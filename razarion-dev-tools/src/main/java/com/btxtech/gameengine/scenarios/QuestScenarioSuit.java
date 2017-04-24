@@ -51,11 +51,6 @@ public class QuestScenarioSuit extends ScenarioSuite {
             public QuestConfig setupQuest() {
                 return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
     }
 }

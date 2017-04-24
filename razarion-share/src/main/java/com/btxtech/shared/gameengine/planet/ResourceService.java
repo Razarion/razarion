@@ -15,7 +15,9 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
+import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -23,7 +25,9 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,11 +47,23 @@ public class ResourceService {
     private TerrainService terrainService;
     @Inject
     private GameLogicService gameLogicService;
+    @Inject
+    private Instance<ResourceRegion> instance;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
+    private final Collection<ResourceRegion> resourceRegions = new ArrayList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         synchronized (resources) {
             resources.clear();
+        }
+        if (planetActivationEvent.getPlanetConfig().getResourceRegionConfigs() != null && planetActivationEvent.getPlanetConfig().getGameEngineMode() == GameEngineMode.MASTER) {
+            synchronized (resourceRegions) {
+                for (ResourceRegionConfig resourceRegionConfig : planetActivationEvent.getPlanetConfig().getResourceRegionConfigs()) {
+                    ResourceRegion resourceRegion = instance.get();
+                    resourceRegion.init(resourceRegionConfig);
+                    resourceRegions.add(resourceRegion);
+                }
+            }
         }
     }
 
@@ -72,6 +88,14 @@ public class ResourceService {
         gameLogicService.onResourceExhausted(syncResourceItem);
         synchronized (resources) {
             resources.remove(syncResourceItem.getId());
+        }
+        syncItemContainerService.destroySyncItem(syncResourceItem);
+        synchronized (resourceRegions) {
+            for (ResourceRegion resourceRegion : resourceRegions) {
+                if (resourceRegion.onResourceItemRemoved(syncResourceItem)) {
+                    break;
+                }
+            }
         }
     }
 

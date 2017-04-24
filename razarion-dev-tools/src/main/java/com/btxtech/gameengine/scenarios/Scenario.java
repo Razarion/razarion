@@ -2,11 +2,13 @@ package com.btxtech.gameengine.scenarios;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
+import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -15,10 +17,13 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.ResourceRegion;
 import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
@@ -38,6 +43,7 @@ public class Scenario {
     private BaseItemService baseItemService;
     private ResourceService resourceService;
     private BoxService boxService;
+    private SyncItemContainerService syncItemContainerService;
     private PathingService pathingService;
     private PlayerBaseFull playerBase;
     private int slopeId = 1;
@@ -81,6 +87,11 @@ public class Scenario {
     }
 
     // Override in subclasses
+    public void setupResourceRegionConfig(List<ResourceRegionConfig> resourceRegionConfigs) {
+
+    }
+
+    // Override in subclasses
     public QuestConfig setupQuest() {
         return null;
     }
@@ -104,12 +115,13 @@ public class Scenario {
         return playerBase;
     }
 
-    public void setupSyncItems(BaseItemService baseItemService, PlayerBaseFull playerBase, ResourceService resourceService, BoxService boxService, PathingService pathingService) {
+    public void setupSyncItems(BaseItemService baseItemService, PlayerBaseFull playerBase, ResourceService resourceService, BoxService boxService, PathingService pathingService, SyncItemContainerService syncItemContainerService) {
         this.baseItemService = baseItemService;
         this.playerBase = playerBase;
         this.resourceService = resourceService;
         this.boxService = boxService;
         this.pathingService = pathingService;
+        this.syncItemContainerService = syncItemContainerService;
         createSyncItems();
     }
 
@@ -188,6 +200,15 @@ public class Scenario {
 
     protected SyncResourceItem getFirstCreatedSyncResourceItem() {
         return getCreatedSyncResourceItem(0);
+    }
+
+    protected SyncResourceItem getSyncResourceItem(int resourceItemTypeId) {
+        return CollectionUtils.getFirst(syncItemContainerService.findResourceItemWithPlace(resourceItemTypeId, new PlaceConfig(){
+            @Override
+            public boolean checkInside(SyncItem syncItem) {
+                return true;
+            }
+        }));
     }
 
     @Override

@@ -169,7 +169,7 @@ public class ObstacleContainer {
     }
 
     public ObstacleContainerNode getObstacleContainerNode(Index index) {
-        if (index.getY() >= xCount || index.getX() < 0 || index.getY() >= yCount || index.getY() < 0) {
+        if (index.getX() >= xCount || index.getX() < 0 || index.getY() >= yCount || index.getY() < 0) {
             return null;
         }
         return obstacleContainerNodes[index.getX()][index.getY()];

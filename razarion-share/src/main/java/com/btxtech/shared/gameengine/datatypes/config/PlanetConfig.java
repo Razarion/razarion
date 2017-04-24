@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -34,6 +35,7 @@ public class PlanetConfig {
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<PlayerBaseInfo> playerBaseInfos;
     private List<BotConfig> botConfigs;
+    private List<ResourceRegionConfig> resourceRegionConfigs;
 
     public int getPlanetId() {
         return planetId;
@@ -184,5 +186,14 @@ public class PlanetConfig {
 
     public void setActualBaseId(Integer actualBase) {
         this.actualBaseId = actualBase;
+    }
+
+    public List<ResourceRegionConfig> getResourceRegionConfigs() {
+        return resourceRegionConfigs;
+    }
+
+    public PlanetConfig setResourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
+        this.resourceRegionConfigs = resourceRegionConfigs;
+        return this;
     }
 }

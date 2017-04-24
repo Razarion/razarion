@@ -38,7 +38,7 @@ public class ClientEmulatorGameEngineRenderer extends Abstract2dRenderer {
             double factor = (double) (System.currentTimeMillis() - clientEmulator.getLastUpdateTimeStamp()) / 1000.0;
 
             for (ModelMatrices modelMatrices : clientEmulator.getAliveModelMatrices()) {
-                throw new UnsupportedOperationException("Don't know how to solve");
+//                throw new UnsupportedOperationException("Don't know how to solve");
 //                Matrix4 model = modelMatrices.interpolateVelocity(factor).getModel();
 //                List<Vertex> transformed = new ArrayList<>();
 //                for (Vertex vertex : itemNullPosition) {

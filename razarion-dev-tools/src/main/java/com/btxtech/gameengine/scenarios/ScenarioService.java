@@ -7,10 +7,12 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.GameEngineInitEvent;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
@@ -32,6 +34,7 @@ import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
@@ -62,6 +65,7 @@ public class ScenarioService implements QuestListener {
     static final BaseItemType BUILDER_ITEM_TYPE;
     static final BaseItemType FACTORY_ITEM_TYPE;
     static final ResourceItemType RESOURCE_ITEM_TYPE;
+    static final ResourceItemType RESOURCE_LITTLE_ITEM_TYPE;
     static final BoxItemType BOX_ITEM_TYPE;
     static final InventoryItem INVENTORY_ITEM;
     static final int LEVEL_1_ID = 1;
@@ -89,6 +93,8 @@ public class ScenarioService implements QuestListener {
     private Event<GameEngineInitEvent> gameEngineInitEvent;
     @Inject
     private JsonProviderEmulator jsonProviderEmulator;
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
     private List<ScenarioSuite> scenarioSuites = new ArrayList<>();
     private Scenario currentScenario;
 
@@ -159,6 +165,10 @@ public class ScenarioService implements QuestListener {
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);
         RESOURCE_ITEM_TYPE = resource;
+
+        ResourceItemType resourceLittle = new ResourceItemType();
+        resourceLittle.setRadius(2).setAmount(3).setId(++itemId);
+        RESOURCE_LITTLE_ITEM_TYPE = resourceLittle;
 
         InventoryItem inventoryItem = new InventoryItem();
         inventoryItem.setId(++itemId).setName("Inventory Item Name").setBaseItemType(ATTACKER_ITEM_TYPE.getId()).setBaseItemTypeCount(1);
@@ -259,6 +269,9 @@ public class ScenarioService implements QuestListener {
             gameEngineConfig = setupGameEngineConfig();
         }
         currentScenario.setupTerrain(gameEngineConfig.getPlanetConfig().getTerrainSlopePositions(), gameEngineConfig.getPlanetConfig().getTerrainObjectPositions());
+        List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
+        currentScenario.setupResourceRegionConfig(resourceRegionConfigs);
+        gameEngineConfig.getPlanetConfig().setResourceRegionConfigs(resourceRegionConfigs);
         UserContext userContext = new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("User 1").setLevelId(LEVEL_1_ID);
         try {
             gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
@@ -266,7 +279,7 @@ public class ScenarioService implements QuestListener {
             currentScenario.setupBots(botService);
             planetService.start();
             PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName());
-            currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService);
+            currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService, syncItemContainerService);
             List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
             currentScenario.setupBotCommands(botCommandConfigs);
             botService.executeCommands(botCommandConfigs);
@@ -288,7 +301,7 @@ public class ScenarioService implements QuestListener {
         gameEngineConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
         gameEngineConfig.setLevelConfigs(setupLevels());
         gameEngineConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE, SIMPLE_FAST_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE, BUILDER_ITEM_TYPE, TOWER_ITEM_TYPE, FACTORY_ITEM_TYPE));
-        gameEngineConfig.setResourceItemTypes(Collections.singletonList(RESOURCE_ITEM_TYPE));
+        gameEngineConfig.setResourceItemTypes(Arrays.asList(RESOURCE_ITEM_TYPE, RESOURCE_LITTLE_ITEM_TYPE));
         gameEngineConfig.setBoxItemTypes(Collections.singletonList(BOX_ITEM_TYPE));
         gameEngineConfig.setInventoryItems(Collections.singletonList(INVENTORY_ITEM));
         gameEngineConfig.setPlanetConfig(setupPlanetConfig());
@@ -326,6 +339,7 @@ public class ScenarioService implements QuestListener {
         planetConfig.setGroundMeshDimension(new Rectangle(-70, -70, 140, 140)).setWaterLevel(0).setHouseSpace(1000).setStartRazarion(100);
         planetConfig.setTerrainSlopePositions(new ArrayList<>());
         planetConfig.setTerrainObjectPositions(new ArrayList<>());
+        planetConfig.setGameEngineMode(GameEngineMode.MASTER);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE.getId(), 1000);
@@ -376,6 +390,7 @@ public class ScenarioService implements QuestListener {
         addScenarioSuite(new FabricateScenarioSuite());
         addScenarioSuite(new RealGameScenarioSuite());
         addScenarioSuite(new QuestScenarioSuit());
+        addScenarioSuite(new ResourceScenarioSuite());
     }
 
     @Override
