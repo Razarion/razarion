@@ -164,6 +164,8 @@ public interface I18nConstants {
 
     String inventoryNotAvailableBase();
 
+    String startTutorialFinished();
+
     // Connection
     String connectionFailed();
 

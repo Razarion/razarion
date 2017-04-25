@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.cdimock;
 
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
@@ -42,6 +41,11 @@ public class TestModalDialogManager extends ModalDialogManager {
 
     @Override
     protected void showBaseLost(Runnable closeListener) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void showLeaveStartTutorial(Runnable closeListener) {
         throw new UnsupportedOperationException();
     }
 }

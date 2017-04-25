@@ -166,7 +166,6 @@ a:active {
     height: 15px;
 }
 
-
 .empty-cover {
     position: absolute;
     width: 100%;
@@ -485,12 +484,19 @@ a:active {
 }
 
 /** -------------------------- DIALOG FRAMEWORK ENDS -------------------------- */
+/** -------------------------- DIALOG MESSAGE  -------------------------- */
+.message-dialog {
+    max-width: 30em;
+}
+
+/** -------------------------- DIALOG MESSAGE ENDS -------------------------- */
 
 /** -------------------------- DIALOG QUEST PASSED  -------------------------- */
-/** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
 .quest-passed-dialog {
     max-width: 30em;
 }
+
+/** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
 
 /** -------------------------- DIALOG INVENTORY  -------------------------- */
 .inventory-item-table {

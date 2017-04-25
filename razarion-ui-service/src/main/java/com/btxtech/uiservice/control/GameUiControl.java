@@ -22,9 +22,8 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.TrackerService;
-import com.btxtech.uiservice.VisualUiService;
-import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.user.UserUiService;
@@ -50,10 +49,6 @@ import java.util.logging.Logger;
 public class GameUiControl { // Equivalent worker class is PlanetService
     private Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @Inject
-    private VisualUiService visualUiService;
-    @Inject
-    private AudioService audioService;
-    @Inject
     private Instance<Scene> sceneInstance;
     @Inject
     private BaseItemUiService baseItemUiService;
@@ -75,6 +70,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private TrackerService trackerService;
     @Inject
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
+    @Inject
+    private ModalDialogManager modalDialogManager;
     private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -145,10 +142,13 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void finished() {
         if (startTimeStamp == null) {
             logger.warning("startTimeStamp == null");
-            return;
+        } else {
+            trackerService.trackGameUiControl(startTimeStamp);
+            startTimeStamp = null;
         }
-        trackerService.trackGameUiControl(startTimeStamp);
-        startTimeStamp = null;
+        if (getPlanetConfig().getGameEngineMode() == GameEngineMode.MASTER) {
+            modalDialogManager.showLeaveStartTutorial(() -> clientRunner.startWarm());
+        }
     }
 
     public GameUiControlConfig getGameUiControlConfig() {

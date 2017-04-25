@@ -26,10 +26,6 @@ public enum StartupTestSeq implements StartupSeq {
             return SimpleTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_DEFERRED {
         @Override
@@ -37,10 +33,6 @@ public enum StartupTestSeq implements StartupSeq {
             return DeferredTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_BACKGROUND {
         @Override
@@ -48,10 +40,6 @@ public enum StartupTestSeq implements StartupSeq {
             return DeferredBackgroundTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_DEFERRED_FINISH {
         @Override
@@ -59,10 +47,6 @@ public enum StartupTestSeq implements StartupSeq {
             return DeferredFinishTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_DEFERRED_BACKGROUND_FINISH {
         @Override
@@ -70,10 +54,6 @@ public enum StartupTestSeq implements StartupSeq {
             return DeferredBackgroundFinishTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_SIMPLE_EXCEPTION {
         @Override
@@ -81,10 +61,6 @@ public enum StartupTestSeq implements StartupSeq {
             return SimpleExceptionTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_MULTI {
         @Override
@@ -92,10 +68,6 @@ public enum StartupTestSeq implements StartupSeq {
             return MultiTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_WAIT_FOR_BACKGROUND_SIMPLE {
         @Override
@@ -103,10 +75,6 @@ public enum StartupTestSeq implements StartupSeq {
             return WaitForBackgroundTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
     },
     TEST_WAIT_FOR_BACKGROUND_COMPLEX {
         @Override
@@ -114,10 +82,5 @@ public enum StartupTestSeq implements StartupSeq {
             return WaitForBackgroundComplexTestTaskEnum.values();
         }
 
-        @Override
-        public boolean isCold() {
-            return true;
-        }
-    }
-
+    };
 }

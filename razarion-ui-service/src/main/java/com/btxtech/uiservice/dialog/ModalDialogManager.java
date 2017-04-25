@@ -31,6 +31,8 @@ public abstract class ModalDialogManager {
 
     protected abstract void showBaseLost(Runnable closeListener);
 
+    public abstract void showLeaveStartTutorial(Runnable closeListener);
+
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, () -> {
             if (questPassedCallback != null) {

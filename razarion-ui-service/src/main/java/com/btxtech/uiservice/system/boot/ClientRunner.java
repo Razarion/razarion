@@ -4,7 +4,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.MathHelper;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -17,8 +16,7 @@ import java.util.logging.Logger;
  * Date: 04.12.2010
  * Time: 10:56:33
  */
-@ApplicationScoped
-public class ClientRunner {
+public abstract class ClientRunner {
     private Logger logger = Logger.getLogger(ClientRunner.class.getName());
     private Collection<StartupProgressListener> listeners = new ArrayList<>();
     private List<AbstractStartupTask> startupList = new ArrayList<>();
@@ -32,6 +30,8 @@ public class ClientRunner {
     private Instance<AbstractStartupTask> taskInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
+
+    protected abstract StartupSeq getWarm();
 
     public void addStartupProgressListener(StartupProgressListener startupProgressListener) {
         listeners.add(startupProgressListener);
@@ -49,6 +49,10 @@ public class ClientRunner {
         }
         setupStartupSeq(startupSeq);
         runNextTask();
+    }
+
+    public void startWarm() {
+        start(getWarm());
     }
 
     private void runNextTask() {

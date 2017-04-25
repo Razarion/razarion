@@ -65,7 +65,7 @@ public class Client {
     @AfterInitialization
     public void afterInitialization() {
         try {
-            clientRunner.start(GameStartupSeq.COLD_SIMULATED);
+            clientRunner.start(GameStartupSeq.COLD);
             // clientRunner.start(GameStartupSeq.COLD_EXPERIMENTAL);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Start failed", throwable);

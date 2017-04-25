@@ -74,6 +74,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         show(I18nHelper.getConstants().baseLostTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().baseLost(), (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnBaseLost(), DialogButton.Button.CLOSE);
     }
 
+    @Override
+    public void showLeaveStartTutorial(Runnable closeListener) {
+        show(I18nHelper.getConstants().nextPlanet(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().startTutorialFinished(), (button, value) -> closeListener.run(), null, DialogButton.Button.OK);
+    }
+
     public void showMessageDialog(String title, String message) {
         show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
     }

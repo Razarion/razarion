@@ -21,7 +21,7 @@ import com.btxtech.uiservice.system.boot.StartupTaskEnum;
  * Date: 19.06.2010
  * Time: 18:21:15
  */
-public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
+public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
     LOAD_START_JS(LoadStartJsTask.class),
     CALL_FACEBOOK(CallFacebookTask.class),
     LOAD_AND_START_WORKER(LoadWorkerTask.class),
@@ -50,7 +50,7 @@ public enum ColdSimulatedGameStartupTaskEnum implements StartupTaskEnum {
 
     private Class<? extends AbstractStartupTask> taskClass;
 
-    ColdSimulatedGameStartupTaskEnum(Class<? extends AbstractStartupTask> taskClass) {
+    ColdGameStartupTaskEnum(Class<? extends AbstractStartupTask> taskClass) {
         this.taskClass = taskClass;
     }
 

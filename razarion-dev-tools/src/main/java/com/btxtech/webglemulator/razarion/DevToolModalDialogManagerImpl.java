@@ -18,7 +18,6 @@ import javax.inject.Singleton;
 public class DevToolModalDialogManagerImpl extends ModalDialogManager {
     @Override
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
-        System.out.println("*** showQuestPassed Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Quest bestanden");
@@ -31,7 +30,6 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     public void showLevelUp(LevelConfig newLevelConfig, Runnable closeListener) {
-        System.out.println("*** showLevelUp Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Level Up");
@@ -44,7 +42,6 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     public void showBoxPicked(BoxContent boxContent) {
-        System.out.println("*** showBoxPicked Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Box picked");
@@ -56,7 +53,6 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
-        System.out.println("*** showUseInventoryItemLimitExceeded Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("showUseInventoryHouseSpaceExceeded");
@@ -68,7 +64,6 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     public void showUseInventoryHouseSpaceExceeded() {
-        System.out.println("*** showUseInventoryHouseSpaceExceeded Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("showUseInventoryHouseSpaceExceeded");
@@ -80,12 +75,23 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     protected void showBaseLost(Runnable closeListener) {
-        System.out.println("*** showBaseLost Dialog");
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("showBaseLost");
             alert.setHeaderText(null);
             alert.setContentText("showBaseLost");
+            alert.showAndWait();
+            closeListener.run();
+        });
+    }
+
+    @Override
+    public void showLeaveStartTutorial(Runnable closeListener) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Tutorial Finished");
+            alert.setHeaderText(null);
+            alert.setContentText("Move to next planet");
             alert.showAndWait();
             closeListener.run();
         });

@@ -20,6 +20,4 @@ package com.btxtech.uiservice.system.boot;
  */
 public interface StartupSeq {
     StartupTaskEnum[] getAbstractStartupTaskEnum();
-
-    boolean isCold();
 }

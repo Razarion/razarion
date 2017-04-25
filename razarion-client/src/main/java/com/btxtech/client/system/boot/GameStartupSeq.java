@@ -22,27 +22,22 @@ import com.btxtech.uiservice.system.boot.StartupTaskEnum;
  * Time: 22:03:20
  */
 public enum GameStartupSeq implements StartupSeq {
-    COLD_SIMULATED(true) {
+    COLD {
         @Override
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
-            return ColdSimulatedGameStartupTaskEnum.values();
+            return ColdGameStartupTaskEnum.values();
         }
     },
-    COLD_EXPERIMENTAL(true) {
+    WARM {
+        @Override
+        public StartupTaskEnum[] getAbstractStartupTaskEnum() {
+            return ColdGameStartupTaskEnum.values();
+        }
+    },
+    COLD_EXPERIMENTAL {
         @Override
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
             return ColdExperimentalGameStartupTaskEnum.values();
         }
     };
-    private boolean cold;
-
-    GameStartupSeq(boolean isCold) {
-        cold = isCold;
-    }
-
-    public boolean isCold() {
-        return cold;
-    }
-
-    public abstract StartupTaskEnum[] getAbstractStartupTaskEnum();
 }
