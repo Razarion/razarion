@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -75,12 +76,15 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private ModalDialogManager modalDialogManager;
     @Inject
     private ScreenCover screenCover;
+    @Inject
+    private Instance<AbstractServerSystemConnection> serverSystemConnectionInstance;
     private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
     private Date startTimeStamp;
     private Date sceneStartTimeStamp;
     private List<SceneConfig> scenes;
+    private AbstractServerSystemConnection abstractServerSystemConnection;
 
     public void setGameUiControlConfig(GameUiControlConfig gameUiControlConfig) {
         this.gameUiControlConfig = gameUiControlConfig;
@@ -92,6 +96,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void init() {
+        abstractServerSystemConnection = serverSystemConnectionInstance.get();
+        abstractServerSystemConnection.init();
         itemTypeService.init(gameUiControlConfig.getGameEngineConfig());
         terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());
         levelService.init(gameUiControlConfig.getGameEngineConfig());
@@ -288,5 +294,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             bumpIds.add(gameUiControlConfig.getVisualConfig().getWaterConfig().getBmId());
         }
         return bumpIds;
+    }
+
+    public void onLevelUpdate(LevelConfig newLevelConfig) {
+        abstractServerSystemConnection.onLevelChanged(newLevelConfig);
     }
 }

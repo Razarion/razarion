@@ -9,9 +9,11 @@ import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
@@ -33,6 +35,8 @@ public class UserUiService {
     private ItemCockpitService itemCockpitService;
     @Inject
     private ModalDialogManager dialogManager;
+    @Inject
+    private Instance<GameUiControl> gameUiControlInstance;
     private FacebookUserLoginInfo facebookUserLoginInfo;
     private UserContext userContext;
 
@@ -81,6 +85,7 @@ public class UserUiService {
             cockpitService.updateLevelAndXp(userContext);
             itemCockpitService.onStateChanged();
             dialogManager.onLevelPassed(newLevelConfig);
+            gameUiControlInstance.get().onLevelUpdate(newLevelConfig);
         } else {
             userContext.setXp(xp);
             cockpitService.updateLevelAndXp(userContext);

@@ -17,7 +17,7 @@ public class ClientConnectionTest {
 //        SessionHolder session = new SessionHolder();
 //        session.setUser(user);
 //
-//        ClientConnection clientConnection = new ClientConnection();
+//        ClientGameConnection clientConnection = new ClientGameConnection();
 //        TestServerExceptionHandler testServerExceptionHandler = new TestServerExceptionHandler();
 //        SimpleTestEnvironment.injectService("exceptionHandler", clientConnection, testServerExceptionHandler);
 //        SimpleTestEnvironment.injectService("baseItemService", clientConnection, baseItemServiceMock);

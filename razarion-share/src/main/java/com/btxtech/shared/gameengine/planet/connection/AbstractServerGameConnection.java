@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.system.ConnectionMarshaller;
 
 import javax.inject.Inject;
 
@@ -16,7 +17,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 20.04.2017.
  */
-public abstract class AbstractServerConnection {
+public abstract class AbstractServerGameConnection {
     @Inject
     private GameEngineWorker gameEngineWorker;
     @Inject
@@ -28,14 +29,14 @@ public abstract class AbstractServerConnection {
 
     protected abstract String toJson(Object param);
 
-    protected abstract Object fromJson(String jsonString, ConnectionMarshaller.Package aPackage);
+    protected abstract Object fromJson(String jsonString, GameConnectionPacket packet);
 
     public abstract void init();
 
     public abstract void close();
 
     public void createHumanBaseWithBaseItem(DecimalPosition position) {
-        sendToServer(ConnectionMarshaller.marshall(ConnectionMarshaller.Package.CREATE_BASE, toJson(position)));
+        sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.CREATE_BASE, toJson(position)));
     }
 
     public void onCommandSent(BaseCommand baseCommand) {
@@ -43,10 +44,10 @@ public abstract class AbstractServerConnection {
     }
 
     public void handleMessage(String text) {
-        ConnectionMarshaller.Package aPackage = ConnectionMarshaller.deMarshallPackage(text);
+        GameConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, GameConnectionPacket.class);
         String jsonString = ConnectionMarshaller.deMarshallPayload(text);
-        Object param = fromJson(jsonString, aPackage);
-        switch (aPackage) {
+        Object param = fromJson(jsonString, packet);
+        switch (packet) {
 
             case BASE_CREATED:
                 gameEngineWorker.onServerBaseCreated((PlayerBaseInfo) param);
@@ -64,7 +65,7 @@ public abstract class AbstractServerConnection {
                  gameEngineWorker.onServerSyncItemDeleted((SyncItemDeletedInfo) param);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown Packet: " + aPackage);
+                throw new IllegalArgumentException("Unknown Packet: " + packet);
         }
     }
 }

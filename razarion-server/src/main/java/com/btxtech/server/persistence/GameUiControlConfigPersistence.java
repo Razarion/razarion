@@ -206,7 +206,7 @@ public class GameUiControlConfigPersistence {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setInternalName("_setupMove").setViewFieldConfig(viewFieldConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quest geben Erfarungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten level. In der oberen linek Menu siehst du deine Erfahrungspubnkte.")));
+        sceneConfigs.add(new SceneConfig().setInternalName("_setupMove").setViewFieldConfig(viewFieldConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quest geben Erfarungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten level. In der oberen linek Menu siehst du deine Erfahrungspubnkte.")).setRemoveLoadingCover(true));
         // Move quest
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_BULLDOZER, 1);
@@ -564,7 +564,7 @@ public class GameUiControlConfigPersistence {
         addNpcTooWeakCommand(sceneConfigs);
         addBuildViperTask2(sceneConfigs);
         addKillTower(sceneConfigs);
-        addKillBotEndForward(sceneConfigs);
+        addKillFactory(sceneConfigs);
         return sceneConfigs;
     }
 
@@ -711,7 +711,7 @@ public class GameUiControlConfigPersistence {
     private void addPickBoxTask(List<SceneConfig> sceneConfigs) {
         // Drop box
         List<BoxItemPosition> boxItemPositions = new ArrayList<>();
-        boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(GameEngineConfigPersistence.BOX_ITEM_TYPE).setPosition(new DecimalPosition(180, 120)));
+        boxItemPositions.add(new BoxItemPosition().setBoxItemTypeId(GameEngineConfigPersistence.BOX_ITEM_TYPE).setPosition(new DecimalPosition(188, 116)));
         // Pick box quest
         QuestConfig questConfig = new QuestConfig().setXp(1).setTitle("Nimm die Box").setDescription("Eine Box wurde gesichtet. Sammle sie auf").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
         // Tip
@@ -899,10 +899,10 @@ public class GameUiControlConfigPersistence {
         sceneConfigs.add(new SceneConfig().setInternalName("user: kill tower").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
     }
 
-    private void addKillBotEndForward(List<SceneConfig> sceneConfigs) {
+    private void addKillFactory(List<SceneConfig> sceneConfigs) {
         // Kill bot base quest
-        sceneConfigs.add(new SceneConfig().setInternalName("user: kill bot").setQuestConfig(new QuestConfig().setXp(20).setTitle("Kill Razar Industries").setDescription("Vertreibe Razar Industries von diesem Planeten").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)))).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("user: kill factory").setQuestConfig(new QuestConfig().setXp(20).setTitle("Zerstöre Fabriken").setDescription("Zerstöre die Fabriken, damit Razar Industries auf diesem Planeten nicht weiter existieren kann.").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2)))).setWait4QuestPassedDialog(true));
         // Go to than you page
-        sceneConfigs.add(new SceneConfig().setInternalName("script: forward to ThankYou page").setForwardUrl("ThankYou.html"));
+        // sceneConfigs.add(new SceneConfig().setInternalName("script: forward to ThankYou page").setForwardUrl("ThankYou.html"));
     }
 }

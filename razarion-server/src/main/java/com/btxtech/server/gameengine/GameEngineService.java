@@ -39,7 +39,7 @@ public class GameEngineService implements GameLogicListener {
     @Inject
     private GameLogicService gameLogicService;
     @Inject
-    private ClientConnectionService clientConnectionService;
+    private ClientGameConnectionService clientGameConnectionService;
 
     public void start() {
         GameEngineConfig gameEngineConfig = gameEngineConfigPersistence.load4Server();
@@ -59,37 +59,37 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
-        clientConnectionService.onBaseCreated(playerBase);
+        clientGameConnectionService.onBaseCreated(playerBase);
     }
 
     @Override
     public void onBaseDeleted(PlayerBase playerBase) {
-        clientConnectionService.onBaseDeleted(playerBase);
+        clientGameConnectionService.onBaseDeleted(playerBase);
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        clientConnectionService.sendSyncBaseItem(syncBaseItem);
+        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
-        clientConnectionService.onSyncItemRemoved(syncBaseItem, true);
+        clientGameConnectionService.onSyncItemRemoved(syncBaseItem, true);
     }
 
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
-        clientConnectionService.onSyncItemRemoved(syncBaseItem, false);
+        clientGameConnectionService.onSyncItemRemoved(syncBaseItem, false);
     }
 
     @Override
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
-        clientConnectionService.onSyncResourceItemCreated(syncResourceItem);
+        clientGameConnectionService.onSyncResourceItemCreated(syncResourceItem);
     }
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
-        clientConnectionService.onSyncItemRemoved(syncResourceItem, false);
+        clientGameConnectionService.onSyncItemRemoved(syncResourceItem, false);
     }
 
     @Override
@@ -104,30 +104,30 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onSyncBoxDeleted(SyncBoxItem box) {
-        clientConnectionService.onSyncItemRemoved(box, false);
+        clientGameConnectionService.onSyncItemRemoved(box, false);
     }
 
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        clientConnectionService.sendSyncBaseItem(syncBaseItem);
+        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
     @Override
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
-        clientConnectionService.sendSyncBaseItem(syncItem);
+        clientGameConnectionService.sendSyncBaseItem(syncItem);
     }
 
     @Override
     public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
         if (currentBuildup != null) {
-            clientConnectionService.sendSyncBaseItem(currentBuildup);
+            clientGameConnectionService.sendSyncBaseItem(currentBuildup);
         }
-        clientConnectionService.sendSyncBaseItem(syncBaseItem);
+        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
     @Override
     public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
-        clientConnectionService.sendSyncBaseItem(syncBaseItem);
-        clientConnectionService.sendSyncBaseItem(createdBy);
+        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
+        clientGameConnectionService.sendSyncBaseItem(createdBy);
     }
 }

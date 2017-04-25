@@ -1,34 +1,27 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.shared.gameengine.planet.connection.AbstractServerConnection;
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SystemConnectionPacket;
+import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.eclipse.jetty.util.HttpCookieStore;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 
 import javax.inject.Inject;
-import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
-import java.net.CookieStore;
-import java.net.HttpCookie;
-import java.net.URI;
 
 /**
  * Created by Beat
- * 21.04.2017.
+ * 25.04.2017.
  */
 @WebSocket(maxTextMessageSize = 64 * 1024)
-public class DevToolServerConnection extends AbstractServerConnection {
+public class DevToolServerSystemConnection extends AbstractServerSystemConnection implements DevToolConnectionDefault {
     @Inject
     private ExceptionHandler exceptionHandler;
     private RemoteEndpoint remoteEndpoint;
@@ -37,14 +30,7 @@ public class DevToolServerConnection extends AbstractServerConnection {
     @Override
     public void init() {
         try {
-            String destUri = "ws://localhost:8080" + RestUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT;
-            WebSocketClient client = new WebSocketClient();
-            NewCookie newCookie = HttpConnectionEmu.getInstance().getSessionCookie();
-            CookieStore cookieStore = new HttpCookieStore();
-            cookieStore.add(new URI("http://localhost:8080"), new HttpCookie(newCookie.getName(), newCookie.getValue()));
-            client.setCookieStore(cookieStore);
-            client.start();
-            client.connect(this, new URI(destUri), new ClientUpgradeRequest());
+            init("ws://localhost:8080" + RestUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, this);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -52,7 +38,7 @@ public class DevToolServerConnection extends AbstractServerConnection {
 
     @OnWebSocketClose
     public void onClose(int statusCode, String reason) {
-        System.out.printf("Connection closed: %d - %s%n", statusCode, reason);
+        System.out.printf("DevToolServerSystemConnection closed: %d - %s%n", statusCode, reason);
     }
 
     @OnWebSocketConnect
@@ -89,9 +75,9 @@ public class DevToolServerConnection extends AbstractServerConnection {
     }
 
     @Override
-    protected Object fromJson(String jsonString, ConnectionMarshaller.Package aPackage) {
+    protected Object fromJson(String jsonString, SystemConnectionPacket packet) {
         try {
-            return mapper.readValue(jsonString, aPackage.getTheClass());
+            return mapper.readValue(jsonString, packet.getTheClass());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

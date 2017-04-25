@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 
 import java.util.Date;
 
@@ -26,7 +26,7 @@ public abstract class BaseCommand {
     private int id;
     private Date timeStamp;
 
-    public abstract ConnectionMarshaller.Package connectionPackage();
+    public abstract GameConnectionPacket connectionPackage();
 
     public int getId() {
         return id;

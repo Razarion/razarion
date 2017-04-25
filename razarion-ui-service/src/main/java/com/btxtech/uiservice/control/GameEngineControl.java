@@ -75,8 +75,6 @@ public abstract class GameEngineControl {
     private SimpleExecutorService simpleExecutorService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
-//    private long tmpLastTimeStamp2;
-//    private int count;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -211,13 +209,6 @@ public abstract class GameEngineControl {
         effectVisualizationService.baseItemRemoved(baseItemRemoved);
         effectVisualizationService.onSyncBaseItemsExplode(baseItemKilled);
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
-//        count++;
-//        if (tmpLastTimeStamp2 + 5000 < System.currentTimeMillis()) {
-//            long delta = System.currentTimeMillis() - tmpLastTimeStamp2;
-//            logger.severe("Client TICK_UPDATE: " + count + " time: " + delta + " updates: " + (1000.0 * (double) count / delta));
-//            tmpLastTimeStamp2 = System.currentTimeMillis();
-//            count = 0;
-//        }
     }
 
     private void onTickUpdateFailed() {

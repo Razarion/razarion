@@ -6,8 +6,9 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,7 +29,7 @@ import javax.websocket.server.ServerEndpoint;
  * 20.04.2017.
  */
 @ServerEndpoint(value = RestUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT, configurator = WebSocketEndpointConfigAware.class)
-public class ClientConnection {
+public class ClientGameConnection {
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -36,7 +37,7 @@ public class ClientConnection {
     @Inject
     private SessionService sessionService;
     @Inject
-    private ClientConnectionService clientConnectionService;
+    private ClientGameConnectionService clientGameConnectionService;
     @Inject
     private CommandService commandService;
     private ObjectMapper mapper = new ObjectMapper();
@@ -47,10 +48,10 @@ public class ClientConnection {
     @OnMessage
     public void onMessage(Session session, String text) {
         try {
-            ConnectionMarshaller.Package aPackage = ConnectionMarshaller.deMarshallPackage(text);
+            GameConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, GameConnectionPacket.class);
             String payload = ConnectionMarshaller.deMarshallPayload(text);
-            Object param = mapper.readValue(payload, aPackage.getTheClass());
-            onPackageReceived(aPackage, param);
+            Object param = mapper.readValue(payload, packet.getTheClass());
+            onPackageReceived(packet, param);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -60,7 +61,7 @@ public class ClientConnection {
     public void open(Session session, EndpointConfig config) {
         this.config = config;
         async = session.getAsyncRemote();
-        clientConnectionService.onOpen(this);
+        clientGameConnectionService.onOpen(this);
     }
 
     @OnError
@@ -70,13 +71,13 @@ public class ClientConnection {
 
     @OnClose
     public void close(Session session, CloseReason reason) {
-        clientConnectionService.onClose(this);
+        clientGameConnectionService.onClose(this);
         async = null;
     }
 
-    protected void onPackageReceived(ConnectionMarshaller.Package aPackage, Object param) {
+    protected void onPackageReceived(GameConnectionPacket packet, Object param) {
         PlayerSession playerSession = getSession();
-        switch (aPackage) {
+        switch (packet) {
             case CREATE_BASE:
                 baseItemService.createHumanBaseWithBaseItem(playerSession.getUserContext().getLevelId(), playerSession.getUserContext().getHumanPlayerId(), playerSession.getUserContext().getName(), (DecimalPosition) param);
                 break;
@@ -92,14 +93,13 @@ public class ClientConnection {
                 commandService.executeCommand((BaseCommand) param);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown Packet: " + aPackage);
+                throw new IllegalArgumentException("Unknown Packet: " + packet);
         }
     }
 
     public void sendToClient(String text) {
         async.sendText(text);
     }
-
 
     private PlayerSession getSession() {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);

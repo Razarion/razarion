@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 
 /**
  * User: beat
@@ -22,7 +22,7 @@ import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
  */
 public class MoveCommand extends PathToDestinationCommand {
     @Override
-    public ConnectionMarshaller.Package connectionPackage() {
-        return ConnectionMarshaller.Package.MOVE_COMMAND;
+    public GameConnectionPacket connectionPackage() {
+        return GameConnectionPacket.MOVE_COMMAND;
     }
 }

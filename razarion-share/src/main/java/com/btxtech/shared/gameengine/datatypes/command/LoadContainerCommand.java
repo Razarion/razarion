@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 
 /**
  * User: beat
@@ -32,7 +32,7 @@ public class LoadContainerCommand extends PathToDestinationCommand {
     }
 
     @Override
-    public ConnectionMarshaller.Package connectionPackage() {
-        return ConnectionMarshaller.Package.LOAD_CONTAINER_COMMAND;
+    public GameConnectionPacket connectionPackage() {
+        return GameConnectionPacket.LOAD_CONTAINER_COMMAND;
     }
 }

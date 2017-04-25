@@ -14,7 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.command;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 
 /**
  * User: beat
@@ -33,7 +33,7 @@ public class UnloadContainerCommand extends BaseCommand {
     }
 
     @Override
-    public ConnectionMarshaller.Package connectionPackage() {
-        return ConnectionMarshaller.Package.UNLOAD_CONTAINER_COMMAND;
+    public GameConnectionPacket connectionPackage() {
+        return GameConnectionPacket.UNLOAD_CONTAINER_COMMAND;
     }
 }

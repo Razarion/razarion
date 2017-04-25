@@ -133,4 +133,16 @@ public class UserService {
         return userContext;
     }
 
+    public void onLevelUpdate(String sessionId, int levelId) {
+        UserContext userContext = getLoggedInUserContext(sessionId);
+        userContext.setLevelId(levelId);
+    }
+
+    public UserContext getLoggedInUserContext(String sessionId) {
+        UserContext userContext = loggedInUserContext.get(sessionId);
+        if (userContext == null) {
+            throw new IllegalArgumentException("No userContext for sessionId: " + sessionId);
+        }
+        return userContext;
+    }
 }

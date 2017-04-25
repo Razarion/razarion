@@ -13,7 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.command;
 
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 
 /**
  * User: beat
@@ -32,8 +32,8 @@ public class FactoryCommand extends BaseCommand {
     }
 
     @Override
-    public ConnectionMarshaller.Package connectionPackage() {
-        return ConnectionMarshaller.Package.FACTORY_COMMAND;
+    public GameConnectionPacket connectionPackage() {
+        return GameConnectionPacket.FACTORY_COMMAND;
     }
 
     @Override

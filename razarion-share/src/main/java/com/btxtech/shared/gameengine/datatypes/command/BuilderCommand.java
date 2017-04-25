@@ -15,7 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.command;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.planet.connection.ConnectionMarshaller;
+import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 
 /**
  * User: beat
@@ -43,8 +43,8 @@ public class BuilderCommand extends PathToDestinationCommand {
     }
 
     @Override
-    public ConnectionMarshaller.Package connectionPackage() {
-        return ConnectionMarshaller.Package.BUILDER_COMMAND;
+    public GameConnectionPacket connectionPackage() {
+        return GameConnectionPacket.BUILDER_COMMAND;
     }
 
     @Override

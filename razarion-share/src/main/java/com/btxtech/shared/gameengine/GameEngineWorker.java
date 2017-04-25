@@ -36,7 +36,7 @@ import com.btxtech.shared.gameengine.planet.PlanetTickListener;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
-import com.btxtech.shared.gameengine.planet.connection.AbstractServerConnection;
+import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -97,14 +97,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Inject
     private ObstacleContainer obstacleContainer;
     @Inject
-    private Instance<AbstractServerConnection> connectionInstance;
+    private Instance<AbstractServerGameConnection> connectionInstance;
     private UserContext userContext;
     private PlayerBase playerBase;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
     private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
     private int xpFromKills;
     private boolean sendTickUpdate;
-    private AbstractServerConnection serverConnection;
+    private AbstractServerGameConnection serverConnection;
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 
@@ -286,7 +286,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 return null;
             });
             GameInfo gameInfo = new GameInfo();
-            gameInfo.setXpFromKills(xpFromKills);
+            if (planetService.getPlanetConfig().getGameEngineMode() == GameEngineMode.SLAVE) {
+                gameInfo.setXpFromKills(xpFromKills);
+            }
             xpFromKills = 0;
             List<SyncBaseItemSimpleDto> tmpKilled = killed;
             killed = new ArrayList<>();
