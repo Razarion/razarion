@@ -31,7 +31,7 @@ public enum GameStartupSeq implements StartupSeq {
     WARM {
         @Override
         public StartupTaskEnum[] getAbstractStartupTaskEnum() {
-            return ColdGameStartupTaskEnum.values();
+            return WarmGameStartupTaskEnum.values();
         }
     },
     COLD_EXPERIMENTAL {

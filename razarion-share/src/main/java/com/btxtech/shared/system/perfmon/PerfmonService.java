@@ -2,9 +2,9 @@ package com.btxtech.shared.system.perfmon;
 
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.rest.TrackerProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.annotation.PostConstruct;
@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -37,10 +36,20 @@ public class PerfmonService {
     private Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
     private Collection<SampleEntry> sampleEntries = new ArrayList<>();
     private MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
+    private SimpleScheduledFuture simpleScheduledFuture;
 
     @PostConstruct
     public void postConstruct() {
-        simpleExecutorService.scheduleAtFixedRate(DUMP_DELAY, true, () -> {
+        start();
+    }
+
+    public void start() {
+        if (simpleScheduledFuture != null) {
+            simpleScheduledFuture.cancel();
+            simpleScheduledFuture = null;
+            logger.warning("PerfmonService.stop(): simpleScheduledFuture != null");
+        }
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(DUMP_DELAY, true, () -> {
             try {
                 Collection<StatisticEntry> statisticEntries = analyse();
                 for (StatisticEntry statisticEntry : statisticEntries) {
@@ -53,6 +62,18 @@ public class PerfmonService {
                 exceptionHandler.handleException(t);
             }
         }, SimpleExecutorService.Type.UNSPECIFIED);
+    }
+
+    public void stop() {
+        if (simpleScheduledFuture != null) {
+            simpleScheduledFuture.cancel();
+            simpleScheduledFuture = null;
+            enterTimes.clear();
+            sampleEntries.clear();
+            statisticEntries.clear();
+        } else {
+            logger.warning("PerfmonService.stop(): simpleScheduledFuture == null");
+        }
     }
 
     public void onEntered(PerfmonEnum perfmonEnum) {

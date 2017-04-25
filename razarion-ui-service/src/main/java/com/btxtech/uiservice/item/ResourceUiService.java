@@ -37,6 +37,11 @@ public class ResourceUiService {
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private final MapList<ResourceItemType, ModelMatrices> resourceModelMatrices = new MapList<>();
 
+    public void clear() {
+        resources.clear();
+        resourceModelMatrices.clear();
+    }
+
     public void addResource(SyncResourceItemSimpleDto syncResourceItem) {
         synchronized (resources) {
             if (resources.put(syncResourceItem.getId(), syncResourceItem) != null) {

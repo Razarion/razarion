@@ -73,6 +73,15 @@ public class TerrainUiService {
         lowestPointInView = LOWEST_POINT_IN_VIEW;
     }
 
+    public void clear() {
+        terrainObjectConfigModelMatrices.clear();
+        terrainObjectPositions.clear();
+        terrainZConsumers.clear();
+        overlapConsumers.clear();
+        overlapTypeConsumers.clear();
+        clearTerrainTiles();
+    }
+
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         terrainObjectPositions = gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions();
     }
@@ -94,7 +103,7 @@ public class TerrainUiService {
         }
     }
 
-    public void clearTerrainTilesForEditor() {
+    public void clearTerrainTiles() {
         for (UiTerrainTile uiTerrainTile : displayTerrainTiles.values()) {
             uiTerrainTile.dispose();
         }
@@ -103,6 +112,10 @@ public class TerrainUiService {
             uiTerrainTile.dispose();
         }
         cacheTerrainTiles.clear();
+    }
+
+    public void clearTerrainTilesForEditor() {
+        clearTerrainTiles();
         onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
     }
 
@@ -236,6 +249,6 @@ public class TerrainUiService {
     }
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {
-        terrainTileConsumers.get(new Index(terrainTile.getIndexX(), terrainTile.getIndexY())).accept(terrainTile);
+        terrainTileConsumers.remove(new Index(terrainTile.getIndexX(), terrainTile.getIndexY())).accept(terrainTile);
     }
 }

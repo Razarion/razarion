@@ -71,20 +71,22 @@ public class BaseItemService {
         bases.clear();
         guardingItems.clear();
         lastBaseItId = 1;
-        planetConfig = planetActivationEvent.getPlanetConfig();
-        if (getGameEngineMode() == GameEngineMode.SLAVE) {
-            for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getPlanetConfig().getPlayerBaseInfos()) {
-                createBaseSlave(playerBaseInfo);
-            }
+        if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
+            planetConfig = planetActivationEvent.getPlanetConfig();
+            if (getGameEngineMode() == GameEngineMode.SLAVE) {
+                for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getPlanetConfig().getPlayerBaseInfos()) {
+                    createBaseSlave(playerBaseInfo);
+                }
 
-            Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
-            for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getPlanetConfig().getSyncBaseItemInfos()) {
-                SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
-                tmp.put(syncBaseItem, syncBaseItemInfo);
-            }
+                Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
+                for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getPlanetConfig().getSyncBaseItemInfos()) {
+                    SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
+                    tmp.put(syncBaseItem, syncBaseItemInfo);
+                }
 
-            for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
-                synchronizeActivateSlave(entry.getKey(), entry.getValue());
+                for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
+                    synchronizeActivateSlave(entry.getKey(), entry.getValue());
+                }
             }
         }
     }

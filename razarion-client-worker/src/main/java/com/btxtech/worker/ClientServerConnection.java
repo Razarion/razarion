@@ -74,4 +74,14 @@ public class ClientServerConnection extends AbstractServerConnection {
     protected Object fromJson(String jsonString, ConnectionMarshaller.Package aPackage) {
         return MarshallingWrapper.fromJSON(jsonString, aPackage.getTheClass());
     }
+
+    @Override
+    public void close() {
+        try {
+            webSocket.close();
+            webSocket = null;
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException("ClientServerConnection.close()", throwable);
+        }
+    }
 }

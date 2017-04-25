@@ -109,7 +109,7 @@ public class BaseItemServiceBase {
 
         planetConfig.setItemTypeLimitation(setupItemTypeLimitations());
 
-        baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig));
+        baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, PlanetActivationEvent.Type.INITIALIZE));
     }
 
     protected void setupBuilder(List<BaseItemType> baseItemTypes) {

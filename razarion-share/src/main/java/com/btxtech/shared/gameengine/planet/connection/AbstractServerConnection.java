@@ -32,6 +32,8 @@ public abstract class AbstractServerConnection {
 
     public abstract void init();
 
+    public abstract void close();
+
     public void createHumanBaseWithBaseItem(DecimalPosition position) {
         sendToServer(ConnectionMarshaller.marshall(ConnectionMarshaller.Package.CREATE_BASE, toJson(position)));
     }

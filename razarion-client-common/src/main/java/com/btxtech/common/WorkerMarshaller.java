@@ -41,6 +41,8 @@ public class WorkerMarshaller {
             // No data
             case LOADED:
             case START:
+            case STOP_REQUEST:
+            case STOP_RESPONSE:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:
@@ -129,6 +131,8 @@ public class WorkerMarshaller {
             // No data
             case LOADED:
             case START:
+            case STOP_REQUEST:
+            case STOP_RESPONSE:
             case QUEST_PASSED:
             case PERFMON_REQUEST:
             case TICK_UPDATE_REQUEST:

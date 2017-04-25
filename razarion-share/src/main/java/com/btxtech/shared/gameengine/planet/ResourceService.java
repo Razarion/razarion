@@ -18,6 +18,7 @@ import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
@@ -56,24 +57,43 @@ public class ResourceService {
     private GameEngineMode gameEngineMode;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
-        gameEngineMode = planetActivationEvent.getPlanetConfig().getGameEngineMode();
+        switch (planetActivationEvent.getType()) {
+
+            case INITIALIZE:
+                setup(planetActivationEvent.getPlanetConfig());
+                break;
+            case STOP:
+                stop();
+                break;
+            default:
+                throw new IllegalArgumentException("ResourceService.onPlanetActivation() can not handle: " + planetActivationEvent.getType());
+        }
+    }
+
+    private void setup(PlanetConfig planetConfig) {
+        gameEngineMode = planetConfig.getGameEngineMode();
         synchronized (resources) {
             resources.clear();
         }
-        if (planetActivationEvent.getPlanetConfig().getResourceRegionConfigs() != null && gameEngineMode == GameEngineMode.MASTER) {
+        if (planetConfig.getResourceRegionConfigs() != null && gameEngineMode == GameEngineMode.MASTER) {
             synchronized (resourceRegions) {
-                for (ResourceRegionConfig resourceRegionConfig : planetActivationEvent.getPlanetConfig().getResourceRegionConfigs()) {
+                for (ResourceRegionConfig resourceRegionConfig : planetConfig.getResourceRegionConfigs()) {
                     ResourceRegion resourceRegion = instance.get();
                     resourceRegion.init(resourceRegionConfig);
                     resourceRegions.add(resourceRegion);
                 }
             }
         }
-        if (planetActivationEvent.getPlanetConfig().getSyncResourceItemInfos() != null && gameEngineMode != GameEngineMode.MASTER) {
-            for (SyncResourceItemInfo syncResourceItemInfo : planetActivationEvent.getPlanetConfig().getSyncResourceItemInfos()) {
+        if (planetConfig.getSyncResourceItemInfos() != null && gameEngineMode != GameEngineMode.MASTER) {
+            for (SyncResourceItemInfo syncResourceItemInfo : planetConfig.getSyncResourceItemInfos()) {
                 createSyncResourceItemSlave(syncResourceItemInfo);
             }
         }
+    }
+
+    private void stop() {
+        resources.clear();
+        resourceRegions.clear();
     }
 
     public void onSlaveSyncResourceItemChanged(SyncResourceItemInfo syncResourceItemInfo) {

@@ -68,7 +68,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
         this.planetConfig = planetConfig;
         syncItemContainerService.clear();
         terrainService.setup(planetConfig);
-        activationEvent.fire(new PlanetActivationEvent(planetConfig));
+        activationEvent.fire(new PlanetActivationEvent(planetConfig, PlanetActivationEvent.Type.INITIALIZE));
     }
 
     public void start() {
@@ -76,6 +76,13 @@ public class PlanetService implements Runnable { // Only available in worker. On
         if (planetConfig.getBotConfigs() != null) {
             botService.startBots(planetConfig.getBotConfigs());
         }
+    }
+
+    public void stop() {
+        scheduledFuture.cancel();
+        activationEvent.fire(new PlanetActivationEvent(null, PlanetActivationEvent.Type.STOP));
+        syncItemContainerService.clear();
+        terrainService.clean();
     }
 
     @Override
@@ -105,10 +112,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public void setPause(boolean pause) {
         this.pause = pause;
-    }
-
-    public void stop() {
-        scheduledFuture.cancel();
     }
 
     public void addTickListener(PlanetTickListener planetTickListener) {

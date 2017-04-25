@@ -56,6 +56,10 @@ public class ObstacleContainer {
         logger.severe("Setup ObstacleContainer: " + (System.currentTimeMillis() - time));
     }
 
+    public void clear() {
+        obstacleContainerNodes = null;
+    }
+
     private void insertObstacleTerrainObject(ObstacleTerrainObject obstacleTerrainObject) {
         for (Index node : absoluteCircleToNodes(obstacleTerrainObject.getCircle())) {
             getOrCreate(node).addObstacle(obstacleTerrainObject);

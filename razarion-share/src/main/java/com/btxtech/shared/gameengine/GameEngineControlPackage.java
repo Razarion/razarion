@@ -12,6 +12,8 @@ public class GameEngineControlPackage {
         INITIALIZED,
         INITIALISING_FAILED,
         START,
+        STOP_REQUEST,
+        STOP_RESPONSE,
         TICK_UPDATE_REQUEST,
         TICK_UPDATE_RESPONSE,
         TICK_UPDATE_RESPONSE_FAIL,
@@ -63,8 +65,7 @@ public class GameEngineControlPackage {
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
         // Editor
-        EDITOR_OVERRIDE_TERRAIN,
-
+        EDITOR_OVERRIDE_TERRAIN;
     }
 
     private Command command;

@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.ClientRunner;
@@ -72,6 +73,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private Event<GameUiControlInitEvent> gameUiControlInitEvent;
     @Inject
     private ModalDialogManager modalDialogManager;
+    @Inject
+    private ScreenCover screenCover;
     private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -147,7 +150,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             startTimeStamp = null;
         }
         if (getPlanetConfig().getGameEngineMode() == GameEngineMode.MASTER) {
-            modalDialogManager.showLeaveStartTutorial(() -> clientRunner.startWarm());
+            modalDialogManager.showLeaveStartTutorial(() -> {
+                screenCover.fadeInLoadingCover();
+                clientRunner.startWarm();
+            });
         }
     }
 

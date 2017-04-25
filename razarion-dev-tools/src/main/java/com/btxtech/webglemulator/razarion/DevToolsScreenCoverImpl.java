@@ -28,6 +28,11 @@ public class DevToolsScreenCoverImpl implements ScreenCover {
     }
 
     @Override
+    public void fadeInLoadingCover() {
+        System.out.println("******** DevToolsScreenCoverImpl fadeInLoadingCover");
+    }
+
+    @Override
     public void fadeOutAndForward(String url) {
         System.out.println("******** DevToolsScreenCoverImpl fadeOutAndForward: " + url);
     }

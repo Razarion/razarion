@@ -38,6 +38,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     private StoryCoverPanel storyCoverPanel;
     private int totalStartupTasks;
     private int finishedStartupTasks;
+    private Element loadingCoverBackup;
 
     @Override
     public void showStoryCover(String text) {
@@ -59,13 +60,25 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
 
     @Override
     public void removeLoadingCover() {
-        Browser.getDocument().getBody().removeChild(Browser.getDocument().getElementById(LOADING_COVER_ID));
+        loadingCoverBackup = Browser.getDocument().getElementById(LOADING_COVER_ID);
+        Browser.getDocument().getBody().removeChild(loadingCoverBackup);
     }
 
     @Override
     public void fadeOutLoadingCover() {
         Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
         element.getStyle().setOpacity(0);
+    }
+
+    @Override
+    public void fadeInLoadingCover() {
+        Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
+        if(element == null) {
+            element = loadingCoverBackup;
+            Browser.getDocument().getBody().appendChild(element);
+            loadingCoverBackup = null;
+        }
+        element.getStyle().setOpacity(1);
     }
 
     @Override

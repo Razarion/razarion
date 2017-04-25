@@ -35,6 +35,11 @@ public class BoxUiService {
     private final Map<Integer, SyncBoxItemSimpleDto> boxes = new HashMap<>();
     private final MapList<BoxItemType, ModelMatrices> boxModelMatrices = new MapList<>();
 
+    public void clear() {
+        boxes.clear();
+        boxModelMatrices.clear();
+    }
+
     public void addBox(SyncBoxItemSimpleDto syncBoxItem) {
         synchronized (boxes) {
             if (boxes.put(syncBoxItem.getId(), syncBoxItem) != null) {

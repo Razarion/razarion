@@ -76,6 +76,10 @@ public class TerrainMouseHandler {
     private GroupSelectionFrame groupSelectionFrame;
     private TerrainEditor terrainEditor;
 
+    public void clear() {
+        groupSelectionFrame = null;
+    }
+
     public void onMouseMove(int x, int y, int width, int height, boolean primaryButtonDown) {
         try {
             terrainScrollHandler.handleMouseMoveScroll(x, y, width, height);

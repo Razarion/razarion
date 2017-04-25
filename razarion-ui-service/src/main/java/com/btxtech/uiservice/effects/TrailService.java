@@ -38,6 +38,11 @@ public class TrailService {
         simpleExecutorService.scheduleAtFixedRate(CLEANUP_INTERVAL_MILLIS, true, this::cleanup, SimpleExecutorService.Type.UNSPECIFIED);
     }
 
+    public void clear() {
+        wreckageModelMatrices.clear();
+        wreckageItems.clear();
+    }
+
     public void addWreckage(SyncBaseItemSimpleDto syncBaseItem) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
         if (baseItemType.getWreckageShape3DId() == null) {
@@ -61,5 +66,4 @@ public class TrailService {
             }
         }
     }
-
 }

@@ -37,7 +37,10 @@ public abstract class AudioService implements TerrainScrollListener {
 
     protected abstract void playTerrainLoopAudio(int audioId, double volume);
 
-    @PostConstruct
+    public abstract void muteTerrainLoopAudio();
+
+
+        @PostConstruct
     public void postConstruct() {
         terrainScrollHandler.addTerrainScrollListener(this);
     }

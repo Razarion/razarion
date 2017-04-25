@@ -50,6 +50,10 @@ public class TerrainService {
         setup(planetConfig.getTerrainSlopePositions(), planetConfig.getTerrainObjectPositions());
     }
 
+    public void clean() {
+        obstacleContainer.clear();
+    }
+
     public void override4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         setup(terrainSlopePositions, terrainObjectPositions);
     }

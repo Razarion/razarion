@@ -122,5 +122,4 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         startupTerminatedJson.setSuccessful(success).setTotalTime((int) totalTime);
         return startupTerminatedJson;
     }
-
 }

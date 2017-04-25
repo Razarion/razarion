@@ -97,4 +97,8 @@ public class DevToolServerConnection extends AbstractServerConnection {
         }
     }
 
+    @Override
+    public void close() {
+        remoteEndpoint = null;
+    }
 }

@@ -208,5 +208,6 @@ public class ParticleService {
         waitingEmitters.clear();
         activeEmitters.clear();
         particles.clear();
+        modelMatrices.clear();
     }
 }

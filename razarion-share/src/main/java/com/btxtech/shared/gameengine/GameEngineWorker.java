@@ -121,6 +121,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case START:
                 start();
                 break;
+            case STOP_REQUEST:
+                stop();
+                break;
             case TICK_UPDATE_REQUEST:
                 sendTickUpdate = true;
                 break;
@@ -225,7 +228,22 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     public void stop() {
-        planetService.stop();
+        try {
+            planetService.stop();
+            userContext = null;
+            playerBase = null;
+            killed.clear();
+            removed.clear();
+            xpFromKills = 0;
+            sendTickUpdate = false;
+            if (serverConnection != null) {
+                serverConnection.close();
+                serverConnection = null;
+            }
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+        sendToClient(GameEngineControlPackage.Command.STOP_RESPONSE);
     }
 
     @Override

@@ -19,4 +19,9 @@ public class TestAudioService extends AudioService {
     protected void playTerrainLoopAudio(int audioId, double volume) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected void muteTerrainLoopAudio() {
+        throw new UnsupportedOperationException();
+    }
 }

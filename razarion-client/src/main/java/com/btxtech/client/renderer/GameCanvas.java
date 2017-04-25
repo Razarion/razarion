@@ -45,6 +45,7 @@ public class GameCanvas {
     private int width;
     private int height;
     private Canvas canvas;
+    private boolean running;
 
     public GameCanvas() {
         logger.severe("GameCanvas <init> called twice????");
@@ -131,11 +132,14 @@ public class GameCanvas {
     }
 
     public void startRenderLoop() {
-        // Start render tick
+        running = true;
         resizeCanvas();
         AnimationScheduler.get().requestAnimationFrame(new AnimationScheduler.AnimationCallback() {
             @Override
             public void execute(double timestamp) {
+                if (!running) {
+                    return;
+                }
                 try {
                     renderService.render();
                 } catch (Throwable t) {
@@ -145,6 +149,10 @@ public class GameCanvas {
             }
         }, canvas.getCanvasElement());
 
+    }
+
+    public void stopRenderLoop() {
+        running = false;
     }
 
     public WebGLRenderingContext getCtx3d() {

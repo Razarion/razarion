@@ -73,7 +73,7 @@ public abstract class GameEngineControl {
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
-    private DeferredStartup initializationReferredStartup;
+    private DeferredStartup deferredStartup;
 //    private long tmpLastTimeStamp2;
 //    private int count;
 
@@ -88,8 +88,14 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
 
+    public void stop(DeferredStartup deferredStartup) {
+        perfmonConsumer = null;
+        this.deferredStartup = deferredStartup;
+        sendToWorker(GameEngineControlPackage.Command.STOP_REQUEST);
+    }
+
     public void init(GameEngineConfig gameEngineConfig, DeferredStartup initializationReferredStartup) {
-        this.initializationReferredStartup = initializationReferredStartup;
+        this.deferredStartup = initializationReferredStartup;
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, gameEngineConfig, userUiService.getUserContext());
     }
 
@@ -220,16 +226,23 @@ public abstract class GameEngineControl {
     }
 
     private void onInitialized() {
-        if (initializationReferredStartup != null) {
-            initializationReferredStartup.finished();
-            initializationReferredStartup = null;
+        if (deferredStartup != null) {
+            deferredStartup.finished();
+            deferredStartup = null;
         }
     }
 
     private void onInitialisingFailed(String errorText) {
-        if (initializationReferredStartup != null) {
-            initializationReferredStartup.failed(errorText);
-            initializationReferredStartup = null;
+        if (deferredStartup != null) {
+            deferredStartup.failed(errorText);
+            deferredStartup = null;
+        }
+    }
+
+    private void onStopped() {
+        if (deferredStartup != null) {
+            deferredStartup.finished();
+            deferredStartup = null;
         }
     }
 
@@ -305,6 +318,9 @@ public abstract class GameEngineControl {
                 break;
             case TERRAIN_TILE_RESPONSE:
                 terrainUiService.onTerrainTileResponse((TerrainTile) controlPackage.getData(0));
+                break;
+            case STOP_RESPONSE:
+                onStopped();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

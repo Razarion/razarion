@@ -30,6 +30,11 @@ public class ProjectileUiService {
     private final Collection<ProjectileUi> projectiles = new ArrayList<>();
     private MapList<BaseItemType, ModelMatrices> modelMatrices = new MapList<>();
 
+    public void clear() {
+        projectiles.clear();
+        modelMatrices.clear();
+    }
+
     public void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex target) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
         ProjectileUi projectileUi = new ProjectileUi(baseItemType, muzzlePosition, target, baseItemType.getWeaponType().getProjectileSpeed());

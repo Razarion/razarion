@@ -32,7 +32,6 @@ public abstract class RenderService {
     // private Logger logger = Logger.getLogger(RenderService.class.getName());
     @Inject
     private Event<RenderServiceInitEvent> serviceInitEvent;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject

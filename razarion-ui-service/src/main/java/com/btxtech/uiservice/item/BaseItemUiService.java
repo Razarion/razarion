@@ -76,6 +76,25 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
     private long lastUpdateTimeStamp;
 
+    public void clear() {
+        bases.clear();
+        syncItemStates.clear();
+        myBase = null;
+        resources = 0;
+        houseSpace = 0;
+        usedHouseSpace = 0;
+        itemCount = 0;
+        syncBaseItems.clear();
+        spawningModelMatrices.clear();
+        buildupModelMatrices.clear();
+        aliveModelMatrices.clear();
+        demolitionModelMatrices.clear();
+        harvestModelMatrices.clear();
+        builderModelMatrices.clear();
+        weaponTurretModelMatrices.clear();
+        lastUpdateTimeStamp = 0;
+    }
+
     public Collection<BaseItemType> getBaseItemTypes() {
         return itemTypeService.getBaseItemTypes();
     }

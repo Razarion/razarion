@@ -16,4 +16,6 @@ public interface ScreenCover {
     void fadeOutLoadingCover();
 
     void fadeOutAndForward(String url);
+
+    void fadeInLoadingCover();
 }

@@ -20,4 +20,9 @@ public class DevToolAudioService extends AudioService {
     protected void playTerrainLoopAudio(int audioId, double volume) {
         // System.out.println("#### DevToolAudioService.playTerrainLoopAudio(): " + audioId + " volume: " + volume);
     }
+
+    @Override
+    protected void muteTerrainLoopAudio() {
+
+    }
 }

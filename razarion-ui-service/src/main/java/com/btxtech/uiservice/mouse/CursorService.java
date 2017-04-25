@@ -37,6 +37,13 @@ public abstract class CursorService {
 
     protected abstract void setPointerCursorInternal();
 
+    public void clear() {
+        currentCursorType = null;
+        currentAllowed = false;
+        currentPointer = false;
+        currentDefault = false;
+    }
+
     public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
         if (selectionEvent.getType() == SelectionEvent.Type.CLEAR) {
             setDefaultCursor();

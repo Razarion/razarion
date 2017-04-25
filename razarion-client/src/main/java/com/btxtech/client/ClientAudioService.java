@@ -59,7 +59,14 @@ public class ClientAudioService extends AudioService {
         }
     }
 
-    public void mute(boolean mute) {
+    @Override
+    protected void muteTerrainLoopAudio() {
+        for (AudioElement audioElement : terrainLoopAudios.values()) {
+            audioElement.setVolume(0);
+        }
+    }
+
+        public void mute(boolean mute) {
         if (mute == isMute) {
             return;
         }

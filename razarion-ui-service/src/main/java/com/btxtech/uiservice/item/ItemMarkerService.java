@@ -48,6 +48,22 @@ public class ItemMarkerService {
     private ModelMatrices hoverHealthModelMatrices;
     private ModelMatrices hoverConstructingModelMatrices;
 
+    public void clear() {
+        selectionMonitors.clear();
+        hoverSyncItemMonitor = null;
+        // ModelMatrices for renderer
+        allMarkerModelMatrices.clear();
+        allStatusBarModelMatrices.clear();
+        // Selection
+        selectedMarkerModelMatrices.clear();
+        selectedHealthModelMatrices.clear();
+        selectedConstructingModelMatrices.clear();
+        // Hover
+        hoverMarkerModelMatrices = null;
+        hoverHealthModelMatrices = null;
+        hoverConstructingModelMatrices = null;
+    }
+
     public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
         clearSelection();
 

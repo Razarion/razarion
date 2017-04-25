@@ -1,7 +1,9 @@
 package com.btxtech.common.system;
 
 import com.btxtech.shared.rest.TrackerProvider;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -27,25 +29,46 @@ public class ClientPerformanceTrackerService {
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private PerfmonService perfmonService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
+    private SimpleScheduledFuture simpleScheduledFuture;
 
     public void start() {
-        simpleExecutorService.scheduleAtFixedRate(SEND_SERVER_INTERVAL, true, () -> {
-            int sendCount = (int) (SEND_SERVER_INTERVAL / PerfmonService.DUMP_DELAY);
-            List<PerfmonStatistic> perfmonStatistics = perfmonService.getPerfmonStatistics(sendCount);
-            if (perfmonStatistics.size() != 1) {
-                logger.severe("PerfmonService SEND_SERVER_INTERVAL perfmonStatistics.size() != 1: " + perfmonStatistics.size());
-            }
-            if (perfmonStatistics.isEmpty()) {
-                return;
-            }
-            PerfmonStatistic perfmonStatistic = CollectionUtils.getFirst(perfmonStatistics);
-            providerCaller.call(response -> {
-            }, (message, throwable) -> {
-                logger.log(Level.SEVERE, "TrackerProvider.performanceTracker() failed: " + message, throwable);
-                return false;
-            }).performanceTracker(perfmonStatistic);
-        }, SimpleExecutorService.Type.UNSPECIFIED);
-
+        if (simpleScheduledFuture != null) {
+            simpleScheduledFuture.cancel();
+            logger.warning("ClientPerformanceTrackerService.start() simpleScheduledFuture != null");
+        }
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SEND_SERVER_INTERVAL, true, this::sendToClient, SimpleExecutorService.Type.UNSPECIFIED);
     }
 
+    public void stop() {
+        try {
+            if (simpleScheduledFuture != null) {
+                simpleScheduledFuture.cancel();
+                simpleScheduledFuture = null;
+                sendToClient();
+            } else {
+                logger.warning("ClientPerformanceTrackerService.stop() simpleScheduledFuture == null");
+            }
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    private void sendToClient() {
+        int sendCount = (int) (SEND_SERVER_INTERVAL / PerfmonService.DUMP_DELAY);
+        List<PerfmonStatistic> perfmonStatistics = perfmonService.getPerfmonStatistics(sendCount);
+        if (perfmonStatistics.size() != 1) {
+            logger.severe("PerfmonService SEND_SERVER_INTERVAL perfmonStatistics.size() != 1: " + perfmonStatistics.size());
+        }
+        if (perfmonStatistics.isEmpty()) {
+            return;
+        }
+        PerfmonStatistic perfmonStatistic = CollectionUtils.getFirst(perfmonStatistics);
+        providerCaller.call(response -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "TrackerProvider.performanceTracker() failed: " + message, throwable);
+            return false;
+        }).performanceTracker(perfmonStatistic);
+    }
 }

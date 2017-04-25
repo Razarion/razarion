@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 // Better name: something with game-control
 public class Scene implements TerrainScrollListener {
     private Logger logger = Logger.getLogger(Scene.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ScreenCover screenCover;
     @Inject
