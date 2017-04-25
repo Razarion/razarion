@@ -46,7 +46,7 @@ public class ClientAudioService extends AudioService {
     protected void playTerrainLoopAudio(int audioId, double volume) {
         try {
             AudioElement audio = terrainLoopAudios.get(audioId);
-            if(audio == null) {
+            if (audio == null) {
                 audio = Browser.getDocument().createAudioElement();
                 audio.setSrc(RestUrl.getAudioServiceUrl(audioId));
                 audio.play();
@@ -60,13 +60,13 @@ public class ClientAudioService extends AudioService {
     }
 
     @Override
-    protected void muteTerrainLoopAudio() {
+    public void muteTerrainLoopAudio() {
         for (AudioElement audioElement : terrainLoopAudios.values()) {
             audioElement.setVolume(0);
         }
     }
 
-        public void mute(boolean mute) {
+    public void mute(boolean mute) {
         if (mute == isMute) {
             return;
         }

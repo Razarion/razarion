@@ -11,6 +11,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -97,6 +98,11 @@ public abstract class GameEngineControl {
     public void init(GameEngineConfig gameEngineConfig, DeferredStartup initializationReferredStartup) {
         this.deferredStartup = initializationReferredStartup;
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, gameEngineConfig, userUiService.getUserContext());
+    }
+
+    public void initWarm(PlanetConfig planetConfig, DeferredStartup deferredStartup) {
+        this.deferredStartup = deferredStartup;
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext());
     }
 
     void startBots(List<BotConfig> botConfigs) {

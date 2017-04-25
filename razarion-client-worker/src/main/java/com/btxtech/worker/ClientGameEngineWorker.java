@@ -51,6 +51,12 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     }
 
     @Override
+    public void stop() {
+        clientPerformanceTrackerService.stop();
+        super.stop();
+    }
+
+    @Override
     protected void sendToClient(GameEngineControlPackage.Command command, Object... object) {
         getDedicatedWorkerGlobalScope().postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, object)));
     }

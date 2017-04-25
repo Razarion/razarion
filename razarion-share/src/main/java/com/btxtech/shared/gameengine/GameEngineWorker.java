@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
@@ -118,6 +119,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case INITIALIZE:
                 initialise((GameEngineConfig) controlPackage.getData(0), (UserContext) controlPackage.getData(1));
                 break;
+            case INITIALIZE_WARM:
+                initialiseWarm((PlanetConfig) controlPackage.getData(0), (UserContext) controlPackage.getData(1));
+                break;
             case START:
                 start();
                 break;
@@ -215,6 +219,24 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
+    private void initialiseWarm(PlanetConfig planetConfig, UserContext userContext) {
+        try {
+            this.userContext = userContext;
+            if (planetConfig.getGameEngineMode() == GameEngineMode.SLAVE) {
+                serverConnection = connectionInstance.get();
+                serverConnection.init();
+            }
+            planetService.initialise(planetConfig);
+            if (planetConfig.getActualBaseId() != null) {
+                playerBase = baseItemService.getPlayerBase4BaseId(planetConfig.getActualBaseId());
+            }
+            sendToClient(GameEngineControlPackage.Command.INITIALIZED);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
+        }
+    }
+
     private void createHumanBaseWithBaseItem(int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
@@ -229,6 +251,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public void stop() {
         try {
+            perfmonService.stop();
             planetService.stop();
             userContext = null;
             playerBase = null;

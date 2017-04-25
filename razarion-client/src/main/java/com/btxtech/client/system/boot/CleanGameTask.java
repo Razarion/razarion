@@ -19,13 +19,15 @@ import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 25.04.2017.
  */
-public class CleanGame extends AbstractStartupTask {
+@Dependent
+public class CleanGameTask extends AbstractStartupTask {
     @Inject
     private RenderService renderService;
     @Inject

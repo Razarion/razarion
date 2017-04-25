@@ -9,6 +9,7 @@ public class GameEngineControlPackage {
         // System
         LOADED,
         INITIALIZE,
+        INITIALIZE_WARM,
         INITIALIZED,
         INITIALISING_FAILED,
         START,

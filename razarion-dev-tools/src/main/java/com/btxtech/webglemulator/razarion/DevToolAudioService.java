@@ -22,7 +22,7 @@ public class DevToolAudioService extends AudioService {
     }
 
     @Override
-    protected void muteTerrainLoopAudio() {
+    public void muteTerrainLoopAudio() {
 
     }
 }

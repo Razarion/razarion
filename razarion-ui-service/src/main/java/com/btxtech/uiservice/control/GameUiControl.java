@@ -87,6 +87,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         userUiService.setUserContext(gameUiControlConfig.getUserContext());
     }
 
+    public void onPlanetConfigLoaded(PlanetConfig planetConfig) {
+        this.gameUiControlConfig.getGameEngineConfig().setPlanetConfig(planetConfig);
+    }
+
     public void init() {
         itemTypeService.init(gameUiControlConfig.getGameEngineConfig());
         terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());

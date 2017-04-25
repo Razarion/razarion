@@ -21,7 +21,7 @@ public class TestAudioService extends AudioService {
     }
 
     @Override
-    protected void muteTerrainLoopAudio() {
+    public void muteTerrainLoopAudio() {
         throw new UnsupportedOperationException();
     }
 }

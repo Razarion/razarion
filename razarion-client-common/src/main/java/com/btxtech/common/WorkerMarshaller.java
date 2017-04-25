@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -73,6 +74,7 @@ public class WorkerMarshaller {
                 break;
             // Double JSON data
             case INITIALIZE:
+            case INITIALIZE_WARM:
             case COMMAND_ATTACK:
             case COMMAND_FINALIZE_BUILD:
             case COMMAND_FABRICATE:
@@ -141,6 +143,10 @@ public class WorkerMarshaller {
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), UserContext.class));
+                break;
+            case INITIALIZE_WARM:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), PlanetConfig.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), UserContext.class));
                 break;
             case INITIALISING_FAILED:
