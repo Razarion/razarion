@@ -91,6 +91,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
 
     @Override
     public void onStart(StartupSeq startupSeq) {
+        finishedStartupTasks = 0;
         totalStartupTasks = startupSeq.getAbstractStartupTaskEnum().length;
     }
 
