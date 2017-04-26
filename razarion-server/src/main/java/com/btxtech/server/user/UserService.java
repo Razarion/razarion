@@ -43,6 +43,9 @@ public class UserService {
 
         // facebookUserLoginInfo is never null. Errai Jackson JAX-RS does not accept null value in POST rest call
         if (facebookUserLoginInfo.getUserId() == null) {
+            if (sessionHolder.getPlayerSession().getUserContext() != null) {
+                return sessionHolder.getPlayerSession().getUserContext();
+            }
             return createAndLoginUserContext(null);
         }
 
@@ -56,6 +59,13 @@ public class UserService {
         }
         //TODO ends
         UserContext userContext = userEntity.createUser();
+        HumanPlayerId alreadyLoggerIn = null;
+        if (sessionHolder.getPlayerSession().getUserContext() != null) {
+            alreadyLoggerIn = sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId();
+        }
+        if (alreadyLoggerIn != null && alreadyLoggerIn.getUserId() != null && alreadyLoggerIn.getUserId().equals(userContext.getHumanPlayerId().getUserId())) {
+            return sessionHolder.getPlayerSession().getUserContext();
+        }
         return createAndLoginUserContext(userContext);
     }
 
