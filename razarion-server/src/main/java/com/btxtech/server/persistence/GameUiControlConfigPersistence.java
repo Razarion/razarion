@@ -96,8 +96,8 @@ public class GameUiControlConfigPersistence {
             gameUiControlConfig = getGameUiControlConfig4Level(1).toGameUiControlConfig(gameEngineConfig);
             gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.MASTER);// TODO move to DB
             TemporaryPersistenceUtils.completePlanetConfigTutorial(gameEngineConfig.getPlanetConfig());  // TODO move to DB
-            // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO move to DB
-            gameUiControlConfig.setSceneConfigs(setupMoveToMultiplayer()); // TODO move to DB
+            gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO move to DB
+            // gameUiControlConfig.setSceneConfigs(setupMoveToMultiplayer()); // TODO move to DB
             // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO move to DB
             // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO move to DB
             // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO move to DB
