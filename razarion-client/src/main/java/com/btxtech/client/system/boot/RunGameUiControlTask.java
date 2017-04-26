@@ -3,6 +3,7 @@ package com.btxtech.client.system.boot;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
+import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
@@ -27,6 +28,8 @@ public class RunGameUiControlTask extends AbstractStartupTask {
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
+    private PerfmonService perfmonService;
+    @Inject
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
 
     @Override
@@ -34,6 +37,7 @@ public class RunGameUiControlTask extends AbstractStartupTask {
         gameEngineControl.start();
         gameUiControl.start();
         gameCanvas.startRenderLoop();
+        perfmonService.start();
         clientPerformanceTrackerService.start();
     }
 }

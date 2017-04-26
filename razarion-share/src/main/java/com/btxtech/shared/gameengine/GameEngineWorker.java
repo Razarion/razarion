@@ -247,6 +247,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public void start() {
         planetService.start();
+        perfmonService.start();
     }
 
     public void stop() {

@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.perfmon.PerfmonService;
 import elemental.events.MessageEvent;
 import elemental.js.html.JsDedicatedWorkerGlobalScope;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
@@ -26,6 +27,8 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     private ExceptionHandler exceptionHandler;
     @Inject
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
+    @Inject
+    private PerfmonService perfmonService;
 
     @PostConstruct
     public void onModuleLoad() {

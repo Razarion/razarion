@@ -38,11 +38,6 @@ public class PerfmonService {
     private MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
     private SimpleScheduledFuture simpleScheduledFuture;
 
-    @PostConstruct
-    public void postConstruct() {
-        start();
-    }
-
     public void start() {
         if (simpleScheduledFuture != null) {
             simpleScheduledFuture.cancel();
