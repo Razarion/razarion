@@ -23,6 +23,11 @@ public class DevToolsRenderServiceImpl extends RenderService {
     private WebGlEmulatorShadowController shadowController;
 
     @Override
+    protected void internalSetup() {
+
+    }
+
+    @Override
     protected void prepareMainRendering() {
         webGlEmulator.setCanvas(webGlEmulatorController.getCanvas());
         webGlEmulator.clear();

@@ -14,7 +14,6 @@ import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.particle.ParticleService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
-import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
@@ -29,8 +28,6 @@ import javax.inject.Inject;
  */
 @Dependent
 public class CleanGameTask extends AbstractStartupTask {
-    @Inject
-    private RenderService renderService;
     @Inject
     private GameCanvas gameCanvas;
     @Inject

@@ -6,7 +6,6 @@ import com.btxtech.client.renderer.webgl.WebGlException;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLFramebuffer;
@@ -14,7 +13,6 @@ import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
@@ -40,7 +38,8 @@ public class ClientRenderServiceImpl extends RenderService {
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
 
-    public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
+    @Override
+    protected void internalSetup() {
         initFrameBuffer();
     }
 

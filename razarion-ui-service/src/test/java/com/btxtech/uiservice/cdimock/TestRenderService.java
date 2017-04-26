@@ -12,6 +12,11 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class TestRenderService extends RenderService {
     @Override
+    protected void internalSetup() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     protected void prepareMainRendering() {
         throw new UnsupportedOperationException();
     }

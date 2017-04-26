@@ -18,7 +18,6 @@ import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -31,8 +30,6 @@ import java.util.List;
 public abstract class RenderService {
     // private Logger logger = Logger.getLogger(RenderService.class.getName());
     @Inject
-    private Event<RenderServiceInitEvent> serviceInitEvent;
-    @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private Instance<AbstractRenderTask> instance;
@@ -41,6 +38,8 @@ public abstract class RenderService {
     private List<AbstractRenderTask> renderTasks = new ArrayList<>();
     private boolean showNorm;
 
+    protected abstract void internalSetup();
+
     protected abstract void prepareMainRendering();
 
     protected abstract void prepareDepthBufferRendering();
@@ -48,7 +47,7 @@ public abstract class RenderService {
     protected abstract void prepare(RenderUnitControl renderUnitControl);
 
     public void setup() {
-        serviceInitEvent.fire(new RenderServiceInitEvent());
+        internalSetup();
         renderTasks.clear();
 
         addRenderTask(GroundRenderTask.class, "Ground");
