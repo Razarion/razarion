@@ -59,4 +59,10 @@ public class UiTerrainWaterTile {
         return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
     }
 
+    public void dispose() {
+        if (modelRenderer != null) {
+            waterRenderTask.remove(modelRenderer);
+            modelRenderer.dispose();
+        }
+    }
 }

@@ -168,5 +168,15 @@ public class UiTerrainTile {
             groundRenderTask.remove(modelRenderer);
             modelRenderer.dispose();
         }
+        if(uiTerrainSlopeTiles != null) {
+            for (UiTerrainSlopeTile uiTerrainSlopeTile : uiTerrainSlopeTiles) {
+                uiTerrainSlopeTile.dispose();
+            }
+            uiTerrainSlopeTiles = null;
+        }
+        if(uiTerrainWaterTile != null) {
+            uiTerrainWaterTile.dispose();
+            uiTerrainWaterTile = null;
+        }
     }
 }

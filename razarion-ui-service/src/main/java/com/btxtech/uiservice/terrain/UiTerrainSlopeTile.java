@@ -103,4 +103,11 @@ public class UiTerrainSlopeTile {
     public double getWaterGroundLevel() {
         return waterGroundLevel;
     }
+
+    public void dispose() {
+        if (modelRenderer != null) {
+            slopeRenderTask.remove(modelRenderer);
+            modelRenderer.dispose();
+        }
+    }
 }
