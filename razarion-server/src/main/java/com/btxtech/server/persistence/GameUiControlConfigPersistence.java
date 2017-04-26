@@ -96,7 +96,8 @@ public class GameUiControlConfigPersistence {
             gameUiControlConfig = getGameUiControlConfig4Level(1).toGameUiControlConfig(gameEngineConfig);
             gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.MASTER);// TODO move to DB
             TemporaryPersistenceUtils.completePlanetConfigTutorial(gameEngineConfig.getPlanetConfig());  // TODO move to DB
-            gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO move to DB
+            // gameUiControlConfig.setSceneConfigs(setupTutorial()); // TODO move to DB
+            gameUiControlConfig.setSceneConfigs(setupMoveToMultiplayer()); // TODO move to DB
             // gameUiControlConfig.setSceneConfigs(setupMove()); // TODO move to DB
             // gameUiControlConfig.setSceneConfigs(findEnemyBase()); // TODO move to DB
             // gameUiControlConfig.setSceneConfigs(setupAttack()); // TODO move to DB
@@ -526,6 +527,19 @@ public class GameUiControlConfigPersistence {
         botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotId(NPC_BOT_OUTPOST).setTargetBotId(ENEMY_BOT).setDominanceFactor(1).setAttackerBaseItemTypeId(GameEngineConfigPersistence.BASE_ITEM_TYPE_ATTACKER).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 220, 50, 50))));
 
         sceneConfigs.add(new SceneConfig().setInternalName("_demolitionVisualization").setRemoveLoadingCover(true).setViewFieldConfig(viewFieldConfig).setBotConfigs(botConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setWait4QuestPassedDialog(true));
+        return sceneConfigs;
+    }
+
+    // Demolition Move to Multiplayer planet -----------------------------------------------------------------------------
+    private List<SceneConfig> setupMoveToMultiplayer() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        // User Spawn
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(243, 120));
+        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
+        buildupItemTypeCount.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_BULLDOZER, 1);
+        ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
+        ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
+        sceneConfigs.add(new SceneConfig().setInternalName("_killHumanBase 1").setRemoveLoadingCover(true).setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setXp(10).setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 

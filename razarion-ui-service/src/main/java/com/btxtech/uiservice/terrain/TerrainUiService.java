@@ -9,16 +9,16 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
-import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
-import com.btxtech.uiservice.renderer.RenderServiceInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 
@@ -60,7 +60,6 @@ public class TerrainUiService {
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
-    private List<TerrainObjectPosition> terrainObjectPositions;
     private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
     private MapCollection<DecimalPosition, Consumer<Boolean>> overlapConsumers = new MapCollection<>();
     private Map<Integer, Consumer<Boolean>> overlapTypeConsumers = new HashMap<>();
@@ -73,20 +72,8 @@ public class TerrainUiService {
         lowestPointInView = LOWEST_POINT_IN_VIEW;
     }
 
-    public void clear() {
-        terrainObjectConfigModelMatrices.clear();
-        terrainObjectPositions.clear();
-        terrainZConsumers.clear();
-        overlapConsumers.clear();
-        overlapTypeConsumers.clear();
-        clearTerrainTiles();
-    }
-
-    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        terrainObjectPositions = gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions();
-    }
-
-    public void onRenderServiceInitEvent(@Observes RenderServiceInitEvent renderServiceInitEvent) {
+    public void init(PlanetConfig planetConfig) {
+        List<TerrainObjectPosition> terrainObjectPositions = planetConfig.getTerrainObjectPositions();
         terrainObjectConfigModelMatrices = new MapCollection<>();
         for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
             try {
@@ -101,6 +88,14 @@ public class TerrainUiService {
                 exceptionHandler.handleException("Placing terrain object failed", t);
             }
         }
+    }
+
+    public void clear() {
+        terrainObjectConfigModelMatrices.clear();
+        terrainZConsumers.clear();
+        overlapConsumers.clear();
+        overlapTypeConsumers.clear();
+        clearTerrainTiles();
     }
 
     public void clearTerrainTiles() {

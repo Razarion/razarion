@@ -1,6 +1,5 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -13,17 +12,12 @@ import javax.inject.Inject;
  * 25.01.2017.
  */
 @Dependent
-public class InitWarmWorkerTask extends AbstractStartupTask {
-    @Inject
-    private GameEngineControl gameEngineControl;
+public class InitWarmGameUiTask extends AbstractStartupTask {
     @Inject
     private GameUiControl gameUiControl;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        deferredStartup.setDeferred();
-        deferredStartup.setBackground();
-
-        gameEngineControl.initWarm(gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig(), deferredStartup);
+        gameUiControl.initWarm();
     }
 }

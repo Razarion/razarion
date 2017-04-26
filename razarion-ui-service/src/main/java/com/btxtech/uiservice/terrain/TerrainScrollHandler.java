@@ -6,13 +6,11 @@ import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -64,10 +62,6 @@ public class TerrainScrollHandler {
     @PostConstruct
     public void postConstruct() {
         simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, false, this::autoScroll, SimpleExecutorService.Type.UNSPECIFIED);
-    }
-
-    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        setPlayGround(gameUiControlInitEvent.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getPlayGround());
     }
 
     public void setPlayGround(Rectangle2D playGround) {

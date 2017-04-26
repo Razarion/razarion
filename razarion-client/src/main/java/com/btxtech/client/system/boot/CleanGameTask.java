@@ -17,6 +17,7 @@ import com.btxtech.uiservice.projectile.ProjectileUiService;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.Dependent;
@@ -60,6 +61,8 @@ public class CleanGameTask extends AbstractStartupTask {
     private TerrainUiService terrainUiService;
     @Inject
     private AudioService audioService;
+    @Inject
+    private TerrainScrollHandler terrainScrollHandler;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
@@ -79,5 +82,6 @@ public class CleanGameTask extends AbstractStartupTask {
         trailService.clear();
         terrainUiService.clear();
         audioService.muteTerrainLoopAudio();
+        terrainScrollHandler.cleanup();
     }
 }

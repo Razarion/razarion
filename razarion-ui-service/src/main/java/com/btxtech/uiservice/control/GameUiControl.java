@@ -28,6 +28,7 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.system.boot.ClientRunner;
+import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.event.Event;
@@ -78,6 +79,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private ScreenCover screenCover;
     @Inject
     private Instance<AbstractServerSystemConnection> serverSystemConnectionInstance;
+    @Inject
+    private TerrainScrollHandler terrainScrollHandler;
     private GameUiControlConfig gameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -103,6 +106,11 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         levelService.init(gameUiControlConfig.getGameEngineConfig());
         inventoryService.init(gameUiControlConfig.getGameEngineConfig());
         gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
+        terrainScrollHandler.setPlayGround(gameUiControlConfig.getGameEngineConfig().getPlanetConfig().getPlayGround());
+    }
+
+    public void initWarm() {
+        terrainScrollHandler.setPlayGround(gameUiControlConfig.getGameEngineConfig().getPlanetConfig().getPlayGround());
     }
 
     public void start() {

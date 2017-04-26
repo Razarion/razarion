@@ -168,6 +168,5 @@ public class UiTerrainTile {
             groundRenderTask.remove(modelRenderer);
             modelRenderer.dispose();
         }
-
     }
 }

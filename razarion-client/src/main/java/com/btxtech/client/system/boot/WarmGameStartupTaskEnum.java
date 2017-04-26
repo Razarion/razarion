@@ -11,6 +11,13 @@ public enum WarmGameStartupTaskEnum implements StartupTaskEnum {
     CLEAN_GAME(CleanGameTask.class),
     LOAD_PLANET_CONFIG(LoadPlanetConfigTask.class),
     INIT_WORKER_WARM(InitWarmWorkerTask.class),
+    INIT_WARM(InitWarmGameUiTask.class),
+    INIT_TERRAIN_UI(InitUiTerrainTask.class) {
+        @Override
+        public StartupTaskEnum[] getWaitForBackgroundTasks() {
+            return new StartupTaskEnum[]{INIT_WORKER_WARM};
+        }
+    },
     RUN_GAME(RunGameUiControlTask.class);
 
     private Class<? extends AbstractStartupTask> taskClass;

@@ -1,29 +1,26 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 /**
  * Created by Beat
- * 25.01.2017.
+ * 26.04.2017.
  */
 @Dependent
-public class InitWarmWorkerTask extends AbstractStartupTask {
+public class InitUiTerrainTask extends AbstractStartupTask {
     @Inject
-    private GameEngineControl gameEngineControl;
+    private TerrainUiService terrainUiService;
     @Inject
     private GameUiControl gameUiControl;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        deferredStartup.setDeferred();
-        deferredStartup.setBackground();
-
-        gameEngineControl.initWarm(gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig(), deferredStartup);
+        terrainUiService.init(gameUiControl.getPlanetConfig());
     }
 }
