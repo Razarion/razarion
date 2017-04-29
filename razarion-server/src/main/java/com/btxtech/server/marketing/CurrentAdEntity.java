@@ -46,6 +46,7 @@ public class CurrentAdEntity {
             joinColumns = @JoinColumn(name = "currentAdEntityId")
     )
     private List<Interest> interests;
+    private String urlTagParam;
 
     public State getState() {
         return state;
@@ -124,6 +125,14 @@ public class CurrentAdEntity {
             this.interests = new ArrayList<>();
         }
         this.interests.addAll(interests);
+    }
+
+    public String getUrlTagParam() {
+        return urlTagParam;
+    }
+
+    public void setUrlTagParam(String urlTagParam) {
+        this.urlTagParam = urlTagParam;
     }
 
     @Override

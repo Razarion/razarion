@@ -1,6 +1,7 @@
 package com.btxtech.server.marketing;
 
 import com.btxtech.server.marketing.facebook.AdSetInsight;
+import com.btxtech.server.marketing.restdatatypes.CampaignJson;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -42,6 +43,7 @@ public class HistoryAdEntity {
             joinColumns = @JoinColumn(name = "historyAdEntityId")
     )
     private List<Interest> interests;
+    private String urlTagParam;
 
     public void fill(CurrentAdEntity currentAdEntity, AdSetInsight adSetInsight) {
         campaignId = currentAdEntity.getCampaignId();
@@ -61,6 +63,11 @@ public class HistoryAdEntity {
         clicks = adSetInsight.getClicks();
         impressions = adSetInsight.getImpressions();
         spent = adSetInsight.getSpent();
+        urlTagParam = currentAdEntity.getUrlTagParam();
+    }
+
+    public CampaignJson createCampaignJson() {
+        return new CampaignJson().setAdId(Long.toString(adId)).setBody(body).setTitle(title).setClicks(clicks).setDateStart(dateStart).setDateStop(dateStop).setImpressions(impressions).setSpent(spent).setUrlTagParam(urlTagParam);
     }
 
     @Override

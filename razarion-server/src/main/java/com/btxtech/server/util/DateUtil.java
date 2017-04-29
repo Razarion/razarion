@@ -17,6 +17,20 @@ public class DateUtil {
     public static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
 
     /**
+     * Strip of: minutes, seconds and milli seconds
+     *
+     * @param date input
+     * @return stripped date
+     */
+    public static Date hourStart(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return new Date(cal.getTimeInMillis());
+    }
+    /**
      * Strip of: hour, minutes, seconds and milli seconds
      *
      * @param date input

@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.marketing.MarketingService;
+import com.btxtech.server.marketing.restdatatypes.CampaignJson;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -9,9 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -36,4 +39,15 @@ public class Marketing {
         return Response.status(HttpServletResponse.SC_OK).build();
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("history")
+    public List<CampaignJson> getHistory() {
+        try {
+            return marketingService.getCampaignHistory();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
 }

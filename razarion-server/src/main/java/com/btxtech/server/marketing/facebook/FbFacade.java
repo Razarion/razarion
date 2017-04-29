@@ -30,7 +30,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +47,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class FbFacade {
+    private static final String URL_PARAM_TRACK_KEY = "fbAdRazTrack";
     private Logger logger = Logger.getLogger(FbFacade.class.getName());
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     @Inject
@@ -61,7 +61,7 @@ public class FbFacade {
         return new AdAccount(filePropertiesService.getFacebookMarketingAccount(), apiContext);
     }
 
-    public CreationData createAd(String title, String body, FbAdImage fbAdImage, List<Interest> interests) {
+    public CreationData createAd(String title, String body, FbAdImage fbAdImage, List<Interest> interests, String urlTagParam) {
         try {
             APIContext context = getContext();
             AdAccount adAccount = getAdAccount(context);
@@ -70,7 +70,7 @@ public class FbFacade {
             creationData.setCampaignId(campaignId);
             long adSetId = createAddSet(context, adAccount, campaignId, interests);
             creationData.setAdSetId(adSetId);
-            long adId = createAdd(adAccount, adSetId, title, body, fbAdImage);
+            long adId = createAdd(adAccount, adSetId, title, body, fbAdImage, urlTagParam);
             creationData.setAdId(adId);
             setTrackingTag(adId, RestUrl.fbClickTrackingReceiver());
             return creationData;
@@ -144,11 +144,16 @@ public class FbFacade {
         }
     }
 
-    private long createAdd(AdAccount account, long adSetId, String title, String body, FbAdImage fbAdImage) throws APIException {
+    public static String setupTagParam(String urlTagParam) {
+        return URL_PARAM_TRACK_KEY + "=" + urlTagParam;
+    }
+
+    private long createAdd(AdAccount account, long adSetId, String title, String body, FbAdImage fbAdImage, String urlTagParam) throws APIException {
         AdCreative creative = account.createAdCreative()
                 .setObjectType("SHARE")
                 .setTitle(title)
                 .setBody(body)
+                .setUrlTags(setupTagParam(urlTagParam))
                 .setObjectStorySpec(new AdCreativeObjectStorySpec().setFieldPageId(filePropertiesService.getFacebookAppPageId())
                         .setFieldLinkData(new AdCreativeLinkData()
                                 .setFieldLink("https://apps.facebook.com/razarion/")
@@ -281,7 +286,7 @@ public class FbFacade {
 
     public void uploadImageFile(String base64File) {
         try {
-           getAdAccount(getContext()).createAdImage().setParam("bytes", base64File).execute();
+            getAdAccount(getContext()).createAdImage().setParam("bytes", base64File).execute();
         } catch (APIException e) {
             throw new RuntimeException(e);
         }
