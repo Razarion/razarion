@@ -8,5 +8,4 @@ export class Campaign {
     title: string;
     body: string;
     clicksPerHour: ClicksPerHour[];
-    clicksPerHour: ClicksPerHour[];
 }

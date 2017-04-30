@@ -75,6 +75,10 @@ public class HistoryAdEntity {
         return new CampaignJson().setAdId(Long.toString(adId)).setBody(body).setTitle(title).setClicks(clicks).setDateStart(dateStart).setDateStop(dateStop).setImpressions(impressions).setSpent(spent).setUrlTagParam(urlTagParam).setAdInterests(adInterest);
     }
 
+    public String getImageHash() {
+        return imageHash;
+    }
+
     @Override
     public String toString() {
         return "HistoryAdEntity{" +

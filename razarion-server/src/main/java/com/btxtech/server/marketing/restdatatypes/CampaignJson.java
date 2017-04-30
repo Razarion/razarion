@@ -16,10 +16,11 @@ public class CampaignJson {
     private double spent;
     private String title;
     private String body;
+    private String imageUrl;
+    private String imageUrl128;
     private String urlTagParam;
     private List<AdInterestJson> adInterests;
     private List<ClicksPerHourJson> clicksPerHour;
-
 
     public String getAdId() {
         return adId;
@@ -90,6 +91,24 @@ public class CampaignJson {
 
     public CampaignJson setBody(String body) {
         this.body = body;
+        return this;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public CampaignJson setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+        return this;
+    }
+
+    public String getImageUrl128() {
+        return imageUrl128;
+    }
+
+    public CampaignJson setImageUrl128(String imageUrl128) {
+        this.imageUrl128 = imageUrl128;
         return this;
     }
 

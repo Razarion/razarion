@@ -1,16 +1,19 @@
 <h3>{{campaign.dateStart | date:'dd.MM.yyyy HH:mm:ss'}} - {{campaign.dateStop | date:'dd.MM.yyyy HH:mm:ss'}}</h3>
 <table>
     <tr>
-        <td>
+        <td colspan="2">
             <svg #svgelement width="960" height="500"></svg>
         </td>
     </tr>
     <tr>
-        <td>
+        <td colspan="2">
             {{campaign.body}}
         </td>
     </tr>
     <tr>
+        <td>
+            <img src="{{campaign.imageUrl128}}" />
+        </td>
         <td>
             <span *ngFor="let adInterest of campaign.adInterests">
                 {{adInterest.name}}

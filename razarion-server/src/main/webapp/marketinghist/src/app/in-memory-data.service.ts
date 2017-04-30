@@ -10,6 +10,8 @@ export class InMemoryDataService implements InMemoryDbService {
             "spent": 5.67,
             "title": "Echtzeit Strategiespiel",
             "body": "Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie",
+            "imageUrl": "https://scontent.xx.fbcdn.net/t45.1600-4/17268666_6065556735621_5236920741466734592_n.png",
+            "imageUrl128": "https://scontent.xx.fbcdn.net/t45.1600-4/s128x128/17268666_6065556735621_5236920741466734592_n.png",
             "urlTagParam": "0001",
             "adInterests": [{"id": "6003057392644", "name": "Gaming"}, {"id": "6003253267911", "name": "Command & Conquer"}, {"id": "6003066189670", "name": "Trump"}, {
                 "id": "6003582500438",
@@ -37,6 +39,8 @@ export class InMemoryDataService implements InMemoryDbService {
             "spent": 2.8,
             "title": "Echtzeit Strategiespiel",
             "body": "Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie",
+            "imageUrl": "https://scontent.xx.fbcdn.net/t45.1600-4/17268666_6065556735621_5236920741466734592_n.png",
+            "imageUrl128": "https://scontent.xx.fbcdn.net/t45.1600-4/s128x128/17268666_6065556735621_5236920741466734592_n.png",
             "urlTagParam": "0002",
             "adInterests": [{"id": "6003704710113", "name": "Real-time strategy"}, {"id": "6003271038593", "name": "Strategy video game"}, {
                 "id": "6003746660346",
@@ -55,6 +59,8 @@ export class InMemoryDataService implements InMemoryDbService {
             "spent": 2.71,
             "title": "Echtzeit Strategiespiel",
             "body": "Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie",
+            "imageUrl": "https://scontent.xx.fbcdn.net/t45.1600-4/17268666_6065556735621_5236920741466734592_n.png",
+            "imageUrl128": "https://scontent.xx.fbcdn.net/t45.1600-4/s128x128/17268666_6065556735621_5236920741466734592_n.png",
             "urlTagParam": "0003",
             "adInterests": [{"id": "6003070856229", "name": "Games"}, {"id": "6003153672865", "name": "Online games"}, {"id": "6002971095994", "name": "Action games"}, {
                 "id": "6003176101552",
@@ -94,11 +100,13 @@ export class InMemoryDataService implements InMemoryDbService {
             "spent": 3.55,
             "title": "Echtzeit Strategiespiel",
             "body": "Razarion vereint packende Echtzeit-Schlachten mit komplexer Strategie und MultiplayerspaÃŸ",
+            "imageUrl": "https://scontent.xx.fbcdn.net/t45.1600-4/17268666_6065556735621_5236920741466734592_n.png",
+            "imageUrl128": "https://scontent.xx.fbcdn.net/t45.1600-4/s128x128/17268666_6065556735621_5236920741466734592_n.png",
             "urlTagParam": "0004",
-            "adInterests": [{"id": "6003057392644", "name": "Gaming"}, {"id": "6003253267911", "name": "Command & Conquer"}, {"id": "6003210792176", "name": "Donald Trump"}, {
-                "id": "6003582500438",
-                "name": "Strategy games"
-            }],
+            "adInterests": [{"id": "6003057392644", "name": "Gaming"}, {"id": "6003253267911", "name": "Command & Conquer"}, {
+                "id": "6003210792176",
+                "name": "Donald Trump"
+            }, {"id": "6003582500438", "name": "Strategy games"}],
             "clicksPerHour": [{"date": 1492149600000, "clicks": 4}, {"date": 1492214400000, "clicks": 1}, {"date": 1492106400000, "clicks": 0}, {
                 "date": 1492200000000,
                 "clicks": 3

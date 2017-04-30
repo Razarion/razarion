@@ -170,6 +170,7 @@ public class MarketingService {
     @Transactional
     @SecurityCheck
     public List<CampaignJson> getCampaignHistory() {
+        Map<String, FbAdImage> hashUrlMap = getFbAdImages();
         List<CampaignJson> campaignJsons = new ArrayList<>();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<HistoryAdEntity> userQuery = criteriaBuilder.createQuery(HistoryAdEntity.class);
@@ -178,6 +179,10 @@ public class MarketingService {
         for (HistoryAdEntity historyAdEntity : entityManager.createQuery(userSelect).getResultList()) {
             CampaignJson campaignJson = historyAdEntity.createCampaignJson();
             campaignJson.setClicksPerHour(getClicksPerHour(campaignJson));
+            FbAdImage fbAdImage = hashUrlMap.get(historyAdEntity.getImageHash());
+            if (fbAdImage != null) {
+                campaignJson.setImageUrl(fbAdImage.getUrl()).setImageUrl128(fbAdImage.getUrl128());
+            }
             campaignJsons.add(campaignJson);
         }
         return campaignJsons;
@@ -209,6 +214,15 @@ public class MarketingService {
             clicksPerHourJsons.add(new ClicksPerHourJson().setDate(entry.getKey()).setClicks(entry.getValue()));
         }
         return clicksPerHourJsons;
+    }
+
+    private Map<String, FbAdImage> getFbAdImages() {
+        List<FbAdImage> fbAdImages = queryFbAdImages();
+        Map<String, FbAdImage> hashUrlMap = new HashMap<>();
+        for (FbAdImage fbAdImage : fbAdImages) {
+            hashUrlMap.put(fbAdImage.getHash(), fbAdImage);
+        }
+        return hashUrlMap;
     }
 
 //  DB MIGRATION CAN BE REMOVED
