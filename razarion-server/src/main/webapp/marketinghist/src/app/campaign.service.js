@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var campaign_1 = require("./campaign");
 var http_1 = require("@angular/http");
 var core_1 = require("@angular/core");
+require("rxjs/add/operator/toPromise");
 var CampaignService = (function () {
-    // private campaignUrl = 'api/heroes';  // URL to web api
     function CampaignService(http) {
         this.http = http;
         // private campaignUrl = 'http://localhost:8080/rest/marketing/history';  // URL to web api

@@ -3,7 +3,7 @@ import {Campaign} from "./campaign";
 import {CampaignService} from "./campaign.service";
 
 @Component({
-    selector: 'my-campaign',
+    selector: 'campaign-list',
     templateUrl: './campaign-list.component.html',
     styleUrls: ['./campaign-list.component.css']
 })

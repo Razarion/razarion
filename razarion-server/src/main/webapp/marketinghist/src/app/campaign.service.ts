@@ -1,12 +1,12 @@
 import {Campaign} from "./campaign";
 import {Http} from "@angular/http";
 import {Injectable} from "@angular/core";
+import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class CampaignService {
     // private campaignUrl = 'http://localhost:8080/rest/marketing/history';  // URL to web api
     private campaignUrl = '/rest/marketing/history';  // URL to web api
-    // private campaignUrl = 'api/heroes';  // URL to web api
 
     constructor(private http: Http) {
     }
