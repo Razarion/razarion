@@ -16,8 +16,10 @@
 <h:head>
     <title>Razarion Marketing</title>
 </h:head>
-
 <h:body>
+    <a href="/marketinghist/src/index.html">Marketing History</a>
+    <br/>
+    <br/>
     <h:form>
         <h:commandButton value="Show Current Campaigns" action="#{marketingPageBean.readCurrentCampaigns()}">
             <f:ajax execute="@this" render="currentCampaignDisplay"/>

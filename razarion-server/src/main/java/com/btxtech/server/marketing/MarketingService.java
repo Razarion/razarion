@@ -152,19 +152,23 @@ public class MarketingService {
         entityManager.persist(clickTrackerEntity);
     }
 
+    @SecurityCheck
     public List<FbAdImage> queryFbAdImages() {
         return fbFacade.queryFbAdImages();
     }
 
+    @SecurityCheck
     public void deleteFbAdImage(FbAdImage image) {
         fbFacade.deleteFbAdImage(image);
     }
 
+    @SecurityCheck
     public void uploadImageFile(byte[] uploadImageFile) {
         fbFacade.uploadImageFile(new String(Base64.getEncoder().encode(uploadImageFile)));
     }
 
     @Transactional
+    @SecurityCheck
     public List<CampaignJson> getCampaignHistory() {
         List<CampaignJson> campaignJsons = new ArrayList<>();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
