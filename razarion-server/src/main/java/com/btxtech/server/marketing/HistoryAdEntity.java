@@ -1,6 +1,7 @@
 package com.btxtech.server.marketing;
 
 import com.btxtech.server.marketing.facebook.AdSetInsight;
+import com.btxtech.server.marketing.restdatatypes.AdInterestJson;
 import com.btxtech.server.marketing.restdatatypes.CampaignJson;
 
 import javax.persistence.CollectionTable;
@@ -67,7 +68,11 @@ public class HistoryAdEntity {
     }
 
     public CampaignJson createCampaignJson() {
-        return new CampaignJson().setAdId(Long.toString(adId)).setBody(body).setTitle(title).setClicks(clicks).setDateStart(dateStart).setDateStop(dateStop).setImpressions(impressions).setSpent(spent).setUrlTagParam(urlTagParam);
+        List<AdInterestJson> adInterest = new ArrayList<>();
+        for (Interest interest : interests) {
+            adInterest.add(interest.generateAdInterestJson());
+        }
+        return new CampaignJson().setAdId(Long.toString(adId)).setBody(body).setTitle(title).setClicks(clicks).setDateStart(dateStart).setDateStop(dateStop).setImpressions(impressions).setSpent(spent).setUrlTagParam(urlTagParam).setAdInterests(adInterest);
     }
 
     @Override

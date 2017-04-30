@@ -17,7 +17,9 @@ public class CampaignJson {
     private String title;
     private String body;
     private String urlTagParam;
+    private List<AdInterestJson> adInterests;
     private List<ClicksPerHourJson> clicksPerHour;
+
 
     public String getAdId() {
         return adId;
@@ -97,6 +99,15 @@ public class CampaignJson {
 
     public CampaignJson setUrlTagParam(String urlTagParam) {
         this.urlTagParam = urlTagParam;
+        return this;
+    }
+
+    public List<AdInterestJson> getAdInterests() {
+        return adInterests;
+    }
+
+    public CampaignJson setAdInterests(List<AdInterestJson> adInterests) {
+        this.adInterests = adInterests;
         return this;
     }
 

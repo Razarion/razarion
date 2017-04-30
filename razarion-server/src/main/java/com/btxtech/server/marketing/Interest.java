@@ -1,5 +1,7 @@
 package com.btxtech.server.marketing;
 
+import com.btxtech.server.marketing.restdatatypes.AdInterestJson;
+
 import javax.persistence.Embeddable;
 
 /**
@@ -35,6 +37,10 @@ public class Interest {
     public Interest setName(String name) {
         this.name = name;
         return this;
+    }
+
+    public AdInterestJson generateAdInterestJson() {
+        return new AdInterestJson().setId(id).setName(getName());
     }
 
     @Override

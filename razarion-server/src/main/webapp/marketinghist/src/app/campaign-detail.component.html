@@ -1,2 +1,21 @@
 <h3>{{campaign.dateStart | date:'dd.MM.yyyy HH:mm:ss'}} - {{campaign.dateStop | date:'dd.MM.yyyy HH:mm:ss'}}</h3>
-<svg #svgelement width="960" height="500"></svg>
+<table>
+    <tr>
+        <td>
+            <svg #svgelement width="960" height="500"></svg>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {{campaign.body}}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <span *ngFor="let adInterest of campaign.adInterests">
+                {{adInterest.name}}
+                {{adInterest.id}},
+            </span>
+        </td>
+    </tr>
+</table>

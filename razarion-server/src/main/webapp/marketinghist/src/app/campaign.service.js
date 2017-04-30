@@ -9,7 +9,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var campaign_1 = require("./campaign");
 var http_1 = require("@angular/http");
 var core_1 = require("@angular/core");
 require("rxjs/add/operator/toPromise");
@@ -17,44 +16,19 @@ var CampaignService = (function () {
     function CampaignService(http) {
         this.http = http;
         // private campaignUrl = 'http://localhost:8080/rest/marketing/history';  // URL to web api
-        this.campaignUrl = '/rest/marketing/history'; // URL to web api
+        this.campaignUrl = '/rest/marketing/history';
     }
     CampaignService.prototype.getCampaigns = function () {
         return this.http.get(this.campaignUrl)
             .toPromise()
             .then(function (response) {
-            return response.json();
+            return response.json() /*.data*/; // Add .data for in-memory
         })
             .catch(this.handleError);
     };
     CampaignService.prototype.handleError = function (error) {
         console.error('An error occurred', error);
         return Promise.reject(error.message || error);
-    };
-    CampaignService.prototype.getCampaigns_old = function () {
-        var campaign = new campaign_1.Campaign();
-        campaign.title = "title text";
-        campaign.body = "body text";
-        campaign.clicks = 12;
-        campaign.spent = 5.23;
-        campaign.impressions = 4052;
-        campaign.dateStart = new Date("2017-03-25");
-        campaign.dateStop = new Date("2017-03-26");
-        campaign.clicksPerHour = [
-            { date: new Date(2017, 3, 1, 0, 0, 0), clicks: 5 },
-            { date: new Date(2017, 3, 1, 1, 0, 0), clicks: 0 },
-            { date: new Date(2017, 3, 1, 2, 0, 0), clicks: 1 },
-            { date: new Date(2017, 3, 1, 3, 0, 0), clicks: 3 },
-            { date: new Date(2017, 3, 1, 4, 0, 0), clicks: 4 },
-            { date: new Date(2017, 3, 1, 5, 0, 0), clicks: 7 },
-            { date: new Date(2017, 3, 1, 6, 0, 0), clicks: 2 },
-            { date: new Date(2017, 3, 1, 7, 0, 0), clicks: 1 },
-            { date: new Date(2017, 3, 1, 8, 0, 0), clicks: 0 },
-            { date: new Date(2017, 3, 1, 9, 0, 0), clicks: 8 }
-        ];
-        var campaigns = [];
-        campaigns.push(campaign);
-        return campaigns;
     };
     return CampaignService;
 }());
