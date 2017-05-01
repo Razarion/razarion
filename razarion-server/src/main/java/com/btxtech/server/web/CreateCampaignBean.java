@@ -1,8 +1,8 @@
 package com.btxtech.server.web;
 
+import com.btxtech.server.marketing.DetailedAdInterest;
 import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.marketing.MarketingService;
-import com.btxtech.server.marketing.facebook.AdInterest;
 import com.btxtech.server.marketing.facebook.FbAdImage;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -29,8 +29,8 @@ public class CreateCampaignBean implements Serializable {
     private String title;
     private String body;
     private List<FbAdImage> fbAdImages;
-    private List<AdInterest> selectedAdInterest = new ArrayList<>();
-    private List<AdInterest> availableAdInterest = new ArrayList<>();
+    private List<DetailedAdInterest> selectedAdInterest = new ArrayList<>();
+    private List<DetailedAdInterest> availableAdInterest = new ArrayList<>();
     private String interestQuery;
     private String campaignCreationError;
     private String imageGalleryError;
@@ -58,11 +58,11 @@ public class CreateCampaignBean implements Serializable {
         this.body = body;
     }
 
-    public List<AdInterest> getSelectedAdInterest() {
+    public List<DetailedAdInterest> getSelectedAdInterest() {
         return selectedAdInterest;
     }
 
-    public void setSelectedAdInterest(List<AdInterest> selectedAdInterest) {
+    public void setSelectedAdInterest(List<DetailedAdInterest> selectedAdInterest) {
         this.selectedAdInterest = selectedAdInterest;
     }
 
@@ -74,7 +74,7 @@ public class CreateCampaignBean implements Serializable {
         this.interestQuery = interestQuery;
     }
 
-    public List<AdInterest> getAvailableAdInterest() {
+    public List<DetailedAdInterest> getAvailableAdInterest() {
         return availableAdInterest;
     }
 
@@ -83,20 +83,20 @@ public class CreateCampaignBean implements Serializable {
         return null;
     }
 
-    public void addInterest(AdInterest adInterest) {
+    public void addInterest(DetailedAdInterest adInterest) {
         if (!selectedAdInterest.contains(adInterest)) {
             selectedAdInterest.add(adInterest);
         }
     }
 
-    public void removeInterest(AdInterest adInterest) {
+    public void removeInterest(DetailedAdInterest adInterest) {
         selectedAdInterest.remove(adInterest);
     }
 
     public Object deepQueryInterest() {
-        List<AdInterest> deepInterests = new ArrayList<>(availableAdInterest);
-        for (AdInterest adInterest : availableAdInterest) {
-            for (AdInterest interest : marketingService.queryAdInterest(adInterest.getName())) {
+        List<DetailedAdInterest> deepInterests = new ArrayList<>(availableAdInterest);
+        for (DetailedAdInterest adInterest : availableAdInterest) {
+            for (DetailedAdInterest interest : marketingService.queryAdInterest(adInterest.getAdInterest().getName())) {
                 if (!deepInterests.contains(interest)) {
                     deepInterests.add(interest);
                 }
@@ -127,10 +127,10 @@ public class CreateCampaignBean implements Serializable {
 
         try {
             List<Interest> interests = new ArrayList<>();
-            for (AdInterest selected : selectedAdInterest) {
+            for (DetailedAdInterest selected : selectedAdInterest) {
                 Interest interest = new Interest();
-                interest.setName(selected.getName());
-                interest.setId(selected.getId());
+                interest.setName(selected.getAdInterest().getName());
+                interest.setFbId(selected.getAdInterest().getId());
                 interests.add(interest);
             }
             marketingService.startCampaign(title, body, selectedImage, interests);
@@ -188,7 +188,10 @@ public class CreateCampaignBean implements Serializable {
         }
         try {
             byte[] bytes = new byte[uploadImageFile.getInputStream().available()];
-            uploadImageFile.getInputStream().read(bytes);
+            int bytesRead = uploadImageFile.getInputStream().read(bytes);
+            if (bytesRead < 0) {
+                throw new IllegalStateException("bytesRead < 0");
+            }
             marketingService.uploadImageFile(bytes);
             fbAdImages = marketingService.queryFbAdImages();
             uploadImageFile = null;

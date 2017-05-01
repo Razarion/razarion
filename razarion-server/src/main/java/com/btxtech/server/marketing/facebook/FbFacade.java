@@ -100,7 +100,7 @@ public class FbFacade {
     private long createAddSet(APIContext context, AdAccount account, long campaignId, Collection<Interest> interests) throws APIException {
         List<IDName> fbInterests = new ArrayList<>();
         for (Interest interest : interests) {
-            fbInterests.add(new IDName().setFieldId(interest.getId()).setFieldName(interest.getName()));
+            fbInterests.add(new IDName().setFieldId(interest.getFbId()).setFieldName(interest.getName()));
         }
 
         Targeting targeting = new Targeting()

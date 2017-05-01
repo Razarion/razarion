@@ -18,6 +18,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -140,8 +141,41 @@ public class MarketingService {
     }
 
     @SecurityCheck
-    public List<AdInterest> queryAdInterest(String query) {
-        return fbFacade.queryAdInterest(query);
+    public List<DetailedAdInterest> queryAdInterest(String query) {
+        List<AdInterest> adInterests = fbFacade.queryAdInterest(query);
+        List<DetailedAdInterest> result = new ArrayList<>();
+        for (AdInterest adInterest : adInterests) {
+            result.add(new DetailedAdInterest().setAdInterest(adInterest).setUsedCurrentDates(getCurrentAdEntity4Interest(adInterest)).setUsedHistoryDates(getHistoryAdEntity4Interest(adInterest)));
+        }
+        return result;
+    }
+
+    private List<Date> getCurrentAdEntity4Interest(AdInterest adInterest) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> userQuery = criteriaBuilder.createTupleQuery();
+        Root<CurrentAdEntity> from = userQuery.from(CurrentAdEntity.class);
+        userQuery.multiselect(from.get(CurrentAdEntity_.dateStart));
+        // Interest_.id -> Interest_.fbId: Join always takes attribute type from CurrentAdEntity if it is called id
+        userQuery.where(criteriaBuilder.equal(from.join(CurrentAdEntity_.interests).get(Interest_.fbId), adInterest.getId()));
+        List<Date> dates = new ArrayList<>();
+        for (Tuple tuple : entityManager.createQuery(userQuery).getResultList()) {
+            dates.add((Date) tuple.get(0));
+        }
+        return dates;
+    }
+
+    private List<Date> getHistoryAdEntity4Interest(AdInterest adInterest) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> userQuery = criteriaBuilder.createTupleQuery();
+        Root<HistoryAdEntity> from = userQuery.from(HistoryAdEntity.class);
+        userQuery.multiselect(from.get(HistoryAdEntity_.dateStart));
+        // Interest_.id -> Interest_.fbId: Join always takes attribute type from HistoryAdEntity if it is called id
+        userQuery.where(criteriaBuilder.equal(from.join(HistoryAdEntity_.interests).get(Interest_.fbId), adInterest.getId()));
+        List<Date> dates = new ArrayList<>();
+        for (Tuple tuple : entityManager.createQuery(userQuery).getResultList()) {
+            dates.add((Date) tuple.get(0));
+        }
+        return dates;
     }
 
     @Transactional

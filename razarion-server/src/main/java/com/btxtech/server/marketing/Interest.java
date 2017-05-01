@@ -10,23 +10,23 @@ import javax.persistence.Embeddable;
  */
 @Embeddable
 public class Interest {
-    private String id;
+    private String fbId; // Can not be called id: join does not work. See MarketingService
     private String name;
 
     public Interest() {
     }
 
     public Interest(Interest interest) {
-        id = interest.getId();
+        fbId = interest.getFbId();
         name = interest.getName();
     }
 
-    public String getId() {
-        return id;
+    public String getFbId() {
+        return fbId;
     }
 
-    public Interest setId(String id) {
-        this.id = id;
+    public Interest setFbId(String id) {
+        this.fbId = id;
         return this;
     }
 
@@ -40,13 +40,13 @@ public class Interest {
     }
 
     public AdInterestJson generateAdInterestJson() {
-        return new AdInterestJson().setId(id).setName(getName());
+        return new AdInterestJson().setId(fbId).setName(getName());
     }
 
     @Override
     public String toString() {
         return "Interest{" +
-                "id='" + id + '\'' +
+                "id='" + fbId + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }

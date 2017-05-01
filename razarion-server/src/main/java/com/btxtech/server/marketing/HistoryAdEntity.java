@@ -82,8 +82,8 @@ public class HistoryAdEntity {
     @Override
     public String toString() {
         return "HistoryAdEntity{" +
-                "facebookDateStart=" + facebookDateStart +
-                ", facebookDateStop=" + facebookDateStop +
+                "dateStart=" + dateStart +
+                ", dateStop=" + dateStop +
                 ", clicks=" + clicks +
                 ", impressions=" + impressions +
                 ", spent=" + spent +

@@ -31,37 +31,58 @@
                         <!-- column header -->
                         <f:facet name="header">Name</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.name}"/>
+                        <h:outputText value="#{i.adInterest.name}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Audience Size</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.audienceSize}"/>
+                        <h:outputText value="#{i.adInterest.audienceSize}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Topic</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.topic}"/>
+                        <h:outputText value="#{i.adInterest.topic}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Id</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.id}"/>
+                        <h:outputText value="#{i.adInterest.id}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Disambiguation Category</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.disambiguationCategory}"/>
+                        <h:outputText value="#{i.adInterest.disambiguationCategory}"/>
+                    </h:column>
+                    <h:column>
+                        <!-- column header -->
+                        <f:facet name="header">Usage</f:facet>
+                        <!-- row record -->
+                        <h:panelGroup styleClass="tooltip" layout="block" rendered="#{i.usedInCurrent}">
+                            Current
+                            <h:dataTable value="#{i.usedCurrentDates}" var="d" styleClass="tooltiptext">
+                                <h:column>
+                                    <h:outputText value="#{d}"/>
+                                </h:column>
+                            </h:dataTable>
+                        </h:panelGroup>
+                        <h:panelGroup styleClass="tooltip" layout="block" rendered="#{i.usedInHistory}">
+                            History
+                            <h:dataTable value="#{i.usedHistoryDates}" var="d" styleClass="tooltiptext">
+                                <h:column>
+                                    <h:outputText value="#{d}"/>
+                                </h:column>
+                            </h:dataTable>
+                        </h:panelGroup>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Description</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.description}"/>
+                        <h:outputText value="#{i.adInterest.description}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
@@ -83,37 +104,37 @@
                         <!-- column header -->
                         <f:facet name="header">Name</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.name}"/>
+                        <h:outputText value="#{i.adInterest.name}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Audience Size</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.audienceSize}"/>
+                        <h:outputText value="#{i.adInterest.audienceSize}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Topic</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.topic}"/>
+                        <h:outputText value="#{i.adInterest.topic}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Id</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.id}"/>
+                        <h:outputText value="#{i.adInterest.id}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Disambiguation Category</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.disambiguationCategory}"/>
+                        <h:outputText value="#{i.adInterest.disambiguationCategory}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Description</f:facet>
                         <!-- row record -->
-                        <h:outputText value="#{i.description}"/>
+                        <h:outputText value="#{i.adInterest.description}"/>
                     </h:column>
                     <h:column>
                         <!-- column header -->
