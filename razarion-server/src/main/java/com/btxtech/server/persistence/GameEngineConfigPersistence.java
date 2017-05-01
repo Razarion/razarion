@@ -46,6 +46,7 @@ import java.util.Map;
 @ApplicationScoped
 public class GameEngineConfigPersistence {
     public static final int FIRST_LEVEL_ID = 1;
+    public static final int MULTI_PLAYER_PLANET_LEVEL_ID = 5;
     static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
     static final int BASE_ITEM_TYPE_HARVESTER = 180830;
     static final int BASE_ITEM_TYPE_ATTACKER = 180832;

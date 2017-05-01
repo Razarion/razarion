@@ -85,7 +85,7 @@ public class GameUiControlConfigPersistence {
         int levelNumber = getLevelNumber(userContext.getLevelId());
         // TODO move to DB
         GameUiControlConfig gameUiControlConfig;
-        if (levelNumber >= 5) {
+        if (levelNumber >= GameEngineConfigPersistence.MULTI_PLAYER_PLANET_LEVEL_ID) {
             // Multiplayer
             gameUiControlConfig = getGameUiControlConfig4Level(2).toGameUiControlConfig(gameEngineConfig);
             gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.SLAVE);// TODO move to DB
@@ -539,7 +539,7 @@ public class GameUiControlConfigPersistence {
         buildupItemTypeCount.put(GameEngineConfigPersistence.BASE_ITEM_TYPE_BULLDOZER, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(243, 90)).setCameraLocked(false);
-        sceneConfigs.add(new SceneConfig().setInternalName("_killHumanBase 1").setRemoveLoadingCover(true).setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setXp(10).setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("_platziere 1").setRemoveLoadingCover(true).setViewFieldConfig(viewFieldConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setXp(10).setConditionConfig(conditionConfig).setTitle("Platzieren").setDescription("Platzieren")).setWait4QuestPassedDialog(true));
         return sceneConfigs;
     }
 
