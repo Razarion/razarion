@@ -32,6 +32,7 @@ public class UiTerrainTile {
     private Instance<UiTerrainSlopeTile> uiTerrainSlopeTileInstance;
     @Inject
     private Instance<UiTerrainWaterTile> uiTerrainWaterTileInstance;
+    private Index index;
     private GroundSkeletonConfig groundSkeletonConfig;
     private TerrainTile terrainTile;
     private ModelRenderer modelRenderer;
@@ -40,6 +41,7 @@ public class UiTerrainTile {
     private UiTerrainWaterTile uiTerrainWaterTile;
 
     public void init(Index index, GroundSkeletonConfig groundSkeletonConfig) {
+        this.index = index;
         this.groundSkeletonConfig = groundSkeletonConfig;
         terrainUiService.requestTerrainTile(index, this::terrainTileReceived);
     }
@@ -160,6 +162,9 @@ public class UiTerrainTile {
         nodeX = Math.min(nodeX, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
         nodeY = Math.min(nodeY, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
 
+        if (terrainTile == null) {
+            throw new IllegalStateException("Terrain Tile is null. TerrainTile index: " + index);
+        }
         return terrainTile.getDisplayHeights()[TerrainUtil.filedToArrayNodeIndex(new Index(nodeX, nodeY))];
     }
 
@@ -168,13 +173,13 @@ public class UiTerrainTile {
             groundRenderTask.remove(modelRenderer);
             modelRenderer.dispose();
         }
-        if(uiTerrainSlopeTiles != null) {
+        if (uiTerrainSlopeTiles != null) {
             for (UiTerrainSlopeTile uiTerrainSlopeTile : uiTerrainSlopeTiles) {
                 uiTerrainSlopeTile.dispose();
             }
             uiTerrainSlopeTiles = null;
         }
-        if(uiTerrainWaterTile != null) {
+        if (uiTerrainWaterTile != null) {
             uiTerrainWaterTile.dispose();
             uiTerrainWaterTile = null;
         }
