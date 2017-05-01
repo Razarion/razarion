@@ -3,6 +3,7 @@ package com.btxtech.webglemulator.razarion;
 import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import com.btxtech.webglemulator.WebGlEmulatorSceneController;
 import javafx.application.Platform;
@@ -33,6 +34,8 @@ public class RazarionEmulator {
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
+    private TerrainUiService terrainUiService;
+    @Inject
     private DevToolShape3DUiService devToolShape3DUiService;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private boolean showRenderTime;
@@ -45,6 +48,7 @@ public class RazarionEmulator {
             gameUiControl.setGameUiControlConfig(httpConnectionEmu.getGameUiControlConfig());
             gameUiControl.init();
             gameEngineControl.init(gameUiControl.getGameUiControlConfig().getGameEngineConfig(), null);
+            terrainUiService.init(httpConnectionEmu.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig());
             devToolShape3DUiService.loadBuffer();
             gameEngineControl.start();
             gameUiControl.start();
