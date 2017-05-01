@@ -102,7 +102,7 @@ public class PerfmonService {
             List<StatisticEntry> value = entry.getValue();
             if (count < 1) {
                 count = value.size() - 1;
-            } else if (count > value.size()) {
+            } else if (count > value.size() - 1) {
                 count = value.size() - 1;
             }
             for (int i = count; i >= 0; i--) {
