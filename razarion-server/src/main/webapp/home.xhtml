@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+>
+<h:head>
+    <meta charset="UTF-8"/>
+    <link type="text/css" rel="stylesheet" href="razarion.css"/>
+    <title>Razarion</title>
+</h:head>
+<h:body>
+    <h:form id="helperForm" style="visibility: hidden">
+        <h:inputHidden id="fbUserIdField" value="#{homePageBean.fbUserId}"/>
+        <h:commandButton id="fbResponseFormButton" value="Submit" action="#{homePageBean.fbLoginResponse}">
+        </h:commandButton>
+    </h:form>
+
+    <script type="text/javascript">
+        function statusChangeCallback(response) {
+            if (response.status === 'connected') {
+                doPost(response.authResponse.userID);
+            } else {
+                doPost('');
+            }
+        }
+
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '#{facebookAppStart.facebookAppId}',
+                cookie: true,
+                xfbml: true,
+                version: 'v2.8'
+            });
+
+            FB.getLoginStatus(function (response) {
+                statusChangeCallback(response);
+            });
+
+        };
+
+        function doPost(userId) {
+            document.getElementById('helperForm:fbUserIdField').value = userId;
+            document.getElementById('helperForm:fbResponseFormButton').click();
+        }
+
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s);
+            js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+    </script>
+
+</h:body>
+</html>
