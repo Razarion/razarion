@@ -93,12 +93,9 @@ public class UserService {
     }
 
     private UserContext loginUserContext(UserContext userContext) {
-        if (filePropertiesService.isDeveloperMode()) {
-            userContext.setAdmin(true);
-        }
         sessionHolder.getPlayerSession().setUserContext(userContext);
         userContext.setName("Emulator Name");// TODO
-        loginUser(sessionHolder.getPlayerSession().getHttpSessionId(), userContext);
+        loggedInUserContext.put(sessionHolder.getPlayerSession().getHttpSessionId(), userContext);
         return userContext;
     }
 
@@ -135,10 +132,6 @@ public class UserService {
         humanPlayerIdEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         entityManager.persist(humanPlayerIdEntity);
         return humanPlayerIdEntity;
-    }
-
-    private void loginUser(String sessionId, UserContext userContext) {
-        loggedInUserContext.put(sessionId, userContext);
     }
 
     public void logoutUserUser(String sessionId) {
