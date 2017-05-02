@@ -39,7 +39,11 @@ public class CreateCampaignBean implements Serializable {
 
     @PostConstruct
     public void postConstruct() {
-        fbAdImages = marketingService.queryFbAdImages();
+        try {
+            fbAdImages = marketingService.queryFbAdImages();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public String getTitle() {
@@ -79,7 +83,11 @@ public class CreateCampaignBean implements Serializable {
     }
 
     public Object queryInterest() {
-        availableAdInterest = marketingService.queryAdInterest(interestQuery);
+        try {
+            availableAdInterest = marketingService.queryAdInterest(interestQuery);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
         return null;
     }
 
@@ -94,15 +102,19 @@ public class CreateCampaignBean implements Serializable {
     }
 
     public Object deepQueryInterest() {
-        List<DetailedAdInterest> deepInterests = new ArrayList<>(availableAdInterest);
-        for (DetailedAdInterest adInterest : availableAdInterest) {
-            for (DetailedAdInterest interest : marketingService.queryAdInterest(adInterest.getAdInterest().getName())) {
-                if (!deepInterests.contains(interest)) {
-                    deepInterests.add(interest);
+        try {
+            List<DetailedAdInterest> deepInterests = new ArrayList<>(availableAdInterest);
+            for (DetailedAdInterest adInterest : availableAdInterest) {
+                for (DetailedAdInterest interest : marketingService.queryAdInterest(adInterest.getAdInterest().getName())) {
+                    if (!deepInterests.contains(interest)) {
+                        deepInterests.add(interest);
+                    }
                 }
             }
+            availableAdInterest = deepInterests;
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        availableAdInterest = deepInterests;
         return null;
     }
 
