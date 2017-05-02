@@ -20,5 +20,5 @@ public interface GameUiControlProvider {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    GameUiControlConfig loadGameUiControlConfig(FacebookUserLoginInfo facebookUserLoginInfo);
+    GameUiControlConfig loadGameUiControlConfig();
 }

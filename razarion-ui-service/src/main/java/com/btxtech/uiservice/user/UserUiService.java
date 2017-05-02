@@ -37,33 +37,10 @@ public class UserUiService {
     private ModalDialogManager dialogManager;
     @Inject
     private Instance<GameUiControl> gameUiControlInstance;
-    private FacebookUserLoginInfo facebookUserLoginInfo;
     private UserContext userContext;
 
     public void setUserContext(UserContext userContext) {
         this.userContext = userContext;
-    }
-
-    public void facebookLoginState(String status, String accessToken, Integer expiresIn, String signedRequest, String userId) {
-        if (FACEBOOK_STATUS_CONNECTED.equalsIgnoreCase(status)) {
-            facebookUserLoginInfo = new FacebookUserLoginInfo();
-            facebookUserLoginInfo.setAccessToken(accessToken).setExpiresIn(expiresIn).setSignedRequest(signedRequest).setUserId(userId);
-        } else {
-            facebookUserLoginInfo = null;
-        }
-    }
-
-    public void facebookLoginState(String status) {
-        facebookUserLoginInfo = null;
-        logger.warning("Facebook login unclear: " + status);
-    }
-
-    public void facebookLoginStateFailed() {
-        facebookUserLoginInfo = null;
-    }
-
-    public FacebookUserLoginInfo getFacebookUserLoginInfo() {
-        return facebookUserLoginInfo;
     }
 
     public UserContext getUserContext() {

@@ -13,7 +13,8 @@ import java.io.Serializable;
  */
 @Named
 @SessionScoped
-public class MainPageBean implements Serializable {
+public class GamePageBean implements Serializable {
+    public static final String GAME_PAGE = "game.xhtml";
     @Inject
     private FilePropertiesService filePropertiesService;
     @Inject

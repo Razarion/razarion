@@ -35,9 +35,9 @@ public class UserEntity {
         return id;
     }
 
-    public void fromFacebookUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo, HumanPlayerIdEntity humanPlayerId) {
+    public void fromFacebookUserLoginInfo(String facebookUserId, HumanPlayerIdEntity humanPlayerId) {
         registerDate = new Date();
-        facebookUserId = facebookUserLoginInfo.getUserId();
+        this.facebookUserId = facebookUserId;
         this.humanPlayerIdEntity = humanPlayerId;
     }
 

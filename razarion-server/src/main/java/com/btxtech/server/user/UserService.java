@@ -5,7 +5,7 @@ import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.FacebookUserLoginInfo;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,23 +35,27 @@ public class UserService {
     private SessionHolder sessionHolder;
     @Inject
     private FilePropertiesService filePropertiesService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
-    public UserContext handleUserLoginInfo(FacebookUserLoginInfo facebookUserLoginInfo) {
+    public UserContext getUserContext() {
+        UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
+        if (userContext == null) {
+            userContext = createUnregisteredUserContext();
+            loginUserContext(userContext);
+        }
+        return userContext;
+    }
+
+    @Transactional
+    public UserContext handleFacebookUserLogin(String facebookUserId) {
         // TODO verify facebook signedRequest
 
-        // facebookUserLoginInfo is never null. Errai Jackson JAX-RS does not accept null value in POST rest call
-        if (facebookUserLoginInfo.getUserId() == null) {
-            if (sessionHolder.getPlayerSession().getUserContext() != null) {
-                return sessionHolder.getPlayerSession().getUserContext();
-            }
-            return createAndLoginUserContext(null);
-        }
-
-        UserEntity userEntity = getUserForFacebookId(facebookUserLoginInfo.getUserId());
+        UserEntity userEntity = getUserForFacebookId(facebookUserId);
         if (userEntity == null) {
-            userEntity = createUser(facebookUserLoginInfo);
+            userEntity = createUser(facebookUserId);
         }
         //TODO remove if all do have a HumanPlayerId
         if (userEntity.getHumanPlayerIdEntity() == null) {
@@ -66,7 +70,21 @@ public class UserService {
         if (alreadyLoggerIn != null && alreadyLoggerIn.getUserId() != null && alreadyLoggerIn.getUserId().equals(userContext.getHumanPlayerId().getUserId())) {
             return sessionHolder.getPlayerSession().getUserContext();
         }
-        return createAndLoginUserContext(userContext);
+        return loginUserContext(userContext);
+    }
+
+    @Transactional
+    public void handleUnregisteredLogin() {
+        UserContext userContext = createUnregisteredUserContext();
+        loginUserContext(userContext);
+    }
+
+    private UserContext createUnregisteredUserContext() {
+        UserContext userContext = new UserContext();
+        userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
+        userContext.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
+        userContext.setName("Fake name");
+        return userContext;
     }
 
     private void fixHumanPlayerIdEntity(UserEntity userEntity) {
@@ -74,15 +92,7 @@ public class UserService {
         entityManager.merge(userEntity);
     }
 
-    private UserContext createAndLoginUserContext(UserContext userContext) {
-        if (userContext == null) {
-            userContext = sessionHolder.getPlayerSession().getUserContext();
-            if (userContext == null) {
-                userContext = new UserContext();
-                userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-                userContext.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
-            }
-        }
+    private UserContext loginUserContext(UserContext userContext) {
         if (filePropertiesService.isDeveloperMode()) {
             userContext.setAdmin(true);
         }
@@ -93,9 +103,9 @@ public class UserService {
     }
 
     @Transactional
-    private UserEntity createUser(FacebookUserLoginInfo facebookUserLoginInfo) {
+    private UserEntity createUser(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
-        userEntity.fromFacebookUserLoginInfo(facebookUserLoginInfo, createHumanPlayerId());
+        userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId());
         userEntity.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
         entityManager.persist(userEntity);
         return userEntity;

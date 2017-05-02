@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 @WebListener
 public class HttpRequestMonitor implements ServletRequestListener {
-    private static final String MAIN_PAGE = "/main.xhtml";
     private static final String THANK_YOU_PAGE = "/ThankYou.html";
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -28,8 +27,8 @@ public class HttpRequestMonitor implements ServletRequestListener {
             HttpServletRequest httpServletRequest = (HttpServletRequest) sre.getServletRequest();
             if (httpServletRequest.getRequestURI().startsWith(THANK_YOU_PAGE)) {
                 trackerPersistence.onPage(THANK_YOU_PAGE, httpServletRequest);
-            } else if (httpServletRequest.getPathInfo() != null && httpServletRequest.getPathInfo().startsWith(MAIN_PAGE)) {
-                trackerPersistence.onPage(MAIN_PAGE, httpServletRequest);
+            } else if (httpServletRequest.getPathInfo() != null && httpServletRequest.getPathInfo().startsWith(GamePageBean.GAME_PAGE)) {
+                trackerPersistence.onPage(GamePageBean.GAME_PAGE, httpServletRequest);
             }
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);

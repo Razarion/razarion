@@ -29,9 +29,9 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
 
     @Override
     @Transactional
-    public GameUiControlConfig loadGameUiControlConfig(FacebookUserLoginInfo facebookUserLoginInfo) {
+    public GameUiControlConfig loadGameUiControlConfig() {
         try {
-            UserContext userContext = userService.handleUserLoginInfo(facebookUserLoginInfo);
+            UserContext userContext = userService.getUserContext();
             return gameUiControlConfigPersistence.load(userContext);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);

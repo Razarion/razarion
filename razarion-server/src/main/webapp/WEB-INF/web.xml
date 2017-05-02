@@ -16,7 +16,7 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>faces/main.xhtml</welcome-file>
+        <welcome-file>faces/game.xhtml</welcome-file>
     </welcome-file-list>
 
 </web-app>

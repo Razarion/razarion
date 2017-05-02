@@ -1,4 +1,4 @@
-package com.btxtech.server.web;
+package com.btxtech.server.web.marketing;
 
 import com.btxtech.server.marketing.DetailedAdInterest;
 import com.btxtech.server.marketing.Interest;

@@ -1,6 +1,7 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.user.PlayerSession;
+import com.btxtech.shared.datatypes.UserContext;
 
 import javax.enterprise.context.SessionScoped;
 import java.io.Serializable;
@@ -19,5 +20,10 @@ public class SessionHolder implements Serializable {
 
     public void setPlayerSession(PlayerSession playerSession) {
         this.playerSession = playerSession;
+    }
+
+    public boolean isLoggedIn() {
+        UserContext userContext = playerSession.getUserContext();
+        return userContext != null && userContext.getHumanPlayerId().getUserId() != null;
     }
 }

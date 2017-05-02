@@ -33,10 +33,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        FacebookUserLoginInfo facebookUserLoginInfo = userUiService.getFacebookUserLoginInfo();
-        if(facebookUserLoginInfo == null) {
-            facebookUserLoginInfo = new FacebookUserLoginInfo(); // Errai Jackson JAX-RS does not accept null value in POST rest call
-        }
         serviceCaller.call(new RemoteCallback<GameUiControlConfig>() {
             @Override
             public void callback(GameUiControlConfig gameUiControlConfig) {
@@ -47,6 +43,6 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
             deferredStartup.failed(throwable);
             return false;
-        }).loadGameUiControlConfig(facebookUserLoginInfo);
+        }).loadGameUiControlConfig();
     }
 }

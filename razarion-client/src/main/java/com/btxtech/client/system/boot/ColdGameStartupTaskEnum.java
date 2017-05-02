@@ -23,15 +23,9 @@ import com.btxtech.uiservice.system.boot.StartupTaskEnum;
  */
 public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
     LOAD_START_JS(LoadStartJsTask.class),
-    CALL_FACEBOOK(CallFacebookTask.class),
     LOAD_AND_START_WORKER(LoadWorkerTask.class),
     LOAD_SHAPE3D_BUFFER(LoadShape3DBufferTask.class),
-    LOAD_GAME_UI_CONTROL_CONFIG(LoadGameUiControlTask.class) {
-        @Override
-        public StartupTaskEnum[] getWaitForBackgroundTasks() {
-            return new StartupTaskEnum[]{CALL_FACEBOOK};
-        }
-    },
+    LOAD_GAME_UI_CONTROL_CONFIG(LoadGameUiControlTask.class),
     LOAD_MEDIAS(LoadMediaControlTask.class),
     INIT_WORKER(InitWorkerTask.class) {
         @Override
