@@ -38,9 +38,9 @@ import java.util.function.Supplier;
  * 16.04.2017.
  */
 public class BaseItemServiceBase {
-    protected static final int BUILDER_ITEM_TYPE_ID = 1;
-    protected static final int FACTORY_ITEM_TYPE_ID = 2;
-    protected static final int ATTACKER_ITEM_TYPE_ID = 3;
+    public static final int BUILDER_ITEM_TYPE_ID = 1;
+    public static final int FACTORY_ITEM_TYPE_ID = 2;
+    public static final int ATTACKER_ITEM_TYPE_ID = 3;
     protected static final int LEVEL_ID_1 = 1;
     private BaseItemService baseItemService;
     private SyncItemContainerService syncItemContainerService;
@@ -98,13 +98,7 @@ public class BaseItemServiceBase {
         SimpleTestEnvironment.injectService("gameLogicService", baseItemService, gameLogicServiceMock);
 
         // Setup ItemTypeService
-        List<BaseItemType> baseItemTypes = new ArrayList<>();
-        setupBuilder(baseItemTypes);
-        setupFactory(baseItemTypes);
-        setupAttacker(baseItemTypes);
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
-        gameEngineConfig.setBaseItemTypes(baseItemTypes);
-        itemTypeService.onGameEngineInit(new GameEngineInitEvent(gameEngineConfig));
+        setupItemTypeService(itemTypeService);
         SimpleTestEnvironment.injectService("itemTypeService", baseItemService, itemTypeService);
 
         planetConfig.setItemTypeLimitation(setupItemTypeLimitations());
@@ -112,7 +106,17 @@ public class BaseItemServiceBase {
         baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, PlanetActivationEvent.Type.INITIALIZE));
     }
 
-    protected void setupBuilder(List<BaseItemType> baseItemTypes) {
+    public static void setupItemTypeService(ItemTypeService itemTypeService) {
+        List<BaseItemType> baseItemTypes = new ArrayList<>();
+        setupBuilder(baseItemTypes);
+        setupFactory(baseItemTypes);
+        setupAttacker(baseItemTypes);
+        GameEngineConfig gameEngineConfig = new GameEngineConfig();
+        gameEngineConfig.setBaseItemTypes(baseItemTypes);
+        itemTypeService.onGameEngineInit(new GameEngineInitEvent(gameEngineConfig));
+    }
+
+    public static void setupBuilder(List<BaseItemType> baseItemTypes) {
         BaseItemType bulldozer = new BaseItemType();
         bulldozer.setHealth(40).setId(BUILDER_ITEM_TYPE_ID);
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(2).setSpeed(20.0));
@@ -120,7 +124,7 @@ public class BaseItemServiceBase {
         baseItemTypes.add(bulldozer);
     }
 
-    protected void setupFactory(List<BaseItemType> baseItemTypes) {
+    public static void setupFactory(List<BaseItemType> baseItemTypes) {
         BaseItemType factory = new BaseItemType();
         factory.setHealth(30).setId(FACTORY_ITEM_TYPE_ID);
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(5).setSpeed(20.0));
@@ -128,7 +132,7 @@ public class BaseItemServiceBase {
         baseItemTypes.add(factory);
     }
 
-    protected void setupAttacker(List<BaseItemType> baseItemTypes) {
+    public static void setupAttacker(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(20).setId(ATTACKER_ITEM_TYPE_ID);
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(3).setSpeed(20.0));

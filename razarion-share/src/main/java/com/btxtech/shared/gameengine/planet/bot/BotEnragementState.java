@@ -69,7 +69,6 @@ public class BotEnragementState {
         return botItemContainer.getAllIdleAttackers();
     }
 
-    @Deprecated
     public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         botItemContainer.onSyncBaseItemCreated(syncBaseItem, createdBy);
     }

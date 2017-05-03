@@ -168,7 +168,10 @@ public class GameLogicService {
     public void onHouseSpaceExceededExceptionBuilder(SyncBaseItem syncBaseItem) {
     }
 
-    public void onBuildingSyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
+    public void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        if (syncBaseItem.getBase().getCharacter().isBot()) {
+            botServiceInstance.get().onBotSyncBaseItemCreated(syncBaseItem, createdBy);
+        }
     }
 
     public void onFactoryLevelLimitation4ItemTypeExceeded() {
@@ -180,8 +183,12 @@ public class GameLogicService {
     public void onFactoryNoMoney() {
     }
 
-    public void onFactorySyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
-        questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
+    public void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        if (syncBaseItem.getBase().getCharacter().isBot()) {
+            botServiceInstance.get().onBotSyncBaseItemCreated(syncBaseItem, createdBy);
+        } else {
+            questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
+        }
     }
 
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {

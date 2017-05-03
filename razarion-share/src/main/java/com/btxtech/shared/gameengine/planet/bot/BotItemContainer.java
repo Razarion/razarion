@@ -69,7 +69,6 @@ public class BotItemContainer {
     private BotService botService;
     @Inject
     private Instance<BotSyncBaseItem> baseItemInstance;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     private final HashMap<SyncBaseItem, BotSyncBaseItem> botItems = new HashMap<>();
@@ -260,7 +259,6 @@ public class BotItemContainer {
         }
     }
 
-    @Deprecated
     public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         BotSyncBaseItem createdByBotSyncBaseItem = null;
         if (createdBy != null) {

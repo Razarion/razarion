@@ -34,8 +34,9 @@ public class GroundSkeletonConfig {
         return id;
     }
 
-    public void setId(int id) {
+    public GroundSkeletonConfig setId(int id) {
         this.id = id;
+        return this;
     }
 
     public double[][] getHeights() {
@@ -46,104 +47,117 @@ public class GroundSkeletonConfig {
         return heights[CollectionUtils.getCorrectedIndex(x, heightXCount)][CollectionUtils.getCorrectedIndexInvert(y, heightYCount)];
     }
 
-    public void setHeights(double[][] heights) {
+    public GroundSkeletonConfig setHeights(double[][] heights) {
         this.heights = heights;
+        return this;
     }
 
     public int getHeightXCount() {
         return heightXCount;
     }
 
-    public void setHeightXCount(int heightXCount) {
+    public GroundSkeletonConfig setHeightXCount(int heightXCount) {
         this.heightXCount = heightXCount;
+        return this;
     }
 
     public int getHeightYCount() {
         return heightYCount;
     }
 
-    public void setHeightYCount(int heightYCount) {
+    public GroundSkeletonConfig setHeightYCount(int heightYCount) {
         this.heightYCount = heightYCount;
+        return this;
     }
 
     public double[][] getSplattings() {
         return splattings;
     }
 
-    public void setSplattings(double[][] splattings) {
+    public GroundSkeletonConfig setSplattings(double[][] splattings) {
         this.splattings = splattings;
+        return this;
     }
 
     public int getSplattingXCount() {
         return splattingXCount;
     }
 
-    public void setSplattingXCount(int splattingXCount) {
+    public GroundSkeletonConfig setSplattingXCount(int splattingXCount) {
         this.splattingXCount = splattingXCount;
+        return this;
     }
 
     public int getSplattingYCount() {
         return splattingYCount;
     }
 
-    public void setSplattingYCount(int splattingYCount) {
+    public GroundSkeletonConfig setSplattingYCount(int splattingYCount) {
         this.splattingYCount = splattingYCount;
+        return this;
     }
 
     public double getTopBmDepth() {
         return topBmDepth;
     }
 
-    public void setTopBmDepth(double topBmDepth) {
+    public GroundSkeletonConfig setTopBmDepth(double topBmDepth) {
         this.topBmDepth = topBmDepth;
+        return this;
     }
 
     public double getBottomBmDepth() {
         return bottomBmDepth;
     }
 
-    public void setBottomBmDepth(double bottomBmDepth) {
+    public GroundSkeletonConfig setBottomBmDepth(double bottomBmDepth) {
         this.bottomBmDepth = bottomBmDepth;
+        return this;
     }
 
     public LightConfig getLightConfig() {
         return lightConfig;
     }
 
-    public void setLightConfig(LightConfig lightConfig) {
+    public GroundSkeletonConfig setLightConfig(LightConfig lightConfig) {
         this.lightConfig = lightConfig;
+        return this;
     }
 
     public Integer getTopTextureId() {
         return topTextureId;
     }
 
-    public void setTopTextureId(Integer topTextureId) {
+    public GroundSkeletonConfig setTopTextureId(Integer topTextureId) {
         this.topTextureId = topTextureId;
+        return this;
     }
 
     public Integer getTopBmId() {
         return topBmId;
     }
 
-    public void setTopBmId(Integer topBmId) {
+    public GroundSkeletonConfig setTopBmId(Integer topBmId) {
         this.topBmId = topBmId;
+        return this;
     }
 
     public double getTopBmScale() {
         return topBmScale;
     }
 
-    public void setTopBmScale(double topBmScale) {
+    public GroundSkeletonConfig setTopBmScale(double topBmScale) {
         this.topBmScale = topBmScale;
+        return this;
     }
 
     public Integer getSplattingId() {
         return splattingId;
     }
 
-    public void setSplattingId(Integer splattingId) {
+    public GroundSkeletonConfig setSplattingId(Integer splattingId) {
         this.splattingId = splattingId;
+        return this;
     }
 
     public Integer getBottomTextureId() {
@@ -154,8 +168,9 @@ public class GroundSkeletonConfig {
         return splattingScale;
     }
 
-    public void setSplattingScale(double splattingScale) {
+    public GroundSkeletonConfig setSplattingScale(double splattingScale) {
         this.splattingScale = splattingScale;
+        return this;
     }
 
     public void setBottomTextureId(Integer bottomTextureId) {
@@ -166,16 +181,18 @@ public class GroundSkeletonConfig {
         return bottomTextureScale;
     }
 
-    public void setBottomTextureScale(double bottomTextureScale) {
+    public GroundSkeletonConfig setBottomTextureScale(double bottomTextureScale) {
         this.bottomTextureScale = bottomTextureScale;
+        return this;
     }
 
     public Integer getBottomBmId() {
         return bottomBmId;
     }
 
-    public void setBottomBmId(Integer bottomBmId) {
+    public GroundSkeletonConfig setBottomBmId(Integer bottomBmId) {
         this.bottomBmId = bottomBmId;
+        return this;
     }
 
     public double getBottomBmScale() {
@@ -190,7 +207,8 @@ public class GroundSkeletonConfig {
         return topTextureScale;
     }
 
-    public void setTopTextureScale(double topTextureScale) {
+    public GroundSkeletonConfig setTopTextureScale(double topTextureScale) {
         this.topTextureScale = topTextureScale;
+        return this;
     }
 }

@@ -170,19 +170,19 @@ public class BaseItemService {
     }
 
 
-    public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
         syncBaseItem.setSpawnProgress(1.0);
         syncBaseItem.setBuildup(1.0);
-        gameLogicService.onFactorySyncItem(syncBaseItem, toBeBuilt);
+        gameLogicService.onFactorySyncItem(syncBaseItem, createdBy);
         return syncBaseItem;
     }
 
-    public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
 
         syncBaseItem.setSpawnProgress(1.0);
-        gameLogicService.onBuildingSyncItem(syncBaseItem, toBeBuilt);
+        gameLogicService.onBuildingSyncItem(syncBaseItem, createdBy);
 
         return syncBaseItem;
     }

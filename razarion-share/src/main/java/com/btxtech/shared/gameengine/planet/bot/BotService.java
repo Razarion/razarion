@@ -121,4 +121,15 @@ public class BotService {
         }
         throw new IllegalArgumentException("No bot runner for playerBase: " + playerBase);
     }
+
+    public void onBotSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        synchronized (botRunners) {
+            for (BotRunner botRunner : botRunners) {
+                if (botRunner.onSyncBaseItemCreated(syncBaseItem, createdBy)) {
+                    return;
+                }
+            }
+        }
+    }
+
 }

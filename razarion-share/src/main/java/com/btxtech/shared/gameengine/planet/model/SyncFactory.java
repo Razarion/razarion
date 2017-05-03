@@ -92,7 +92,7 @@ public class SyncFactory extends SyncBaseAbility {
                     gameLogicService.onFactoryHouseSpaceExceeded();
                     return true;
                 }
-                SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, getSyncBaseItem().getSyncPhysicalArea().getPosition2d(), (PlayerBaseFull) getSyncBaseItem().getBase());
+                SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, getSyncBaseItem().getSyncPhysicalArea().getPosition2d(), (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
                 stop();
                 commandService.move(createItem, rallyPoint);
             }

@@ -154,11 +154,14 @@ public class BotRunner {
         }
     }
 
-    @Deprecated
-    public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+    public boolean onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         if (botEnragementState != null) {
-            botEnragementState.onSyncBaseItemCreated(syncBaseItem, createdBy);
+            if(base != null && base.equals(syncBaseItem.getBase())) {
+                botEnragementState.onSyncBaseItemCreated(syncBaseItem, createdBy);
+                return true;
+            }
         }
+        return false;
     }
 
     public void executeCommand(AbstractBotCommandConfig botCommandConfig) {
@@ -187,7 +190,7 @@ public class BotRunner {
         killBotThread();
         BotTicker botTicker = new BotTicker();
         botTicker.run();
-        botTickerFuture = simpleExecutorService.scheduleAtFixedRate(botConfig.getActionDelay(), true, botTicker, SimpleExecutorService.Type.UNSPECIFIED);
+        botTickerFuture = simpleExecutorService.scheduleAtFixedRate(botConfig.getActionDelay(), true, botTicker, SimpleExecutorService.Type.BOT);
     }
 
     private void runBotTimer() {
