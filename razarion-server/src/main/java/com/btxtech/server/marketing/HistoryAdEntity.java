@@ -30,8 +30,6 @@ public class HistoryAdEntity {
     private long adId;
     private Date dateStart;
     private Date dateStop;
-    private Date facebookDateStart; // May the time range of the insight query. Wrong data from facebook.
-    private Date facebookDateStop; // May the time range of the insight query. Wrong data from facebook
     private int clicks;
     private int impressions;
     private double spent;
@@ -45,6 +43,9 @@ public class HistoryAdEntity {
     )
     private List<Interest> interests;
     private String urlTagParam;
+    private Date scheduleTimeStart;
+    private Date scheduleTimeEnd;
+    private boolean lifeTime;
 
     public void fill(CurrentAdEntity currentAdEntity, AdSetInsight adSetInsight) {
         campaignId = currentAdEntity.getCampaignId();
@@ -59,12 +60,13 @@ public class HistoryAdEntity {
         for (Interest currentInterest : currentAdEntity.getInterests()) {
             interests.add(new Interest(currentInterest));
         }
-        facebookDateStart = adSetInsight.getFacebookDateStart();
-        facebookDateStop = adSetInsight.getFacebookDateStop();
         clicks = adSetInsight.getClicks();
         impressions = adSetInsight.getImpressions();
         spent = adSetInsight.getSpent();
         urlTagParam = currentAdEntity.getUrlTagParam();
+        scheduleTimeStart = currentAdEntity.getScheduleTimeStart();
+        scheduleTimeEnd = currentAdEntity.getScheduleTimeEnd();
+        lifeTime = currentAdEntity.isLifeTime();
     }
 
     public CampaignJson createCampaignJson() {

@@ -2,7 +2,8 @@ package com.btxtech.server.marketing;
 
 import com.btxtech.server.marketing.facebook.AdInterest;
 import com.btxtech.server.marketing.facebook.AdSetInsight;
-import com.btxtech.server.marketing.facebook.CreationData;
+import com.btxtech.server.marketing.facebook.CreationInput;
+import com.btxtech.server.marketing.facebook.CreationResult;
 import com.btxtech.server.marketing.facebook.FbAdImage;
 import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.marketing.restdatatypes.CampaignJson;
@@ -49,21 +50,16 @@ public class MarketingService {
 
     @Transactional
     @SecurityCheck
-    public CreationData startCampaign(String title, String body, FbAdImage fbAdImage, List<Interest> interests) {
-        String urlTagParam = ServerUtil.generateSimpleUuid();
-        CreationData creationData = fbFacade.createAd(title, body, fbAdImage, interests, urlTagParam);
+    public CreationResult startCampaign(CreationInput creationInput) {
+        CreationResult creationResult = fbFacade.createAd(creationInput);
 
         CurrentAdEntity currentAdEntity = new CurrentAdEntity();
         currentAdEntity.setState(CurrentAdEntity.State.RUNNING);
-        currentAdEntity.setIds(creationData);
+        currentAdEntity.setIds(creationResult);
         currentAdEntity.setDateStart(new Date());
-        currentAdEntity.setTitle(title);
-        currentAdEntity.setBody(body);
-        currentAdEntity.setImageHash(fbAdImage.getHash());
-        currentAdEntity.setInterests(interests);
-        currentAdEntity.setUrlTagParam(urlTagParam);
+        currentAdEntity.setCreationInput(creationInput);
         entityManager.persist(currentAdEntity);
-        return creationData;
+        return creationResult;
     }
 
     @Transactional

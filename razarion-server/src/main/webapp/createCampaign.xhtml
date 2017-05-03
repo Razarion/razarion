@@ -98,6 +98,16 @@
                 <br/>
                 Body: <h:inputText value="#{createCampaignBean.body}"/>
                 <br/>
+                Lifetime: <h:selectBooleanCheckbox value="#{createCampaignBean.lifeTime}"/>
+                <br/>
+                Schedule Start Time:<h:inputText value="#{createCampaignBean.scheduleStartTime}" size="20">
+                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+            </h:inputText>
+                <br/>
+                Schedule End Time:<h:inputText value="#{createCampaignBean.scheduleEndTime}" size="20">
+                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+            </h:inputText>
+                <br/>
                 <h:graphicImage value="#{createCampaignBean.selectedImage.url128}"/>
                 <h:dataTable value="#{createCampaignBean.selectedAdInterest}" var="i">
                     <h:column>

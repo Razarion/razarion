@@ -4,7 +4,7 @@ package com.btxtech.server.marketing.facebook;
  * Created by Beat
  * 21.03.2017.
  */
-public class CreationData {
+public class CreationResult {
     private long campaignId;
     private long adSetId;
     private long adId;

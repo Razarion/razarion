@@ -61,19 +61,19 @@ public class FbFacade {
         return new AdAccount(filePropertiesService.getFacebookMarketingAccount(), apiContext);
     }
 
-    public CreationData createAd(String title, String body, FbAdImage fbAdImage, List<Interest> interests, String urlTagParam) {
+    public CreationResult createAd(CreationInput creationInput) {
         try {
             APIContext context = getContext();
             AdAccount adAccount = getAdAccount(context);
-            CreationData creationData = new CreationData();
+            CreationResult creationResult = new CreationResult();
             long campaignId = createCampaign(adAccount);
-            creationData.setCampaignId(campaignId);
-            long adSetId = createAddSet(context, adAccount, campaignId, interests);
-            creationData.setAdSetId(adSetId);
-            long adId = createAdd(adAccount, adSetId, title, body, fbAdImage, urlTagParam);
-            creationData.setAdId(adId);
+            creationResult.setCampaignId(campaignId);
+            long adSetId = createAddSet(context, adAccount, campaignId, creationInput);
+            creationResult.setAdSetId(adSetId);
+            long adId = createAdd(adAccount, adSetId, creationInput);
+            creationResult.setAdId(adId);
             setTrackingTag(adId, RestUrl.fbClickTrackingReceiver());
-            return creationData;
+            return creationResult;
         } catch (APIException e) {
             throw new RuntimeException(e);
         }
@@ -97,9 +97,9 @@ public class FbFacade {
         }
     }
 
-    private long createAddSet(APIContext context, AdAccount account, long campaignId, Collection<Interest> interests) throws APIException {
+    private long createAddSet(APIContext context, AdAccount account, long campaignId, CreationInput creationInput) throws APIException {
         List<IDName> fbInterests = new ArrayList<>();
-        for (Interest interest : interests) {
+        for (Interest interest : creationInput.getInterests()) {
             fbInterests.add(new IDName().setFieldId(interest.getFbId()).setFieldName(interest.getName()));
         }
 
@@ -112,19 +112,27 @@ public class FbFacade {
                 .setFieldLocales(Collections.singletonList(5L))
                 .setFieldFlexibleSpec(Collections.singletonList(new FlexibleTargeting().setFieldInterests(fbInterests)));
         Campaign campaign = new Campaign(campaignId, context).get().execute();
-        AdSet adSet = account.createAdSet()
+        AdAccount.APIRequestCreateAdSet apiRequestCreateAdSet = account.createAdSet()
                 .setName("Automated Ad AdSet: " + DateUtil.formatDateTime(new Date()))
                 .setCampaignId(campaign.getFieldId())
                 .setStatus(AdSet.EnumStatus.VALUE_ACTIVE)
                 .setBillingEvent(AdSet.EnumBillingEvent.VALUE_IMPRESSIONS)
                 .setIsAutobid(true)
-                .setDailyBudget(200L)
+                // .setDailyBudget(200L)
                 .setOptimizationGoal(AdSet.EnumOptimizationGoal.VALUE_APP_INSTALLS)
                 .setPromotedObject("{application_id: " + filePropertiesService.getFacebookAppId() + ", object_store_url: \"https://apps.facebook.com/razarion\"}")
                 .setTargeting(targeting)
-                .setRedownload(true)
-                // Does not work .setAdsetSchedule(Collections.singletonList(new DayPart().setFieldDays(Arrays.asList(0L, 1L, 2L, 3L, 4L, 5L, 6L)).setFieldStartMinute(14L * 60).setFieldEndMinute(23L * 60 + 59)))
-                .execute();
+                .setRedownload(true);
+        if (creationInput.isLifeTime()) {
+            apiRequestCreateAdSet.setLifetimeBudget(200L);
+            apiRequestCreateAdSet.setStartTime(DateUtil.toFacebookTimeString(creationInput.getScheduleStartTime()));
+            apiRequestCreateAdSet.setEndTime(DateUtil.toFacebookTimeString(creationInput.getScheduleEndTime()));
+        } else {
+            apiRequestCreateAdSet.setDailyBudget(200L);
+        }
+
+
+        AdSet adSet = apiRequestCreateAdSet.execute();
         return Long.parseLong(adSet.getId());
     }
 
@@ -148,17 +156,17 @@ public class FbFacade {
         return URL_PARAM_TRACK_KEY + "=" + urlTagParam;
     }
 
-    private long createAdd(AdAccount account, long adSetId, String title, String body, FbAdImage fbAdImage, String urlTagParam) throws APIException {
+    private long createAdd(AdAccount account, long adSetId, CreationInput creationInput) throws APIException {
         AdCreative creative = account.createAdCreative()
                 .setObjectType("SHARE")
-                .setTitle(title)
-                .setBody(body)
-                .setUrlTags(setupTagParam(urlTagParam))
+                .setTitle(creationInput.getTitle())
+                .setBody(creationInput.getBody())
+                .setUrlTags(setupTagParam(creationInput.getUrlTagParam()))
                 .setObjectStorySpec(new AdCreativeObjectStorySpec().setFieldPageId(filePropertiesService.getFacebookAppPageId())
                         .setFieldLinkData(new AdCreativeLinkData()
                                 .setFieldLink("https://apps.facebook.com/razarion/")
-                                .setFieldMessage(body)
-                                .setFieldImageHash(fbAdImage.getHash())
+                                .setFieldMessage(creationInput.getBody())
+                                .setFieldImageHash(creationInput.getFbAdImage().getHash())
                                 .setFieldCallToAction(new AdCreativeLinkDataCallToAction()
                                         .setFieldType(AdCreativeLinkDataCallToAction.EnumType.VALUE_PLAY_GAME)
                                         .setFieldValue(new AdCreativeLinkDataCallToActionValue().setFieldApplication(filePropertiesService.getFacebookAppId())

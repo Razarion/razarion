@@ -1,17 +1,11 @@
 package com.btxtech.server.web.marketing;
 
-import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.marketing.MarketingService;
-import com.btxtech.server.marketing.facebook.AdInterest;
-import com.btxtech.server.marketing.facebook.CreationData;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Created by Beat

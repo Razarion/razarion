@@ -15,6 +15,7 @@ public class DateUtil {
     public static final String DATE_TIME_FORMAT_STRING_MILIS = "dd.MM.yyyy HH:mm:ss.SSS";
     public static final String TIME_FORMAT_STRING = "HH:mm:ss";
     public static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
+    public static final String FACEBOOK_DATE_TIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ssX";
 
     /**
      * Strip of: minutes, seconds and milli seconds
@@ -157,5 +158,10 @@ public class DateUtil {
         long diffMs = end - start;
         diffMs /= 1000;
         return Long.toString(diffMs);
+    }
+
+    public static String toFacebookTimeString(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FACEBOOK_DATE_TIME_FORMAT_STRING);
+        return simpleDateFormat.format(date);
     }
 }

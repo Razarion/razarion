@@ -3,8 +3,11 @@ package com.btxtech.server.web.marketing;
 import com.btxtech.server.marketing.DetailedAdInterest;
 import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.marketing.MarketingService;
+import com.btxtech.server.marketing.facebook.CreationInput;
 import com.btxtech.server.marketing.facebook.FbAdImage;
+import com.btxtech.server.util.ServerUtil;
 import com.btxtech.shared.system.ExceptionHandler;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
@@ -13,6 +16,7 @@ import javax.inject.Named;
 import javax.servlet.http.Part;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,15 +30,13 @@ public class CreateCampaignBean implements Serializable {
     private MarketingService marketingService;
     @Inject
     transient private ExceptionHandler exceptionHandler;
-    private String title;
-    private String body;
+    private CreationInput creationInput = new CreationInput();
     private List<FbAdImage> fbAdImages;
     private List<DetailedAdInterest> selectedAdInterest = new ArrayList<>();
     private List<DetailedAdInterest> availableAdInterest = new ArrayList<>();
     private String interestQuery;
     private String campaignCreationError;
     private String imageGalleryError;
-    private FbAdImage selectedImage;
     private Part uploadImageFile;
 
     @PostConstruct
@@ -47,19 +49,43 @@ public class CreateCampaignBean implements Serializable {
     }
 
     public String getTitle() {
-        return title;
+        return creationInput.getTitle();
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        creationInput.setTitle(title);
     }
 
     public String getBody() {
-        return body;
+        return creationInput.getBody();
     }
 
     public void setBody(String body) {
-        this.body = body;
+        creationInput.setBody(body);
+    }
+
+    public boolean isLifeTime() {
+        return creationInput.isLifeTime();
+    }
+
+    public void setLifeTime(boolean lifeTime) {
+        creationInput.setLifeTime(lifeTime);
+    }
+
+    public Date getScheduleStartTime() {
+        return creationInput.getScheduleStartTime();
+    }
+
+    public void setScheduleStartTime(Date scheduleStartTime) {
+        creationInput.setScheduleStartTime(scheduleStartTime);
+    }
+
+    public Date getScheduleEndTime() {
+        return creationInput.getScheduleEndTime();
+    }
+
+    public void setScheduleEndTime(Date scheduleEndTime) {
+        creationInput.setScheduleEndTime(scheduleEndTime);
     }
 
     public List<DetailedAdInterest> getSelectedAdInterest() {
@@ -120,15 +146,25 @@ public class CreateCampaignBean implements Serializable {
 
 
     public Object createCampaign() {
-        if (title == null || title.isEmpty()) {
+        if (creationInput.isLifeTime()) {
+            if (creationInput.getScheduleStartTime() == null) {
+                campaignCreationError = "If budget type is lifetime, Schedule Start Time must be set";
+                return null;
+            }
+            if (creationInput.getScheduleEndTime() == null) {
+                campaignCreationError = "If budget type is lifetime, Schedule End Time must be set";
+                return null;
+            }
+        }
+        if (StringUtils.isEmpty(creationInput.getTitle())) {
             campaignCreationError = "Title not defined";
             return null;
         }
-        if (body == null || body.isEmpty()) {
+        if (StringUtils.isEmpty(creationInput.getBody())) {
             campaignCreationError = "Body not defined";
             return null;
         }
-        if (selectedImage == null) {
+        if (creationInput.getFbAdImage() == null) {
             campaignCreationError = "No Image selected";
             return null;
         }
@@ -145,7 +181,9 @@ public class CreateCampaignBean implements Serializable {
                 interest.setFbId(selected.getAdInterest().getId());
                 interests.add(interest);
             }
-            marketingService.startCampaign(title, body, selectedImage, interests);
+            creationInput.setInterests(interests);
+            creationInput.setUrlTagParam(ServerUtil.generateSimpleUuid());
+            marketingService.startCampaign(creationInput);
             return "marketing";
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -163,15 +201,15 @@ public class CreateCampaignBean implements Serializable {
     }
 
     public void selectImage(FbAdImage image) {
-        selectedImage = image;
+        creationInput.setFbAdImage(image);
     }
 
     public void deleteImage(FbAdImage image) {
         try {
             marketingService.deleteFbAdImage(image);
             fbAdImages = marketingService.queryFbAdImages();
-            if (selectedImage == image) {
-                selectedImage = null;
+            if (creationInput.getFbAdImage() == image) {
+                creationInput.setFbAdImage(null);
             }
             imageGalleryError = null;
         } catch (Throwable e) {
@@ -181,7 +219,7 @@ public class CreateCampaignBean implements Serializable {
     }
 
     public FbAdImage getSelectedImage() {
-        return selectedImage;
+        return creationInput.getFbAdImage();
     }
 
     public void setUploadImageFile(Part uploadImageFile) {

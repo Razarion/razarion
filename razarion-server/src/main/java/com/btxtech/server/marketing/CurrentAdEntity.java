@@ -1,6 +1,7 @@
 package com.btxtech.server.marketing;
 
-import com.btxtech.server.marketing.facebook.CreationData;
+import com.btxtech.server.marketing.facebook.CreationInput;
+import com.btxtech.server.marketing.facebook.CreationResult;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -34,6 +35,8 @@ public class CurrentAdEntity {
     private State state;
     private Date dateStart;
     private Date dateStop;
+    private Date scheduleTimeStart;
+    private Date scheduleTimeEnd;
     private long campaignId;
     private long adSetId;
     private long adId;
@@ -47,6 +50,7 @@ public class CurrentAdEntity {
     )
     private List<Interest> interests;
     private String urlTagParam;
+    private boolean lifeTime;
 
     public State getState() {
         return state;
@@ -84,55 +88,58 @@ public class CurrentAdEntity {
         return adId;
     }
 
-    public void setIds(CreationData creationData) {
-        campaignId = creationData.getCampaignId();
-        adSetId = creationData.getAdSetId();
-        adId = creationData.getAdId();
+    public void setIds(CreationResult creationResult) {
+        campaignId = creationResult.getCampaignId();
+        adSetId = creationResult.getAdSetId();
+        adId = creationResult.getAdId();
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public String getBody() {
         return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
     }
 
     public String getImageHash() {
         return imageHash;
     }
 
-    public void setImageHash(String imageHash) {
-        this.imageHash = imageHash;
-    }
-
     public List<Interest> getInterests() {
         return interests;
-    }
-
-    public void setInterests(List<Interest> interests) {
-        if (this.interests != null) {
-            this.interests.clear();
-        } else {
-            this.interests = new ArrayList<>();
-        }
-        this.interests.addAll(interests);
     }
 
     public String getUrlTagParam() {
         return urlTagParam;
     }
 
-    public void setUrlTagParam(String urlTagParam) {
-        this.urlTagParam = urlTagParam;
+    public Date getScheduleTimeStart() {
+        return scheduleTimeStart;
+    }
+
+    public Date getScheduleTimeEnd() {
+        return scheduleTimeEnd;
+    }
+
+    public boolean isLifeTime() {
+        return lifeTime;
+    }
+
+    public void setCreationInput(CreationInput creationInput) {
+        title = creationInput.getTitle();
+        body = creationInput.getBody();
+        urlTagParam = creationInput.getUrlTagParam();
+        if (interests != null) {
+            interests.clear();
+        } else {
+            interests = new ArrayList<>();
+        }
+        interests.addAll(creationInput.getInterests());
+        imageHash = creationInput.getFbAdImage().getHash();
+        scheduleTimeStart = creationInput.getScheduleStartTime();
+        scheduleTimeEnd = creationInput.getScheduleEndTime();
+        lifeTime = creationInput.isLifeTime();
     }
 
     @Override
