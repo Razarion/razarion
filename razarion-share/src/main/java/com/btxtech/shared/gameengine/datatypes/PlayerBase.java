@@ -70,6 +70,9 @@ public class PlayerBase {
     }
 
     public boolean withdrawalResource(double amount) {
+        if(character.isBot()) {
+            return true;
+        }
         if (amount > resources) {
             return false;
         }

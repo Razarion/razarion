@@ -7,19 +7,16 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.exception.PathCanNotBeFoundException;
-import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
-import com.btxtech.shared.gameengine.datatypes.exception.PositionTakenException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,15 +25,13 @@ import java.util.logging.Logger;
  * Created by Beat
  * 25.07.2016.
  */
-@ApplicationScoped
+@Singleton
 public class GameLogicService {
     private Logger logger = Logger.getLogger(GameLogicService.class.getName());
     @Inject
-    private PlanetService planetService;
+    private Instance<QuestService> questServiceInstance;
     @Inject
-    private QuestService questService;
-    @Inject
-    private BotService botService;
+    private Instance<BotService> botServiceInstance;
     private Optional<GameLogicListener> gameLogicListener = Optional.empty();
 
     public void setGameLogicListener(GameLogicListener gameLogicListener) {
@@ -63,7 +58,7 @@ public class GameLogicService {
     }
 
     public void onBaseKilled(PlayerBase playerBase, SyncBaseItem actor) {
-        questService.onBaseKilled(actor);
+        questServiceInstance.get().onBaseKilled(actor);
         gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
     }
 
@@ -93,7 +88,7 @@ public class GameLogicService {
     }
 
     public void onBuildup(SyncBaseItem syncBaseItem) {
-        questService.onSyncItemBuilt(syncBaseItem);
+        questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
     }
 
     public void onAttacked(SyncBaseItem target, SyncBaseItem actor, double damage) {
@@ -118,14 +113,14 @@ public class GameLogicService {
     }
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
-        questService.onSyncItemBuilt(syncBaseItem);
+        questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
     }
 
     public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
-        questService.onSyncItemKilled(target, actor);
+        questServiceInstance.get().onSyncItemKilled(target, actor);
         gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemKilledMaster(target, actor));
         if (target.getBase().getCharacter().isBot()) {
-            botService.enrageOnKill(target, actor.getBase());
+            botServiceInstance.get().enrageOnKill(target, actor.getBase());
         }
     }
 
@@ -138,7 +133,7 @@ public class GameLogicService {
     }
 
     public void onResourcesHarvested(SyncBaseItem syncBaseItem, double harvestedResources, SyncResourceItem resource) {
-        questService.onHarvested(syncBaseItem, harvestedResources);
+        questServiceInstance.get().onHarvested(syncBaseItem, harvestedResources);
     }
 
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
@@ -156,7 +151,7 @@ public class GameLogicService {
     public void onBoxPicket(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
         gameLogicListener.ifPresent(listener -> listener.onBoxPicked(picker.getBase().getHumanPlayerId(), boxContent));
         gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box));
-        questService.onSyncBoxItemPicked(picker);
+        questServiceInstance.get().onSyncBoxItemPicked(picker);
     }
 
 
@@ -186,7 +181,7 @@ public class GameLogicService {
     }
 
     public void onFactorySyncItem(SyncBaseItem syncBaseItem, BaseItemType toBeBuilt) {
-        questService.onSyncItemBuilt(syncBaseItem);
+        questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
     }
 
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
