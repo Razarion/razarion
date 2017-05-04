@@ -33,12 +33,15 @@ public class FacebookAppStart {
     private ExceptionHandler exceptionHandler;
     @Inject
     private UserService userService;
+    @Inject
+    private PageTrackerBean pageTrackerBean;
     private String fbUserId;
 
-    public String check() {
+    public String check(String page) {
         String[] values = httpServletRequest.getParameterMap().get(SIGNED_REQUEST_KEY);
         if (values == null || values.length == 0) {
             logger.warning("No signed_request for FacebookAppStart");
+            pageTrackerBean.trackPage(page);
             return GamePageBean.GAME_PAGE;
         }
 
@@ -47,6 +50,7 @@ public class FacebookAppStart {
             if (facebookSignedRequest.hasUserId()) {
                 // Is authorized by facebook
                 userService.handleFacebookUserLogin(facebookSignedRequest.getUserId());
+                pageTrackerBean.trackPage(page);
                 return GamePageBean.GAME_PAGE;
             } else {
                 // Is NOT authorized by facebook
@@ -54,6 +58,7 @@ public class FacebookAppStart {
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
+            pageTrackerBean.trackPage(page);
             return GamePageBean.GAME_PAGE;
         }
     }

@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core"
 >
+
+<f:metadata>
+    <f:event type="preRenderComponent" listener="#{pageTrackerBean.trackPage(facesContext.viewRoot.viewId)}"/>
+</f:metadata>
+
 <h:head>
     <meta charset="UTF-8"/>
     <link type="text/css" rel="stylesheet" href="razarion.css"/>

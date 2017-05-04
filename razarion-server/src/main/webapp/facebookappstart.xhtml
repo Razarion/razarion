@@ -13,8 +13,8 @@
       xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 <f:metadata>
-    <!--<f:event type="preRenderView" listener="#{facebookAppStart.init()}"/>-->
-    <f:viewAction action="#{facebookAppStart.check}"/>
+    <f:event type="preRenderComponent" listener="#{pageTrackerBean.trackPage(facesContext.viewRoot.viewId)}"/>
+    <f:viewAction action="#{facebookAppStart.check(facesContext.viewRoot.viewId)}"/>
 </f:metadata>
 
 <h:head>
