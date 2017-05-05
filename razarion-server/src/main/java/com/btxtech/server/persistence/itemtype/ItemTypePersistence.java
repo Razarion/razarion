@@ -52,6 +52,11 @@ public class ItemTypePersistence {
     }
 
     @Transactional
+    public BaseItemTypeEntity readBaseItemTypeEntity(int id) {
+        return entityManager.find(BaseItemTypeEntity.class, id);
+    }
+
+    @Transactional
     @SecurityCheck
     public void updateBaseItemType(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, baseItemType.getId());

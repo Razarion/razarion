@@ -42,11 +42,15 @@ public class GameEngineService implements GameLogicListener {
     private ClientGameConnectionService clientGameConnectionService;
 
     public void start() {
-        GameEngineConfig gameEngineConfig = gameEngineConfigPersistence.load4Server();
-        gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
-        planetService.initialise(gameEngineConfig.getPlanetConfig());
-        gameLogicService.setGameLogicListener(this);
-        planetService.start();
+        try {
+            GameEngineConfig gameEngineConfig = gameEngineConfigPersistence.load4Server();
+            gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
+            planetService.initialise(gameEngineConfig.getPlanetConfig());
+            gameLogicService.setGameLogicListener(this);
+            planetService.start();
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
     }
 
     public void stop() {

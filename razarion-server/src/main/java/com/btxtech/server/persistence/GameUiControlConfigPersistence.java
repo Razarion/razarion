@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.gameengine.GameEngineService;
+import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -73,16 +74,14 @@ public class GameUiControlConfigPersistence {
     private GameEngineConfigPersistence gameEngineConfigPersistence;
     @Inject
     private GameEngineService gameEngineService;
-
-    // TODO DB Migration
-    // TODO create GAME_UI_CONTROL_CONFIG with id 2, planet 2
-    // TODO create PLANET with id 2
+    @Inject
+    private LevelPersistence levelPersistence;
 
     @Transactional
     public GameUiControlConfig load(UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         GameEngineConfig gameEngineConfig = gameEngineConfigPersistence.load4Client();
 
-        int levelNumber = getLevelNumber(userContext.getLevelId());
+        int levelNumber = levelPersistence.read(userContext.getLevelId()).getId();
         // TODO move to DB
         GameUiControlConfig gameUiControlConfig;
         if (levelNumber >= GameEngineConfigPersistence.MULTI_PLAYER_PLANET_LEVEL_ID) {
@@ -187,15 +186,6 @@ public class GameUiControlConfigPersistence {
         audioConfig.setOnCommandSent(272529);
         audioConfig.setOnBaseLost(284040);
         return audioConfig;
-    }
-
-    private int getLevelNumber(int levelId) {
-        for (LevelConfig levelConfig : gameEngineConfigPersistence.setupLevelConfigs()) {
-            if (levelConfig.getLevelId() == levelId) {
-                return levelConfig.getNumber();
-            }
-        }
-        throw new IllegalArgumentException("No level for id: " + levelId);
     }
 
     // Move and tip  -----------------------------------------------------------------------------

@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -59,6 +60,8 @@ public class GameEngineConfigPersistence {
     private TerrainElementPersistence terrainElementPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
+    @Inject
+    private LevelPersistence levelPersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -85,7 +88,7 @@ public class GameEngineConfigPersistence {
         gameEngineConfig.setBaseItemTypes(finalizeBaseItemTypes(itemTypePersistence.readBaseItemTypes()));// TODO move to DB
         gameEngineConfig.setResourceItemTypes(finalizeResourceItemTypes(itemTypePersistence.readResourceItemTypes()));// TODO move to DB
         gameEngineConfig.setBoxItemTypes(finalizeBoxItemTypes(itemTypePersistence.readBoxItemTypes()));
-        gameEngineConfig.setLevelConfigs(setupLevelConfigs());  // TODO move to DB
+        gameEngineConfig.setLevelConfigs(levelPersistence.read());
         gameEngineConfig.setInventoryItems(setupInventoryItems()); // TODO move to DB
         return gameEngineConfig;
     }
@@ -245,35 +248,6 @@ public class GameEngineConfigPersistence {
         return new I18nString(localizedStrings);
     }
 
-    public List<LevelConfig> setupLevelConfigs() {
-        List<LevelConfig> levelConfigs = new ArrayList<>();
-        Map<Integer, Integer> level1Limitation = new HashMap<>();
-        level1Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        levelConfigs.add(new LevelConfig().setLevelId(FIRST_LEVEL_ID).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
-        Map<Integer, Integer> level2Limitation = new HashMap<>();
-        level2Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        level2Limitation.put(BASE_ITEM_TYPE_ATTACKER, 3);
-        levelConfigs.add(new LevelConfig().setLevelId(2).setNumber(2).setXp2LevelUp(13).setItemTypeLimitation(level2Limitation));
-        Map<Integer, Integer> level3Limitation = new HashMap<>();
-        level3Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        level3Limitation.put(BASE_ITEM_TYPE_ATTACKER, 3);
-        level3Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
-        level3Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
-        levelConfigs.add(new LevelConfig().setLevelId(3).setNumber(3).setXp2LevelUp(30).setItemTypeLimitation(level3Limitation));
-        Map<Integer, Integer> level4Limitation = new HashMap<>();
-        level4Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        level4Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
-        level4Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
-        level4Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
-        levelConfigs.add(new LevelConfig().setLevelId(4).setNumber(4).setXp2LevelUp(50).setItemTypeLimitation(level4Limitation));
-        Map<Integer, Integer> level5Limitation = new HashMap<>();
-        level5Limitation.put(BASE_ITEM_TYPE_BULLDOZER, 1);
-        level5Limitation.put(BASE_ITEM_TYPE_ATTACKER, 5);
-        level5Limitation.put(BASE_ITEM_TYPE_HARVESTER, 1);
-        level5Limitation.put(BASE_ITEM_TYPE_FACTORY, 1);
-        levelConfigs.add(new LevelConfig().setLevelId(5).setNumber(5).setXp2LevelUp(75).setItemTypeLimitation(level5Limitation));
-        return levelConfigs;
-    }
 
     public List<InventoryItem> setupInventoryItems() {
         List<InventoryItem> inventoryItems = new ArrayList<>();
