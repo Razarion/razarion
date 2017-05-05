@@ -75,6 +75,7 @@ public class UserService {
 
     @Transactional
     public void handleUnregisteredLogin() {
+        logger.warning("handleUnregisteredLogin: " + sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = createUnregisteredUserContext();
         loginUserContext(userContext);
     }
