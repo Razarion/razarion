@@ -58,17 +58,13 @@ public class ClientPerformanceTrackerService {
     private void sendToClient() {
         int sendCount = (int) (SEND_SERVER_INTERVAL / PerfmonService.DUMP_DELAY);
         List<PerfmonStatistic> perfmonStatistics = perfmonService.getPerfmonStatistics(sendCount);
-        if (perfmonStatistics.size() != 1) {
-            logger.severe("PerfmonService SEND_SERVER_INTERVAL perfmonStatistics.size() != 1: " + perfmonStatistics.size());
+        for (PerfmonStatistic perfmonStatistic : perfmonStatistics) {
+            providerCaller.call(response -> {
+            }, (message, throwable) -> {
+                logger.log(Level.SEVERE, "TrackerProvider.performanceTracker() failed: " + message, throwable);
+                return false;
+            }).performanceTracker(perfmonStatistic);
         }
-        if (perfmonStatistics.isEmpty()) {
-            return;
-        }
-        PerfmonStatistic perfmonStatistic = CollectionUtils.getFirst(perfmonStatistics);
-        providerCaller.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TrackerProvider.performanceTracker() failed: " + message, throwable);
-            return false;
-        }).performanceTracker(perfmonStatistic);
+
     }
 }

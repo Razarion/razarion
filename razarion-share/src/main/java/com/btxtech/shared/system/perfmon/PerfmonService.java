@@ -120,16 +120,19 @@ public class PerfmonService {
     }
 
     private Collection<StatisticEntry> analyse() {
-        MapCollection<PerfmonEnum, SampleEntry> orderedMap = new MapCollection<>();
+        MapCollection<PerfmonEnum, SampleEntry> groupedMap = new MapCollection<>();
         Collection<SampleEntry> tmpSampleEntries = sampleEntries;
         sampleEntries = new ArrayList<>();
         for (SampleEntry sampleEntry : tmpSampleEntries) {
-            orderedMap.put(sampleEntry.getPerfmonEnum(), sampleEntry);
+            groupedMap.put(sampleEntry.getPerfmonEnum(), sampleEntry);
         }
         Collection<StatisticEntry> statisticEntries = new ArrayList<>();
-        for (Collection<SampleEntry> samples : orderedMap.getMap().values()) {
-            StatisticEntry statisticEntry = new StatisticEntry(CollectionUtils.getFirst(samples).getPerfmonEnum());
-            for (SampleEntry sample : samples) {
+        for (Map.Entry<PerfmonEnum, Collection<SampleEntry>> entry : groupedMap.getMap().entrySet()) {
+            if(entry.getValue().size() < 2) {
+                continue;
+            }
+            StatisticEntry statisticEntry = new StatisticEntry(entry.getKey());
+            for (SampleEntry sample : entry.getValue()) {
                 statisticEntry.analyze(sample);
             }
             statisticEntry.finalizeStatistic();
