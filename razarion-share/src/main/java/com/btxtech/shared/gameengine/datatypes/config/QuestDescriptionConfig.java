@@ -5,11 +5,23 @@ package com.btxtech.shared.gameengine.datatypes.config;
  * 24.10.2016.
  */
 public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
+    private int id;
     private String title;
     private String description;
     private int xp;
+    private int money;
+    private int cristal;
     private String passedMessage;
-    private boolean waitButHidePassedDialog; // Shit solution
+    private boolean hidePassedDialog;
+
+    public int getId() {
+        return id;
+    }
+
+    public T setId(int id) {
+        this.id = id;
+        return (T) this;
+    }
 
     public String getTitle() {
         return title;
@@ -38,6 +50,24 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
         return (T) this;
     }
 
+    public int getMoney() {
+        return money;
+    }
+
+    public T setMoney(int money) {
+        this.money = money;
+        return (T) this;
+    }
+
+    public int getCristal() {
+        return cristal;
+    }
+
+    public T setCristal(int cristal) {
+        this.cristal = cristal;
+        return (T) this;
+    }
+
     public String getPassedMessage() {
         return passedMessage;
     }
@@ -47,12 +77,12 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
         return (T) this;
     }
 
-    public boolean isWaitButHidePassedDialog() {
-        return waitButHidePassedDialog;
+    public boolean isHidePassedDialog() {
+        return hidePassedDialog;
     }
 
-    public T setWaitButHidePassedDialog(boolean waitButHidePassedDialog) {
-        this.waitButHidePassedDialog = waitButHidePassedDialog;
+    public T setHidePassedDialog(boolean hidePassedDialog) {
+        this.hidePassedDialog = hidePassedDialog;
         return (T) this;
     }
 }

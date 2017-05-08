@@ -140,7 +140,7 @@ public class Scene implements TerrainScrollListener {
             completionCallbackCount++;
             modalDialogManager.setBaseLostCallback(this::onComplete);
         }
-        if (sceneConfig.getQuestConfig() != null && sceneConfig.getQuestConfig().isWaitButHidePassedDialog()) {
+        if (sceneConfig.getQuestConfig() != null && sceneConfig.getQuestConfig().isHidePassedDialog()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
         }
@@ -228,7 +228,7 @@ public class Scene implements TerrainScrollListener {
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
             questVisualizer.showSideBar(null);
-            if (sceneConfig.getQuestConfig().isWaitButHidePassedDialog()) {
+            if (sceneConfig.getQuestConfig().isHidePassedDialog()) {
                 onComplete();
             } else {
                 modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
@@ -240,7 +240,7 @@ public class Scene implements TerrainScrollListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             questVisualizer.showSideBar(null);
-            if (sceneConfig.getScrollUiQuest().isWaitButHidePassedDialog()) {
+            if (sceneConfig.getScrollUiQuest().isHidePassedDialog()) {
                 onComplete();
             } else {
                 modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());

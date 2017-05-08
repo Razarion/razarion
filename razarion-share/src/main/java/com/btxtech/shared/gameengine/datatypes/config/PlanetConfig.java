@@ -38,6 +38,7 @@ public class PlanetConfig {
     private List<BotConfig> botConfigs;
     private List<ResourceRegionConfig> resourceRegionConfigs;
     private List<SyncResourceItemInfo> syncResourceItemInfos;
+    private List<QuestConfig> questConfigs;
 
     public int getPlanetId() {
         return planetId;
@@ -206,5 +207,13 @@ public class PlanetConfig {
     public PlanetConfig setSyncResourceItemInfos(List<SyncResourceItemInfo> syncResourceItemInfos) {
         this.syncResourceItemInfos = syncResourceItemInfos;
         return this;
+    }
+
+    public List<QuestConfig> getQuestConfigs() {
+        return questConfigs;
+    }
+
+    public void setQuestConfigs(List<QuestConfig> questConfigs) {
+        this.questConfigs = questConfigs;
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
  * 08.07.2016.
  */
 @Singleton
-public class PlanetPersistenceService {
+public class PlanetPersistence {
     @Inject
     private TerrainElementPersistence terrainElementPersistence;
     @PersistenceContext

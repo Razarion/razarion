@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.PlanetPersistenceService;
+import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.rest.PlanetEditorProvider;
@@ -21,7 +21,7 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private PlanetPersistenceService persistenceService;
+    private PlanetPersistence persistenceService;
 
     @Override
     public void createTerrainObjectPositions(int planetId, List<TerrainObjectPosition> createdTerrainObjects) {
