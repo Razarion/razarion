@@ -2,7 +2,7 @@ package com.btxtech.persistence;
 
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.dto.GameUiControlConfig;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.webglemulator.razarion.HttpConnectionEmu;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,8 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.ClientRequestContext;
-import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -62,10 +60,10 @@ public class JsonProviderEmulator {
         }
     }
 
-    public GameEngineConfig readGameEngineConfigFromFile(String filename) {
+    public StaticGameConfig readGameEngineConfigFromFile(String filename) {
         try {
             String string = new String(Files.readAllBytes(new File(filename).toPath()));
-            return new ObjectMapper().readValue(string, GameEngineConfig.class);
+            return new ObjectMapper().readValue(string, StaticGameConfig.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

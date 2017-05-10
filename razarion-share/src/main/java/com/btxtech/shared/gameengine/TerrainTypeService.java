@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
@@ -20,15 +20,17 @@ public class TerrainTypeService {
     private Map<Integer, SlopeSkeletonConfig> slopeSkeletonConfigs = new HashMap<>();
     private GroundSkeletonConfig groundSkeletonConfig;
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
+    private double waterLevel;
 
-    public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
-        init(engineInitEvent.getGameEngineConfig());
+    public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
+        init(engineInitEvent.getStaticGameConfig());
     }
 
-    public void init(GameEngineConfig gameEngineConfig) {
-        groundSkeletonConfig = gameEngineConfig.getGroundSkeletonConfig();
-        setSlopeSkeletonConfigs(gameEngineConfig.getSlopeSkeletonConfigs());
-        setTerrainObjectConfigs(gameEngineConfig.getTerrainObjectConfigs());
+    public void init(StaticGameConfig staticGameConfig) {
+        waterLevel = staticGameConfig.getWaterLevel();
+        groundSkeletonConfig = staticGameConfig.getGroundSkeletonConfig();
+        setSlopeSkeletonConfigs(staticGameConfig.getSlopeSkeletonConfigs());
+        setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
     }
 
     public void setSlopeSkeletonConfigs(Collection<SlopeSkeletonConfig> slopeSkeletonConfigs) {
@@ -75,6 +77,10 @@ public class TerrainTypeService {
             throw new IllegalArgumentException("No TerrainObjectConfig for id: " + id);
         }
         return terrainObjectConfig;
+    }
+
+    public double getWaterLevel() {
+        return waterLevel;
     }
 
     // Methods used by the editors -----------------------------------------------------------------

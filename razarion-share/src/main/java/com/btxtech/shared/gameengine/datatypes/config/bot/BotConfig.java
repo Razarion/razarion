@@ -17,10 +17,10 @@ public class BotConfig {
     private int actionDelay;
     private PlaceConfig realm;
     private String name;
-    private Long minInactiveMs;
-    private Long maxInactiveMs;
-    private Long minActiveMs;
-    private Long maxActiveMs;
+    private Integer minInactiveMs;
+    private Integer maxInactiveMs;
+    private Integer minActiveMs;
+    private Integer maxActiveMs;
     private List<BotEnragementStateConfig> botEnragementStateConfigs;
 
     public BotConfig setId(int id) {
@@ -48,22 +48,22 @@ public class BotConfig {
         return this;
     }
 
-    public BotConfig setMinInactiveMs(Long minInactiveMs) {
+    public BotConfig setMinInactiveMs(Integer minInactiveMs) {
         this.minInactiveMs = minInactiveMs;
         return this;
     }
 
-    public BotConfig setMaxInactiveMs(Long maxInactiveMs) {
+    public BotConfig setMaxInactiveMs(Integer maxInactiveMs) {
         this.maxInactiveMs = maxInactiveMs;
         return this;
     }
 
-    public BotConfig setMinActiveMs(Long minActiveMs) {
+    public BotConfig setMinActiveMs(Integer minActiveMs) {
         this.minActiveMs = minActiveMs;
         return this;
     }
 
-    public BotConfig setMaxActiveMs(Long maxActiveMs) {
+    public BotConfig setMaxActiveMs(Integer maxActiveMs) {
         this.maxActiveMs = maxActiveMs;
         return this;
     }
@@ -93,19 +93,19 @@ public class BotConfig {
         return name;
     }
 
-    public Long getMinInactiveMs() {
+    public Integer getMinInactiveMs() {
         return minInactiveMs;
     }
 
-    public Long getMaxInactiveMs() {
+    public Integer getMaxInactiveMs() {
         return maxInactiveMs;
     }
 
-    public Long getMinActiveMs() {
+    public Integer getMinActiveMs() {
         return minActiveMs;
     }
 
-    public Long getMaxActiveMs() {
+    public Integer getMaxActiveMs() {
         return maxActiveMs;
     }
 

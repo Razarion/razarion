@@ -3,10 +3,9 @@ package com.btxtech.scenariongui.scenario;
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.GameEngineInitEvent;
+import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
@@ -25,14 +24,14 @@ public abstract class AbstractTerrainScenario extends Scenario {
     @Override
     public void init() {
         JsonProviderEmulator jsonProviderEmulator = new JsonProviderEmulator();
-        GameEngineConfig gameEngineConfig = jsonProviderEmulator.readFromFile(false).getGameEngineConfig();
-        // GameEngineConfig gameEngineConfig = jsonProviderEmulator.readGameEngineConfigFromFile("C:\\dev\\projects\\razarion\\code\\tmp\\TmpGameUiControlConfig.json");
+        StaticGameConfig staticGameConfig = jsonProviderEmulator.readFromFile(false).getStaticGameConfig();
+        // StaticGameConfig staticGameConfig = jsonProviderEmulator.readGameEngineConfigFromFile("C:\\dev\\projects\\razarion\\code\\tmp\\TmpGameUiControlConfig.json");
         Weld weld = new Weld();
         weldContainer = weld.initialize();
         TerrainTypeService terrainTypeService = weldContainer.instance().select(TerrainTypeService.class).get();
-        terrainTypeService.onGameEngineInit(new GameEngineInitEvent(gameEngineConfig));
+        terrainTypeService.onGameEngineInit(new StaticGameInitEvent(staticGameConfig));
         TerrainService terrainService = weldContainer.instance().select(TerrainService.class).get();
-        terrainService.setup(gameEngineConfig.getPlanetConfig());
+        // TODO terrainService.setup(staticGameConfig.getPlanetConfig());
     }
 
     protected TerrainService getTerrainService() {

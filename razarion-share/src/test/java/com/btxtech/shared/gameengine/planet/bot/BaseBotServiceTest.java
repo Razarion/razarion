@@ -7,8 +7,8 @@ import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -43,10 +43,10 @@ public class BaseBotServiceTest {
         baseItemService = weldContainer.instance().select(BaseItemService.class).get();
         // Setup game environment
         BaseItemServiceBase.setupItemTypeService(itemTypeService);
-        PlanetConfig planetConfig = new PlanetConfig().setGroundMeshDimension(new Rectangle(0, 0, 1000, 1000)).setGameEngineMode(GameEngineMode.MASTER);
+        PlanetConfig planetConfig = new PlanetConfig().setGroundMeshDimension(new Rectangle(0, 0, 1000, 1000));
         terrainService.setup(planetConfig);
-        terrainTypeService.init(new GameEngineConfig().setGroundSkeletonConfig(new GroundSkeletonConfig().setHeights(new double[][]{{0.0}}).setHeightXCount(1).setHeightYCount(1)));
-        baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, PlanetActivationEvent.Type.INITIALIZE));
+        terrainTypeService.init(new StaticGameConfig().setGroundSkeletonConfig(new GroundSkeletonConfig().setHeights(new double[][]{{0.0}}).setHeightXCount(1).setHeightYCount(1)));
+        baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, GameEngineMode.MASTER, null, null, PlanetActivationEvent.Type.INITIALIZE));
     }
 
     protected void startBot(List<BotConfig> botConfigs) {

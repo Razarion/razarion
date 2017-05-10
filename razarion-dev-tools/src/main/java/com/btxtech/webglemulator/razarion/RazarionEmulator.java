@@ -47,8 +47,8 @@ public class RazarionEmulator {
             httpConnectionEmu = jsonProviderEmulator.fromServer();
             gameUiControl.setGameUiControlConfig(httpConnectionEmu.getGameUiControlConfig());
             gameUiControl.init();
-            gameEngineControl.init(gameUiControl.getGameUiControlConfig().getGameEngineConfig(), null);
-            terrainUiService.init(httpConnectionEmu.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig());
+            gameEngineControl.init(gameUiControl.getGameUiControlConfig(), null);
+            terrainUiService.init(httpConnectionEmu.getGameUiControlConfig().getPlanetConfig());
             devToolShape3DUiService.loadBuffer();
             gameEngineControl.start();
             gameUiControl.start();

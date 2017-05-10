@@ -12,7 +12,7 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -44,9 +44,10 @@ public class TerrainServiceTestBase {
         SimpleTestEnvironment.injectService("obstacleContainer", terrainTileFactory, obstacleContainer);
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
+        StaticGameConfig staticGameConfig = new StaticGameConfig();
+        staticGameConfig.setWaterLevel(-0.7);
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
+        staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         groundSkeletonConfig.setHeights(toColumnRow(heights));
         groundSkeletonConfig.setHeightXCount(heights[0].length);
         groundSkeletonConfig.setHeightYCount(heights.length);
@@ -54,16 +55,15 @@ public class TerrainServiceTestBase {
         groundSkeletonConfig.setSplattingXCount(splattings[0].length);
         groundSkeletonConfig.setSplattingYCount(splattings.length);
 
-        gameEngineConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
+        staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
 
-        terrainTypeService.init(gameEngineConfig);
+        terrainTypeService.init(staticGameConfig);
         SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
         SimpleTestEnvironment.injectService("terrainTypeService", terrainTileFactory, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setTerrainSlopePositions(terrainSlopePositions).setWaterLevel(-0.7);
+        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
-        planetConfig.setWaterLevel(-0.7);
         terrainService.setup(planetConfig);
     }
 

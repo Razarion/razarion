@@ -1,8 +1,9 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -32,11 +33,12 @@ public class GameUiControlConfigEntity {
     @JoinColumn(nullable = false)
     @OrderColumn(name = "orderColumn")
     private List<SceneEntity> scenes;
+    @OneToOne
+    private LevelEntity minimalLevel;
 
-    public GameUiControlConfig toGameUiControlConfig(GameEngineConfig gameEngineConfig) {
+    public GameUiControlConfig toGameUiControlConfig() {
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
-        gameUiControlConfig.setGameEngineConfig(gameEngineConfig);
-        gameEngineConfig.setPlanetConfig(planetEntity.toPlanetConfig());
+        gameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         for (SceneEntity scene : scenes) {
             sceneConfigs.add(scene.toSceneConfig());

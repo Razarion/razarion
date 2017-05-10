@@ -18,7 +18,6 @@ import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
@@ -60,7 +59,7 @@ public class ResourceService {
         switch (planetActivationEvent.getType()) {
 
             case INITIALIZE:
-                setup(planetActivationEvent.getPlanetConfig());
+                setup(planetActivationEvent);
                 break;
             case STOP:
                 stop();
@@ -70,22 +69,22 @@ public class ResourceService {
         }
     }
 
-    private void setup(PlanetConfig planetConfig) {
-        gameEngineMode = planetConfig.getGameEngineMode();
+    private void setup(PlanetActivationEvent planetActivationEvent) {
         synchronized (resources) {
             resources.clear();
         }
-        if (planetConfig.getResourceRegionConfigs() != null && gameEngineMode == GameEngineMode.MASTER) {
+        gameEngineMode = planetActivationEvent.getGameEngineMode();
+        if (planetActivationEvent.getMasterPlanetConfig() != null && planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs() != null) {
             synchronized (resourceRegions) {
-                for (ResourceRegionConfig resourceRegionConfig : planetConfig.getResourceRegionConfigs()) {
+                for (ResourceRegionConfig resourceRegionConfig : planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs()) {
                     ResourceRegion resourceRegion = instance.get();
                     resourceRegion.init(resourceRegionConfig);
                     resourceRegions.add(resourceRegion);
                 }
             }
         }
-        if (planetConfig.getSyncResourceItemInfos() != null && gameEngineMode != GameEngineMode.MASTER) {
-            for (SyncResourceItemInfo syncResourceItemInfo : planetConfig.getSyncResourceItemInfos()) {
+        if (planetActivationEvent.getSlaveSyncItemInfo() != null && planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos() != null) {
+            for (SyncResourceItemInfo syncResourceItemInfo : planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos()) {
                 createSyncResourceItemSlave(syncResourceItemInfo);
             }
         }

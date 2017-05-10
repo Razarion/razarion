@@ -1,15 +1,16 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.persistence.GameEngineConfigPersistence;
+import com.btxtech.server.persistence.StaticGameConfigPersistence;
+import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.GameEngineInitEvent;
+import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -29,25 +30,26 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class GameEngineService implements GameLogicListener {
     @Inject
-    private Event<GameEngineInitEvent> gameEngineInitEvent;
+    private Event<StaticGameInitEvent> gameEngineInitEvent;
     @Inject
     private PlanetService planetService;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private GameEngineConfigPersistence gameEngineConfigPersistence;
+    private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
     private GameLogicService gameLogicService;
     @Inject
     private ClientGameConnectionService clientGameConnectionService;
+    @Inject
+    private ServerGameEnginePersistence serverGameEnginePersistence;
 
     public void start() {
         try {
-            GameEngineConfig gameEngineConfig = gameEngineConfigPersistence.load4Server();
-            gameEngineInitEvent.fire(new GameEngineInitEvent(gameEngineConfig));
-            planetService.initialise(gameEngineConfig.getPlanetConfig());
+            gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
+            planetService.initialise(serverGameEnginePersistence.readPlanetConfig(), GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null);
             gameLogicService.setGameLogicListener(this);
-            planetService.start();
+            planetService.start(serverGameEnginePersistence.readBotConfigs());
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
@@ -57,8 +59,8 @@ public class GameEngineService implements GameLogicListener {
         planetService.stop();
     }
 
-    public void fillSyncItems(PlanetConfig planetConfig, UserContext userContext) {
-        planetService.fillSyncItems(planetConfig, userContext);
+    public SlaveSyncItemInfo generateSlaveSyncItemInfo(UserContext userContext) {
+        return planetService.generateSlaveSyncItemInfo(userContext);
     }
 
     @Override

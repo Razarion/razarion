@@ -28,6 +28,10 @@ public class ResourceItemTypeEntity {
     private double radius;
     private int amount;
 
+    public Integer getId() {
+        return id;
+    }
+
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
         resourceItemType.setRadius(radius).setAmount(amount).setId(id).setName(name);

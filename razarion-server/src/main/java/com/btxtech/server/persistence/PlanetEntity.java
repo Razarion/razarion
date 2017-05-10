@@ -33,6 +33,10 @@ public class PlanetEntity {
     @JoinColumn(nullable = false)
     private List<TerrainObjectPositionEntity> terrainObjectPositionEntities;
 
+    public Integer getId() {
+        return id;
+    }
+
     public PlanetConfig toPlanetConfig() {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         for (TerrainSlopePositionEntity terrainSlopePositionEntity : terrainSlopePositionEntities) {

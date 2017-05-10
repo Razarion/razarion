@@ -64,6 +64,7 @@ public class BaseItemService {
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
     private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
     private PlanetConfig planetConfig;
+    private GameEngineMode gameEngineMode;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
@@ -72,14 +73,15 @@ public class BaseItemService {
         guardingItems.clear();
         lastBaseItId = 1;
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
+            gameEngineMode = planetActivationEvent.getGameEngineMode();
             planetConfig = planetActivationEvent.getPlanetConfig();
-            if (getGameEngineMode() == GameEngineMode.SLAVE) {
-                for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getPlanetConfig().getPlayerBaseInfos()) {
+            if (planetActivationEvent.getSlaveSyncItemInfo() == null) {
+                for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getSlaveSyncItemInfo() .getPlayerBaseInfos()) {
                     createBaseSlave(playerBaseInfo);
                 }
 
                 Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
-                for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getPlanetConfig().getSyncBaseItemInfos()) {
+                for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getSlaveSyncItemInfo() .getSyncBaseItemInfos()) {
                     SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
                     tmp.put(syncBaseItem, syncBaseItemInfo);
                 }
@@ -486,7 +488,7 @@ public class BaseItemService {
     }
 
     public GameEngineMode getGameEngineMode() {
-        return planetConfig.getGameEngineMode();
+        return gameEngineMode;
     }
 
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {

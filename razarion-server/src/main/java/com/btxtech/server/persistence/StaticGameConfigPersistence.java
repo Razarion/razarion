@@ -2,16 +2,13 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelPersistence;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ResourceRegionConfig;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -45,8 +42,10 @@ import java.util.Map;
  * 18.04.2017.
  */
 @ApplicationScoped
-public class GameEngineConfigPersistence {
+public class StaticGameConfigPersistence {
     public static final int FIRST_LEVEL_ID = 1;
+    @Deprecated
+    // GameUiControlEntity has minimal level. Should be handled with that
     public static final int MULTI_PLAYER_PLANET_LEVEL_ID = 5;
     static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
     static final int BASE_ITEM_TYPE_HARVESTER = 180830;
@@ -62,35 +61,20 @@ public class GameEngineConfigPersistence {
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private LevelPersistence levelPersistence;
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    public GameEngineConfig load4Client() {
-        return setupGameEngineConfig();
-    }
 
     @Transactional
-    public GameEngineConfig load4Server() {
-        GameEngineConfig gameEngineConfig = setupGameEngineConfig();
-        gameEngineConfig.setPlanetConfig(entityManager.find(PlanetEntity.class, 2).toPlanetConfig());
-        gameEngineConfig.getPlanetConfig().setGameEngineMode(GameEngineMode.MASTER);// TODO move to DB
-        TemporaryPersistenceUtils.completePlanetConfigMultiPlayer(gameEngineConfig.getPlanetConfig());// TODO move to DB
-        gameEngineConfig.getPlanetConfig().setBotConfigs(setupServerBots());
-        gameEngineConfig.getPlanetConfig().setResourceRegionConfigs(setupResourceRegionConfigs());
-        return gameEngineConfig;
-    }
-
-    private GameEngineConfig setupGameEngineConfig() {
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
-        gameEngineConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
-        gameEngineConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
-        gameEngineConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
-        gameEngineConfig.setBaseItemTypes(finalizeBaseItemTypes(itemTypePersistence.readBaseItemTypes()));
-        gameEngineConfig.setResourceItemTypes(finalizeResourceItemTypes(itemTypePersistence.readResourceItemTypes()));// TODO move to DB
-        gameEngineConfig.setBoxItemTypes(finalizeBoxItemTypes(itemTypePersistence.readBoxItemTypes()));
-        gameEngineConfig.setLevelConfigs(levelPersistence.read());
-        gameEngineConfig.setInventoryItems(setupInventoryItems()); // TODO move to DB
-        return gameEngineConfig;
+    public StaticGameConfig loadStaticGameConfig() {
+        StaticGameConfig staticGameConfig = new StaticGameConfig();
+        staticGameConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
+        staticGameConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
+        staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
+        staticGameConfig.setWaterLevel(-0.7);
+        staticGameConfig.setBaseItemTypes(finalizeBaseItemTypes(itemTypePersistence.readBaseItemTypes()));
+        staticGameConfig.setResourceItemTypes(finalizeResourceItemTypes(itemTypePersistence.readResourceItemTypes()));// TODO move to DB
+        staticGameConfig.setBoxItemTypes(finalizeBoxItemTypes(itemTypePersistence.readBoxItemTypes()));
+        staticGameConfig.setLevelConfigs(levelPersistence.read());
+        staticGameConfig.setInventoryItems(setupInventoryItems()); // TODO move to DB
+        return staticGameConfig;
     }
 
     private List<ResourceItemType> finalizeResourceItemTypes(List<ResourceItemType> resourceItemTypes) {
@@ -251,25 +235,13 @@ public class GameEngineConfigPersistence {
 
     public List<InventoryItem> setupInventoryItems() {
         List<InventoryItem> inventoryItems = new ArrayList<>();
-        inventoryItems.add(new InventoryItem().setId(GameEngineConfigPersistence.INVENTORY_ITEM).setBaseItemType(GameEngineConfigPersistence.BASE_ITEM_TYPE_ATTACKER).setBaseItemTypeCount(3).setItemFreeRange(5).setName("3 Attacker pack").setImageId(272484));
+        inventoryItems.add(new InventoryItem().setId(StaticGameConfigPersistence.INVENTORY_ITEM).setBaseItemType(StaticGameConfigPersistence.BASE_ITEM_TYPE_ATTACKER).setBaseItemTypeCount(3).setItemFreeRange(5).setName("3 Attacker pack").setImageId(272484));
         return inventoryItems;
-    }
-
-    private List<BotConfig> setupServerBots() {
-        List<BotConfig> botConfigs = new ArrayList<>();
-        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
-        List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameEngineConfigPersistence.BASE_ITEM_TYPE_FACTORY).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameEngineConfigPersistence.BASE_ITEM_TYPE_ATTACKER).setCount(6).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
-        // botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(75, 246))).setNoSpawn(true).setNoRebuild(true));
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(GameUiControlConfigPersistence.PLANET_BOT_1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
-        return botConfigs;
     }
 
     private List<ResourceRegionConfig> setupResourceRegionConfigs() {
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
-        resourceRegionConfigs.add(new ResourceRegionConfig().setCount(10).setMinDistanceToItems(2).setResourceItemTypeId(GameEngineConfigPersistence.RESOURCE_ITEM_TYPE).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(160, 140, 80, 90))));
+        resourceRegionConfigs.add(new ResourceRegionConfig().setCount(10).setMinDistanceToItems(2).setResourceItemTypeId(StaticGameConfigPersistence.RESOURCE_ITEM_TYPE).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(160, 140, 80, 90))));
         return resourceRegionConfigs;
     }
 }

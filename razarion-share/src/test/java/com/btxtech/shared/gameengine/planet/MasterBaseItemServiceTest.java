@@ -22,9 +22,8 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
     @Test
     public void test() {
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setGameEngineMode(GameEngineMode.MASTER);
 
-        setup(planetConfig);
+        setup(planetConfig, GameEngineMode.MASTER, null, null);
 
         PlayerBaseFull base1 = getBaseItemService().createHumanBase(1000, 1, new HumanPlayerId().setPlayerId(105), "Unit test Base human");
         PlayerBaseFull base2 = getBaseItemService().createBotBase(new BotConfig().setName("Test Bot").setNpc(false));

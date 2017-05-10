@@ -262,12 +262,14 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     private Collection<ModifiedSlope> setupModifiedSlopes() {
-        return gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
+        throw new UnsupportedOperationException("... TODO ...");
+        // TODO return gameUiControl.getGameUiControlConfig().getStaticGameConfig().getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
     }
 
     private Collection<ModifiedTerrainObject> setupModifiedTerrainObjects() {
-        return gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getTerrainObjectPositions()
-                .stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
+        throw new UnsupportedOperationException("... TODO ...");
+        // TODO return gameUiControl.getGameUiControlConfig().getStaticGameConfig().getPlanetConfig().getTerrainObjectPositions()
+        // TODO         .stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
     }
 
     private List<ModelMatrices> setupModelMatrices() {
@@ -457,6 +459,7 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     private int getPlanetId() {
-        return gameUiControl.getGameUiControlConfig().getGameEngineConfig().getPlanetConfig().getPlanetId();
+        throw new UnsupportedOperationException("... TODO ...");
+        // TODO return gameUiControl.getGameUiControlConfig().getStaticGameConfig().getPlanetConfig().getPlanetId();
     }
 }

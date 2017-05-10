@@ -9,7 +9,7 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
@@ -49,9 +49,9 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
                 {0, 0, 0},
                 {0, 0, 0},
         };
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
+        StaticGameConfig staticGameConfig = new StaticGameConfig();
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
+        staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         groundSkeletonConfig.setHeights(FrameworkHelper.toColumnRow(heights));
         groundSkeletonConfig.setHeightXCount(heights[0].length);
         groundSkeletonConfig.setHeightYCount(heights.length);
@@ -73,9 +73,9 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
         slopeSkeletonConfigLand.setSlopeNodes(FrameworkHelper.toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
-        gameEngineConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
+        staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
 
-        terrainTypeService.init(gameEngineConfig);
+        terrainTypeService.init(staticGameConfig);
         FrameworkHelper.injectService("terrainTypeService", terrainService, terrainTypeService);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

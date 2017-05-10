@@ -24,6 +24,7 @@ public class ArquillianBaseTest {
     public static final int BASE_ITEM_TYPE_ATTACKER_ID = 180832;
     public static final int BASE_ITEM_TYPE_FACTORY_ID = 272490;
     public static final int BASE_ITEM_TYPE_TOWER_ID = 272495;
+    public static final int RESOURCE_ITEM_TYPE_ID = 180829;
 
     @Deployment
     public static Archive<?> createDeployment() {

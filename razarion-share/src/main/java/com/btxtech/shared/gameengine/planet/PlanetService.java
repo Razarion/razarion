@@ -1,9 +1,13 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
@@ -64,23 +68,23 @@ public class PlanetService implements Runnable { // Only available in worker. On
         scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this, SimpleExecutorService.Type.GAME_ENGINE);
     }
 
-    public void initialise(PlanetConfig planetConfig) {
+    public void initialise(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, SlaveSyncItemInfo slaveSyncItemInfo) {
         this.planetConfig = planetConfig;
         syncItemContainerService.clear();
         terrainService.setup(planetConfig);
-        activationEvent.fire(new PlanetActivationEvent(planetConfig, PlanetActivationEvent.Type.INITIALIZE));
+        activationEvent.fire(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, slaveSyncItemInfo, PlanetActivationEvent.Type.INITIALIZE));
     }
 
-    public void start() {
+    public void start(Collection<BotConfig> botConfigs) {
         scheduledFuture.start();
-        if (planetConfig.getBotConfigs() != null) {
-            botService.startBots(planetConfig.getBotConfigs());
+        if (botConfigs != null) {
+            botService.startBots(botConfigs);
         }
     }
 
     public void stop() {
         scheduledFuture.cancel();
-        activationEvent.fire(new PlanetActivationEvent(null, PlanetActivationEvent.Type.STOP));
+        activationEvent.fire(new PlanetActivationEvent(null, null, null, null, PlanetActivationEvent.Type.STOP));
         syncItemContainerService.clear();
         terrainService.clean();
     }
@@ -128,13 +132,15 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }
     }
 
-    public void fillSyncItems(PlanetConfig planetConfig, UserContext userContext) {
-        planetConfig.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
-        planetConfig.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
+    public SlaveSyncItemInfo generateSlaveSyncItemInfo(UserContext userContext) {
+        SlaveSyncItemInfo slaveSyncItemInfo = new SlaveSyncItemInfo();
+        slaveSyncItemInfo.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
+        slaveSyncItemInfo.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
         PlayerBaseFull playerBaseFull = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
         if (playerBaseFull != null) {
-            planetConfig.setActualBaseId(playerBaseFull.getBaseId());
+            slaveSyncItemInfo.setActualBaseId(playerBaseFull.getBaseId());
         }
-        planetConfig.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
+        slaveSyncItemInfo.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
+        return slaveSyncItemInfo;
     }
 }

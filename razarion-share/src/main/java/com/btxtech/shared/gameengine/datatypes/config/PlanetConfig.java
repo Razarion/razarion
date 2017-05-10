@@ -21,24 +21,14 @@ import java.util.Map;
  */
 public class PlanetConfig {
     private int planetId;
-    private GameEngineMode gameEngineMode;
     private Rectangle groundMeshDimension;
+    private Rectangle2D playGround;
     private List<TerrainSlopePosition> terrainSlopePositions;
     private List<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, Integer> itemTypeLimitation;
-    private double waterLevel;
     private int houseSpace;
-    private Integer actualBaseId;
     private int startRazarion;
     private int startBaseItemTypeId;
-    private Polygon2D startRegion;
-    private Rectangle2D playGround;
-    private List<SyncBaseItemInfo> syncBaseItemInfos;
-    private List<PlayerBaseInfo> playerBaseInfos;
-    private List<BotConfig> botConfigs;
-    private List<ResourceRegionConfig> resourceRegionConfigs;
-    private List<SyncResourceItemInfo> syncResourceItemInfos;
-    private List<QuestConfig> questConfigs;
 
     public int getPlanetId() {
         return planetId;
@@ -46,15 +36,6 @@ public class PlanetConfig {
 
     public void setPlanetId(int planetId) {
         this.planetId = planetId;
-    }
-
-    public GameEngineMode getGameEngineMode() {
-        return gameEngineMode;
-    }
-
-    public PlanetConfig setGameEngineMode(GameEngineMode gameEngineMode) {
-        this.gameEngineMode = gameEngineMode;
-        return this;
     }
 
     public Rectangle getGroundMeshDimension() {
@@ -102,15 +83,6 @@ public class PlanetConfig {
         }
     }
 
-    public double getWaterLevel() {
-        return waterLevel;
-    }
-
-    public PlanetConfig setWaterLevel(double waterLevel) {
-        this.waterLevel = waterLevel;
-        return this;
-    }
-
     public int getHouseSpace() {
         return houseSpace;
     }
@@ -126,15 +98,6 @@ public class PlanetConfig {
 
     public PlanetConfig setStartBaseItemTypeId(int startBaseItemTypeId) {
         this.startBaseItemTypeId = startBaseItemTypeId;
-        return this;
-    }
-
-    public Polygon2D getStartRegion() {
-        return startRegion;
-    }
-
-    public PlanetConfig setStartRegion(Polygon2D startRegion) {
-        this.startRegion = startRegion;
         return this;
     }
 
@@ -154,66 +117,5 @@ public class PlanetConfig {
     public PlanetConfig setPlayGround(Rectangle2D playGround) {
         this.playGround = playGround;
         return this;
-    }
-
-    public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
-        return syncBaseItemInfos;
-    }
-
-    public PlanetConfig setSyncBaseItemInfos(List<SyncBaseItemInfo> syncBaseItemInfos) {
-        this.syncBaseItemInfos = syncBaseItemInfos;
-        return this;
-    }
-
-    public List<PlayerBaseInfo> getPlayerBaseInfos() {
-        return playerBaseInfos;
-    }
-
-    public PlanetConfig setPlayerBaseInfos(List<PlayerBaseInfo> playerBaseInfos) {
-        this.playerBaseInfos = playerBaseInfos;
-        return this;
-    }
-
-    public List<BotConfig> getBotConfigs() {
-        return botConfigs;
-    }
-
-    public PlanetConfig setBotConfigs(List<BotConfig> botConfigs) {
-        this.botConfigs = botConfigs;
-        return this;
-    }
-
-    public Integer getActualBaseId() {
-        return actualBaseId;
-    }
-
-    public void setActualBaseId(Integer actualBase) {
-        this.actualBaseId = actualBase;
-    }
-
-    public List<ResourceRegionConfig> getResourceRegionConfigs() {
-        return resourceRegionConfigs;
-    }
-
-    public PlanetConfig setResourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
-        this.resourceRegionConfigs = resourceRegionConfigs;
-        return this;
-    }
-
-    public List<SyncResourceItemInfo> getSyncResourceItemInfos() {
-        return syncResourceItemInfos;
-    }
-
-    public PlanetConfig setSyncResourceItemInfos(List<SyncResourceItemInfo> syncResourceItemInfos) {
-        this.syncResourceItemInfos = syncResourceItemInfos;
-        return this;
-    }
-
-    public List<QuestConfig> getQuestConfigs() {
-        return questConfigs;
-    }
-
-    public void setQuestConfigs(List<QuestConfig> questConfigs) {
-        this.questConfigs = questConfigs;
     }
 }

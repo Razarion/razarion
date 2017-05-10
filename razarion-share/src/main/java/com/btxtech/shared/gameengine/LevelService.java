@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine;
 
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,14 +21,14 @@ public class LevelService {
     private Map<Integer, LevelConfig> levels = new HashMap<>();
     private List<LevelConfig> orderedLevels = new ArrayList<>();
 
-    public void onGameEngineInit(@Observes GameEngineInitEvent engineInitEvent) {
-        init(engineInitEvent.getGameEngineConfig());
+    public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
+        init(engineInitEvent.getStaticGameConfig());
     }
 
-    public void init(GameEngineConfig gameEngineConfig) {
+    public void init(StaticGameConfig staticGameConfig) {
         levels.clear();
         orderedLevels.clear();
-        for (LevelConfig levelConfig : gameEngineConfig.getLevelConfigs()) {
+        for (LevelConfig levelConfig : staticGameConfig.getLevelConfigs()) {
             levels.put(levelConfig.getLevelId(), levelConfig);
             orderedLevels.add(levelConfig);
         }

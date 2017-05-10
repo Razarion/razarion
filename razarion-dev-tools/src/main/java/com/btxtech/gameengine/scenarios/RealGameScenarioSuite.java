@@ -7,7 +7,7 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
 import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -46,8 +46,8 @@ public class RealGameScenarioSuite extends ScenarioSuite {
     protected void setupScenarios() {
         addScenario(new Scenario("Bot attack") {
             @Override
-            public GameEngineConfig setupGameEngineConfig() {
-                return new JsonProviderEmulator().readFromFile(false).getGameEngineConfig();
+            public StaticGameConfig setupGameEngineConfig() {
+                return new JsonProviderEmulator().readFromFile(false).getStaticGameConfig();
             }
 
             @Override

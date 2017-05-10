@@ -7,11 +7,11 @@ import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
+import com.btxtech.shared.dto.WarmGameConfig;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
@@ -35,6 +35,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.security.SecurityPermission;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,30 +95,31 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         userUiService.setUserContext(gameUiControlConfig.getUserContext());
     }
 
-    public void onPlanetConfigLoaded(PlanetConfig planetConfig) {
-        this.gameUiControlConfig.getGameEngineConfig().setPlanetConfig(planetConfig);
+    public void onWarmGameConfigLoaded(WarmGameConfig warmGameConfig) {
+        this.gameUiControlConfig.setPlanetConfig(warmGameConfig.getPlanetConfig());
+        this.gameUiControlConfig.setSlaveSyncItemInfo(warmGameConfig.getSlaveSyncItemInfo());
     }
 
     public void init() {
         abstractServerSystemConnection = serverSystemConnectionInstance.get();
         abstractServerSystemConnection.init();
-        itemTypeService.init(gameUiControlConfig.getGameEngineConfig());
-        terrainTypeService.init(gameUiControlConfig.getGameEngineConfig());
-        levelService.init(gameUiControlConfig.getGameEngineConfig());
-        inventoryService.init(gameUiControlConfig.getGameEngineConfig());
+        itemTypeService.init(gameUiControlConfig.getStaticGameConfig());
+        terrainTypeService.init(gameUiControlConfig.getStaticGameConfig());
+        levelService.init(gameUiControlConfig.getStaticGameConfig());
+        inventoryService.init(gameUiControlConfig.getStaticGameConfig());
         gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
-        terrainScrollHandler.setPlayGround(gameUiControlConfig.getGameEngineConfig().getPlanetConfig().getPlayGround());
+        terrainScrollHandler.setPlayGround(gameUiControlConfig.getPlanetConfig().getPlayGround());
     }
 
     public void initWarm() {
-        terrainScrollHandler.setPlayGround(gameUiControlConfig.getGameEngineConfig().getPlanetConfig().getPlayGround());
+        terrainScrollHandler.setPlayGround(gameUiControlConfig.getPlanetConfig().getPlayGround());
     }
 
     public void start() {
         startTimeStamp = new Date();
         cockpitService.show(userUiService.getUserContext());
         nextSceneNumber = 0;
-        if (getPlanetConfig().getGameEngineMode() == GameEngineMode.SLAVE) {
+        if (this.gameUiControlConfig.getSlaveSyncItemInfo() != null) {
             scenes = setupSlaveScenes();
         } else {
             scenes = gameUiControlConfig.getSceneConfigs();
@@ -167,7 +169,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             trackerService.trackGameUiControl(startTimeStamp);
             startTimeStamp = null;
         }
-        if (getPlanetConfig().getGameEngineMode() == GameEngineMode.MASTER) {
+        if (gameUiControlConfig.getSlaveSyncItemInfo() == null) {
+            // Temporary fix for showing move to first multiplayer planet
             modalDialogManager.showLeaveStartTutorial(() -> {
                 screenCover.fadeInLoadingCover();
                 clientRunner.startWarm();
@@ -180,7 +183,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public PlanetConfig getPlanetConfig() {
-        return gameUiControlConfig.getGameEngineConfig().getPlanetConfig();
+        return gameUiControlConfig.getPlanetConfig();
     }
 
     public void onQuestPassed() {
@@ -203,7 +206,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     private List<SceneConfig> setupSlaveScenes() {
-        if (getPlanetConfig().getActualBaseId() != null) {
+        if (gameUiControlConfig.getSlaveSyncItemInfo().getActualBaseId() != null) {
             return setupSlaveExistingScenes();
         } else {
             return setupSlaveSpawnScenes();
@@ -215,8 +218,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         DecimalPosition factoryPosition = null;
         DecimalPosition builderPosition = null;
         DecimalPosition unitPosition = null;
-        for (SyncBaseItemInfo syncBaseItemInfo : getPlanetConfig().getSyncBaseItemInfos()) {
-            if (syncBaseItemInfo.getBaseId() == getPlanetConfig().getActualBaseId()) {
+        for (SyncBaseItemInfo syncBaseItemInfo : gameUiControlConfig.getSlaveSyncItemInfo().getSyncBaseItemInfos()) {
+            if (syncBaseItemInfo.getBaseId() == gameUiControlConfig.getSlaveSyncItemInfo().getActualBaseId()) {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
                 if (baseItemType.getFactoryType() != null) {
                     factoryPosition = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
@@ -246,7 +249,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private List<SceneConfig> setupSlaveSpawnScenes() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        DecimalPosition position = getPlanetConfig().getStartRegion().toAabb().center();
+        DecimalPosition position = gameUiControlConfig.getSlavePlanetConfig().getStartRegion().toAabb().center();
         // Set camera Position
         sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
         // Fade out
@@ -264,13 +267,13 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public Set<Integer> getAllTextureIds() {
         Set<Integer> textureIds = Shape3DUtils.getAllTextures(gameUiControlConfig.getVisualConfig().getShape3Ds());
 
-        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getGameEngineConfig().getSlopeSkeletonConfigs()) {
+        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
             if (slopeSkeletonConfig.getTextureId() != null) {
                 textureIds.add(slopeSkeletonConfig.getTextureId());
             }
         }
 
-        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getGameEngineConfig().getGroundSkeletonConfig();
+        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
         if (groundSkeletonConfig.getTopTextureId() != null) {
             textureIds.add(groundSkeletonConfig.getTopTextureId());
         }
@@ -285,13 +288,13 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public Set<Integer> getAllBumpTextureIds() {
         Set<Integer> bumpIds = new HashSet<>();
-        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getGameEngineConfig().getSlopeSkeletonConfigs()) {
+        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
             if (slopeSkeletonConfig.getBmId() != null) {
                 bumpIds.add(slopeSkeletonConfig.getBmId());
             }
         }
 
-        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getGameEngineConfig().getGroundSkeletonConfig();
+        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
         if (groundSkeletonConfig.getTopBmId() != null) {
             bumpIds.add(groundSkeletonConfig.getTopBmId());
         }

@@ -11,8 +11,13 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+
+-- Exportiere Datenbank Struktur für razarion-test
+DROP DATABASE IF EXISTS `razarion-test`;
+CREATE DATABASE IF NOT EXISTS `razarion-test` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `razarion-test`;
+
 -- Exportiere Struktur von Tabelle razarion-test.AUDIO_LIBRARY
-DROP TABLE IF EXISTS `AUDIO_LIBRARY`;
 CREATE TABLE IF NOT EXISTS `AUDIO_LIBRARY` (
   `id` int(11) NOT NULL,
   `data` longblob,
@@ -28,7 +33,6 @@ DELETE FROM `AUDIO_LIBRARY`;
 /*!40000 ALTER TABLE `AUDIO_LIBRARY` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.BASE_ITEM_TYPE
-DROP TABLE IF EXISTS `BASE_ITEM_TYPE`;
 CREATE TABLE IF NOT EXISTS `BASE_ITEM_TYPE` (
   `id` int(11) NOT NULL,
   `health` int(11) NOT NULL,
@@ -55,8 +59,72 @@ INSERT INTO `BASE_ITEM_TYPE` (`id`, `health`, `name`, `radius`, `spawnDurationMi
 	(272495, 10, 'Tower', 4, 3000, 272492, 180806);
 /*!40000 ALTER TABLE `BASE_ITEM_TYPE` ENABLE KEYS */;
 
+-- Exportiere Struktur von Tabelle razarion-test.BOT_CONFIG
+CREATE TABLE IF NOT EXISTS `BOT_CONFIG` (
+  `id` int(11) NOT NULL,
+  `actionDelay` int(11) NOT NULL,
+  `maxActiveMs` int(11) DEFAULT NULL,
+  `maxInactiveMs` int(11) DEFAULT NULL,
+  `minActiveMs` int(11) DEFAULT NULL,
+  `minInactiveMs` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `npc` bit(1) NOT NULL,
+  `realm_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKpevo4xbk12x450abbpwgsdoj4` (`realm_id`),
+  CONSTRAINT `FKpevo4xbk12x450abbpwgsdoj4` FOREIGN KEY (`realm_id`) REFERENCES `PLACE_CONFIG` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.BOT_CONFIG: ~0 rows (ungefähr)
+DELETE FROM `BOT_CONFIG`;
+/*!40000 ALTER TABLE `BOT_CONFIG` DISABLE KEYS */;
+/*!40000 ALTER TABLE `BOT_CONFIG` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.BOT_CONFIG_BOT_ITEM
+CREATE TABLE IF NOT EXISTS `BOT_CONFIG_BOT_ITEM` (
+  `id` int(11) NOT NULL,
+  `angle` double NOT NULL,
+  `count` int(11) NOT NULL,
+  `createDirectly` bit(1) NOT NULL,
+  `idleTtl` int(11) DEFAULT NULL,
+  `moveRealmIfIdle` bit(1) NOT NULL,
+  `noRebuild` bit(1) NOT NULL,
+  `noSpawn` bit(1) NOT NULL,
+  `rePopTime` int(11) DEFAULT NULL,
+  `baseItemTypeEntity_id` int(11) DEFAULT NULL,
+  `place_id` int(11) DEFAULT NULL,
+  `botItems_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKrmnmfvv7eqabotm7aik3kp0vo` (`baseItemTypeEntity_id`),
+  KEY `FKo3anxwa9qjqljjau19r55097r` (`place_id`),
+  KEY `FKkb9blf16iocvut8n5t7vibor7` (`botItems_id`),
+  CONSTRAINT `FKkb9blf16iocvut8n5t7vibor7` FOREIGN KEY (`botItems_id`) REFERENCES `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (`id`),
+  CONSTRAINT `FKo3anxwa9qjqljjau19r55097r` FOREIGN KEY (`place_id`) REFERENCES `PLACE_CONFIG` (`id`),
+  CONSTRAINT `FKrmnmfvv7eqabotm7aik3kp0vo` FOREIGN KEY (`baseItemTypeEntity_id`) REFERENCES `BASE_ITEM_TYPE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.BOT_CONFIG_BOT_ITEM: ~0 rows (ungefähr)
+DELETE FROM `BOT_CONFIG_BOT_ITEM`;
+/*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` DISABLE KEYS */;
+/*!40000 ALTER TABLE `BOT_CONFIG_BOT_ITEM` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.BOT_CONFIG_ENRAGEMENT_STATE_CONFIG
+CREATE TABLE IF NOT EXISTS `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (
+  `id` int(11) NOT NULL,
+  `enrageUpKills` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `botEnragementStateConfigs_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FK4e4h07ssbp9cgg6bfn898ed2e` (`botEnragementStateConfigs_id`),
+  CONSTRAINT `FK4e4h07ssbp9cgg6bfn898ed2e` FOREIGN KEY (`botEnragementStateConfigs_id`) REFERENCES `BOT_CONFIG` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.BOT_CONFIG_ENRAGEMENT_STATE_CONFIG: ~0 rows (ungefähr)
+DELETE FROM `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG`;
+/*!40000 ALTER TABLE `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` DISABLE KEYS */;
+/*!40000 ALTER TABLE `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` ENABLE KEYS */;
+
 -- Exportiere Struktur von Tabelle razarion-test.BOX_ITEM_TYPE
-DROP TABLE IF EXISTS `BOX_ITEM_TYPE`;
 CREATE TABLE IF NOT EXISTS `BOX_ITEM_TYPE` (
   `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -73,7 +141,6 @@ DELETE FROM `BOX_ITEM_TYPE`;
 /*!40000 ALTER TABLE `BOX_ITEM_TYPE` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.COLLADA
-DROP TABLE IF EXISTS `COLLADA`;
 CREATE TABLE IF NOT EXISTS `COLLADA` (
   `id` int(11) NOT NULL,
   `colladaString` longtext,
@@ -86,7 +153,6 @@ DELETE FROM `COLLADA`;
 /*!40000 ALTER TABLE `COLLADA` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.COLLADA_ANIMATIONS
-DROP TABLE IF EXISTS `COLLADA_ANIMATIONS`;
 CREATE TABLE IF NOT EXISTS `COLLADA_ANIMATIONS` (
   `ColladaEntity_id` int(11) NOT NULL,
   `animations` varchar(255) DEFAULT NULL,
@@ -101,7 +167,6 @@ DELETE FROM `COLLADA_ANIMATIONS`;
 /*!40000 ALTER TABLE `COLLADA_ANIMATIONS` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.COLLADA_TEXTURES
-DROP TABLE IF EXISTS `COLLADA_TEXTURES`;
 CREATE TABLE IF NOT EXISTS `COLLADA_TEXTURES` (
   `ColladaEntity_id` int(11) NOT NULL,
   `textures_id` int(11) NOT NULL,
@@ -118,7 +183,6 @@ DELETE FROM `COLLADA_TEXTURES`;
 /*!40000 ALTER TABLE `COLLADA_TEXTURES` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.FB_MARKETING_CLICK_TRACKER
-DROP TABLE IF EXISTS `FB_MARKETING_CLICK_TRACKER`;
 CREATE TABLE IF NOT EXISTS `FB_MARKETING_CLICK_TRACKER` (
   `id` int(11) NOT NULL,
   `adId` varchar(255) DEFAULT NULL,
@@ -132,7 +196,6 @@ DELETE FROM `FB_MARKETING_CLICK_TRACKER`;
 /*!40000 ALTER TABLE `FB_MARKETING_CLICK_TRACKER` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.FB_MARKETING_CURRENT_AD
-DROP TABLE IF EXISTS `FB_MARKETING_CURRENT_AD`;
 CREATE TABLE IF NOT EXISTS `FB_MARKETING_CURRENT_AD` (
   `id` int(11) NOT NULL,
   `adId` bigint(20) NOT NULL,
@@ -157,7 +220,6 @@ DELETE FROM `FB_MARKETING_CURRENT_AD`;
 /*!40000 ALTER TABLE `FB_MARKETING_CURRENT_AD` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.FB_MARKETING_CURRENT_AD_INTEREST
-DROP TABLE IF EXISTS `FB_MARKETING_CURRENT_AD_INTEREST`;
 CREATE TABLE IF NOT EXISTS `FB_MARKETING_CURRENT_AD_INTEREST` (
   `currentAdEntityId` int(11) NOT NULL,
   `fbId` varchar(255) DEFAULT NULL,
@@ -172,7 +234,6 @@ DELETE FROM `FB_MARKETING_CURRENT_AD_INTEREST`;
 /*!40000 ALTER TABLE `FB_MARKETING_CURRENT_AD_INTEREST` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.FB_MARKETING_HISTORY_AD
-DROP TABLE IF EXISTS `FB_MARKETING_HISTORY_AD`;
 CREATE TABLE IF NOT EXISTS `FB_MARKETING_HISTORY_AD` (
   `id` int(11) NOT NULL,
   `adId` bigint(20) NOT NULL,
@@ -199,7 +260,6 @@ DELETE FROM `FB_MARKETING_HISTORY_AD`;
 /*!40000 ALTER TABLE `FB_MARKETING_HISTORY_AD` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.FB_MARKETING_HISTORY_AD_INTEREST
-DROP TABLE IF EXISTS `FB_MARKETING_HISTORY_AD_INTEREST`;
 CREATE TABLE IF NOT EXISTS `FB_MARKETING_HISTORY_AD_INTEREST` (
   `historyAdEntityId` int(11) NOT NULL,
   `fbId` varchar(255) DEFAULT NULL,
@@ -214,13 +274,15 @@ DELETE FROM `FB_MARKETING_HISTORY_AD_INTEREST`;
 /*!40000 ALTER TABLE `FB_MARKETING_HISTORY_AD_INTEREST` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.GAME_UI_CONTROL_CONFIG
-DROP TABLE IF EXISTS `GAME_UI_CONTROL_CONFIG`;
 CREATE TABLE IF NOT EXISTS `GAME_UI_CONTROL_CONFIG` (
   `id` int(11) NOT NULL,
   `planetEntity_id` int(11) DEFAULT NULL,
+  `minimalLevel_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK60h9hy9lm12515cvw99w1oel7` (`planetEntity_id`),
-  CONSTRAINT `FK60h9hy9lm12515cvw99w1oel7` FOREIGN KEY (`planetEntity_id`) REFERENCES `PLANET` (`id`)
+  KEY `FKsijau4m27twx6nsuc4sa7s31u` (`minimalLevel_id`),
+  CONSTRAINT `FK60h9hy9lm12515cvw99w1oel7` FOREIGN KEY (`planetEntity_id`) REFERENCES `PLANET` (`id`),
+  CONSTRAINT `FKsijau4m27twx6nsuc4sa7s31u` FOREIGN KEY (`minimalLevel_id`) REFERENCES `LEVEL` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Exportiere Daten aus Tabelle razarion-test.GAME_UI_CONTROL_CONFIG: ~0 rows (ungefähr)
@@ -229,7 +291,6 @@ DELETE FROM `GAME_UI_CONTROL_CONFIG`;
 /*!40000 ALTER TABLE `GAME_UI_CONTROL_CONFIG` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.GROUND_CONFIG
-DROP TABLE IF EXISTS `GROUND_CONFIG`;
 CREATE TABLE IF NOT EXISTS `GROUND_CONFIG` (
   `id` int(11) NOT NULL,
   `bottomBmDepth` double NOT NULL,
@@ -289,7 +350,6 @@ DELETE FROM `GROUND_CONFIG`;
 /*!40000 ALTER TABLE `GROUND_CONFIG` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.GROUND_HEIGHT
-DROP TABLE IF EXISTS `GROUND_HEIGHT`;
 CREATE TABLE IF NOT EXISTS `GROUND_HEIGHT` (
   `id` int(11) NOT NULL,
   `height` double NOT NULL,
@@ -307,7 +367,6 @@ DELETE FROM `GROUND_HEIGHT`;
 /*!40000 ALTER TABLE `GROUND_HEIGHT` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.GROUND_SPLATTING
-DROP TABLE IF EXISTS `GROUND_SPLATTING`;
 CREATE TABLE IF NOT EXISTS `GROUND_SPLATTING` (
   `id` int(11) NOT NULL,
   `splatting` double NOT NULL,
@@ -325,7 +384,6 @@ DELETE FROM `GROUND_SPLATTING`;
 /*!40000 ALTER TABLE `GROUND_SPLATTING` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.hibernate_sequence
-DROP TABLE IF EXISTS `hibernate_sequence`;
 CREATE TABLE IF NOT EXISTS `hibernate_sequence` (
   `next_val` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -334,41 +392,40 @@ CREATE TABLE IF NOT EXISTS `hibernate_sequence` (
 DELETE FROM `hibernate_sequence`;
 /*!40000 ALTER TABLE `hibernate_sequence` DISABLE KEYS */;
 INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20),
-	(20);
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21),
+	(21);
 /*!40000 ALTER TABLE `hibernate_sequence` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.HUMAN_PLAYER_ENTITY
-DROP TABLE IF EXISTS `HUMAN_PLAYER_ENTITY`;
 CREATE TABLE IF NOT EXISTS `HUMAN_PLAYER_ENTITY` (
   `id` int(11) NOT NULL,
   `sessionId` varchar(190) NOT NULL,
@@ -376,13 +433,37 @@ CREATE TABLE IF NOT EXISTS `HUMAN_PLAYER_ENTITY` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Exportiere Daten aus Tabelle razarion-test.HUMAN_PLAYER_ENTITY: ~1 rows (ungefähr)
+-- Exportiere Daten aus Tabelle razarion-test.HUMAN_PLAYER_ENTITY: ~0 rows (ungefähr)
 DELETE FROM `HUMAN_PLAYER_ENTITY`;
 /*!40000 ALTER TABLE `HUMAN_PLAYER_ENTITY` DISABLE KEYS */;
 /*!40000 ALTER TABLE `HUMAN_PLAYER_ENTITY` ENABLE KEYS */;
 
+-- Exportiere Struktur von Tabelle razarion-test.I18N_BUNDLE
+CREATE TABLE IF NOT EXISTS `I18N_BUNDLE` (
+  `id` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.I18N_BUNDLE: ~0 rows (ungefähr)
+DELETE FROM `I18N_BUNDLE`;
+/*!40000 ALTER TABLE `I18N_BUNDLE` DISABLE KEYS */;
+/*!40000 ALTER TABLE `I18N_BUNDLE` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.I18N_BUNDLE_STRING
+CREATE TABLE IF NOT EXISTS `I18N_BUNDLE_STRING` (
+  `bundle` int(11) NOT NULL,
+  `i18nString` varchar(10000) DEFAULT NULL,
+  `locale` varchar(255) NOT NULL,
+  PRIMARY KEY (`bundle`,`locale`),
+  CONSTRAINT `FKpveq2u612sld12e8xax55qlgm` FOREIGN KEY (`bundle`) REFERENCES `I18N_BUNDLE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.I18N_BUNDLE_STRING: ~0 rows (ungefähr)
+DELETE FROM `I18N_BUNDLE_STRING`;
+/*!40000 ALTER TABLE `I18N_BUNDLE_STRING` DISABLE KEYS */;
+/*!40000 ALTER TABLE `I18N_BUNDLE_STRING` ENABLE KEYS */;
+
 -- Exportiere Struktur von Tabelle razarion-test.IMAGE_LIBRARY
-DROP TABLE IF EXISTS `IMAGE_LIBRARY`;
 CREATE TABLE IF NOT EXISTS `IMAGE_LIBRARY` (
   `id` int(11) NOT NULL,
   `data` longblob,
@@ -398,7 +479,6 @@ DELETE FROM `IMAGE_LIBRARY`;
 /*!40000 ALTER TABLE `IMAGE_LIBRARY` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.LEVEL
-DROP TABLE IF EXISTS `LEVEL`;
 CREATE TABLE IF NOT EXISTS `LEVEL` (
   `id` int(11) NOT NULL,
   `number` int(11) NOT NULL,
@@ -406,13 +486,12 @@ CREATE TABLE IF NOT EXISTS `LEVEL` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Exportiere Daten aus Tabelle razarion-test.LEVEL: ~4 rows (ungefähr)
+-- Exportiere Daten aus Tabelle razarion-test.LEVEL: ~0 rows (ungefähr)
 DELETE FROM `LEVEL`;
 /*!40000 ALTER TABLE `LEVEL` DISABLE KEYS */;
 /*!40000 ALTER TABLE `LEVEL` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.LEVEL_LIMITATION
-DROP TABLE IF EXISTS `LEVEL_LIMITATION`;
 CREATE TABLE IF NOT EXISTS `LEVEL_LIMITATION` (
   `LevelEntity_id` int(11) NOT NULL,
   `itemTypeLimitation` int(11) DEFAULT NULL,
@@ -423,13 +502,41 @@ CREATE TABLE IF NOT EXISTS `LEVEL_LIMITATION` (
   CONSTRAINT `FKiuvkgev9cw8g39baap1oyqhj4` FOREIGN KEY (`baseItemTypeEntityId`) REFERENCES `BASE_ITEM_TYPE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Exportiere Daten aus Tabelle razarion-test.LEVEL_LIMITATION: ~12 rows (ungefähr)
+-- Exportiere Daten aus Tabelle razarion-test.LEVEL_LIMITATION: ~0 rows (ungefähr)
 DELETE FROM `LEVEL_LIMITATION`;
 /*!40000 ALTER TABLE `LEVEL_LIMITATION` DISABLE KEYS */;
 /*!40000 ALTER TABLE `LEVEL_LIMITATION` ENABLE KEYS */;
 
+-- Exportiere Struktur von Tabelle razarion-test.PLACE_CONFIG
+CREATE TABLE IF NOT EXISTS `PLACE_CONFIG` (
+  `id` int(11) NOT NULL,
+  `x` double DEFAULT NULL,
+  `y` double DEFAULT NULL,
+  `radius` double DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.PLACE_CONFIG: ~0 rows (ungefähr)
+DELETE FROM `PLACE_CONFIG`;
+/*!40000 ALTER TABLE `PLACE_CONFIG` DISABLE KEYS */;
+/*!40000 ALTER TABLE `PLACE_CONFIG` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.PLACE_CONFIG_POSITION_POLYGON
+CREATE TABLE IF NOT EXISTS `PLACE_CONFIG_POSITION_POLYGON` (
+  `OWNER_ID` int(11) NOT NULL,
+  `x` double NOT NULL,
+  `y` double NOT NULL,
+  `orderColumn` int(11) NOT NULL,
+  PRIMARY KEY (`OWNER_ID`,`orderColumn`),
+  CONSTRAINT `FKmmbtyhe3hwrjo2djh1jnlfotc` FOREIGN KEY (`OWNER_ID`) REFERENCES `PLACE_CONFIG` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.PLACE_CONFIG_POSITION_POLYGON: ~0 rows (ungefähr)
+DELETE FROM `PLACE_CONFIG_POSITION_POLYGON`;
+/*!40000 ALTER TABLE `PLACE_CONFIG_POSITION_POLYGON` DISABLE KEYS */;
+/*!40000 ALTER TABLE `PLACE_CONFIG_POSITION_POLYGON` ENABLE KEYS */;
+
 -- Exportiere Struktur von Tabelle razarion-test.PLANET
-DROP TABLE IF EXISTS `PLANET`;
 CREATE TABLE IF NOT EXISTS `PLANET` (
   `id` int(11) NOT NULL,
   PRIMARY KEY (`id`)
@@ -440,8 +547,82 @@ DELETE FROM `PLANET`;
 /*!40000 ALTER TABLE `PLANET` DISABLE KEYS */;
 /*!40000 ALTER TABLE `PLANET` ENABLE KEYS */;
 
+-- Exportiere Struktur von Tabelle razarion-test.QUEST
+CREATE TABLE IF NOT EXISTS `QUEST` (
+  `id` int(11) NOT NULL,
+  `cristal` int(11) NOT NULL,
+  `hidePassedDialog` bit(1) NOT NULL,
+  `money` int(11) NOT NULL,
+  `xp` int(11) NOT NULL,
+  `conditionConfigEntity_id` int(11) DEFAULT NULL,
+  `description_id` int(11) DEFAULT NULL,
+  `passedMessage_id` int(11) DEFAULT NULL,
+  `title_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKg8ekfv29livdwri9llb7p620p` (`conditionConfigEntity_id`),
+  KEY `FK8lv5qeunaw77hqlwfticg7w55` (`description_id`),
+  KEY `FKmllgre0tlj3i2od98hfmfj9ry` (`passedMessage_id`),
+  KEY `FKmbk4qf213aih41banidutli49` (`title_id`),
+  CONSTRAINT `FK8lv5qeunaw77hqlwfticg7w55` FOREIGN KEY (`description_id`) REFERENCES `I18N_BUNDLE` (`id`),
+  CONSTRAINT `FKg8ekfv29livdwri9llb7p620p` FOREIGN KEY (`conditionConfigEntity_id`) REFERENCES `QUEST_CONDITION` (`id`),
+  CONSTRAINT `FKmbk4qf213aih41banidutli49` FOREIGN KEY (`title_id`) REFERENCES `I18N_BUNDLE` (`id`),
+  CONSTRAINT `FKmllgre0tlj3i2od98hfmfj9ry` FOREIGN KEY (`passedMessage_id`) REFERENCES `I18N_BUNDLE` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.QUEST: ~0 rows (ungefähr)
+DELETE FROM `QUEST`;
+/*!40000 ALTER TABLE `QUEST` DISABLE KEYS */;
+/*!40000 ALTER TABLE `QUEST` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.QUEST_COMPARISON
+CREATE TABLE IF NOT EXISTS `QUEST_COMPARISON` (
+  `id` int(11) NOT NULL,
+  `addExisting` bit(1) DEFAULT NULL,
+  `count` int(11) DEFAULT NULL,
+  `time` int(11) DEFAULT NULL,
+  `placeConfig_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKlgftwoj397x1478q83caeykv4` (`placeConfig_id`),
+  CONSTRAINT `FKlgftwoj397x1478q83caeykv4` FOREIGN KEY (`placeConfig_id`) REFERENCES `PLACE_CONFIG` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.QUEST_COMPARISON: ~0 rows (ungefähr)
+DELETE FROM `QUEST_COMPARISON`;
+/*!40000 ALTER TABLE `QUEST_COMPARISON` DISABLE KEYS */;
+/*!40000 ALTER TABLE `QUEST_COMPARISON` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.QUEST_COMPARISON_BASE_ITEM
+CREATE TABLE IF NOT EXISTS `QUEST_COMPARISON_BASE_ITEM` (
+  `ComparisonConfigEntity_id` int(11) NOT NULL,
+  `typeCount` int(11) DEFAULT NULL,
+  `baseItemTypeEntityId` int(11) NOT NULL,
+  PRIMARY KEY (`ComparisonConfigEntity_id`,`baseItemTypeEntityId`),
+  KEY `FKox69d9d2u7iegll4y4bua3uhn` (`baseItemTypeEntityId`),
+  CONSTRAINT `FKox69d9d2u7iegll4y4bua3uhn` FOREIGN KEY (`baseItemTypeEntityId`) REFERENCES `BASE_ITEM_TYPE` (`id`),
+  CONSTRAINT `FKqewsitlqloonk59cl0vlbyq6o` FOREIGN KEY (`ComparisonConfigEntity_id`) REFERENCES `QUEST_COMPARISON` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.QUEST_COMPARISON_BASE_ITEM: ~0 rows (ungefähr)
+DELETE FROM `QUEST_COMPARISON_BASE_ITEM`;
+/*!40000 ALTER TABLE `QUEST_COMPARISON_BASE_ITEM` DISABLE KEYS */;
+/*!40000 ALTER TABLE `QUEST_COMPARISON_BASE_ITEM` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.QUEST_CONDITION
+CREATE TABLE IF NOT EXISTS `QUEST_CONDITION` (
+  `id` int(11) NOT NULL,
+  `conditionTrigger` varchar(255) DEFAULT NULL,
+  `comparisonConfig_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKe3ke0d5alxod0vb59hbol2t5t` (`comparisonConfig_id`),
+  CONSTRAINT `FKe3ke0d5alxod0vb59hbol2t5t` FOREIGN KEY (`comparisonConfig_id`) REFERENCES `QUEST_COMPARISON` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.QUEST_CONDITION: ~0 rows (ungefähr)
+DELETE FROM `QUEST_CONDITION`;
+/*!40000 ALTER TABLE `QUEST_CONDITION` DISABLE KEYS */;
+/*!40000 ALTER TABLE `QUEST_CONDITION` ENABLE KEYS */;
+
 -- Exportiere Struktur von Tabelle razarion-test.RESOURCE_ITEM_TYPE
-DROP TABLE IF EXISTS `RESOURCE_ITEM_TYPE`;
 CREATE TABLE IF NOT EXISTS `RESOURCE_ITEM_TYPE` (
   `id` int(11) NOT NULL,
   `amount` int(11) NOT NULL,
@@ -456,10 +637,11 @@ CREATE TABLE IF NOT EXISTS `RESOURCE_ITEM_TYPE` (
 -- Exportiere Daten aus Tabelle razarion-test.RESOURCE_ITEM_TYPE: ~0 rows (ungefähr)
 DELETE FROM `RESOURCE_ITEM_TYPE`;
 /*!40000 ALTER TABLE `RESOURCE_ITEM_TYPE` DISABLE KEYS */;
+INSERT INTO `RESOURCE_ITEM_TYPE` (`id`, `amount`, `name`, `radius`, `shape3DId_id`) VALUES
+	(180829, 100000, 'Resource 1', 3, 180820);
 /*!40000 ALTER TABLE `RESOURCE_ITEM_TYPE` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.SCENE
-DROP TABLE IF EXISTS `SCENE`;
 CREATE TABLE IF NOT EXISTS `SCENE` (
   `id` int(11) NOT NULL,
   `cameraConfigCameraLocked` bit(1) NOT NULL,
@@ -483,8 +665,73 @@ DELETE FROM `SCENE`;
 /*!40000 ALTER TABLE `SCENE` DISABLE KEYS */;
 /*!40000 ALTER TABLE `SCENE` ENABLE KEYS */;
 
+-- Exportiere Struktur von Tabelle razarion-test.SERVER_GAME_ENGINE_BOT_CONFIG
+CREATE TABLE IF NOT EXISTS `SERVER_GAME_ENGINE_BOT_CONFIG` (
+  `serverGameEngineId` int(11) NOT NULL,
+  `botConfigId` int(11) NOT NULL,
+  UNIQUE KEY `UK_9w8m9rvbobngldmp0p3hdxgtl` (`botConfigId`),
+  KEY `FKh6pao5d5ikcs0h79x6gwx8tfj` (`serverGameEngineId`),
+  CONSTRAINT `FKh6pao5d5ikcs0h79x6gwx8tfj` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`),
+  CONSTRAINT `FKrlpv849ke6l8gyvfsm5f8ya9g` FOREIGN KEY (`botConfigId`) REFERENCES `BOT_CONFIG` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.SERVER_GAME_ENGINE_BOT_CONFIG: ~0 rows (ungefähr)
+DELETE FROM `SERVER_GAME_ENGINE_BOT_CONFIG`;
+/*!40000 ALTER TABLE `SERVER_GAME_ENGINE_BOT_CONFIG` DISABLE KEYS */;
+/*!40000 ALTER TABLE `SERVER_GAME_ENGINE_BOT_CONFIG` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.SERVER_GAME_ENGINE_CONFIG
+CREATE TABLE IF NOT EXISTS `SERVER_GAME_ENGINE_CONFIG` (
+  `id` int(11) NOT NULL,
+  `planetEntity_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKcj2w622aa54egcdbyynkvtfu6` (`planetEntity_id`),
+  CONSTRAINT `FKcj2w622aa54egcdbyynkvtfu6` FOREIGN KEY (`planetEntity_id`) REFERENCES `PLANET` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.SERVER_GAME_ENGINE_CONFIG: ~0 rows (ungefähr)
+DELETE FROM `SERVER_GAME_ENGINE_CONFIG`;
+/*!40000 ALTER TABLE `SERVER_GAME_ENGINE_CONFIG` DISABLE KEYS */;
+/*!40000 ALTER TABLE `SERVER_GAME_ENGINE_CONFIG` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.SERVER_GAME_ENGINE_START_REGION
+CREATE TABLE IF NOT EXISTS `SERVER_GAME_ENGINE_START_REGION` (
+  `serverGameEngineId` int(11) NOT NULL,
+  `x` double NOT NULL,
+  `y` double NOT NULL,
+  `orderColumn` int(11) NOT NULL,
+  PRIMARY KEY (`serverGameEngineId`,`orderColumn`),
+  CONSTRAINT `FKq8oi0ffo2nnt7wk4nf5e7lde3` FOREIGN KEY (`serverGameEngineId`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.SERVER_GAME_ENGINE_START_REGION: ~0 rows (ungefähr)
+DELETE FROM `SERVER_GAME_ENGINE_START_REGION`;
+/*!40000 ALTER TABLE `SERVER_GAME_ENGINE_START_REGION` DISABLE KEYS */;
+/*!40000 ALTER TABLE `SERVER_GAME_ENGINE_START_REGION` ENABLE KEYS */;
+
+-- Exportiere Struktur von Tabelle razarion-test.SERVER_RESOURCE_REGION_CONFIG
+CREATE TABLE IF NOT EXISTS `SERVER_RESOURCE_REGION_CONFIG` (
+  `id` int(11) NOT NULL,
+  `count` int(11) NOT NULL,
+  `minDistanceToItems` double NOT NULL,
+  `region_id` int(11) DEFAULT NULL,
+  `resourceItemType_id` int(11) DEFAULT NULL,
+  `resourceRegionConfigs_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKrwr42mqa70kps709cr58h2iir` (`region_id`),
+  KEY `FKms0li4pxnifye8592vt0yksum` (`resourceItemType_id`),
+  KEY `FKtrfro1i7d58wvrixn4rq425ft` (`resourceRegionConfigs_id`),
+  CONSTRAINT `FKms0li4pxnifye8592vt0yksum` FOREIGN KEY (`resourceItemType_id`) REFERENCES `RESOURCE_ITEM_TYPE` (`id`),
+  CONSTRAINT `FKrwr42mqa70kps709cr58h2iir` FOREIGN KEY (`region_id`) REFERENCES `PLACE_CONFIG` (`id`),
+  CONSTRAINT `FKtrfro1i7d58wvrixn4rq425ft` FOREIGN KEY (`resourceRegionConfigs_id`) REFERENCES `SERVER_GAME_ENGINE_CONFIG` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Exportiere Daten aus Tabelle razarion-test.SERVER_RESOURCE_REGION_CONFIG: ~0 rows (ungefähr)
+DELETE FROM `SERVER_RESOURCE_REGION_CONFIG`;
+/*!40000 ALTER TABLE `SERVER_RESOURCE_REGION_CONFIG` DISABLE KEYS */;
+/*!40000 ALTER TABLE `SERVER_RESOURCE_REGION_CONFIG` ENABLE KEYS */;
+
 -- Exportiere Struktur von Tabelle razarion-test.SLOPE_CONFIG
-DROP TABLE IF EXISTS `SLOPE_CONFIG`;
 CREATE TABLE IF NOT EXISTS `SLOPE_CONFIG` (
   `id` int(11) NOT NULL,
   `bmDepth` double NOT NULL,
@@ -527,7 +774,6 @@ DELETE FROM `SLOPE_CONFIG`;
 /*!40000 ALTER TABLE `SLOPE_CONFIG` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.SLOPE_NODE
-DROP TABLE IF EXISTS `SLOPE_NODE`;
 CREATE TABLE IF NOT EXISTS `SLOPE_NODE` (
   `id` int(11) NOT NULL,
   `x` double NOT NULL,
@@ -548,7 +794,6 @@ DELETE FROM `SLOPE_NODE`;
 /*!40000 ALTER TABLE `SLOPE_NODE` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.SLOPE_SHAPE
-DROP TABLE IF EXISTS `SLOPE_SHAPE`;
 CREATE TABLE IF NOT EXISTS `SLOPE_SHAPE` (
   `id` int(11) NOT NULL,
   `x` double NOT NULL,
@@ -567,7 +812,6 @@ DELETE FROM `SLOPE_SHAPE`;
 /*!40000 ALTER TABLE `SLOPE_SHAPE` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TERRAIN_OBJECT
-DROP TABLE IF EXISTS `TERRAIN_OBJECT`;
 CREATE TABLE IF NOT EXISTS `TERRAIN_OBJECT` (
   `id` int(11) NOT NULL,
   `internalName` varchar(255) DEFAULT NULL,
@@ -584,7 +828,6 @@ DELETE FROM `TERRAIN_OBJECT`;
 /*!40000 ALTER TABLE `TERRAIN_OBJECT` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TERRAIN_OBJECT_POSITION
-DROP TABLE IF EXISTS `TERRAIN_OBJECT_POSITION`;
 CREATE TABLE IF NOT EXISTS `TERRAIN_OBJECT_POSITION` (
   `id` int(11) NOT NULL,
   `x` double NOT NULL,
@@ -606,7 +849,6 @@ DELETE FROM `TERRAIN_OBJECT_POSITION`;
 /*!40000 ALTER TABLE `TERRAIN_OBJECT_POSITION` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TERRAIN_SLOPE_POSITION
-DROP TABLE IF EXISTS `TERRAIN_SLOPE_POSITION`;
 CREATE TABLE IF NOT EXISTS `TERRAIN_SLOPE_POSITION` (
   `id` int(11) NOT NULL,
   `slopeConfigEntity_id` int(11) NOT NULL,
@@ -624,7 +866,6 @@ DELETE FROM `TERRAIN_SLOPE_POSITION`;
 /*!40000 ALTER TABLE `TERRAIN_SLOPE_POSITION` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TERRAIN_SLOPE_POSITION_POLYGON
-DROP TABLE IF EXISTS `TERRAIN_SLOPE_POSITION_POLYGON`;
 CREATE TABLE IF NOT EXISTS `TERRAIN_SLOPE_POSITION_POLYGON` (
   `OWNER_ID` int(11) NOT NULL,
   `x` double NOT NULL,
@@ -640,7 +881,6 @@ DELETE FROM `TERRAIN_SLOPE_POSITION_POLYGON`;
 /*!40000 ALTER TABLE `TERRAIN_SLOPE_POSITION_POLYGON` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_GAME_UI_CONTROL
-DROP TABLE IF EXISTS `TRACKER_GAME_UI_CONTROL`;
 CREATE TABLE IF NOT EXISTS `TRACKER_GAME_UI_CONTROL` (
   `id` int(11) NOT NULL,
   `clientStartTime` datetime DEFAULT NULL,
@@ -659,7 +899,6 @@ DELETE FROM `TRACKER_GAME_UI_CONTROL`;
 /*!40000 ALTER TABLE `TRACKER_GAME_UI_CONTROL` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_PAGE
-DROP TABLE IF EXISTS `TRACKER_PAGE`;
 CREATE TABLE IF NOT EXISTS `TRACKER_PAGE` (
   `id` int(11) NOT NULL,
   `page` varchar(255) DEFAULT NULL,
@@ -677,7 +916,6 @@ DELETE FROM `TRACKER_PAGE`;
 /*!40000 ALTER TABLE `TRACKER_PAGE` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_PERFMON
-DROP TABLE IF EXISTS `TRACKER_PERFMON`;
 CREATE TABLE IF NOT EXISTS `TRACKER_PERFMON` (
   `id` int(11) NOT NULL,
   `clientTimeStamp` datetime DEFAULT NULL,
@@ -694,7 +932,6 @@ DELETE FROM `TRACKER_PERFMON`;
 /*!40000 ALTER TABLE `TRACKER_PERFMON` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_PERFMON_DURATION
-DROP TABLE IF EXISTS `TRACKER_PERFMON_DURATION`;
 CREATE TABLE IF NOT EXISTS `TRACKER_PERFMON_DURATION` (
   `perfmonStatisticEntityId` int(11) NOT NULL,
   `avgDuration` double DEFAULT NULL,
@@ -709,7 +946,6 @@ DELETE FROM `TRACKER_PERFMON_DURATION`;
 /*!40000 ALTER TABLE `TRACKER_PERFMON_DURATION` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_PERFMON_FREQUENCY
-DROP TABLE IF EXISTS `TRACKER_PERFMON_FREQUENCY`;
 CREATE TABLE IF NOT EXISTS `TRACKER_PERFMON_FREQUENCY` (
   `perfmonStatisticEntityId` int(11) NOT NULL,
   `frequency` double DEFAULT NULL,
@@ -724,7 +960,6 @@ DELETE FROM `TRACKER_PERFMON_FREQUENCY`;
 /*!40000 ALTER TABLE `TRACKER_PERFMON_FREQUENCY` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_SCENE
-DROP TABLE IF EXISTS `TRACKER_SCENE`;
 CREATE TABLE IF NOT EXISTS `TRACKER_SCENE` (
   `id` int(11) NOT NULL,
   `clientStartTime` datetime DEFAULT NULL,
@@ -744,7 +979,6 @@ DELETE FROM `TRACKER_SCENE`;
 /*!40000 ALTER TABLE `TRACKER_SCENE` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_SESSION
-DROP TABLE IF EXISTS `TRACKER_SESSION`;
 CREATE TABLE IF NOT EXISTS `TRACKER_SESSION` (
   `id` int(11) NOT NULL,
   `language` varchar(255) DEFAULT NULL,
@@ -758,13 +992,12 @@ CREATE TABLE IF NOT EXISTS `TRACKER_SESSION` (
   KEY `IDXtmu9rd272j5lofhd2c8rh6fxh` (`sessionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Exportiere Daten aus Tabelle razarion-test.TRACKER_SESSION: ~2 rows (ungefähr)
+-- Exportiere Daten aus Tabelle razarion-test.TRACKER_SESSION: ~0 rows (ungefähr)
 DELETE FROM `TRACKER_SESSION`;
 /*!40000 ALTER TABLE `TRACKER_SESSION` DISABLE KEYS */;
 /*!40000 ALTER TABLE `TRACKER_SESSION` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_STARTUP_TASK
-DROP TABLE IF EXISTS `TRACKER_STARTUP_TASK`;
 CREATE TABLE IF NOT EXISTS `TRACKER_STARTUP_TASK` (
   `id` int(11) NOT NULL,
   `clientStartTime` datetime DEFAULT NULL,
@@ -785,7 +1018,6 @@ DELETE FROM `TRACKER_STARTUP_TASK`;
 /*!40000 ALTER TABLE `TRACKER_STARTUP_TASK` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.TRACKER_STARTUP_TERMINATED
-DROP TABLE IF EXISTS `TRACKER_STARTUP_TERMINATED`;
 CREATE TABLE IF NOT EXISTS `TRACKER_STARTUP_TERMINATED` (
   `id` int(11) NOT NULL,
   `gameSessionUuid` varchar(190) DEFAULT NULL,
@@ -804,7 +1036,6 @@ DELETE FROM `TRACKER_STARTUP_TERMINATED`;
 /*!40000 ALTER TABLE `TRACKER_STARTUP_TERMINATED` ENABLE KEYS */;
 
 -- Exportiere Struktur von Tabelle razarion-test.USER
-DROP TABLE IF EXISTS `USER`;
 CREATE TABLE IF NOT EXISTS `USER` (
   `id` int(11) NOT NULL,
   `admin` bit(1) NOT NULL,
@@ -818,7 +1049,7 @@ CREATE TABLE IF NOT EXISTS `USER` (
   CONSTRAINT `FKdvrsr9xke3jgbsxgaarr9cica` FOREIGN KEY (`humanPlayerIdEntity_id`) REFERENCES `HUMAN_PLAYER_ENTITY` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- Exportiere Daten aus Tabelle razarion-test.USER: ~1 rows (ungefähr)
+-- Exportiere Daten aus Tabelle razarion-test.USER: ~0 rows (ungefähr)
 DELETE FROM `USER`;
 /*!40000 ALTER TABLE `USER` DISABLE KEYS */;
 /*!40000 ALTER TABLE `USER` ENABLE KEYS */;

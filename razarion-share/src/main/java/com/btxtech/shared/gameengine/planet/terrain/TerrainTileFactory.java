@@ -42,8 +42,6 @@ public class TerrainTileFactory {
     @Inject
     private Instance<TerrainWaterTileContext> terrainWaterTileContextInstance;
     @Inject
-    private TerrainService terrainService;
-    @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
     private ObstacleContainer obstacleContainer;
@@ -89,7 +87,7 @@ public class TerrainTileFactory {
                     return;
                 }
                 if (obstacleContainerNode.isFullWater()) {
-                    terrainTileContext.insertDisplayHeight(nodeIndex, terrainService.getPlanetConfig().getWaterLevel());
+                    terrainTileContext.insertDisplayHeight(nodeIndex, terrainTypeService.getWaterLevel());
                     return;
                 }
             } else {
@@ -556,11 +554,11 @@ public class TerrainTileFactory {
                 return;
             }
             if (obstacleContainerNode.isFullWater()) {
-                terrainWaterTileContext.insertNode(nodeIndex, terrainService.getPlanetConfig().getWaterLevel());
+                terrainWaterTileContext.insertNode(nodeIndex, terrainTypeService.getWaterLevel());
                 return;
             }
             if (obstacleContainerNode.isFractionWater() && obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), terrainService.getPlanetConfig().getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), terrainTypeService.getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
             }
         });
         terrainWaterTileContext.complete();

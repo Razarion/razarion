@@ -5,10 +5,11 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -73,8 +74,6 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
-            case INITIALIZE:
-            case INITIALIZE_WARM:
             case COMMAND_ATTACK:
             case COMMAND_FINALIZE_BUILD:
             case COMMAND_FABRICATE:
@@ -93,6 +92,7 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
+            case INITIALIZE_WARM:
             case COMMAND_BUILD:
             case PROJECTILE_FIRED:
             case TERRAIN_OVERLAP_TYPE:
@@ -101,6 +101,7 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             // Quadruple JSON data
+            case INITIALIZE:
             case TICK_UPDATE_RESPONSE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
@@ -142,12 +143,15 @@ public class WorkerMarshaller {
             case TICK_UPDATE_RESPONSE_FAIL:
                 break;
             case INITIALIZE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), GameEngineConfig.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), UserContext.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_0), StaticGameConfig.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), PlanetConfig.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), SlaveSyncItemInfo.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_3), UserContext.class));
                 break;
             case INITIALIZE_WARM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), PlanetConfig.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), UserContext.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), SlaveSyncItemInfo.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), UserContext.class));
                 break;
             case INITIALISING_FAILED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), String.class));

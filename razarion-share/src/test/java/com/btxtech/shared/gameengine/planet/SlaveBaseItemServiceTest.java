@@ -4,6 +4,7 @@ import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -25,13 +26,12 @@ import java.util.List;
 public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
     @Test
     public void test() {
-        PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setGameEngineMode(GameEngineMode.SLAVE);
+        SlaveSyncItemInfo slaveSyncItemInfo = new SlaveSyncItemInfo();
         // Setup bases
         List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
         playerBaseInfos.add(new PlayerBaseInfo().setBaseId(99).setCharacter(Character.HUMAN).setName("Test human base 1").setResources(211).setHumanPlayerId(new HumanPlayerId().setPlayerId(105)));
         playerBaseInfos.add(new PlayerBaseInfo().setBaseId(40).setCharacter(Character.BOT).setName("Test bot base 1"));
-        planetConfig.setPlayerBaseInfos(playerBaseInfos);
+        slaveSyncItemInfo.setPlayerBaseInfos(playerBaseInfos);
         // Setup SyncBaseItemInfo
         List<SyncBaseItemInfo> syncBaseItemInfos = new ArrayList<>();
         // Attacker
@@ -49,10 +49,9 @@ public class SlaveBaseItemServiceTest extends BaseItemServiceBase {
         SyncBaseItemInfo factoryInfo = new SyncBaseItemInfo().setId(107).setBaseId(99).setItemTypeId(FACTORY_ITEM_TYPE_ID).setSyncPhysicalAreaInfo(syncPhysicalAreaInfo).setBuildup(1.0).setHealth(0.5).setSpawnProgress(0.0);
         factoryInfo.setFactoryBuildupProgress(0.45).setToBeBuiltTypeId(BUILDER_ITEM_TYPE_ID).setRallyPoint(new DecimalPosition(300, 150));
         syncBaseItemInfos.add(factoryInfo);
+        slaveSyncItemInfo.setSyncBaseItemInfos(syncBaseItemInfos);
 
-        planetConfig.setSyncBaseItemInfos(syncBaseItemInfos);
-
-        setup(planetConfig);
+        setup(new PlanetConfig(), GameEngineMode.SLAVE, null, slaveSyncItemInfo);
 
         // Verify
         SyncBaseItem builder = getSyncItemContainerService().getSyncBaseItemSave(15);

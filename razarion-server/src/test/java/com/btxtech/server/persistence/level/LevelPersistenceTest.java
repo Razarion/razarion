@@ -6,6 +6,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,8 @@ import java.util.Map;
 public class LevelPersistenceTest extends ArquillianBaseTest {
     @Inject
     private LevelPersistence levelPersistence;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Test
     public void testCrud() {
@@ -51,6 +55,7 @@ public class LevelPersistenceTest extends ArquillianBaseTest {
         } catch (IllegalArgumentException ignore) {
             // Expected
         }
+        Assert.assertEquals(0, ((Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM LEVEL_LIMITATION").getSingleResult()).intValue());
     }
 
     private LevelConfig getLevelConfig(int levelId, List<LevelConfig> levelConfigs) {

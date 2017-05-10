@@ -5,12 +5,13 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
+import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
+import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -93,14 +94,14 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.STOP_REQUEST);
     }
 
-    public void init(GameEngineConfig gameEngineConfig, DeferredStartup initializationReferredStartup) {
+    public void init(GameUiControlConfig gameUiControlConfig, DeferredStartup initializationReferredStartup) {
         this.deferredStartup = initializationReferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE, gameEngineConfig, userUiService.getUserContext());
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE, gameUiControlConfig.getStaticGameConfig(), gameUiControlConfig.getPlanetConfig(), gameUiControlConfig.getSlaveSyncItemInfo(), userUiService.getUserContext());
     }
 
-    public void initWarm(PlanetConfig planetConfig, DeferredStartup deferredStartup) {
+    public void initWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext());
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, slaveSyncItemInfo, userUiService.getUserContext());
     }
 
     void startBots(List<BotConfig> botConfigs) {

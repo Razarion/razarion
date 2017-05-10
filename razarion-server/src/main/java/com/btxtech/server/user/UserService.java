@@ -1,6 +1,7 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.persistence.GameEngineConfigPersistence;
+import com.btxtech.server.persistence.StaticGameConfigPersistence;
+import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.HumanPlayerId;
@@ -37,6 +38,8 @@ public class UserService {
     private FilePropertiesService filePropertiesService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private LevelPersistence levelPersistence;
     private Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
@@ -83,7 +86,7 @@ public class UserService {
     private UserContext createUnregisteredUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        userContext.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
+        userContext.setLevelId(StaticGameConfigPersistence.FIRST_LEVEL_ID);
         userContext.setName("Fake name");
         return userContext;
     }
@@ -104,7 +107,7 @@ public class UserService {
     private UserEntity createUser(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId());
-        userEntity.setLevelId(GameEngineConfigPersistence.FIRST_LEVEL_ID);
+        userEntity.setLevelId(StaticGameConfigPersistence.FIRST_LEVEL_ID);
         entityManager.persist(userEntity);
         return userEntity;
     }
@@ -158,5 +161,13 @@ public class UserService {
             throw new IllegalArgumentException("No userContext for sessionId: " + sessionId);
         }
         return userContext;
+    }
+
+    // GameUiControlEntity has minimal level. Should be handled with that
+    @Deprecated
+    public boolean isMultiplayer() {
+        UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
+        int levelNumber = levelPersistence.read(userContext.getLevelId()).getId();
+        return levelNumber >= StaticGameConfigPersistence.MULTI_PLAYER_PLANET_LEVEL_ID;
     }
 }

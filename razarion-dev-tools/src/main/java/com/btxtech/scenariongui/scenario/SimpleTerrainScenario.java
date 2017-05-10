@@ -9,9 +9,8 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
@@ -88,10 +87,10 @@ public class SimpleTerrainScenario extends Scenario {
                 {0, 0, 0, 0},
         };
         TerrainTypeService terrainTypeService = new TerrainTypeService();
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
+        StaticGameConfig staticGameConfig = new StaticGameConfig();
 
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        gameEngineConfig.setGroundSkeletonConfig(groundSkeletonConfig);
+        staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         groundSkeletonConfig.setHeights(FrameworkHelper.toColumnRow(heights));
         groundSkeletonConfig.setHeightXCount(heights[0].length);
         groundSkeletonConfig.setHeightYCount(heights.length);
@@ -124,9 +123,9 @@ public class SimpleTerrainScenario extends Scenario {
         slopeSkeletonConfigWater.setSlopeNodes(FrameworkHelper.toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
-        gameEngineConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
+        staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
 
-        terrainTypeService.init(gameEngineConfig);
+        terrainTypeService.init(staticGameConfig);
         FrameworkHelper.injectService("terrainTypeService", terrainService, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();

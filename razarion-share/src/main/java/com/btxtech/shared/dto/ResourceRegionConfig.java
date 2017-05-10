@@ -23,7 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  */
 public class ResourceRegionConfig {
     private int count;
-    private int minDistanceToItems;
+    private double minDistanceToItems;
     private int resourceItemTypeId;
     private PlaceConfig region;
 
@@ -45,11 +45,11 @@ public class ResourceRegionConfig {
         return this;
     }
 
-    public int getMinDistanceToItems() {
+    public double getMinDistanceToItems() {
         return minDistanceToItems;
     }
 
-    public ResourceRegionConfig setMinDistanceToItems(int minDistanceToItems) {
+    public ResourceRegionConfig setMinDistanceToItems(double minDistanceToItems) {
         this.minDistanceToItems = minDistanceToItems;
         return this;
     }

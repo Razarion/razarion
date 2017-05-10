@@ -17,7 +17,7 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.GameEngineConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
@@ -54,15 +54,16 @@ public class ExperimentalTask extends AbstractStartupTask {
     }
 
     private GameUiControlConfig setupGameUiControlConfig() {
-        GameEngineConfig gameEngineConfig = new GameEngineConfig();
-        gameEngineConfig.setGroundSkeletonConfig(defaultGroundSkeletonConfig());
-        gameEngineConfig.setLevelConfigs(Collections.emptyList());
-        gameEngineConfig.setPlanetConfig(defaultPlanetConfig());
+        StaticGameConfig staticGameConfig = new StaticGameConfig();
+        staticGameConfig.setGroundSkeletonConfig(defaultGroundSkeletonConfig());
+        staticGameConfig.setLevelConfigs(Collections.emptyList());
+        // TODO staticGameConfig.setPlanetConfig(defaultPlanetConfig());
+        staticGameConfig.setWaterLevel(-0.7);
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
         gameUiControlConfig.setUserContext(new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
         gameUiControlConfig.setVisualConfig(defaultVisualConfig());
         gameUiControlConfig.setAudioConfig(new AudioConfig());
-        gameUiControlConfig.setGameEngineConfig(gameEngineConfig);
+        gameUiControlConfig.setStaticGameConfig(staticGameConfig);
         gameUiControlConfig.setSceneConfigs(defaultSceneConfigs());
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());
         return gameUiControlConfig;
@@ -139,7 +140,6 @@ public class ExperimentalTask extends AbstractStartupTask {
         planetConfig.setHouseSpace(10);
         planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setPlayGround(new Rectangle2D(50, 40, 310, 320));
-        planetConfig.setWaterLevel(-0.7);
         planetConfig.setStartRazarion(550);
         return planetConfig;
     }

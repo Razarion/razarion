@@ -53,7 +53,11 @@ public class ItemTypePersistence {
 
     @Transactional
     public BaseItemTypeEntity readBaseItemTypeEntity(int id) {
-        return entityManager.find(BaseItemTypeEntity.class, id);
+        BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, id);
+        if (baseItemTypeEntity == null) {
+            throw new IllegalArgumentException("No BaseItemTypeEntity for id: " + id);
+        }
+        return baseItemTypeEntity;
     }
 
     @Transactional
@@ -78,6 +82,16 @@ public class ItemTypePersistence {
         ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
         entityManager.persist(resourceItemTypeEntity);
         return resourceItemTypeEntity.toResourceItemType();
+    }
+
+    @Transactional
+    public ResourceItemTypeEntity readResourceItemTypeEntity(int id) {
+        ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, id);
+        if (resourceItemTypeEntity == null) {
+            throw new IllegalArgumentException("No ResourceItemTypeEntity for id: " + id);
+        }
+        return resourceItemTypeEntity;
+
     }
 
     @Transactional
