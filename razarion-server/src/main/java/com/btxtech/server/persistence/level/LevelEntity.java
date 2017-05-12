@@ -55,6 +55,10 @@ public class LevelEntity {
         this.itemTypeLimitation.putAll(itemTypeLimitation);
     }
 
+    public int getNumber() {
+        return number;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -85,4 +85,13 @@ public class LevelPersistence {
         userQuery.orderBy(criteriaBuilder.asc(from.get(LevelEntity_.number)));
         return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult().getId();
     }
+
+    @Transactional
+    public int getLevelNumber4Id(int levelId) {
+        LevelEntity levelEntity =  entityManager.find(LevelEntity.class, levelId);
+        if (levelEntity == null) {
+            throw new IllegalArgumentException("No level for id: " + levelId);
+        }
+        return levelEntity.getNumber();
+    }
 }
