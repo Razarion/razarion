@@ -43,7 +43,6 @@ import java.util.Map;
  */
 @ApplicationScoped
 public class StaticGameConfigPersistence {
-    public static final int FIRST_LEVEL_ID = 1;
     @Deprecated
     // GameUiControlEntity has minimal level. Should be handled with that
     public static final int MULTI_PLAYER_PLANET_LEVEL_ID = 5;

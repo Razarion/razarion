@@ -2,7 +2,9 @@ package com.btxtech.server;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
@@ -25,6 +27,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -33,12 +37,19 @@ import java.io.File;
 @Ignore
 @RunWith(Arquillian.class)
 public class ArquillianBaseTest {
+    // Item types
     public static int BASE_ITEM_TYPE_BULLDOZER_ID;
     public static int BASE_ITEM_TYPE_HARVESTER_ID;
     public static int BASE_ITEM_TYPE_ATTACKER_ID;
     public static int BASE_ITEM_TYPE_FACTORY_ID;
     public static int BASE_ITEM_TYPE_TOWER_ID;
     public static int RESOURCE_ITEM_TYPE_ID;
+    // Levels
+    public static int LEVEL_1_ID;
+    public static int LEVEL_2_ID;
+    public static int LEVEL_3_ID;
+    public static int LEVEL_4_ID;
+
     @Inject
     private UserTransaction utx;
     @PersistenceContext
@@ -103,8 +114,8 @@ public class ArquillianBaseTest {
     protected void cleanItemTypes() throws Exception {
         utx.begin();
         em.joinTransaction();
-        em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();;
-        em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();;
+        em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();
         utx.commit();
     }
 
@@ -126,5 +137,57 @@ public class ArquillianBaseTest {
         em.persist(resourceItemTypeEntity);
         utx.commit();
         return resourceItemTypeEntity.getId();
+    }
+
+    protected void setupLevels() throws Exception {
+        setupItemTypes();
+        utx.begin();
+        em.joinTransaction();
+
+        // Level 1
+        LevelEntity levelEntity1 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation1 = new HashMap<>();
+        itemTypeLimitation1.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        levelEntity1.fromLevelConfig(new LevelConfig().setNumber(1).setXp2LevelUp(10), itemTypeLimitation1);
+        em.persist(levelEntity1);
+        LEVEL_1_ID = levelEntity1.getId();
+        // Level 2
+        LevelEntity levelEntity2 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation2 = new HashMap<>();
+        itemTypeLimitation2.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation2.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        levelEntity2.fromLevelConfig(new LevelConfig().setNumber(2).setXp2LevelUp(20), itemTypeLimitation2);
+        em.persist(levelEntity2);
+        LEVEL_2_ID = levelEntity2.getId();
+        // Level 3
+        LevelEntity levelEntity3 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation3 = new HashMap<>();
+        itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        levelEntity3.fromLevelConfig(new LevelConfig().setNumber(3).setXp2LevelUp(30), itemTypeLimitation3);
+        em.persist(levelEntity3);
+        LEVEL_3_ID = levelEntity3.getId();
+        // Level 4
+        LevelEntity levelEntity4 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation4 = new HashMap<>();
+        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
+        levelEntity4.fromLevelConfig(new LevelConfig().setNumber(4).setXp2LevelUp(40), itemTypeLimitation4);
+        em.persist(levelEntity4);
+        LEVEL_4_ID = levelEntity4.getId();
+
+        utx.commit();
+    }
+
+    protected void cleanLevels() throws Exception {
+        utx.begin();
+        em.joinTransaction();
+        em.createNativeQuery("DELETE FROM LEVEL_LIMITATION").executeUpdate();
+        em.createQuery("DELETE FROM LevelEntity").executeUpdate();
+        utx.commit();
+        cleanItemTypes();
     }
 }

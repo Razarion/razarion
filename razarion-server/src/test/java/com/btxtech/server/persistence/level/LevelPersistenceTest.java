@@ -61,6 +61,13 @@ public class LevelPersistenceTest extends ArquillianBaseTest {
         cleanItemTypes();
     }
 
+    @Test
+    public void testStarterLevelId() throws Exception {
+        setupLevels();
+        Assert.assertEquals(LEVEL_1_ID, levelPersistence.getStarterLevelId());
+        cleanLevels();
+    }
+
     private LevelConfig getLevelConfig(int levelId, List<LevelConfig> levelConfigs) {
         for (LevelConfig levelConfig : levelConfigs) {
             if (levelConfig.getLevelId() == levelId) {

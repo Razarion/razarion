@@ -86,8 +86,8 @@ public class UserService {
     private UserContext createUnregisteredUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        userContext.setLevelId(StaticGameConfigPersistence.FIRST_LEVEL_ID);
-        userContext.setName("Fake name");
+        userContext.setLevelId(levelPersistence.getStarterLevelId());
+        userContext.setName("Unregistered User");
         return userContext;
     }
 
@@ -98,7 +98,6 @@ public class UserService {
 
     private UserContext loginUserContext(UserContext userContext) {
         sessionHolder.getPlayerSession().setUserContext(userContext);
-        userContext.setName("Emulator Name");// TODO
         loggedInUserContext.put(sessionHolder.getPlayerSession().getHttpSessionId(), userContext);
         return userContext;
     }
@@ -107,7 +106,7 @@ public class UserService {
     private UserEntity createUser(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId());
-        userEntity.setLevelId(StaticGameConfigPersistence.FIRST_LEVEL_ID);
+        userEntity.setLevelId(levelPersistence.getStarterLevelId());
         entityManager.persist(userEntity);
         return userEntity;
     }

@@ -75,4 +75,14 @@ public class LevelPersistence {
     public void delete(int id) {
         entityManager.remove(read(id));
     }
+
+    @Transactional
+    public int getStarterLevelId() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
+        Root<LevelEntity> from = userQuery.from(LevelEntity.class);
+        CriteriaQuery<LevelEntity> userSelect = userQuery.select(from);
+        userQuery.orderBy(criteriaBuilder.asc(from.get(LevelEntity_.number)));
+        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult().getId();
+    }
 }

@@ -43,7 +43,7 @@ public class UserEntity {
 
     public UserContext createUser() {
         HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
-        return new UserContext().setHumanPlayerId(humanPlayerId).setLevelId(levelId).setAdmin(admin);
+        return new UserContext().setName("Registered User").setHumanPlayerId(humanPlayerId).setLevelId(levelId).setAdmin(admin);
     }
 
     public int getLevelId() {
