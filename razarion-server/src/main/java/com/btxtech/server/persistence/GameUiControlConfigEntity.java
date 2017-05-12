@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -25,7 +26,7 @@ import java.util.List;
 @Table(name = "GAME_UI_CONTROL_CONFIG")
 public class GameUiControlConfigEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private PlanetEntity planetEntity;
@@ -36,6 +37,10 @@ public class GameUiControlConfigEntity {
     @OneToOne
     private LevelEntity minimalLevel;
 
+    public Integer getId() {
+        return id;
+    }
+
     public GameUiControlConfig toGameUiControlConfig() {
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
         gameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
@@ -45,6 +50,22 @@ public class GameUiControlConfigEntity {
         }
         gameUiControlConfig.setSceneConfigs(sceneConfigs);
         return gameUiControlConfig;
+    }
+
+    public PlanetEntity getPlanetEntity() {
+        return planetEntity;
+    }
+
+    public void setPlanetEntity(PlanetEntity planetEntity) {
+        this.planetEntity = planetEntity;
+    }
+
+    public LevelEntity getMinimalLevel() {
+        return minimalLevel;
+    }
+
+    public void setMinimalLevel(LevelEntity minimalLevel) {
+        this.minimalLevel = minimalLevel;
     }
 
     @Override

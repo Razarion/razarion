@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.gameengine.GameEngineService;
+import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.UserService;
@@ -40,6 +41,11 @@ import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -59,7 +65,8 @@ public class GameUiControlConfigPersistence {
     private static final int NPC_BOT_OUTPOST_2 = 2;
     private static final int NPC_BOT_INSTRUCTOR = 3;
     private static final int ENEMY_BOT = 4;
-    public static final int PLANET_BOT_1 = 5;
+    @PersistenceContext
+    private EntityManager entityManager;
     @Inject
     private Shape3DPersistence shape3DPersistence;
     @Inject
@@ -88,13 +95,15 @@ public class GameUiControlConfigPersistence {
     }
 
     private GameUiControlConfigEntity load4Level(int levelId) {
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<GameUiControlConfigEntity> query = criteriaBuilder.createQuery(GameUiControlConfigEntity.class);
-//        Root<GameUiControlConfigEntity> root = query.from(GameUiControlConfigEntity.class);
-//        query.where(criteriaBuilder.equal(root.get(GameUiControlConfigEntity_.id), gameUiControlConfigEntityId));
-//        CriteriaQuery<GameUiControlConfigEntity> userSelect = query.select(root);
-//        return entityManager.createQuery(userSelect).getSingleResult();
-        throw new UnsupportedOperationException("... TODO ... load the GameUiControlConfigEntity with the biggest level possible with my level");
+        int levelNumber = levelPersistence.getLevelNumber4Id(levelId);
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<GameUiControlConfigEntity> query = criteriaBuilder.createQuery(GameUiControlConfigEntity.class);
+        Root<GameUiControlConfigEntity> root = query.from(GameUiControlConfigEntity.class);
+        query.where(criteriaBuilder.lessThanOrEqualTo(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number), levelNumber));
+        CriteriaQuery<GameUiControlConfigEntity> userSelect = query.select(root);
+        query.orderBy(criteriaBuilder.asc(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number)));
+        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
     }
 
     private GameTipVisualConfig defaultGameTipVisualConfig() {

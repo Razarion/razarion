@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -105,6 +106,9 @@ public class GroundConfigEntity {
         bottomBm = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getBottomBmId());
         bottomBmScale = groundConfig.getGroundSkeletonConfig().getBottomBmScale();
         bottomBmDepth = groundConfig.getGroundSkeletonConfig().getBottomBmDepth();
+        if(lightConfigEmbeddable == null) {
+            lightConfigEmbeddable = new LightConfigEmbeddable();
+        }
         lightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeletonConfig().getLightConfig());
         splattingFractalMin = groundConfig.getSplattingFractalMin();
         splattingFractalMax = groundConfig.getSplattingFractalMax();
@@ -113,6 +117,9 @@ public class GroundConfigEntity {
         splattingFractalRoughness = groundConfig.getSplattingFractalRoughness();
         splattingXCount = groundConfig.getGroundSkeletonConfig().getSplattingXCount();
         splattingYCount = groundConfig.getGroundSkeletonConfig().getSplattingYCount();
+        if(splattings == null) {
+            splattings = new ArrayList<>();
+        }
         splattings.clear();
         for (int x = 0; x < splattingXCount; x++) {
             for (int y = 0; y < splattingYCount; y++) {
@@ -128,6 +135,9 @@ public class GroundConfigEntity {
         heightFractalRoughness = groundConfig.getHeightFractalRoughness();
         heightXCount = groundConfig.getGroundSkeletonConfig().getHeightXCount();
         heightYCount = groundConfig.getGroundSkeletonConfig().getHeightYCount();
+        if(heights == null) {
+            heights = new ArrayList<>();
+        }
         heights.clear();
         for (int x = 0; x < heightXCount; x++) {
             for (int y = 0; y < heightYCount; y++) {

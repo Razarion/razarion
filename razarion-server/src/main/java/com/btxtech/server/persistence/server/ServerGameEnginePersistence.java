@@ -92,7 +92,6 @@ public class ServerGameEnginePersistence {
 
     private ServerGameEngineConfigEntity read() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        // Query for total row count in invitations
         CriteriaQuery<ServerGameEngineConfigEntity> userQuery = criteriaBuilder.createQuery(ServerGameEngineConfigEntity.class);
         Root<ServerGameEngineConfigEntity> from = userQuery.from(ServerGameEngineConfigEntity.class);
         CriteriaQuery<ServerGameEngineConfigEntity> userSelect = userQuery.select(from);

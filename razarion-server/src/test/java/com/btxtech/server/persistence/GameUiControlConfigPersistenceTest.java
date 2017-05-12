@@ -2,11 +2,11 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.GameUiControlConfig;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by Beat
@@ -17,10 +17,25 @@ public class GameUiControlConfigPersistenceTest extends ArquillianBaseTest {
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
 
     @Test
-    public void testTutorial() {
-        UserContext userContext = new UserContext();
-
-        // gameUiControlConfigPersistence.load()
-
+    public void testLoad() throws Exception {
+//        setupPlanets();
+//
+//        UserContext userContext = new UserContext().setLevelId(LEVEL_1_ID);
+//        GameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
+//        Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getPlanetConfig().getPlanetId());
+//
+//        userContext = new UserContext().setLevelId(LEVEL_2_ID);
+//        gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
+//        Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getPlanetConfig().getPlanetId());
+//
+//        userContext = new UserContext().setLevelId(LEVEL_3_ID);
+//        gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
+//        Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getPlanetConfig().getPlanetId());
+//
+//        userContext = new UserContext().setLevelId(LEVEL_4_ID);
+//        gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
+//        Assert.assertEquals(PLANET_2_ID, gameUiControlConfig.getPlanetConfig().getPlanetId());
+//
+//        cleanPlanets();
     }
 }

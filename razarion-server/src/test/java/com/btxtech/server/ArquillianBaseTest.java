@@ -1,9 +1,17 @@
 package com.btxtech.server;
 
+import com.btxtech.server.persistence.GameUiControlConfigEntity;
+import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.surface.GroundConfigEntity;
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -49,9 +57,17 @@ public class ArquillianBaseTest {
     public static int LEVEL_2_ID;
     public static int LEVEL_3_ID;
     public static int LEVEL_4_ID;
+    // Planet
+    public static int PLANET_1_ID;
+    public static int PLANET_2_ID;
+    // GameUiControlConfigEntity
+    public static int GAME_UI_CONTROL_CONFIG_1_ID;
+    public static int GAME_UI_CONTROL_CONFIG_2_ID;
 
     @Inject
     private UserTransaction utx;
+    @Inject
+    private ImagePersistence imagePersistence;
     @PersistenceContext
     private EntityManager em;
 
@@ -190,4 +206,56 @@ public class ArquillianBaseTest {
         utx.commit();
         cleanItemTypes();
     }
+
+    protected void setupPlanets() throws Exception {
+        setupLevels();
+
+        utx.begin();
+        em.joinTransaction();
+
+        GroundConfigEntity groundConfigEntity = new GroundConfigEntity();
+        groundConfigEntity.fromGroundConfig(setupGroundConfig(), imagePersistence);
+        em.persist(groundConfigEntity);
+
+        PlanetEntity planetEntity1 = new PlanetEntity();
+        em.persist(planetEntity1);
+        PLANET_1_ID = planetEntity1.getId();
+
+        PlanetEntity planetEntity2 = new PlanetEntity();
+        em.persist(planetEntity2);
+        PLANET_2_ID = planetEntity1.getId();
+
+        GameUiControlConfigEntity gameUiControlConfigEntity1 = new GameUiControlConfigEntity();
+        gameUiControlConfigEntity1.setPlanetEntity(planetEntity1);
+        gameUiControlConfigEntity1.setMinimalLevel(em.find(LevelEntity.class, LEVEL_1_ID));
+        em.persist(gameUiControlConfigEntity1);
+        GAME_UI_CONTROL_CONFIG_1_ID = gameUiControlConfigEntity1.getId();
+
+        GameUiControlConfigEntity gameUiControlConfigEntity2 = new GameUiControlConfigEntity();
+        gameUiControlConfigEntity2.setPlanetEntity(planetEntity2);
+        gameUiControlConfigEntity2.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
+        em.persist(gameUiControlConfigEntity2);
+        GAME_UI_CONTROL_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
+
+        utx.commit();
+    }
+
+    private GroundConfig setupGroundConfig() {
+        GroundConfig groundConfig = new GroundConfig();
+        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
+        groundSkeletonConfig.setLightConfig(new LightConfig().setDiffuse(Color.fromHtmlColor("#000000")).setAmbient(Color.fromHtmlColor("#000000")));
+        groundConfig.setGroundSkeletonConfig(groundSkeletonConfig);
+        return groundConfig;
+    }
+
+    protected void cleanPlanets() throws Exception {
+        utx.begin();
+        em.joinTransaction();
+        em.createQuery("DELETE FROM GroundConfigEntity").executeUpdate();
+        em.createQuery("DELETE FROM GameUiControlConfigEntity").executeUpdate();
+        em.createQuery("DELETE FROM PlanetEntity").executeUpdate();
+        utx.commit();
+        cleanLevels();
+    }
+
 }
