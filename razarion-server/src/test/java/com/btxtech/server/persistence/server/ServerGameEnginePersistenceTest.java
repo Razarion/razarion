@@ -34,6 +34,7 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
 
     @Test
     public void crudBot() throws Exception {
+        setupItemTypes();
         Assert.assertTrue(serverGameEnginePersistence.readBotConfigs().isEmpty());
         serverGameEnginePersistence.updateBotConfigs(setupServerBots1());
         // Assert bot config
@@ -73,6 +74,7 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotEnragementStateConfigEntity b").getSingleResult());
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotItemConfigEntity b").getSingleResult());
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(p) FROM PlaceConfigEntity p").getSingleResult());
+        cleanItemTypes();
     }
 
     @Test
@@ -104,6 +106,7 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
 
     @Test
     public void crudMasterPlanetConfig() throws Exception {
+        setupItemTypes();
         Assert.assertTrue(serverGameEnginePersistence.readMasterPlanetConfig().getResourceRegionConfigs().isEmpty());
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
         resourceRegionConfigs.add(new ResourceRegionConfig().setCount(4).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setMinDistanceToItems(9.9));
@@ -137,6 +140,7 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         Assert.assertTrue(serverGameEnginePersistence.readMasterPlanetConfig().getResourceRegionConfigs().isEmpty());
 
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(p) FROM PlaceConfigEntity p").getSingleResult());
+        cleanItemTypes();
     }
 
     private List<BotConfig> setupServerBots1() {

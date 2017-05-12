@@ -66,6 +66,7 @@ public class LevelPersistence {
         }
         LevelEntity levelEntity = read(levelConfig.getLevelId());
         levelEntity.fromLevelConfig(levelConfig, itemTypeLimitation);
+        entityManager.merge(levelEntity);
         return levelEntity.toLevelConfig();
     }
 

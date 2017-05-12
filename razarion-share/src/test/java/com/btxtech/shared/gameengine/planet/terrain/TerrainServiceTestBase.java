@@ -37,7 +37,6 @@ public class TerrainServiceTestBase {
         injectTerrainTileContextInstance(terrainTileFactory);
         injectTerrainWaterTileContextInstance(terrainTileFactory);
         SimpleTestEnvironment.injectService("terrainTileFactory", terrainService, terrainTileFactory);
-        SimpleTestEnvironment.injectService("terrainService", terrainTileFactory, terrainService);
 
         ObstacleContainer obstacleContainer = new ObstacleContainer();
         SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainer);

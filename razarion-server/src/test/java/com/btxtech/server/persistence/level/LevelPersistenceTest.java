@@ -23,7 +23,8 @@ public class LevelPersistenceTest extends ArquillianBaseTest {
     private EntityManager entityManager;
 
     @Test
-    public void testCrud() {
+    public void testCrud() throws Exception {
+        setupItemTypes();
         // Create
         LevelConfig levelConfig = levelPersistence.create();
         // Update
@@ -55,7 +56,9 @@ public class LevelPersistenceTest extends ArquillianBaseTest {
         } catch (IllegalArgumentException ignore) {
             // Expected
         }
+        Assert.assertEquals(0, ((Number) entityManager.createQuery("SELECT COUNT(l) FROM LevelEntity l").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM LEVEL_LIMITATION").getSingleResult()).intValue());
+        cleanItemTypes();
     }
 
     private LevelConfig getLevelConfig(int levelId, List<LevelConfig> levelConfigs) {

@@ -109,7 +109,7 @@ public class ItemTypePersistence {
     @SecurityCheck
     public void updateResourceItemType(ResourceItemType resourceItemType) {
         ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, resourceItemType.getId());
-        resourceItemTypeEntity.fromBaseItemType(resourceItemType);
+        resourceItemTypeEntity.fromResourceItemType(resourceItemType);
         resourceItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(resourceItemType.getShape3DId()));
         entityManager.merge(resourceItemTypeEntity);
     }

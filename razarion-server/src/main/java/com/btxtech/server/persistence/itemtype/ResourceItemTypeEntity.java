@@ -41,7 +41,7 @@ public class ResourceItemTypeEntity {
         return resourceItemType;
     }
 
-    public void fromBaseItemType(ResourceItemType resourceItemType) {
+    public void fromResourceItemType(ResourceItemType resourceItemType) {
         name = resourceItemType.getName();
         radius = resourceItemType.getRadius();
         amount = resourceItemType.getAmount();

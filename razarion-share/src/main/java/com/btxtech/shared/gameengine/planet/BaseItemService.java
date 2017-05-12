@@ -75,13 +75,13 @@ public class BaseItemService {
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
             gameEngineMode = planetActivationEvent.getGameEngineMode();
             planetConfig = planetActivationEvent.getPlanetConfig();
-            if (planetActivationEvent.getSlaveSyncItemInfo() == null) {
-                for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getSlaveSyncItemInfo() .getPlayerBaseInfos()) {
+            if (planetActivationEvent.getSlaveSyncItemInfo() != null) {
+                for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getSlaveSyncItemInfo().getPlayerBaseInfos()) {
                     createBaseSlave(playerBaseInfo);
                 }
 
                 Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
-                for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getSlaveSyncItemInfo() .getSyncBaseItemInfos()) {
+                for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getSlaveSyncItemInfo().getSyncBaseItemInfos()) {
                     SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
                     tmp.put(syncBaseItem, syncBaseItemInfo);
                 }
