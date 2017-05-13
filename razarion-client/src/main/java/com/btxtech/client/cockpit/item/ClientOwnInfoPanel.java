@@ -39,8 +39,8 @@ public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
     @Override
     public void init(BaseItemType baseItemType, int count) {
         image.setUrl(RestUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
-        itemTypeName.setText(I18nHelper.getLocalizedString(baseItemType.getI18Name()));
-        itemTypeDescr.setHTML(I18nHelper.getLocalizedString(baseItemType.getDescription()));
+        itemTypeName.setText(I18nHelper.getLocalizedString(baseItemType.getI18nName()));
+        itemTypeDescr.setHTML(I18nHelper.getLocalizedString(baseItemType.getI18nDescription()));
         if (count > 1) {
             countLabel.setText(Integer.toString(count));
         } else {

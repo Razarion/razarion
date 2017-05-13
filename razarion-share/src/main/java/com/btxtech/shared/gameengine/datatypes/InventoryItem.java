@@ -1,11 +1,14 @@
 package com.btxtech.shared.gameengine.datatypes;
 
+import com.btxtech.shared.datatypes.I18nString;
+
 /**
  * Created by Beat
  * 25.10.2016.
  */
 public class InventoryItem {
     private Integer id;
+    private I18nString i18nName;
     private String name;
     private Integer gold;
     private Integer baseItemType;
@@ -20,6 +23,14 @@ public class InventoryItem {
     public InventoryItem setId(Integer id) {
         this.id = id;
         return this;
+    }
+
+    public I18nString getI18nName() {
+        return i18nName;
+    }
+
+    public void setI18nName(I18nString i18nName) {
+        this.i18nName = i18nName;
     }
 
     public String getName() {

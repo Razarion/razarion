@@ -100,8 +100,8 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
         }
         if (itemType != null) {
             image.setUrl(RestUrl.getImageServiceUrlSafe(itemType.getThumbnail()));
-            itemTypeName.setText(I18nHelper.getLocalizedString(itemType.getI18Name()));
-            itemTypeDescr.setHTML(I18nHelper.getLocalizedString(itemType.getDescription()));
+            itemTypeName.setText(I18nHelper.getLocalizedString(itemType.getI18nName()));
+            itemTypeDescr.setHTML(I18nHelper.getLocalizedString(itemType.getI18nDescription()));
         }
     }
 }

@@ -74,7 +74,7 @@ public class EffectVisualizationService {
         removeBuildingDemolitionEffect(syncBaseItem);
         trailService.addWreckage(syncBaseItem);
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-        Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleEmitterSequenceConfigId();
+        Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleConfigId();
         if (explosionParticleEmitterSequenceConfigId == null) {
             logger.warning("No explosionParticleEmitterSequenceConfigId configured for: " + System.currentTimeMillis());
             return;

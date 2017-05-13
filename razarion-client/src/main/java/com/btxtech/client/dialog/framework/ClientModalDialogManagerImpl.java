@@ -61,7 +61,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     public void showUseInventoryItemLimitExceeded(BaseItemType baseItemType) {
-        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemLimit(I18nHelper.getLocalizedString(baseItemType.getI18Name())), null, null, DialogButton.Button.CLOSE);
+        show(I18nHelper.getConstants().useItem(), ClientModalDialogManagerImpl.Type.STACK_ABLE, MessageDialog.class, I18nHelper.getConstants().useItemLimit(I18nHelper.getLocalizedString(baseItemType.getI18nName())), null, null, DialogButton.Button.CLOSE);
     }
 
     @Override

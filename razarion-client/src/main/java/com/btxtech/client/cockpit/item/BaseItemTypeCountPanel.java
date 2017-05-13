@@ -55,7 +55,7 @@ public class BaseItemTypeCountPanel implements TakesValue<BaseItemTypeCount>, Is
         this.baseItemTypeCount = baseItemTypeCount;
         image.setUrl(RestUrl.getImageServiceUrlSafe(baseItemTypeCount.getBaseItemType().getThumbnail()));
         countLabel.setText(Integer.toString(baseItemTypeCount.getCount()));
-        selectedItemTd.setTitle(I18nHelper.getConstants().tooltipSelect(I18nHelper.getLocalizedString(baseItemTypeCount.getBaseItemType().getI18Name())));
+        selectedItemTd.setTitle(I18nHelper.getConstants().tooltipSelect(I18nHelper.getLocalizedString(baseItemTypeCount.getBaseItemType().getI18nName())));
     }
 
     @Override

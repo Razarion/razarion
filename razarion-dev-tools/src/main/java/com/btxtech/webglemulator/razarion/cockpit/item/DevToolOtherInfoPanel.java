@@ -31,16 +31,16 @@ public class DevToolOtherInfoPanel extends VBox implements OtherInfoPanel {
         if (otherSelection instanceof SyncBaseItemSimpleDto) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(otherSelection.getItemTypeId());
             getChildren().add(new Label("Type: " + baseItemType.getName()));
-            getChildren().add(new Label("Description: " + baseItemType.getDescription()));
+            getChildren().add(new Label("Description: " + baseItemType.getI18nDescription()));
             getChildren().add(new Label("Player: " + baseItemUiService.getBase(((SyncBaseItemSimpleDto) otherSelection).getBaseId()).getName()));
         } else if (otherSelection instanceof SyncResourceItemSimpleDto) {
             ResourceItemType resourceItemType = itemTypeService.getResourceItemType(otherSelection.getItemTypeId());
             getChildren().add(new Label("Type: " + resourceItemType.getName()));
-            getChildren().add(new Label("Description: " + resourceItemType.getDescription()));
+            getChildren().add(new Label("Description: " + resourceItemType.getI18nDescription()));
         } else if (otherSelection instanceof SyncBoxItemSimpleDto) {
             BoxItemType boxItemType = itemTypeService.getBoxItemType(otherSelection.getItemTypeId());
             getChildren().add(new Label("Type: " + boxItemType.getName()));
-            getChildren().add(new Label("Description: " + boxItemType.getDescription()));
+            getChildren().add(new Label("Description: " + boxItemType.getI18nDescription()));
         }
     }
 }

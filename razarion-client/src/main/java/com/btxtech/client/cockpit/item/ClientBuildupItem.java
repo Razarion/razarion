@@ -90,7 +90,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         }
 
         public String getToolTip(BaseItemType itemType) {
-            return lookup(I18nHelper.getLocalizedString(itemType.getI18Name()));
+            return lookup(I18nHelper.getLocalizedString(itemType.getI18nName()));
         }
 
         abstract String lookup(String itemName);

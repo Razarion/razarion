@@ -17,7 +17,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 import java.util.List;
 
 public class BoxItemType extends ItemType {
-    private int ttl;
+    private Integer ttl;
     private double radius;
     private boolean fixVerticalNorm;
     private List<BoxItemTypePossibility> boxItemTypePossibilities;
@@ -35,7 +35,7 @@ public class BoxItemType extends ItemType {
         return this;
     }
 
-    public int getTtl() {
+    public Integer getTtl() {
         return ttl;
     }
 
@@ -43,7 +43,7 @@ public class BoxItemType extends ItemType {
         return boxItemTypePossibilities;
     }
 
-    public BoxItemType setTtl(int ttl) {
+    public BoxItemType setTtl(Integer ttl) {
         this.ttl = ttl;
         return this;
     }

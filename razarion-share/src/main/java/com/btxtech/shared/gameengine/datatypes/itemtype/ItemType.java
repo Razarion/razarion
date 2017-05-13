@@ -27,15 +27,12 @@ import com.btxtech.shared.gameengine.datatypes.TerrainType;
 public abstract class ItemType implements ObjectNameIdProvider {
     private int id;
     private String name;
-    private I18nString i18Name;
-    private I18nString description;
+    private I18nString i18nName;
+    private I18nString i18nDescription;
     private TerrainType terrainType;
     private SurfaceType adjoinSurfaceType;
     @Deprecated
     private BoundingBox boundingBox;
-    private Integer selectionSound;
-    private Integer buildupSound;
-    private Integer commandSound;
     private Integer shape3DId;
     private Integer thumbnail;
 
@@ -57,8 +54,8 @@ public abstract class ItemType implements ObjectNameIdProvider {
         return name;
     }
 
-    public I18nString getI18Name() {
-        return i18Name;
+    public I18nString getI18nName() {
+        return i18nName;
     }
 
     public ItemType setId(int id) {
@@ -66,13 +63,13 @@ public abstract class ItemType implements ObjectNameIdProvider {
         return this;
     }
 
-    public ItemType setDescription(I18nString description) {
-        this.description = description;
+    public ItemType setI18nDescription(I18nString i18nDescription) {
+        this.i18nDescription = i18nDescription;
         return this;
     }
 
-    public I18nString getDescription() {
-        return description;
+    public I18nString getI18nDescription() {
+        return i18nDescription;
     }
 
     public ItemType setName(String name) {
@@ -80,8 +77,8 @@ public abstract class ItemType implements ObjectNameIdProvider {
         return this;
     }
 
-    public ItemType setI18Name(I18nString i18Name) {
-        this.i18Name = i18Name;
+    public ItemType setI18nName(I18nString i18nName) {
+        this.i18nName = i18nName;
         return this;
     }
 
@@ -100,33 +97,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     public ItemType setAdjoinSurfaceType(SurfaceType adjoinSurfaceType) {
         this.adjoinSurfaceType = adjoinSurfaceType;
-        return this;
-    }
-
-    public Integer getSelectionSound() {
-        return selectionSound;
-    }
-
-    public ItemType setSelectionSound(Integer selectionSound) {
-        this.selectionSound = selectionSound;
-        return this;
-    }
-
-    public Integer getBuildupSound() {
-        return buildupSound;
-    }
-
-    public ItemType setBuildupSound(Integer buildupSound) {
-        this.buildupSound = buildupSound;
-        return this;
-    }
-
-    public Integer getCommandSound() {
-        return commandSound;
-    }
-
-    public ItemType setCommandSound(Integer commandSound) {
-        this.commandSound = commandSound;
         return this;
     }
 

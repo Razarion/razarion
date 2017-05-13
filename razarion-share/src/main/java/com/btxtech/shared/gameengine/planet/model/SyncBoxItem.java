@@ -13,7 +13,6 @@
 
 package com.btxtech.shared.gameengine.planet.model;
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 
 import javax.enterprise.context.Dependent;
@@ -43,7 +42,8 @@ public class SyncBoxItem extends SyncItem {
     }
 
     public boolean isInTTL() {
-        return System.currentTimeMillis() - createdTimeStamp < ((BoxItemType) getItemType()).getTtl();
+        return getBoxItemType().getTtl() == null || System.currentTimeMillis() - createdTimeStamp < getBoxItemType().getTtl();
+
     }
 
     public BoxItemType getBoxItemType() {
