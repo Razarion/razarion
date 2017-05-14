@@ -82,11 +82,9 @@ public class GameUiControlConfigPersistence {
 
     @Transactional
     public GameUiControlConfig load(UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
-        GameUiControlConfigEntity gameUiControlConfigEntity = load4Level(userContext.getLevelId());
-        GameUiControlConfig gameUiControlConfig = gameUiControlConfigEntity.toGameUiControlConfig();
+        GameUiControlConfig gameUiControlConfig = load4Level(userContext.getLevelId()).toGameUiControlConfig();
         gameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         gameUiControlConfig.setUserContext(userContext);
-        gameUiControlConfig.setVisualConfig(defaultVisualConfig());  // TODO move to DB
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO move to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO move to DB
         gameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig());

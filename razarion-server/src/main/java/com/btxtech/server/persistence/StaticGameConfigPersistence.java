@@ -3,24 +3,11 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelPersistence;
-import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.datatypes.Polygon2D;
-import com.btxtech.shared.dto.ResourceRegionConfig;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.TerrainType;
-import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
-import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -59,7 +46,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setResourceItemTypes(itemTypePersistence.readResourceItemTypes());
         staticGameConfig.setBoxItemTypes(itemTypePersistence.readBoxItemTypes());
         staticGameConfig.setLevelConfigs(levelPersistence.read());
-        staticGameConfig.setInventoryItems(inventoryPersistence.readInventoryItems()); // TODO move to DB
+        staticGameConfig.setInventoryItems(inventoryPersistence.readInventoryItems());
         return staticGameConfig;
     }
 }

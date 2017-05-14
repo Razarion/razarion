@@ -3,7 +3,6 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -36,6 +35,8 @@ public class GameUiControlConfigEntity {
     private List<SceneEntity> scenes;
     @OneToOne
     private LevelEntity minimalLevel;
+    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
+    private VisualConfigEntity visualConfigEntity;
 
     public Integer getId() {
         return id;
@@ -49,6 +50,9 @@ public class GameUiControlConfigEntity {
             sceneConfigs.add(scene.toSceneConfig());
         }
         gameUiControlConfig.setSceneConfigs(sceneConfigs);
+        if (visualConfigEntity != null) {
+            gameUiControlConfig.setVisualConfig(visualConfigEntity.toVisualConfig());
+        }
         return gameUiControlConfig;
     }
 
@@ -66,6 +70,14 @@ public class GameUiControlConfigEntity {
 
     public void setMinimalLevel(LevelEntity minimalLevel) {
         this.minimalLevel = minimalLevel;
+    }
+
+    public VisualConfigEntity getVisualConfigEntity() {
+        return visualConfigEntity;
+    }
+
+    public void setVisualConfigEntity(VisualConfigEntity visualConfigEntity) {
+        this.visualConfigEntity = visualConfigEntity;
     }
 
     @Override
