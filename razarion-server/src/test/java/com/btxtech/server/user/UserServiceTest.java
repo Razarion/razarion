@@ -37,8 +37,10 @@ public class UserServiceTest extends ArquillianBaseTest {
 
     @Test
     public void handleFacebookUserLogin() throws Exception {
+        setupLevels();
         System.out.println("userService: " + userService);
         userService.handleFacebookUserLogin("0000001");
+        cleanLevels();
     }
 
 }
