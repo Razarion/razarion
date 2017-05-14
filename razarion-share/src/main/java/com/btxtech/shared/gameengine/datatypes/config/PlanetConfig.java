@@ -34,8 +34,9 @@ public class PlanetConfig {
         return planetId;
     }
 
-    public void setPlanetId(int planetId) {
+    public PlanetConfig setPlanetId(int planetId) {
         this.planetId = planetId;
+        return this;
     }
 
     public Rectangle getGroundMeshDimension() {
