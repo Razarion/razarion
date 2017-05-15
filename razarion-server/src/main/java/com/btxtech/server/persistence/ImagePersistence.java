@@ -78,7 +78,7 @@ public class ImagePersistence {
     @Transactional
     public ImageLibraryEntity getImageLibraryEntity(Integer id) {
         if (id != null) {
-            return entityManager.find(ImageLibraryEntity.class, id.longValue());
+            return entityManager.find(ImageLibraryEntity.class, id);
         } else {
             return null;
         }

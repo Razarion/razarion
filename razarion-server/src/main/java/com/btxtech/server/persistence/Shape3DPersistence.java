@@ -72,7 +72,7 @@ public class Shape3DPersistence {
     @Transactional
     public ColladaEntity getColladaEntity(Integer colladaId) {
         if (colladaId != null) {
-            return entityManager.find(ColladaEntity.class, colladaId.longValue());
+            return entityManager.find(ColladaEntity.class, colladaId);
         } else {
             return null;
         }

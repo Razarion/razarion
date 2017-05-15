@@ -5,7 +5,7 @@ import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.UserService;
-import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -76,6 +76,8 @@ public class GameUiControlConfigPersistence {
     private UserService userService;
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
+    @Inject
+    private DbPropertiesService dbPropertiesService;
 
     @Transactional
     public GameUiControlConfig load(UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
@@ -83,8 +85,8 @@ public class GameUiControlConfigPersistence {
         gameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         gameUiControlConfig.setUserContext(userContext);
         gameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
-        gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO move to DB
-        gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO move to DB
+        gameUiControlConfig.setAudioConfig(setupAudioConfig());
+        gameUiControlConfig.setGameTipVisualConfig(setupGameTipVisualConfig());
         gameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig());
         gameUiControlConfig.setSlaveSyncItemInfo(gameEngineService.generateSlaveSyncItemInfo(userContext));
         return gameUiControlConfig;
@@ -103,42 +105,42 @@ public class GameUiControlConfigPersistence {
     }
 
 
-    private GameTipVisualConfig defaultGameTipVisualConfig() {
+    private GameTipVisualConfig setupGameTipVisualConfig() {
         GameTipVisualConfig gameTipVisualConfig = new GameTipVisualConfig();
-        gameTipVisualConfig.setCornerMoveDuration(1500);
-        gameTipVisualConfig.setCornerMoveDistance(15);
-        gameTipVisualConfig.setCornerLength(1);
-        gameTipVisualConfig.setDefaultCommandShape3DId(272501);
-        gameTipVisualConfig.setSelectCornerColor(new Color(0, 1, 0));
-        gameTipVisualConfig.setSelectShape3DId(272499);
-        gameTipVisualConfig.setOutOfViewShape3DId(272503);
-        gameTipVisualConfig.setAttackCommandCornerColor(new Color(1, 0, 0));
-        gameTipVisualConfig.setBaseItemPlacerCornerColor(new Color(1, 1, 0));
-        gameTipVisualConfig.setBaseItemPlacerShape3DId(272499);
-        gameTipVisualConfig.setGrabCommandCornerColor(new Color(0, 0, 1));
-        gameTipVisualConfig.setMoveCommandCornerColor(new Color(0, 1, 0));
-        gameTipVisualConfig.setToBeFinalizedCornerColor(new Color(1, 1, 0));
-        gameTipVisualConfig.setWestLeftMouseGuiImageId(272506);
-        gameTipVisualConfig.setSouthLeftMouseGuiImageId(272507);
-        gameTipVisualConfig.setDirectionShape3DId(272503);
-        gameTipVisualConfig.setSplashScrollImageId(272508);
+        gameTipVisualConfig.setCornerMoveDuration(dbPropertiesService.getIntProperty(DbPropertyKey.TIP_CORNER_MOVE_DURATION));
+        gameTipVisualConfig.setCornerMoveDistance(dbPropertiesService.getDoubleProperty(DbPropertyKey.TIP_CORNER_MOVE_DISTANCE));
+        gameTipVisualConfig.setCornerLength(dbPropertiesService.getDoubleProperty(DbPropertyKey.TIP_CORNER_LENGTH));
+        gameTipVisualConfig.setDefaultCommandShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_DEFAULT_COMMAND_SHAPE3D));
+        gameTipVisualConfig.setSelectCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_SELECT_CORNER_COLOR));
+        gameTipVisualConfig.setSelectShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_SELECT_SHAPE3D));
+        gameTipVisualConfig.setOutOfViewShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_OUT_OF_VIEW_SHAPE3D));
+        gameTipVisualConfig.setAttackCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
+        gameTipVisualConfig.setBaseItemPlacerCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_CORNER_COLOR));
+        gameTipVisualConfig.setBaseItemPlacerShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
+        gameTipVisualConfig.setGrabCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_GRAB_COMMAND_CORNER_COLOR));
+        gameTipVisualConfig.setMoveCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_MOVE_COMMAND_CORNER_COLOR));
+        gameTipVisualConfig.setToBeFinalizedCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_TO_BE_FINALIZED_CORENER_COLOR));
+        gameTipVisualConfig.setWestLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_WEST_LEFT_MOUSE_IMAGE));
+        gameTipVisualConfig.setSouthLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SOUTH_LEFT_MOUSE_IMAGE));
+        gameTipVisualConfig.setDirectionShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_DIRECTION_SHAPE3D));
+        gameTipVisualConfig.setSplashScrollImageId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_SCROLL_IMAGE));
         return gameTipVisualConfig;
     }
 
-    private AudioConfig defaultAudioConfig() {
+    private AudioConfig setupAudioConfig() {
         AudioConfig audioConfig = new AudioConfig();
-        audioConfig.setDialogOpened(272514);
-        audioConfig.setDialogClosed(272515);
-        audioConfig.setOnQuestActivated(272516);
-        audioConfig.setOnQuestPassed(272517);
-        audioConfig.setOnLevelUp(272518);
-        audioConfig.setOnBoxPicked(272519);
-        audioConfig.setOnSelectionCleared(272525);
-        audioConfig.setOnOwnMultiSelection(272526);
-        audioConfig.setOnOwnSingleSelection(272527);
-        audioConfig.setOnOtherSelection(272528);
-        audioConfig.setOnCommandSent(272529);
-        audioConfig.setOnBaseLost(284040);
+        audioConfig.setDialogOpened(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_DIALOG_OPENED));
+        audioConfig.setDialogClosed(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_DIALOG_CLOSED));
+        audioConfig.setOnQuestActivated(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_QUEST_ACTIVATED));
+        audioConfig.setOnQuestPassed(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_QUEST_PASSED));
+        audioConfig.setOnLevelUp(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_LEVEL_UP));
+        audioConfig.setOnBoxPicked(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_BOX_PICKED));
+        audioConfig.setOnSelectionCleared(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_SELECTION_CLEARED));
+        audioConfig.setOnOwnMultiSelection(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_SELECTION_OWN_MULTI));
+        audioConfig.setOnOwnSingleSelection(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_SELECTION_OWN_SINGLE));
+        audioConfig.setOnOtherSelection(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_SELECTION_OTHER));
+        audioConfig.setOnCommandSent(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_COMMAND_SENT));
+        audioConfig.setOnBaseLost(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_BASE_LOST));
         return audioConfig;
     }
 

@@ -38,6 +38,7 @@ import javax.transaction.UserTransaction;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -145,23 +146,30 @@ public class ArquillianBaseTest {
     }
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) throws Exception {
-        utx.begin();
-        em.joinTransaction();
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
-        baseItemTypeEntity.fromBaseItemType(baseItemType);
-        em.persist(baseItemTypeEntity);
-        utx.commit();
+        persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }
 
     private int createResourceItemTypeEntity(ResourceItemType resourceItemType) throws Exception {
+        ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
+        persistInTransaction(resourceItemTypeEntity);
+        return resourceItemTypeEntity.getId();
+    }
+
+    protected <T> T persistInTransaction(T object) throws Exception {
         utx.begin();
         em.joinTransaction();
-        ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
-        resourceItemTypeEntity.fromResourceItemType(resourceItemType);
-        em.persist(resourceItemTypeEntity);
+        em.persist(object);
         utx.commit();
-        return resourceItemTypeEntity.getId();
+        return object;
+    }
+
+    protected void runInTransaction(Consumer<EntityManager> consumer) throws Exception {
+        utx.begin();
+        em.joinTransaction();
+        consumer.accept(em);
+        utx.commit();
     }
 
     protected void setupLevels() throws Exception {

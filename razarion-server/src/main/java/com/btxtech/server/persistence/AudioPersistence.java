@@ -37,7 +37,11 @@ public class AudioPersistence {
 
     @Transactional
     public AudioItemConfig getAudioItemConfig(int id) {
-        return entityManager.find(AudioLibraryEntity.class, id).toAudioConfig();
+        return getAudioLibraryEntity(id).toAudioConfig();
+    }
+
+    public AudioLibraryEntity getAudioLibraryEntity(int id) {
+        return entityManager.find(AudioLibraryEntity.class, id);
     }
 
     @Transactional
