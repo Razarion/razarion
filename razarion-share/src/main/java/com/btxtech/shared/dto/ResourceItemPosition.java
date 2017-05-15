@@ -7,19 +7,9 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  * 06.10.2016.
  */
 public class ResourceItemPosition {
-    private Integer id;
     private int resourceItemTypeId;
     private DecimalPosition position;
     private double rotationZ;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public ResourceItemPosition setId(Integer id) {
-        this.id = id;
-        return this;
-    }
 
     public int getResourceItemTypeId() {
         return resourceItemTypeId;

@@ -2,10 +2,14 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+
 /**
  * Created by Beat
  * 05.07.2016.
  */
+@Embeddable
 public class ViewFieldConfig {
     private DecimalPosition fromPosition;
     private DecimalPosition toPosition;

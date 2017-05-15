@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -41,6 +42,10 @@ public class BotConfigEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<BotEnragementStateConfigEntity> botEnragementStateConfigs;
+
+    public Integer getId() {
+        return id;
+    }
 
     public BotConfig toBotConfig() {
         PlaceConfig realm = null;
@@ -96,5 +101,4 @@ public class BotConfigEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

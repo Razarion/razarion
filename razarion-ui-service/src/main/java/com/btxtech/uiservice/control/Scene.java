@@ -161,12 +161,12 @@ public class Scene implements TerrainScrollListener {
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.start(sceneConfig.getGameTipConfig());
         }
-        if (sceneConfig.getForwardUrl() != null) {
-            screenCover.fadeOutAndForward(sceneConfig.getForwardUrl());
-            completionCallbackCount++;
-            hasCompletionCallback = true;
-            gameUiControl.finished();
-        }
+//        if (sceneConfig.getForwardUrl() != null) {
+//            screenCover.fadeOutAndForward(sceneConfig.getForwardUrl());
+//            completionCallbackCount++;
+//            hasCompletionCallback = true;
+//            gameUiControl.finished();
+//        }
 
         if (!hasCompletionCallback) {
             gameUiControl.onSceneCompleted();

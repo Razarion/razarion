@@ -43,6 +43,10 @@ public class BoxItemTypeEntity {
     @JoinColumn(nullable = false)
     List<BoxItemTypePossibilityEntity> boxItemTypePossibilities;
 
+    public Integer getId() {
+        return id;
+    }
+
     public BoxItemType toBoxItemType() {
         BoxItemType boxItemType = new BoxItemType();
         boxItemType.setRadius(radius).setTtl(ttl).setId(id).setName(name);

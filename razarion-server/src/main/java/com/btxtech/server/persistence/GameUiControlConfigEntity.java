@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SceneConfig;
 
@@ -16,6 +17,7 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -40,13 +42,15 @@ public class GameUiControlConfigEntity {
         return id;
     }
 
-    public GameUiControlConfig toGameUiControlConfig() {
+    public GameUiControlConfig toGameUiControlConfig(Locale locale) {
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
         gameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
         gameUiControlConfig.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        for (SceneEntity scene : scenes) {
-            sceneConfigs.add(scene.toSceneConfig());
+        if (scenes != null) {
+            for (SceneEntity scene : scenes) {
+                sceneConfigs.add(scene.toSceneConfig(locale));
+            }
         }
         gameUiControlConfig.setSceneConfigs(sceneConfigs);
         return gameUiControlConfig;

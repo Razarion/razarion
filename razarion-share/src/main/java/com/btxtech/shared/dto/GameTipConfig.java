@@ -26,7 +26,6 @@ public class GameTipConfig {
 
     private Tip tip;
     private int actor;
-    private int target;
     private int toCreatedItemTypeId;
     private int toGrabItemTypeId;
     private int inventoryItemId;
@@ -48,15 +47,6 @@ public class GameTipConfig {
 
     public GameTipConfig setActor(int actor) {
         this.actor = actor;
-        return this;
-    }
-
-    public int getTarget() {
-        return target;
-    }
-
-    public GameTipConfig setTarget(int target) {
-        this.target = target;
         return this;
     }
 

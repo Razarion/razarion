@@ -2,8 +2,8 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.user.UserService;
+import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.FacebookUserLoginInfo;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -21,18 +21,19 @@ import java.io.IOException;
 public class GameUiControlProviderImpl implements GameUiControlProvider {
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private UserService userService;
+    @Inject
+    private SessionHolder sessionHolder;
 
     @Override
     @Transactional
     public GameUiControlConfig loadGameUiControlConfig() {
         try {
             UserContext userContext = userService.getUserContext();
-            return gameUiControlConfigPersistence.load(userContext);
+            return gameUiControlConfigPersistence.load(sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

@@ -10,6 +10,7 @@ import java.util.List;
  * 05.07.2016.
  */
 public class SceneConfig {
+    private int id;
     private String internalName;
     private String introText;
     private QuestConfig questConfig;
@@ -32,7 +33,15 @@ public class SceneConfig {
     private List<BoxItemPosition> boxItemPositions;
     private GameTipConfig gameTipConfig;
     private boolean removeLoadingCover;
-    private String forwardUrl;
+
+    public int getId() {
+        return id;
+    }
+
+    public SceneConfig setId(int id) {
+        this.id = id;
+        return this;
+    }
 
     public String getInternalName() {
         return internalName;
@@ -229,15 +238,6 @@ public class SceneConfig {
 
     public SceneConfig setRemoveLoadingCover(boolean removeLoadingCover) {
         this.removeLoadingCover = removeLoadingCover;
-        return this;
-    }
-
-    public String getForwardUrl() {
-        return forwardUrl;
-    }
-
-    public SceneConfig setForwardUrl(String forwardUrl) {
-        this.forwardUrl = forwardUrl;
         return this;
     }
 }
