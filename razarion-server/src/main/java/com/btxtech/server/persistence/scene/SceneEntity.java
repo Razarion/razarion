@@ -73,18 +73,25 @@ public class SceneEntity {
             inverseJoinColumns = @JoinColumn(name = "botd"))
     private List<BotConfigEntity> botConfigEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<BotMoveCommandEntity> botMoveCommandEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<BotHarvestCommandEntity> botHarvestCommandEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<BotAttackCommandEntity> botAttackCommandEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<BotKillOtherBotCommandEntity> botKillOtherBotCommandEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<BotKillHumanCommandEntity> botKillHumanCommandEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<BotRemoveOwnItemCommandEntity> botRemoveOwnItemCommandEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<KillBotCommandEntity> killBotCommandEntities;
     // BaseItemPlacerConfig
     private DecimalPosition startPlacerSuggestedPosition;
@@ -97,6 +104,7 @@ public class SceneEntity {
     private Boolean wait4QuestPassedDialog;
     private Boolean waitForBaseLostDialog;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<ResourceItemPositionEntity> resourceItemPositionEntities;
     private Integer duration;
     // ScrollUiQuest
@@ -115,6 +123,7 @@ public class SceneEntity {
     })
     private Rectangle2D scrollUiQuestTargetRectangle;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn
     private List<BoxItemPositionEntity> boxItemPositionEntities;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private GameTipConfigEntity gameTipConfigEntity;
