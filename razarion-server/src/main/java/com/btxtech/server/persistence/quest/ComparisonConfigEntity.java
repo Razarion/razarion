@@ -14,6 +14,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToOne;
@@ -29,7 +30,7 @@ import java.util.Map;
 @Table(name = "QUEST_COMPARISON")
 public class ComparisonConfigEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private Integer count;
     @ElementCollection

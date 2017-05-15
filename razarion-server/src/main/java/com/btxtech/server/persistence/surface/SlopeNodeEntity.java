@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -17,7 +18,7 @@ import javax.persistence.Table;
 @Table(name = "SLOPE_NODE")
 public class SlopeNodeEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private int segmentIndex;
     private int rowIndex;

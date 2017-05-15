@@ -17,6 +17,7 @@ package com.btxtech.server.persistence.tracker;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Lob;
@@ -32,7 +33,7 @@ import java.util.Date;
 @Table(name = "TRACKER_PAGE", indexes = {@Index(columnList = "sessionId")})
 public class PageTrackerEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     @Column(nullable = false)
     private Date timeStamp;

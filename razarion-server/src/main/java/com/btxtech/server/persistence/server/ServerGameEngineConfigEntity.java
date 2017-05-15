@@ -16,6 +16,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -35,7 +36,7 @@ import java.util.List;
 @Table(name = "SERVER_GAME_ENGINE_CONFIG")
 public class ServerGameEngineConfigEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     @OneToOne
     private PlanetEntity planetEntity;

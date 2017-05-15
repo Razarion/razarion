@@ -9,6 +9,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class I18nBundleEntity {
     public static final String DEFAULT = "DEFAULT";
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     @ElementCollection(fetch = FetchType.LAZY)
     @MapKeyColumn(name = "locale")

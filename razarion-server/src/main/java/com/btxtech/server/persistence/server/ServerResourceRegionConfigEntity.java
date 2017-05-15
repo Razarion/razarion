@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -21,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "SERVER_RESOURCE_REGION_CONFIG")
 public class ServerResourceRegionConfigEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private int count;
     private double minDistanceToItems;

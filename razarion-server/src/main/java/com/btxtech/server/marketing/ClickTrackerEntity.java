@@ -2,6 +2,7 @@ package com.btxtech.server.marketing;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
@@ -14,7 +15,7 @@ import java.util.Date;
 @Table(name = "FB_MARKETING_CLICK_TRACKER")
 public class ClickTrackerEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private Date timeStamp;
     private String adId;

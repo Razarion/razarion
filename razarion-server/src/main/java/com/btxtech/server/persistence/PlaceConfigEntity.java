@@ -12,6 +12,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OrderColumn;
@@ -27,7 +28,7 @@ import java.util.List;
 @Table(name = "PLACE_CONFIG")
 public class PlaceConfigEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     @ElementCollection
     @CollectionTable(name = "PLACE_CONFIG_POSITION_POLYGON", joinColumns = @JoinColumn(name = "OWNER_ID"))

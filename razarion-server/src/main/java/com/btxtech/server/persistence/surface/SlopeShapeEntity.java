@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.SlopeShape;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -17,7 +18,7 @@ import javax.persistence.Table;
 @Table(name = "SLOPE_SHAPE")
 public class SlopeShapeEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     @Embedded
     private DecimalPosition position;

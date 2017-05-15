@@ -4,6 +4,7 @@ import com.btxtech.shared.dto.AudioItemConfig;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
@@ -16,7 +17,7 @@ import javax.persistence.Table;
 @Table(name = "AUDIO_LIBRARY")
 public class AudioLibraryEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     @Lob
     private byte[] data;

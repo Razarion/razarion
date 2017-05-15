@@ -3,6 +3,7 @@ package com.btxtech.server.user;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
@@ -15,7 +16,7 @@ import java.util.Date;
 @Table(name = "HUMAN_PLAYER_ENTITY")
 public class HumanPlayerIdEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private Date timeStamp;
     @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes

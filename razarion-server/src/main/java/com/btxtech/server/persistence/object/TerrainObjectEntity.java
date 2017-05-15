@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.TerrainObjectConfig;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -19,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "TERRAIN_OBJECT")
 public class TerrainObjectEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)

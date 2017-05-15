@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -22,7 +23,7 @@ import java.util.List;
 @Table(name = "BOT_CONFIG_ENRAGEMENT_STATE_CONFIG")
 public class BotEnragementStateConfigEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private String name;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)

@@ -8,6 +8,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
@@ -23,7 +24,7 @@ import java.util.List;
 @Table(name = "FB_MARKETING_HISTORY_AD")
 public class HistoryAdEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.TABLE)
     private Integer id;
     private long campaignId;
     private long adSetId;
