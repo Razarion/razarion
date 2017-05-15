@@ -10,7 +10,6 @@ import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
@@ -33,8 +32,6 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
-    @Inject
-    private VisualUiService visualUiService;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -92,7 +89,7 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
 
 
         webGlFacade.uniform3fNoAlpha(uLightingAmbient, ambient);
-        webGlFacade.uniform3f(uLightingDirection, visualUiService.getShape3DLightDirection());
+        webGlFacade.uniform3f(uLightingDirection, shape3DUiService.getShape3DLightDirection());
         webGlFacade.uniform3fNoAlpha(uLightingDiffuse, diffuse);
         webGlFacade.uniformMatrix4fv(buildupMatrixUniformLocation, buildupMatrix);
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());

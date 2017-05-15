@@ -61,6 +61,12 @@ public class BaseItemTypeEntity {
     // TODO private List<DemolitionStepEffect> demolitionStepEffects;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
+    private ImageLibraryEntity buildupTexture;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ImageLibraryEntity demolitionImage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
     private ColladaEntity wreckageShape3DId;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private WeaponTypeEntity weaponType;
@@ -106,6 +112,12 @@ public class BaseItemTypeEntity {
         baseItemType.setSpawnDurationMillis(spawnDurationMillis);
         if (thumbnail != null) {
             baseItemType.setThumbnail(thumbnail.getId());
+        }
+        if (demolitionImage != null) {
+            baseItemType.setBaseItemDemolitionImageId(demolitionImage.getId());
+        }
+        if (buildupTexture != null) {
+            baseItemType.setBuildupTextureId(buildupTexture.getId());
         }
         if (wreckageShape3DId != null) {
             baseItemType.setWreckageShape3DId(wreckageShape3DId.getId());
@@ -236,6 +248,14 @@ public class BaseItemTypeEntity {
 
     public void setSpawnShape3DId(ColladaEntity spawnShape3DId) {
         this.spawnShape3DId = spawnShape3DId;
+    }
+
+    public void setBuildupTexture(ImageLibraryEntity buildupTextureId) {
+        this.buildupTexture = buildupTextureId;
+    }
+
+    public void setDemolitionImage(ImageLibraryEntity demolitionImageId) {
+        this.demolitionImage = demolitionImageId;
     }
 
     public void setWreckageShape3DId(ColladaEntity wreckageShape3DId) {

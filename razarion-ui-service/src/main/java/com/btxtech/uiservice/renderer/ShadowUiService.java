@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Plane3d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -26,8 +26,6 @@ public class ShadowUiService {
     @Inject
     private VisualUiService visualUiService;
     @Inject
-    private Camera camera;
-    @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
     private TerrainUiService terrainUiService;
@@ -36,12 +34,8 @@ public class ShadowUiService {
     private Matrix4 depthProjectionTransformation;
     private Matrix4 depthViewTransformation;
 
-    public void onVisualConfig(@Observes VisualConfig visualConfig) {
-        setupLightDirection(visualConfig);
-    }
-
-    public double getShadowAlpha() {
-        return visualUiService.getVisualConfig().getShadowAlpha();
+    public void onVisualConfig(@Observes PlanetVisualConfig planetVisualConfig) {
+        setupLightDirection(planetVisualConfig);
     }
 
     public Matrix4 getShadowLookupTransformation() {
@@ -65,8 +59,8 @@ public class ShadowUiService {
         // - projectionTransformation (only one which is done)
         // - lightDirection
         // - terrainUiService.getHighestPointInView()
-        // - visualUiService.getVisualConfig().getShadowRotationX + Y
-        setupLightDirection(visualUiService.getVisualConfig());
+        // - visualUiService.getStaticVisualConfig().getShadowRotationX + Y
+        setupLightDirection(visualUiService.getPlanetVisualConfig());
         setupDepthRendererTransformations();
         // setupDepthRendererViewTransformation();
         shadowLookupTransformation = TEXTURE_COORDINATE_TRANSFORMATION.multiply(depthProjectionTransformation.multiply(depthViewTransformation));
@@ -78,7 +72,7 @@ public class ShadowUiService {
      * @return direction normalized
      */
     private Vertex getPlaneXAxis() {
-        return Matrix4.createYRotation(visualUiService.getVisualConfig().getShadowRotationY()).multiply(Matrix4.createXRotation(visualUiService.getVisualConfig().getShadowRotationX())).multiply(new Vertex(1, 0, 0), 1.0);
+        return Matrix4.createYRotation(visualUiService.getPlanetVisualConfig().getShadowRotationY()).multiply(Matrix4.createXRotation(visualUiService.getPlanetVisualConfig().getShadowRotationX())).multiply(new Vertex(1, 0, 0), 1.0);
     }
 
     /**
@@ -87,7 +81,7 @@ public class ShadowUiService {
      * @return direction normalized
      */
     private Vertex getPlaneYAxis() {
-        return Matrix4.createYRotation(visualUiService.getVisualConfig().getShadowRotationY()).multiply(Matrix4.createXRotation(visualUiService.getVisualConfig().getShadowRotationX())).multiply(new Vertex(0, 1, 0), 1.0);
+        return Matrix4.createYRotation(visualUiService.getPlanetVisualConfig().getShadowRotationY()).multiply(Matrix4.createXRotation(visualUiService.getPlanetVisualConfig().getShadowRotationX())).multiply(new Vertex(0, 1, 0), 1.0);
     }
 
     private void setupDepthRendererTransformations() {
@@ -136,7 +130,7 @@ public class ShadowUiService {
 
         Vertex lightPosition = lightPositionOnPlane.add(lightDirection.multiply(-Z_NEAR));
 
-        depthViewTransformation = Matrix4.createXRotation(-visualUiService.getVisualConfig().getShadowRotationX()).multiply(Matrix4.createYRotation(-visualUiService.getVisualConfig().getShadowRotationY())).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
+        depthViewTransformation = Matrix4.createXRotation(-visualUiService.getPlanetVisualConfig().getShadowRotationX()).multiply(Matrix4.createYRotation(-visualUiService.getPlanetVisualConfig().getShadowRotationY())).multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
 
     }
 
@@ -169,9 +163,8 @@ public class ShadowUiService {
         return new Plane3d(lightDirection, pointOnPlane);
     }
 
-
-    private void setupLightDirection(VisualConfig visualConfig) {
-        lightDirection = Matrix4.createYRotation(visualConfig.getShadowRotationY()).multiply(Matrix4.createXRotation(visualConfig.getShadowRotationX())).multiply(new Vertex(0, 0, -1), 1.0);
+    private void setupLightDirection(PlanetVisualConfig planetVisualConfig) {
+        lightDirection = Matrix4.createYRotation(planetVisualConfig.getShadowRotationY()).multiply(Matrix4.createXRotation(planetVisualConfig.getShadowRotationX())).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
 }

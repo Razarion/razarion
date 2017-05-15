@@ -1,13 +1,13 @@
 package com.btxtech.client.renderer;
 
-import com.btxtech.test.TestHelper;
-import com.btxtech.shared.dto.VisualConfig;
-import com.btxtech.uiservice.VisualUiService;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.shared.dto.VertexList;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.dto.VertexList;
+import com.btxtech.test.TestHelper;
+import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -26,7 +26,7 @@ public class DepthSorterTest {
     @Before
     public void before() throws Exception {
         VisualUiService visualUiService = new VisualUiService();
-        TestHelper.setPrivateField(visualUiService, "visualConfig", new VisualConfig());
+        TestHelper.setPrivateField(visualUiService, "planetVisualConfig", new PlanetVisualConfig());
         camera = new Camera();
         ShadowUiService shadowUiService = new ShadowUiService();
         ProjectionTransformation projectionTransformation = new ProjectionTransformation();

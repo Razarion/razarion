@@ -160,12 +160,12 @@ public class WebGlEmulatorController implements Initializable {
             camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
         });
         shadowXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
-            visualUiService.getVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
+            visualUiService.getPlanetVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
             shadowUiService.setupMatrices();
             sceneController.update();
         });
         shadowYRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
-            visualUiService.getVisualConfig().setShadowRotationY(Math.toRadians(shadowYRotationSlider.getValue()));
+            visualUiService.getPlanetVisualConfig().setShadowRotationY(Math.toRadians(shadowYRotationSlider.getValue()));
             shadowUiService.setupMatrices();
             sceneController.update();
         });
@@ -183,8 +183,8 @@ public class WebGlEmulatorController implements Initializable {
         yTranslationField.setText(Double.toString(camera.getTranslateY()));
         zTranslationField.setText(Double.toString(camera.getTranslateZ()));
 
-        shadowXRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationX()));
-        shadowYRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getVisualConfig().getShadowRotationY()));
+        shadowXRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getPlanetVisualConfig().getShadowRotationX()));
+        shadowYRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getPlanetVisualConfig().getShadowRotationY()));
     }
 
     private DecimalPosition toClipCoordinates(DecimalPosition canvasPosition) {

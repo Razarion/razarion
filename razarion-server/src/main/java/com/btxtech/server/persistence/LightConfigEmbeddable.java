@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.dto.LightConfig;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -15,26 +15,26 @@ import javax.persistence.Embedded;
  */
 @Embeddable
 public class LightConfigEmbeddable {
-    double xRotation;
-    double yRotation;
+    private Double xRotation;
+    private Double yRotation;
     @AttributeOverrides({
-            @AttributeOverride(name = "r", column = @Column(name = "diffuseR", nullable = false)),
-            @AttributeOverride(name = "g", column = @Column(name = "diffuseG", nullable = false)),
-            @AttributeOverride(name = "b", column = @Column(name = "diffuseB", nullable = false)),
-            @AttributeOverride(name = "a", column = @Column(name = "diffuseA", nullable = false)),
+            @AttributeOverride(name = "r", column = @Column(name = "diffuseR")),
+            @AttributeOverride(name = "g", column = @Column(name = "diffuseG")),
+            @AttributeOverride(name = "b", column = @Column(name = "diffuseB")),
+            @AttributeOverride(name = "a", column = @Column(name = "diffuseA")),
     })
     @Embedded
     private Color diffuse;
     @AttributeOverrides({
-            @AttributeOverride(name = "r", column = @Column(name = "ambientR", nullable = false)),
-            @AttributeOverride(name = "g", column = @Column(name = "ambientG", nullable = false)),
-            @AttributeOverride(name = "b", column = @Column(name = "ambientB", nullable = false)),
-            @AttributeOverride(name = "a", column = @Column(name = "ambientA", nullable = false)),
+            @AttributeOverride(name = "r", column = @Column(name = "ambientR")),
+            @AttributeOverride(name = "g", column = @Column(name = "ambientG")),
+            @AttributeOverride(name = "b", column = @Column(name = "ambientB")),
+            @AttributeOverride(name = "a", column = @Column(name = "ambientA")),
     })
     @Embedded
     private Color ambient;
-    private double specularIntensity;
-    private double specularHardness;
+    private Double specularIntensity;
+    private Double specularHardness;
 
     public LightConfig toLightConfig() {
         LightConfig lightConfig = new LightConfig();

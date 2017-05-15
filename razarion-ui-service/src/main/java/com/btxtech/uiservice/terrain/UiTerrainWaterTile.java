@@ -1,9 +1,9 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.dto.WaterConfig;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
@@ -19,13 +19,13 @@ public class UiTerrainWaterTile {
     @Inject
     private WaterRenderTask waterRenderTask;
     @Inject
-    private VisualUiService visualUiService;
+    private TerrainTypeService terrainTypeService;
     private ModelRenderer modelRenderer;
     private TerrainWaterTile terrainWaterTile;
     private WaterConfig waterConfig;
 
     public void init(boolean active, TerrainWaterTile terrainWaterTile) {
-        waterConfig = visualUiService.getVisualConfig().getWaterConfig();
+        waterConfig = terrainTypeService.getWaterConfig();
         this.terrainWaterTile = terrainWaterTile;
         modelRenderer = waterRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);

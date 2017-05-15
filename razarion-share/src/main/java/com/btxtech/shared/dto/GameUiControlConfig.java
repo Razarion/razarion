@@ -1,6 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
@@ -12,13 +13,17 @@ import java.util.List;
  */
 // Better name: something with game-control, client control
 public class GameUiControlConfig {
-    private List<SceneConfig> sceneConfigs;
-    private StaticGameConfig staticGameConfig;
-    private VisualConfig visualConfig;
-    private AudioConfig audioConfig;
+    // User
     private UserContext userContext;
+    // Static
+    private StaticGameConfig staticGameConfig;
+    private List<Shape3D> shape3Ds;
+    private AudioConfig audioConfig;
     private GameTipVisualConfig gameTipVisualConfig;
+    // Planet
+    private List<SceneConfig> sceneConfigs;
     private PlanetConfig planetConfig;
+    private PlanetVisualConfig planetVisualConfig;
     private SlavePlanetConfig slavePlanetConfig;
     private SlaveSyncItemInfo slaveSyncItemInfo;
 
@@ -40,12 +45,21 @@ public class GameUiControlConfig {
         return this;
     }
 
-    public VisualConfig getVisualConfig() {
-        return visualConfig;
+    public List<Shape3D> getShape3Ds() {
+        return shape3Ds;
     }
 
-    public GameUiControlConfig setVisualConfig(VisualConfig visualConfig) {
-        this.visualConfig = visualConfig;
+    public GameUiControlConfig setShape3Ds(List<Shape3D> shape3Ds) {
+        this.shape3Ds = shape3Ds;
+        return this;
+    }
+
+    public PlanetVisualConfig getPlanetVisualConfig() {
+        return planetVisualConfig;
+    }
+
+    public GameUiControlConfig setPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
+        this.planetVisualConfig = planetVisualConfig;
         return this;
     }
 

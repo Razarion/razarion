@@ -109,7 +109,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                 for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                     CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
-                    compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ);
+                    compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ).setBaseItemBuildupImageId(baseItemType.getBuildupTextureId());
                     compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ);
                     compositeRenderer.setupNoAnimation(vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
@@ -172,7 +172,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     }
                     CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
-                    compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(visualUiService.getVisualConfig().getBaseItemDemolitionImageId());
+                    compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(baseItemType.getBaseItemDemolitionImageId());
                     compositeRenderer.setDepthBufferRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class);
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
@@ -183,7 +183,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
             }
             add(modelRenderer);
         } else {
-            logger.warning("BaseItemRenderTask: no spawnShape3DId for BaseItemType: " + baseItemType);
+            logger.warning("BaseItemRenderTask: no shape3DId for BaseItemType: " + baseItemType);
         }
     }
 

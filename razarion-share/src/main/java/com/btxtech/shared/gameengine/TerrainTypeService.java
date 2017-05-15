@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.enterprise.event.Observes;
@@ -20,14 +21,14 @@ public class TerrainTypeService {
     private Map<Integer, SlopeSkeletonConfig> slopeSkeletonConfigs = new HashMap<>();
     private GroundSkeletonConfig groundSkeletonConfig;
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
-    private double waterLevel;
+    private WaterConfig waterConfig;
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());
     }
 
     public void init(StaticGameConfig staticGameConfig) {
-        waterLevel = staticGameConfig.getWaterLevel();
+        waterConfig = staticGameConfig.getWaterConfig();
         groundSkeletonConfig = staticGameConfig.getGroundSkeletonConfig();
         setSlopeSkeletonConfigs(staticGameConfig.getSlopeSkeletonConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
@@ -79,8 +80,8 @@ public class TerrainTypeService {
         return terrainObjectConfig;
     }
 
-    public double getWaterLevel() {
-        return waterLevel;
+    public WaterConfig getWaterConfig() {
+        return waterConfig;
     }
 
     // Methods used by the editors -----------------------------------------------------------------

@@ -23,7 +23,7 @@ public class StaticGameConfigPersistenceTest extends ArquillianBaseTest {
         Assert.assertNotNull(staticGameConfig.getGroundSkeletonConfig());
         Assert.assertNotNull(staticGameConfig.getSlopeSkeletonConfigs());
         Assert.assertNotNull(staticGameConfig.getTerrainObjectConfigs());
-        Assert.assertEquals(-0.7, staticGameConfig.getWaterLevel(), 0.0001);
+        Assert.assertNotNull(staticGameConfig.getWaterConfig());
         Assert.assertNotNull(staticGameConfig.getBaseItemTypes());
         Assert.assertNotNull(staticGameConfig.getResourceItemTypes());
         Assert.assertNotNull(staticGameConfig.getBoxItemTypes());

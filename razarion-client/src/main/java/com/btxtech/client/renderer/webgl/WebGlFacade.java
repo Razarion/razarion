@@ -15,9 +15,9 @@ import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.uiservice.renderer.ShadowUiService;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -62,7 +62,7 @@ public class WebGlFacade {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ShadowUiService shadowUiService;
+    private VisualUiService visualUiService;
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
@@ -209,7 +209,7 @@ public class WebGlFacade {
         if (shadowWebGlTextureId == null) {
             throw new IllegalStateException("Shadow must be enabled before");
         }
-        uniform1f(uShadowAlpha, (float) shadowUiService.getShadowAlpha());
+        uniform1f(uShadowAlpha, (float) visualUiService.getPlanetVisualConfig().getShadowAlpha());
         uniform1i(uShadowTexture, shadowWebGlTextureId.getUniformValue());
         gameCanvas.getCtx3d().activeTexture(shadowWebGlTextureId.getWebGlTextureId());
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());

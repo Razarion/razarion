@@ -1,16 +1,28 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+
 /**
  * Created by Beat
  * 15.03.2017.
  */
 public class WaterConfig {
+    private double waterLevel;
     private double transparency;
     private Integer bmId;
     private double bmScale;
     private double bmDepth;
     private double groundLevel;
     private LightConfig lightConfig;
+
+    public double getWaterLevel() {
+        return waterLevel;
+    }
+
+    public WaterConfig setWaterLevel(double waterLevel) {
+        this.waterLevel = waterLevel;
+        return this;
+    }
 
     public double getTransparency() {
         return transparency;

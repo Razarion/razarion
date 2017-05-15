@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -69,6 +70,11 @@ public class PlanetEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity startBaseItemType;
+    private double shadowRotationX;
+    private double shadowRotationY;
+    private double shadowAlpha;
+    private double shape3DLightRotateX;
+    private double shape3DLightRotateZ;
 
     public Integer getId() {
         return id;
@@ -101,6 +107,13 @@ public class PlanetEntity {
             planetConfig.setStartBaseItemTypeId(startBaseItemType.getId());
         }
         return planetConfig;
+    }
+
+    public PlanetVisualConfig toPlanetVisualConfig() {
+        PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
+        planetVisualConfig.setShadowRotationX(shadowRotationX).setShadowRotationY(shadowRotationY).setShadowAlpha(shadowAlpha);
+        planetVisualConfig.setShape3DLightRotateX(shape3DLightRotateX).setShape3DLightRotateZ(shape3DLightRotateZ);
+        return planetVisualConfig;
     }
 
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {

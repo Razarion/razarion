@@ -44,6 +44,8 @@ public class BaseItemType extends ItemType {
     private Integer explosionParticleConfigId;
     private List<DemolitionStepEffect> demolitionStepEffects;
     private Integer wreckageShape3DId;
+    private Integer baseItemDemolitionImageId;
+    private Integer buildupTextureId;
 
     public PhysicalAreaConfig getPhysicalAreaConfig() {
         return physicalAreaConfig;
@@ -279,6 +281,24 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setWreckageShape3DId(Integer wreckageShape3DId) {
         this.wreckageShape3DId = wreckageShape3DId;
+        return this;
+    }
+
+    public Integer getBaseItemDemolitionImageId() {
+        return baseItemDemolitionImageId;
+    }
+
+    public BaseItemType setBaseItemDemolitionImageId(Integer baseItemDemolitionImageId) {
+        this.baseItemDemolitionImageId = baseItemDemolitionImageId;
+        return this;
+    }
+
+    public Integer getBuildupTextureId() {
+        return buildupTextureId;
+    }
+
+    public BaseItemType setBuildupTextureId(Integer buildupTextureId) {
+        this.buildupTextureId = buildupTextureId;
         return this;
     }
 }

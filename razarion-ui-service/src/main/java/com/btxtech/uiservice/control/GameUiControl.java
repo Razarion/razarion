@@ -35,7 +35,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.security.SecurityPermission;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -265,7 +264,15 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public Set<Integer> getAllTextureIds() {
-        Set<Integer> textureIds = Shape3DUtils.getAllTextures(gameUiControlConfig.getVisualConfig().getShape3Ds());
+        Set<Integer> textureIds = Shape3DUtils.getAllTextures(gameUiControlConfig.getShape3Ds());
+        for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
+            if(baseItemType.getBuildupTextureId() != null) {
+                textureIds.add(baseItemType.getBuildupTextureId());
+            }
+            if(baseItemType.getBaseItemDemolitionImageId() != null) {
+                textureIds.add(baseItemType.getBaseItemDemolitionImageId());
+            }
+        }
 
         for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
             if (slopeSkeletonConfig.getTextureId() != null) {
@@ -279,9 +286,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
         if (groundSkeletonConfig.getBottomTextureId() != null) {
             textureIds.add(groundSkeletonConfig.getBottomTextureId());
-        }
-        if (gameUiControlConfig.getVisualConfig().getBaseItemDemolitionImageId() != null) {
-            textureIds.add(gameUiControlConfig.getVisualConfig().getBaseItemDemolitionImageId());
         }
         return textureIds;
     }
@@ -301,8 +305,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (groundSkeletonConfig.getBottomBmId() != null) {
             bumpIds.add(groundSkeletonConfig.getBottomBmId());
         }
-        if (gameUiControlConfig.getVisualConfig().getWaterConfig().getBmId() != null) {
-            bumpIds.add(gameUiControlConfig.getVisualConfig().getWaterConfig().getBmId());
+        if (gameUiControlConfig.getStaticGameConfig().getWaterConfig().getBmId() != null) {
+            bumpIds.add(gameUiControlConfig.getStaticGameConfig().getWaterConfig().getBmId());
         }
         return bumpIds;
     }

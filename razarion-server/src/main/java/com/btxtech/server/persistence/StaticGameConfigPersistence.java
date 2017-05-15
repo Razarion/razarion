@@ -41,7 +41,7 @@ public class StaticGameConfigPersistence {
         staticGameConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
         staticGameConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
-        staticGameConfig.setWaterLevel(-0.7); // TODO move to DB
+        staticGameConfig.setWaterConfig(terrainElementPersistence.readWaterConfig());
         staticGameConfig.setBaseItemTypes(itemTypePersistence.readBaseItemTypes());
         staticGameConfig.setResourceItemTypes(itemTypePersistence.readResourceItemTypes());
         staticGameConfig.setBoxItemTypes(itemTypePersistence.readBoxItemTypes());

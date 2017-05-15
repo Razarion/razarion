@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
+import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
@@ -131,6 +132,14 @@ public class ArquillianBaseTest {
         utx.begin();
         em.joinTransaction();
         em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM WeaponTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM FactoryTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM HarvesterTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM BuilderTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM ConsumerTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM ItemContainerTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM HouseTypeEntity").executeUpdate();
+        em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
         em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();
         utx.commit();
     }
@@ -217,6 +226,8 @@ public class ArquillianBaseTest {
         groundConfigEntity.fromGroundConfig(setupGroundConfig(), imagePersistence);
         em.persist(groundConfigEntity);
 
+        em.persist(new WaterConfigEntity());
+
         PlanetEntity planetEntity1 = new PlanetEntity();
         em.persist(planetEntity1);
         PLANET_1_ID = planetEntity1.getId();
@@ -251,6 +262,7 @@ public class ArquillianBaseTest {
     protected void cleanPlanets() throws Exception {
         utx.begin();
         em.joinTransaction();
+        em.createQuery("DELETE FROM WaterConfigEntity ").executeUpdate();
         em.createQuery("DELETE FROM GroundConfigEntity").executeUpdate();
         em.createQuery("DELETE FROM GameUiControlConfigEntity").executeUpdate();
         em.createQuery("DELETE FROM PlanetEntity").executeUpdate();

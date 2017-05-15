@@ -9,7 +9,6 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
@@ -30,8 +29,6 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     // private Logger logger = Logger.getLogger(ClientVertexContainerRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
-    @Inject
-    private VisualUiService visualUiService;
     @Inject
     private ClientShape3DUiService shape3DUiService;
     private Vec3Float32ArrayShaderAttribute positions;
@@ -81,7 +78,7 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
         webGlFacade.useProgram();
 
         webGlFacade.uniform3fNoAlpha(uLightingAmbient, ambient);
-        webGlFacade.uniform3f(uLightingDirection, visualUiService.getShape3DLightDirection());
+        webGlFacade.uniform3f(uLightingDirection, shape3DUiService.getShape3DLightDirection());
         webGlFacade.uniform3fNoAlpha(uLightingDiffuse, diffuse);
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());

@@ -3,7 +3,7 @@ package com.btxtech.client.editor;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
-import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.google.gwt.user.client.ui.DoubleBox;
@@ -30,7 +30,7 @@ public class VisualConfigPanel extends LeftSideBarContent {
     private VisualUiService visualUiService;
     @Inject
     @AutoBound
-    private DataBinder<VisualConfig> visualConfigDataBinder;
+    private DataBinder<PlanetVisualConfig> planetVisualConfigDataBinder;
     @Inject
     @DataField
     private Label shadowDirectionLabel;
@@ -77,17 +77,17 @@ public class VisualConfigPanel extends LeftSideBarContent {
     @PostConstruct
     public void init() {
         // Shadow
-        visualConfigDataBinder.setModel(visualUiService.getVisualConfig());
-        visualConfigDataBinder.addPropertyChangeHandler(event -> {
-            displayLightDirectionLabels();
-            shadowUiService.setupMatrices();
-        });
+        // TODO planetVisualConfigDataBinder.setModel(visualUiService.getStaticVisualConfig());
+        // TODO planetVisualConfigDataBinder.addPropertyChangeHandler(event -> {
+        // TODO     displayLightDirectionLabels();
+        // TODO     shadowUiService.setupMatrices();
+        // TODO });
         displayLightDirectionLabels();
     }
 
     private void displayLightDirectionLabels() {
         shadowDirectionLabel.setText(DisplayUtils.formatVertex(shadowUiService.getLightDirection()));
-        shape3DDirectionLabel.setText(DisplayUtils.formatVertex(visualUiService.getShape3DLightDirection()));
+        // TODO shape3DDirectionLabel.setText(DisplayUtils.formatVertex(visualUiService.getShape3DLightDirection()));
     }
 
 }

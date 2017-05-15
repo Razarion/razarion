@@ -1,11 +1,9 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 
-import javax.inject.Inject;
 import java.util.logging.Logger;
 
 /**
@@ -14,10 +12,9 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractRenderUnit<VertexContainer> {
     private Logger logger = Logger.getLogger(AbstractBuildupVertexContainerRenderUnit.class.getName());
-    @Inject
-    private VisualUiService visualUiService;
     private Matrix4 buildupMatrix;
     private double mayZ;
+    private Integer baseItemBuildupImageId;
 
     protected abstract void internalFillBuffers(VertexContainer vertexContainer, Matrix4 buildupMatrix, int buildupTextureId);
 
@@ -25,8 +22,14 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
 
     protected abstract void draw(ModelMatrices modelMatrices, double progressZ);
 
-    public void setMaxZ(double mayZ) {
+    public AbstractBuildupVertexContainerRenderUnit setMaxZ(double mayZ) {
         this.mayZ = mayZ;
+        return this;
+    }
+
+    public AbstractBuildupVertexContainerRenderUnit setBaseItemBuildupImageId(Integer baseItemBuildupImageId) {
+        this.baseItemBuildupImageId = baseItemBuildupImageId;
+        return this;
     }
 
     @Override
@@ -35,13 +38,13 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
             logger.warning("No texture id: " + vertexContainer.getKey());
             return;
         }
-        if (visualUiService.getVisualConfig().getBuildupTextureId() == null) {
-            logger.warning("Buildup Texture Id from VisualConfig is not set");
+        if (baseItemBuildupImageId == null) {
+            logger.warning("Buildup baseItemBuildupImageId Texture Id set: " + helperString());
             return;
         }
 
         buildupMatrix = vertexContainer.getShapeTransform().setupMatrix();
-        internalFillBuffers(vertexContainer, buildupMatrix, visualUiService.getVisualConfig().getBuildupTextureId());
+        internalFillBuffers(vertexContainer, buildupMatrix, baseItemBuildupImageId);
 
         setElementCount(vertexContainer);
     }

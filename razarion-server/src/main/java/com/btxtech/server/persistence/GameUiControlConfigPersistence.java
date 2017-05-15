@@ -22,13 +22,10 @@ import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
-import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ScrollUiQuest;
 import com.btxtech.shared.dto.ViewFieldConfig;
-import com.btxtech.shared.dto.VisualConfig;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
@@ -85,6 +82,7 @@ public class GameUiControlConfigPersistence {
         GameUiControlConfig gameUiControlConfig = load4Level(userContext.getLevelId()).toGameUiControlConfig();
         gameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         gameUiControlConfig.setUserContext(userContext);
+        gameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         gameUiControlConfig.setAudioConfig(defaultAudioConfig());  // TODO move to DB
         gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());  // TODO move to DB
         gameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig());
@@ -103,6 +101,7 @@ public class GameUiControlConfigPersistence {
         query.orderBy(criteriaBuilder.asc(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number)));
         return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
     }
+
 
     private GameTipVisualConfig defaultGameTipVisualConfig() {
         GameTipVisualConfig gameTipVisualConfig = new GameTipVisualConfig();
@@ -124,26 +123,6 @@ public class GameUiControlConfigPersistence {
         gameTipVisualConfig.setDirectionShape3DId(272503);
         gameTipVisualConfig.setSplashScrollImageId(272508);
         return gameTipVisualConfig;
-    }
-
-    private VisualConfig defaultVisualConfig() throws IOException, SAXException, ParserConfigurationException {
-        VisualConfig visualConfig = new VisualConfig();
-        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
-        visualConfig.setShape3DLightRotateX(Math.toRadians(60)).setShape3DLightRotateZ(Math.toRadians(260));
-        visualConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
-        visualConfig.setBaseItemDemolitionImageId(180848);
-        visualConfig.setBuildupTextureId(180818);
-        visualConfig.setWaterConfig(defaultWaterConfig());
-        return visualConfig;
-    }
-
-    private WaterConfig defaultWaterConfig() {
-        WaterConfig waterConfig = new WaterConfig();
-        waterConfig.setGroundLevel(-2).setBmDepth(7).setTransparency(0.5).setBmId(272480).setBmDepth(2).setBmScale(0.02);
-        LightConfig lightConfig = new LightConfig();
-        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(0.38, 0.38, 0.38));
-        lightConfig.setRotationX(Math.toRadians(-33)).setRotationY(Math.toRadians(0)).setSpecularIntensity(0.75).setSpecularHardness(30);
-        return waterConfig.setLightConfig(lightConfig);
     }
 
     private AudioConfig defaultAudioConfig() {

@@ -11,6 +11,7 @@ import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -44,7 +45,7 @@ public class TerrainServiceTestBase {
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setWaterLevel(-0.7);
+        staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         groundSkeletonConfig.setHeights(toColumnRow(heights));

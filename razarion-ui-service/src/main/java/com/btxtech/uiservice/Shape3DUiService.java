@@ -1,8 +1,11 @@
 package com.btxtech.uiservice;
 
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
 import javax.enterprise.event.Observes;
 import java.util.ArrayList;
@@ -17,16 +20,25 @@ import java.util.Map;
 public abstract class Shape3DUiService {
     // private Logger logger = Logger.getLogger(Shape3DUiService.class.getName());
     private Map<Integer, Shape3D> shape3Ds = new HashMap<>();
+    private Vertex lightDirection;
 
     public abstract double getMaxZ(VertexContainer vertexContainer);
 
     // Global methods  ----------------------------------------------------
-    public void onVisualConfig(@Observes VisualConfig visualConfig) {
-        setShapes3Ds(visualConfig.getShape3Ds());
+    public void onStaticVisualConfig(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+        setShapes3Ds(gameUiControlInitEvent.getGameUiControlConfig().getShape3Ds());
+    }
+
+    public void onVisualConfig(@Observes PlanetVisualConfig planetVisualConfig) {
+        lightDirection = Matrix4.createZRotation(planetVisualConfig.getShape3DLightRotateZ()).multiply(Matrix4.createXRotation(planetVisualConfig.getShape3DLightRotateX())).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
     public Shape3D getShape3D(int id) {
         return shape3Ds.get(id);
+    }
+
+    public Vertex getShape3DLightDirection() {
+        return lightDirection;
     }
 
     // Methods only used by the editor ----------------------------------------------------

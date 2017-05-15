@@ -35,8 +35,6 @@ public class GameUiControlConfigEntity {
     private List<SceneEntity> scenes;
     @OneToOne
     private LevelEntity minimalLevel;
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-    private VisualConfigEntity visualConfigEntity;
 
     public Integer getId() {
         return id;
@@ -45,14 +43,12 @@ public class GameUiControlConfigEntity {
     public GameUiControlConfig toGameUiControlConfig() {
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
         gameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
+        gameUiControlConfig.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         for (SceneEntity scene : scenes) {
             sceneConfigs.add(scene.toSceneConfig());
         }
         gameUiControlConfig.setSceneConfigs(sceneConfigs);
-        if (visualConfigEntity != null) {
-            gameUiControlConfig.setVisualConfig(visualConfigEntity.toVisualConfig());
-        }
         return gameUiControlConfig;
     }
 
@@ -70,14 +66,6 @@ public class GameUiControlConfigEntity {
 
     public void setMinimalLevel(LevelEntity minimalLevel) {
         this.minimalLevel = minimalLevel;
-    }
-
-    public VisualConfigEntity getVisualConfigEntity() {
-        return visualConfigEntity;
-    }
-
-    public void setVisualConfigEntity(VisualConfigEntity visualConfigEntity) {
-        this.visualConfigEntity = visualConfigEntity;
     }
 
     @Override

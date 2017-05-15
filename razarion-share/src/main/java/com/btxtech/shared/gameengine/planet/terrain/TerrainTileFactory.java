@@ -87,7 +87,7 @@ public class TerrainTileFactory {
                     return;
                 }
                 if (obstacleContainerNode.isFullWater()) {
-                    terrainTileContext.insertDisplayHeight(nodeIndex, terrainTypeService.getWaterLevel());
+                    terrainTileContext.insertDisplayHeight(nodeIndex, terrainTypeService.getWaterConfig().getWaterLevel());
                     return;
                 }
             } else {
@@ -554,11 +554,11 @@ public class TerrainTileFactory {
                 return;
             }
             if (obstacleContainerNode.isFullWater()) {
-                terrainWaterTileContext.insertNode(nodeIndex, terrainTypeService.getWaterLevel());
+                terrainWaterTileContext.insertNode(nodeIndex, terrainTypeService.getWaterConfig().getWaterLevel());
                 return;
             }
             if (obstacleContainerNode.isFractionWater() && obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), terrainTypeService.getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), terrainTypeService.getWaterConfig().getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
             }
         });
         terrainWaterTileContext.complete();

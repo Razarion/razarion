@@ -13,12 +13,12 @@ import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
-import com.btxtech.shared.dto.VisualConfig;
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -57,11 +57,11 @@ public class ExperimentalTask extends AbstractStartupTask {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setGroundSkeletonConfig(defaultGroundSkeletonConfig());
         staticGameConfig.setLevelConfigs(Collections.emptyList());
-        // TODO staticGameConfig.setPlanetConfig(defaultPlanetConfig());
-        staticGameConfig.setWaterLevel(-0.7);
+        staticGameConfig.setWaterConfig(defaultWaterConfig());
         GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
         gameUiControlConfig.setUserContext(new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
-        gameUiControlConfig.setVisualConfig(defaultVisualConfig());
+        gameUiControlConfig.setPlanetConfig(defaultPlanetConfig());
+        gameUiControlConfig.setPlanetVisualConfig(defaultPlanetVisualConfig());
         gameUiControlConfig.setAudioConfig(new AudioConfig());
         gameUiControlConfig.setStaticGameConfig(staticGameConfig);
         gameUiControlConfig.setSceneConfigs(defaultSceneConfigs());
@@ -115,13 +115,11 @@ public class ExperimentalTask extends AbstractStartupTask {
         return gameTipVisualConfig;
     }
 
-    private VisualConfig defaultVisualConfig() {
-        VisualConfig visualConfig = new VisualConfig();
-        visualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
-        visualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
-        visualConfig.setWaterConfig(defaultWaterConfig());
-        visualConfig.setBaseItemDemolitionImageId(180848);
-        return visualConfig;
+    private PlanetVisualConfig defaultPlanetVisualConfig() {
+        PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
+        planetVisualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
+        planetVisualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
+        return planetVisualConfig;
     }
 
     private WaterConfig defaultWaterConfig() {

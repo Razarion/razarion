@@ -5,12 +5,14 @@ import com.btxtech.server.persistence.object.TerrainObjectEntity_;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
+import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
 import javax.inject.Inject;
@@ -47,6 +49,16 @@ public class TerrainElementPersistence {
         Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
         CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
         return entityManager.createQuery(userSelect).getSingleResult().generateGroundSkeleton();
+    }
+
+    @Transactional
+    public WaterConfig readWaterConfig() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        // Query for total row count in invitations
+        CriteriaQuery<WaterConfigEntity> userQuery = criteriaBuilder.createQuery(WaterConfigEntity.class);
+        Root<WaterConfigEntity> from = userQuery.from(WaterConfigEntity.class);
+        CriteriaQuery<WaterConfigEntity> userSelect = userQuery.select(from);
+        return entityManager.createQuery(userSelect).getSingleResult().toWaterConfig();
     }
 
     @Transactional

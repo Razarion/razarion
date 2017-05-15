@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -16,9 +17,9 @@ import java.util.List;
  */
 public class StaticGameConfig {
     private GroundSkeletonConfig groundSkeletonConfig;
+    private WaterConfig waterConfig;
     private List<SlopeSkeletonConfig> slopeSkeletonConfigs;
     private List<TerrainObjectConfig> terrainObjectConfigs;
-    private double waterLevel;
     private List<BaseItemType> baseItemTypes;
     private List<ResourceItemType> resourceItemTypes;
     private List<BoxItemType> boxItemTypes;
@@ -32,6 +33,14 @@ public class StaticGameConfig {
     public StaticGameConfig setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
         this.groundSkeletonConfig = groundSkeletonConfig;
         return this;
+    }
+
+    public WaterConfig getWaterConfig() {
+        return waterConfig;
+    }
+
+    public void setWaterConfig(WaterConfig waterConfig) {
+        this.waterConfig = waterConfig;
     }
 
     public List<SlopeSkeletonConfig> getSlopeSkeletonConfigs() {
@@ -49,15 +58,6 @@ public class StaticGameConfig {
 
     public StaticGameConfig setTerrainObjectConfigs(List<TerrainObjectConfig> terrainObjectConfigs) {
         this.terrainObjectConfigs = terrainObjectConfigs;
-        return this;
-    }
-
-    public double getWaterLevel() {
-        return waterLevel;
-    }
-
-    public StaticGameConfig setWaterLevel(double waterLevel) {
-        this.waterLevel = waterLevel;
         return this;
     }
 

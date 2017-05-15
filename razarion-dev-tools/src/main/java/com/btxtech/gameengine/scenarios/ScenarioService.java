@@ -11,6 +11,7 @@ import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -298,7 +299,7 @@ public class ScenarioService implements QuestListener {
         staticGameConfig.setGroundSkeletonConfig(setupGroundSkeletonConfig());
         staticGameConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
         staticGameConfig.setTerrainObjectConfigs(setupTerrainObjectConfigs());
-        staticGameConfig.setWaterLevel(0);
+        staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         staticGameConfig.setLevelConfigs(setupLevels());
         staticGameConfig.setBaseItemTypes(Arrays.asList(SIMPLE_FIX_ITEM_TYPE, SIMPLE_MOVABLE_ITEM_TYPE, SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE, SIMPLE_FAST_MOVABLE_ITEM_TYPE, HARVESTER_ITEM_TYPE, ATTACKER_ITEM_TYPE, BUILDER_ITEM_TYPE, TOWER_ITEM_TYPE, FACTORY_ITEM_TYPE));
         staticGameConfig.setResourceItemTypes(Arrays.asList(RESOURCE_ITEM_TYPE, RESOURCE_LITTLE_ITEM_TYPE));

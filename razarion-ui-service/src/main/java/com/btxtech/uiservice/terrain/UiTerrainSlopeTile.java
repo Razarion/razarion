@@ -33,8 +33,8 @@ public class UiTerrainSlopeTile {
     public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
         this.uiTerrainTile = uiTerrainTile;
         slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeSkeletonConfigId());
-        waterLevel = terrainTypeService.getWaterLevel();
-        waterGroundLevel = visualUiService.getVisualConfig().getWaterConfig().getGroundLevel();
+        waterLevel = terrainTypeService.getWaterConfig().getWaterLevel();
+        waterGroundLevel = terrainTypeService.getWaterConfig().getGroundLevel();
         this.terrainSlopeTile = terrainSlopeTile;
         modelRenderer = slopeRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);

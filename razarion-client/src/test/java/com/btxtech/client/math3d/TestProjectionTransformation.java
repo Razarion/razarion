@@ -1,8 +1,8 @@
 package com.btxtech.client.math3d;
 
-import com.btxtech.test.TestHelper;
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.dto.VisualConfig;
+import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.test.TestHelper;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -23,7 +23,7 @@ public class TestProjectionTransformation {
     @Before
     public void before() throws Exception {
         VisualUiService visualUiService = new VisualUiService();
-        TestHelper.setPrivateField(visualUiService, "visualConfig", new VisualConfig());
+        TestHelper.setPrivateField(visualUiService, "planetVisualConfig", new PlanetVisualConfig());
         camera = new Camera();
         ShadowUiService shadowUiService = new ShadowUiService();
         projectionTransformation = new ProjectionTransformation();
