@@ -75,7 +75,7 @@ public class BaseItemService {
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
             gameEngineMode = planetActivationEvent.getGameEngineMode();
             planetConfig = planetActivationEvent.getPlanetConfig();
-            if (planetActivationEvent.getSlaveSyncItemInfo() != null) {
+            if (gameEngineMode == GameEngineMode.SLAVE && planetActivationEvent.getSlaveSyncItemInfo() != null) {
                 for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getSlaveSyncItemInfo().getPlayerBaseInfos()) {
                     createBaseSlave(playerBaseInfo);
                 }

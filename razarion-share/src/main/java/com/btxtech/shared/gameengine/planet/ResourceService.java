@@ -74,7 +74,7 @@ public class ResourceService {
             resources.clear();
         }
         gameEngineMode = planetActivationEvent.getGameEngineMode();
-        if (planetActivationEvent.getMasterPlanetConfig() != null && planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs() != null) {
+        if (gameEngineMode == GameEngineMode.MASTER && planetActivationEvent.getMasterPlanetConfig() != null && planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs() != null) {
             synchronized (resourceRegions) {
                 for (ResourceRegionConfig resourceRegionConfig : planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs()) {
                     ResourceRegion resourceRegion = instance.get();

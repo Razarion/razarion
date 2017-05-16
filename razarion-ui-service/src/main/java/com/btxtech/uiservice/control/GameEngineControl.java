@@ -97,8 +97,13 @@ public abstract class GameEngineControl {
 
     public void init(ColdGameUiControlConfig coldGameUiControlConfig, DeferredStartup initializationReferredStartup) {
         this.deferredStartup = initializationReferredStartup;
+        SlaveSyncItemInfo slaveSyncItemInfo = coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo();
+        if(slaveSyncItemInfo == null) {
+            // Errai can not handle top level null JSON
+            slaveSyncItemInfo = new SlaveSyncItemInfo();
+        }
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiControlConfig.getStaticGameConfig(), coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig(),
-                coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo(), userUiService.getUserContext(), coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode());
+                slaveSyncItemInfo, userUiService.getUserContext(), coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode());
     }
 
     public void initWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {

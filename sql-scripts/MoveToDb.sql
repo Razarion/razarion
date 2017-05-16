@@ -48,6 +48,8 @@
 # 	`specularHardness`,	`specularIntensity`,	`xRotation`,	`yRotation`,	`waterLevel`,	`waterTransparency`,	`bmId_id`)
 # 	 VALUES ('5', '2', '0.02', '-2', '1', '0.38', '0.38', '0.38', '1', '1', '1', '1', '30',  '0.75', '-0.575959', '0', '-0.7', '0.5', '34');
 
+# INSERT INTO razarion.GAME_UI_CONTROL_CONFIG (gameEngineMode, minimalLevel_id, planetEntity_id) VALUES ('MASTER', 1, 1);
+# INSERT INTO razarion.GAME_UI_CONTROL_CONFIG (gameEngineMode, minimalLevel_id, planetEntity_id) VALUES ('SLAVE', 5, 2);
 
 #############################
 # ALTER TABLE TRACKER_PAGE DROP id;
