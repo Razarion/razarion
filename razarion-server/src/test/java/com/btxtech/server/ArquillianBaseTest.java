@@ -147,6 +147,7 @@ public class ArquillianBaseTest {
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) throws Exception {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
+        baseItemTypeEntity.fromBaseItemType(baseItemType);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }
