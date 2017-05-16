@@ -43,7 +43,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals(50.34, viewFieldConfig.getSpeed(), 0.0001);
 
         runInTransaction(em -> {
-            // em.createQuery("DELETE FROM SceneEntity ").executeUpdate();
+            em.createQuery("DELETE FROM SceneEntity ").executeUpdate();
         });
         cleanPlanets();
     }
