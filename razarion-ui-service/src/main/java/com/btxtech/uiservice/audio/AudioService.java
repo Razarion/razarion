@@ -136,7 +136,7 @@ public abstract class AudioService implements TerrainScrollListener {
 
         lastLandWaterProportion = landWaterProportion;
 
-        playTerrainLoopAudio(272521, lastLandWaterProportion);
-        playTerrainLoopAudio(272522, 1.0 - lastLandWaterProportion);
+        playTerrainLoopAudio(audioConfig.getTerrainLoopLand(), lastLandWaterProportion);
+        playTerrainLoopAudio(audioConfig.getTerrainLoopWater(), 1.0 - lastLandWaterProportion);
     }
 }

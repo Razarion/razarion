@@ -18,6 +18,8 @@ public enum DbPropertyKey {
     AUDIO_SELECTION_OTHER("audio.selection.other"),
     AUDIO_COMMAND_SENT("audio.command.sent"),
     AUDIO_BASE_LOST("audio.base.lost"),
+    AUDIO_TERRAIN_LAND("audio.terrain.land"),
+    AUDIO_TERRAIN_WATER("audio.terrain.water"),
     // Tips
     TIP_CORNER_MOVE_DURATION("tip.corner.move.duration"),
     TIP_CORNER_MOVE_DISTANCE("tip.corner.move.distance"),

@@ -17,6 +17,8 @@ public class AudioConfig {
     private Integer onOtherSelection;
     private Integer onCommandSent;
     private Integer onBaseLost;
+    private Integer terrainLoopWater;
+    private Integer terrainLoopLand;
 
     public Integer getDialogOpened() {
         return dialogOpened;
@@ -123,6 +125,24 @@ public class AudioConfig {
 
     public AudioConfig setOnBaseLost(Integer onBaseLost) {
         this.onBaseLost = onBaseLost;
+        return this;
+    }
+
+    public Integer getTerrainLoopWater() {
+        return terrainLoopWater;
+    }
+
+    public AudioConfig setTerrainLoopWater(Integer terrainLoopWater) {
+        this.terrainLoopWater = terrainLoopWater;
+        return this;
+    }
+
+    public Integer getTerrainLoopLand() {
+        return terrainLoopLand;
+    }
+
+    public AudioConfig setTerrainLoopLand(Integer terrainLoopLand) {
+        this.terrainLoopLand = terrainLoopLand;
         return this;
     }
 }
