@@ -25,7 +25,7 @@ public abstract class Shape3DUiService {
     public abstract double getMaxZ(VertexContainer vertexContainer);
 
     // Global methods  ----------------------------------------------------
-    public void onStaticVisualConfig(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
+    public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
         setShapes3Ds(gameUiControlInitEvent.getColdGameUiControlConfig().getShape3Ds());
     }
 

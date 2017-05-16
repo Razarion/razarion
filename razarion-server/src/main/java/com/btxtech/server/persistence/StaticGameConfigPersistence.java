@@ -15,14 +15,6 @@ import javax.transaction.Transactional;
  */
 @ApplicationScoped
 public class StaticGameConfigPersistence {
-    static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
-    static final int BASE_ITEM_TYPE_HARVESTER = 180830;
-    static final int BASE_ITEM_TYPE_ATTACKER = 180832;
-    static final int BASE_ITEM_TYPE_FACTORY = 272490;
-    static final int BASE_ITEM_TYPE_TOWER = 272495;
-    static final int RESOURCE_ITEM_TYPE = 180829;
-    static final int BOX_ITEM_TYPE = 272481;
-    static final int INVENTORY_ITEM = 1;
     @Inject
     private TerrainElementPersistence terrainElementPersistence;
     @Inject
