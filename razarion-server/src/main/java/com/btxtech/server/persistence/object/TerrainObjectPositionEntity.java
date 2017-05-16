@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "TERRAIN_OBJECT_POSITION")
 public class TerrainObjectPositionEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn

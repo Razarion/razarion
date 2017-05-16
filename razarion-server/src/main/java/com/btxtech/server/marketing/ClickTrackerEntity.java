@@ -15,7 +15,7 @@ import java.util.Date;
 @Table(name = "FB_MARKETING_CLICK_TRACKER")
 public class ClickTrackerEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Date timeStamp;
     private String adId;

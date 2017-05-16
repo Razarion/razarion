@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "BASE_ITEM_FACTORY_TYPE_ENTITY")
 public class FactoryTypeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     public FactoryType toFactoryType() {

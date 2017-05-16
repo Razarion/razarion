@@ -22,7 +22,7 @@ import java.util.Map;
 @Table(name = "LEVEL")
 public class LevelEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private int number;
     private int xp2LevelUp;

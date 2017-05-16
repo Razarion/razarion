@@ -28,7 +28,7 @@ import java.util.List;
 @Table(name = "PLACE_CONFIG")
 public class PlaceConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ElementCollection
     @CollectionTable(name = "PLACE_CONFIG_POSITION_POLYGON", joinColumns = @JoinColumn(name = "OWNER_ID"))

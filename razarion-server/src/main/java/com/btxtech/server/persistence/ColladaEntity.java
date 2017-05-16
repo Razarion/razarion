@@ -25,7 +25,7 @@ import java.util.Map;
 @Table(name = "COLLADA")
 public class ColladaEntity implements ColladaConverterMapper {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Lob
     private String colladaString;

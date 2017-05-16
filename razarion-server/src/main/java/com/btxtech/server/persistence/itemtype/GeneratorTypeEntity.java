@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "BASE_ITEM_GENERATOR_TYPE_ENTITY")
 public class GeneratorTypeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     public GeneratorType toGeneratorType() {

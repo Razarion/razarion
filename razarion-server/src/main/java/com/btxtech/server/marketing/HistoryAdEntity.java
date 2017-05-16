@@ -24,7 +24,7 @@ import java.util.List;
 @Table(name = "FB_MARKETING_HISTORY_AD")
 public class HistoryAdEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private long campaignId;
     private long adSetId;

@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @Table(name = "SLOPE_NODE")
 public class SlopeNodeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private int segmentIndex;
     private int rowIndex;

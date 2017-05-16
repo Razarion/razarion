@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "QUEST_CONDITION")
 public class ConditionConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Enumerated(EnumType.STRING)
     private ConditionTrigger conditionTrigger;

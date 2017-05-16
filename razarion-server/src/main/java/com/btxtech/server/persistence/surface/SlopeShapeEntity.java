@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @Table(name = "SLOPE_SHAPE")
 public class SlopeShapeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Embedded
     private DecimalPosition position;

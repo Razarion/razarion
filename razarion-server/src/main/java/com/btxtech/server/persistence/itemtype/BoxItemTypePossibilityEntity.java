@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "BOX_ITEM_TYPE_POSSIBILITY")
 public class BoxItemTypePossibilityEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private double possibility;
     @ManyToOne(fetch = FetchType.LAZY)

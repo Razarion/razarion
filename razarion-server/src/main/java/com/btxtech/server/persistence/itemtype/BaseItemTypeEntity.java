@@ -26,7 +26,7 @@ import javax.persistence.Table;
 @Table(name = "BASE_ITEM_TYPE")
 public class BaseItemTypeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private double radius;

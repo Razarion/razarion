@@ -28,7 +28,7 @@ import java.util.List;
 @Table(name = "TRACKER_PERFMON", indexes = {@Index(columnList = "sessionId")})
 public class PerfmonStatisticEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Date timeStamp;
     @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes

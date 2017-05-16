@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "BASE_ITEM_ITEM_CONSUMER_TYPE_ENTITY")
 public class ItemContainerTypeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     public ItemContainerType toItemContainerType() {

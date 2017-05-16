@@ -30,7 +30,7 @@ import java.util.Map;
 @Table(name = "QUEST_COMPARISON")
 public class ComparisonConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer count;
     @ElementCollection

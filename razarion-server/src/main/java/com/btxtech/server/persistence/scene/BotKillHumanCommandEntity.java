@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "SCENE_BOT_KILL_HUMAN_COMMAND")
 public class BotKillHumanCommandEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn

@@ -23,7 +23,7 @@ import java.util.List;
 @Table(name = "BOT_CONFIG_ENRAGEMENT_STATE_CONFIG")
 public class BotEnragementStateConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)

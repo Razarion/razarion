@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @Table(name = "RESOURCE_ITEM_TYPE")
 public class ResourceItemTypeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn

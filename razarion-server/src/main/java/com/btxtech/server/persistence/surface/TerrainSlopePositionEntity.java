@@ -25,7 +25,7 @@ import java.util.List;
 @Table(name = "TERRAIN_SLOPE_POSITION")
 public class TerrainSlopePositionEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn

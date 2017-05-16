@@ -29,7 +29,7 @@ import java.util.List;
 @Table(name = "GROUND_CONFIG")
 public class GroundConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Embedded
     private LightConfigEmbeddable lightConfigEmbeddable;

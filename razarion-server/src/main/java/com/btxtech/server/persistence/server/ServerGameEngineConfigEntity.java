@@ -36,7 +36,7 @@ import java.util.List;
 @Table(name = "SERVER_GAME_ENGINE_CONFIG")
 public class ServerGameEngineConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @OneToOne
     private PlanetEntity planetEntity;

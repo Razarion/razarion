@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "BASE_ITEM_HOUSE_TYPE_ENTITY")
 public class HouseTypeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     public HouseType toHouseType() {

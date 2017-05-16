@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "GROUND_HEIGHT")
 public class GroundHeightEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private int xIndex;
     private int yIndex;

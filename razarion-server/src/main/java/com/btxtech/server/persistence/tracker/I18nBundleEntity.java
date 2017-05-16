@@ -26,7 +26,7 @@ import java.util.Map;
 public class I18nBundleEntity {
     public static final String DEFAULT = "DEFAULT";
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ElementCollection(fetch = FetchType.LAZY)
     @MapKeyColumn(name = "locale")

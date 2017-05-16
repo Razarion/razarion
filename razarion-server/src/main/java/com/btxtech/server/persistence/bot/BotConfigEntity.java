@@ -28,7 +28,7 @@ import java.util.List;
 @Table(name = "BOT_CONFIG")
 public class BotConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private boolean npc;
     private int actionDelay;

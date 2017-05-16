@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @Table(name = "INVENTORY_ITEM")
 public class InventoryItemEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

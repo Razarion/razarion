@@ -32,7 +32,7 @@ import java.util.Date;
 @Table(name = "TRACKER_STARTUP_TASK", indexes = { @Index(columnList = "sessionId"),  @Index(columnList = "gameSessionUuid") })
 public class StartupTaskEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;

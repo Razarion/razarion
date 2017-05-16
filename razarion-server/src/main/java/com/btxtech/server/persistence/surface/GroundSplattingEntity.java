@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "GROUND_SPLATTING")
 public class GroundSplattingEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private int xIndex;
     private int yIndex;

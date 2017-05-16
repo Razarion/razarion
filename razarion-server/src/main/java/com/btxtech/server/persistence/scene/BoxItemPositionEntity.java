@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "SCENE_BOX_ITEM_POSITION")
 public class BoxItemPositionEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn

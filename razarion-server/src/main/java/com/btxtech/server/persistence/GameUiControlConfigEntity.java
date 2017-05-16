@@ -30,7 +30,7 @@ import java.util.Locale;
 @Table(name = "GAME_UI_CONTROL_CONFIG")
 public class GameUiControlConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private PlanetEntity planetEntity;

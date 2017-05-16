@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "BOT_CONFIG_BOT_ITEM")
 public class BotItemConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @OneToOne
     private BaseItemTypeEntity baseItemTypeEntity;

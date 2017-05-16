@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "WATER_CONFIG")
 public class WaterConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private double waterLevel;
     private double waterTransparency;

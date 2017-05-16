@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "SERVER_RESOURCE_REGION_CONFIG")
 public class ServerResourceRegionConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private int count;
     private double minDistanceToItems;

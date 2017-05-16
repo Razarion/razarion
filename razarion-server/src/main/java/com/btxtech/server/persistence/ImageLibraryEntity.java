@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Table(name = "IMAGE_LIBRARY")
 public class ImageLibraryEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Lob
     private byte[] data;

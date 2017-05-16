@@ -33,7 +33,7 @@ import java.util.Date;
 @Table(name = "TRACKER_SESSION", indexes = { @Index(columnList = "sessionId") })
 public class SessionTrackerEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(nullable = false)
     private Date timeStamp;

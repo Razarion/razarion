@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Table(name = "AUDIO_LIBRARY")
 public class AudioLibraryEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Lob
     private byte[] data;

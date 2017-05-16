@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Table(name = "TERRAIN_OBJECT")
 public class TerrainObjectEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)

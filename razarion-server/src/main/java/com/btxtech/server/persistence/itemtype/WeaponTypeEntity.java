@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Table(name = "BASE_ITEM_WEAPON_TYPE_ENTITY")
 public class WeaponTypeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     public WeaponType toWeaponType() {

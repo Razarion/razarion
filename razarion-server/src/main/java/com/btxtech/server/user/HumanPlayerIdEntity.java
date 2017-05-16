@@ -16,7 +16,7 @@ import java.util.Date;
 @Table(name = "HUMAN_PLAYER_ENTITY")
 public class HumanPlayerIdEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Date timeStamp;
     @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes

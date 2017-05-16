@@ -32,7 +32,7 @@ import javax.persistence.Table;
 @Table(name = "SCENE_TIP_CONFIG")
 public class GameTipConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Enumerated(EnumType.STRING)
     private GameTipConfig.Tip tip;

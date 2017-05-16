@@ -37,7 +37,7 @@ import java.util.List;
 @Table(name = "SLOPE_CONFIG")
 public class SlopeConfigEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String internalName;
     @Embedded
