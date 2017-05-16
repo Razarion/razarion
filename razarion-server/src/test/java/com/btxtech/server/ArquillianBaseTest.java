@@ -130,19 +130,18 @@ public class ArquillianBaseTest {
     }
 
     protected void cleanItemTypes() throws Exception {
-        utx.begin();
-        em.joinTransaction();
-        em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM WeaponTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM FactoryTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM HarvesterTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM BuilderTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM ConsumerTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM ItemContainerTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM HouseTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
-        em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();
-        utx.commit();
+        runInTransaction(em -> {
+            em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM WeaponTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM FactoryTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM HarvesterTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM BuilderTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM ConsumerTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM ItemContainerTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM HouseTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();
+        });
     }
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) throws Exception {

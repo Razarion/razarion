@@ -48,8 +48,11 @@
 # 	`specularHardness`,	`specularIntensity`,	`xRotation`,	`yRotation`,	`waterLevel`,	`waterTransparency`,	`bmId_id`)
 # 	 VALUES ('5', '2', '0.02', '-2', '1', '0.38', '0.38', '0.38', '1', '1', '1', '1', '30',  '0.75', '-0.575959', '0', '-0.7', '0.5', '34');
 
-# INSERT INTO razarion.GAME_UI_CONTROL_CONFIG (gameEngineMode, minimalLevel_id, planetEntity_id) VALUES ('MASTER', 1, 1);
-# INSERT INTO razarion.GAME_UI_CONTROL_CONFIG (gameEngineMode, minimalLevel_id, planetEntity_id) VALUES ('SLAVE', 5, 2);
+# INSERT INTO GAME_UI_CONTROL_CONFIG (id, gameEngineMode, minimalLevel_id, planetEntity_id) VALUES (1, 'MASTER', 1, 1);
+# INSERT INTO GAME_UI_CONTROL_CONFIG (id, gameEngineMode, minimalLevel_id, planetEntity_id) VALUES (2, 'SLAVE', 5, 2);
+
+INSERT INTO SCENE (duration, internalName, removeLoadingCover, scrollUiQuestI18nHidePassedDialog, scrollUiQuestTargetRectangleEndX, scrollUiQuestTargetRectangleEndY, scrollUiQuestTargetRectangleStartX, scrollUiQuestTargetRectangleStartY, startPlacerEnemyFreeRadius, startPlacerSuggestedPositionX, startPlacerSuggestedPositionY, viewFieldBottomWidth, viewFieldCameraLocked, viewFieldFromPositionX, viewFieldFromPositionY, viewFieldSpeed, viewFieldToPositionX, viewFieldToPositionY, wait4LevelUpDialog, wait4QuestPassedDialog, waitForBaseLostDialog, gameTipConfigEntity_id, i18nIntroText_id, questConfig_id, scrollUiQuestI18nDescription_id, scrollUiQuestI18nPassedMessage_id, scrollUiQuestI18nTitle_id, gameUiControlConfigEntityId, orderColumn)
+VALUES (NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 65.23, TRUE, 12.4, 54.23, 50.34, 17.9, 100, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 0);
 
 #############################
 # ALTER TABLE TRACKER_PAGE DROP id;

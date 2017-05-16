@@ -94,6 +94,10 @@ public class SceneEntity {
     @JoinColumn
     private List<KillBotCommandEntity> killBotCommandEntities;
     // BaseItemPlacerConfig
+    @AttributeOverrides({
+            @AttributeOverride(name = "x", column = @Column(name = "startPlacerSuggestedPositionX")),
+            @AttributeOverride(name = "y", column = @Column(name = "startPlacerSuggestedPositionY")),
+    })
     private DecimalPosition startPlacerSuggestedPosition;
     private Double startPlacerEnemyFreeRadius;
     @ElementCollection
@@ -127,7 +131,7 @@ public class SceneEntity {
     private List<BoxItemPositionEntity> boxItemPositionEntities;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private GameTipConfigEntity gameTipConfigEntity;
-    private boolean removeLoadingCover;
+    private Boolean removeLoadingCover;
 
     public SceneConfig toSceneConfig(Locale locale) {
         SceneConfig sceneConfig = new SceneConfig().setId(id).setInternalName(internalName);
@@ -197,8 +201,15 @@ public class SceneEntity {
         if (startPlacerSuggestedPosition != null && startPlacerEnemyFreeRadius != null && startPlacerEnemyAllowedArea != null && !startPlacerEnemyAllowedArea.isEmpty()) {
             sceneConfig.setStartPointPlacerConfig(new BaseItemPlacerConfig().setSuggestedPosition(startPlacerSuggestedPosition).setEnemyFreeRadius(startPlacerEnemyFreeRadius).setAllowedArea(new Polygon2D(startPlacerEnemyAllowedArea)));
         }
-        sceneConfig.setWait4LevelUpDialog(wait4LevelUpDialog).setWait4QuestPassedDialog(wait4QuestPassedDialog).setWaitForBaseLostDialog(waitForBaseLostDialog);
-
+        if(wait4LevelUpDialog != null) {
+            sceneConfig.setWait4LevelUpDialog(wait4LevelUpDialog);
+        }
+        if(wait4QuestPassedDialog != null) {
+            sceneConfig.setWait4QuestPassedDialog(wait4QuestPassedDialog);
+        }
+        if(waitForBaseLostDialog != null) {
+            sceneConfig.setWaitForBaseLostDialog(waitForBaseLostDialog);
+        }
         if (resourceItemPositionEntities != null) {
             List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
             for (ResourceItemPositionEntity resourceItemPositionEntity : resourceItemPositionEntities) {
@@ -231,8 +242,14 @@ public class SceneEntity {
         if (gameTipConfigEntity != null) {
             sceneConfig.setGameTipConfig(gameTipConfigEntity.toGameTipConfig());
         }
-        sceneConfig.setRemoveLoadingCover(removeLoadingCover);
+        if (removeLoadingCover != null) {
+            sceneConfig.setRemoveLoadingCover(removeLoadingCover);
+        }
         return sceneConfig;
+    }
+
+    public void fromSceneConfig(SceneConfig sceneConfig) {
+        viewFieldConfig = sceneConfig.getViewFieldConfig();
     }
 
     @Override

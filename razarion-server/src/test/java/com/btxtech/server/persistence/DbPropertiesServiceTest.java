@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.RazAssertTestHelper;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import org.junit.Assert;
@@ -68,9 +69,9 @@ public class DbPropertiesServiceTest extends ArquillianBaseTest {
         Assert.assertNull(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
         // Test color value
         dbPropertiesService.setColorProperty(new Color(0.1, 0.3, 0.5, 0.7), DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR);
-        assertColor(new Color(0.1, 0.3, 0.5, 0.7), dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
+        RazAssertTestHelper.assertColor(new Color(0.1, 0.3, 0.5, 0.7), dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
         dbPropertiesService.setColorProperty(new Color(0.2, 0.4, 0.6, 0.9), DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR);
-        assertColor(new Color(0.2, 0.4, 0.6, 0.9), dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
+        RazAssertTestHelper.assertColor(new Color(0.2, 0.4, 0.6, 0.9), dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
         dbPropertiesService.setColorProperty(null, DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR);
         Assert.assertNull(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
 
@@ -82,12 +83,4 @@ public class DbPropertiesServiceTest extends ArquillianBaseTest {
             entityManager.createQuery("DELETE FROM ColladaEntity").executeUpdate();
         });
     }
-
-    private void assertColor(Color expected, Color actual) {
-        Assert.assertEquals("R value of color is not the same", expected.getR(), actual.getR(), 0.0001);
-        Assert.assertEquals("G value of color is not the same", expected.getG(), actual.getG(), 0.0001);
-        Assert.assertEquals("B value of color is not the same", expected.getB(), actual.getB(), 0.0001);
-        Assert.assertEquals("A value of color is not the same", expected.getA(), actual.getA(), 0.0001);
-    }
-
 }

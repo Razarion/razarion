@@ -14,6 +14,7 @@ public class RestUrl {
     public static final String LOGGING_JSON = "json";
     public static final String IMAGE_SERVICE_PATH = "image";
     public static final String AUDIO_SERVICE_PATH = "audio";
+    public static final String SCENE_EDITOR_PATH = "sceneeditor";
     public static final String GAME_UI_CONTROL_PATH = G_ZIPPED + "/" + "gameuicontrol";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String WARM_GAME_CONFIG_PROVIDER = "warmgameconfigprovider";

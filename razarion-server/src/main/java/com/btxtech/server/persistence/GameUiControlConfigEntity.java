@@ -35,7 +35,7 @@ public class GameUiControlConfigEntity {
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
     private PlanetEntity planetEntity;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "gameUiControlConfigEntityId", nullable = false )
     @OrderColumn(name = "orderColumn")
     private List<SceneEntity> scenes;
     @OneToOne
@@ -64,6 +64,14 @@ public class GameUiControlConfigEntity {
             }
         }
         return sceneConfigs;
+    }
+
+    public List<SceneEntity> getScenes() {
+        return scenes;
+    }
+
+    public void setScenes(List<SceneEntity> scenes) {
+        this.scenes = scenes;
     }
 
     public PlanetEntity getPlanetEntity() {
