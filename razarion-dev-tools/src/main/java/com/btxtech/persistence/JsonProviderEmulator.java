@@ -1,7 +1,7 @@
 package com.btxtech.persistence;
 
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
-import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.webglemulator.razarion.HttpConnectionEmu;
@@ -37,14 +37,14 @@ public class JsonProviderEmulator {
     private static final String FACEBOOK_USER_LOGIN_INFO_STRING_TUTORIAL = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": null}";
     private static final String FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": 100003634094139}";
 
-    public GameUiControlConfig readFromServer() {
-        return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(GameUiControlConfig.class);
+    public ColdGameUiControlConfig readFromServer() {
+        return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(ColdGameUiControlConfig.class);
     }
 
-    public GameUiControlConfig readFromFile(boolean tutorial) {
+    public ColdGameUiControlConfig readFromFile(boolean tutorial) {
         try {
             String string = new String(Files.readAllBytes(getFile(tutorial ? FILE_NAME_TUTORIAL : FILE_NAME_MULTI_PLAYER).toPath()));
-            return new ObjectMapper().readValue(string, GameUiControlConfig.class);
+            return new ObjectMapper().readValue(string, ColdGameUiControlConfig.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +91,7 @@ public class JsonProviderEmulator {
                 }
             });
             String string = client.target(URL).request(MediaType.APPLICATION_JSON).post(Entity.entity(FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER, MediaType.APPLICATION_JSON_TYPE), String.class);
-            emu.setGameUiControlConfig(new ObjectMapper().readValue(string, GameUiControlConfig.class));
+            emu.setColdGameUiControlConfig(new ObjectMapper().readValue(string, ColdGameUiControlConfig.class));
             return emu;
         } catch (IOException e) {
             throw new RuntimeException(e);

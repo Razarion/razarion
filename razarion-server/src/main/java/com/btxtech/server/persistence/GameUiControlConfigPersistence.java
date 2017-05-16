@@ -8,8 +8,10 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
-import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -48,16 +50,25 @@ public class GameUiControlConfigPersistence {
     private DbPropertiesService dbPropertiesService;
 
     @Transactional
-    public GameUiControlConfig load(Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
-        GameUiControlConfig gameUiControlConfig = load4Level(userContext.getLevelId()).toGameUiControlConfig(locale);
-        gameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
-        gameUiControlConfig.setUserContext(userContext);
-        gameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
-        gameUiControlConfig.setAudioConfig(setupAudioConfig());
-        gameUiControlConfig.setGameTipVisualConfig(setupGameTipVisualConfig());
-        gameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig());
-        gameUiControlConfig.setSlaveSyncItemInfo(gameEngineService.generateSlaveSyncItemInfo(userContext));
-        return gameUiControlConfig;
+    public ColdGameUiControlConfig load(Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
+        ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
+        coldGameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
+        coldGameUiControlConfig.setUserContext(userContext);
+        coldGameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
+        coldGameUiControlConfig.setAudioConfig(setupAudioConfig());
+        coldGameUiControlConfig.setGameTipVisualConfig(setupGameTipVisualConfig());
+        coldGameUiControlConfig.setWarmGameUiControlConfig(loadWarm(locale, userContext));
+        return coldGameUiControlConfig;
+    }
+
+    @Transactional
+    public WarmGameUiControlConfig loadWarm(Locale locale, UserContext userContext) {
+        WarmGameUiControlConfig warmGameUiControlConfig = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
+        if (warmGameUiControlConfig.getGameEngineMode() == GameEngineMode.SLAVE) {
+            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig());
+            warmGameUiControlConfig.setSlaveSyncItemInfo(gameEngineService.generateSlaveSyncItemInfo(userContext));
+        }
+        return warmGameUiControlConfig;
     }
 
     private GameUiControlConfigEntity load4Level(int levelId) {

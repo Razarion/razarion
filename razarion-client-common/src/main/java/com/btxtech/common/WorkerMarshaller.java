@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
@@ -92,7 +93,6 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
-            case INITIALIZE_WARM:
             case COMMAND_BUILD:
             case PROJECTILE_FIRED:
             case TERRAIN_OVERLAP_TYPE:
@@ -101,19 +101,21 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             // Quadruple JSON data
-            case INITIALIZE:
+            case INITIALIZE_WARM:
             case TICK_UPDATE_RESPONSE:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
-                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
-                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
-                break;
-            // Quadruple JSON data
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                break;
+            // Quintuple  JSON data
+            case INITIALIZE:
+                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
                 break;
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
@@ -147,11 +149,13 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_1), PlanetConfig.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), SlaveSyncItemInfo.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_3), UserContext.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_4), GameEngineMode.class));
                 break;
             case INITIALIZE_WARM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), PlanetConfig.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), SlaveSyncItemInfo.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), UserContext.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_3), GameEngineMode.class));
                 break;
             case INITIALISING_FAILED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), String.class));

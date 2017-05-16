@@ -1,9 +1,6 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -22,7 +19,7 @@ public class VisualUiService {
     private PlanetVisualConfig planetVisualConfig;
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        planetVisualConfig = gameUiControlInitEvent.getGameUiControlConfig().getPlanetVisualConfig();
+        planetVisualConfig = gameUiControlInitEvent.getColdGameUiControlConfig().getWarmGameUiControlConfig().getPlanetVisualConfig();
         planetVisualConfigTrigger.fire(planetVisualConfig);
     }
 

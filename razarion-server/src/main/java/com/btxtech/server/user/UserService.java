@@ -1,6 +1,5 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
@@ -160,13 +159,5 @@ public class UserService {
             throw new IllegalArgumentException("No userContext for sessionId: " + sessionId);
         }
         return userContext;
-    }
-
-    // GameUiControlEntity has minimal level. Should be handled with that
-    @Deprecated
-    public boolean isMultiplayer() {
-        UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
-        int levelNumber = levelPersistence.read(userContext.getLevelId()).getId();
-        return levelNumber >= StaticGameConfigPersistence.MULTI_PLAYER_PLANET_LEVEL_ID;
     }
 }

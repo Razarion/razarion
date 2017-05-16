@@ -24,6 +24,6 @@ public class InitWarmWorkerTask extends AbstractStartupTask {
         deferredStartup.setDeferred();
         deferredStartup.setBackground();
 
-        gameEngineControl.initWarm(gameUiControl.getGameUiControlConfig().getPlanetConfig(), gameUiControl.getGameUiControlConfig().getSlaveSyncItemInfo(), deferredStartup);
+        gameEngineControl.initWarm(gameUiControl.getPlanetConfig(), gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveSyncItemInfo(),  gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getGameEngineMode(), deferredStartup);
     }
 }

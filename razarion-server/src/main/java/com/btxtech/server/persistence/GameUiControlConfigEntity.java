@@ -2,11 +2,14 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
-import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,23 +40,30 @@ public class GameUiControlConfigEntity {
     private List<SceneEntity> scenes;
     @OneToOne
     private LevelEntity minimalLevel;
+    @Enumerated(EnumType.STRING)
+    private GameEngineMode gameEngineMode;
 
     public Integer getId() {
         return id;
     }
 
-    public GameUiControlConfig toGameUiControlConfig(Locale locale) {
-        GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
-        gameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
-        gameUiControlConfig.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
+    public WarmGameUiControlConfig toGameWarmGameUiControlConfig(Locale locale) {
+        WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig();
+        warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
+        warmGameUiControlConfig.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
+        warmGameUiControlConfig.setSceneConfigs(setupScenes(locale));
+        warmGameUiControlConfig.setGameEngineMode(gameEngineMode);
+        return warmGameUiControlConfig;
+    }
+
+    private List<SceneConfig> setupScenes(Locale locale) {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
         if (scenes != null) {
             for (SceneEntity scene : scenes) {
                 sceneConfigs.add(scene.toSceneConfig(locale));
             }
         }
-        gameUiControlConfig.setSceneConfigs(sceneConfigs);
-        return gameUiControlConfig;
+        return sceneConfigs;
     }
 
     public PlanetEntity getPlanetEntity() {

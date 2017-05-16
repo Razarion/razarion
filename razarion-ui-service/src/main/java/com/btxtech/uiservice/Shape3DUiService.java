@@ -26,7 +26,7 @@ public abstract class Shape3DUiService {
 
     // Global methods  ----------------------------------------------------
     public void onStaticVisualConfig(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        setShapes3Ds(gameUiControlInitEvent.getGameUiControlConfig().getShape3Ds());
+        setShapes3Ds(gameUiControlInitEvent.getColdGameUiControlConfig().getShape3Ds());
     }
 
     public void onVisualConfig(@Observes PlanetVisualConfig planetVisualConfig) {

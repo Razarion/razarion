@@ -1,6 +1,6 @@
 package com.btxtech.shared.rest;
 
-import com.btxtech.shared.dto.WarmGameConfig;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,6 +16,6 @@ public interface WarmGameConfigProvider {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    WarmGameConfig loadWarmGameConfigTask();
+    WarmGameUiControlConfig loadWarmGameConfigTask();
 
 }

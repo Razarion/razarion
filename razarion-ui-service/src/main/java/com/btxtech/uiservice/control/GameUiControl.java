@@ -2,16 +2,17 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
-import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
-import com.btxtech.shared.dto.WarmGameConfig;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
@@ -81,47 +82,52 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private Instance<AbstractServerSystemConnection> serverSystemConnectionInstance;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
-    private GameUiControlConfig gameUiControlConfig;
+    private ColdGameUiControlConfig coldGameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
     private Date startTimeStamp;
     private Date sceneStartTimeStamp;
     private List<SceneConfig> scenes;
     private AbstractServerSystemConnection abstractServerSystemConnection;
+    private GameEngineMode gameEngineMode;
 
-    public void setGameUiControlConfig(GameUiControlConfig gameUiControlConfig) {
-        this.gameUiControlConfig = gameUiControlConfig;
-        userUiService.setUserContext(gameUiControlConfig.getUserContext());
+    public void setColdGameUiControlConfig(ColdGameUiControlConfig coldGameUiControlConfig) {
+        this.coldGameUiControlConfig = coldGameUiControlConfig;
+        gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
+        userUiService.setUserContext(coldGameUiControlConfig.getUserContext());
     }
 
-    public void onWarmGameConfigLoaded(WarmGameConfig warmGameConfig) {
-        this.gameUiControlConfig.setPlanetConfig(warmGameConfig.getPlanetConfig());
-        this.gameUiControlConfig.setSlaveSyncItemInfo(warmGameConfig.getSlaveSyncItemInfo());
+    public void onWarmGameConfigLoaded(WarmGameUiControlConfig warmGameUiControlConfig) {
+        this.coldGameUiControlConfig.setWarmGameUiControlConfig(warmGameUiControlConfig);
+        gameEngineMode = warmGameUiControlConfig.getGameEngineMode();
     }
 
     public void init() {
         abstractServerSystemConnection = serverSystemConnectionInstance.get();
         abstractServerSystemConnection.init();
-        itemTypeService.init(gameUiControlConfig.getStaticGameConfig());
-        terrainTypeService.init(gameUiControlConfig.getStaticGameConfig());
-        levelService.init(gameUiControlConfig.getStaticGameConfig());
-        inventoryService.init(gameUiControlConfig.getStaticGameConfig());
-        gameUiControlInitEvent.fire(new GameUiControlInitEvent(gameUiControlConfig));
-        terrainScrollHandler.setPlayGround(gameUiControlConfig.getPlanetConfig().getPlayGround());
+        itemTypeService.init(coldGameUiControlConfig.getStaticGameConfig());
+        terrainTypeService.init(coldGameUiControlConfig.getStaticGameConfig());
+        levelService.init(coldGameUiControlConfig.getStaticGameConfig());
+        inventoryService.init(coldGameUiControlConfig.getStaticGameConfig());
+        gameUiControlInitEvent.fire(new GameUiControlInitEvent(coldGameUiControlConfig));
+        terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
     }
 
     public void initWarm() {
-        terrainScrollHandler.setPlayGround(gameUiControlConfig.getPlanetConfig().getPlayGround());
+        gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
+        terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
     }
 
     public void start() {
         startTimeStamp = new Date();
         cockpitService.show(userUiService.getUserContext());
         nextSceneNumber = 0;
-        if (this.gameUiControlConfig.getSlaveSyncItemInfo() != null) {
+        if (gameEngineMode == GameEngineMode.MASTER) {
+            scenes = coldGameUiControlConfig.getWarmGameUiControlConfig().getSceneConfigs();
+        } else if (gameEngineMode == GameEngineMode.SLAVE) {
             scenes = setupSlaveScenes();
         } else {
-            scenes = gameUiControlConfig.getSceneConfigs();
+            throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode());
         }
         runScene();
     }
@@ -168,8 +174,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             trackerService.trackGameUiControl(startTimeStamp);
             startTimeStamp = null;
         }
-        if (gameUiControlConfig.getSlaveSyncItemInfo() == null) {
-            // Temporary fix for showing move to first multiplayer planet
+        if (gameEngineMode == GameEngineMode.MASTER) {
+            // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {
                 screenCover.fadeInLoadingCover();
                 clientRunner.startWarm();
@@ -177,12 +183,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
     }
 
-    public GameUiControlConfig getGameUiControlConfig() {
-        return gameUiControlConfig;
+    public ColdGameUiControlConfig getColdGameUiControlConfig() {
+        return coldGameUiControlConfig;
     }
 
     public PlanetConfig getPlanetConfig() {
-        return gameUiControlConfig.getPlanetConfig();
+        return coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig();
     }
 
     public void onQuestPassed() {
@@ -205,7 +211,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     private List<SceneConfig> setupSlaveScenes() {
-        if (gameUiControlConfig.getSlaveSyncItemInfo().getActualBaseId() != null) {
+        if (coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo().getActualBaseId() != null) {
             return setupSlaveExistingScenes();
         } else {
             return setupSlaveSpawnScenes();
@@ -217,8 +223,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         DecimalPosition factoryPosition = null;
         DecimalPosition builderPosition = null;
         DecimalPosition unitPosition = null;
-        for (SyncBaseItemInfo syncBaseItemInfo : gameUiControlConfig.getSlaveSyncItemInfo().getSyncBaseItemInfos()) {
-            if (syncBaseItemInfo.getBaseId() == gameUiControlConfig.getSlaveSyncItemInfo().getActualBaseId()) {
+        for (SyncBaseItemInfo syncBaseItemInfo : coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo().getSyncBaseItemInfos()) {
+            if (syncBaseItemInfo.getBaseId() == coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo().getActualBaseId()) {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
                 if (baseItemType.getFactoryType() != null) {
                     factoryPosition = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
@@ -248,7 +254,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private List<SceneConfig> setupSlaveSpawnScenes() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        DecimalPosition position = gameUiControlConfig.getSlavePlanetConfig().getStartRegion().toAabb().center();
+        DecimalPosition position = coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion().toAabb().center();
         // Set camera Position
         sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
         // Fade out
@@ -264,23 +270,23 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public Set<Integer> getAllTextureIds() {
-        Set<Integer> textureIds = Shape3DUtils.getAllTextures(gameUiControlConfig.getShape3Ds());
+        Set<Integer> textureIds = Shape3DUtils.getAllTextures(coldGameUiControlConfig.getShape3Ds());
         for (BaseItemType baseItemType : itemTypeService.getBaseItemTypes()) {
-            if(baseItemType.getBuildupTextureId() != null) {
+            if (baseItemType.getBuildupTextureId() != null) {
                 textureIds.add(baseItemType.getBuildupTextureId());
             }
-            if(baseItemType.getBaseItemDemolitionImageId() != null) {
+            if (baseItemType.getBaseItemDemolitionImageId() != null) {
                 textureIds.add(baseItemType.getBaseItemDemolitionImageId());
             }
         }
 
-        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
+        for (SlopeSkeletonConfig slopeSkeletonConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
             if (slopeSkeletonConfig.getTextureId() != null) {
                 textureIds.add(slopeSkeletonConfig.getTextureId());
             }
         }
 
-        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
+        GroundSkeletonConfig groundSkeletonConfig = coldGameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
         if (groundSkeletonConfig.getTopTextureId() != null) {
             textureIds.add(groundSkeletonConfig.getTopTextureId());
         }
@@ -292,21 +298,21 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public Set<Integer> getAllBumpTextureIds() {
         Set<Integer> bumpIds = new HashSet<>();
-        for (SlopeSkeletonConfig slopeSkeletonConfig : gameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
+        for (SlopeSkeletonConfig slopeSkeletonConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
             if (slopeSkeletonConfig.getBmId() != null) {
                 bumpIds.add(slopeSkeletonConfig.getBmId());
             }
         }
 
-        GroundSkeletonConfig groundSkeletonConfig = gameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
+        GroundSkeletonConfig groundSkeletonConfig = coldGameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
         if (groundSkeletonConfig.getTopBmId() != null) {
             bumpIds.add(groundSkeletonConfig.getTopBmId());
         }
         if (groundSkeletonConfig.getBottomBmId() != null) {
             bumpIds.add(groundSkeletonConfig.getBottomBmId());
         }
-        if (gameUiControlConfig.getStaticGameConfig().getWaterConfig().getBmId() != null) {
-            bumpIds.add(gameUiControlConfig.getStaticGameConfig().getWaterConfig().getBmId());
+        if (coldGameUiControlConfig.getStaticGameConfig().getWaterConfig().getBmId() != null) {
+            bumpIds.add(coldGameUiControlConfig.getStaticGameConfig().getWaterConfig().getBmId());
         }
         return bumpIds;
     }

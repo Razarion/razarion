@@ -15,9 +15,6 @@ import javax.transaction.Transactional;
  */
 @ApplicationScoped
 public class StaticGameConfigPersistence {
-    @Deprecated
-    // GameUiControlEntity has minimal level. Should be handled with that
-    public static final int MULTI_PLAYER_PLANET_LEVEL_ID = 5;
     static final int BASE_ITEM_TYPE_BULLDOZER = 180807;
     static final int BASE_ITEM_TYPE_HARVESTER = 180830;
     static final int BASE_ITEM_TYPE_ATTACKER = 180832;

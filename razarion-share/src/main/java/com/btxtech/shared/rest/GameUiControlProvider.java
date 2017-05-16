@@ -1,9 +1,8 @@
 package com.btxtech.shared.rest;
 
-import com.btxtech.shared.dto.FacebookUserLoginInfo;
-import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,7 +17,10 @@ import javax.ws.rs.core.MediaType;
 public interface GameUiControlProvider {
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    GameUiControlConfig loadGameUiControlConfig();
+    ColdGameUiControlConfig loadGameUiControlConfig();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    WarmGameUiControlConfig loadWarmGameUiControlConfig();
 }

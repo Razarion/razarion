@@ -22,10 +22,6 @@ import java.util.List;
  */
 @Singleton
 public class PlanetPersistence {
-    @Deprecated // Read from DB
-    private static final int TUTORIAL_PLANET = 1;
-    @Deprecated // Read from DB
-    private static final int MULTIPLAYER_PLANET = 1;
     @Inject
     private TerrainElementPersistence terrainElementPersistence;
     @PersistenceContext
@@ -122,16 +118,6 @@ public class PlanetPersistence {
         for (int terrainSlopePositionId : terrainSlopePositionIds) {
             planetEntity.getTerrainSlopePositionEntities().remove(getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePositionId));
         }
-    }
-
-    @Transactional
-    public PlanetConfig readTutorialPlanetConfig() {
-        return loadPlanet(TUTORIAL_PLANET).toPlanetConfig();
-    }
-
-    @Transactional
-    public PlanetConfig readMultiplayerPlanetConfig() {
-        return loadPlanet(MULTIPLAYER_PLANET).toPlanetConfig();
     }
 
     private TerrainSlopePositionEntity getSlopePositionEntityFromPlanet(PlanetEntity planetEntity, int id) {

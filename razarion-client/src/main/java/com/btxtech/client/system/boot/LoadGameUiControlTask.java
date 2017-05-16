@@ -1,8 +1,6 @@
 package com.btxtech.client.system.boot;
 
-import com.btxtech.client.editor.terrain.TerrainEditorImpl;
-import com.btxtech.shared.dto.FacebookUserLoginInfo;
-import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
@@ -33,10 +31,10 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        serviceCaller.call(new RemoteCallback<GameUiControlConfig>() {
+        serviceCaller.call(new RemoteCallback<ColdGameUiControlConfig>() {
             @Override
-            public void callback(GameUiControlConfig gameUiControlConfig) {
-                gameUiControl.setGameUiControlConfig(gameUiControlConfig);
+            public void callback(ColdGameUiControlConfig coldGameUiControlConfig) {
+                gameUiControl.setColdGameUiControlConfig(coldGameUiControlConfig);
                 deferredStartup.finished();
             }
         }, (message, throwable) -> {

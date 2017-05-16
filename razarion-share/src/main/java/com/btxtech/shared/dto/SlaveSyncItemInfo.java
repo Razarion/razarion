@@ -15,6 +15,7 @@ public class SlaveSyncItemInfo {
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<PlayerBaseInfo> playerBaseInfos;
     private List<SyncResourceItemInfo> syncResourceItemInfos;
+    // TODO boxes
 
     public Integer getActualBaseId() {
         return actualBaseId;

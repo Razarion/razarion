@@ -6,7 +6,6 @@ import com.btxtech.uiservice.Group;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -170,7 +169,7 @@ public abstract class AbstractTipTask {
     }
 
     GameTipVisualConfig getGameTipVisualConfig() {
-        return gameUiControl.getGameUiControlConfig().getGameTipVisualConfig();
+        return gameUiControl.getColdGameUiControlConfig().getGameTipVisualConfig();
     }
 
     Collection<SyncBaseItemSimpleDto> findItemsOfType(int baseItemTypeId) {

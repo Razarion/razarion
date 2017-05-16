@@ -1,6 +1,6 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.shared.dto.GameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
 
 import javax.ws.rs.core.NewCookie;
 
@@ -11,19 +11,19 @@ import javax.ws.rs.core.NewCookie;
 public class HttpConnectionEmu {
     public static final String SESSION_KEY = "JSESSIONID";
     private static HttpConnectionEmu INSTANCE;
-    private GameUiControlConfig gameUiControlConfig;
+    private ColdGameUiControlConfig coldGameUiControlConfig;
     private NewCookie sessionCookie;
 
     public HttpConnectionEmu() {
         INSTANCE = this;
     }
 
-    public GameUiControlConfig getGameUiControlConfig() {
-        return gameUiControlConfig;
+    public ColdGameUiControlConfig getColdGameUiControlConfig() {
+        return coldGameUiControlConfig;
     }
 
-    public void setGameUiControlConfig(GameUiControlConfig gameUiControlConfig) {
-        this.gameUiControlConfig = gameUiControlConfig;
+    public void setColdGameUiControlConfig(ColdGameUiControlConfig coldGameUiControlConfig) {
+        this.coldGameUiControlConfig = coldGameUiControlConfig;
     }
 
     public void setSessionCookie(NewCookie sessionCookie) {

@@ -1,9 +1,6 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.ArquillianBaseTest;
-import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.GameUiControlConfig;
-import org.junit.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -21,7 +18,7 @@ public class GameUiControlConfigPersistenceTest extends ArquillianBaseTest {
 //        setupPlanets();
 //
 //        UserContext userContext = new UserContext().setLevelId(LEVEL_1_ID);
-//        GameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
+//        ColdGameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load(userContext);
 //        Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getPlanetConfig().getPlanetId());
 //
 //        userContext = new UserContext().setLevelId(LEVEL_2_ID);

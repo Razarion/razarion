@@ -9,14 +9,16 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
-import com.btxtech.shared.dto.GameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.dto.WaterConfig;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -45,7 +47,7 @@ public class ExperimentalTask extends AbstractStartupTask {
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
-        gameUiControl.setGameUiControlConfig(setupGameUiControlConfig());
+        gameUiControl.setColdGameUiControlConfig(setupGameUiControlConfig());
         gameUiControl.init();
         gameCanvas.init();
         renderService.setup();
@@ -53,20 +55,18 @@ public class ExperimentalTask extends AbstractStartupTask {
         gameUiControl.start();
     }
 
-    private GameUiControlConfig setupGameUiControlConfig() {
+    private ColdGameUiControlConfig setupGameUiControlConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setGroundSkeletonConfig(defaultGroundSkeletonConfig());
         staticGameConfig.setLevelConfigs(Collections.emptyList());
         staticGameConfig.setWaterConfig(defaultWaterConfig());
-        GameUiControlConfig gameUiControlConfig = new GameUiControlConfig();
-        gameUiControlConfig.setUserContext(new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
-        gameUiControlConfig.setPlanetConfig(defaultPlanetConfig());
-        gameUiControlConfig.setPlanetVisualConfig(defaultPlanetVisualConfig());
-        gameUiControlConfig.setAudioConfig(new AudioConfig());
-        gameUiControlConfig.setStaticGameConfig(staticGameConfig);
-        gameUiControlConfig.setSceneConfigs(defaultSceneConfigs());
-        gameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());
-        return gameUiControlConfig;
+        ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
+        coldGameUiControlConfig.setUserContext(new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
+        coldGameUiControlConfig.setAudioConfig(new AudioConfig());
+        coldGameUiControlConfig.setStaticGameConfig(staticGameConfig);
+        coldGameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());
+        coldGameUiControlConfig.setWarmGameUiControlConfig(new WarmGameUiControlConfig().setGameEngineMode(GameEngineMode.MASTER).setSceneConfigs(defaultSceneConfigs()).setPlanetConfig(defaultPlanetConfig()).setPlanetVisualConfig(defaultPlanetVisualConfig()));
+        return coldGameUiControlConfig;
     }
 
     private GroundSkeletonConfig defaultGroundSkeletonConfig() {

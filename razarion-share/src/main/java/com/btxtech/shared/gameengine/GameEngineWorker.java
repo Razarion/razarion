@@ -119,10 +119,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
-                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (SlaveSyncItemInfo) controlPackage.getData(2), (UserContext) controlPackage.getData(3));
+                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (SlaveSyncItemInfo) controlPackage.getData(2), (UserContext) controlPackage.getData(3), (GameEngineMode) controlPackage.getData(4));
                 break;
             case INITIALIZE_WARM:
-                initialiseWarm((PlanetConfig) controlPackage.getData(0), (SlaveSyncItemInfo) controlPackage.getData(1), (UserContext) controlPackage.getData(2));
+                initialiseWarm((PlanetConfig) controlPackage.getData(0), (SlaveSyncItemInfo) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3));
                 break;
             case START:
                 start();
@@ -201,20 +201,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext) {
+    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
         try {
-            gameEngineMode = setupGameEngineMode(slaveSyncItemInfo);
-            this.userContext = userContext;
-            if (gameEngineMode == GameEngineMode.SLAVE) {
-                serverConnection = connectionInstance.get();
-                serverConnection.init();
-            }
             staticGameInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
-            planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo);
             planetService.addTickListener(this);
-            if (slaveSyncItemInfo != null && slaveSyncItemInfo.getActualBaseId() != null) {
-                playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
-            }
+            initWarmInternal(planetConfig, slaveSyncItemInfo,userContext, gameEngineMode);
             sendToClient(GameEngineControlPackage.Command.INITIALIZED);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -222,18 +213,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initialiseWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext) {
+    private void initialiseWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
         try {
-            gameEngineMode = setupGameEngineMode(slaveSyncItemInfo);
-            this.userContext = userContext;
-            if (gameEngineMode == GameEngineMode.SLAVE) {
-                serverConnection = connectionInstance.get();
-                serverConnection.init();
-            }
-            planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo);
-            if (slaveSyncItemInfo != null && slaveSyncItemInfo.getActualBaseId() != null) {
-                playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
-            }
+            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode);
             sendToClient(GameEngineControlPackage.Command.INITIALIZED);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -241,8 +223,17 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private GameEngineMode setupGameEngineMode(SlaveSyncItemInfo slaveSyncItemInfo) {
-        return slaveSyncItemInfo != null ? GameEngineMode.MASTER : GameEngineMode.SLAVE;
+    private void initWarmInternal(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
+        this.gameEngineMode = gameEngineMode;
+        this.userContext = userContext;
+        if (gameEngineMode == GameEngineMode.SLAVE) {
+            serverConnection = connectionInstance.get();
+            serverConnection.init();
+        }
+        if (gameEngineMode == GameEngineMode.SLAVE && slaveSyncItemInfo.getActualBaseId() != null) {
+            playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
+        }
+        planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo);
     }
 
     private void createHumanBaseWithBaseItem(int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
