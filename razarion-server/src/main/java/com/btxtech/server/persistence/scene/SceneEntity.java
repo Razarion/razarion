@@ -249,6 +249,7 @@ public class SceneEntity {
     }
 
     public void fromSceneConfig(SceneConfig sceneConfig) {
+        removeLoadingCover = sceneConfig.isRemoveLoadingCover();
         viewFieldConfig = sceneConfig.getViewFieldConfig();
     }
 
