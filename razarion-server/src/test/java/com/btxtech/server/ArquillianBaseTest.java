@@ -100,6 +100,10 @@ public class ArquillianBaseTest {
         }
     }
 
+    protected EntityManager getEntityManager() {
+        return em;
+    }
+
     protected void setupItemTypes() throws Exception {
         BaseItemType builder = new BaseItemType();
         builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setName("Builder");

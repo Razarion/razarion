@@ -59,7 +59,46 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
     @Test
     public void saveAllScenes() throws Exception {
         List<SceneConfig> expectedSceneConfigs = setupTutorial();
-        expectedSceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true).setViewFieldConfig(new ViewFieldConfig().setFromPosition(new DecimalPosition(12.4, 54.23)).setToPosition(new DecimalPosition(17.9, 100)).setBottomWidth(65.23).setCameraLocked(true).setSpeed(50.34)));
+
+        while (!expectedSceneConfigs.isEmpty()) {
+            saveAllScenesInternal(expectedSceneConfigs);
+            expectedSceneConfigs.remove(expectedSceneConfigs.size() - 1);
+        }
+        saveAllScenesInternal(new ArrayList<>());
+
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM SCENE_BOT").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ResourceItemPositionEntity r").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BoxItemPositionEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BoxItemPositionEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotAttackCommandEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotHarvestCommandEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotKillBotCommandEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotKillHumanCommandEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotKillOtherBotCommandEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotMoveCommandEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(s) FROM SceneEntity s").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotRemoveOwnItemCommandEntity b").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(g) FROM GameTipConfigEntity g").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM SCENE_START_PLACE_ALLOWED_AREA").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM QUEST_COMPARISON_BASE_ITEM").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(q) FROM QuestConfigEntity q").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(c) FROM ConditionConfigEntity c").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(c) FROM ComparisonConfigEntity c").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM SCENE_START_PLACE_ALLOWED_AREA").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(s) FROM StartPointPlacerEntity s").getSingleResult()).intValue());
+        // Bots
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM BOT_CONFIG_BOT_ITEM").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM BOT_CONFIG_ENRAGEMENT_STATE_CONFIG").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(b) FROM BotConfigEntity b").getSingleResult()).intValue());
+        // I18n bundles
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM I18N_BUNDLE_STRING").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(i) FROM I18N_BUNDLE i").getSingleResult()).intValue());
+        // Place
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM PLACE_CONFIG_POSITION_POLYGON").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(p) FROM PlaceConfigEntity p").getSingleResult()).intValue());
+    }
+
+    private void saveAllScenesInternal(List<SceneConfig> expectedSceneConfigs) throws Exception {
         sceneEditorPersistence.saveAllScenes(GAME_UI_CONTROL_CONFIG_1_ID, expectedSceneConfigs, Locale.ENGLISH);
 
         List<SceneConfig> actualSceneConfigs = gameUiControlConfigPersistence.load(Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getWarmGameUiControlConfig().getSceneConfigs();
@@ -77,39 +116,6 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
 
     @After
     public void after() throws Exception {
-        runInTransactionSave(em -> {
-            em.createNativeQuery("DELETE FROM SCENE_BOT").executeUpdate();
-            // TODO remove bots
-            em.createQuery("DELETE FROM ResourceItemPositionEntity").executeUpdate();
-            em.createQuery("DELETE FROM BoxItemPositionEntity").executeUpdate();
-            em.createQuery("DELETE FROM BoxItemPositionEntity").executeUpdate();
-            em.createQuery("DELETE FROM BotAttackCommandEntity").executeUpdate();
-            em.createQuery("DELETE FROM BotHarvestCommandEntity").executeUpdate();
-            em.createQuery("DELETE FROM BotKillBotCommandEntity").executeUpdate();
-            em.createQuery("DELETE FROM BotKillHumanCommandEntity").executeUpdate();
-            em.createQuery("DELETE FROM BotKillOtherBotCommandEntity").executeUpdate();
-            em.createQuery("DELETE FROM BotMoveCommandEntity").executeUpdate();
-            em.createQuery("DELETE FROM SceneEntity ").executeUpdate();
-            em.createQuery("DELETE FROM BotRemoveOwnItemCommandEntity").executeUpdate();
-            em.createQuery("DELETE FROM GameTipConfigEntity ").executeUpdate();
-            em.createNativeQuery("DELETE FROM SCENE_START_PLACE_ALLOWED_AREA").executeUpdate();
-            em.createNativeQuery("DELETE FROM QUEST_COMPARISON_BASE_ITEM").executeUpdate();
-            em.createQuery("DELETE FROM QuestConfigEntity").executeUpdate();
-            em.createQuery("DELETE FROM ConditionConfigEntity").executeUpdate();
-            em.createQuery("DELETE FROM ComparisonConfigEntity ").executeUpdate();
-            em.createNativeQuery("DELETE FROM SCENE_START_PLACE_ALLOWED_AREA").executeUpdate();
-            em.createQuery("DELETE FROM StartPointPlacerEntity").executeUpdate();
-            // Bots
-            em.createNativeQuery("DELETE FROM BOT_CONFIG_BOT_ITEM").executeUpdate();
-            em.createNativeQuery("DELETE FROM BOT_CONFIG_ENRAGEMENT_STATE_CONFIG").executeUpdate();
-            em.createQuery("DELETE FROM BotConfigEntity ").executeUpdate();
-            // I18n bundles
-            em.createNativeQuery("DELETE FROM I18N_BUNDLE_STRING").executeUpdate();
-            em.createQuery("DELETE FROM I18N_BUNDLE").executeUpdate();
-            // Place
-            em.createNativeQuery("DELETE FROM PLACE_CONFIG_POSITION_POLYGON").executeUpdate();
-            em.createQuery("DELETE FROM PlaceConfigEntity").executeUpdate();
-        });
         cleanPlanets();
     }
 
