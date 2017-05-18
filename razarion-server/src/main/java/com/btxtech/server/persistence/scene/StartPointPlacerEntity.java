@@ -36,7 +36,7 @@ public class StartPointPlacerEntity {
     private DecimalPosition suggestedPosition;
     private Double enemyFreeRadius;
     @ElementCollection
-    @CollectionTable(name = "SCENE_START_PLACE_ALLOWED_AREA", joinColumns = @JoinColumn(name = "sceneId"))
+    @CollectionTable(name = "SCENE_START_PLACE_ALLOWED_AREA", joinColumns = @JoinColumn(name = "startPointPlacer"))
     @OrderColumn(name = "orderColumn")
     private List<DecimalPosition> allowedArea;
 

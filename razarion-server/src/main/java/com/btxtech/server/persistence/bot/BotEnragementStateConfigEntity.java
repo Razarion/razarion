@@ -27,7 +27,7 @@ public class BotEnragementStateConfigEntity {
     private Integer id;
     private String name;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "botEnragementStateConfig", nullable = false)
     private List<BotItemConfigEntity> botItems;
     private Integer enrageUpKills;
 

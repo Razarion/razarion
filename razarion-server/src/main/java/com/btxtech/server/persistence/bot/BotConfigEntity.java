@@ -2,7 +2,6 @@ package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -40,7 +39,7 @@ public class BotConfigEntity {
     private Integer minActiveMs;
     private Integer maxActiveMs;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "botConfig", nullable = false)
     private List<BotEnragementStateConfigEntity> botEnragementStateConfigs;
 
     public Integer getId() {
@@ -73,7 +72,7 @@ public class BotConfigEntity {
         maxInactiveMs = botConfig.getMaxInactiveMs();
         minActiveMs = botConfig.getMinActiveMs();
         maxActiveMs = botConfig.getMaxActiveMs();
-        if(this.botEnragementStateConfigs == null) {
+        if (this.botEnragementStateConfigs == null) {
             this.botEnragementStateConfigs = new ArrayList<>();
         }
         this.botEnragementStateConfigs.clear();
