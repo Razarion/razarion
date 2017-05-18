@@ -41,7 +41,7 @@ public class GameTipConfigEntity {
     private BaseItemTypeEntity actor;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private BaseItemTypeEntity toCreatedItemTypeId;
+    private BaseItemTypeEntity toCreatedItemType;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ResourceItemTypeEntity resourceItemTypeEntity;
@@ -65,13 +65,14 @@ public class GameTipConfigEntity {
         if (actor != null) {
             gameTipConfig.setActor(actor.getId());
         }
-        if (toCreatedItemTypeId != null) {
-            gameTipConfig.setToCreatedItemTypeId(toCreatedItemTypeId.getId());
+        if (toCreatedItemType != null) {
+            gameTipConfig.setToCreatedItemTypeId(toCreatedItemType.getId());
         }
         if (resourceItemTypeEntity != null) {
-            gameTipConfig.setToCreatedItemTypeId(resourceItemTypeEntity.getId());
-        } else if (boxItemTypeEntity != null) {
-            gameTipConfig.setToCreatedItemTypeId(boxItemTypeEntity.getId());
+            gameTipConfig.setResourceItemTypeId(resourceItemTypeEntity.getId());
+        }
+        if (boxItemTypeEntity != null) {
+            gameTipConfig.setBoxItemTypeId(boxItemTypeEntity.getId());
         }
         if (inventoryItemEntity != null) {
             gameTipConfig.setInventoryItemId(inventoryItemEntity.getId());
@@ -81,6 +82,38 @@ public class GameTipConfigEntity {
             gameTipConfig.setPlaceConfig(placeConfig.toPlaceConfig());
         }
         return gameTipConfig;
+    }
+
+    public void setTip(GameTipConfig.Tip tip) {
+        this.tip = tip;
+    }
+
+    public void setActor(BaseItemTypeEntity actor) {
+        this.actor = actor;
+    }
+
+    public void setToCreatedItemType(BaseItemTypeEntity toCreatedItemTypeId) {
+        this.toCreatedItemType = toCreatedItemTypeId;
+    }
+
+    public void setResourceItemTypeEntity(ResourceItemTypeEntity resourceItemTypeEntity) {
+        this.resourceItemTypeEntity = resourceItemTypeEntity;
+    }
+
+    public void setBoxItemTypeEntity(BoxItemTypeEntity boxItemTypeEntity) {
+        this.boxItemTypeEntity = boxItemTypeEntity;
+    }
+
+    public void setInventoryItemEntity(InventoryItemEntity inventoryItemEntity) {
+        this.inventoryItemEntity = inventoryItemEntity;
+    }
+
+    public void setTerrainPositionHint(DecimalPosition terrainPositionHint) {
+        this.terrainPositionHint = terrainPositionHint;
+    }
+
+    public void setPlaceConfig(PlaceConfigEntity placeConfig) {
+        this.placeConfig = placeConfig;
     }
 
     @Override

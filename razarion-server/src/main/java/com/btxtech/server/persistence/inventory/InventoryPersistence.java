@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ public class InventoryPersistence {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Transactional
     public List<InventoryItem> readInventoryItems() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<InventoryItemEntity> userQuery = criteriaBuilder.createQuery(InventoryItemEntity.class);
@@ -28,5 +30,14 @@ public class InventoryPersistence {
         List<InventoryItemEntity> itemTypeEntities = entityManager.createQuery(userSelect).getResultList();
 
         return itemTypeEntities.stream().map(InventoryItemEntity::toInventoryItem).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public InventoryItemEntity readInventoryItemEntity(int id) {
+        InventoryItemEntity inventoryItemEntity = entityManager.find(InventoryItemEntity.class, id);
+        if (inventoryItemEntity == null) {
+            throw new IllegalArgumentException("No InventoryItemEntity for id: " + id);
+        }
+        return inventoryItemEntity;
     }
 }

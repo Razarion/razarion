@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.quest;
 
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
@@ -37,19 +38,56 @@ public class QuestConfigEntity {
     private ConditionConfigEntity conditionConfigEntity;
 
     public QuestConfig toQuestConfig(Locale locale) {
-        QuestConfig questConfig = new QuestConfig().setId(id).setTitle(title.getString(locale)).setDescription(description.getString(locale)).setXp(xp).setMoney(money).setCristal(cristal);
-        return questConfig.setConditionConfig(conditionConfigEntity.toQuestConfig()).setPassedMessage(passedMessage.getString(locale)).setHidePassedDialog(hidePassedDialog);
+        QuestConfig questConfig = new QuestConfig().setId(id).setXp(xp).setMoney(money).setCristal(cristal);
+        if (title != null) {
+            questConfig.setTitle(title.getString(locale));
+        }
+        if (description != null) {
+            questConfig.setDescription(description.getString(locale));
+        }
+        if (passedMessage != null) {
+            questConfig.setPassedMessage(passedMessage.getString(locale));
+        }
+        return questConfig.setConditionConfig(conditionConfigEntity.toQuestConfig()).setHidePassedDialog(hidePassedDialog);
     }
 
-    public void fromQuestConfig(QuestConfig questConfig, Locale locale) {
-        title.putString(locale, questConfig.getTitle());
-        description.putString(locale, questConfig.getDescription());
+    public void fromQuestConfig(ItemTypePersistence itemTypePersistence, QuestConfig questConfig, Locale locale) {
+        if (questConfig.getTitle() != null) {
+            if (title == null) {
+                title = new I18nBundleEntity();
+            }
+            title.putString(locale, questConfig.getTitle());
+        } else {
+            title = null;
+        }
+        if (questConfig.getDescription() != null) {
+            if (description == null) {
+                description = new I18nBundleEntity();
+            }
+            description.putString(locale, questConfig.getDescription());
+        } else {
+            description = null;
+        }
         xp = questConfig.getXp();
         money = questConfig.getMoney();
         cristal = questConfig.getCristal();
-        passedMessage.putString(locale, questConfig.getPassedMessage());
+        if (questConfig.getPassedMessage() != null) {
+            if (passedMessage == null) {
+                passedMessage = new I18nBundleEntity();
+            }
+            passedMessage.putString(locale, questConfig.getPassedMessage());
+        } else {
+            passedMessage = null;
+        }
         hidePassedDialog = questConfig.isHidePassedDialog();
-        conditionConfigEntity.fromConditionConfig(questConfig.getConditionConfig());
+        if (questConfig.getConditionConfig() != null) {
+            if (conditionConfigEntity == null) {
+                conditionConfigEntity = new ConditionConfigEntity();
+            }
+            conditionConfigEntity.fromConditionConfig(itemTypePersistence, questConfig.getConditionConfig());
+        } else {
+            conditionConfigEntity = null;
+        }
     }
 
     @Override

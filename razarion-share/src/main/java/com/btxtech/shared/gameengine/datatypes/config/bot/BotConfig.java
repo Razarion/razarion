@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class BotConfig {
     private int id;
+    private Integer auxiliaryId;
     private boolean npc;
     private int actionDelay;
     private PlaceConfig realm;
@@ -26,6 +27,14 @@ public class BotConfig {
     public BotConfig setId(int id) {
         this.id = id;
         return this;
+    }
+
+    public Integer getAuxiliaryId() {
+        return auxiliaryId;
+    }
+
+    public void setAuxiliaryId(Integer auxiliaryId) {
+        this.auxiliaryId = auxiliaryId;
     }
 
     public BotConfig setNpc(boolean npc) {

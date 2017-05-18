@@ -1,15 +1,12 @@
 package com.btxtech.server.persistence.scene;
 
-import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.shared.dto.KillBotCommandConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -18,20 +15,18 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "SCENE_BOT_KILL_BOT_COMMAND")
-public class KillBotCommandEntity {
+public class BotKillBotCommandEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BotConfigEntity botConfigEntity;
+    private Integer botAuxiliaryIdId;
 
     public KillBotCommandConfig toKillBotCommandConfig() {
-        KillBotCommandConfig killBotCommandConfig = new KillBotCommandConfig();
-        if (botConfigEntity != null) {
-            killBotCommandConfig.setBotId(botConfigEntity.getId());
-        }
-        return killBotCommandConfig;
+        return new KillBotCommandConfig().setBotAuxiliaryId(botAuxiliaryIdId);
+    }
+
+    public void fromKillBotCommandConfig(KillBotCommandConfig killBotCommandConfig) {
+        botAuxiliaryIdId = killBotCommandConfig.getBotAuxiliaryId();
     }
 
     @Override
@@ -43,7 +38,7 @@ public class KillBotCommandEntity {
             return false;
         }
 
-        KillBotCommandEntity that = (KillBotCommandEntity) o;
+        BotKillBotCommandEntity that = (BotKillBotCommandEntity) o;
         return id != null && id.equals(that.id);
     }
 

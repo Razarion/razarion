@@ -25,10 +25,11 @@ public class GameTipConfig {
     }
 
     private Tip tip;
-    private int actor;
-    private int toCreatedItemTypeId;
-    private int toGrabItemTypeId;
-    private int inventoryItemId;
+    private Integer actor;
+    private Integer toCreatedItemTypeId;
+    private Integer resourceItemTypeId;
+    private Integer boxItemTypeId;
+    private Integer inventoryItemId;
     private DecimalPosition terrainPositionHint;
     private PlaceConfig placeConfig;
 
@@ -41,7 +42,7 @@ public class GameTipConfig {
         return this;
     }
 
-    public int getActor() {
+    public Integer getActor() {
         return actor;
     }
 
@@ -50,7 +51,7 @@ public class GameTipConfig {
         return this;
     }
 
-    public int getToCreatedItemTypeId() {
+    public Integer getToCreatedItemTypeId() {
         return toCreatedItemTypeId;
     }
 
@@ -68,16 +69,25 @@ public class GameTipConfig {
         return this;
     }
 
-    public int getToGrabItemTypeId() {
-        return toGrabItemTypeId;
+    public Integer getResourceItemTypeId() {
+        return resourceItemTypeId;
     }
 
-    public GameTipConfig setToGrabItemTypeId(int toGrabItemTypeId) {
-        this.toGrabItemTypeId = toGrabItemTypeId;
+    public GameTipConfig setResourceItemTypeId(Integer resourceItemTypeId) {
+        this.resourceItemTypeId = resourceItemTypeId;
         return this;
     }
 
-    public int getInventoryItemId() {
+    public Integer getBoxItemTypeId() {
+        return boxItemTypeId;
+    }
+
+    public GameTipConfig setBoxItemTypeId(Integer boxItemTypeId) {
+        this.boxItemTypeId = boxItemTypeId;
+        return this;
+    }
+
+    public Integer getInventoryItemId() {
         return inventoryItemId;
     }
 

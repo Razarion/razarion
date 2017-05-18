@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.scene;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
-import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
@@ -27,9 +26,7 @@ public class BotHarvestCommandEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BotConfigEntity botConfigEntity;
+    private Integer botAuxiliaryIdId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity harvesterItemType;
@@ -40,10 +37,7 @@ public class BotHarvestCommandEntity {
     private PlaceConfigEntity resourceSelection;
 
     public BotHarvestCommandConfig toBotHarvestCommandConfig() {
-        BotHarvestCommandConfig botHarvestCommandConfig = new BotHarvestCommandConfig();
-        if (botConfigEntity != null) {
-            botHarvestCommandConfig.setBotId(botConfigEntity.getId());
-        }
+        BotHarvestCommandConfig botHarvestCommandConfig = new BotHarvestCommandConfig().setBotAuxiliaryId(botAuxiliaryIdId);
         if (harvesterItemType != null) {
             botHarvestCommandConfig.setHarvesterItemTypeId(harvesterItemType.getId());
         }
@@ -54,6 +48,22 @@ public class BotHarvestCommandEntity {
             botHarvestCommandConfig.setResourceSelection(resourceSelection.toPlaceConfig());
         }
         return botHarvestCommandConfig;
+    }
+
+    public void setBotAuxiliaryIdId(Integer botAuxiliaryIdId) {
+        this.botAuxiliaryIdId = botAuxiliaryIdId;
+    }
+
+    public void setHarvesterItemType(BaseItemTypeEntity harvesterItemType) {
+        this.harvesterItemType = harvesterItemType;
+    }
+
+    public void setResourceItemType(ResourceItemTypeEntity resourceItemType) {
+        this.resourceItemType = resourceItemType;
+    }
+
+    public void setResourceSelection(PlaceConfigEntity resourceSelection) {
+        this.resourceSelection = resourceSelection;
     }
 
     @Override

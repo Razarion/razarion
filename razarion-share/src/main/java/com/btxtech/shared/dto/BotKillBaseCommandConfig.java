@@ -7,11 +7,11 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * 01.11.2016.
  */
 public class BotKillBaseCommandConfig<T extends BotKillBaseCommandConfig<T>> extends AbstractBotCommandConfig<T> {
-    private int attackerBaseItemTypeId;
+    private Integer attackerBaseItemTypeId;
     private int dominanceFactor;
     private PlaceConfig spawnPoint;
 
-    public int getAttackerBaseItemTypeId() {
+    public Integer getAttackerBaseItemTypeId() {
         return attackerBaseItemTypeId;
     }
 

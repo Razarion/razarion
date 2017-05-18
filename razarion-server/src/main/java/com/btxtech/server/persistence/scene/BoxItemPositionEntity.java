@@ -37,6 +37,18 @@ public class BoxItemPositionEntity {
         return resourceItemPosition;
     }
 
+    public void setBoxItemType(BoxItemTypeEntity boxItemType) {
+        this.boxItemType = boxItemType;
+    }
+
+    public void setPosition(DecimalPosition position) {
+        this.position = position;
+    }
+
+    public void setRotationZ(double rotationZ) {
+        this.rotationZ = rotationZ;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

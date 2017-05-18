@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence.scene;
 
-import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
@@ -27,9 +26,7 @@ public class BotMoveCommandEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BotConfigEntity botConfigEntity;
+    private Integer botAuxiliaryIdId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity baseItemType;
@@ -40,14 +37,23 @@ public class BotMoveCommandEntity {
     private DecimalPosition targetPosition;
 
     public BotMoveCommandConfig toBotMoveCommandConfig() {
-        BotMoveCommandConfig botMoveCommandConfig = new BotMoveCommandConfig();
-        if (botConfigEntity != null) {
-            botMoveCommandConfig.setBotId(botConfigEntity.getId());
-        }
+        BotMoveCommandConfig botMoveCommandConfig = new BotMoveCommandConfig().setBotAuxiliaryId(botAuxiliaryIdId).setTargetPosition(targetPosition);
         if (baseItemType != null) {
             botMoveCommandConfig.setBaseItemTypeId(baseItemType.getId());
         }
-        return botMoveCommandConfig.setTargetPosition(targetPosition);
+        return botMoveCommandConfig;
+    }
+
+    public void setBotAuxiliaryIdId(Integer botAuxiliaryIdId) {
+        this.botAuxiliaryIdId = botAuxiliaryIdId;
+    }
+
+    public void setBaseItemType(BaseItemTypeEntity baseItemType) {
+        this.baseItemType = baseItemType;
+    }
+
+    public void setTargetPosition(DecimalPosition targetPosition) {
+        this.targetPosition = targetPosition;
     }
 
     @Override

@@ -72,7 +72,7 @@ public class AttackScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setTargetPosition(new DecimalPosition(0, 10)).setBaseItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()));
+                botCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(1).setTargetPosition(new DecimalPosition(0, 10)).setBaseItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()));
             }
 
             @Override

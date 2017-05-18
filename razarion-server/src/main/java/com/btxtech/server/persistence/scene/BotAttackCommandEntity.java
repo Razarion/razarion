@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.scene;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
-import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 
@@ -26,9 +25,7 @@ public class BotAttackCommandEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BotConfigEntity botConfigEntity;
+    private Integer botAuxiliaryIdId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity targetItemType;
@@ -39,10 +36,7 @@ public class BotAttackCommandEntity {
     private BaseItemTypeEntity actorItemType;
 
     public BotAttackCommandConfig toBotAttackCommandConfig() {
-        BotAttackCommandConfig attackCommandConfig = new BotAttackCommandConfig();
-        if (botConfigEntity != null) {
-            attackCommandConfig.setBotId(botConfigEntity.getId());
-        }
+        BotAttackCommandConfig attackCommandConfig = new BotAttackCommandConfig().setBotAuxiliaryId(botAuxiliaryIdId);
         if (targetItemType != null) {
             attackCommandConfig.setTargetItemTypeId(targetItemType.getId());
         }
@@ -53,6 +47,22 @@ public class BotAttackCommandEntity {
             attackCommandConfig.setActorItemTypeId(actorItemType.getId());
         }
         return attackCommandConfig;
+    }
+
+    public void setBotAuxiliaryIdId(Integer botAuxiliaryIdId) {
+        this.botAuxiliaryIdId = botAuxiliaryIdId;
+    }
+
+    public void setTargetItemType(BaseItemTypeEntity targetItemType) {
+        this.targetItemType = targetItemType;
+    }
+
+    public void setTargetSelection(PlaceConfigEntity targetSelection) {
+        this.targetSelection = targetSelection;
+    }
+
+    public void setActorItemType(BaseItemTypeEntity actorItemType) {
+        this.actorItemType = actorItemType;
     }
 
     @Override

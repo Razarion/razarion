@@ -42,7 +42,7 @@ public class BotScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new BotMoveCommandConfig().setBotId(1).setTargetPosition(new DecimalPosition(0, 20)).setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()));
+                botCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(1).setTargetPosition(new DecimalPosition(0, 20)).setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()));
             }
         });
         // 39
@@ -63,7 +63,7 @@ public class BotScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new BotHarvestCommandConfig().setBotId(1).setResourceItemTypeId(ScenarioService.RESOURCE_ITEM_TYPE.getId()).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(20, 0))).setHarvesterItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()));
+                botCommandConfigs.add(new BotHarvestCommandConfig().setBotAuxiliaryId(1).setResourceItemTypeId(ScenarioService.RESOURCE_ITEM_TYPE.getId()).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(20, 0))).setHarvesterItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()));
             }
         });
         addScenario(new Scenario("Kill other bot command") {
@@ -92,7 +92,7 @@ public class BotScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                BotKillOtherBotCommandConfig commandConfig = new BotKillOtherBotCommandConfig().setBotId(2).setTargetBotId(1).setAttackerBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId());
+                BotKillOtherBotCommandConfig commandConfig = new BotKillOtherBotCommandConfig().setBotAuxiliaryId(2).setTargetBotAuxiliaryId(1).setAttackerBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId());
                 commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0, 0, 15, 15).toPolygon()));
                 botCommandConfigs.add(commandConfig);
             }
@@ -118,7 +118,7 @@ public class BotScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                BotKillHumanCommandConfig commandConfig = new BotKillHumanCommandConfig().setBotId(2).setAttackerBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId());
+                BotKillHumanCommandConfig commandConfig = new BotKillHumanCommandConfig().setBotAuxiliaryId(2).setAttackerBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId());
                 commandConfig.setDominanceFactor(2).setSpawnPoint(new PlaceConfig().setPolygon2D(new Rectangle2D(0, 0, 15, 15).toPolygon()));
                 botCommandConfigs.add(commandConfig);
             }
@@ -138,7 +138,7 @@ public class BotScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new BotRemoveOwnItemCommandConfig().setBotId(1).setBaseItemType2RemoveId(ScenarioService.ATTACKER_ITEM_TYPE.getId()));
+                botCommandConfigs.add(new BotRemoveOwnItemCommandConfig().setBotAuxiliaryId(1).setBaseItemType2RemoveId(ScenarioService.ATTACKER_ITEM_TYPE.getId()));
             }
         });
         addScenario(new Scenario("Kill Bot Command Configs") {
@@ -156,7 +156,7 @@ public class BotScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupBotCommands(Collection<AbstractBotCommandConfig> botCommandConfigs) {
-                botCommandConfigs.add(new KillBotCommandConfig().setBotId(1));
+                botCommandConfigs.add(new KillBotCommandConfig().setBotAuxiliaryId(1));
             }
         });
     }

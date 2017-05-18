@@ -129,6 +129,15 @@ public class ItemTypePersistence {
     }
 
     @Transactional
+    public BoxItemTypeEntity readBoxItemTypeEntity(int id) {
+        BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, id);
+        if (boxItemTypeEntity == null) {
+            throw new IllegalArgumentException("No BoxItemTypeEntity for id: " + id);
+        }
+        return boxItemTypeEntity;
+    }
+
+    @Transactional
     public List<BoxItemType> readBoxItemTypes() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<BoxItemTypeEntity> userQuery = criteriaBuilder.createQuery(BoxItemTypeEntity.class);

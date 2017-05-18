@@ -3,7 +3,9 @@ package com.btxtech.server;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
+import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
@@ -13,8 +15,10 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
@@ -54,6 +58,7 @@ public class ArquillianBaseTest {
     public static int BASE_ITEM_TYPE_FACTORY_ID;
     public static int BASE_ITEM_TYPE_TOWER_ID;
     public static int RESOURCE_ITEM_TYPE_ID;
+    public static int BOX_ITEM_TYPE_ID;
     // Levels
     public static int LEVEL_1_ID;
     public static int LEVEL_2_ID;
@@ -65,6 +70,8 @@ public class ArquillianBaseTest {
     // GameUiControlConfigEntity
     public static int GAME_UI_CONTROL_CONFIG_1_ID;
     public static int GAME_UI_CONTROL_CONFIG_2_ID;
+    // Inventory
+    public static int INVENTORY_ITEM_1_ID;
 
     @Inject
     private UserTransaction utx;
@@ -76,7 +83,7 @@ public class ArquillianBaseTest {
     @Deployment
     public static Archive<?> createDeployment() {
         try {
-            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve().withTransitivity().asFile();
+            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve("org.unitils:unitils-core:4.0-SNAPSHOT").withTransitivity().asFile();
 
             WebArchive webArchive = ShrinkWrap.create(WebArchive.class, "test.war")
                     .addPackages(true, "com.btxtech.server")
@@ -123,10 +130,16 @@ public class ArquillianBaseTest {
         tower.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));
         BASE_ITEM_TYPE_TOWER_ID = createBaseItemTypeEntity(tower);
 
+        InventoryItem inventoryItem = new InventoryItem();
+        INVENTORY_ITEM_1_ID = createInventoryItemEntity(inventoryItem);
+
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000);
         RESOURCE_ITEM_TYPE_ID = createResourceItemTypeEntity(resource);
 
+        BoxItemType boxItemType = new BoxItemType();
+        boxItemType.setRadius(2);
+        BOX_ITEM_TYPE_ID = createBoxItemTypeEntity(boxItemType);
     }
 
     protected void cleanItemTypes() throws Exception {
@@ -141,6 +154,8 @@ public class ArquillianBaseTest {
             em.createQuery("DELETE FROM HouseTypeEntity").executeUpdate();
             em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
             em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();
+            em.createQuery("DELETE FROM BoxItemTypeEntity ").executeUpdate();
+            em.createQuery("DELETE FROM InventoryItemEntity").executeUpdate();
         });
     }
 
@@ -153,8 +168,23 @@ public class ArquillianBaseTest {
 
     private int createResourceItemTypeEntity(ResourceItemType resourceItemType) throws Exception {
         ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
+        resourceItemTypeEntity.fromResourceItemType(resourceItemType);
         persistInTransaction(resourceItemTypeEntity);
         return resourceItemTypeEntity.getId();
+    }
+
+    private int createInventoryItemEntity(InventoryItem inventoryItem) throws Exception {
+        InventoryItemEntity inventoryItemEntity = new InventoryItemEntity();
+        inventoryItemEntity.fromInventoryItem(inventoryItem);
+        persistInTransaction(inventoryItemEntity);
+        return inventoryItemEntity.getId();
+    }
+
+    private int createBoxItemTypeEntity(BoxItemType boxItemType) throws Exception {
+        BoxItemTypeEntity boxItemTypeEntity = new BoxItemTypeEntity();
+        boxItemTypeEntity.fromBoxItemType(boxItemType);
+        persistInTransaction(boxItemTypeEntity);
+        return boxItemTypeEntity.getId();
     }
 
     protected <T> T persistInTransaction(T object) throws Exception {
@@ -170,6 +200,18 @@ public class ArquillianBaseTest {
         em.joinTransaction();
         consumer.accept(em);
         utx.commit();
+    }
+
+    protected void runInTransactionSave(Consumer<EntityManager> consumer) throws Exception {
+        try {
+            utx.begin();
+            em.joinTransaction();
+            consumer.accept(em);
+            utx.commit();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            utx.rollback();
+        }
     }
 
     protected void setupLevels() throws Exception {

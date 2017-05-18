@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence.scene;
 
-import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 
@@ -23,22 +22,25 @@ public class BotRemoveOwnItemCommandEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private BotConfigEntity botConfigEntity;
+    private Integer botAuxiliaryIdId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity baseItemType2Remove;
 
     public BotRemoveOwnItemCommandConfig toBotRemoveOwnItemCommandConfig() {
-        BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig = new BotRemoveOwnItemCommandConfig();
-        if (botConfigEntity != null) {
-            botRemoveOwnItemCommandConfig.setBotId(botConfigEntity.getId());
-        }
+        BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig = new BotRemoveOwnItemCommandConfig().setBotAuxiliaryId(botAuxiliaryIdId);
         if (baseItemType2Remove != null) {
             botRemoveOwnItemCommandConfig.setBaseItemType2RemoveId(baseItemType2Remove.getId());
         }
         return botRemoveOwnItemCommandConfig;
+    }
+
+    public void setBotAuxiliaryIdId(Integer botAuxiliaryIdId) {
+        this.botAuxiliaryIdId = botAuxiliaryIdId;
+    }
+
+    public void setBaseItemType2Remove(BaseItemTypeEntity baseItemType2Remove) {
+        this.baseItemType2Remove = baseItemType2Remove;
     }
 
     @Override

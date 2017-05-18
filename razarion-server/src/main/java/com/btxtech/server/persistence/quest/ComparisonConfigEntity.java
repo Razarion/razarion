@@ -2,15 +2,12 @@ package com.btxtech.server.persistence.quest;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
-import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -43,18 +40,44 @@ public class ComparisonConfigEntity {
     private PlaceConfigEntity placeConfig;
 
     public ComparisonConfig toComparisonConfig() {
-        Map<Integer, Integer> typeCount = null;
-        if(this.typeCount == null || this.typeCount.isEmpty()) {
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setCount(count).setTime(time).setAddExisting(addExisting);
+        if (this.typeCount == null || !this.typeCount.isEmpty()) {
+            Map<Integer, Integer> typeCount = null;
             typeCount = new HashMap<>();
             for (Map.Entry<BaseItemTypeEntity, Integer> entry : this.typeCount.entrySet()) {
                 typeCount.put(entry.getKey().getId(), entry.getValue());
             }
+            comparisonConfig.setTypeCount(typeCount);
         }
-        return new ComparisonConfig().setCount(count).setTypeCount(typeCount).setTime(time).setAddExisting(addExisting).setPlaceConfig(placeConfig.toPlaceConfig());
+        if (placeConfig != null) {
+            comparisonConfig.setPlaceConfig(placeConfig.toPlaceConfig());
+        }
+        return comparisonConfig;
     }
 
-    public void fromComparisonConfig(ComparisonConfig comparisonConfig) {
-
+    public void fromComparisonConfig(ItemTypePersistence itemTypePersistence, ComparisonConfig comparisonConfig) {
+        count = comparisonConfig.getCount();
+        time = comparisonConfig.getTime();
+        addExisting = comparisonConfig.getAddExisting();
+        if (comparisonConfig.getPlaceConfig() != null) {
+            if (placeConfig == null) {
+                placeConfig = new PlaceConfigEntity();
+            }
+            placeConfig.fromPlaceConfig(comparisonConfig.getPlaceConfig());
+        } else {
+            placeConfig = null;
+        }
+        if (comparisonConfig.getTypeCount() != null) {
+            if (typeCount == null) {
+                typeCount = new HashMap<>();
+            }
+            typeCount.clear();
+            for (Map.Entry<Integer, Integer> entry : comparisonConfig.getTypeCount().entrySet()) {
+                typeCount.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
+            }
+        } else {
+            typeCount = null;
+        }
     }
 
     @Override

@@ -88,9 +88,9 @@ public class BotService {
     public void executeCommands(List<? extends AbstractBotCommandConfig> botCommandConfigs) {
         for (AbstractBotCommandConfig botCommandConfig : botCommandConfigs) {
             try {
-                BotRunner botRunner = getBotRunner(botCommandConfig.getBotId());
+                BotRunner botRunner = getBotRunner4AuxiliaryId(botCommandConfig.getBotAuxiliaryId());
                 if (botCommandConfig instanceof KillBotCommandConfig) {
-                    killBot(botCommandConfig.getBotId());
+                    killBot(botRunner.getBotConfig().getId());
                 } else {
                     botRunner.executeCommand(botCommandConfig);
                 }
@@ -109,6 +109,17 @@ public class BotService {
             }
         }
         throw new IllegalArgumentException("No bot runner for id: " + botId);
+    }
+
+    public BotRunner getBotRunner4AuxiliaryId(int auxiliaryId) {
+        synchronized (botRunners) {
+            for (BotRunner botRunner : botRunners) {
+                if (botRunner.getBotConfig().getAuxiliaryId() != null && botRunner.getBotConfig().getAuxiliaryId() == auxiliaryId) {
+                    return botRunner;
+                }
+            }
+        }
+        throw new IllegalArgumentException("No bot runner for auxiliaryId: " + auxiliaryId);
     }
 
     private BotRunner getBotRunner(PlayerBase playerBase) {
