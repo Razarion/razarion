@@ -39,7 +39,7 @@ public class EffectVisualizationService {
     private Map<Integer, DemolitionBaseItemEntry> demolitionBaseItemEntries = new HashMap<>();
 
     public void onProjectileFired(BaseItemType baseItemType, Vertex muzzlePosition, Vertex target) {
-        Integer muzzleFlashParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getMuzzleFlashParticleEmitterSequenceConfigId();
+        Integer muzzleFlashParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getMuzzleFlashParticleConfigId();
         if (muzzleFlashParticleEmitterSequenceConfigId == null) {
             logger.warning("No muzzleFlashParticleEmitterSequenceConfigId configured for: " + baseItemType);
             return;
@@ -49,7 +49,7 @@ public class EffectVisualizationService {
 
     public void onProjectileDetonation(int baseItemTypeId, Vertex position) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
-        Integer detonationParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getDetonationParticleEmitterSequenceConfigId();
+        Integer detonationParticleEmitterSequenceConfigId = baseItemType.getWeaponType().getDetonationParticleConfigId();
         if (detonationParticleEmitterSequenceConfigId == null) {
             logger.warning("No projectile detonationParticleEmitterSequenceConfigId configured for: " + baseItemType);
             return;
@@ -115,7 +115,7 @@ public class EffectVisualizationService {
         DemolitionStepEffect demolitionStepEffect = baseItemType.getDemolitionStepEffect(step);
 
         for (DemolitionParticleConfig demolitionParticleConfig : demolitionStepEffect.getDemolitionParticleConfigs()) {
-            ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(demolitionParticleConfig.getParticleEmitterSequenceConfigId());
+            ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(demolitionParticleConfig.getParticleConfigId());
             demolitionBaseItemEntry.addParticleHandler(particleService.start(System.currentTimeMillis(), syncBaseItem.getPosition3d().add(demolitionParticleConfig.getPosition()), null, particleEmitterSequenceConfig));
         }
 

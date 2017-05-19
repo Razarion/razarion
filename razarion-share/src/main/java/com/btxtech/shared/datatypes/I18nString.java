@@ -11,6 +11,7 @@ import java.util.Map;
 public class I18nString {
     public static final String DEFAULT = "DEFAULT"; // Errai Jackson JSON marshaller can not handle enum as Map keys
     public static final String DE = "DE"; // Errai Jackson JSON marshaller can not handle enum as Map keys
+    public static final String EN = "EN"; // Errai Jackson JSON marshaller can not handle enum as Map keys
 
     private Map<String, String> localizedStrings;
 
@@ -19,6 +20,8 @@ public class I18nString {
             return DEFAULT;
         } else if (localName.toLowerCase().startsWith("de")) {
             return DE;
+        } else if (localName.toLowerCase().startsWith("en")) {
+            return EN;
         } else {
             return DEFAULT;
         }

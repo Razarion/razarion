@@ -28,11 +28,6 @@ public class SyncItemArea {
     private BoundingBox boundingBox;
     private Logger log = Logger.getLogger(SyncItemArea.class.getName());
 
-    public SyncItemArea(SyncItem syncItem) {
-        this.syncItem = syncItem;
-        boundingBox = syncItem.getItemType().getBoundingBox();
-    }
-
     public SyncItemArea(BoundingBox boundingBox, DecimalPosition position) {
         this.boundingBox = boundingBox;
         setPosition(position);
@@ -282,15 +277,6 @@ public class SyncItemArea {
 
     public boolean isInRange(int range, SyncItem target) throws TargetHasNoPositionException {
         return range >= getDistanceRounded(target);
-    }
-
-    public boolean isInRange(int range, Index position, ItemType toBeBuiltType) {
-        try {
-            return isInRange(range, toBeBuiltType.getBoundingBox().createSyntheticSyncItemArea(position));
-        } catch (TargetHasNoPositionException e) {
-            log.warning("SyncItemArea.isInRange() synthetic item area should always have a position");
-            return false;
-        }
     }
 
     public boolean isInRange(int range, Index position) {

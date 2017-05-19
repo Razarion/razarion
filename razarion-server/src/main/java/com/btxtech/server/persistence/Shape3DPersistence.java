@@ -71,11 +71,14 @@ public class Shape3DPersistence {
 
     @Transactional
     public ColladaEntity getColladaEntity(Integer colladaId) {
-        if (colladaId != null) {
-            return entityManager.find(ColladaEntity.class, colladaId);
-        } else {
+        if (colladaId == null) {
             return null;
         }
+        ColladaEntity colladaEntity = entityManager.find(ColladaEntity.class, colladaId);
+        if (colladaEntity == null) {
+            throw new IllegalArgumentException("No ColladaEntity for id: " + colladaId);
+        }
+        return colladaEntity;
     }
 
     @Transactional

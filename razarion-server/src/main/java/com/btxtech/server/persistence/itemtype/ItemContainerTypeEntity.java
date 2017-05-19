@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * 13.05.2017.
  */
 @Entity
-@Table(name = "BASE_ITEM_ITEM_CONSUMER_TYPE_ENTITY")
+@Table(name = "BASE_ITEM_ITEM_CONSUMER_TYPE")
 public class ItemContainerTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

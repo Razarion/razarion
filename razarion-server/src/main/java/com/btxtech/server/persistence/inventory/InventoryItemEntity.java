@@ -49,7 +49,7 @@ public class InventoryItemEntity {
             inventoryItem.setBaseItemType(baseItemType.getId()).setBaseItemTypeCount(baseItemTypeCount).setItemFreeRange(itemFreeRange);
         }
         if (i18nName != null) {
-            inventoryItem.setI18nName(i18nName.createI18nString());
+            inventoryItem.setI18nName(i18nName.toI18nString());
         }
         inventoryItem.setGold(gold);
         if (image != null) {

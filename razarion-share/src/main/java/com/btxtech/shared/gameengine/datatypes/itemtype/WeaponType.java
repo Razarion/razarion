@@ -14,8 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 /**
  * User: beat
@@ -27,11 +26,11 @@ public class WeaponType {
     private int damage;
     private double detonationRadius;
     private double reloadTime;
-    private Collection<Integer> disallowedItemTypes;
-    private Double projectileSpeed; // Pixel per second
+    private List<Integer> disallowedItemTypes;
+    private Double projectileSpeed; // Meter per second
     private Integer projectileShape3DId;
-    private Integer muzzleFlashParticleEmitterSequenceConfigId;
-    private Integer detonationParticleEmitterSequenceConfigId;
+    private Integer muzzleFlashParticleConfigId;
+    private Integer detonationParticleConfigId;
     private TurretType turretType;
 
     public double getRange() {
@@ -70,11 +69,11 @@ public class WeaponType {
         return this;
     }
 
-    public Collection<Integer> getDisallowedItemTypes() {
+    public List<Integer> getDisallowedItemTypes() {
         return disallowedItemTypes;
     }
 
-    public WeaponType setDisallowedItemTypes(Collection<Integer> disallowedItemTypes) {
+    public WeaponType setDisallowedItemTypes(List<Integer> disallowedItemTypes) {
         this.disallowedItemTypes = disallowedItemTypes;
         return this;
     }
@@ -101,21 +100,21 @@ public class WeaponType {
         return this;
     }
 
-    public Integer getMuzzleFlashParticleEmitterSequenceConfigId() {
-        return muzzleFlashParticleEmitterSequenceConfigId;
+    public Integer getMuzzleFlashParticleConfigId() {
+        return muzzleFlashParticleConfigId;
     }
 
-    public WeaponType setMuzzleFlashParticleEmitterSequenceConfigId(Integer muzzleFlashParticleEmitterSequenceConfigId) {
-        this.muzzleFlashParticleEmitterSequenceConfigId = muzzleFlashParticleEmitterSequenceConfigId;
+    public WeaponType setMuzzleFlashParticleConfigId(Integer muzzleFlashParticleConfigId) {
+        this.muzzleFlashParticleConfigId = muzzleFlashParticleConfigId;
         return this;
     }
 
-    public Integer getDetonationParticleEmitterSequenceConfigId() {
-        return detonationParticleEmitterSequenceConfigId;
+    public Integer getDetonationParticleConfigId() {
+        return detonationParticleConfigId;
     }
 
-    public WeaponType setDetonationParticleEmitterSequenceConfigId(Integer detonationParticleEmitterSequenceConfigId) {
-        this.detonationParticleEmitterSequenceConfigId = detonationParticleEmitterSequenceConfigId;
+    public WeaponType setDetonationParticleConfigId(Integer detonationParticleConfigId) {
+        this.detonationParticleConfigId = detonationParticleConfigId;
         return this;
     }
 

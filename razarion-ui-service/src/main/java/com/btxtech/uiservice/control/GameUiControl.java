@@ -275,8 +275,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             if (baseItemType.getBuildupTextureId() != null) {
                 textureIds.add(baseItemType.getBuildupTextureId());
             }
-            if (baseItemType.getBaseItemDemolitionImageId() != null) {
-                textureIds.add(baseItemType.getBaseItemDemolitionImageId());
+            if (baseItemType.getDemolitionImageId() != null) {
+                textureIds.add(baseItemType.getDemolitionImageId());
             }
         }
 

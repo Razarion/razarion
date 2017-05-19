@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * 13.05.2017.
  */
 @Entity
-@Table(name = "BASE_ITEM_HOUSE_TYPE_ENTITY")
+@Table(name = "BASE_ITEM_HOUSE_TYPE")
 public class HouseTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

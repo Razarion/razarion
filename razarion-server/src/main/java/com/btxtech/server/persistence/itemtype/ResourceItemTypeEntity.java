@@ -47,10 +47,10 @@ public class ResourceItemTypeEntity {
             resourceItemType.setShape3DId(shape3DId.getId());
         }
         if (i18nName != null) {
-            resourceItemType.setI18nName(i18nName.createI18nString());
+            resourceItemType.setI18nName(i18nName.toI18nString());
         }
         if (i18nDescription != null) {
-            resourceItemType.setI18nDescription(i18nDescription.createI18nString());
+            resourceItemType.setI18nDescription(i18nDescription.toI18nString());
         }
         return resourceItemType;
     }

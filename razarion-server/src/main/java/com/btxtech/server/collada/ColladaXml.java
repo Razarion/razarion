@@ -178,17 +178,11 @@ public class ColladaXml {
     }
 
     protected List<String> getElementAsStringList(Node node) {
-        if (node.getFirstChild() == null) {
-            System.out.println("xxx");
-        }
         return Arrays.asList(node.getFirstChild().getNodeValue().split(" "));
     }
 
 
     protected List<Double> getElementAsDoubleList(Node node) {
-        if (node.getFirstChild() == null) {
-            System.out.println("xxx");
-        }
         return parseDoubleString(node.getFirstChild().getNodeValue());
     }
 

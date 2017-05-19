@@ -40,8 +40,16 @@ public class AudioPersistence {
         return getAudioLibraryEntity(id).toAudioConfig();
     }
 
-    public AudioLibraryEntity getAudioLibraryEntity(int id) {
-        return entityManager.find(AudioLibraryEntity.class, id);
+    @Transactional
+    public AudioLibraryEntity getAudioLibraryEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        AudioLibraryEntity audioLibraryEntity = entityManager.find(AudioLibraryEntity.class, id);
+        if (audioLibraryEntity == null) {
+            throw new IllegalArgumentException("No AudioLibraryEntity for id: " + id);
+        }
+        return audioLibraryEntity;
     }
 
     @Transactional

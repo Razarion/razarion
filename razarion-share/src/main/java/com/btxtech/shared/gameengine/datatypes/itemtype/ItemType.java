@@ -31,23 +31,11 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private I18nString i18nDescription;
     private TerrainType terrainType;
     private SurfaceType adjoinSurfaceType;
-    @Deprecated
-    private BoundingBox boundingBox;
     private Integer shape3DId;
     private Integer thumbnail;
 
     public int getId() {
         return id;
-    }
-
-    public BoundingBox getBoundingBox() {
-        // throw new UnsupportedOperationException("Bounding box no longer supported");
-        return boundingBox;
-    }
-
-    public ItemType setBoundingBox(BoundingBox boundingBox) {
-        this.boundingBox = boundingBox;
-        return this;
     }
 
     public String getName() {

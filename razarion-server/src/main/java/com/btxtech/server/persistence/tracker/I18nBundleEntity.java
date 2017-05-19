@@ -38,44 +38,21 @@ public class I18nBundleEntity {
         return id;
     }
 
-    public String getString() {
-        return getString(null);
-    }
-
     public String getString(Locale locale) {
         if (localizedStrings == null) {
             return null;
         }
-        String i18NString = null;
-        if (locale != null && !locale.getLanguage().equals(Locale.ENGLISH.getLanguage())) {
-            i18NString = localizedStrings.get(locale.getLanguage());
-        }
-        if (i18NString == null) {
-            i18NString = localizedStrings.get(DEFAULT);
-        }
-        return i18NString;
-    }
 
-    public String getStringNoFallback(Locale locale) {
-        if (localizedStrings == null) {
-            return null;
-        }
-        return localizedStrings.get(locale.getLanguage());
-    }
-
-    public void putString(String string) {
-        putString(null, string);
+        String language = I18nString.convert(locale.getLanguage());
+        return toI18nString().getString(language);
     }
 
     public void putString(Locale locale, String string) {
         if (localizedStrings == null) {
             localizedStrings = new HashMap<>();
         }
-        if (locale != null && !locale.getLanguage().equals(Locale.ENGLISH.getLanguage())) {
-            localizedStrings.put(locale.getLanguage(), string);
-        } else {
-            localizedStrings.put(DEFAULT, string);
-        }
+        String language = I18nString.convert(locale.getLanguage());
+        localizedStrings.put(language, string);
     }
 
     public boolean isEmpty() {
@@ -90,7 +67,7 @@ public class I18nBundleEntity {
         return true;
     }
 
-    public I18nString createI18nString() {
+    public I18nString toI18nString() {
         Map<String, String> localizedStrings = new HashMap<>();
         if (this.localizedStrings != null)
             for (Map.Entry<String, String> entry : this.localizedStrings.entrySet()) {
@@ -99,8 +76,16 @@ public class I18nBundleEntity {
         return new I18nString(localizedStrings);
     }
 
-    public Map<String, String> getLocalizedStrings() {
-        return localizedStrings;
+    public void fromI18nString(I18nString i18nString) {
+        if (localizedStrings == null) {
+            localizedStrings = new HashMap<>();
+        }
+        localizedStrings.clear();
+        if (i18nString.getLocalizedStrings() != null) {
+            for (Map.Entry<String, String> entry : i18nString.getLocalizedStrings().entrySet()) {
+                localizedStrings.put(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     @Override
@@ -119,5 +104,16 @@ public class I18nBundleEntity {
     @Override
     public int hashCode() {
         return id != null ? id : System.identityHashCode(this);
+    }
+
+    public static I18nBundleEntity fromI18nStringSafe(I18nString i18nString, I18nBundleEntity i18nBundleEntity) {
+        if (i18nString == null) {
+            return null;
+        }
+        if (i18nBundleEntity == null) {
+            i18nBundleEntity = new I18nBundleEntity();
+        }
+        i18nBundleEntity.fromI18nString(i18nString);
+        return i18nBundleEntity;
     }
 }

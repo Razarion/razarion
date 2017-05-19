@@ -3,14 +3,17 @@ package com.btxtech.server;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
+import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -72,13 +75,16 @@ public class ArquillianBaseTest {
     public static int GAME_UI_CONTROL_CONFIG_2_ID;
     // Inventory
     public static int INVENTORY_ITEM_1_ID;
-
+    @PersistenceContext
+    private EntityManager em;
     @Inject
     private UserTransaction utx;
     @Inject
     private ImagePersistence imagePersistence;
-    @PersistenceContext
-    private EntityManager em;
+    @Inject
+    private ItemTypePersistence itemTypePersistence;
+    @Inject
+    private Shape3DPersistence shape3DPersistence;
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -102,6 +108,12 @@ public class ArquillianBaseTest {
 
     protected EntityManager getEntityManager() {
         return em;
+    }
+
+    protected I18nString i18nHelper(String string) {
+        Map<String, String> localizedStrings = new HashMap<>();
+        localizedStrings.put(I18nString.DE, string);
+        return new I18nString(localizedStrings);
     }
 
     protected void setupItemTypes() throws Exception {
@@ -165,7 +177,7 @@ public class ArquillianBaseTest {
 
     private int createBaseItemTypeEntity(BaseItemType baseItemType) throws Exception {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
-        baseItemTypeEntity.fromBaseItemType(baseItemType);
+        baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, shape3DPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }

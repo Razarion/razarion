@@ -7,15 +7,15 @@ import com.btxtech.shared.datatypes.Vertex;
  * 20.12.2016.
  */
 public class DemolitionParticleConfig {
-    private int particleEmitterSequenceConfigId;
+    private Integer particleConfigId;
     private Vertex position;
 
-    public int getParticleEmitterSequenceConfigId() {
-        return particleEmitterSequenceConfigId;
+    public Integer getParticleConfigId() {
+        return particleConfigId;
     }
 
-    public DemolitionParticleConfig setParticleEmitterSequenceConfigId(int particleEmitterSequenceConfigId) {
-        this.particleEmitterSequenceConfigId = particleEmitterSequenceConfigId;
+    public DemolitionParticleConfig setParticleConfigId(Integer particleConfigId) {
+        this.particleConfigId = particleConfigId;
         return this;
     }
 

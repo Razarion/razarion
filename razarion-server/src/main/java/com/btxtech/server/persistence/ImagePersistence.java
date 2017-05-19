@@ -77,11 +77,13 @@ public class ImagePersistence {
 
     @Transactional
     public ImageLibraryEntity getImageLibraryEntity(Integer id) {
-        if (id != null) {
-            return entityManager.find(ImageLibraryEntity.class, id);
-        } else {
+        if (id == null) {
             return null;
         }
+        ImageLibraryEntity imageLibraryEntity = entityManager.find(ImageLibraryEntity.class, id);
+        if (imageLibraryEntity == null) {
+            throw new IllegalArgumentException("No ImageLibraryEntity for id: " + id);
+        }
+        return imageLibraryEntity;
     }
-
 }

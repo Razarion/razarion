@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * 13.05.2017.
  */
 @Entity
-@Table(name = "BASE_ITEM_GENERATOR_TYPE_ENTITY")
+@Table(name = "BASE_ITEM_GENERATOR_TYPE")
 public class GeneratorTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
