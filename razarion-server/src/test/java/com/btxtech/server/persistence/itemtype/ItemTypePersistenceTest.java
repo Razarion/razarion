@@ -136,6 +136,8 @@ public class ItemTypePersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM HarvesterTypeEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM WeaponTypeEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM TurretTypeEntity r").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM I18N_BUNDLE r").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM I18N_BUNDLE_STRING").getSingleResult()).intValue());
     }
 
     private void assertFactory(BaseItemType factoryExpected) {
