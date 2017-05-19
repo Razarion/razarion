@@ -29,6 +29,7 @@ public class BotConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private Integer auxiliaryId;
     private boolean npc;
     private int actionDelay;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -55,10 +56,11 @@ public class BotConfigEntity {
         for (BotEnragementStateConfigEntity botEnragementStateConfigEnity : this.botEnragementStateConfigs) {
             botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
         }
-        return new BotConfig().setId(id).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
+        return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
     }
 
     public void fromBotConfig(ItemTypePersistence itemTypePersistence, BotConfig botConfig) {
+        auxiliaryId = botConfig.getAuxiliaryId();
         npc = botConfig.isNpc();
         actionDelay = botConfig.getActionDelay();
         if (botConfig.getRealm() != null) {

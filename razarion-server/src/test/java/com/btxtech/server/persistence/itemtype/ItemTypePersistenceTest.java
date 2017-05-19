@@ -161,7 +161,7 @@ public class ItemTypePersistenceTest extends ArquillianBaseTest {
         builder.setI18nDescription(i18nHelper("Builds buildings"));
         builder.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
         BuilderType builderType = new BuilderType().setProgress(1).setRange(10).setAnimationShape3dId(9).setAnimationOrigin(new Vertex(1.63196, 0, 3.04829));
-        if (ableToBuild.length > 1) {
+        if (ableToBuild.length > 0) {
             builderType.setAbleToBuildIds(Arrays.asList(ableToBuild));
         }
         builder.setBuilderType(builderType);
@@ -222,7 +222,7 @@ public class ItemTypePersistenceTest extends ArquillianBaseTest {
         factory.setExplosionParticleConfigId(2).setBuildup(30);
         factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
         FactoryType factoryType = new FactoryType().setProgress(1.0).setAbleToBuildIds(Arrays.asList(ableToBuild));
-        if (ableToBuild.length > 1) {
+        if (ableToBuild.length > 0) {
             factoryType.setAbleToBuildIds(Arrays.asList(ableToBuild));
         }
         factory.setFactoryType(factoryType);

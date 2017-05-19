@@ -240,11 +240,11 @@ INSERT INTO `PLACE_CONFIG_POSITION_POLYGON` (`OWNER_ID`, `x`, `y`, `orderColumn`
 	(25, 263, 249, 2),
 	(25, 212, 249, 3);
 
-INSERT INTO `BOT_CONFIG` (`id`, `actionDelay`, `maxActiveMs`, `maxInactiveMs`, `minActiveMs`, `minInactiveMs`, `name`, `npc`, `realm_id`) VALUES
-  (1, 3000, NULL, NULL, NULL, NULL, 'Roger', b'1', NULL),
-  (2, 3000, NULL, NULL, NULL, NULL, 'Razar Industries', b'0', NULL),
-  (3, 3000, NULL, NULL, NULL, NULL, 'Kenny', b'1', NULL),
-  (4, 3000, NULL, NULL, NULL, NULL, 'Roger', b'1', NULL);
+INSERT INTO `BOT_CONFIG` (`id`, `actionDelay`, `auxiliaryId`, `maxActiveMs`, `maxInactiveMs`, `minActiveMs`, `minInactiveMs`, `name`, `npc`, `realm_id`) VALUES
+  (1, 3000, 11, NULL, NULL, NULL, NULL, 'Roger', b'1', NULL),
+  (2, 3000, 33, NULL, NULL, NULL, NULL, 'Razar Industries', b'0', NULL),
+  (3, 3000, 44, NULL, NULL, NULL, NULL, 'Kenny', b'1', NULL),
+  (4, 3000, 22, NULL, NULL, NULL, NULL, 'Roger', b'1', NULL);
 
 INSERT INTO `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (`id`, `enrageUpKills`, `name`, `botConfig`) VALUES
 	(1, NULL, 'Normal', 1),

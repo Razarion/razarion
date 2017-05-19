@@ -33,8 +33,9 @@ public class BotConfig {
         return auxiliaryId;
     }
 
-    public void setAuxiliaryId(Integer auxiliaryId) {
+    public BotConfig setAuxiliaryId(Integer auxiliaryId) {
         this.auxiliaryId = auxiliaryId;
+        return this;
     }
 
     public BotConfig setNpc(boolean npc) {
