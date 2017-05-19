@@ -1,3 +1,59 @@
+INSERT INTO `I18N_BUNDLE` (`id`) VALUES
+  (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23), (24), (25), (26), (27),
+  (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45), (46), (47), (48), (49), (50);
+
+INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
+  (1, 'Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.', 'DEFAULT'),
+  (2, 'Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.', 'DEFAULT'),
+  (3, 'Wähle deinen Startpunkt um deine Starteinheit zu platzieren', 'DEFAULT'),
+  (4, 'Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte.', 'DEFAULT'),
+  (5, 'Platzieren', 'DEFAULT'),
+  (6, 'Folge mir zum Vorposten', 'DEFAULT'),
+  (7, 'Fahre deine Einheit zum Vorposten', 'DEFAULT'),
+  (8, 'Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich', 'DEFAULT'),
+  (9, 'Fahre zu Vorposten', 'DEFAULT'),
+  (10, 'Hilfe wir werden angegriffen', 'DEFAULT'),
+  (11, 'Scrolle und such die gegenrische Basis', 'DEFAULT'),
+  (12, 'Gratuliere, du hast die gegnerische Basis gefunden', 'DEFAULT'),
+  (13, 'Finde Gegenerbasis', 'DEFAULT'),
+  (14, 'Eine Box wurde gesichtet. Sammle sie auf', 'DEFAULT'),
+  (15, 'Nimm die Box', 'DEFAULT'),
+  (16, 'Platziere die Militäreinheiten vom Inventar', 'DEFAULT'),
+  (17, 'Benutze Inventar', 'DEFAULT'),
+  (18, 'Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge', 'DEFAULT'),
+  (19, 'Zerstöre die Abbaufahrzeuge', 'DEFAULT'),
+  (20, 'Hilfe, Razar Industries greift uns an', 'DEFAULT'),
+  (21, 'Baue dich neu auf und zerstöre Razar Industries.', 'DEFAULT'),
+  (22, 'Platziere deinen Bulldozer und baue eine Basis auf um Razarion Industries zu besiegen.', 'DEFAULT'),
+  (23, 'Baue eine Basis', 'DEFAULT'),
+  (24, 'Baue eine Fabrik mit deinem Bulldozer', 'DEFAULT'),
+  (25, 'Baue eine Fabrik', 'DEFAULT'),
+  (26, 'Baue ein Harvester in deiner Fabrik', 'DEFAULT'),
+  (27, 'Baue ein Harvester', 'DEFAULT'),
+  (28, 'Sammle Razarion um eine Armee zu bauen', 'DEFAULT'),
+  (29, 'Sammle Razarion', 'DEFAULT'),
+  (30, 'Du brauchst viel Razarion um eine Armee zu bauen', 'DEFAULT'),
+  (31, 'Baue ein Viper in deiner Fabrik', 'DEFAULT'),
+  (32, 'Bauen', 'DEFAULT'),
+  (33, 'Komm, greiffen wir an!', 'DEFAULT'),
+  (34, 'Der Turm ist zu stark, wir brauchen eine grössere Armee', 'DEFAULT'),
+  (35, 'Baue zwei Vipers in deiner Fabrik', 'DEFAULT'),
+  (36, 'Bauen', 'DEFAULT'),
+  (37, 'Nimm deine 3 Vipers und zerstöre den Turm', 'DEFAULT'),
+  (38, 'Zerstöre Turm', 'DEFAULT'),
+  (39, 'Vertreibe Razar Industries von diesem Planeten', 'DEFAULT'),
+  (40, 'Kill Razar Industries', 'DEFAULT'),
+  (41, 'Builds buildings', 'DE'),
+  (42, 'Builder', 'DE'),
+  (43, 'Collects resources', 'DE'),
+  (44, 'Harvester', 'DE'),
+  (45, 'Attacks other units', 'DE'),
+  (46, 'Attacker', 'DE'),
+  (47, 'Defense tower', 'DE'),
+  (48, 'Tower', 'DE'),
+  (49, 'Creates units', 'DE'),
+  (50, 'Factory', 'DE');
+
 # INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.opened', 1);
 # INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.closed', 2);
 # INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.quest.activated', 3);
@@ -30,16 +86,52 @@
 # INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.direction.shape3d', 14);
 # INSERT INTO razarion.PROPERTY (propertyKey, image_id) VALUES ('tip.splash.scroll.image', 49);
 
-# INSERT INTO razarion.BASE_ITEM_TYPE (id, acceleration, angularVelocity, boxPickupRange, dropBoxPossibility, explosionParticleConfigId_TMP, fixVerticalNorm, health, name, price, radius, spawnDurationMillis, speed, unlockCrystals, xpOnKilling, builderType_id, buildupTexture_id, consumerType_id, demolitionImage_id, factoryType_id, generatorType_id, harvesterType_id, houseType_id, i18nDescription_id, i18nName_id, itemContainerType_id, shape3DId_id, spawnAudioId_id, spawnShape3DId_id, thumbnail_id, weaponType_id, wreckageShape3DId_id)
-# VALUES (1, 2.78, 0.5235987755982988, 2, 0, NULL, FALSE, 100, 'Builder', 0, 2, 1000, 17, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-# INSERT INTO razarion.BASE_ITEM_TYPE (id, acceleration, angularVelocity, boxPickupRange, dropBoxPossibility, explosionParticleConfigId_TMP, fixVerticalNorm, health, name, price, radius, spawnDurationMillis, speed, unlockCrystals, xpOnKilling, builderType_id, buildupTexture_id, consumerType_id, demolitionImage_id, factoryType_id, generatorType_id, harvesterType_id, houseType_id, i18nDescription_id, i18nName_id, itemContainerType_id, shape3DId_id, spawnAudioId_id, spawnShape3DId_id, thumbnail_id, weaponType_id, wreckageShape3DId_id)
-# VALUES (2, 40, 0.5235987755982988, 0, 0, NULL, FALSE, 10, 'Harvester', 0, 2, 1000, 80, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-# INSERT INTO razarion.BASE_ITEM_TYPE (id, acceleration, angularVelocity, boxPickupRange, dropBoxPossibility, explosionParticleConfigId_TMP, fixVerticalNorm, health, name, price, radius, spawnDurationMillis, speed, unlockCrystals, xpOnKilling, builderType_id, buildupTexture_id, consumerType_id, demolitionImage_id, factoryType_id, generatorType_id, harvesterType_id, houseType_id, i18nDescription_id, i18nName_id, itemContainerType_id, shape3DId_id, spawnAudioId_id, spawnShape3DId_id, thumbnail_id, weaponType_id, wreckageShape3DId_id)
-# VALUES (3, 40, 0.5235987755982988, 2, 0, NULL, FALSE, 100, 'Attacker', 0, 2, 1000, 10, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-# INSERT INTO razarion.BASE_ITEM_TYPE (id, acceleration, angularVelocity, boxPickupRange, dropBoxPossibility, explosionParticleConfigId_TMP, fixVerticalNorm, health, name, price, radius, spawnDurationMillis, speed, unlockCrystals, xpOnKilling, builderType_id, buildupTexture_id, consumerType_id, demolitionImage_id, factoryType_id, generatorType_id, harvesterType_id, houseType_id, i18nDescription_id, i18nName_id, itemContainerType_id, shape3DId_id, spawnAudioId_id, spawnShape3DId_id, thumbnail_id, weaponType_id, wreckageShape3DId_id)
-# VALUES (4, NULL, NULL, 0, 0, NULL, FALSE, 100, 'Factory', 0, 5, 1000, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-# INSERT INTO razarion.BASE_ITEM_TYPE (id, acceleration, angularVelocity, boxPickupRange, dropBoxPossibility, explosionParticleConfigId_TMP, fixVerticalNorm, health, name, price, radius, spawnDurationMillis, speed, unlockCrystals, xpOnKilling, builderType_id, buildupTexture_id, consumerType_id, demolitionImage_id, factoryType_id, generatorType_id, harvesterType_id, houseType_id, i18nDescription_id, i18nName_id, itemContainerType_id, shape3DId_id, spawnAudioId_id, spawnShape3DId_id, thumbnail_id, weaponType_id, wreckageShape3DId_id)
-# VALUES (5, NULL, NULL, 0, 0, NULL, FALSE, 100, 'Tower', 0, 3, 1000, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+INSERT INTO `BASE_ITEM_BUILDER_TYPE` (`id`, `animationOriginX`, `animationOriginY`, `animationOriginZ`, `buildRange`, `progress`, `animationShape3d_id`) VALUES
+  (1, 1.63196, 0, 3.04829, 10, 1, 9);
+INSERT INTO `BASE_ITEM_FACTORY_TYPE` (`id`, `progress`) VALUES
+  (1, 1);
+INSERT INTO `BASE_ITEM_HARVESTER_TYPE` (`id`, `animationOriginX`, `animationOriginY`, `animationOriginZ`, `harvestRange`, `progress`, `animationShape3d_id`) VALUES
+  (1, 2.5, 0, 1.25, 3, 10, 18);
+INSERT INTO `BASE_ITEM_TURRET_TYPE` (`id`, `angleVelocity`, `muzzlePositionX`, `muzzlePositionY`, `muzzlePositionZ`, `shape3dMaterialId`, `torrentCenterX`, `torrentCenterY`, `torrentCenterZ`) VALUES
+  (1, 2.0943951023931953, 1.3, 0, 0, 'Turret-material', -0.25, 0, 2),
+  (2, 2.0943951023931953, 5.2, 0, 5.4, 'turret_001-material', 0, 0, 0.98);
+INSERT INTO `BASE_ITEM_WEAPON_TYPE` (`id`, `attackRange`, `damage`, `detonationParticleConfigId_TMP`, `detonationRadius`, `muzzleFlashParticleConfigId_TMP`, `projectileSpeed`, `reloadTime`, `projectileShape3D_id`, `turretType_id`)
+VALUES
+  (1, 10, 1, 3, 1, 4, 17, 3, 6, 1),
+  (2, 20, 1, 3, 1, 4, 40, 3, 6, 2);
+INSERT INTO `BASE_ITEM_TYPE` (`id`, `acceleration`, `angularVelocity`, `boxPickupRange`, `buildup`, `dropBoxPossibility`, `explosionParticleConfigId_TMP`, `fixVerticalNorm`, `health`, `name`, `price`, `radius`, `spawnDurationMillis`, `speed`, `unlockCrystals`, `xpOnKilling`, `builderType_id`, `buildupTexture_id`, `consumerType_id`, `demolitionImage_id`, `factoryType_id`, `generatorType_id`, `harvesterType_id`, `houseType_id`, `i18nDescription_id`, `i18nName_id`, `itemContainerType_id`, `shape3DId_id`, `spawnAudio_id`, `spawnShape3DId_id`, `thumbnail_id`, `weaponType_id`, `wreckageShape3D_id`)
+VALUES
+  (4, NULL, NULL, 0, 30, 0, 2, b'1', 0, NULL, 200, 0, 0, NULL, NULL, 0, NULL, 17, NULL, 27, 1, NULL, NULL, NULL, 49, 50, NULL, 10, 7, 2, 46, NULL, 15),
+  (1, 40, 1.0471975511965976, 2, 30, 0, 2, b'0', 0, NULL, 100, 0, 0, 10, NULL, 0, 1, 17, NULL, 27, NULL, NULL, NULL, NULL, 41, 42, NULL, 3, 7, 2, 45, NULL, 16),
+  (2, 5, 1.0471975511965976, 2, 20, 0, 2, b'0', 0, NULL, 100, 0, 0, 15, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, 1, NULL, 43, 44, NULL, 17, 7, 2, 64, NULL, 16),
+  (3, 5, 1.0471975511965976, 2, 15, 0, 2, b'0', 0, NULL, 100, 0, 0, 17, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, 45, 46, NULL, 11, 7, 2, 63, 1, 16),
+  (5, NULL, NULL, 0, 45, 0, 2, b'1', 0, NULL, 0, 0, 0, NULL, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, 47, 48, NULL, 11, 7, 2, 65, 2, 15);
+INSERT INTO `BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD` (`factory`, `baseItemType`) VALUES
+  (1, 1),
+  (1, 2),
+  (1, 3);
+INSERT INTO `BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD` (`builder`, `baseItemType`) VALUES
+  (1, 4);
+INSERT INTO `BASE_ITEM_DEMOLITION_STEP_EFFECT` (`id`, `baseItemType`, `orderColumn`) VALUES
+  (1, 5, 0),
+  (2, 5, 1),
+  (3, 5, 2),
+  (4, 5, 0),
+  (5, 5, 1),
+  (6, 5, 2);
+INSERT INTO `BASE_ITEM_DEMOLITION_STEP_EFFECT_PARTICLE` (`id`, `particleConfigId_TMP`, `positionX`, `positionY`, `positionZ`, `demolitionStepEffect`, `orderColumn`) VALUES
+  (1, 1, 0, 0, 3, 1, 0),
+  (2, 1, 2, 2, 2, 2, 0),
+  (3, 1, -2, -2, 2, 2, 1),
+  (4, 1, 3, 0, 1, 3, 0),
+  (5, 1, 0, 3, 1, 3, 1),
+  (6, 1, 3, 3, 1, 3, 2),
+  (7, 5, -2.1, 2, 3.4, 4, 0),
+  (8, 1, -2.1, 2, 3.4, 5, 0),
+  (9, 5, 3, 0.47, 3, 5, 1),
+  (10, 1, -2.1, 2, 3.4, 6, 0),
+  (11, 1, 3, 0.47, 3, 6, 1);
 
 # INSERT INTO `BOX_ITEM_TYPE` (`id`, `name`, `radius`, `ttl`, `i18nDescription_id`, `i18nName_id`, `shape3DId_id`)
 #  VALUES (1, NULL, 2, NULL, NULL, NULL, NULL);
@@ -180,52 +272,6 @@
 #   (16, 4.1887902047863905, 1, b'1', NULL, b'0', b'1', b'1', NULL, 2, 17, 2),
 #   (17, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 1, 18, 3),
 #   (18, 0, 1, b'1', NULL, b'0', b'1', b'1', NULL, 3, 26, 4);
-#
-# INSERT INTO `I18N_BUNDLE` (`id`) VALUES
-#   (1),  (2),  (3),  (4),  (5),  (6),  (7),  (8),  (9),  (10),  (11),  (12),  (13),  (14),  (15),  (16),  (17),  (18),  (19),  (20),  (21),  (22),  (23),  (24),  (25),  (26),  (27),
-#   (28),  (29),  (30),  (31),  (32),  (33),  (34),  (35),  (36),  (37),  (38),  (39),  (40);
-#
-# INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
-#   (1, 'Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.', 'DEFAULT'),
-#   (2, 'Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.', 'DEFAULT'),
-#   (3, 'Wähle deinen Startpunkt um deine Starteinheit zu platzieren', 'DEFAULT'),
-#   (4, 'Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte.', 'DEFAULT'),
-#   (5, 'Platzieren', 'DEFAULT'),
-#   (6, 'Folge mir zum Vorposten', 'DEFAULT'),
-#   (7, 'Fahre deine Einheit zum Vorposten', 'DEFAULT'),
-#   (8, 'Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich', 'DEFAULT'),
-#   (9, 'Fahre zu Vorposten', 'DEFAULT'),
-#   (10, 'Hilfe wir werden angegriffen', 'DEFAULT'),
-#   (11, 'Scrolle und such die gegenrische Basis', 'DEFAULT'),
-#   (12, 'Gratuliere, du hast die gegnerische Basis gefunden', 'DEFAULT'),
-#   (13, 'Finde Gegenerbasis', 'DEFAULT'),
-#   (14, 'Eine Box wurde gesichtet. Sammle sie auf', 'DEFAULT'),
-#   (15, 'Nimm die Box', 'DEFAULT'),
-#   (16, 'Platziere die Militäreinheiten vom Inventar', 'DEFAULT'),
-#   (17, 'Benutze Inventar', 'DEFAULT'),
-#   (18, 'Greiffe Razarion insudtries an und zerstöre die Abbaufahrzeuge', 'DEFAULT'),
-#   (19, 'Zerstöre die Abbaufahrzeuge', 'DEFAULT'),
-#   (20, 'Hilfe, Razar Industries greift uns an', 'DEFAULT'),
-#   (21, 'Baue dich neu auf und zerstöre Razar Industries.', 'DEFAULT'),
-#   (22, 'Platziere deinen Bulldozer und baue eine Basis auf um Razarion Industries zu besiegen.', 'DEFAULT'),
-#   (23, 'Baue eine Basis', 'DEFAULT'),
-#   (24, 'Baue eine Fabrik mit deinem Bulldozer', 'DEFAULT'),
-#   (25, 'Baue eine Fabrik', 'DEFAULT'),
-#   (26, 'Baue ein Harvester in deiner Fabrik', 'DEFAULT'),
-#   (27, 'Baue ein Harvester', 'DEFAULT'),
-#   (28, 'Sammle Razarion um eine Armee zu bauen', 'DEFAULT'),
-#   (29, 'Sammle Razarion', 'DEFAULT'),
-#   (30, 'Du brauchst viel Razarion um eine Armee zu bauen', 'DEFAULT'),
-#   (31, 'Baue ein Viper in deiner Fabrik', 'DEFAULT'),
-#   (32, 'Bauen', 'DEFAULT'),
-#   (33, 'Komm, greiffen wir an!', 'DEFAULT'),
-#   (34, 'Der Turm ist zu stark, wir brauchen eine grössere Armee', 'DEFAULT'),
-#   (35, 'Baue zwei Vipers in deiner Fabrik', 'DEFAULT'),
-#   (36, 'Bauen', 'DEFAULT'),
-#   (37, 'Nimm deine 3 Vipers und zerstöre den Turm', 'DEFAULT'),
-#   (38, 'Zerstöre Turm', 'DEFAULT'),
-#   (39, 'Vertreibe Razar Industries von diesem Planeten', 'DEFAULT'),
-#   (40, 'Kill Razar Industries', 'DEFAULT');
 #
 # INSERT INTO `QUEST_COMPARISON` (`id`, `addExisting`, `count`, `time`, `placeConfig_id`) VALUES
 #   (1, NULL, NULL, NULL, NULL),
