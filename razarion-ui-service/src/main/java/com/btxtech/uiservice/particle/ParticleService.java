@@ -71,7 +71,7 @@ public class ParticleService {
         ParticleEmitterSequenceConfig explosion = new ParticleEmitterSequenceConfig().setId(2).setInternalName("Explosion");
         List<AutonomousParticleEmitterConfig> autonomousParticleEmitterConfigs = new ArrayList<>();
         explosion.setAutonomous(autonomousParticleEmitterConfigs);
-        explosion.setAudioIds(Collections.singletonList(284041));
+        explosion.setAudioIds(Collections.singletonList(18));
         particleEmitterSequenceConfigs.put(explosion.getId(), explosion);
         // Splitter
         AutonomousParticleEmitterConfig splitter1 = new AutonomousParticleEmitterConfig();
@@ -99,7 +99,7 @@ public class ParticleService {
         //-------------------------------------------------------------------------
         // Detonation
         ParticleEmitterSequenceConfig detonation = new ParticleEmitterSequenceConfig().setId(3).setInternalName("Detonation");
-        detonation.setAudioIds(Arrays.asList(284042, 284043));
+        detonation.setAudioIds(Arrays.asList(19, 20));
         autonomousParticleEmitterConfigs = new ArrayList<>();
         detonation.setAutonomous(autonomousParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(detonation.getId(), detonation);
@@ -112,7 +112,7 @@ public class ParticleService {
         //-------------------------------------------------------------------------
         // Muzzle flash
         ParticleEmitterSequenceConfig muzzleFlash = new ParticleEmitterSequenceConfig().setId(4).setInternalName("Muzzle Flash");
-        muzzleFlash.setAudioIds(Arrays.asList(272523, 272524));
+        muzzleFlash.setAudioIds(Arrays.asList(10, 11));
         autonomousParticleEmitterConfigs = new ArrayList<>();
         muzzleFlash.setAutonomous(autonomousParticleEmitterConfigs);
         particleEmitterSequenceConfigs.put(muzzleFlash.getId(), muzzleFlash);
