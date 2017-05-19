@@ -1,3 +1,35 @@
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.opened', 1);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.closed', 2);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.quest.activated', 3);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.quest.passed', 4);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.level.up', 5);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.box.picked', 6);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.selection.cleared', 12);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.selection.own.multi', 13);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.selection.own.single', 14);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.selection.other', 15);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.command.sent', 16);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.base.lost', 17);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.terrain.land', 8);
+# INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.terrain.water', 9);
+# INSERT INTO razarion.PROPERTY (propertyKey, intValue) VALUES ('tip.corner.move.duration', 1500);
+# INSERT INTO razarion.PROPERTY (propertyKey, doubleValue) VALUES ('tip.corner.move.distance', 15);
+# INSERT INTO razarion.PROPERTY (propertyKey, doubleValue) VALUES ('tip.corner.length', 1);
+# INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.default.command.shape3d', 15);
+# INSERT INTO razarion.PROPERTY (propertyKey, colorRValue, colorGValue, colorBValue, colorAValue) VALUES ('tip.select.corner.color', 0, 1, 0, 1);
+# INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.select.shape3d', 12);
+# INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.outOfView.shape3d', 14);
+# INSERT INTO razarion.PROPERTY (propertyKey, colorRValue, colorGValue, colorBValue, colorAValue) VALUES ('tip.attack.command.corner.color', 1, 0, 0, 1);
+# INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.baseItemPlacer.shape3d', 12);
+# INSERT INTO razarion.PROPERTY (propertyKey, colorRValue, colorGValue, colorBValue, colorAValue) VALUES ('tip.baseItemPlacer.corner.color', 1, 1, 0, 1);
+# INSERT INTO razarion.PROPERTY (propertyKey, colorRValue, colorGValue, colorBValue, colorAValue) VALUES ('tip.grab.command.corner.color', 0, 0, 1, 1);
+# INSERT INTO razarion.PROPERTY (propertyKey, colorRValue, colorGValue, colorBValue, colorAValue) VALUES ('tip.move.command.corner.color', 0, 1, 0, 1);
+# INSERT INTO razarion.PROPERTY (propertyKey, colorRValue, colorGValue, colorBValue, colorAValue) VALUES ('tip.toBeFinalized.corner.color', 1, 1, 0, 1);
+# INSERT INTO razarion.PROPERTY (propertyKey, image_id) VALUES ('tip.west.leftMouseImage', 47);
+# INSERT INTO razarion.PROPERTY (propertyKey, image_id) VALUES ('tip.south.leftMouseImage', 48);
+# INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.direction.shape3d', 14);
+# INSERT INTO razarion.PROPERTY (propertyKey, image_id) VALUES ('tip.splash.scroll.image', 49);
+
 # INSERT INTO razarion.BASE_ITEM_TYPE (id, acceleration, angularVelocity, boxPickupRange, dropBoxPossibility, explosionParticleConfigId_TMP, fixVerticalNorm, health, name, price, radius, spawnDurationMillis, speed, unlockCrystals, xpOnKilling, builderType_id, buildupTexture_id, consumerType_id, demolitionImage_id, factoryType_id, generatorType_id, harvesterType_id, houseType_id, i18nDescription_id, i18nName_id, itemContainerType_id, shape3DId_id, spawnAudioId_id, spawnShape3DId_id, thumbnail_id, weaponType_id, wreckageShape3DId_id)
 # VALUES (1, 2.78, 0.5235987755982988, 2, 0, NULL, FALSE, 100, 'Builder', 0, 2, 1000, 17, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 # INSERT INTO razarion.BASE_ITEM_TYPE (id, acceleration, angularVelocity, boxPickupRange, dropBoxPossibility, explosionParticleConfigId_TMP, fixVerticalNorm, health, name, price, radius, spawnDurationMillis, speed, unlockCrystals, xpOnKilling, builderType_id, buildupTexture_id, consumerType_id, demolitionImage_id, factoryType_id, generatorType_id, harvesterType_id, houseType_id, i18nDescription_id, i18nName_id, itemContainerType_id, shape3DId_id, spawnAudioId_id, spawnShape3DId_id, thumbnail_id, weaponType_id, wreckageShape3DId_id)

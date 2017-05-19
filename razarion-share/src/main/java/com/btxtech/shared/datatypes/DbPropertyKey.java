@@ -37,7 +37,7 @@ public enum DbPropertyKey {
     TIP_WEST_LEFT_MOUSE_IMAGE("tip.west.leftMouseImage"),
     TIP_SOUTH_LEFT_MOUSE_IMAGE("tip.south.leftMouseImage"),
     TIP_DIRECTION_SHAPE3D("tip.direction.shape3d"),
-    TIP_SCROLL_IMAGE("tip.scroll.image");
+    TIP_SPLASH_SCROLL_IMAGE("tip.splash.scroll.image");
 
     private String key;
 
