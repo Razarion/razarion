@@ -160,6 +160,11 @@ public class ArquillianBaseTest {
 
     protected void cleanItemTypes() throws Exception {
         runInTransaction(em -> {
+            em.createNativeQuery("SELECT COUNT(*) FROM BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD").executeUpdate();
+            em.createNativeQuery("SELECT COUNT(*) FROM BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD").executeUpdate();
+            em.createNativeQuery("SELECT COUNT(*) FROM BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES").executeUpdate();
+            em.createQuery("DELETE FROM DemolitionStepEffectParticleEntity").executeUpdate();
+            em.createQuery("DELETE FROM DemolitionStepEffectEntity").executeUpdate();
             em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
             em.createQuery("DELETE FROM WeaponTypeEntity").executeUpdate();
             em.createQuery("DELETE FROM FactoryTypeEntity").executeUpdate();
@@ -172,6 +177,7 @@ public class ArquillianBaseTest {
             em.createQuery("DELETE FROM ResourceItemTypeEntity").executeUpdate();
             em.createQuery("DELETE FROM BoxItemTypeEntity ").executeUpdate();
             em.createQuery("DELETE FROM InventoryItemEntity").executeUpdate();
+            em.createQuery("DELETE FROM TurretTypeEntity").executeUpdate();
         });
     }
 
