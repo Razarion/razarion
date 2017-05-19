@@ -101,11 +101,11 @@ VALUES
   (2, 20, 1, 3, 1, 4, 40, 3, 6, 2);
 INSERT INTO `BASE_ITEM_TYPE` (`id`, `acceleration`, `angularVelocity`, `boxPickupRange`, `buildup`, `dropBoxPossibility`, `explosionParticleConfigId_TMP`, `fixVerticalNorm`, `health`, `name`, `price`, `radius`, `spawnDurationMillis`, `speed`, `unlockCrystals`, `xpOnKilling`, `builderType_id`, `buildupTexture_id`, `consumerType_id`, `demolitionImage_id`, `factoryType_id`, `generatorType_id`, `harvesterType_id`, `houseType_id`, `i18nDescription_id`, `i18nName_id`, `itemContainerType_id`, `shape3DId_id`, `spawnAudio_id`, `spawnShape3DId_id`, `thumbnail_id`, `weaponType_id`, `wreckageShape3D_id`)
 VALUES
-  (4, NULL, NULL, 0, 30, 0, 2, b'1', 0, NULL, 200, 0, 0, NULL, NULL, 0, NULL, 17, NULL, 27, 1, NULL, NULL, NULL, 49, 50, NULL, 8, 7, 2, 46, NULL, 15),
-  (1, 40, 1.0471975511965976, 2, 30, 0, 2, b'0', 0, NULL, 100, 0, 0, 10, NULL, 0, 1, 17, NULL, 27, NULL, NULL, NULL, NULL, 41, 42, NULL, 3, 7, 2, 45, NULL, 16),
-  (2, 5, 1.0471975511965976, 2, 20, 0, 2, b'0', 0, NULL, 100, 0, 0, 15, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, 1, NULL, 43, 44, NULL, 17, 7, 2, 64, NULL, 16),
-  (3, 5, 1.0471975511965976, 2, 15, 0, 2, b'0', 0, NULL, 100, 0, 0, 17, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, 45, 46, NULL, 11, 7, 2, 63, 1, 16),
-  (5, NULL, NULL, 0, 45, 0, 2, b'1', 0, NULL, 0, 0, 0, NULL, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, 47, 48, NULL, 10, 7, 2, 65, 2, 15);
+  (1, 40, 1.0471975511965976, 2, 30, 0, 2, b'0', 5, NULL, 100, 3, 3000, 10, NULL, 0, 1, 17, NULL, 27, NULL, NULL, NULL, NULL, 41, 42, NULL, 3, 7, 2, 45, NULL, 16),
+  (2, 5, 1.0471975511965976, 2, 20, 0, 2, b'0', 5, NULL, 100, 3, 3000, 15, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, 1, NULL, 43, 44, NULL, 17, 7, 2, 64, NULL, 16),
+  (3, 5, 1.0471975511965976, 2, 15, 0, 2, b'0', 5, NULL, 100, 2, 3000, 17, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, 45, 46, NULL, 11, 7, 2, 63, 1, 16),
+  (4, NULL, NULL, 0, 30, 0, 2, b'1', 10, NULL, 200, 6, 3000, NULL, NULL, 0, NULL, 17, NULL, 27, 1, NULL, NULL, NULL, 49, 50, NULL, 8, 7, 2, 46, NULL, 15),
+  (5, NULL, NULL, 0, 45, 0, 2, b'1', 10, NULL, 0, 4, 3000, NULL, NULL, 0, NULL, 17, NULL, 27, NULL, NULL, NULL, NULL, 47, 48, NULL, 10, 7, 2, 65, 2, 15);
 INSERT INTO `BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD` (`factory`, `baseItemType`) VALUES
   (1, 1),
   (1, 2),

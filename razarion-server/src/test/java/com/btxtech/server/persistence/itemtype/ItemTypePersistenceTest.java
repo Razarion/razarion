@@ -156,10 +156,10 @@ public class ItemTypePersistenceTest extends ArquillianBaseTest {
     }
 
     private void finalizeBuilder(BaseItemType builder, Integer... ableToBuild) {
-        builder.setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(45).setShape3DId(3);
+        builder.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(45).setShape3DId(3);
         builder.setI18nName(i18nHelper("Builder"));
         builder.setI18nDescription(i18nHelper("Builds buildings"));
-        builder.getPhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
+        builder.getPhysicalAreaConfig().setRadius(3).setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60));
         BuilderType builderType = new BuilderType().setProgress(1).setRange(10).setAnimationShape3dId(9).setAnimationOrigin(new Vertex(1.63196, 0, 3.04829));
         if (ableToBuild.length > 0) {
             builderType.setAbleToBuildIds(Arrays.asList(ableToBuild));
@@ -170,30 +170,30 @@ public class ItemTypePersistenceTest extends ArquillianBaseTest {
     }
 
     private void finalizeHarvester(BaseItemType harvester) {
-        harvester.setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(64).setShape3DId(17);
+        harvester.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(64).setShape3DId(17);
         harvester.setI18nName(i18nHelper("Harvester"));
         harvester.setI18nDescription(i18nHelper("Collects resources"));
-        harvester.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(15.0).setAngularVelocity(Math.toRadians(60));
+        harvester.getPhysicalAreaConfig().setRadius(3).setAcceleration(5.0).setSpeed(15.0).setAngularVelocity(Math.toRadians(60));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(3).setAnimationShape3dId(18).setAnimationOrigin(new Vertex(2.5, 0, 1.25)));
         harvester.setBoxPickupRange(2).setExplosionParticleConfigId(2).setBuildup(20);
         harvester.setPrice(100).setWreckageShape3DId(16);
     }
 
     private void finalizeAttacker(BaseItemType attacker) {
-        attacker.setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(63).setShape3DId(11);
+        attacker.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(63).setShape3DId(11);
         attacker.setI18nName(i18nHelper("Attacker"));
         attacker.setI18nDescription(i18nHelper("Attacks other units"));
-        attacker.getPhysicalAreaConfig().setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
+        attacker.getPhysicalAreaConfig().setRadius(2).setAcceleration(5.0).setSpeed(17.0).setAngularVelocity(Math.toRadians(60));
         attacker.setWeaponType(new WeaponType().setRange(10).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(17.0).setProjectileShape3DId(6).setMuzzleFlashParticleConfigId(4).setDetonationParticleConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(-0.25, 0, 2)).setMuzzlePosition(new Vertex(1.3, 0, 0)).setShape3dMaterialId("Turret-material")));
         attacker.setBoxPickupRange(2).setExplosionParticleConfigId(2).setBuildup(15);
         attacker.setPrice(100).setWreckageShape3DId(16);
     }
 
     private void finalizeTower(BaseItemType tower) {
-        tower.setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(65).setShape3DId(11);
+        tower.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(65).setShape3DId(11);
         tower.setI18nName(i18nHelper("Tower"));
         tower.setI18nDescription(i18nHelper("Defense tower"));
-        tower.getPhysicalAreaConfig().setFixVerticalNorm(true);
+        tower.getPhysicalAreaConfig().setRadius(4).setFixVerticalNorm(true);
         tower.setWeaponType(new WeaponType().setRange(20).setDamage(1).setReloadTime(3).setDetonationRadius(1).setProjectileSpeed(40.0).setProjectileShape3DId(6).setMuzzleFlashParticleConfigId(4).setDetonationParticleConfigId(3).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(120)).setTorrentCenter(new Vertex(0, 0, 0.98)).setMuzzlePosition(new Vertex(5.2, 0, 5.4)).setShape3dMaterialId("turret_001-material")));
         tower.setExplosionParticleConfigId(2).setWreckageShape3DId(15).setBuildup(45);
         List<DemolitionStepEffect> demolitionStepEffects = new ArrayList<>();
@@ -216,11 +216,11 @@ public class ItemTypePersistenceTest extends ArquillianBaseTest {
     }
 
     private void finalizeFactory(BaseItemType factory, Integer... ableToBuild) {
-        factory.setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(46).setShape3DId(10);
+        factory.setHealth(5).setSpawnDurationMillis(3000).setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(17).setDemolitionImageId(27).setThumbnail(46).setShape3DId(10);
         factory.setI18nName(i18nHelper("Factory"));
         factory.setI18nDescription(i18nHelper("Creates units"));
         factory.setExplosionParticleConfigId(2).setBuildup(30);
-        factory.getPhysicalAreaConfig().setFixVerticalNorm(true);
+        factory.getPhysicalAreaConfig().setRadius(6).setFixVerticalNorm(true);
         FactoryType factoryType = new FactoryType().setProgress(1.0).setAbleToBuildIds(Arrays.asList(ableToBuild));
         if (ableToBuild.length > 0) {
             factoryType.setAbleToBuildIds(Arrays.asList(ableToBuild));
