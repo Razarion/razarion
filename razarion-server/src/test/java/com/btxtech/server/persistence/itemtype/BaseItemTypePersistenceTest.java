@@ -24,7 +24,7 @@ import java.util.List;
  * Created by Beat
  * 19.05.2017.
  */
-public class ItemTypePersistenceTest extends ArquillianBaseTest {
+public class BaseItemTypePersistenceTest extends ArquillianBaseTest {
     @Inject
     private ItemTypePersistence itemTypePersistence;
 
