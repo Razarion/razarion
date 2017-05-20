@@ -34,11 +34,13 @@ public class InventoryPersistenceTest extends ArquillianBaseTest {
         expectedInventoryItem.setI18nName(i18nHelper("aiudhoais paisuhdpaisd")).setName("adesasd").setGold(999).setBaseItemTypeCount(3).setBaseItemTypeId(baseItemTypeId).setBaseItemTypeFreeRange(1234).setImageId(1);
         inventoryPersistence.updateInventoryItem(expectedInventoryItem);
         List<InventoryItem> actualInventoryItems = inventoryPersistence.readInventoryItems();
+        Assert.assertEquals(1, actualInventoryItems.size());
         ReflectionAssert.assertReflectionEquals(expectedInventoryItem, actualInventoryItems.get(0));
 
         expectedInventoryItem.setI18nName(i18nHelper("ddd www")).setName("rrr").setGold(1).setBaseItemTypeCount(0).setBaseItemTypeId(null).setBaseItemTypeFreeRange(0).setImageId(23);
         inventoryPersistence.updateInventoryItem(expectedInventoryItem);
         actualInventoryItems = inventoryPersistence.readInventoryItems();
+        Assert.assertEquals(1, actualInventoryItems.size());
         ReflectionAssert.assertReflectionEquals(expectedInventoryItem, actualInventoryItems.get(0));
         Assert.assertEquals(1, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM BaseItemTypeEntity r").getSingleResult()).intValue());
 

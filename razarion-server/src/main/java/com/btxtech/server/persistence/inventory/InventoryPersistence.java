@@ -65,7 +65,10 @@ public class InventoryPersistence {
     }
 
     @Transactional
-    public InventoryItemEntity readInventoryItemEntity(int id) {
+    public InventoryItemEntity readInventoryItemEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
         InventoryItemEntity inventoryItemEntity = entityManager.find(InventoryItemEntity.class, id);
         if (inventoryItemEntity == null) {
             throw new IllegalArgumentException("No InventoryItemEntity for id: " + id);

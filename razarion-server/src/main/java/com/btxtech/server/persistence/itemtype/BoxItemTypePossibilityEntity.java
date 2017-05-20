@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
+import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 
 import javax.persistence.Entity;
@@ -33,6 +34,14 @@ public class BoxItemTypePossibilityEntity {
             boxItemTypePossibility.setInventoryItemId(inventoryItem.getId());
         }
         return boxItemTypePossibility;
+    }
+
+    public void fromBoxItemTypePossibility(BoxItemTypePossibility boxItemTypePossibility, InventoryPersistence inventoryPersistence) {
+        possibility = boxItemTypePossibility.getPossibility();
+        if (inventoryItem != null) {
+            boxItemTypePossibility.setInventoryItemId(inventoryItem.getId());
+        }
+        inventoryItem = inventoryPersistence.readInventoryItemEntity(boxItemTypePossibility.getInventoryItemId());
     }
 
     @Override

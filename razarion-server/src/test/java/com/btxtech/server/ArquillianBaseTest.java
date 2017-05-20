@@ -204,7 +204,7 @@ public class ArquillianBaseTest {
 
     private int createBoxItemTypeEntity(BoxItemType boxItemType) throws Exception {
         BoxItemTypeEntity boxItemTypeEntity = new BoxItemTypeEntity();
-        boxItemTypeEntity.fromBoxItemType(boxItemType);
+        boxItemTypeEntity.fromBoxItemType(boxItemType, null);
         persistInTransaction(boxItemTypeEntity);
         return boxItemTypeEntity.getId();
     }

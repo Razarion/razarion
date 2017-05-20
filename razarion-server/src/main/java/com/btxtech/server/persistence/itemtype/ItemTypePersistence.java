@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -36,6 +37,8 @@ public class ItemTypePersistence {
     private ImagePersistence imagePersistence;
     @Inject
     private AudioPersistence audioPersistence;
+    @Inject
+    private InventoryPersistence inventoryPersistence;
 
     @Transactional
     @SecurityCheck
@@ -171,8 +174,9 @@ public class ItemTypePersistence {
     @SecurityCheck
     public void updateBoxItemType(BoxItemType boxItemType) {
         BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, boxItemType.getId());
-        boxItemTypeEntity.fromBoxItemType(boxItemType);
+        boxItemTypeEntity.fromBoxItemType(boxItemType, inventoryPersistence);
         boxItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(boxItemType.getShape3DId()));
+        boxItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(boxItemType.getThumbnail()));
         entityManager.merge(boxItemTypeEntity);
     }
 }
