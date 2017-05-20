@@ -71,7 +71,7 @@ INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.terrain.wa
 INSERT INTO razarion.PROPERTY (propertyKey, intValue) VALUES ('tip.corner.move.duration', 1500);
 INSERT INTO razarion.PROPERTY (propertyKey, doubleValue) VALUES ('tip.corner.move.distance', 15);
 INSERT INTO razarion.PROPERTY (propertyKey, doubleValue) VALUES ('tip.corner.length', 1);
-INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.default.command.shape3d', 15);
+INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.default.command.shape3d', 13);
 INSERT INTO razarion.PROPERTY (propertyKey, colorRValue, colorGValue, colorBValue, colorAValue) VALUES ('tip.select.corner.color', 0, 1, 0, 1);
 INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.select.shape3d', 12);
 INSERT INTO razarion.PROPERTY (propertyKey, shape3DId_id) VALUES ('tip.outOfView.shape3d', 14);
