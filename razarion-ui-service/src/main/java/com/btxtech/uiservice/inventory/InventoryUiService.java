@@ -64,7 +64,7 @@ public class InventoryUiService {
     public void useItem(InventoryItem inventoryItem) {
         if (inventoryItem.hasBaseItemTypeId()) {
             try {
-                BaseItemType baseItemType = itemTypeService.getBaseItemType(inventoryItem.getBaseItemType());
+                BaseItemType baseItemType = itemTypeService.getBaseItemType(inventoryItem.getBaseItemTypeId());
                 if (baseItemUiService.isMyLevelLimitation4ItemTypeExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
                     modalDialogManager.showUseInventoryItemLimitExceeded(baseItemType);
                 } else if (baseItemUiService.isMyHouseSpaceExceeded(baseItemType, inventoryItem.getBaseItemTypeCount())) {
@@ -73,7 +73,7 @@ public class InventoryUiService {
                     BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig();
                     baseItemPlacerConfig.setBaseItemTypeId(baseItemType.getId());
                     baseItemPlacerConfig.setBaseItemCount(inventoryItem.getBaseItemTypeCount());
-                    baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getItemFreeRange());
+                    baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getBaseItemTypeFreeRange());
                     baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
                         gameEngineControl.spawnSyncBaseItem(baseItemType, decimalPositions);
                         userUiService.getUserContext().removeInventoryItem(inventoryItem.getId());

@@ -171,7 +171,7 @@ public class ScenarioService implements QuestListener {
         RESOURCE_LITTLE_ITEM_TYPE = resourceLittle;
 
         InventoryItem inventoryItem = new InventoryItem();
-        inventoryItem.setId(++itemId).setName("Inventory Item Name").setBaseItemType(ATTACKER_ITEM_TYPE.getId()).setBaseItemTypeCount(1);
+        inventoryItem.setId(++itemId).setName("Inventory Item Name").setBaseItemTypeId(ATTACKER_ITEM_TYPE.getId()).setBaseItemTypeCount(1);
         INVENTORY_ITEM = inventoryItem;
 
         BoxItemType box = new BoxItemType();

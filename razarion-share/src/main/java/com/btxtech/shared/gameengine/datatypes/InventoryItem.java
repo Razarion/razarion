@@ -7,20 +7,20 @@ import com.btxtech.shared.datatypes.I18nString;
  * 25.10.2016.
  */
 public class InventoryItem {
-    private Integer id;
+    private int id;
     private I18nString i18nName;
     private String name;
     private Integer gold;
-    private Integer baseItemType;
+    private Integer baseItemTypeId;
     private int baseItemTypeCount;
-    private double itemFreeRange;
+    private double baseItemTypeFreeRange;
     private Integer imageId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public InventoryItem setId(Integer id) {
+    public InventoryItem setId(int id) {
         this.id = id;
         return this;
     }
@@ -29,8 +29,9 @@ public class InventoryItem {
         return i18nName;
     }
 
-    public void setI18nName(I18nString i18nName) {
+    public InventoryItem setI18nName(I18nString i18nName) {
         this.i18nName = i18nName;
+        return this;
     }
 
     public String getName() {
@@ -51,12 +52,12 @@ public class InventoryItem {
         return this;
     }
 
-    public Integer getBaseItemType() {
-        return baseItemType;
+    public Integer getBaseItemTypeId() {
+        return baseItemTypeId;
     }
 
-    public InventoryItem setBaseItemType(Integer baseItemType) {
-        this.baseItemType = baseItemType;
+    public InventoryItem setBaseItemTypeId(Integer baseItemTypeId) {
+        this.baseItemTypeId = baseItemTypeId;
         return this;
     }
 
@@ -69,12 +70,12 @@ public class InventoryItem {
         return this;
     }
 
-    public double getItemFreeRange() {
-        return itemFreeRange;
+    public double getBaseItemTypeFreeRange() {
+        return baseItemTypeFreeRange;
     }
 
-    public InventoryItem setItemFreeRange(double itemFreeRange) {
-        this.itemFreeRange = itemFreeRange;
+    public InventoryItem setBaseItemTypeFreeRange(double baseItemTypeFreeRange) {
+        this.baseItemTypeFreeRange = baseItemTypeFreeRange;
         return this;
     }
 
@@ -88,7 +89,7 @@ public class InventoryItem {
     }
 
     public boolean hasBaseItemTypeId() {
-        return baseItemType != null;
+        return baseItemTypeId != null;
     }
 
     @Override
@@ -97,9 +98,9 @@ public class InventoryItem {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", gold=" + gold +
-                ", baseItemType=" + baseItemType +
+                ", baseItemTypeId=" + baseItemTypeId +
                 ", baseItemTypeCount=" + baseItemTypeCount +
-                ", itemFreeRange=" + itemFreeRange +
+                ", baseItemTypeFreeRange=" + baseItemTypeFreeRange +
                 ", imageId=" + imageId +
                 '}';
     }

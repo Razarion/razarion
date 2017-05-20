@@ -46,7 +46,7 @@ public class InventoryItemEntity {
     public InventoryItem toInventoryItem() {
         InventoryItem inventoryItem = new InventoryItem().setId(id).setName(name);
         if (baseItemType != null) {
-            inventoryItem.setBaseItemType(baseItemType.getId()).setBaseItemTypeCount(baseItemTypeCount).setItemFreeRange(itemFreeRange);
+            inventoryItem.setBaseItemTypeId(baseItemType.getId()).setBaseItemTypeCount(baseItemTypeCount).setBaseItemTypeFreeRange(itemFreeRange);
         }
         if (i18nName != null) {
             inventoryItem.setI18nName(i18nName.toI18nString());
@@ -60,14 +60,14 @@ public class InventoryItemEntity {
 
     public void fromInventoryItem(InventoryItem inventoryItem) {
         name = inventoryItem.getName();
-        // TODO i18nName
+        i18nName = I18nBundleEntity.fromI18nStringSafe(inventoryItem.getI18nName(), i18nName);
         baseItemTypeCount = inventoryItem.getBaseItemTypeCount();
-        itemFreeRange = inventoryItem.getItemFreeRange();
+        itemFreeRange = inventoryItem.getBaseItemTypeFreeRange();
         gold = inventoryItem.getGold();
     }
 
-    public BaseItemTypeEntity getBaseItemType() {
-        return baseItemType;
+    public void setBaseItemType(BaseItemTypeEntity baseItemType) {
+        this.baseItemType = baseItemType;
     }
 
     public void setImage(ImageLibraryEntity image) {

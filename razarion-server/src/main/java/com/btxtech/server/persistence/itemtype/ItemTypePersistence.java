@@ -57,7 +57,10 @@ public class ItemTypePersistence {
     }
 
     @Transactional
-    public BaseItemTypeEntity readBaseItemTypeEntity(int id) {
+    public BaseItemTypeEntity readBaseItemTypeEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
         BaseItemTypeEntity baseItemTypeEntity = entityManager.find(BaseItemTypeEntity.class, id);
         if (baseItemTypeEntity == null) {
             throw new IllegalArgumentException("No BaseItemTypeEntity for id: " + id);

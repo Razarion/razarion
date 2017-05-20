@@ -127,7 +127,7 @@ public class TipTaskFactory {
     private void createSpawnInventoryItem(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(tipTaskInstance.select(OpenInventoryTipTask.class).get());
         tipTaskContainer.add(createUseInventoryItemTipTask(gameTipConfig.getInventoryItemId()));
-        tipTaskContainer.add(createSpawnPlacerTipTask(inventoryService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemType(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.add(createSpawnPlacerTipTask(inventoryService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemTypeId(), gameTipConfig.getTerrainPositionHint()));
     }
 
     private void createScrollTipTask(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
