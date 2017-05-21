@@ -1,6 +1,7 @@
 INSERT INTO `I18N_BUNDLE` (`id`) VALUES
   (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23), (24), (25), (26), (27),
-  (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45), (46), (47), (48), (49), (50), (51), (52), (53);
+  (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45), (46), (47), (48), (49), (50), (51), (52), (53),
+  (54), (55);
 
 INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
   (1, 'Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.', 'DEFAULT'),
@@ -55,7 +56,9 @@ INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
   (50, 'Factory', 'DE'),
   (51, 'Box', 'DE'),
   (52, 'Contains useful items', 'DE'),
-  (53, '3 Attacker pack');
+  (53, '3 Attacker pack', 'DE'),
+  (54, 'Razarion spot', 'DE'),
+  (55, 'Harvest Razarion from here', 'DE');
 
 INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.opened', 1);
 INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.closed', 2);
@@ -142,8 +145,8 @@ INSERT INTO `BOX_ITEM_TYPE` (`id`, `fixVerticalNorm`, `name`, `radius`, `ttl`, `
 INSERT INTO `BOX_ITEM_TYPE_POSSIBILITY` (`id`, `possibility`, `inventoryItem_id`, `boxItemTypePossibilities_id`) VALUES
   (1, 1.0, 1, 1);
 
-INSERT INTO `RESOURCE_ITEM_TYPE` (`id`, `amount`, `name`, `radius`, `i18nDescription_id`, `i18nName_id`, `shape3DId_id`)
-VALUES (1, 1000, NULL, 2, NULL, NULL, NULL);
+INSERT INTO `RESOURCE_ITEM_TYPE` (`id`, `amount`, `fixVerticalNorm`, `name`, `radius`, `i18nDescription_id`, `i18nName_id`, `shape3DId_id`, `thumbnail_id`) VALUES
+  (1, 100000, b'1', NULL, 3, 55, 54, 4, NULL);
 
 INSERT INTO LEVEL (id, number, xp2LevelUp) VALUES (1, 1, 2);
 INSERT INTO LEVEL_LIMITATION (LevelEntity_id, itemTypeLimitation, baseItemTypeEntityId) VALUES (1, 1, 1);
