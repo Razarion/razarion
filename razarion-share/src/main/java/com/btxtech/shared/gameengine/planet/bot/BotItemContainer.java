@@ -370,7 +370,7 @@ public class BotItemContainer {
     }
 
     private void handleKillOtherBotCommand(BotKillOtherBotCommandConfig botKillOtherBotCommandConfig, PlayerBaseFull base) {
-        PlayerBaseFull target = botService.getBotRunner(botKillOtherBotCommandConfig.getTargetBotAuxiliaryId()).getBase();
+        PlayerBaseFull target = botService.getBotRunner4AuxiliaryId(botKillOtherBotCommandConfig.getTargetBotAuxiliaryId()).getBase();
         handleKillBaseCommand(botKillOtherBotCommandConfig, base, target);
     }
 
