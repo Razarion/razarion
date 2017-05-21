@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.itemtype;
 
 import com.btxtech.server.persistence.ColladaEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 
@@ -35,6 +36,10 @@ public class ResourceItemTypeEntity {
     private I18nBundleEntity i18nName;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity i18nDescription;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ImageLibraryEntity thumbnail;
+    private boolean fixVerticalNorm;
 
     public Integer getId() {
         return id;
@@ -42,7 +47,7 @@ public class ResourceItemTypeEntity {
 
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
-        resourceItemType.setRadius(radius).setAmount(amount).setId(id).setName(name);
+        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setId(id).setName(name);
         if (shape3DId != null) {
             resourceItemType.setShape3DId(shape3DId.getId());
         }
@@ -52,6 +57,9 @@ public class ResourceItemTypeEntity {
         if (i18nDescription != null) {
             resourceItemType.setI18nDescription(i18nDescription.toI18nString());
         }
+        if (thumbnail != null) {
+            resourceItemType.setThumbnail(thumbnail.getId());
+        }
         return resourceItemType;
     }
 
@@ -59,11 +67,17 @@ public class ResourceItemTypeEntity {
         name = resourceItemType.getName();
         radius = resourceItemType.getRadius();
         amount = resourceItemType.getAmount();
-        // TODO i18nName i18nDescription
+        i18nName = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nName(), i18nName);
+        i18nDescription = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nDescription(), i18nDescription);
+        fixVerticalNorm = resourceItemType.isFixVerticalNorm();
     }
 
     public void setShape3DId(ColladaEntity shape3DId) {
         this.shape3DId = shape3DId;
+    }
+
+    public void setThumbnail(ImageLibraryEntity thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     @Override

@@ -101,7 +101,10 @@ public class ItemTypePersistence {
     }
 
     @Transactional
-    public ResourceItemTypeEntity readResourceItemTypeEntity(int id) {
+    public ResourceItemTypeEntity readResourceItemTypeEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
         ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, id);
         if (resourceItemTypeEntity == null) {
             throw new IllegalArgumentException("No ResourceItemTypeEntity for id: " + id);
@@ -127,6 +130,7 @@ public class ItemTypePersistence {
         ResourceItemTypeEntity resourceItemTypeEntity = entityManager.find(ResourceItemTypeEntity.class, resourceItemType.getId());
         resourceItemTypeEntity.fromResourceItemType(resourceItemType);
         resourceItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(resourceItemType.getShape3DId()));
+        resourceItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(resourceItemType.getThumbnail()));
         entityManager.merge(resourceItemTypeEntity);
     }
 
@@ -145,7 +149,10 @@ public class ItemTypePersistence {
     }
 
     @Transactional
-    public BoxItemTypeEntity readBoxItemTypeEntity(int id) {
+    public BoxItemTypeEntity readBoxItemTypeEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
         BoxItemTypeEntity boxItemTypeEntity = entityManager.find(BoxItemTypeEntity.class, id);
         if (boxItemTypeEntity == null) {
             throw new IllegalArgumentException("No BoxItemTypeEntity for id: " + id);

@@ -184,21 +184,11 @@ public class SceneEditorPersistence {
             if (sceneConfig.getGameTipConfig() != null) {
                 GameTipConfigEntity gameTipConfigEntity = new GameTipConfigEntity();
                 gameTipConfigEntity.setTip(sceneConfig.getGameTipConfig().getTip());
-                if (sceneConfig.getGameTipConfig().getActor() != null) {
-                    gameTipConfigEntity.setActor(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getActor()));
-                }
-                if (sceneConfig.getGameTipConfig().getToCreatedItemTypeId() != null) {
-                    gameTipConfigEntity.setToCreatedItemType(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getToCreatedItemTypeId()));
-                }
-                if (sceneConfig.getGameTipConfig().getResourceItemTypeId() != null) {
-                    gameTipConfigEntity.setResourceItemTypeEntity(itemTypePersistence.readResourceItemTypeEntity(sceneConfig.getGameTipConfig().getResourceItemTypeId()));
-                }
-                if (sceneConfig.getGameTipConfig().getBoxItemTypeId() != null) {
-                    gameTipConfigEntity.setBoxItemTypeEntity(itemTypePersistence.readBoxItemTypeEntity(sceneConfig.getGameTipConfig().getBoxItemTypeId()));
-                }
-                if (sceneConfig.getGameTipConfig().getInventoryItemId() != null) {
-                    gameTipConfigEntity.setInventoryItemEntity(inventoryPersistence.readInventoryItemEntity(sceneConfig.getGameTipConfig().getInventoryItemId()));
-                }
+                gameTipConfigEntity.setActor(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getActor()));
+                gameTipConfigEntity.setToCreatedItemType(itemTypePersistence.readBaseItemTypeEntity(sceneConfig.getGameTipConfig().getToCreatedItemTypeId()));
+                gameTipConfigEntity.setResourceItemTypeEntity(itemTypePersistence.readResourceItemTypeEntity(sceneConfig.getGameTipConfig().getResourceItemTypeId()));
+                gameTipConfigEntity.setBoxItemTypeEntity(itemTypePersistence.readBoxItemTypeEntity(sceneConfig.getGameTipConfig().getBoxItemTypeId()));
+                gameTipConfigEntity.setInventoryItemEntity(inventoryPersistence.readInventoryItemEntity(sceneConfig.getGameTipConfig().getInventoryItemId()));
                 gameTipConfigEntity.setTerrainPositionHint(sceneConfig.getGameTipConfig().getTerrainPositionHint());
                 if (sceneConfig.getGameTipConfig().getPlaceConfig() != null) {
                     PlaceConfigEntity placeConfigEntity = new PlaceConfigEntity();

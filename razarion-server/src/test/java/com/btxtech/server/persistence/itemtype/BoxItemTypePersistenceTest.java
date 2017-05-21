@@ -52,11 +52,13 @@ public class BoxItemTypePersistenceTest extends ArquillianBaseTest {
         ReflectionAssert.assertReflectionEquals(boxExpected, actualBoxes.get(0));
 
         itemTypePersistence.deleteBoxItemType(boxExpected.getId());
+        Assert.assertTrue(itemTypePersistence.readBoxItemTypes().isEmpty());
 
         // Verify leftovers
         Assert.assertEquals(2, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM InventoryItemEntity r").getSingleResult()).intValue());
         Assert.assertEquals(2, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ColladaEntity r").getSingleResult()).intValue());
         Assert.assertEquals(2, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ImageLibraryEntity r").getSingleResult()).intValue());
+        Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM BoxItemTypeEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM I18N_BUNDLE r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM I18N_BUNDLE_STRING").getSingleResult()).intValue());
     }
