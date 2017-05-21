@@ -1,6 +1,6 @@
 INSERT INTO `I18N_BUNDLE` (`id`) VALUES
   (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23), (24), (25), (26), (27),
-  (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45), (46), (47), (48), (49), (50);
+  (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45), (46), (47), (48), (49), (50), (51), (52), (53);
 
 INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
   (1, 'Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.', 'DEFAULT'),
@@ -52,7 +52,10 @@ INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
   (47, 'Defense tower', 'DE'),
   (48, 'Tower', 'DE'),
   (49, 'Creates units', 'DE'),
-  (50, 'Factory', 'DE');
+  (50, 'Factory', 'DE'),
+  (51, 'Box', 'DE'),
+  (52, 'Contains useful items', 'DE'),
+  (53, '3 Attacker pack');
 
 INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.opened', 1);
 INSERT INTO razarion.PROPERTY (propertyKey,  audio_id) VALUES ('audio.dialog.closed', 2);
@@ -132,14 +135,15 @@ INSERT INTO `BASE_ITEM_DEMOLITION_STEP_EFFECT_PARTICLE` (`id`, `particleConfigId
   (10, 1, -2.1, 2, 3.4, 6, 0),
   (11, 1, 3, 0.47, 3, 6, 1);
 
-INSERT INTO `BOX_ITEM_TYPE` (`id`, `name`, `radius`, `ttl`, `i18nDescription_id`, `i18nName_id`, `shape3DId_id`)
- VALUES (1, NULL, 2, NULL, NULL, NULL, NULL);
+INSERT INTO `INVENTORY_ITEM` (`id`, `baseItemTypeCount`, `gold`, `itemFreeRange`, `name`, `baseItemType_id`, `i18nName_id`, `image_id`) VALUES
+  (1, 3, NULL, 0, NULL, 3, NULL, 36);
+INSERT INTO `BOX_ITEM_TYPE` (`id`, `fixVerticalNorm`, `name`, `radius`, `ttl`, `i18nDescription_id`, `i18nName_id`, `shape3DId_id`, `thumbnail_id`) VALUES
+  (1, b'1', NULL, 2, NULL, 52, 51, 7, NULL);
+INSERT INTO `BOX_ITEM_TYPE_POSSIBILITY` (`id`, `possibility`, `inventoryItem_id`, `boxItemTypePossibilities_id`) VALUES
+  (1, 1.0, 1, 1);
 
 INSERT INTO `RESOURCE_ITEM_TYPE` (`id`, `amount`, `name`, `radius`, `i18nDescription_id`, `i18nName_id`, `shape3DId_id`)
 VALUES (1, 1000, NULL, 2, NULL, NULL, NULL);
-
-INSERT INTO `INVENTORY_ITEM` (`id`, `baseItemTypeCount`, `gold`, `itemFreeRange`, `name`, `baseItemType_id`, `i18nName_id`, `image_id`) VALUES
-	(1, 0, NULL, 0, NULL, NULL, NULL, NULL);
 
 INSERT INTO LEVEL (id, number, xp2LevelUp) VALUES (1, 1, 2);
 INSERT INTO LEVEL_LIMITATION (LevelEntity_id, itemTypeLimitation, baseItemTypeEntityId) VALUES (1, 1, 1);
@@ -416,7 +420,7 @@ INSERT INTO `SCENE_BOT_MOVE_COMMAND` (`id`, `botAuxiliaryIdId`, `targetPositionX
   (4, 44, 48, 110, 1, 18);
 
 INSERT INTO `SCENE_BOX_ITEM_POSITION` (`id`, `x`, `y`, `rotationZ`, `boxItemType_id`, `sceneId`) VALUES
-  (1, 180, 120, 0, 1, 13);
+  (1, 180, 116, 0, 1, 13);
 
 INSERT INTO `SCENE_RESOURCE_ITEM_POSITION` (`id`, `x`, `y`, `rotationZ`, `resourceItemType_id`, `sceneId`) VALUES
   (1, 212, 144, 0, 1, 1),
