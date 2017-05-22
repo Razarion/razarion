@@ -80,8 +80,8 @@ INSERT INTO `I18N_BUNDLE_STRING` (`bundle`, `i18nString`, `locale`) VALUES
   (37, 'Nimm deine 3 Vipers und zerstöre den Turm', 'DE'),
   (38, 'Destroy tower', 'EN'),
   (38, 'Zerstöre Turm', 'DE'),
-  (39, 'Banish Razar Industries from this planet', 'EN'),
-  (39, 'Vertreibe Razar Industries von diesem Planeten', 'DE'),
+  (39, 'Banish Razar Industries from this planet. Destroy a factory.', 'EN'),
+  (39, 'Vertreibe Razar Industries von diesem Planeten. Zerstöre eine Fabrik.', 'DE'),
   (40, 'Kill Razar Industries', 'EN'),
   (40, 'Zerstöre Razar Industries', 'DE'),
   (41, 'Builds buildings', 'EN'),
@@ -347,7 +347,7 @@ INSERT INTO `QUEST_COMPARISON` (`id`, `addExisting`, `count`, `time`, `placeConf
   (10, NULL, NULL, NULL, NULL),
   (11, NULL, NULL, NULL, NULL),
   (12, NULL, NULL, NULL, NULL),
-  (13, NULL, 1, NULL, NULL);
+  (13, NULL, NULL, NULL, NULL);
 
 INSERT INTO `QUEST_COMPARISON_BASE_ITEM` (`ComparisonConfigEntity_id`, `typeCount`, `baseItemTypeEntityId`) VALUES
   (1, 1, 1),
@@ -358,7 +358,8 @@ INSERT INTO `QUEST_COMPARISON_BASE_ITEM` (`ComparisonConfigEntity_id`, `typeCoun
   (8, 1, 2),
   (10, 1, 3),
   (11, 2, 3),
-  (12, 1, 5);
+  (12, 1, 5),
+  (13, 1, 4);
 
 INSERT INTO `QUEST_CONDITION` (`id`, `conditionTrigger`, `comparisonConfig_id`) VALUES
   (1, 'SYNC_ITEM_CREATED', 1),
@@ -373,7 +374,7 @@ INSERT INTO `QUEST_CONDITION` (`id`, `conditionTrigger`, `comparisonConfig_id`) 
   (10, 'SYNC_ITEM_CREATED', 10),
   (11, 'SYNC_ITEM_CREATED', 11),
   (12, 'SYNC_ITEM_KILLED', 12),
-  (13, 'BASE_KILLED', 13);
+  (13, 'SYNC_ITEM_KILLED', 13);
 
 INSERT INTO `QUEST` (`id`, `cristal`, `hidePassedDialog`, `money`, `xp`, `conditionConfigEntity_id`, `description_id`, `passedMessage_id`, `title_id`) VALUES
 	(1, 0, b'0', 0, 1, 1, 3, 4, 5),
