@@ -32,7 +32,7 @@ public class JsonProviderEmulator {
     private static final String FILE_NAME_MULTI_PLAYER = "GameUiControlConfigMultiplayer.json";
     private static final String VERTEX_CONTAINER_BUFFERS_FILE_NAME = "VertexContainerBuffers.json";
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
-    private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH;
+    private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH + "/" + RestUrl.WARM;
     private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.SHAPE_3D_PROVIDER + "/" + RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     private static final String FACEBOOK_USER_LOGIN_INFO_STRING_TUTORIAL = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": null}";
     private static final String FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": 100003634094139}";

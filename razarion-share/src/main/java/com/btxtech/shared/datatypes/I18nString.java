@@ -45,7 +45,7 @@ public class I18nString {
         if (value != null) {
             return value;
         } else {
-            return localizedStrings.get(DEFAULT);
+            return defaultWithFallback();
         }
     }
 
@@ -57,5 +57,13 @@ public class I18nString {
     // Only used for JAX-RS JSON
     public void setLocalizedStrings(Map<String, String> localizedStrings) {
         this.localizedStrings = localizedStrings;
+    }
+
+    private String defaultWithFallback() {
+        String s = localizedStrings.get(DEFAULT);
+        if (s == null) {
+            s = localizedStrings.get(EN);
+        }
+        return s;
     }
 }

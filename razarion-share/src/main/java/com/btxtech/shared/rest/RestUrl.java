@@ -16,8 +16,9 @@ public class RestUrl {
     public static final String AUDIO_SERVICE_PATH = "audio";
     public static final String SCENE_EDITOR_PATH = "sceneeditor";
     public static final String GAME_UI_CONTROL_PATH = G_ZIPPED + "/" + "gameuicontrol";
+    public static final String COLD = "cold";
+    public static final String WARM = "warm";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
-    public static final String WARM_GAME_CONFIG_PROVIDER = "warmgameconfigprovider";
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
     public static final String SHAPE_3D_PROVIDER = G_ZIPPED + "/" + "shape3dprovider";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";

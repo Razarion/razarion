@@ -1,6 +1,7 @@
 package com.btxtech.client.dialog.levelup;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.uiservice.i18n.I18nHelper;
 
 /**
  * Created by Beat
@@ -12,8 +13,8 @@ public class ItemTypeLimitation {
     private String name;
 
     public ItemTypeLimitation(BaseItemType baseItemType, int count) {
-        imageId =  baseItemType.getThumbnail();
-        name = baseItemType.getName();
+        imageId = baseItemType.getThumbnail();
+        name = I18nHelper.getLocalizedString(baseItemType.getI18nName());
         this.count = count;
     }
 

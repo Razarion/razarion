@@ -16,11 +16,13 @@ import javax.ws.rs.core.MediaType;
 @Path(RestUrl.GAME_UI_CONTROL_PATH)
 public interface GameUiControlProvider {
 
-    @POST
+    @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path(RestUrl.COLD)
     ColdGameUiControlConfig loadGameUiControlConfig();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
+    @Path(RestUrl.WARM)
     WarmGameUiControlConfig loadWarmGameUiControlConfig();
 }
