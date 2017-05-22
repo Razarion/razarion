@@ -45,7 +45,7 @@ public class Client {
                 GWT.log("UncaughtExceptionHandler", e);
             }
         });
-        RestClient.setApplicationRoot(RestUrl.APPLICATION_PATH);
+        RestClient.setApplicationRoot('/' + RestUrl.APPLICATION_PATH); // If the html-page is in the faces servlet filter path, the charset is overridden. -> problems with special characters
     }
 
     @PostConstruct
