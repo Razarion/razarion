@@ -53,6 +53,10 @@ public class ServerGameEngineConfigEntity {
             inverseJoinColumns = @JoinColumn(name = "botConfigId"))
     private List<BotConfigEntity> botConfigs;
 
+    public Integer getId() {
+        return id;
+    }
+
     public PlanetConfig getPlanetConfig() {
         if (planetEntity != null) {
             return planetEntity.toPlanetConfig();

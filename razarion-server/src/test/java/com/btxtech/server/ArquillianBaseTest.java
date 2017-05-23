@@ -10,6 +10,7 @@ import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.shared.datatypes.Color;
@@ -77,6 +78,8 @@ public class ArquillianBaseTest {
     public static int GAME_UI_CONTROL_CONFIG_2_ID;
     // Inventory
     public static int INVENTORY_ITEM_1_ID;
+    // ServerGameEngineConfigEntity
+    public static int SERVER_GAME_ENGINE_CONFIG_ID_1;
     @PersistenceContext
     private EntityManager em;
     @Inject
@@ -324,6 +327,11 @@ public class ArquillianBaseTest {
         em.persist(gameUiControlConfigEntity2);
         GAME_UI_CONTROL_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
 
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
+        serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
+        em.persist(serverGameEngineConfigEntity1);
+        SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
+
         utx.commit();
     }
 
@@ -341,6 +349,7 @@ public class ArquillianBaseTest {
         em.createQuery("DELETE FROM WaterConfigEntity ").executeUpdate();
         em.createQuery("DELETE FROM GroundConfigEntity").executeUpdate();
         em.createQuery("DELETE FROM GameUiControlConfigEntity").executeUpdate();
+        em.createQuery("DELETE FROM ServerGameEngineConfigEntity").executeUpdate();
         em.createQuery("DELETE FROM PlanetEntity").executeUpdate();
         utx.commit();
         cleanLevels();
@@ -350,8 +359,16 @@ public class ArquillianBaseTest {
         Assert.assertEquals(countExpected, ((Number) getEntityManager().createQuery("SELECT COUNT(e) FROM " + entityClass.getName() + " e").getSingleResult()).intValue());
     }
 
+    protected void assertEmptyCount(Class entityClass) {
+        assertCount(0, entityClass);
+    }
+
     protected void assertCountNative(int countExpected, String tableName) {
         Assert.assertEquals(countExpected, ((Number) em.createNativeQuery("SELECT COUNT(*) FROM " + tableName).getSingleResult()).intValue());
+    }
+
+    protected void assertEmptyCountNative(String tableName) {
+        assertCountNative(0, tableName);
     }
 
     protected void cleanTable(Class entityClass) throws Exception {

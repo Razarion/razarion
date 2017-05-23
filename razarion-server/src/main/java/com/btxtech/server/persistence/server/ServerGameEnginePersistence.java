@@ -97,9 +97,7 @@ public class ServerGameEnginePersistence {
         CriteriaQuery<ServerGameEngineConfigEntity> userSelect = userQuery.select(from);
         List<ServerGameEngineConfigEntity> serverGameEngineConfigEntities = entityManager.createQuery(userSelect).getResultList();
         if (serverGameEngineConfigEntities.isEmpty()) {
-            ServerGameEngineConfigEntity serverGameEngineConfigEntity = new ServerGameEngineConfigEntity();
-            entityManager.persist(serverGameEngineConfigEntity);
-            return serverGameEngineConfigEntity;
+            throw new IllegalStateException("No ServerGameEngineConfigEntity found");
         }
         if (serverGameEngineConfigEntities.size() > 1) {
             throw new IllegalStateException("More then one ServerGameEngineConfigEntity found: " + serverGameEngineConfigEntities.size());
