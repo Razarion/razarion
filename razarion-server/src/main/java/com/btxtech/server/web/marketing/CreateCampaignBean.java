@@ -179,6 +179,7 @@ public class CreateCampaignBean implements Serializable {
                 Interest interest = new Interest();
                 interest.setName(selected.getAdInterest().getName());
                 interest.setFbId(selected.getAdInterest().getId());
+                interest.setAudienceSize(selected.getAdInterest().getAudienceSize());
                 interests.add(interest);
             }
             creationInput.setInterests(interests);

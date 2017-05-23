@@ -12,6 +12,7 @@ import javax.persistence.Embeddable;
 public class Interest {
     private String fbId; // Can not be called id: join does not work. See MarketingService
     private String name;
+    private Long audienceSize;
 
     public Interest() {
     }
@@ -19,6 +20,7 @@ public class Interest {
     public Interest(Interest interest) {
         fbId = interest.getFbId();
         name = interest.getName();
+        audienceSize = interest.getAudienceSize();
     }
 
     public String getFbId() {
@@ -39,8 +41,20 @@ public class Interest {
         return this;
     }
 
+    public Long getAudienceSize() {
+        return audienceSize;
+    }
+
+    public void setAudienceSize(Long audienceSize) {
+        this.audienceSize = audienceSize;
+    }
+
     public AdInterestJson generateAdInterestJson() {
-        return new AdInterestJson().setId(fbId).setName(getName());
+        AdInterestJson adInterestJson = new AdInterestJson().setId(fbId).setName(getName());
+        if(audienceSize != null) {
+            adInterestJson.setAudienceSize(audienceSize.intValue());
+        }
+        return adInterestJson;
     }
 
     @Override

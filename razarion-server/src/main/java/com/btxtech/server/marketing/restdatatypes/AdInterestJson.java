@@ -7,6 +7,7 @@ package com.btxtech.server.marketing.restdatatypes;
 public class AdInterestJson {
     private String id;
     private String name;
+    private Integer audienceSize;
 
     public String getId() {
         return id;
@@ -23,6 +24,15 @@ public class AdInterestJson {
 
     public AdInterestJson setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public Integer getAudienceSize() {
+        return audienceSize;
+    }
+
+    public AdInterestJson setAudienceSize(Integer audienceSize) {
+        this.audienceSize = audienceSize;
         return this;
     }
 }
