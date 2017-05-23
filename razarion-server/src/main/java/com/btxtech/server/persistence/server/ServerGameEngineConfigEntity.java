@@ -45,7 +45,7 @@ public class ServerGameEngineConfigEntity {
     @OrderColumn(name = "orderColumn")
     private List<DecimalPosition> startRegion;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "serverGameEngineId", nullable = false)
     private List<ServerResourceRegionConfigEntity> resourceRegionConfigs;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinTable(name = "SERVER_GAME_ENGINE_BOT_CONFIG",
