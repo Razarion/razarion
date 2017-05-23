@@ -235,9 +235,6 @@ INSERT INTO PLANET_LIMITATION (PlanetEntity_id, itemTypeLimitation, baseItemType
 INSERT INTO PLANET_LIMITATION (PlanetEntity_id, itemTypeLimitation, baseItemTypeEntityId) VALUES (2, 1, 2);
 INSERT INTO PLANET_LIMITATION (PlanetEntity_id, itemTypeLimitation, baseItemTypeEntityId) VALUES (2, 1, 4);
 
-
-INSERT INTO SERVER_GAME_ENGINE_CONFIG (id, planetEntity_id) VALUES (1, 2);
-
 INSERT INTO WATER_CONFIG (	`id`,	`bmDepth`,	`bmScale`,	`groundLevel`,	`ambientA`,	`ambientB`,	`ambientG`,	`ambientR`,	`diffuseA`,	`diffuseB`,	`diffuseG`,	`diffuseR`,
 	`specularHardness`,	`specularIntensity`,	`xRotation`,	`yRotation`,	`waterLevel`,	`waterTransparency`,	`bmId_id`)
 	 VALUES ('5', '2', '0.02', '-2', '1', '0.38', '0.38', '0.38', '1', '1', '1', '1', '30',  '0.75', '-0.575959', '0', '-0.7', '0.5', '34');
@@ -274,7 +271,10 @@ INSERT INTO `PLACE_CONFIG` (`id`, `x`, `y`, `radius`) VALUES
 	(26, 145, 260, NULL),
 	(27, 108, 254, NULL),
 	(28, 190, 242, NULL),
-	(29, 190, 242, NULL);
+	(29, 190, 242, NULL),
+  (30, NULL, NULL, NULL),
+  (31, NULL, NULL, NULL),
+  (32, NULL, NULL, NULL);
 
 INSERT INTO `PLACE_CONFIG_POSITION_POLYGON` (`OWNER_ID`, `x`, `y`, `orderColumn`) VALUES
 	(19, 175, 103, 0),
@@ -300,19 +300,33 @@ INSERT INTO `PLACE_CONFIG_POSITION_POLYGON` (`OWNER_ID`, `x`, `y`, `orderColumn`
 	(25, 212, 162, 0),
 	(25, 263, 162, 1),
 	(25, 263, 249, 2),
-	(25, 212, 249, 3);
+	(25, 212, 249, 3),
+  (30, 150, 80, 0),
+  (30, 300, 80, 1),
+  (30, 300, 230, 2),
+  (30, 150, 230, 3),
+  (31, 150, 80, 0),
+  (31, 300, 80, 1),
+  (31, 300, 230, 2),
+  (31, 150, 230, 3),
+  (32, 160, 140, 0),
+  (32, 240, 140, 1),
+  (32, 240, 230, 2),
+  (32, 160, 230, 3);
 
 INSERT INTO `BOT_CONFIG` (`id`, `actionDelay`, `auxiliaryId`, `maxActiveMs`, `maxInactiveMs`, `minActiveMs`, `minInactiveMs`, `name`, `npc`, `realm_id`) VALUES
   (1, 3000, 11, NULL, NULL, NULL, NULL, 'Roger', b'1', NULL),
   (2, 3000, 33, NULL, NULL, NULL, NULL, 'Razar Industries', b'0', NULL),
   (3, 3000, 44, NULL, NULL, NULL, NULL, 'Kenny', b'1', NULL),
-  (4, 3000, 22, NULL, NULL, NULL, NULL, 'Roger', b'1', NULL);
+  (4, 3000, 22, NULL, NULL, NULL, NULL, 'Roger', b'1', NULL),
+  (5, 3000, NULL, NULL, NULL, NULL, NULL, 'Kenny', b'0', NULL);
 
 INSERT INTO `BOT_CONFIG_ENRAGEMENT_STATE_CONFIG` (`id`, `enrageUpKills`, `name`, `botConfig`) VALUES
 	(1, NULL, 'Normal', 1),
 	(2, NULL, 'Normal', 2),
 	(3, NULL, 'Normal', 3),
-	(4, NULL, 'Normal', 4);
+	(4, NULL, 'Normal', 4),
+  (5, NULL, 'Normal', 5);
 
 INSERT INTO `BOT_CONFIG_BOT_ITEM` (`id`, `angle`, `count`, `createDirectly`, `idleTtl`, `moveRealmIfIdle`, `noRebuild`, `noSpawn`, `rePopTime`, `baseItemTypeEntity_id`, `place_id`, `botEnragementStateConfig`) VALUES
   (1, 1.9198621771937625, 1, b'1', NULL, b'0', b'1', b'1', NULL, 2, 1, 1),
@@ -332,7 +346,9 @@ INSERT INTO `BOT_CONFIG_BOT_ITEM` (`id`, `angle`, `count`, `createDirectly`, `id
   (15, 4.537856055185257, 1, b'1', NULL, b'0', b'1', b'1', NULL, 3, 16, 2),
   (16, 4.1887902047863905, 1, b'1', NULL, b'0', b'1', b'1', NULL, 2, 17, 2),
   (17, 0, 1, b'1', NULL, b'0', b'1', b'0', NULL, 1, 18, 3),
-  (18, 0, 1, b'1', NULL, b'0', b'1', b'1', NULL, 3, 26, 4);
+  (18, 0, 1, b'1', NULL, b'0', b'1', b'1', NULL, 3, 26, 4),
+  (19, 0, 3, b'1', NULL, b'0', b'0', b'0', NULL, 4, 30, 5),
+  (20, 0, 6, b'0', NULL, b'0', b'0', b'0', NULL, 3, 31, 5);
 
 INSERT INTO `QUEST_COMPARISON` (`id`, `addExisting`, `count`, `time`, `placeConfig_id`) VALUES
   (1, NULL, NULL, NULL, NULL),
@@ -487,6 +503,22 @@ INSERT INTO `SCENE_RESOURCE_ITEM_POSITION` (`id`, `x`, `y`, `rotationZ`, `resour
   (3, 96, 254, 0, 1, 1),
   (4, 108, 254, 1.3962634015954636, 1, 1),
   (5, 120, 252, 2.792526803190927, 1, 1);
+
+
+INSERT INTO `SERVER_GAME_ENGINE_CONFIG` (`id`, `planetEntity_id`) VALUES
+  (1, 2);
+
+INSERT INTO `SERVER_GAME_ENGINE_BOT_CONFIG` (`serverGameEngineId`, `botConfigId`) VALUES
+  (1, 5);
+
+INSERT INTO `SERVER_GAME_ENGINE_START_REGION` (`serverGameEngineId`, `x`, `y`, `orderColumn`) VALUES
+  (1, 100, 100, 0),
+  (1, 300, 100, 1),
+  (1, 300, 300, 2),
+  (1, 100, 300, 3);
+
+INSERT INTO `SERVER_RESOURCE_REGION_CONFIG` (`id`, `count`, `minDistanceToItems`, `region_id`, `resourceItemType_id`, `serverGameEngineId`) VALUES
+  (1, 10, 2, 32, 1, 1);
 
 ############################
 # --ALTER TABLE TRACKER_PAGE DROP id;--
