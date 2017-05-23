@@ -20,6 +20,7 @@ import javax.persistence.Table;
 @Table(name = "PROPERTY")
 public class DbPropertiesEntity {
     @Id
+    @Column(length = 190) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String propertyKey;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn

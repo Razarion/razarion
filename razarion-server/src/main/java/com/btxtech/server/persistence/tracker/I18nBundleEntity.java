@@ -29,7 +29,7 @@ public class I18nBundleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ElementCollection(fetch = FetchType.LAZY)
-    @MapKeyColumn(name = "locale")
+    @MapKeyColumn(length = 180, name = "locale") // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     @Column(name = "i18nString", length = 10000)
     @CollectionTable(name = "I18N_BUNDLE_STRING", joinColumns = @JoinColumn(name = "bundle"))
     private Map<String, String> localizedStrings;

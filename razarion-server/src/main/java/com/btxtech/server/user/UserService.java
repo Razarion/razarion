@@ -71,11 +71,6 @@ public class UserService {
         if (userEntity == null) {
             userEntity = createUser(facebookUserId);
         }
-        //TODO remove if all do have a HumanPlayerId
-        if (userEntity.getHumanPlayerIdEntity() == null) {
-            fixHumanPlayerIdEntity(userEntity);
-        }
-        //TODO ends
         UserContext userContext = userEntity.createUser();
         HumanPlayerId alreadyLoggerIn = null;
         if (sessionHolder.getPlayerSession().getUserContext() != null) {
@@ -100,11 +95,6 @@ public class UserService {
         userContext.setLevelId(levelPersistence.getStarterLevel().getId());
         userContext.setName("Unregistered User");
         return userContext;
-    }
-
-    private void fixHumanPlayerIdEntity(UserEntity userEntity) {
-        userEntity.setHumanPlayerIdEntity(createHumanPlayerId());
-        entityManager.merge(userEntity);
     }
 
     private UserContext loginUserContext(UserContext userContext) {
