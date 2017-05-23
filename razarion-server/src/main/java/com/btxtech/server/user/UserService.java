@@ -1,12 +1,18 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.persistence.GameUiControlConfigPersistence;
+import com.btxtech.server.persistence.history.HistoryPersistence;
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.system.ExceptionHandler;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -39,6 +45,12 @@ public class UserService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private LevelPersistence levelPersistence;
+    @Inject
+    private Instance<GameUiControlConfigPersistence> gameUiControlConfigPersistence;
+    @Inject
+    private Instance<HistoryPersistence> historyPersistence;
+    @Inject
+    private SessionService sessionService;
     private Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
@@ -85,7 +97,7 @@ public class UserService {
     private UserContext createUnregisteredUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        userContext.setLevelId(levelPersistence.getStarterLevelId());
+        userContext.setLevelId(levelPersistence.getStarterLevel().getId());
         userContext.setName("Unregistered User");
         return userContext;
     }
@@ -105,7 +117,7 @@ public class UserService {
     private UserEntity createUser(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId());
-        userEntity.setLevelId(levelPersistence.getStarterLevelId());
+        userEntity.setLevel(levelPersistence.getStarterLevel());
         entityManager.persist(userEntity);
         return userEntity;
     }
@@ -136,6 +148,17 @@ public class UserService {
         return humanPlayerIdEntity;
     }
 
+    public HumanPlayerIdEntity getHumanPlayerId(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        HumanPlayerIdEntity humanPlayerIdEntity = entityManager.find(HumanPlayerIdEntity.class, id);
+        if (humanPlayerIdEntity == null) {
+            throw new IllegalArgumentException("No HumanPlayerIdEntity for id: " + id);
+        }
+        return humanPlayerIdEntity;
+    }
+
     public void logoutUserUser(String sessionId) {
         loggedInUserContext.remove(sessionId);
     }
@@ -148,9 +171,20 @@ public class UserService {
         return userContext;
     }
 
-    public void onLevelUpdate(String sessionId, int levelId) {
-        UserContext userContext = getLoggedInUserContext(sessionId);
-        userContext.setLevelId(levelId);
+    @Transactional
+    public void onLevelUpdate(String sessionId, int newLevelId) {
+        LevelEntity newLevel = levelPersistence.getLevel4Id(newLevelId);
+        UserContext userContext = sessionService.getSession(sessionId).getUserContext();
+        historyPersistence.get().onLevelUp(userContext.getHumanPlayerId(), newLevel);
+        // Temporary: Only save the level if on multiplayer planet. Main reason, tutorial state und units are not saved.
+        if (gameUiControlConfigPersistence.get().load4Level(newLevelId).getGameEngineMode() == GameEngineMode.SLAVE) {
+            userContext.setLevelId(newLevelId);
+            if (userContext.getHumanPlayerId().getUserId() != null) {
+                UserEntity userEntity = getUserEntity(userContext.getHumanPlayerId().getUserId());
+                userEntity.setLevel(newLevel);
+                entityManager.merge(userEntity);
+            }
+        }
     }
 
     public UserContext getLoggedInUserContext(String sessionId) {
@@ -159,5 +193,13 @@ public class UserService {
             throw new IllegalArgumentException("No userContext for sessionId: " + sessionId);
         }
         return userContext;
+    }
+
+    private UserEntity getUserEntity(int userId) {
+        UserEntity userEntity = entityManager.find(UserEntity.class, userId);
+        if (userEntity == null) {
+            throw new IllegalArgumentException("No UserEntity for userId: " + userId);
+        }
+        return userEntity;
     }
 }

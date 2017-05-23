@@ -77,21 +77,25 @@ public class LevelPersistence {
     }
 
     @Transactional
-    public int getStarterLevelId() {
+    public LevelEntity getStarterLevel() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
         Root<LevelEntity> from = userQuery.from(LevelEntity.class);
         CriteriaQuery<LevelEntity> userSelect = userQuery.select(from);
         userQuery.orderBy(criteriaBuilder.asc(from.get(LevelEntity_.number)));
-        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult().getId();
+        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
+    }
+
+    public LevelEntity getLevel4Id(int levelId) {
+        LevelEntity levelEntity = entityManager.find(LevelEntity.class, levelId);
+        if (levelEntity == null) {
+            throw new IllegalArgumentException("No level for id: " + levelId);
+        }
+        return levelEntity;
     }
 
     @Transactional
     public int getLevelNumber4Id(int levelId) {
-        LevelEntity levelEntity =  entityManager.find(LevelEntity.class, levelId);
-        if (levelEntity == null) {
-            throw new IllegalArgumentException("No level for id: " + levelId);
-        }
-        return levelEntity.getNumber();
+        return getLevel4Id(levelId).getNumber();
     }
 }

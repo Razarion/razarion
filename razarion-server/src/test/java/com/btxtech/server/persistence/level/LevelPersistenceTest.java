@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import org.junit.Assert;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class LevelPersistenceTest extends ArquillianBaseTest {
     @Test
     public void testStarterLevelId() throws Exception {
         setupLevels();
-        Assert.assertEquals(LEVEL_1_ID, levelPersistence.getStarterLevelId());
+        Assert.assertEquals(LEVEL_1_ID, (int)levelPersistence.getStarterLevel().getId());
         cleanLevels();
     }
 

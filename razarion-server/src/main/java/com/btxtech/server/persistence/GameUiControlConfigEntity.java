@@ -90,6 +90,14 @@ public class GameUiControlConfigEntity {
         this.minimalLevel = minimalLevel;
     }
 
+    public GameEngineMode getGameEngineMode() {
+        return gameEngineMode;
+    }
+
+    public void setGameEngineMode(GameEngineMode gameEngineMode) {
+        this.gameEngineMode = gameEngineMode;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

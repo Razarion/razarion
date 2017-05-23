@@ -1,15 +1,18 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.FacebookUserLoginInfo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.Date;
@@ -28,9 +31,10 @@ public class UserEntity {
     private String facebookUserId;
     private Date registerDate;
     private boolean admin;
-    private int levelId;
     @OneToOne
     private HumanPlayerIdEntity humanPlayerIdEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    LevelEntity level;
 
     public Integer getId() {
         return id;
@@ -44,15 +48,15 @@ public class UserEntity {
 
     public UserContext createUser() {
         HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
-        return new UserContext().setName("Registered User").setHumanPlayerId(humanPlayerId).setLevelId(levelId).setAdmin(admin);
+        return new UserContext().setName("Registered User").setHumanPlayerId(humanPlayerId).setLevelId(level.getId()).setAdmin(admin);
     }
 
-    public int getLevelId() {
-        return levelId;
+    public LevelEntity getLevel() {
+        return level;
     }
 
-    public void setLevelId(int levelId) {
-        this.levelId = levelId;
+    public void setLevel(LevelEntity level) {
+        this.level = level;
     }
 
     public HumanPlayerIdEntity getHumanPlayerIdEntity() {

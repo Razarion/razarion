@@ -18,6 +18,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -35,6 +36,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
@@ -160,9 +162,9 @@ public class ArquillianBaseTest {
 
     protected void cleanItemTypes() throws Exception {
         runInTransaction(em -> {
-            em.createNativeQuery("SELECT COUNT(*) FROM BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD").executeUpdate();
-            em.createNativeQuery("SELECT COUNT(*) FROM BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD").executeUpdate();
-            em.createNativeQuery("SELECT COUNT(*) FROM BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES").executeUpdate();
+            em.createNativeQuery("DELETE FROM BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD").executeUpdate();
+            em.createNativeQuery("DELETE FROM BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD").executeUpdate();
+            em.createNativeQuery("DELETE FROM BASE_ITEM_WEAPON_TYPE_DISALLOWED_ITEM_TYPES").executeUpdate();
             em.createQuery("DELETE FROM DemolitionStepEffectParticleEntity").executeUpdate();
             em.createQuery("DELETE FROM DemolitionStepEffectEntity").executeUpdate();
             em.createQuery("DELETE FROM BaseItemTypeEntity").executeUpdate();
@@ -306,17 +308,19 @@ public class ArquillianBaseTest {
 
         PlanetEntity planetEntity2 = new PlanetEntity();
         em.persist(planetEntity2);
-        PLANET_2_ID = planetEntity1.getId();
+        PLANET_2_ID = planetEntity2.getId();
 
         GameUiControlConfigEntity gameUiControlConfigEntity1 = new GameUiControlConfigEntity();
         gameUiControlConfigEntity1.setPlanetEntity(planetEntity1);
         gameUiControlConfigEntity1.setMinimalLevel(em.find(LevelEntity.class, LEVEL_1_ID));
+        gameUiControlConfigEntity1.setGameEngineMode(GameEngineMode.MASTER);
         em.persist(gameUiControlConfigEntity1);
         GAME_UI_CONTROL_CONFIG_1_ID = gameUiControlConfigEntity1.getId();
 
         GameUiControlConfigEntity gameUiControlConfigEntity2 = new GameUiControlConfigEntity();
         gameUiControlConfigEntity2.setPlanetEntity(planetEntity2);
         gameUiControlConfigEntity2.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
+        gameUiControlConfigEntity2.setGameEngineMode(GameEngineMode.SLAVE);
         em.persist(gameUiControlConfigEntity2);
         GAME_UI_CONTROL_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
 
@@ -340,6 +344,22 @@ public class ArquillianBaseTest {
         em.createQuery("DELETE FROM PlanetEntity").executeUpdate();
         utx.commit();
         cleanLevels();
+    }
+
+    protected void assertCount(int countExpected, Class entityClass) {
+        Assert.assertEquals(countExpected, ((Number) getEntityManager().createQuery("SELECT COUNT(e) FROM " + entityClass.getName() + " e").getSingleResult()).intValue());
+    }
+
+    protected void assertCountNative(int countExpected, String tableName) {
+        Assert.assertEquals(countExpected, ((Number) em.createNativeQuery("SELECT COUNT(*) FROM " + tableName).getSingleResult()).intValue());
+    }
+
+    protected void cleanTable(Class entityClass) throws Exception {
+        runInTransaction(em -> em.createQuery("DELETE FROM " + entityClass.getName()).executeUpdate());
+    }
+
+    protected void clearTableNative(String tableName) throws Exception {
+        runInTransaction(em -> em.createNativeQuery("DELETE FROM " + tableName).executeUpdate());
     }
 
 }

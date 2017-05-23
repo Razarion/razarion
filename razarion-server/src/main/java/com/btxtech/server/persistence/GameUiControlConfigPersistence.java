@@ -71,7 +71,7 @@ public class GameUiControlConfigPersistence {
         return warmGameUiControlConfig;
     }
 
-    private GameUiControlConfigEntity load4Level(int levelId) {
+    public GameUiControlConfigEntity load4Level(int levelId) {
         int levelNumber = levelPersistence.getLevelNumber4Id(levelId);
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
@@ -79,7 +79,7 @@ public class GameUiControlConfigPersistence {
         Root<GameUiControlConfigEntity> root = query.from(GameUiControlConfigEntity.class);
         query.where(criteriaBuilder.lessThanOrEqualTo(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number), levelNumber));
         CriteriaQuery<GameUiControlConfigEntity> userSelect = query.select(root);
-        query.orderBy(criteriaBuilder.asc(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number)));
+        query.orderBy(criteriaBuilder.desc(root.join(GameUiControlConfigEntity_.minimalLevel).get(LevelEntity_.number)));
         return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
     }
 
