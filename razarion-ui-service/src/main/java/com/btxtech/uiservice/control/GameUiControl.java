@@ -264,7 +264,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(getPlanetConfig().getStartBaseItemTypeId(), 1);
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setInternalName("Planet 1 Spawn").setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(0)));
+        sceneConfigs.add(new SceneConfig().setInternalName("Planet 1 Spawn").setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(0).setHidePassedDialog(true)));
 
         return sceneConfigs;
     }
