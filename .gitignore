@@ -6,7 +6,6 @@ target/
 razarion-ui-service/razarion-ui-service.iml
 razarion-dev-tools/razarion-dev-tools.iml
 razarion-server/razarion-server.iml
-razarion-server/src/main/webapp/WEB-INF/classes/
 razarion-server/src/main/webapp/razarion_client
 razarion-server/src/main/webapp/razarion_client_worker
 razarion-server/src/main/webapp/WEB-INF/deploy
