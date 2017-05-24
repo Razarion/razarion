@@ -16,7 +16,6 @@ import javax.inject.Named;
 import javax.servlet.http.Part;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +47,10 @@ public class CreateCampaignBean implements Serializable {
         }
     }
 
+    public CreationInput getCreationInput() {
+        return creationInput;
+    }
+
     public String getTitle() {
         return creationInput.getTitle();
     }
@@ -62,30 +65,6 @@ public class CreateCampaignBean implements Serializable {
 
     public void setBody(String body) {
         creationInput.setBody(body);
-    }
-
-    public boolean isLifeTime() {
-        return creationInput.isLifeTime();
-    }
-
-    public void setLifeTime(boolean lifeTime) {
-        creationInput.setLifeTime(lifeTime);
-    }
-
-    public Date getScheduleStartTime() {
-        return creationInput.getScheduleStartTime();
-    }
-
-    public void setScheduleStartTime(Date scheduleStartTime) {
-        creationInput.setScheduleStartTime(scheduleStartTime);
-    }
-
-    public Date getScheduleEndTime() {
-        return creationInput.getScheduleEndTime();
-    }
-
-    public void setScheduleEndTime(Date scheduleEndTime) {
-        creationInput.setScheduleEndTime(scheduleEndTime);
     }
 
     public List<DetailedAdInterest> getSelectedAdInterest() {
@@ -153,6 +132,15 @@ public class CreateCampaignBean implements Serializable {
             }
             if (creationInput.getScheduleEndTime() == null) {
                 campaignCreationError = "If budget type is lifetime, Schedule End Time must be set";
+                return null;
+            }
+            if (creationInput.getLifeTimeBudget() == null) {
+                campaignCreationError = "If budget type is lifetime, Lifetime budget must be set";
+                return null;
+            }
+        } else {
+            if (creationInput.getDailyBudget() == null) {
+                campaignCreationError = "If budget type is not lifetime, Daily budget must be set";
                 return null;
             }
         }

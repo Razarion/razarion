@@ -52,6 +52,8 @@ public class CurrentAdEntity {
     private List<Interest> interests;
     private String urlTagParam;
     private boolean lifeTime;
+    private Double dailyBudget;
+    private Double lifeTimeBudget;
 
     public State getState() {
         return state;
@@ -127,6 +129,14 @@ public class CurrentAdEntity {
         return lifeTime;
     }
 
+    public Double getDailyBudget() {
+        return dailyBudget;
+    }
+
+    public Double getLifeTimeBudget() {
+        return lifeTimeBudget;
+    }
+
     public void setCreationInput(CreationInput creationInput) {
         title = creationInput.getTitle();
         body = creationInput.getBody();
@@ -141,6 +151,8 @@ public class CurrentAdEntity {
         scheduleTimeStart = creationInput.getScheduleStartTime();
         scheduleTimeEnd = creationInput.getScheduleEndTime();
         lifeTime = creationInput.isLifeTime();
+        dailyBudget = creationInput.getDailyBudget();
+        lifeTimeBudget = creationInput.getLifeTimeBudget();
     }
 
     @Override

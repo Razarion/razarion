@@ -4,6 +4,7 @@ import com.btxtech.server.marketing.Interest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.DoubleFunction;
 
 /**
  * Created by Beat
@@ -18,68 +19,63 @@ public class CreationInput {
     private Date scheduleStartTime;
     private Date scheduleEndTime;
     private boolean lifeTime;
+    private Double dailyBudget;
+    private Double lifeTimeBudget;
 
     public String getTitle() {
         return title;
     }
 
-    public CreationInput setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
-        return this;
     }
 
     public String getBody() {
         return body;
     }
 
-    public CreationInput setBody(String body) {
+    public void setBody(String body) {
         this.body = body;
-        return this;
     }
 
     public FbAdImage getFbAdImage() {
         return fbAdImage;
     }
 
-    public CreationInput setFbAdImage(FbAdImage fbAdImage) {
+    public void setFbAdImage(FbAdImage fbAdImage) {
         this.fbAdImage = fbAdImage;
-        return this;
     }
 
     public List<Interest> getInterests() {
         return interests;
     }
 
-    public CreationInput setInterests(List<Interest> interests) {
+    public void setInterests(List<Interest> interests) {
         this.interests = interests;
-        return this;
     }
 
     public String getUrlTagParam() {
         return urlTagParam;
     }
 
-    public CreationInput setUrlTagParam(String urlTagParam) {
+    public void setUrlTagParam(String urlTagParam) {
         this.urlTagParam = urlTagParam;
-        return this;
     }
 
     public Date getScheduleStartTime() {
         return scheduleStartTime;
     }
 
-    public CreationInput setScheduleStartTime(Date scheduleStartTime) {
+    public void setScheduleStartTime(Date scheduleStartTime) {
         this.scheduleStartTime = scheduleStartTime;
-        return this;
     }
 
     public Date getScheduleEndTime() {
         return scheduleEndTime;
     }
 
-    public CreationInput setScheduleEndTime(Date scheduleEndTime) {
+    public void setScheduleEndTime(Date scheduleEndTime) {
         this.scheduleEndTime = scheduleEndTime;
-        return this;
     }
 
     public boolean isLifeTime() {
@@ -88,5 +84,21 @@ public class CreationInput {
 
     public void setLifeTime(boolean lifeTime) {
         this.lifeTime = lifeTime;
+    }
+
+    public Double getDailyBudget() {
+        return dailyBudget;
+    }
+
+    public void setDailyBudget(Double dailyBudget) {
+        this.dailyBudget = dailyBudget;
+    }
+
+    public Double getLifeTimeBudget() {
+        return lifeTimeBudget;
+    }
+
+    public void setLifeTimeBudget(Double lifeTimeBudget) {
+        this.lifeTimeBudget = lifeTimeBudget;
     }
 }

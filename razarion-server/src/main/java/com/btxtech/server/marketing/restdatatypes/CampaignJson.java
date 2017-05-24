@@ -19,6 +19,11 @@ public class CampaignJson {
     private String imageUrl;
     private String imageUrl128;
     private String urlTagParam;
+    private Date scheduleTimeStart;
+    private Date scheduleTimeEnd;
+    private boolean lifeTime;
+    private Double dailyBudget;
+    private Double lifeTimeBudget;
     private List<AdInterestJson> adInterests;
     private List<ClicksPerHourJson> clicksPerHour;
 
@@ -136,6 +141,51 @@ public class CampaignJson {
 
     public CampaignJson setClicksPerHour(List<ClicksPerHourJson> clicksPerHour) {
         this.clicksPerHour = clicksPerHour;
+        return this;
+    }
+
+    public Date getScheduleTimeStart() {
+        return scheduleTimeStart;
+    }
+
+    public CampaignJson setScheduleTimeStart(Date scheduleTimeStart) {
+        this.scheduleTimeStart = scheduleTimeStart;
+        return this;
+    }
+
+    public Date getScheduleTimeEnd() {
+        return scheduleTimeEnd;
+    }
+
+    public CampaignJson setScheduleTimeEnd(Date scheduleTimeEnd) {
+        this.scheduleTimeEnd = scheduleTimeEnd;
+        return this;
+    }
+
+    public boolean isLifeTime() {
+        return lifeTime;
+    }
+
+    public CampaignJson setLifeTime(boolean lifeTime) {
+        this.lifeTime = lifeTime;
+        return this;
+    }
+
+    public Double getDailyBudget() {
+        return dailyBudget;
+    }
+
+    public CampaignJson setDailyBudget(Double dailyBudget) {
+        this.dailyBudget = dailyBudget;
+        return this;
+    }
+
+    public Double getLifeTimeBudget() {
+        return lifeTimeBudget;
+    }
+
+    public CampaignJson setLifeTimeBudget(Double lifeTimeBudget) {
+        this.lifeTimeBudget = lifeTimeBudget;
         return this;
     }
 }

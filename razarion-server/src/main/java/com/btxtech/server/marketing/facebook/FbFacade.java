@@ -124,11 +124,17 @@ public class FbFacade {
                 .setTargeting(targeting)
                 .setRedownload(true);
         if (creationInput.isLifeTime()) {
-            apiRequestCreateAdSet.setLifetimeBudget(200L);
+            if (creationInput.getLifeTimeBudget() == null) {
+                throw new IllegalArgumentException("Life time budget is not set");
+            }
+            apiRequestCreateAdSet.setLifetimeBudget((long) (creationInput.getLifeTimeBudget() * 100));
             apiRequestCreateAdSet.setStartTime(DateUtil.toFacebookTimeString(creationInput.getScheduleStartTime()));
             apiRequestCreateAdSet.setEndTime(DateUtil.toFacebookTimeString(creationInput.getScheduleEndTime()));
         } else {
-            apiRequestCreateAdSet.setDailyBudget(200L);
+            if (creationInput.getDailyBudget() == null) {
+                throw new IllegalArgumentException("Daily budget is not set");
+            }
+            apiRequestCreateAdSet.setDailyBudget((long) (creationInput.getDailyBudget() * 100));
         }
 
 

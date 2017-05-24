@@ -94,19 +94,21 @@
 
                 <h2>Create Compaign</h2>
                 <h2>Data</h2>
-                Title: <h:inputText value="#{createCampaignBean.title}"/>
+                Title: <h:inputText value="#{createCampaignBean.creationInput.title}" size="25"/>
                 <br/>
-                Body: <h:inputText value="#{createCampaignBean.body}"/>
+                Body: <h:inputText value="#{createCampaignBean.creationInput.body}" size="90"/>
                 <br/>
-                Lifetime: <h:selectBooleanCheckbox value="#{createCampaignBean.lifeTime}"/>
+                Lifetime: <h:selectBooleanCheckbox value="#{createCampaignBean.creationInput.lifeTime}"/>
                 <br/>
-                Schedule Start Time:<h:inputText value="#{createCampaignBean.scheduleStartTime}" size="20">
-                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
-            </h:inputText>
+                Daily Budget: <h:inputText value="#{createCampaignBean.creationInput.dailyBudget}" size="5"/>
                 <br/>
-                Schedule End Time:<h:inputText value="#{createCampaignBean.scheduleEndTime}" size="20">
-                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
-            </h:inputText>
+                Lifetime Budget: <h:inputText value="#{createCampaignBean.creationInput.lifeTimeBudget}" size="5"/>
+                <br/>
+                Schedule Start Time:<h:inputText value="#{createCampaignBean.creationInput.scheduleStartTime}" size="20">
+                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/></h:inputText>
+                <br/>
+                Schedule End Time:<h:inputText value="#{createCampaignBean.creationInput.scheduleEndTime}" size="20">
+                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/></h:inputText>
                 <br/>
                 <h:graphicImage value="#{createCampaignBean.selectedImage.url128}"/>
                 <h:dataTable value="#{createCampaignBean.selectedAdInterest}" var="i">

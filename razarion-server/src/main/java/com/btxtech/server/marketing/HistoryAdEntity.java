@@ -47,6 +47,8 @@ public class HistoryAdEntity {
     private Date scheduleTimeStart;
     private Date scheduleTimeEnd;
     private boolean lifeTime;
+    private Double dailyBudget;
+    private Double lifeTimeBudget;
 
     public void fill(CurrentAdEntity currentAdEntity, AdSetInsight adSetInsight) {
         campaignId = currentAdEntity.getCampaignId();
@@ -68,6 +70,8 @@ public class HistoryAdEntity {
         scheduleTimeStart = currentAdEntity.getScheduleTimeStart();
         scheduleTimeEnd = currentAdEntity.getScheduleTimeEnd();
         lifeTime = currentAdEntity.isLifeTime();
+        dailyBudget = currentAdEntity.getDailyBudget();
+        lifeTimeBudget = currentAdEntity.getLifeTimeBudget();
     }
 
     public CampaignJson createCampaignJson() {
@@ -75,7 +79,10 @@ public class HistoryAdEntity {
         for (Interest interest : interests) {
             adInterest.add(interest.generateAdInterestJson());
         }
-        return new CampaignJson().setAdId(Long.toString(adId)).setBody(body).setTitle(title).setClicks(clicks).setDateStart(dateStart).setDateStop(dateStop).setImpressions(impressions).setSpent(spent).setUrlTagParam(urlTagParam).setAdInterests(adInterest);
+        CampaignJson campaignJson = new CampaignJson().setAdId(Long.toString(adId)).setBody(body).setTitle(title).setClicks(clicks).setDateStart(dateStart).setDateStop(dateStop);
+        campaignJson.setImpressions(impressions).setSpent(spent).setUrlTagParam(urlTagParam).setAdInterests(adInterest);
+        campaignJson.setScheduleTimeStart(scheduleTimeStart).setScheduleTimeEnd(scheduleTimeEnd).setLifeTime(lifeTime).setDailyBudget(dailyBudget).setLifeTimeBudget(lifeTimeBudget);
+        return campaignJson;
     }
 
     public String getImageHash() {
