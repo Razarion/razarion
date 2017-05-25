@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.Map;
 public abstract class Shape3DUiService {
     // private Logger logger = Logger.getLogger(Shape3DUiService.class.getName());
     private Map<Integer, Shape3D> shape3Ds = new HashMap<>();
+    @Inject
+    private VisualUiService visualUiService;
     private Vertex lightDirection;
 
     public abstract double getMaxZ(VertexContainer vertexContainer);
@@ -30,7 +33,11 @@ public abstract class Shape3DUiService {
     }
 
     public void onVisualConfig(@Observes PlanetVisualConfig planetVisualConfig) {
-        lightDirection = Matrix4.createZRotation(planetVisualConfig.getShape3DLightRotateZ()).multiply(Matrix4.createXRotation(planetVisualConfig.getShape3DLightRotateX())).multiply(new Vertex(0, 0, -1), 1.0);
+        updateLightDirection();
+    }
+
+    public void updateLightDirection() {
+        lightDirection = Matrix4.createYRotation(visualUiService.getPlanetVisualConfig().getShape3DLightRotateY()).multiply(Matrix4.createXRotation(visualUiService.getPlanetVisualConfig().getShape3DLightRotateX())).multiply(new Vertex(0, 0, -1), 1.0);
     }
 
     public Shape3D getShape3D(int id) {

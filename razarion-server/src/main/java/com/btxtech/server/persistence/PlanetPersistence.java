@@ -3,9 +3,9 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -145,5 +145,13 @@ public class PlanetPersistence {
             throw new IllegalArgumentException("No planet for id: " + planetId);
         }
         return planetEntity;
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
+        PlanetEntity planetEntity = loadPlanet(planetId);
+        planetEntity.fromPlanetVisualConfig(planetVisualConfig);
+        entityManager.merge(planetEntity);
     }
 }

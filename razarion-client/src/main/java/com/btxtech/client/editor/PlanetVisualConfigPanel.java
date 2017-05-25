@@ -4,10 +4,15 @@ import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
@@ -17,17 +22,28 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 14.08.2016.
  */
-@Templated("VisualConfigPanel.html#visual-panel")
-public class VisualConfigPanel extends LeftSideBarContent {
+@Templated("PlanetVisualConfigPanel.html#planet-panel")
+public class PlanetVisualConfigPanel extends LeftSideBarContent {
+    private Logger logger = Logger.getLogger(PlanetVisualConfigPanel.class.getName());
     @Inject
     private ShadowUiService shadowUiService;
     @Inject
     private VisualUiService visualUiService;
+    @Inject
+    private Shape3DUiService shape3DUiService;
+    @Inject
+    private ViewService viewService;
+    @Inject
+    private GameUiControl gameUiControl;
+    @Inject
+    private Caller<PlanetEditorProvider> planetEditorProviderCaller;
     @Inject
     @AutoBound
     private DataBinder<PlanetVisualConfig> planetVisualConfigDataBinder;
@@ -66,28 +82,43 @@ public class VisualConfigPanel extends LeftSideBarContent {
     @DataField
     private DoubleBox shape3DLightRotationXBox;
     @Inject
-    @Bound(property = "shape3DLightRotateZ", converter = GradToRadConverter.class)
+    @Bound(property = "shape3DLightRotateY", converter = GradToRadConverter.class)
     @DataField
-    private DoubleBox shape3DLightRotationZSlider;
+    private DoubleBox shape3DLightRotationYSlider;
     @Inject
-    @Bound(property = "shape3DLightRotateZ", converter = GradToRadConverter.class)
+    @Bound(property = "shape3DLightRotateY", converter = GradToRadConverter.class)
     @DataField
-    private DoubleBox shape3DLightRotationZBox;
+    private DoubleBox shape3DLightRotationYBox;
 
     @PostConstruct
     public void init() {
-        // Shadow
-        // TODO planetVisualConfigDataBinder.setModel(visualUiService.getStaticVisualConfig());
-        // TODO planetVisualConfigDataBinder.addPropertyChangeHandler(event -> {
-        // TODO     displayLightDirectionLabels();
-        // TODO     shadowUiService.setupMatrices();
-        // TODO });
+        planetVisualConfigDataBinder.setModel(visualUiService.getPlanetVisualConfig());
+        planetVisualConfigDataBinder.addPropertyChangeHandler(event -> {
+            shadowUiService.setupMatrices();
+            shape3DUiService.updateLightDirection();
+            viewService.onViewChanged();
+            displayLightDirectionLabels();
+            enableSaveButton(true);
+        });
         displayLightDirectionLabels();
     }
 
     private void displayLightDirectionLabels() {
         shadowDirectionLabel.setText(DisplayUtils.formatVertex(shadowUiService.getLightDirection()));
-        // TODO shape3DDirectionLabel.setText(DisplayUtils.formatVertex(visualUiService.getShape3DLightDirection()));
+        shape3DDirectionLabel.setText(DisplayUtils.formatVertex(shape3DUiService.getShape3DLightDirection()));
+    }
+
+    @Override
+    protected void onConfigureDialog() {
+        registerSaveButton(() -> {
+            planetEditorProviderCaller.call(response -> {
+
+            }, (message, throwable) -> {
+                logger.log(Level.SEVERE, "getAudioItemConfigs failed: " + message, throwable);
+                return false;
+            }).updatePlanetVisualConfig(gameUiControl.getPlanetConfig().getPlanetId(), visualUiService.getPlanetVisualConfig());
+        });
+        enableSaveButton(false);
     }
 
 }

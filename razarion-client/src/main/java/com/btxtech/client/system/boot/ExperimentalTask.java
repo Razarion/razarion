@@ -118,7 +118,7 @@ public class ExperimentalTask extends AbstractStartupTask {
     private PlanetVisualConfig defaultPlanetVisualConfig() {
         PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
         planetVisualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
-        planetVisualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateZ(Math.toRadians(290));
+        planetVisualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateY(Math.toRadians(290));
         return planetVisualConfig;
     }
 

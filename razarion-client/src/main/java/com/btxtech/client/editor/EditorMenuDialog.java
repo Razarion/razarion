@@ -51,7 +51,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button gameEngineButton;
     @Inject
     @DataField
-    private Button visualConfigButton;
+    private Button planetVisualConfigButton;
     @Inject
     @DataField
     private Button terrainButton;
@@ -109,9 +109,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
         openEditor(GameEngineEditorPanel.class);
     }
 
-    @EventHandler("visualConfigButton")
-    private void onVisualConfigButtonClicked(ClickEvent event) {
-        openEditor(VisualConfigPanel.class);
+    @EventHandler("planetVisualConfigButton")
+    private void onPanetVisualConfigButtonClicked(ClickEvent event) {
+        openEditor(PlanetVisualConfigPanel.class);
     }
 
     @EventHandler("terrainButton")

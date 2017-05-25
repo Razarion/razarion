@@ -9,7 +9,7 @@ public class PlanetVisualConfig {
     private double shadowRotationY;
     private double shadowAlpha;
     private double shape3DLightRotateX;
-    private double shape3DLightRotateZ;
+    private double shape3DLightRotateY;
 
     public double getShadowRotationX() {
         return shadowRotationX;
@@ -47,12 +47,12 @@ public class PlanetVisualConfig {
         return this;
     }
 
-    public double getShape3DLightRotateZ() {
-        return shape3DLightRotateZ;
+    public double getShape3DLightRotateY() {
+        return shape3DLightRotateY;
     }
 
-    public PlanetVisualConfig setShape3DLightRotateZ(double shape3DLightRotateZ) {
-        this.shape3DLightRotateZ = shape3DLightRotateZ;
+    public PlanetVisualConfig setShape3DLightRotateY(double shape3DLightRotateY) {
+        this.shape3DLightRotateY = shape3DLightRotateY;
         return this;
     }
 

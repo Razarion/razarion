@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
@@ -47,4 +48,9 @@ public interface PlanetEditorProvider {
     @Path("deleteTerrainSlopePositionIds/{planetId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void deleteTerrainSlopePositionIds(@PathParam("planetId") int planetId, List<Integer> deletedSlopeIds);
+
+    @PUT
+    @Path("updatePlanetVisualConfig/{planetId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updatePlanetVisualConfig(@PathParam("planetId") int planetId, PlanetVisualConfig planetVisualConfig);
 }

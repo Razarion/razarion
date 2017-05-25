@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.rest.PlanetEditorProvider;
@@ -77,6 +78,16 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     public void deleteTerrainSlopePositionIds(int planetId, List<Integer> deletedSlopeIds) {
         try {
             persistenceService.deleteTerrainSlopePositions(planetId, deletedSlopeIds);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
+        try {
+            persistenceService.updatePlanetVisualConfig(planetId, planetVisualConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

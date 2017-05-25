@@ -74,7 +74,7 @@ public class PlanetEntity {
     private double shadowRotationY;
     private double shadowAlpha;
     private double shape3DLightRotateX;
-    private double shape3DLightRotateZ;
+    private double shape3DLightRotateY;
 
     public Integer getId() {
         return id;
@@ -112,8 +112,16 @@ public class PlanetEntity {
     public PlanetVisualConfig toPlanetVisualConfig() {
         PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
         planetVisualConfig.setShadowRotationX(shadowRotationX).setShadowRotationY(shadowRotationY).setShadowAlpha(shadowAlpha);
-        planetVisualConfig.setShape3DLightRotateX(shape3DLightRotateX).setShape3DLightRotateZ(shape3DLightRotateZ);
+        planetVisualConfig.setShape3DLightRotateX(shape3DLightRotateX).setShape3DLightRotateY(shape3DLightRotateY);
         return planetVisualConfig;
+    }
+
+    public void fromPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
+        shadowRotationX = planetVisualConfig.getShadowRotationX();
+        shadowRotationY = planetVisualConfig.getShadowRotationY();
+        shadowAlpha = planetVisualConfig.getShadowAlpha();
+        shape3DLightRotateX = planetVisualConfig.getShape3DLightRotateX();
+        shape3DLightRotateY = planetVisualConfig.getShape3DLightRotateY();
     }
 
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {
