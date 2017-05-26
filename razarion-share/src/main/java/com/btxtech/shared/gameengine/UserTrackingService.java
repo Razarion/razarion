@@ -68,7 +68,7 @@ public class UserTrackingService {
 
     // TODO void onEventTrackingStart(EventTrackingStart eventTrackingStart);
 
-    // TODO void onEventTrackerItems(Collection<EventTrackingItem> eventTrackingItems, Collection<SyncItemInfo> syncItemInfos, Collection<SelectionTrackingItem> selectionTrackingItems, Collection<TerrainScrollTracking> terrainScrollTrackings, Collection<BrowserWindowTracking> browserWindowTrackings, Collection<DialogTracking> dialogTrackings);
+    // TODO void onEventTrackerItems(Collection<EventTrackingItem> eventTrackingItems, Collection<SyncItemInfo> syncItemInfos, Collection<SelectionTracking> selectionTrackingItems, Collection<TerrainScrollTracking> terrainScrollTrackings, Collection<ViewFieldTracking> browserWindowTrackings, Collection<DialogTracking> dialogTrackings);
 
     // TODO List<DbEventTrackingItem> getDbEventTrackingItem(String startUuid);
 

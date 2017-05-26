@@ -176,4 +176,24 @@ public class ViewField {
         }
         return bottomLeft.add(bottomRight).add(topRight).add(topLeft).divide(4);
     }
+
+    public double getZ() {
+        return z;
+    }
+
+    public DecimalPosition getBottomLeft() {
+        return bottomLeft;
+    }
+
+    public DecimalPosition getBottomRight() {
+        return bottomRight;
+    }
+
+    public DecimalPosition getTopRight() {
+        return topRight;
+    }
+
+    public DecimalPosition getTopLeft() {
+        return topLeft;
+    }
 }

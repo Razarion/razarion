@@ -262,24 +262,24 @@ public class TerrainScrollHandler {
             }
             double deltaX = position.getX() - camera.getTranslateX();
             double deltaY = position.getY() - camera.getTranslateY();
-            Rectangle2D viewFiledAabb = viewService.getCurrentAabb().translate(deltaX, deltaY);
-            if (viewFiledAabb.width() >= playGround.width()) {
+            Rectangle2D viewFieldAabb = viewService.getCurrentAabb().translate(deltaX, deltaY);
+            if (viewFieldAabb.width() >= playGround.width()) {
                 correctedXPosition = projectionTransformation.viewFieldCenterToCamera(playGround.center(), 0).getX();
             } else {
-                if (playGround.startX() > viewFiledAabb.startX()) {
-                    correctedXPosition += playGround.startX() - viewFiledAabb.startX();
-                } else if (playGround.endX() < viewFiledAabb.endX()) {
-                    correctedXPosition -= viewFiledAabb.endX() - playGround.endX();
+                if (playGround.startX() > viewFieldAabb.startX()) {
+                    correctedXPosition += playGround.startX() - viewFieldAabb.startX();
+                } else if (playGround.endX() < viewFieldAabb.endX()) {
+                    correctedXPosition -= viewFieldAabb.endX() - playGround.endX();
                 }
             }
 
-            if (viewFiledAabb.height() >= playGround.height()) {
+            if (viewFieldAabb.height() >= playGround.height()) {
                 correctedYPosition = projectionTransformation.viewFieldCenterToCamera(playGround.center(), 0).getY();
             } else {
-                if (playGround.startY() > viewFiledAabb.startY()) {
-                    correctedYPosition += playGround.startY() - viewFiledAabb.startY();
-                } else if (playGround.endY() < viewFiledAabb.endY()) {
-                    correctedYPosition -= viewFiledAabb.endY() - playGround.endY();
+                if (playGround.startY() > viewFieldAabb.startY()) {
+                    correctedYPosition += playGround.startY() - viewFieldAabb.startY();
+                } else if (playGround.endY() < viewFieldAabb.endY()) {
+                    correctedYPosition -= viewFieldAabb.endY() - playGround.endY();
                 }
             }
         }

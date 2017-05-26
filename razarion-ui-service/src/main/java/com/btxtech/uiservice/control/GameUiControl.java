@@ -123,6 +123,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         cockpitService.show(userUiService.getUserContext());
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.MASTER) {
+            if(coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {
+                trackerService.startDetailedTracking();
+            }
             scenes = coldGameUiControlConfig.getWarmGameUiControlConfig().getSceneConfigs();
         } else if (gameEngineMode == GameEngineMode.SLAVE) {
             scenes = setupSlaveScenes();
@@ -175,6 +178,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             startTimeStamp = null;
         }
         if (gameEngineMode == GameEngineMode.MASTER) {
+            if(coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {
+                trackerService.stopDetailedTracking();
+            }
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {
                 screenCover.fadeInLoadingCover();

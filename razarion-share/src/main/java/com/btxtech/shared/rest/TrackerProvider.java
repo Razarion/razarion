@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -10,6 +11,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -41,4 +43,9 @@ public interface TrackerProvider {
     @Path("performanceTracker")
     @Consumes(MediaType.APPLICATION_JSON)
     void performanceTracker(PerfmonStatistic perfmonStatistic);
+
+    @POST
+    @Path("detailedTracking")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void detailedTracking(List<ViewFieldTracking> viewFieldTrackings);
 }

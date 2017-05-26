@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.uiservice.TrackerService;
+import com.btxtech.uiservice.renderer.ViewField;
 
 import java.util.Date;
 
@@ -16,6 +17,21 @@ public class TestTrackerService implements TrackerService {
 
     @Override
     public void trackScene(Date startTimeStamp, String sceneInternalName) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void startDetailedTracking() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void stopDetailedTracking() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void onViewChanged(ViewField currentViewField) {
         throw new UnsupportedOperationException();
     }
 }

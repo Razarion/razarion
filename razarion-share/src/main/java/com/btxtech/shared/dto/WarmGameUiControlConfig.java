@@ -16,6 +16,7 @@ public class WarmGameUiControlConfig {
     private PlanetConfig planetConfig;
     private List<SceneConfig> sceneConfigs;
     private PlanetVisualConfig planetVisualConfig;
+    private boolean detailedTracking;
 
     public GameEngineMode getGameEngineMode() {
         return gameEngineMode;
@@ -68,6 +69,15 @@ public class WarmGameUiControlConfig {
 
     public WarmGameUiControlConfig setPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
         this.planetVisualConfig = planetVisualConfig;
+        return this;
+    }
+
+    public boolean isDetailedTracking() {
+        return detailedTracking;
+    }
+
+    public WarmGameUiControlConfig setDetailedTracking(boolean detailedTracking) {
+        this.detailedTracking = detailedTracking;
         return this;
     }
 }

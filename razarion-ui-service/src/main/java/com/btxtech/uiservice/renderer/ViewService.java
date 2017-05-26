@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -42,6 +43,8 @@ public class ViewService {
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private TrackerService trackerService;
     private NativeMatrix viewMatrix;
     private NativeMatrix viewNormMatrix;
     private NativeMatrix perspectiveMatrix;
@@ -98,6 +101,7 @@ public class ViewService {
         shadowTransformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewShadowMatrix, perspectiveShadowMatrix));
         shadowLookupTransformationListeners.forEach(listeners -> listeners.onShadowLookupTransformationChanged(shadowLookupMatrix));
         terrainUiService.onViewChanged(currentViewField, currentAabb);
+        trackerService.onViewChanged(currentViewField);
     }
 
     private void updateTransformationMatrices() {

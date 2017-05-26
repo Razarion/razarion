@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -18,6 +19,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -131,5 +133,9 @@ public class TrackerPersistence {
         PerfmonStatisticEntity fromPerfmonStatistic = new PerfmonStatisticEntity();
         fromPerfmonStatistic.fromPerfmonStatistic(sessionHolder.getPlayerSession().getHttpSessionId(), new Date(), perfmonStatistic);
         entityManager.persist(fromPerfmonStatistic);
+    }
+
+    public void detailedTracking(List<ViewFieldTracking> viewFieldTrackings) {
+        System.out.println("*** detailedTracking: " + viewFieldTrackings.size());
     }
 }

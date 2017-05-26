@@ -10,6 +10,7 @@ public interface SimpleExecutorService {
     enum Type {
         GAME_ENGINE(PerfmonEnum.GAME_ENGINE),
         BOT(PerfmonEnum.BOT),
+        DETAILED_TRACKING(PerfmonEnum.DETAILED_TRACKING),
         UNSPECIFIED(null);
 
         private PerfmonEnum perfmonEnum;

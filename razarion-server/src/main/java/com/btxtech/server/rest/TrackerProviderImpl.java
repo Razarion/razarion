@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
+import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -10,6 +11,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -65,6 +67,16 @@ public class TrackerProviderImpl implements TrackerProvider {
     public void performanceTracker(PerfmonStatistic perfmonStatistic) {
         try {
             trackerPersistence.onPerformanceTracker(perfmonStatistic);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void detailedTracking(List<ViewFieldTracking> viewFieldTrackings) {
+        try {
+            trackerPersistence.detailedTracking(viewFieldTrackings);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

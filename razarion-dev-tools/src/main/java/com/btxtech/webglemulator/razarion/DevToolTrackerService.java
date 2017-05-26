@@ -1,6 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.uiservice.TrackerService;
+import com.btxtech.uiservice.renderer.ViewField;
 
 import java.util.Date;
 
@@ -17,5 +18,20 @@ public class DevToolTrackerService implements TrackerService {
     @Override
     public void trackScene(Date startTimeStamp, String sceneInternalName) {
         System.out.println("DevToolTrackerService.trackScene() startTimeStamp: " + startTimeStamp + " sceneInternalName: " + sceneInternalName);
+    }
+
+    @Override
+    public void startDetailedTracking() {
+        System.out.println("DevToolTrackerService.startDetailedTracking()");
+    }
+
+    @Override
+    public void stopDetailedTracking() {
+        System.out.println("DevToolTrackerService.stopDetailedTracking()");
+    }
+
+    @Override
+    public void onViewChanged(ViewField currentViewField) {
+        System.out.println("DevToolTrackerService.onViewChanged()");
     }
 }

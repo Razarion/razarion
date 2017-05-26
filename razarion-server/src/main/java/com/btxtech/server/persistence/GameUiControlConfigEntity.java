@@ -42,6 +42,7 @@ public class GameUiControlConfigEntity {
     private LevelEntity minimalLevel;
     @Enumerated(EnumType.STRING)
     private GameEngineMode gameEngineMode;
+    private boolean detailedTracking;
 
     public Integer getId() {
         return id;
@@ -53,6 +54,7 @@ public class GameUiControlConfigEntity {
         warmGameUiControlConfig.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
         warmGameUiControlConfig.setSceneConfigs(setupScenes(locale));
         warmGameUiControlConfig.setGameEngineMode(gameEngineMode);
+        warmGameUiControlConfig.setDetailedTracking(detailedTracking);
         return warmGameUiControlConfig;
     }
 

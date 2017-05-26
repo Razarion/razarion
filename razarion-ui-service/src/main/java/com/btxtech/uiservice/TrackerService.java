@@ -1,5 +1,7 @@
 package com.btxtech.uiservice;
 
+import com.btxtech.uiservice.renderer.ViewField;
+
 import java.util.Date;
 
 /**
@@ -10,4 +12,10 @@ public interface TrackerService {
     void trackGameUiControl(Date startTimeStamp);
 
     void trackScene(Date startTimeStamp, String sceneInternalName);
+
+    void startDetailedTracking();
+
+    void stopDetailedTracking();
+
+    void onViewChanged(ViewField currentViewField);
 }
