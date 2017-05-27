@@ -1,0 +1,12 @@
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Sessio Id</th>
+    <th>Facebook Ads</th>
+  </tr>
+  <tr *ngFor="let session of sessions" (click)="onClick(session)" style="cursor: pointer">
+    <td>{{ session.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td>{{ session.id }}</td>
+    <td>{{ session.fbAdRazTrack }}</td>
+  </tr>
+</table>
