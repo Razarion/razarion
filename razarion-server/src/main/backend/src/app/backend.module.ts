@@ -9,12 +9,14 @@ import {MainWindow} from "./main-window.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {SessionHistory} from "./tracking/session-history.component";
 import {SessionService} from "./tracking/session.service";
+import {SessionDetails} from "./tracking/session-detail.component";
 
 @NgModule({
   declarations: [
     MainWindow,
     Dashboard,
-    SessionHistory
+    SessionHistory,
+    SessionDetails
   ],
   imports: [
     BrowserModule,

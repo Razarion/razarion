@@ -1,6 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {SessionService} from "./session.service";
 import {Session} from "./session";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'session-history',
@@ -11,7 +12,7 @@ import {Session} from "./session";
 export class SessionHistory implements OnInit {
   sessions: Session[];
 
-  constructor(private sessionService: SessionService) {
+  constructor(private sessionService: SessionService, private route: Router) {
   }
 
   ngOnInit(): void {
@@ -21,7 +22,7 @@ export class SessionHistory implements OnInit {
   }
 
   onClick(session: Session): void {
-    console.error("***** onClick(): " + session);
+    this.route.navigate(['/session', session.id]);
   }
 
 }

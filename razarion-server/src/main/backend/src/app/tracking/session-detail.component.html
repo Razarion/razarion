@@ -1,0 +1,26 @@
+<h2>Session detail</h2>
+
+<table>
+  <tr>
+    <td>Id:</td>
+    <td>{{sessionDetail.id}}</td>
+  </tr>
+  <tr>
+    <td>Time:</td>
+    <td>{{sessionDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+  </tr>
+</table>
+
+<h3>Game sessions</h3>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Game UUID</th>
+    <th>Playback</th>
+  </tr>
+  <tr *ngFor="let gameSessionDetail of sessionDetail.gameSessionDetails" style="cursor: pointer">
+    <td>{{ gameSessionDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td>{{ gameSessionDetail.id }}</td>
+    <td><a target="_blank" [href]="'/game.xhtml?playback=' + gameSessionDetail.id">Open</a></td>
+  </tr>
+</table>

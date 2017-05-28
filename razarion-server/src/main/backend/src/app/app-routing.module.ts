@@ -1,11 +1,12 @@
 import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {Dashboard} from "./dashboard.component";
+import {SessionDetails} from "./tracking/session-detail.component";
 
 const routes: Routes = [
-  {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
   {path: 'dashboard', component: Dashboard},
-  // { path: 'detail/:id', component: HeroDetailComponent },
+  {path: 'session/:id', component: SessionDetails },
+  {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
   // { path: 'heroes',     component: HeroesComponent }
 ];
 

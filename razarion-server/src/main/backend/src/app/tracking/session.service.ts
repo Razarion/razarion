@@ -2,10 +2,11 @@ import {Injectable} from "@angular/core";
 import {Http} from "@angular/http";
 import {Session} from "./session";
 import "rxjs/add/operator/toPromise";
+import {SessionDetail} from "./session-detail";
 
 @Injectable()
 export class SessionService {
-  private sessionUrl = '/rest/tracking';
+  // private sessionUrl = '/rest/tracking';
 
   constructor(private http: Http) {
   }
@@ -14,12 +15,21 @@ export class SessionService {
     return this.http.get('/rest/tracking/sessions')
       .toPromise()
       .then(response => {
-        return response.json().data; // TODO remove data
+        return response.json();
       })
-      .catch(this.handleError);
+      .catch(SessionService.handleError);
   }
 
-  private handleError(error: any): Promise<any> {
+  getSessionDetail(id: string): Promise<SessionDetail> {
+    return this.http.get('/rest/tracking/sessiondetail?id=' + id)
+      .toPromise()
+      .then(response => {
+        return response.json();
+      })
+      .catch(SessionService.handleError);
+  }
+
+  private static handleError(error: any): Promise<any> {
     console.error('An error occurred', error);
     return Promise.reject(error.message || error);
   }
