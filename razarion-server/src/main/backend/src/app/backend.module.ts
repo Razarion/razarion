@@ -3,24 +3,28 @@ import {NgModule} from "@angular/core";
 import {FormsModule} from "@angular/forms";
 import {HttpModule} from "@angular/http";
 import {Dashboard} from "./dashboard.component";
-import {SessionTable} from "./session-table.component";
-import {SessionService} from "./session.service";
 import {InMemoryDataService} from "./in-memory-data.service";
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api/in-memory-web-api.module';
+import {MainWindow} from "./main-window.component";
+import {AppRoutingModule} from "./app-routing.module";
+import {SessionHistory} from "./tracking/session-history.component";
+import {SessionService} from "./tracking/session.service";
 
 @NgModule({
   declarations: [
+    MainWindow,
     Dashboard,
-    SessionTable
+    SessionHistory
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
+    AppRoutingModule,
     InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/tracking"})
   ],
   providers: [SessionService],
-  bootstrap: [Dashboard]
+  bootstrap: [MainWindow]
 })
 export class Backend {
 }

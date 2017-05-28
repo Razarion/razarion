@@ -3,12 +3,12 @@ import {SessionService} from "./session.service";
 import {Session} from "./session";
 
 @Component({
-  selector: 'session-table',
-  templateUrl: './session-table.component.html',
-  styleUrls: ['./session-table.component.css']
+  selector: 'session-history',
+  templateUrl: './session-history.component.html',
+  styleUrls: ['./session-history.component.css']
 })
 
-export class SessionTable implements OnInit {
+export class SessionHistory implements OnInit {
   sessions: Session[];
 
   constructor(private sessionService: SessionService) {
