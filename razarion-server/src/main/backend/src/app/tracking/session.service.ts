@@ -21,7 +21,7 @@ export class SessionService {
   }
 
   getSessionDetail(id: string): Promise<SessionDetail> {
-    return this.http.get(this.sessionUrl + '/sessiondetail?id=' + id)
+    return this.http.get(this.sessionUrl + '/sessiondetail/' + id)
       .toPromise()
       .then(response => {
         return response.json();

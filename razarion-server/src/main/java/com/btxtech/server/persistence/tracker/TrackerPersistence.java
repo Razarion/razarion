@@ -2,7 +2,9 @@ package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.persistence.AudioLibraryEntity_;
+import com.btxtech.server.rest.GameSessionDetail;
 import com.btxtech.server.rest.SearchConfig;
+import com.btxtech.server.rest.SessionDetail;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
@@ -190,5 +192,24 @@ public class TrackerPersistence {
             toIndex = pageTrackerEntity.getParams().length();
         }
         return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
+    }
+
+    @Transactional
+    @SecurityCheck
+    public SessionDetail readSessionDetail(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<SessionTrackerEntity> query = criteriaBuilder.createQuery(SessionTrackerEntity.class);
+        Root<SessionTrackerEntity> root = query.from(SessionTrackerEntity.class);
+        CriteriaQuery<SessionTrackerEntity> userSelect = query.select(root);
+        query.where(criteriaBuilder.equal(root.get(SessionTrackerEntity_.sessionId), sessionId));
+        SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
+
+        List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
+        gameSessionDetails.add(new GameSessionDetail().setId("uuuuuuuuuuu").setSessionId(sessionId));
+        gameSessionDetails.add(new GameSessionDetail().setId("aaaaaaaaaaa").setSessionId(sessionId));
+        gameSessionDetails.add(new GameSessionDetail().setId("xxxxxxxxxxx").setSessionId(sessionId));
+        SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp());
+        sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId)).setGameSessionDetails(gameSessionDetails);
+        return sessionDetail;
     }
 }
