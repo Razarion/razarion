@@ -2,6 +2,7 @@ export class Session {
   time: Date;
   id: string;
   fbAdRazTrack: number;
+  remoteHost: string;
 }
 
 export class SessionDetail {
@@ -15,4 +16,8 @@ export class GameSessionDetail {
   time: Date;
   id: string;
   sessionId: string;
+}
+
+export class SearchConfig {
+  fromDate: Date;
 }

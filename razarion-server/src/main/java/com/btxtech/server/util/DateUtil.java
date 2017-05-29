@@ -1,6 +1,7 @@
 package com.btxtech.server.util;
 
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +17,7 @@ public class DateUtil {
     public static final String TIME_FORMAT_STRING = "HH:mm:ss";
     public static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
     public static final String FACEBOOK_DATE_TIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ssX";
+    public static final String DB_DATE_TIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * Strip of: minutes, seconds and milli seconds
@@ -31,6 +33,7 @@ public class DateUtil {
         cal.set(Calendar.MILLISECOND, 0);
         return new Date(cal.getTimeInMillis());
     }
+
     /**
      * Strip of: hour, minutes, seconds and milli seconds
      *
@@ -163,5 +166,14 @@ public class DateUtil {
     public static String toFacebookTimeString(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(FACEBOOK_DATE_TIME_FORMAT_STRING);
         return simpleDateFormat.format(date);
+    }
+
+    public static Date fromDbTimeString(String dateString) {
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DB_DATE_TIME_FORMAT_STRING);
+            return simpleDateFormat.parse(dateString);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

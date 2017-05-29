@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class FbFacade {
-    private static final String URL_PARAM_TRACK_KEY = "fbAdRazTrack";
+    public static final String URL_PARAM_TRACK_KEY = "fbAdRazTrack";
     private Logger logger = Logger.getLogger(FbFacade.class.getName());
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     @Inject

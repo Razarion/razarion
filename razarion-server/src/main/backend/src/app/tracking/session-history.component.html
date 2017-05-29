@@ -1,12 +1,22 @@
+<!--<input type="date" [(ngModel)]="fromDate | date:'dd.MM.yyyy HH:mm:ss'">-->
+<input type="datetime-local" [(ngModel)]="fromDateString">
+
+
+<!--<input type="datetime-local" [ngModel]="defaultFromDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="fromDate = $event" />-->
+
+
+<button (click)="onSearch()">Search</button>
 <table>
   <tr>
     <th>Date</th>
     <th>Sessio Id</th>
     <th>Facebook Ads</th>
+    <th>Remote Host</th>
   </tr>
   <tr *ngFor="let session of sessions" (click)="onClick(session)" style="cursor: pointer">
     <td>{{ session.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ session.id }}</td>
     <td>{{ session.fbAdRazTrack }}</td>
+    <td>{{ session.remoteHost }}</td>
   </tr>
 </table>

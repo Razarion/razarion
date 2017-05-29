@@ -6,7 +6,9 @@ import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -22,12 +24,13 @@ public class TrackerBackend {
     @Inject
     private TrackerPersistence trackerPersistence;
 
-    @GET
+    @POST
     @Path("sessions")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<SessionTracker> sessions() {
+    public List<SessionTracker> sessions(SearchConfig searchConfig) {
         try {
-            return trackerPersistence.readSessionTracking();
+            return trackerPersistence.readSessionTracking(searchConfig);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

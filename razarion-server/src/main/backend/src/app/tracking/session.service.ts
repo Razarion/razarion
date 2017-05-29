@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
-import {Session, SessionDetail} from "./session-dto";
+import {Headers, Http} from "@angular/http";
+import {SearchConfig, Session, SessionDetail} from "./session-dto";
 import "rxjs/add/operator/toPromise";
 
 @Injectable()
@@ -10,8 +10,9 @@ export class SessionService {
   constructor(private http: Http) {
   }
 
-  getSessions(): Promise<Session[]> {
-    return this.http.get(this.sessionUrl + '/sessions')
+  getSessions(searchConfig: SearchConfig): Promise<Session[]> {
+
+    return this.http.post(this.sessionUrl + '/sessions', JSON.stringify(searchConfig), {headers: new Headers({'Content-Type': 'application/json'})})
       .toPromise()
       .then(response => {
         return response.json();

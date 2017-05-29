@@ -1,5 +1,8 @@
 package com.btxtech.server.persistence.tracker;
 
+import com.btxtech.server.marketing.facebook.FbFacade;
+import com.btxtech.server.persistence.AudioLibraryEntity_;
+import com.btxtech.server.rest.SearchConfig;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
@@ -16,16 +19,19 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -146,17 +152,43 @@ public class TrackerPersistence {
 
     @Transactional
     @SecurityCheck
-    public List<SessionTracker> readSessionTracking() {
+    public List<SessionTracker> readSessionTracking(SearchConfig searchConfig) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SessionTrackerEntity> query = criteriaBuilder.createQuery(SessionTrackerEntity.class);
         Root<SessionTrackerEntity> root = query.from(SessionTrackerEntity.class);
         CriteriaQuery<SessionTrackerEntity> userSelect = query.select(root);
+        if (searchConfig.getFromDate() != null) {
+            query.where(criteriaBuilder.greaterThanOrEqualTo(root.get(SessionTrackerEntity_.timeStamp), searchConfig.getFromDate()));
+        }
         query.orderBy(criteriaBuilder.desc(root.get(SessionTrackerEntity_.timeStamp)));
         List<SessionTracker> sessionTrackers = new ArrayList<>();
         for (SessionTrackerEntity sessionTrackerEntity : entityManager.createQuery(userSelect).getResultList()) {
-            sessionTrackers.add(sessionTrackerEntity.toSessionTracker());
+            sessionTrackers.add(sessionTrackerEntity.toSessionTracker().setFbAdRazTrack(getFbAdRazTrack(sessionTrackerEntity.getSessionId())));
         }
         return sessionTrackers;
     }
 
+    @Transactional
+    @SecurityCheck
+    private String getFbAdRazTrack(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
+        Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
+        CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
+        Predicate sessionPredicate = criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId);
+        Predicate fbAdRazTrackPredicate = criteriaBuilder.like(root.get(PageTrackerEntity_.params), "%" + FbFacade.URL_PARAM_TRACK_KEY + "%");
+        query.where(criteriaBuilder.and(sessionPredicate, fbAdRazTrackPredicate));
+        List<PageTrackerEntity> pageTrackerEntities = entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getResultList();
+        if (pageTrackerEntities.isEmpty()) {
+            return null;
+        }
+        PageTrackerEntity pageTrackerEntity = pageTrackerEntities.get(0);
+        int fromIndex = pageTrackerEntity.getParams().indexOf(FbFacade.URL_PARAM_TRACK_KEY);
+        fromIndex = pageTrackerEntity.getParams().indexOf("=", fromIndex);
+        int toIndex = pageTrackerEntity.getParams().indexOf("||", fromIndex);
+        if (toIndex < 0) {
+            toIndex = pageTrackerEntity.getParams().length();
+        }
+        return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
+    }
 }
