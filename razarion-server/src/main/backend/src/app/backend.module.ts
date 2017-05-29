@@ -23,7 +23,7 @@ import {SessionDetails} from "./tracking/session-detail.component";
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/tracking"})
+    // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/trackerbackend"})
   ],
   providers: [SessionService],
   bootstrap: [MainWindow]

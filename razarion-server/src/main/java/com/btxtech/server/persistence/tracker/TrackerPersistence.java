@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.tracker;
 
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
@@ -13,10 +14,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -138,4 +143,20 @@ public class TrackerPersistence {
     public void detailedTracking(List<ViewFieldTracking> viewFieldTrackings) {
         System.out.println("*** detailedTracking: " + viewFieldTrackings.size());
     }
+
+    @Transactional
+    @SecurityCheck
+    public List<SessionTracker> readSessionTracking() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<SessionTrackerEntity> query = criteriaBuilder.createQuery(SessionTrackerEntity.class);
+        Root<SessionTrackerEntity> root = query.from(SessionTrackerEntity.class);
+        CriteriaQuery<SessionTrackerEntity> userSelect = query.select(root);
+        query.orderBy(criteriaBuilder.desc(root.get(SessionTrackerEntity_.timeStamp)));
+        List<SessionTracker> sessionTrackers = new ArrayList<>();
+        for (SessionTrackerEntity sessionTrackerEntity : entityManager.createQuery(userSelect).getResultList()) {
+            sessionTrackers.add(sessionTrackerEntity.toSessionTracker());
+        }
+        return sessionTrackers;
+    }
+
 }

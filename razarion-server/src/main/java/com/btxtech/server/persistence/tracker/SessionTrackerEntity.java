@@ -105,6 +105,10 @@ public class SessionTrackerEntity {
         this.referer = referer;
     }
 
+    public SessionTracker toSessionTracker() {
+        return new SessionTracker().setId(sessionId).setTime(timeStamp).setRemoteHost(remoteHost);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

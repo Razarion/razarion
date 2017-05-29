@@ -5,13 +5,13 @@ import "rxjs/add/operator/toPromise";
 
 @Injectable()
 export class SessionService {
-  // private sessionUrl = '/rest/tracking';
+  private sessionUrl = 'http://localhost:8080/rest/trackerbackend';
 
   constructor(private http: Http) {
   }
 
   getSessions(): Promise<Session[]> {
-    return this.http.get('/rest/tracking/sessions')
+    return this.http.get(this.sessionUrl + '/sessions')
       .toPromise()
       .then(response => {
         return response.json();
@@ -20,7 +20,7 @@ export class SessionService {
   }
 
   getSessionDetail(id: string): Promise<SessionDetail> {
-    return this.http.get('/rest/tracking/sessiondetail?id=' + id)
+    return this.http.get(this.sessionUrl + '/sessiondetail?id=' + id)
       .toPromise()
       .then(response => {
         return response.json();
