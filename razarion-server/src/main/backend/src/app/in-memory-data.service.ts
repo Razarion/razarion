@@ -17,10 +17,23 @@ export class InMemoryDataService implements InMemoryDbService {
     "id": "SZUGDHB3642307834GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/",
     "fbAdRazTrack": "2379NSCDB",
     "gameSessionDetails": [
-      {"time": 1489995200000, "id": "00000000000000000001"},
-      {"time": 1589995200000, "id": "00000000000000000002"},
-      {"time": 1689995200000, "id": "00000000000000000003"},
-      {"time": 1789995200000, "id": "00000000000000000004"},
+      {
+        "time": 1489995200000,
+        "id": "00000000000000000001",
+        "sessionId": "SZUGDHB3642307834GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/"
+      },
+      {
+        "time": 1589995200000, "id": "00000000000000000002",
+        "sessionId": "SZUGDHB3642307834GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/"
+      },
+      {
+        "time": 1689995200000, "id": "00000000000000000003",
+        "sessionId": "SZUGDHB3642307834GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/"
+      },
+      {
+        "time": 1789995200000, "id": "00000000000000000004",
+        "sessionId": "SZUGDHB3642307834GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/"
+      },
     ]
   };
 

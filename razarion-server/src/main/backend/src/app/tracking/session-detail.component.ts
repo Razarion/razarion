@@ -1,9 +1,9 @@
 import {Component, OnInit} from "@angular/core";
 import {SessionService} from "./session.service";
 import {Params, ActivatedRoute} from "@angular/router";
-import {GameSessionDetail, SessionDetail} from "./session-detail";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/toPromise";
+import {SessionDetail} from "./session-dto";
 
 @Component({
   selector: 'session-detail',

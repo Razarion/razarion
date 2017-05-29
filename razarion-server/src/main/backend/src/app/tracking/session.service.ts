@@ -1,8 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Http} from "@angular/http";
-import {Session} from "./session";
+import {Session, SessionDetail} from "./session-dto";
 import "rxjs/add/operator/toPromise";
-import {SessionDetail} from "./session-detail";
 
 @Injectable()
 export class SessionService {

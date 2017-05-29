@@ -1,3 +1,9 @@
+export class Session {
+  time: Date;
+  id: string;
+  fbAdRazTrack: number;
+}
+
 export class SessionDetail {
   time: Date;
   id: string;
@@ -8,4 +14,5 @@ export class SessionDetail {
 export class GameSessionDetail {
   time: Date;
   id: string;
+  sessionId: string;
 }
