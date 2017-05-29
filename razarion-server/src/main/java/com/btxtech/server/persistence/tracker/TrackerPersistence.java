@@ -1,12 +1,12 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.marketing.facebook.FbFacade;
-import com.btxtech.server.persistence.AudioLibraryEntity_;
 import com.btxtech.server.rest.GameSessionDetail;
 import com.btxtech.server.rest.SearchConfig;
 import com.btxtech.server.rest.SessionDetail;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
@@ -28,12 +28,12 @@ import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by Beat
@@ -47,6 +47,7 @@ public class TrackerPersistence {
     private SessionHolder sessionHolder;
     @PersistenceContext
     private EntityManager entityManager;
+    private MapCollection<String, ViewFieldTracking> viewFieldTrackings = new MapCollection<>();
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
@@ -148,8 +149,10 @@ public class TrackerPersistence {
         entityManager.persist(fromPerfmonStatistic);
     }
 
-    public void detailedTracking(List<ViewFieldTracking> viewFieldTrackings) {
-        System.out.println("*** detailedTracking: " + viewFieldTrackings.size());
+    public void onDetailedTracking(String sessionId, List<ViewFieldTracking> viewFieldTrackings) {
+        for (ViewFieldTracking viewFieldTracking : viewFieldTrackings) {
+            this.viewFieldTrackings.put(sessionId, viewFieldTracking);
+        }
     }
 
     @Transactional
@@ -204,10 +207,16 @@ public class TrackerPersistence {
         query.where(criteriaBuilder.equal(root.get(SessionTrackerEntity_.sessionId), sessionId));
         SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
 
+        Set<String> gameSessionIds = new CopyOnWriteArraySet<>();
+        for (ViewFieldTracking viewFieldTracking : viewFieldTrackings.get(sessionId)) {
+            gameSessionIds.add(viewFieldTracking.getStartUuid());
+        }
+
         List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
-        gameSessionDetails.add(new GameSessionDetail().setId("uuuuuuuuuuu").setSessionId(sessionId));
-        gameSessionDetails.add(new GameSessionDetail().setId("aaaaaaaaaaa").setSessionId(sessionId));
-        gameSessionDetails.add(new GameSessionDetail().setId("xxxxxxxxxxx").setSessionId(sessionId));
+        for (String gameSessionId : gameSessionIds) {
+            gameSessionDetails.add(new GameSessionDetail().setId(gameSessionId).setSessionId(sessionId));
+        }
+
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId)).setGameSessionDetails(gameSessionDetails);
         return sessionDetail;

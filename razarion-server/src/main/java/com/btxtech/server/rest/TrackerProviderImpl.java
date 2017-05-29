@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
+import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
@@ -22,6 +23,8 @@ public class TrackerProviderImpl implements TrackerProvider {
     private ExceptionHandler exceptionHandler;
     @Inject
     private TrackerPersistence trackerPersistence;
+    @Inject
+    private SessionHolder sessionHolder;
 
     @Override
     public void startupTask(StartupTaskJson startupTaskJson) {
@@ -76,7 +79,7 @@ public class TrackerProviderImpl implements TrackerProvider {
     @Override
     public void detailedTracking(List<ViewFieldTracking> viewFieldTrackings) {
         try {
-            trackerPersistence.detailedTracking(viewFieldTrackings);
+            trackerPersistence.onDetailedTracking(sessionHolder.getPlayerSession().getHttpSessionId(), viewFieldTrackings);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
