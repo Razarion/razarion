@@ -2,6 +2,7 @@ package com.btxtech.uiservice.control;
 
 
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
+import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -27,21 +28,21 @@ public class PlaybackControl {
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private Date lastAction;
-    private List<CameraTracking> cameraTrackings;
+    private TrackingContainer trackingContainer;
 
     public void start(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
         lastAction = playbackGameUiControlConfig.getOriginTime();
-        cameraTrackings = playbackGameUiControlConfig.getCameraTrackings();
+        trackingContainer = playbackGameUiControlConfig.getTrackingContainer();
 
         scheduleNextAction();
     }
 
     private void scheduleNextAction() {
-        if (cameraTrackings.isEmpty()) {
+        if (trackingContainer.getCameraTrackings().isEmpty()) {
             finished();
             return;
         }
-        CameraTracking cameraTracking = cameraTrackings.get(0);
+        CameraTracking cameraTracking = trackingContainer.getCameraTrackings().get(0);
         long timeToSleep = cameraTracking.getTimeStamp().getTime() - lastAction.getTime();
         if (timeToSleep < 0) {
             timeToSleep = 0;
@@ -50,7 +51,7 @@ public class PlaybackControl {
     }
 
     private void executeAction() {
-        CameraTracking cameraTracking = cameraTrackings.remove(0);
+        CameraTracking cameraTracking = trackingContainer.getCameraTrackings().remove(0);
         camera.setTranslateXY(cameraTracking.getPosition().getX(), cameraTracking.getPosition().getY());
         projectionTransformation.setFovY(cameraTracking.getFovY());
         lastAction = cameraTracking.getTimeStamp();

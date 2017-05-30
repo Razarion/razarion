@@ -19,7 +19,17 @@ package com.btxtech.shared.datatypes.tracking;
  * Time: 22:09:15
  */
 public class TrackingStart extends DetailedTracking {
+    private String gameSessionUuid;
     private int planetId;
+
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
+    }
+
+    public TrackingStart setGameSessionUuid(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
+        return this;
+    }
 
     public int getPlanetId() {
         return planetId;

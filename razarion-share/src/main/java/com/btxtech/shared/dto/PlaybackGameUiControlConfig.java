@@ -1,6 +1,7 @@
 package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
+import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 
 import java.util.Date;
 import java.util.List;
@@ -11,14 +12,14 @@ import java.util.List;
  */
 public class PlaybackGameUiControlConfig {
     private Date originTime;
-    private List<CameraTracking> cameraTrackings;
+    private TrackingContainer trackingContainer;
 
-    public List<CameraTracking> getCameraTrackings() {
-        return cameraTrackings;
+    public TrackingContainer getTrackingContainer() {
+        return trackingContainer;
     }
 
-    public PlaybackGameUiControlConfig setCameraTrackings(List<CameraTracking> cameraTrackings) {
-        this.cameraTrackings = cameraTrackings;
+    public PlaybackGameUiControlConfig setTrackingContainer(TrackingContainer trackingContainer) {
+        this.trackingContainer = trackingContainer;
         return this;
     }
 
@@ -26,7 +27,8 @@ public class PlaybackGameUiControlConfig {
         return originTime;
     }
 
-    public void setOriginTime(Date originTime) {
+    public PlaybackGameUiControlConfig setOriginTime(Date originTime) {
         this.originTime = originTime;
+        return this;
     }
 }

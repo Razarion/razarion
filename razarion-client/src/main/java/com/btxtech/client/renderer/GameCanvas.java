@@ -1,10 +1,13 @@
 package com.btxtech.client.renderer;
 
+import com.btxtech.client.ClientTrackerService;
 import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.google.gwt.animation.client.AnimationScheduler;
@@ -42,6 +45,8 @@ public class GameCanvas {
     private TerrainMouseHandler terrainMouseHandler;
     @Inject
     private KeyboardEventHandler keyboardEventHandler;
+    @Inject
+    private ClientTrackerService trackerService;
     private int width;
     private int height;
     private Canvas canvas;
@@ -70,6 +75,7 @@ public class GameCanvas {
     private void resizeCanvas() {
         width = Window.getClientWidth();
         height = Window.getClientHeight();
+        trackerService.onResizeCanvas(new DecimalPosition(width, height));
         canvas.setCoordinateSpaceWidth(width);
         canvas.setCoordinateSpaceHeight(height);
         projectionTransformation.setAspectRatio((double) width / (double) height);

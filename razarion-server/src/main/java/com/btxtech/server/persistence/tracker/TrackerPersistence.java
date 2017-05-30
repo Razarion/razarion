@@ -8,9 +8,7 @@ import com.btxtech.server.rest.SearchConfig;
 import com.btxtech.server.rest.SessionDetail;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
-import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.shared.datatypes.tracking.CameraTracking;
-import com.btxtech.shared.datatypes.tracking.DetailedTracking;
+import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
@@ -36,14 +34,10 @@ import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by Beat
@@ -59,8 +53,7 @@ public class TrackerPersistence {
     private PlanetPersistence planetPersistence;
     @PersistenceContext
     private EntityManager entityManager;
-    private MapCollection<String, TrackingStart> trackingStarts = new MapCollection<>();
-    private MapCollection<String, CameraTracking> viewFieldTrackings = new MapCollection<>();
+    private TrackingContainerStore trackingContainerStore = new TrackingContainerStore();
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
@@ -163,13 +156,11 @@ public class TrackerPersistence {
     }
 
     public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) {
-        trackingStarts.put(httpSessionId, trackingStart);
+        trackingContainerStore.onTrackingStart(httpSessionId, trackingStart);
     }
 
-    public void onDetailedTracking(String sessionId, List<CameraTracking> cameraTrackings) {
-        for (CameraTracking cameraTracking : cameraTrackings) {
-            this.viewFieldTrackings.put(sessionId, cameraTracking);
-        }
+    public void onDetailedTracking(String sessionId, TrackingContainer trackingContainer) {
+        trackingContainerStore.onDetailedTracking(sessionId, trackingContainer);
     }
 
     @Transactional
@@ -224,57 +215,28 @@ public class TrackerPersistence {
         query.where(criteriaBuilder.equal(root.get(SessionTrackerEntity_.sessionId), sessionId));
         SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
 
-        Set<String> gameSessionIds = new CopyOnWriteArraySet<>();
-        for (TrackingStart trackingStart : trackingStarts.get(sessionId)) {
-            gameSessionIds.add(trackingStart.getGameSessionUuid());
-        }
-
-        List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
-        for (String gameSessionId : gameSessionIds) {
-            gameSessionDetails.add(new GameSessionDetail().setId(gameSessionId).setSessionId(sessionId));
-        }
-
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp());
-        sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId)).setGameSessionDetails(gameSessionDetails);
+        sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
+        List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
+        for (ServerTrackingContainer serverTrackingContainer : trackingContainerStore.getServerTrackingContainers(sessionId)) {
+            gameSessionDetails.add(new GameSessionDetail().setId(serverTrackingContainer.getGameSessionUuid()).setSessionId(sessionId).setTime(serverTrackingContainer.getTime()));
+        }
+        sessionDetail.setGameSessionDetails(gameSessionDetails);
         return sessionDetail;
     }
 
     @Transactional
     @SecurityCheck
     public WarmGameUiControlConfig setupWarmGameUiControlConfig(GameUiControlInput gameUiControlInput) {
-        Collection<TrackingStart> trackingStarts = this.trackingStarts.get(gameUiControlInput.getPlaybackSessionUuid());
-        if (trackingStarts == null) {
-            throw new IllegalArgumentException("No playback found. SessionId: " + gameUiControlInput.getPlaybackSessionUuid());
-        }
-        TrackingStart trackingStart = null;
-        for (TrackingStart ts : trackingStarts) {
-            if (ts.getGameSessionUuid().equals(gameUiControlInput.getPlaybackGameSessionUuid())) {
-                trackingStart = ts;
-                break;
-            }
-        }
-        if (trackingStart == null) {
-            throw new IllegalArgumentException("No playback found. SessionId: " + gameUiControlInput.getPlaybackSessionUuid() + " GameSessionId: " + gameUiControlInput.getPlaybackGameSessionUuid());
-        }
-        PlanetEntity planetEntity = planetPersistence.loadPlanet(trackingStart.getPlanetId());
+        ServerTrackingContainer serverTrackingContainer = trackingContainerStore.getServerTrackingContainer(gameUiControlInput);
+        PlanetEntity planetEntity = planetPersistence.loadPlanet(serverTrackingContainer.getPlanetId());
 
         WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameEngineMode(GameEngineMode.PLAYBACK);
         warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
+
         PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();
-        playbackGameUiControlConfig.setOriginTime(trackingStart.getTimeStamp());
+        playbackGameUiControlConfig.setOriginTime(serverTrackingContainer.getClientTimeStamp()).setTrackingContainer(serverTrackingContainer.generateTrackingContainer());
         warmGameUiControlConfig.setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
-        // CameraTracking
-        Collection<CameraTracking> allCameraTrackings = this.viewFieldTrackings.get(gameUiControlInput.getPlaybackSessionUuid());
-        if(allCameraTrackings != null) {
-            List<CameraTracking> cameraTrackings = new ArrayList<>();
-            for (CameraTracking vft : allCameraTrackings) {
-                if(vft.getGameSessionUuid().equals(gameUiControlInput.getPlaybackGameSessionUuid())) {
-                    cameraTrackings.add(vft);
-                }
-            }
-            cameraTrackings.sort(Comparator.comparing(DetailedTracking::getTimeStamp));
-            playbackGameUiControlConfig.setCameraTrackings(cameraTrackings);
-        }
         return warmGameUiControlConfig;
     }
 }

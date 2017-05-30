@@ -8,7 +8,6 @@ import java.util.Date;
  */
 public abstract class DetailedTracking {
     private Date timeStamp;
-    private String gameSessionUuid;
 
     public Date getTimeStamp() {
         return timeStamp;
@@ -16,15 +15,6 @@ public abstract class DetailedTracking {
 
     public DetailedTracking setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
-        return this;
-    }
-
-    public String getGameSessionUuid() {
-        return gameSessionUuid;
-    }
-
-    public DetailedTracking setGameSessionUuid(String gameSessionUuid) {
-        this.gameSessionUuid = gameSessionUuid;
         return this;
     }
 }

@@ -1,10 +1,11 @@
 package com.btxtech.client;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
-import com.btxtech.shared.datatypes.tracking.DialogTracking;
-import com.btxtech.shared.datatypes.tracking.EventTrackingItem;
 import com.btxtech.shared.datatypes.tracking.SelectionTracking;
+import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
@@ -57,11 +58,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
-    private List<EventTrackingItem> eventTrackingItems = new ArrayList<>();
-    private List<CameraTracking> cameraTrackings = new ArrayList<>();
-    private List<SelectionTracking> selectionTrackings = new ArrayList<>();
-    // TODO private List<SyncItemInfo> syncItemInfos = new ArrayList<>();
-    private List<DialogTracking> dialogTrackings = new ArrayList<>();
+    private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
 
@@ -161,9 +158,10 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         Window.addCloseHandler(windowCloseEvent -> sendEventTrackerItems());
         stopDetailedTracking();
         detailedTracking = true;
+        createTrackingContainer();
         detailedTrackingFuture = detailedExecutionService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
 
-        TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId);
+        TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(clientRunner.getGameSessionUuid());
         initDetailedTracking(trackingStart);
         trackingProvider.call(response -> {
         }, (message, throwable) -> {
@@ -205,7 +203,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
             selectedIds.add(selectionEvent.getSelectedOther().getId());
         }
         selectionTracking.setSelectedIds(selectedIds);
-        selectionTrackings.add(selectionTracking);
+        trackingContainer.addSelectionTracking(selectionTracking);
     }
 
     @Override
@@ -219,11 +217,21 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         CameraTracking cameraTracking = new CameraTracking();
         initDetailedTracking(cameraTracking);
         cameraTracking.setPosition(camera.getPosition().toXY()).setFovY(projectionTransformation.getFovY());
-        cameraTrackings.add(cameraTracking);
+        trackingContainer.addCameraTracking(cameraTracking);
+    }
+
+    public void onResizeCanvas(DecimalPosition decimalPosition) {
+        if (!detailedTracking) {
+            return;
+        }
+        BrowserWindowTracking browserWindowTracking = new BrowserWindowTracking();
+        initDetailedTracking(browserWindowTracking);
+        browserWindowTracking.setDimension(decimalPosition);
+        trackingContainer.addBrowserWindowTracking(browserWindowTracking);
     }
 
     private void initDetailedTracking(DetailedTracking detailedTracking) {
-        detailedTracking.setTimeStamp(new Date()).setGameSessionUuid(clientRunner.getGameSessionUuid());
+        detailedTracking.setTimeStamp(new Date());
     }
 
 //  TODO  public void addEventTrackingItem(int xPos, int yPos, int eventType) {
@@ -244,28 +252,21 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 //    }
 
     private void sendEventTrackerItems() {
-        if (eventTrackingItems.isEmpty()
-                // TODO  && syncItemInfos.isEmpty()
-                && selectionTrackings.isEmpty()
-                && cameraTrackings.isEmpty()
-                && dialogTrackings.isEmpty()) {
+        if (trackingContainer == null || trackingContainer.checkEmpty()) {
             return;
         }
+        TrackingContainer tmpTrackingContainer = trackingContainer;
+        createTrackingContainer();
         trackingProvider.call(response -> {
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "detailedTracking failed: " + message, throwable);
             return false;
-        }).detailedTracking(cameraTrackings);
-
-        clearTracking();
+        }).detailedTracking(tmpTrackingContainer);
     }
 
-    private void clearTracking() {
-        eventTrackingItems = new ArrayList<>();
-        // TODO syncItemInfos = new ArrayList<>();
-        selectionTrackings = new ArrayList<>();
-        cameraTrackings = new ArrayList<>();
-        dialogTrackings = new ArrayList<>();
+    private void createTrackingContainer() {
+        trackingContainer = new TrackingContainer();
+        trackingContainer.setGameSessionUuid(clientRunner.getGameSessionUuid());
     }
 
 //  TODO  public void onDialogAppears(Widget widget, String description) {
