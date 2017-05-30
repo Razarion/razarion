@@ -1,10 +1,8 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.ArquillianBaseTest;
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import org.junit.Assert;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 

@@ -21,7 +21,7 @@ public class TestTrackerService implements TrackerService {
     }
 
     @Override
-    public void startDetailedTracking() {
+    public void startDetailedTracking(int planetId) {
         throw new UnsupportedOperationException();
     }
 

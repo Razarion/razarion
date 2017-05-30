@@ -1,17 +1,25 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.marketing.facebook.FbFacade;
+import com.btxtech.server.persistence.PlanetEntity;
+import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.rest.GameSessionDetail;
 import com.btxtech.server.rest.SearchConfig;
 import com.btxtech.server.rest.SessionDetail;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.datatypes.tracking.DetailedTracking;
+import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
+import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 
@@ -28,6 +36,8 @@ import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -45,8 +55,11 @@ public class TrackerPersistence {
     private ExceptionHandler exceptionHandler;
     @Inject
     private SessionHolder sessionHolder;
+    @Inject
+    private PlanetPersistence planetPersistence;
     @PersistenceContext
     private EntityManager entityManager;
+    private MapCollection<String, TrackingStart> trackingStarts = new MapCollection<>();
     private MapCollection<String, ViewFieldTracking> viewFieldTrackings = new MapCollection<>();
 
     @Transactional
@@ -149,6 +162,10 @@ public class TrackerPersistence {
         entityManager.persist(fromPerfmonStatistic);
     }
 
+    public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) {
+        trackingStarts.put(httpSessionId, trackingStart);
+    }
+
     public void onDetailedTracking(String sessionId, List<ViewFieldTracking> viewFieldTrackings) {
         for (ViewFieldTracking viewFieldTracking : viewFieldTrackings) {
             this.viewFieldTrackings.put(sessionId, viewFieldTracking);
@@ -208,8 +225,8 @@ public class TrackerPersistence {
         SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
 
         Set<String> gameSessionIds = new CopyOnWriteArraySet<>();
-        for (ViewFieldTracking viewFieldTracking : viewFieldTrackings.get(sessionId)) {
-            gameSessionIds.add(viewFieldTracking.getStartUuid());
+        for (TrackingStart trackingStart : trackingStarts.get(sessionId)) {
+            gameSessionIds.add(trackingStart.getGameSessionUuid());
         }
 
         List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
@@ -220,5 +237,43 @@ public class TrackerPersistence {
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId)).setGameSessionDetails(gameSessionDetails);
         return sessionDetail;
+    }
+
+    @Transactional
+    @SecurityCheck
+    public WarmGameUiControlConfig setupWarmGameUiControlConfig(GameUiControlInput gameUiControlInput) {
+        Collection<TrackingStart> trackingStarts = this.trackingStarts.get(gameUiControlInput.getPlaybackSessionUuid());
+        if (trackingStarts == null) {
+            throw new IllegalArgumentException("No playback found. SessionId: " + gameUiControlInput.getPlaybackSessionUuid());
+        }
+        TrackingStart trackingStart = null;
+        for (TrackingStart ts : trackingStarts) {
+            if (ts.getGameSessionUuid().equals(gameUiControlInput.getPlaybackGameSessionUuid())) {
+                trackingStart = ts;
+                break;
+            }
+        }
+        if (trackingStart == null) {
+            throw new IllegalArgumentException("No playback found. SessionId: " + gameUiControlInput.getPlaybackSessionUuid() + " GameSessionId: " + gameUiControlInput.getPlaybackGameSessionUuid());
+        }
+        PlanetEntity planetEntity = planetPersistence.loadPlanet(trackingStart.getPlanetId());
+
+        WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameEngineMode(GameEngineMode.PLAYBACK);
+        warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
+        PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();
+        warmGameUiControlConfig.setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
+        // ViewFieldTracking
+        Collection<ViewFieldTracking> allViewFieldTrackings = this.viewFieldTrackings.get(gameUiControlInput.getPlaybackSessionUuid());
+        if(allViewFieldTrackings != null) {
+            List<ViewFieldTracking> viewFieldTrackings = new ArrayList<>();
+            for (ViewFieldTracking vft : allViewFieldTrackings) {
+                if(vft.getGameSessionUuid().equals(gameUiControlInput.getPlaybackGameSessionUuid())) {
+                    viewFieldTrackings.add(vft);
+                }
+            }
+            viewFieldTrackings.sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+            playbackGameUiControlConfig.setViewFieldTrackings(viewFieldTrackings);
+        }
+        return warmGameUiControlConfig;
     }
 }

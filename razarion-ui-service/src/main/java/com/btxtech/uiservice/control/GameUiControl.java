@@ -123,12 +123,14 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         cockpitService.show(userUiService.getUserContext());
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.MASTER) {
-            if(coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {
-                trackerService.startDetailedTracking();
+            if (coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {
+                trackerService.startDetailedTracking(getPlanetConfig().getPlanetId());
             }
             scenes = coldGameUiControlConfig.getWarmGameUiControlConfig().getSceneConfigs();
         } else if (gameEngineMode == GameEngineMode.SLAVE) {
             scenes = setupSlaveScenes();
+        } else if (gameEngineMode == GameEngineMode.PLAYBACK) {
+            scenes = setupPlaybackScenes();
         } else {
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode());
         }
@@ -178,7 +180,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             startTimeStamp = null;
         }
         if (gameEngineMode == GameEngineMode.MASTER) {
-            if(coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {
+            if (coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {
                 trackerService.stopDetailedTracking();
             }
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
@@ -272,6 +274,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
         sceneConfigs.add(new SceneConfig().setInternalName("Planet 1 Spawn").setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(0).setHidePassedDialog(true)));
 
+        return sceneConfigs;
+    }
+
+    private List<SceneConfig> setupPlaybackScenes() {
+        List<SceneConfig> sceneConfigs = new ArrayList<>();
+        sceneConfigs.add(new SceneConfig().setRemoveLoadingCover(true));
         return sceneConfigs;
     }
 

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.DialogTracking;
 import com.btxtech.shared.datatypes.tracking.EventTrackingItem;
 import com.btxtech.shared.datatypes.tracking.SelectionTracking;
+import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
@@ -150,11 +151,19 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     }
 
     @Override
-    public void startDetailedTracking() {
+    public void startDetailedTracking(int planetId) {
         Window.addCloseHandler(windowCloseEvent -> sendEventTrackerItems());
         stopDetailedTracking();
         detailedTracking = true;
         detailedTrackingFuture = detailedExecutionService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
+
+        TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId);
+        initDetailedTracking(trackingStart);
+        trackingProvider.call(response -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "trackingStart failed: " + message, throwable);
+            return false;
+        }).trackingStart(trackingStart);
         // MapWindow.getInstance().setTrackingEvents(true);
         // TerrainView.getInstance().addTerrainScrollListener(this);
         // DialogManager.getInstance().addDialogListener(this);
@@ -209,12 +218,12 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     }
 
     private void initDetailedTracking(DetailedTracking detailedTracking) {
-        detailedTracking.setTimeStamp(new Date()).setStartUuid(clientRunner.getGameSessionUuid());
+        detailedTracking.setTimeStamp(new Date()).setGameSessionUuid(clientRunner.getGameSessionUuid());
     }
 
 //  TODO  public void addEventTrackingItem(int xPos, int yPos, int eventType) {
 //        if (detailedTracking) {
-//            eventTrackingItems.add(new EventTrackingItem(ClientGlobalServices.getInstance().getClientRunner().getStartUuid(),
+//            eventTrackingItems.add(new EventTrackingItem(ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid(),
 //                    GwtCommon.correctInt(xPos),
 //                    GwtCommon.correctInt(yPos),
 //                    GwtCommon.correctInt(eventType)));
@@ -223,7 +232,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 //   todo public void trackSyncInfo(SyncItem syncItem) {
 //        if (detailedTracking) {
 //            SyncItemInfo syncItemInfo = syncItem.getSyncInfo();
-//            syncItemInfo.setStartUuid(ClientGlobalServices.getInstance().getClientRunner().getStartUuid());
+//            syncItemInfo.setGameSessionUuid(ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid());
 //            syncItemInfo.setClientTimeStamp();
 //            syncItemInfos.add(syncItemInfo);
 //        }
@@ -264,7 +273,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 //            }
 //
 //            dialogTrackings.add(new DialogTracking(
-//                    ClientGlobalServices.getInstance().getClientRunner().getStartUuid(),
+//                    ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid(),
 //                    GwtCommon.correctInt(widget.getAbsoluteLeft()),
 //                    GwtCommon.correctInt(widget.getAbsoluteTop()),
 //                    GwtCommon.correctInt(widget.getOffsetWidth()),
@@ -278,7 +287,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
 //
 //  TODO  public void onDialogDisappears(Widget widget) {
 //        if (detailedTracking) {
-//            dialogTrackings.add(new DialogTracking(ClientGlobalServices.getInstance().getClientRunner().getStartUuid(),
+//            dialogTrackings.add(new DialogTracking(ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid(),
 //                    GwtCommon.checkInt(System.identityHashCode(widget), "onDialogDisappears System.identityHashCode(widget)")));
 //        }
 //    }

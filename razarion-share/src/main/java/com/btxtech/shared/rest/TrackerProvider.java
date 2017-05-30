@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
@@ -43,6 +44,11 @@ public interface TrackerProvider {
     @Path("performanceTracker")
     @Consumes(MediaType.APPLICATION_JSON)
     void performanceTracker(PerfmonStatistic perfmonStatistic);
+
+    @POST
+    @Path("trackingstart")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void trackingStart(TrackingStart trackingStart);
 
     @POST
     @Path("detailedTracking")

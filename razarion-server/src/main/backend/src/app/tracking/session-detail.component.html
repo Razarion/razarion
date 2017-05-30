@@ -21,6 +21,6 @@
   <tr *ngFor="let gameSessionDetail of sessionDetail.gameSessionDetails" style="cursor: pointer">
     <td>{{ gameSessionDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ gameSessionDetail.id }}</td>
-    <td><a target="_blank" [href]="'/game.xhtml?gameSessionUuid=' + gameSessionDetail.id + '&sessionId=' + gameSessionDetail.sessionId">Open</a></td>
+    <td><a target="_blank" [href]="'http://localhost:8080/faces/game.xhtml?gameSessionUuid=' + gameSessionDetail.id + '&sessionId=' + gameSessionDetail.sessionId">Open</a></td>
   </tr>
 </table>

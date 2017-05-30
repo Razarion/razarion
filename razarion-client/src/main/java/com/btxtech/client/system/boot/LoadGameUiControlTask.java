@@ -1,11 +1,13 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.user.UserUiService;
+import com.google.gwt.user.client.Window;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -20,6 +22,8 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class LoadGameUiControlTask extends AbstractStartupTask {
+    private static final String GAME_SESSION_ID_KEY = "gameSessionUuid";
+    private static final String SESSION_ID_KEY = "sessionId";
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -41,6 +45,13 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
             deferredStartup.failed(throwable);
             return false;
-        }).loadGameUiControlConfig();
+        }).loadGameUiControlConfig(setupGameUiControlInput());
+    }
+
+    private GameUiControlInput setupGameUiControlInput() {
+        GameUiControlInput gameUiControlInput = new GameUiControlInput();
+        gameUiControlInput.setPlaybackGameSessionUuid(Window.Location.getParameter(GAME_SESSION_ID_KEY));
+        gameUiControlInput.setPlaybackSessionUuid(Window.Location.getParameter(SESSION_ID_KEY));
+        return gameUiControlInput;
     }
 }

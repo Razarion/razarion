@@ -13,7 +13,7 @@ public interface TrackerService {
 
     void trackScene(Date startTimeStamp, String sceneInternalName);
 
-    void startDetailedTracking();
+    void startDetailedTracking(int planetId);
 
     void stopDetailedTracking();
 

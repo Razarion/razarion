@@ -5,6 +5,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -31,10 +32,10 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
 
     @Override
     @Transactional
-    public ColdGameUiControlConfig loadGameUiControlConfig() {
+    public ColdGameUiControlConfig loadGameUiControlConfig(GameUiControlInput gameUiControlInput) {
         try {
             UserContext userContext = userService.getUserContext();
-            return gameUiControlConfigPersistence.load(sessionHolder.getPlayerSession().getLocale(), userContext);
+            return gameUiControlConfigPersistence.load(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
             throw new RuntimeException(e);

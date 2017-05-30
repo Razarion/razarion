@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public abstract class DetailedTracking {
     private Date timeStamp;
-    private String startUuid;
+    private String gameSessionUuid;
 
     public Date getTimeStamp() {
         return timeStamp;
@@ -19,12 +19,12 @@ public abstract class DetailedTracking {
         return this;
     }
 
-    public String getStartUuid() {
-        return startUuid;
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
     }
 
-    public DetailedTracking setStartUuid(String startUuid) {
-        this.startUuid = startUuid;
+    public DetailedTracking setGameSessionUuid(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
         return this;
     }
 }

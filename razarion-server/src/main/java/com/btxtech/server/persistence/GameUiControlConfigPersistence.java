@@ -4,12 +4,14 @@ import com.btxtech.server.gameengine.GameEngineService;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import org.xml.sax.SAXException;
@@ -48,16 +50,22 @@ public class GameUiControlConfigPersistence {
     private ServerGameEnginePersistence serverGameEnginePersistence;
     @Inject
     private DbPropertiesService dbPropertiesService;
+    @Inject
+    private TrackerPersistence trackerPersistence;
 
     @Transactional
-    public ColdGameUiControlConfig load(Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
+    public ColdGameUiControlConfig load(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
         coldGameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         coldGameUiControlConfig.setUserContext(userContext);
         coldGameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         coldGameUiControlConfig.setAudioConfig(setupAudioConfig());
         coldGameUiControlConfig.setGameTipVisualConfig(setupGameTipVisualConfig());
-        coldGameUiControlConfig.setWarmGameUiControlConfig(loadWarm(locale, userContext));
+        if (gameUiControlInput.checkPlayback()) {
+            coldGameUiControlConfig.setWarmGameUiControlConfig(trackerPersistence.setupWarmGameUiControlConfig(gameUiControlInput));
+        } else {
+            coldGameUiControlConfig.setWarmGameUiControlConfig(loadWarm(locale, userContext));
+        }
         return coldGameUiControlConfig;
     }
 

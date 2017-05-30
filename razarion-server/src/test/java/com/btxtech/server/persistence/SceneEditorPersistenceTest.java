@@ -13,6 +13,7 @@ import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.GameTipConfig;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
@@ -101,7 +102,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
     private void saveAllScenesInternal(List<SceneConfig> expectedSceneConfigs) throws Exception {
         sceneEditorPersistence.saveAllScenes(GAME_UI_CONTROL_CONFIG_1_ID, expectedSceneConfigs, Locale.ENGLISH);
 
-        List<SceneConfig> actualSceneConfigs = gameUiControlConfigPersistence.load(Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getWarmGameUiControlConfig().getSceneConfigs();
+        List<SceneConfig> actualSceneConfigs = gameUiControlConfigPersistence.load(new GameUiControlInput(), Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getWarmGameUiControlConfig().getSceneConfigs();
 
         ObjectComparatorIgnore.add(BotConfig.class, "id");
         ObjectComparatorIgnore.add(QuestDescriptionConfig.class, "id");

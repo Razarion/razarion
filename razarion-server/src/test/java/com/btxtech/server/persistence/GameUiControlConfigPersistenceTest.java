@@ -3,6 +3,7 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import org.junit.Assert;
 import org.junit.Test;
@@ -25,19 +26,19 @@ public class GameUiControlConfigPersistenceTest extends ArquillianBaseTest {
         Locale locale = Locale.ENGLISH;
 
         UserContext userContext = new UserContext().setLevelId(LEVEL_1_ID);
-        ColdGameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load(locale, userContext);
+        ColdGameUiControlConfig gameUiControlConfig = gameUiControlConfigPersistence.load(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlanetId());
 
         userContext = new UserContext().setLevelId(LEVEL_2_ID);
-        gameUiControlConfig = gameUiControlConfigPersistence.load(locale, userContext);
+        gameUiControlConfig = gameUiControlConfigPersistence.load(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlanetId());
 
         userContext = new UserContext().setLevelId(LEVEL_3_ID);
-        gameUiControlConfig = gameUiControlConfigPersistence.load(locale, userContext);
+        gameUiControlConfig = gameUiControlConfigPersistence.load(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_1_ID, gameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlanetId());
 
         userContext = new UserContext().setLevelId(LEVEL_4_ID);
-        gameUiControlConfig = gameUiControlConfigPersistence.load(locale, userContext);
+        gameUiControlConfig = gameUiControlConfigPersistence.load(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_2_ID, gameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlanetId());
 
         cleanPlanets();

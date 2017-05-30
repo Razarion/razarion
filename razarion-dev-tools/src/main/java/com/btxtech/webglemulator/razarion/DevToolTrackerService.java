@@ -21,7 +21,7 @@ public class DevToolTrackerService implements TrackerService {
     }
 
     @Override
-    public void startDetailedTracking() {
+    public void startDetailedTracking(int planetId) {
         System.out.println("DevToolTrackerService.startDetailedTracking()");
     }
 

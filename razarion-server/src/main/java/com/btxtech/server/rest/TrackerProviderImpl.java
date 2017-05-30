@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
@@ -70,6 +71,16 @@ public class TrackerProviderImpl implements TrackerProvider {
     public void performanceTracker(PerfmonStatistic perfmonStatistic) {
         try {
             trackerPersistence.onPerformanceTracker(perfmonStatistic);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void trackingStart(TrackingStart trackingStart) {
+        try {
+            trackerPersistence.onTrackingStart(sessionHolder.getPlayerSession().getHttpSessionId(), trackingStart);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
