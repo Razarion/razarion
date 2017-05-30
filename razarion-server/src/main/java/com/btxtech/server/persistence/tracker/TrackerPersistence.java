@@ -235,7 +235,7 @@ public class TrackerPersistence {
         warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
 
         PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();
-        playbackGameUiControlConfig.setOriginTime(serverTrackingContainer.getClientTimeStamp()).setTrackingContainer(serverTrackingContainer.generateTrackingContainer());
+        playbackGameUiControlConfig.setTrackingStart(serverTrackingContainer.getTrackingStart()).setTrackingContainer(serverTrackingContainer.generateTrackingContainer());
         warmGameUiControlConfig.setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
         return warmGameUiControlConfig;
     }

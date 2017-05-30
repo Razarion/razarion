@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.control;
 
 
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
@@ -9,17 +10,14 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 30.05.2017.
  */
-@Singleton
-public class PlaybackControl {
+public abstract class PlaybackControl {
     private Logger logger = Logger.getLogger(PlaybackControl.class.getName());
     @Inject
     private Camera camera;
@@ -30,10 +28,15 @@ public class PlaybackControl {
     private Date lastAction;
     private TrackingContainer trackingContainer;
 
-    public void start(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
-        lastAction = playbackGameUiControlConfig.getOriginTime();
-        trackingContainer = playbackGameUiControlConfig.getTrackingContainer();
+    protected abstract void enterCanvasPlaybackMode();
 
+    protected abstract void setCanvasPlaybackDimension(Index browserWindowDimension);
+
+    public void start(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
+        lastAction = playbackGameUiControlConfig.getTrackingStart().getTimeStamp();
+        trackingContainer = playbackGameUiControlConfig.getTrackingContainer();
+        enterCanvasPlaybackMode();
+        setCanvasPlaybackDimension(playbackGameUiControlConfig.getTrackingStart().getBrowserWindowDimension());
         scheduleNextAction();
     }
 

@@ -1,19 +1,19 @@
 package com.btxtech.shared.datatypes.tracking;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 
 /**
  * Created by Beat
  * on 30.05.2017.
  */
 public class BrowserWindowTracking extends DetailedTracking {
-    private DecimalPosition dimension;
+    private Index dimension;
 
-    public DecimalPosition getDimension() {
+    public Index getDimension() {
         return dimension;
     }
 
-    public BrowserWindowTracking setDimension(DecimalPosition dimension) {
+    public BrowserWindowTracking setDimension(Index dimension) {
         this.dimension = dimension;
         return this;
     }

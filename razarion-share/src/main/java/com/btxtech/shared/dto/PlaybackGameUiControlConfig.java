@@ -1,17 +1,14 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
-
-import java.util.Date;
-import java.util.List;
+import com.btxtech.shared.datatypes.tracking.TrackingStart;
 
 /**
  * Created by Beat
  * on 30.05.2017.
  */
 public class PlaybackGameUiControlConfig {
-    private Date originTime;
+    private TrackingStart trackingStart;
     private TrackingContainer trackingContainer;
 
     public TrackingContainer getTrackingContainer() {
@@ -23,12 +20,12 @@ public class PlaybackGameUiControlConfig {
         return this;
     }
 
-    public Date getOriginTime() {
-        return originTime;
+    public TrackingStart getTrackingStart() {
+        return trackingStart;
     }
 
-    public PlaybackGameUiControlConfig setOriginTime(Date originTime) {
-        this.originTime = originTime;
+    public PlaybackGameUiControlConfig setTrackingStart(TrackingStart trackingStart) {
+        this.trackingStart = trackingStart;
         return this;
     }
 }

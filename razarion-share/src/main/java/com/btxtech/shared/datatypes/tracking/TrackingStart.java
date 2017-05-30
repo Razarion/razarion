@@ -13,6 +13,9 @@
 
 package com.btxtech.shared.datatypes.tracking;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+
 /**
  * User: beat
  * Date: 03.08.2010
@@ -21,6 +24,7 @@ package com.btxtech.shared.datatypes.tracking;
 public class TrackingStart extends DetailedTracking {
     private String gameSessionUuid;
     private int planetId;
+    private Index browserWindowDimension;
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
@@ -37,6 +41,15 @@ public class TrackingStart extends DetailedTracking {
 
     public TrackingStart setPlanetId(int planetId) {
         this.planetId = planetId;
+        return this;
+    }
+
+    public Index getBrowserWindowDimension() {
+        return browserWindowDimension;
+    }
+
+    public TrackingStart setBrowserWindowDimension(Index browserWindowDimension) {
+        this.browserWindowDimension = browserWindowDimension;
         return this;
     }
 }

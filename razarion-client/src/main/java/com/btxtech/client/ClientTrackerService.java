@@ -1,6 +1,8 @@
 package com.btxtech.client;
 
+import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
@@ -58,6 +60,8 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
+    @Inject
+    private GameCanvas gameCanvas;
     private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
@@ -162,6 +166,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         detailedTrackingFuture = detailedExecutionService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
 
         TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(clientRunner.getGameSessionUuid());
+        trackingStart.setBrowserWindowDimension(gameCanvas.getWindowDimenionForPlayback());
         initDetailedTracking(trackingStart);
         trackingProvider.call(response -> {
         }, (message, throwable) -> {
@@ -220,13 +225,13 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         trackingContainer.addCameraTracking(cameraTracking);
     }
 
-    public void onResizeCanvas(DecimalPosition decimalPosition) {
+    public void onResizeCanvas(Index dimension) {
         if (!detailedTracking) {
             return;
         }
         BrowserWindowTracking browserWindowTracking = new BrowserWindowTracking();
         initDetailedTracking(browserWindowTracking);
-        browserWindowTracking.setDimension(decimalPosition);
+        browserWindowTracking.setDimension(dimension);
         trackingContainer.addBrowserWindowTracking(browserWindowTracking);
     }
 

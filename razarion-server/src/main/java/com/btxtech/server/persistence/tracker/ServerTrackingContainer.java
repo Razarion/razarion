@@ -31,8 +31,8 @@ public class ServerTrackingContainer {
         return trackingStart.getPlanetId();
     }
 
-    public Date getClientTimeStamp() {
-        return trackingStart.getTimeStamp();
+    public TrackingStart getTrackingStart() {
+        return trackingStart;
     }
 
     public Date getTime() {

@@ -1,13 +1,10 @@
 package com.btxtech.server.persistence.tracker;
 
-import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlInput;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +18,11 @@ public class TrackingContainerStore {
     private Map<String, Map<String, ServerTrackingContainer>> sessionTrackingContainers = new HashMap<>();
 
     public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) {
-        System.out.println("*********** onTrackingStart: " + trackingStart);
-        Map<String, ServerTrackingContainer> containers = sessionTrackingContainers.putIfAbsent(httpSessionId, new HashMap<>());
+        Map<String, ServerTrackingContainer> containers = sessionTrackingContainers.computeIfAbsent(httpSessionId, k -> new HashMap<>());
         containers.put(trackingStart.getGameSessionUuid(), new ServerTrackingContainer(trackingStart));
     }
 
     public void onDetailedTracking(String sessionId, TrackingContainer trackingContainer) {
-        System.out.println("*********** onDetailedTracking: " + trackingContainer);
         sessionTrackingContainers.get(sessionId).get(trackingContainer.getGameSessionUuid()).addTrackingContainer(trackingContainer);
     }
 
