@@ -82,6 +82,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private Instance<AbstractServerSystemConnection> serverSystemConnectionInstance;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private PlaybackControl playbackControl;
     private ColdGameUiControlConfig coldGameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -131,6 +133,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             scenes = setupSlaveScenes();
         } else if (gameEngineMode == GameEngineMode.PLAYBACK) {
             scenes = setupPlaybackScenes();
+            playbackControl.start(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlaybackGameUiControlConfig());
         } else {
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode());
         }

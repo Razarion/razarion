@@ -1,7 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
-import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
+import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -53,5 +53,5 @@ public interface TrackerProvider {
     @POST
     @Path("detailedTracking")
     @Consumes(MediaType.APPLICATION_JSON)
-    void detailedTracking(List<ViewFieldTracking> viewFieldTrackings);
+    void detailedTracking(List<CameraTracking> cameraTrackings);
 }

@@ -9,9 +9,9 @@ import com.btxtech.server.rest.SessionDetail;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
-import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
@@ -60,7 +60,7 @@ public class TrackerPersistence {
     @PersistenceContext
     private EntityManager entityManager;
     private MapCollection<String, TrackingStart> trackingStarts = new MapCollection<>();
-    private MapCollection<String, ViewFieldTracking> viewFieldTrackings = new MapCollection<>();
+    private MapCollection<String, CameraTracking> viewFieldTrackings = new MapCollection<>();
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
@@ -166,9 +166,9 @@ public class TrackerPersistence {
         trackingStarts.put(httpSessionId, trackingStart);
     }
 
-    public void onDetailedTracking(String sessionId, List<ViewFieldTracking> viewFieldTrackings) {
-        for (ViewFieldTracking viewFieldTracking : viewFieldTrackings) {
-            this.viewFieldTrackings.put(sessionId, viewFieldTracking);
+    public void onDetailedTracking(String sessionId, List<CameraTracking> cameraTrackings) {
+        for (CameraTracking cameraTracking : cameraTrackings) {
+            this.viewFieldTrackings.put(sessionId, cameraTracking);
         }
     }
 
@@ -261,18 +261,19 @@ public class TrackerPersistence {
         WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameEngineMode(GameEngineMode.PLAYBACK);
         warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
         PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();
+        playbackGameUiControlConfig.setOriginTime(trackingStart.getTimeStamp());
         warmGameUiControlConfig.setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
-        // ViewFieldTracking
-        Collection<ViewFieldTracking> allViewFieldTrackings = this.viewFieldTrackings.get(gameUiControlInput.getPlaybackSessionUuid());
-        if(allViewFieldTrackings != null) {
-            List<ViewFieldTracking> viewFieldTrackings = new ArrayList<>();
-            for (ViewFieldTracking vft : allViewFieldTrackings) {
+        // CameraTracking
+        Collection<CameraTracking> allCameraTrackings = this.viewFieldTrackings.get(gameUiControlInput.getPlaybackSessionUuid());
+        if(allCameraTrackings != null) {
+            List<CameraTracking> cameraTrackings = new ArrayList<>();
+            for (CameraTracking vft : allCameraTrackings) {
                 if(vft.getGameSessionUuid().equals(gameUiControlInput.getPlaybackGameSessionUuid())) {
-                    viewFieldTrackings.add(vft);
+                    cameraTrackings.add(vft);
                 }
             }
-            viewFieldTrackings.sort(Comparator.comparing(DetailedTracking::getTimeStamp));
-            playbackGameUiControlConfig.setViewFieldTrackings(viewFieldTrackings);
+            cameraTrackings.sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+            playbackGameUiControlConfig.setCameraTrackings(cameraTrackings);
         }
         return warmGameUiControlConfig;
     }

@@ -1,11 +1,11 @@
 package com.btxtech.client;
 
+import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.DialogTracking;
 import com.btxtech.shared.datatypes.tracking.EventTrackingItem;
 import com.btxtech.shared.datatypes.tracking.SelectionTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
-import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -16,6 +16,8 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.TrackerService;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.ClientRunner;
@@ -51,8 +53,12 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private ClientRunner clientRunner;
     @Inject
     private SimpleExecutorService detailedExecutionService;
+    @Inject
+    private Camera camera;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
     private List<EventTrackingItem> eventTrackingItems = new ArrayList<>();
-    private List<ViewFieldTracking> viewFieldTrackings = new ArrayList<>();
+    private List<CameraTracking> cameraTrackings = new ArrayList<>();
     private List<SelectionTracking> selectionTrackings = new ArrayList<>();
     // TODO private List<SyncItemInfo> syncItemInfos = new ArrayList<>();
     private List<DialogTracking> dialogTrackings = new ArrayList<>();
@@ -210,11 +216,10 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         if (currentViewField.hasNullPosition()) {
             return;
         }
-        ViewFieldTracking viewFieldTracking = new ViewFieldTracking();
-        initDetailedTracking(viewFieldTracking);
-        viewFieldTracking.setBottomLeft(currentViewField.getBottomLeft()).setBottomRight(currentViewField.getBottomRight());
-        viewFieldTracking.setBottomRight(currentViewField.getTopRight()).setBottomLeft(currentViewField.getTopRight()).setZ(currentViewField.getZ());
-        viewFieldTrackings.add(viewFieldTracking);
+        CameraTracking cameraTracking = new CameraTracking();
+        initDetailedTracking(cameraTracking);
+        cameraTracking.setPosition(camera.getPosition().toXY()).setFovY(projectionTransformation.getFovY());
+        cameraTrackings.add(cameraTracking);
     }
 
     private void initDetailedTracking(DetailedTracking detailedTracking) {
@@ -242,7 +247,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         if (eventTrackingItems.isEmpty()
                 // TODO  && syncItemInfos.isEmpty()
                 && selectionTrackings.isEmpty()
-                && viewFieldTrackings.isEmpty()
+                && cameraTrackings.isEmpty()
                 && dialogTrackings.isEmpty()) {
             return;
         }
@@ -250,7 +255,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "detailedTracking failed: " + message, throwable);
             return false;
-        }).detailedTracking(viewFieldTrackings);
+        }).detailedTracking(cameraTrackings);
 
         clearTracking();
     }
@@ -259,7 +264,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         eventTrackingItems = new ArrayList<>();
         // TODO syncItemInfos = new ArrayList<>();
         selectionTrackings = new ArrayList<>();
-        viewFieldTrackings = new ArrayList<>();
+        cameraTrackings = new ArrayList<>();
         dialogTrackings = new ArrayList<>();
     }
 

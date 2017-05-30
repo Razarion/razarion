@@ -1,8 +1,8 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.tracking.ViewFieldTracking;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.datatypes.tracking.CameraTracking;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -10,14 +10,23 @@ import java.util.List;
  * on 30.05.2017.
  */
 public class PlaybackGameUiControlConfig {
-    private List<ViewFieldTracking> viewFieldTrackings;
+    private Date originTime;
+    private List<CameraTracking> cameraTrackings;
 
-    public List<ViewFieldTracking> getViewFieldTrackings() {
-        return viewFieldTrackings;
+    public List<CameraTracking> getCameraTrackings() {
+        return cameraTrackings;
     }
 
-    public PlaybackGameUiControlConfig setViewFieldTrackings(List<ViewFieldTracking> viewFieldTrackings) {
-        this.viewFieldTrackings = viewFieldTrackings;
+    public PlaybackGameUiControlConfig setCameraTrackings(List<CameraTracking> cameraTrackings) {
+        this.cameraTrackings = cameraTrackings;
         return this;
+    }
+
+    public Date getOriginTime() {
+        return originTime;
+    }
+
+    public void setOriginTime(Date originTime) {
+        this.originTime = originTime;
     }
 }
