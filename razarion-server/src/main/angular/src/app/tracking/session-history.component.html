@@ -10,13 +10,15 @@
   <tr>
     <th>Date</th>
     <th>Sessio Id</th>
-    <th>Facebook Ads</th>
+    <th>Facebook Ad</th>
     <th>Remote Host</th>
+    <th>User Agent</th>
   </tr>
-  <tr *ngFor="let session of sessions" (click)="onClick(session)" style="cursor: pointer">
-    <td>{{ session.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-    <td>{{ session.id }}</td>
-    <td>{{ session.fbAdRazTrack }}</td>
-    <td>{{ session.remoteHost }}</td>
+  <tr *ngFor="let sessionTracker of sessionTrackers" (click)="onClick(sessionTracker)" style="cursor: pointer">
+    <td>{{ sessionTracker.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td>{{ sessionTracker.id }}</td>
+    <td>{{ sessionTracker.fbAdRazTrack }}</td>
+    <td>{{ sessionTracker.remoteHost }}</td>
+    <td>{{ sessionTracker.userAgent }}</td>
   </tr>
 </table>

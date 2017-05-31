@@ -1,15 +1,17 @@
-package com.btxtech.server.rest;
+package com.btxtech.server.persistence.tracker;
 
 import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Beat on 29.05.2017.
+ * Created by Beat
+ * on 29.05.2017.
  */
 public class SessionDetail {
     private Date time;
     private String id;
     private String fbAdRazTrack;
+    private String userAgent;
     private List<GameSessionDetail> gameSessionDetails;
 
     public Date getTime() {
@@ -36,6 +38,15 @@ public class SessionDetail {
 
     public SessionDetail setFbAdRazTrack(String fbAdRazTrack) {
         this.fbAdRazTrack = fbAdRazTrack;
+        return this;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public SessionDetail setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
         return this;
     }
 

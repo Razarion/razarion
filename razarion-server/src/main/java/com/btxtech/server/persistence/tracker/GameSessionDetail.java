@@ -1,9 +1,10 @@
-package com.btxtech.server.rest;
+package com.btxtech.server.persistence.tracker;
 
 import java.util.Date;
 
 /**
- * Created by Beat on 29.05.2017.
+ * Created by Beat
+ * on 29.05.2017.
  */
 public class GameSessionDetail {
     private Date time;

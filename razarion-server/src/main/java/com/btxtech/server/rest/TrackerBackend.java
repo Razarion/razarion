@@ -1,5 +1,7 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.persistence.tracker.SearchConfig;
+import com.btxtech.server.persistence.tracker.SessionDetail;
 import com.btxtech.server.persistence.tracker.SessionTracker;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.rest.RestUrl;

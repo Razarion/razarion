@@ -1,7 +1,6 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.ArquillianBaseTest;
-import com.btxtech.server.rest.SearchConfig;
 import com.btxtech.server.util.DateUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,8 +8,6 @@ import org.junit.Test;
 import javax.inject.Inject;
 
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by Beat on 29.05.2017.

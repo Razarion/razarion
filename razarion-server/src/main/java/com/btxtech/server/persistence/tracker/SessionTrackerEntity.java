@@ -106,7 +106,7 @@ public class SessionTrackerEntity {
     }
 
     public SessionTracker toSessionTracker() {
-        return new SessionTracker().setId(sessionId).setTime(timeStamp).setRemoteHost(remoteHost);
+        return new SessionTracker().setId(sessionId).setTime(timeStamp).setRemoteHost(remoteHost).setUserAgent(userAgent);
     }
 
     @Override

@@ -9,6 +9,14 @@
     <td>Time:</td>
     <td>{{sessionDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
   </tr>
+  <tr>
+    <td>Facebook Ad:</td>
+    <td>{{sessionDetail.fbAdRazTrack}}</td>
+  </tr>
+  <tr>
+    <td>User Agent:</td>
+    <td>{{sessionDetail.userAgent}}</td>
+  </tr>
 </table>
 
 <h3>Game sessions</h3>
@@ -21,6 +29,8 @@
   <tr *ngFor="let gameSessionDetail of sessionDetail.gameSessionDetails" style="cursor: pointer">
     <td>{{ gameSessionDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ gameSessionDetail.id }}</td>
-    <td><a target="_blank" [href]="'/faces/game.xhtml?gameSessionUuid=' + gameSessionDetail.id + '&sessionId=' + gameSessionDetail.sessionId">Open</a></td>
+    <td><a target="_blank"
+           [href]="'/faces/game.xhtml?gameSessionUuid=' + gameSessionDetail.id + '&sessionId=' + gameSessionDetail.sessionId">Open</a>
+    </td>
   </tr>
 </table>

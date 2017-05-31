@@ -3,9 +3,6 @@ package com.btxtech.server.persistence.tracker;
 import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.PlanetPersistence;
-import com.btxtech.server.rest.GameSessionDetail;
-import com.btxtech.server.rest.SearchConfig;
-import com.btxtech.server.rest.SessionDetail;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
@@ -215,7 +212,7 @@ public class TrackerPersistence {
         query.where(criteriaBuilder.equal(root.get(SessionTrackerEntity_.sessionId), sessionId));
         SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
 
-        SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp());
+        SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
         List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
         for (ServerTrackingContainer serverTrackingContainer : trackingContainerStore.getServerTrackingContainers(sessionId)) {
