@@ -11,7 +11,8 @@ public class TrackingContainer {
     private String gameSessionUuid;
     private List<CameraTracking> cameraTrackings = new ArrayList<>();
     private List<BrowserWindowTracking> browserWindowTrackings = new ArrayList<>();
-    // TODO private List<EventTrackingItem> eventTrackingItems = new ArrayList<>();
+    private List<MouseMoveTracking> mouseMoveTrackings = new ArrayList<>();
+    private List<MouseButtonTracking> mouseButtonTrackings = new ArrayList<>();
     private List<SelectionTracking> selectionTrackings = new ArrayList<>();
     // TODO private List<SyncItemInfo> syncItemInfos = new ArrayList<>();
     // TODO private List<DialogTracking> dialogTrackings = new ArrayList<>();
@@ -29,24 +30,45 @@ public class TrackingContainer {
         return cameraTrackings;
     }
 
-    public void setCameraTrackings(List<CameraTracking> cameraTrackings) {
+    public TrackingContainer setCameraTrackings(List<CameraTracking> cameraTrackings) {
         this.cameraTrackings = cameraTrackings;
+        return this;
     }
 
     public List<BrowserWindowTracking> getBrowserWindowTrackings() {
         return browserWindowTrackings;
     }
 
-    public void setBrowserWindowTrackings(List<BrowserWindowTracking> browserWindowTrackings) {
+    public TrackingContainer setBrowserWindowTrackings(List<BrowserWindowTracking> browserWindowTrackings) {
         this.browserWindowTrackings = browserWindowTrackings;
+        return this;
     }
 
     public List<SelectionTracking> getSelectionTrackings() {
         return selectionTrackings;
     }
 
-    public void setSelectionTrackings(List<SelectionTracking> selectionTrackings) {
+    public TrackingContainer setSelectionTrackings(List<SelectionTracking> selectionTrackings) {
         this.selectionTrackings = selectionTrackings;
+        return this;
+    }
+
+    public List<MouseMoveTracking> getMouseMoveTrackings() {
+        return mouseMoveTrackings;
+    }
+
+    public TrackingContainer setMouseMoveTrackings(List<MouseMoveTracking> mouseMoveTrackings) {
+        this.mouseMoveTrackings = mouseMoveTrackings;
+        return this;
+    }
+
+    public List<MouseButtonTracking> getMouseButtonTrackings() {
+        return mouseButtonTrackings;
+    }
+
+    public TrackingContainer setMouseButtonTrackings(List<MouseButtonTracking> mouseButtonTrackings) {
+        this.mouseButtonTrackings = mouseButtonTrackings;
+        return this;
     }
 
     public void addCameraTracking(CameraTracking cameraTracking) {
@@ -70,9 +92,25 @@ public class TrackingContainer {
         selectionTrackings.add(selectionTracking);
     }
 
+    public void addMouseMoveTrackings(MouseMoveTracking mouseMoveTracking) {
+        if (mouseMoveTrackings == null) {
+            mouseMoveTrackings = new ArrayList<>();
+        }
+        mouseMoveTrackings.add(mouseMoveTracking);
+    }
+
+    public void addMouseButtonTrackings(MouseButtonTracking mouseButtonTracking) {
+        if (mouseButtonTrackings == null) {
+            mouseButtonTrackings = new ArrayList<>();
+        }
+        mouseButtonTrackings.add(mouseButtonTracking);
+    }
+
     public boolean checkEmpty() {
         return (cameraTrackings == null || cameraTrackings.isEmpty())
                 && (browserWindowTrackings == null || browserWindowTrackings.isEmpty())
-                && (selectionTrackings == null || selectionTrackings.isEmpty());
+                && (selectionTrackings == null || selectionTrackings.isEmpty())
+                && (mouseMoveTrackings == null || mouseMoveTrackings.isEmpty())
+                && (mouseButtonTrackings == null || mouseButtonTrackings.isEmpty());
     }
 }

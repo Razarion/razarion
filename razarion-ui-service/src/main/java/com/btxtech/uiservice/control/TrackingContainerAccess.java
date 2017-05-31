@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.control;
 
-import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 
@@ -28,6 +27,8 @@ public class TrackingContainerAccess {
         bestFit.analyse(trackingContainer.getCameraTrackings());
         bestFit.analyse(trackingContainer.getSelectionTrackings());
         bestFit.analyse(trackingContainer.getBrowserWindowTrackings());
+        bestFit.analyse(trackingContainer.getMouseMoveTrackings());
+        bestFit.analyse(trackingContainer.getMouseButtonTrackings());
 
         return bestFit.removeBest();
     }
@@ -38,10 +39,10 @@ public class TrackingContainerAccess {
 
         public void analyse(List<? extends DetailedTracking> detailedTrackings) {
             if (detailedTrackings != null && !detailedTrackings.isEmpty()) {
-                if(timeStamp == null) {
+                if (timeStamp == null) {
                     fill(detailedTrackings);
                 } else {
-                    if(detailedTrackings.get(0).getTimeStamp().getTime() < timeStamp.getTime()) {
+                    if (detailedTrackings.get(0).getTimeStamp().getTime() < timeStamp.getTime()) {
                         fill(detailedTrackings);
                     }
                 }
@@ -54,7 +55,7 @@ public class TrackingContainerAccess {
         }
 
         public DetailedTracking removeBest() {
-            if(timeStamp == null || list == null) {
+            if (timeStamp == null || list == null) {
                 throw new IllegalStateException("TrackingContainerAccess.removeBest(): timeStamp == null || list == null");
             }
             return list.remove(0);

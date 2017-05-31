@@ -52,9 +52,17 @@ public class ServerTrackingContainer {
             if (trackingContainer.getBrowserWindowTrackings() != null) {
                 result.getBrowserWindowTrackings().addAll(trackingContainer.getBrowserWindowTrackings());
             }
+            if (trackingContainer.getMouseMoveTrackings() != null) {
+                result.getMouseMoveTrackings().addAll(trackingContainer.getMouseMoveTrackings());
+            }
+            if (trackingContainer.getMouseButtonTrackings() != null) {
+                result.getMouseButtonTrackings().addAll(trackingContainer.getMouseButtonTrackings());
+            }
         }
         result.getCameraTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getBrowserWindowTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getMouseMoveTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getMouseButtonTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         return result;
     }
 }

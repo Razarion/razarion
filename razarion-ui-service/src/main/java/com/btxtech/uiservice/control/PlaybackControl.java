@@ -5,6 +5,8 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
+import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
+import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -30,14 +32,18 @@ public abstract class PlaybackControl {
     private TrackingContainerAccess trackingContainerAccess;
     private DetailedTracking nextDetailedTracking;
 
-    protected abstract void enterCanvasPlaybackMode();
+    protected abstract void activatePlaybackMode();
 
     protected abstract void setCanvasPlaybackDimension(Index browserWindowDimension);
+
+    protected abstract void displayMouseMove(Index position);
+
+    protected abstract void displayMouseButton(int button, boolean down);
 
     public void start(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
         lastAction = playbackGameUiControlConfig.getTrackingStart().getTimeStamp();
         trackingContainerAccess = new TrackingContainerAccess(playbackGameUiControlConfig.getTrackingContainer());
-        enterCanvasPlaybackMode();
+        activatePlaybackMode();
         setCanvasPlaybackDimension(playbackGameUiControlConfig.getTrackingStart().getBrowserWindowDimension());
         scheduleNextAction();
     }
@@ -63,6 +69,12 @@ public abstract class PlaybackControl {
         } else if (nextDetailedTracking instanceof BrowserWindowTracking) {
             BrowserWindowTracking browserWindowTracking = (BrowserWindowTracking) nextDetailedTracking;
             setCanvasPlaybackDimension(browserWindowTracking.getDimension());
+        } else if (nextDetailedTracking instanceof MouseMoveTracking) {
+            MouseMoveTracking mouseMoveTracking = (MouseMoveTracking) nextDetailedTracking;
+            displayMouseMove(mouseMoveTracking.getPosition());
+        } else if (nextDetailedTracking instanceof MouseButtonTracking) {
+            MouseButtonTracking mouseButtonTracking = (MouseButtonTracking) nextDetailedTracking;
+            displayMouseButton(mouseButtonTracking.getButton(), mouseButtonTracking.isDown());
         } else {
             logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
         }

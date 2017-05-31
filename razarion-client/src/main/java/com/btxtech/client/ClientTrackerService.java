@@ -1,11 +1,12 @@
 package com.btxtech.client;
 
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
+import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
+import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
 import com.btxtech.shared.datatypes.tracking.SelectionTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
@@ -15,6 +16,7 @@ import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.rest.TrackerProvider;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionEvent;
@@ -29,6 +31,9 @@ import com.btxtech.uiservice.system.boot.StartupSeq;
 import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
 import com.google.gwt.user.client.Window;
+import elemental.client.Browser;
+import elemental.events.Event;
+import elemental.events.MouseEvent;
 import org.jboss.errai.common.client.api.Caller;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -62,6 +67,8 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private ProjectionTransformation projectionTransformation;
     @Inject
     private GameCanvas gameCanvas;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
@@ -165,6 +172,10 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         createTrackingContainer();
         detailedTrackingFuture = detailedExecutionService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
 
+        Browser.getDocument().addEventListener(Event.MOUSEMOVE, this::onMouseMove, true);
+        Browser.getDocument().addEventListener(Event.MOUSEDOWN, this::onMouseButtonDown, true);
+        Browser.getDocument().addEventListener(Event.MOUSEUP, this::onMouseButtonUp, true);
+
         TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(clientRunner.getGameSessionUuid());
         trackingStart.setBrowserWindowDimension(gameCanvas.getWindowDimenionForPlayback());
         initDetailedTracking(trackingStart);
@@ -187,8 +198,6 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
             detailedTrackingFuture = null;
         }
         // TODO SelectionHandler.getInstance().removeSelectionListener(this);
-        // TODO MapWindow.getInstance().setTrackingEvents(false);
-        // TODO TerrainView.getInstance().removeTerrainScrollListener(this);
         sendEventTrackerItems();
     }
 
@@ -235,26 +244,42 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         trackingContainer.addBrowserWindowTracking(browserWindowTracking);
     }
 
+    private void onMouseMove(Event event) {
+        try {
+            MouseEvent mouseEvent = (MouseEvent) event;
+            MouseMoveTracking mouseMoveTracking = new MouseMoveTracking().setPosition(new Index(mouseEvent.getClientX(), mouseEvent.getClientY()));
+            initDetailedTracking(mouseMoveTracking);
+            trackingContainer.addMouseMoveTrackings(mouseMoveTracking);
+        } catch (Exception e) {
+            exceptionHandler.handleException("ClientTrackerService.onMouseMove()", e);
+        }
+    }
+
+    private void onMouseButtonDown(Event event) {
+        try {
+            MouseEvent mouseEvent = (MouseEvent) event;
+            MouseButtonTracking mouseButtonTracking = new MouseButtonTracking().setButton(mouseEvent.getButton()).setDown(true);
+            initDetailedTracking(mouseButtonTracking);
+            trackingContainer.addMouseButtonTrackings(mouseButtonTracking);
+        } catch (Exception e) {
+            exceptionHandler.handleException("ClientTrackerService.onMouseButton()", e);
+        }
+    }
+
+    private void onMouseButtonUp(Event event) {
+        try {
+            MouseEvent mouseEvent = (MouseEvent) event;
+            MouseButtonTracking mouseButtonTracking = new MouseButtonTracking().setButton(mouseEvent.getButton()).setDown(false);
+            initDetailedTracking(mouseButtonTracking);
+            trackingContainer.addMouseButtonTrackings(mouseButtonTracking);
+        } catch (Exception e) {
+            exceptionHandler.handleException("ClientTrackerService.onMouseButton()", e);
+        }
+    }
+
     private void initDetailedTracking(DetailedTracking detailedTracking) {
         detailedTracking.setTimeStamp(new Date());
     }
-
-//  TODO  public void addEventTrackingItem(int xPos, int yPos, int eventType) {
-//        if (detailedTracking) {
-//            eventTrackingItems.add(new EventTrackingItem(ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid(),
-//                    GwtCommon.correctInt(xPos),
-//                    GwtCommon.correctInt(yPos),
-//                    GwtCommon.correctInt(eventType)));
-//        }
-//    }
-//   todo public void trackSyncInfo(SyncItem syncItem) {
-//        if (detailedTracking) {
-//            SyncItemInfo syncItemInfo = syncItem.getSyncInfo();
-//            syncItemInfo.setGameSessionUuid(ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid());
-//            syncItemInfo.setClientTimeStamp();
-//            syncItemInfos.add(syncItemInfo);
-//        }
-//    }
 
     private void sendEventTrackerItems() {
         if (trackingContainer == null || trackingContainer.checkEmpty()) {
@@ -273,44 +298,4 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         trackingContainer = new TrackingContainer();
         trackingContainer.setGameSessionUuid(clientRunner.getGameSessionUuid());
     }
-
-//  TODO  public void onDialogAppears(Widget widget, String description) {
-//        if (detailedTracking) {
-//            Integer zIndex = null;
-//            try {
-//                zIndex = Integer.parseInt(widget.getElement().getStyle().getZIndex());
-//            } catch (NumberFormatException e) {
-//                // Ignore
-//            }
-//
-//            dialogTrackings.add(new DialogTracking(
-//                    ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid(),
-//                    GwtCommon.correctInt(widget.getAbsoluteLeft()),
-//                    GwtCommon.correctInt(widget.getAbsoluteTop()),
-//                    GwtCommon.correctInt(widget.getOffsetWidth()),
-//                    GwtCommon.correctInt(widget.getOffsetHeight()),
-//                    GwtCommon.correctInt(zIndex),
-//                    description,
-//                    GwtCommon.correctInt(System.identityHashCode(widget))
-//            ));
-//        }
-//    }
-//
-//  TODO  public void onDialogDisappears(Widget widget) {
-//        if (detailedTracking) {
-//            dialogTrackings.add(new DialogTracking(ClientGlobalServices.getInstance().getClientRunner().getGameSessionUuid(),
-//                    GwtCommon.checkInt(System.identityHashCode(widget), "onDialogDisappears System.identityHashCode(widget)")));
-//        }
-//    }
-//
-//    @Override
-//  TODO  public void onDialogShown(Dialog dialog) {
-//        onDialogAppears(dialog, "Dialog: " + dialog.getTitle());
-//    }
-//
-//    @Override
-// TODO   public void onDialogHidden(Dialog dialog) {
-//        onDialogDisappears(dialog);
-//    }
-
 }

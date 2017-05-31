@@ -39,7 +39,7 @@ public abstract class AbstractBuildupVertexContainerRenderUnit extends AbstractR
             return;
         }
         if (baseItemBuildupImageId == null) {
-            logger.warning("Buildup baseItemBuildupImageId Texture Id set: " + helperString());
+            logger.warning("No buildup baseItemBuildupImageId Texture Id set: " + helperString());
             return;
         }
 

@@ -12,12 +12,22 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class TestPlaybackControl extends PlaybackControl {
     @Override
-    protected void enterCanvasPlaybackMode() {
+    protected void activatePlaybackMode() {
         throw new UnsupportedOperationException();
     }
 
     @Override
     protected void setCanvasPlaybackDimension(Index browserWindowDimension) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void displayMouseMove(Index position) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void displayMouseButton(int button, boolean down) {
         throw new UnsupportedOperationException();
     }
 }

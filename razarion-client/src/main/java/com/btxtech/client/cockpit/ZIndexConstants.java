@@ -16,4 +16,6 @@ public class ZIndexConstants {
     public static final int TIP = counter++;
     public static final int LOADING_COVER = counter++; // Edit in razarion.css
     public static final int EMPTY_COVER = counter++; // Edit in razarion.css
+    public static final int PLAYBACK_MOUSE_CANVAS = counter++;
+
 }
