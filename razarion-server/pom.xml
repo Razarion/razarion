@@ -120,6 +120,30 @@
                 <version>1.0.2.Final</version>
                 <extensions>false</extensions>
             </plugin>
+            <plugin>
+                <!-- Build angular -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>ng</executable>
+                    <workingDirectory>${project.basedir}/src/main/angular</workingDirectory>
+                    <arguments>
+                        <argument>build</argument>
+                        <argument>--prod</argument>
+                        <argument>--output-path=${project.build.directory}/ROOT/backend</argument>
+                        <argument>--base-href=/backend/</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
