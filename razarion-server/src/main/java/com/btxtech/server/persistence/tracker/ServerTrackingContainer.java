@@ -49,8 +49,12 @@ public class ServerTrackingContainer {
             if (trackingContainer.getCameraTrackings() != null) {
                 result.getCameraTrackings().addAll(trackingContainer.getCameraTrackings());
             }
+            if (trackingContainer.getBrowserWindowTrackings() != null) {
+                result.getBrowserWindowTrackings().addAll(trackingContainer.getBrowserWindowTrackings());
+            }
         }
         result.getCameraTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getBrowserWindowTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         return result;
     }
 }

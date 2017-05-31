@@ -84,7 +84,6 @@ public class GameCanvas {
     private void resizeCanvas() {
         canvas.setCoordinateSpaceWidth(width);
         canvas.setCoordinateSpaceHeight(height);
-        // logger.warning("width: " + width + " canvas:" + canvas.);
         projectionTransformation.setAspectRatio((double) width / (double) height);
     }
 
@@ -118,13 +117,13 @@ public class GameCanvas {
             terrainMouseHandler.onMouseMove(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height, GwtUtils.isButtonDown(mouseEvent, 1));
         }, true);
         getCanvasElement().addEventListener(Event.MOUSEOUT, evt -> {
-            if(playbackMode) {
+            if (playbackMode) {
                 return;
             }
             terrainMouseHandler.onMouseOut();
         }, true);
         getCanvasElement().addEventListener(Event.MOUSEDOWN, evt -> {
-            if(playbackMode) {
+            if (playbackMode) {
                 return;
             }
             MouseEvent mouseEvent = (MouseEvent) evt;
@@ -143,7 +142,7 @@ public class GameCanvas {
             }
         }, true);
         getCanvasElement().addEventListener(Event.MOUSEUP, evt -> {
-            if(playbackMode) {
+            if (playbackMode) {
                 return;
             }
             MouseEvent mouseEvent = (MouseEvent) evt;
@@ -151,7 +150,7 @@ public class GameCanvas {
                     GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY));
         }, true);
         getCanvasElement().addEventListener("wheel", evt -> {
-            if(playbackMode) {
+            if (playbackMode) {
                 return;
             }
             WheelEvent wheelEvent = (WheelEvent) evt;

@@ -2,8 +2,9 @@ package com.btxtech.uiservice.control;
 
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
-import com.btxtech.shared.datatypes.tracking.TrackingContainer;
+import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -26,7 +27,8 @@ public abstract class PlaybackControl {
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private Date lastAction;
-    private TrackingContainer trackingContainer;
+    private TrackingContainerAccess trackingContainerAccess;
+    private DetailedTracking nextDetailedTracking;
 
     protected abstract void enterCanvasPlaybackMode();
 
@@ -34,19 +36,19 @@ public abstract class PlaybackControl {
 
     public void start(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
         lastAction = playbackGameUiControlConfig.getTrackingStart().getTimeStamp();
-        trackingContainer = playbackGameUiControlConfig.getTrackingContainer();
+        trackingContainerAccess = new TrackingContainerAccess(playbackGameUiControlConfig.getTrackingContainer());
         enterCanvasPlaybackMode();
         setCanvasPlaybackDimension(playbackGameUiControlConfig.getTrackingStart().getBrowserWindowDimension());
         scheduleNextAction();
     }
 
     private void scheduleNextAction() {
-        if (trackingContainer.getCameraTrackings().isEmpty()) {
+        if (trackingContainerAccess.isEmpty()) {
             finished();
             return;
         }
-        CameraTracking cameraTracking = trackingContainer.getCameraTrackings().get(0);
-        long timeToSleep = cameraTracking.getTimeStamp().getTime() - lastAction.getTime();
+        nextDetailedTracking = trackingContainerAccess.removeNextDetailedTracking();
+        long timeToSleep = nextDetailedTracking.getTimeStamp().getTime() - lastAction.getTime();
         if (timeToSleep < 0) {
             timeToSleep = 0;
         }
@@ -54,10 +56,17 @@ public abstract class PlaybackControl {
     }
 
     private void executeAction() {
-        CameraTracking cameraTracking = trackingContainer.getCameraTrackings().remove(0);
-        camera.setTranslateXY(cameraTracking.getPosition().getX(), cameraTracking.getPosition().getY());
-        projectionTransformation.setFovY(cameraTracking.getFovY());
-        lastAction = cameraTracking.getTimeStamp();
+        if (nextDetailedTracking instanceof CameraTracking) {
+            CameraTracking cameraTracking = (CameraTracking) nextDetailedTracking;
+            camera.setTranslateXY(cameraTracking.getPosition().getX(), cameraTracking.getPosition().getY());
+            projectionTransformation.setFovY(cameraTracking.getFovY());
+        } else if (nextDetailedTracking instanceof BrowserWindowTracking) {
+            BrowserWindowTracking browserWindowTracking = (BrowserWindowTracking) nextDetailedTracking;
+            setCanvasPlaybackDimension(browserWindowTracking.getDimension());
+        } else {
+            logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
+        }
+        lastAction = nextDetailedTracking.getTimeStamp();
         scheduleNextAction();
     }
 
