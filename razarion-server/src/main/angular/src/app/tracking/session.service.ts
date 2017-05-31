@@ -5,7 +5,7 @@ import "rxjs/add/operator/toPromise";
 
 @Injectable()
 export class SessionService {
-  private sessionUrl = 'http://localhost:8080/rest/trackerbackend';
+  private sessionUrl = '/rest/trackerbackend';
 
   constructor(private http: Http) {
   }
