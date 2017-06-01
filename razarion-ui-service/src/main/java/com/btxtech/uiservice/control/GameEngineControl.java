@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
@@ -273,6 +274,10 @@ public abstract class GameEngineControl {
 
     public void playbackSyncResourceItem(SyncResourceItemInfo syncResourceItemInfo) {
         sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_RESOURCE_ITEM, syncResourceItemInfo);
+    }
+
+    public void playbackSyncBoxItem(SyncBoxItemInfo syncBoxItemInfo) {
+        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_BOX_ITEM, syncBoxItemInfo);
     }
 
     protected void dispatch(GameEngineControlPackage controlPackage) {

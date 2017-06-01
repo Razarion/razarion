@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -73,6 +74,24 @@ public class BoxService {
         box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> setupBoxContent(boxItemTypePossibility, boxContent));
 
         gameLogicService.onBoxPicket(box, picker, boxContent);
+    }
+
+    public void onSlaveSyncBoxItemChanged(SyncBoxItemInfo syncBoxItemInfo) {
+        SyncBoxItem syncBoxItem = boxes.get(syncBoxItemInfo.getId());
+        if (syncBoxItem == null) {
+            createSyncBoxItemSlave(syncBoxItemInfo);
+        } else {
+            throw new IllegalArgumentException("BoxService.onSlaveSyncBoxItemChanged() don't know what to do");
+        }
+    }
+
+    private void createSyncBoxItemSlave(SyncBoxItemInfo syncBoxItemInfo) {
+        BoxItemType boxItemType = itemTypeService.getBoxItemType(syncBoxItemInfo.getBoxItemTypeId());
+        SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItemSlave(boxItemType, syncBoxItemInfo.getId(), syncBoxItemInfo.getSyncPhysicalAreaInfo().getPosition(), syncBoxItemInfo.getSyncPhysicalAreaInfo().getAngle());
+        synchronized (boxes) {
+            boxes.put(syncBoxItem.getId(), syncBoxItem);
+        }
+        gameLogicService.onBoxCreated(syncBoxItem);
     }
 
     public void removeSyncBoxSlave(SyncBoxItem box) {

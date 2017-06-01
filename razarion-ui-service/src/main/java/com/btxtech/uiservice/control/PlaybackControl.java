@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
 import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
+import com.btxtech.shared.datatypes.tracking.SyncBoxItemTracking;
 import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
 import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
@@ -89,6 +90,8 @@ public abstract class PlaybackControl {
             gameEngineControl.playbackSyncBaseItem(((SyncBaseItemTracking) nextDetailedTracking).getSyncBaseItemInfo());
         } else if (nextDetailedTracking instanceof SyncResourceItemTracking) {
             gameEngineControl.playbackSyncResourceItem(((SyncResourceItemTracking) nextDetailedTracking).getSyncResourceItemInfo());
+        } else if (nextDetailedTracking instanceof SyncBoxItemTracking) {
+            gameEngineControl.playbackSyncBoxItem(((SyncBoxItemTracking) nextDetailedTracking).getSyncBoxItemInfo());
         } else {
             logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
         }

@@ -33,6 +33,7 @@ public class TrackingContainerAccess {
         bestFit.analyse(trackingContainer.getSyncItemDeletedTrackings());
         bestFit.analyse(trackingContainer.getSyncBaseItemTrackings());
         bestFit.analyse(trackingContainer.getSyncResourceItemTrackings());
+        bestFit.analyse(trackingContainer.getSyncBoxItemTrackings());
 
         return bestFit.removeBest();
     }

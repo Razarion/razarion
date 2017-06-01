@@ -70,6 +70,9 @@ public class ServerTrackingContainer {
             if (trackingContainer.getSyncResourceItemTrackings() != null) {
                 result.getSyncResourceItemTrackings().addAll(trackingContainer.getSyncResourceItemTrackings());
             }
+            if (trackingContainer.getSyncBoxItemTrackings() != null) {
+                result.getSyncBoxItemTrackings().addAll(trackingContainer.getSyncBoxItemTrackings());
+            }
         }
         result.getCameraTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getBrowserWindowTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
@@ -79,6 +82,7 @@ public class ServerTrackingContainer {
         result.getSyncItemDeletedTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getSyncBaseItemTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getSyncResourceItemTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getSyncBoxItemTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         return result;
     }
 }

@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
+import com.btxtech.shared.datatypes.tracking.SyncBoxItemTracking;
 import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
 import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
@@ -10,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -54,6 +56,10 @@ public abstract class WorkerTrackerHandler {
 
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
         trackingContainer.addSyncResourceItemTrackings(initDetailedTracking(new SyncResourceItemTracking().setSyncResourceItemInfo(syncResourceItem.getSyncInfo())));
+    }
+
+    public void onBoxCreated(SyncBoxItem syncBoxItem) {
+        trackingContainer.addSyncBoxItemTrackings(initDetailedTracking(new SyncBoxItemTracking().setSyncBoxItemInfo(syncBoxItem.getSyncInfo())));
     }
 
     private <T extends DetailedTracking> T initDetailedTracking(T t) {

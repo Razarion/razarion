@@ -195,11 +195,28 @@ public class SyncItemContainerService {
         return syncResourceItem;
     }
 
+    SyncResourceItem createSyncResourceItemSlave(ResourceItemType resourceItemType, int syncItemId, DecimalPosition position2d, double zRotation) {
+        SyncResourceItem syncResourceItem = syncItemInstance.select(SyncResourceItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
+        syncPhysicalArea.init(syncResourceItem, resourceItemType.getRadius(), resourceItemType.isFixVerticalNorm(), position2d, zRotation);
+        initAndAddSlave(resourceItemType, syncItemId, syncResourceItem, syncPhysicalArea);
+        return syncResourceItem;
+    }
+
+
     SyncBoxItem createSyncBoxItem(BoxItemType boxItemType, DecimalPosition position2d, double zRotation) {
         SyncBoxItem syncBoxItem = syncItemInstance.select(SyncBoxItem.class).get();
         SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
         syncPhysicalArea.init(syncBoxItem, boxItemType.getRadius(), boxItemType.isFixVerticalNorm(), position2d, zRotation);
         initAndAdd(boxItemType, syncBoxItem, syncPhysicalArea);
+        return syncBoxItem;
+    }
+
+    SyncBoxItem createSyncBoxItemSlave(BoxItemType boxItemType, int syncItemId, DecimalPosition position2d, double zRotation) {
+        SyncBoxItem syncBoxItem = syncItemInstance.select(SyncBoxItem.class).get();
+        SyncPhysicalArea syncPhysicalArea = syncPhysicalAreaInstance.get();
+        syncPhysicalArea.init(syncBoxItem, boxItemType.getRadius(), boxItemType.isFixVerticalNorm(), position2d, zRotation);
+        initAndAddSlave(boxItemType, syncItemId, syncBoxItem, syncPhysicalArea);
         return syncBoxItem;
     }
 

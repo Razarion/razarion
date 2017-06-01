@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 
 import javax.enterprise.context.Dependent;
 
@@ -48,5 +49,13 @@ public class SyncBoxItem extends SyncItem {
 
     public BoxItemType getBoxItemType() {
         return (BoxItemType) getItemType();
+    }
+
+    public SyncBoxItemInfo getSyncInfo() {
+        SyncBoxItemInfo syncBoxItemInfo = new SyncBoxItemInfo();
+        syncBoxItemInfo.setId(getId());
+        syncBoxItemInfo.setSyncPhysicalAreaInfo(getSyncPhysicalArea().getSyncPhysicalAreaInfo());
+        syncBoxItemInfo.setBoxItemTypeId(getItemType().getId());
+        return syncBoxItemInfo;
     }
 }

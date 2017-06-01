@@ -26,6 +26,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
@@ -218,6 +219,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case PLAYBACK_SYNC_RESOURCE_ITEM:
                 resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) controlPackage.getData(0));
                 break;
+            case PLAYBACK_SYNC_BOX_ITEM:
+                boxService.onSlaveSyncBoxItemChanged((SyncBoxItemInfo) controlPackage.getData(0));
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }
@@ -364,6 +368,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncBoxItemSimpleDto.setPosition3d(syncBoxItem.getSyncPhysicalArea().getPosition3d());
         syncBoxItemSimpleDto.setModel(syncBoxItem.getSyncPhysicalArea().getModelMatrices());
         sendToClient(GameEngineControlPackage.Command.BOX_CREATED, syncBoxItemSimpleDto);
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onBoxCreated(syncBoxItem);
+        }
     }
 
     @Override

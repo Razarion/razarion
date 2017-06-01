@@ -106,7 +106,7 @@ public class ResourceService {
 
     private void createSyncResourceItemSlave(SyncResourceItemInfo syncResourceItemInfo) {
         ResourceItemType resourceItemType = itemTypeService.getResourceItemType(syncResourceItemInfo.getResourceItemTypeId());
-        SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItem(resourceItemType, syncResourceItemInfo.getSyncPhysicalAreaInfo().getPosition(), syncResourceItemInfo.getSyncPhysicalAreaInfo().getAngle());
+        SyncResourceItem syncResourceItem = syncItemContainerService.createSyncResourceItemSlave(resourceItemType, syncResourceItemInfo.getId(), syncResourceItemInfo.getSyncPhysicalAreaInfo().getPosition(), syncResourceItemInfo.getSyncPhysicalAreaInfo().getAngle());
         syncResourceItem.setAmount(syncResourceItemInfo.getAmount());
         synchronized (resources) {
             resources.put(syncResourceItem.getId(), syncResourceItem);

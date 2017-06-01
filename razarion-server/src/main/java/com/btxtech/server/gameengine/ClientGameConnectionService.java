@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -62,6 +63,10 @@ public class ClientGameConnectionService {
 
     public void onSyncResourceItemCreated(SyncResourceItem syncResourceItem) {
         sendToClients(GameConnectionPacket.SYNC_RESOURCE_ITEM_CHANGED, syncResourceItem.getSyncInfo());
+    }
+
+    public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {
+        sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
     private void sendToClients(GameConnectionPacket packet, Object object) {

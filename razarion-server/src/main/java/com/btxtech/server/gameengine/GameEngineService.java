@@ -100,12 +100,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onBoxCreated(SyncBoxItem syncBoxItem) {
-
-    }
-
-    @Override
-    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-
+        clientGameConnectionService.onSyncBoxCreated(syncBoxItem);
     }
 
     @Override

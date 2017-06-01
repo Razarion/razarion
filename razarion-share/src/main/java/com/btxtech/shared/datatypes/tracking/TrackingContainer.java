@@ -18,6 +18,7 @@ public class TrackingContainer {
     private List<SyncItemDeletedTracking> syncItemDeletedTrackings = new ArrayList<>();
     private List<SyncBaseItemTracking> syncBaseItemTrackings = new ArrayList<>();
     private List<SyncResourceItemTracking> syncResourceItemTrackings = new ArrayList<>();
+    private List<SyncBoxItemTracking> syncBoxItemTrackings = new ArrayList<>();
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
@@ -105,6 +106,14 @@ public class TrackingContainer {
         this.syncResourceItemTrackings = syncResourceItemTrackings;
     }
 
+    public List<SyncBoxItemTracking> getSyncBoxItemTrackings() {
+        return syncBoxItemTrackings;
+    }
+
+    public void setSyncBoxItemTrackings(List<SyncBoxItemTracking> syncBoxItemTrackings) {
+        this.syncBoxItemTrackings = syncBoxItemTrackings;
+    }
+
     public void addCameraTracking(CameraTracking cameraTracking) {
         if (cameraTrackings == null) {
             cameraTrackings = new ArrayList<>();
@@ -168,6 +177,13 @@ public class TrackingContainer {
         syncResourceItemTrackings.add(syncResourceItemTracking);
     }
 
+    public void addSyncBoxItemTrackings(SyncBoxItemTracking syncBoxItemTracking) {
+        if (syncBoxItemTrackings == null) {
+            syncBoxItemTrackings = new ArrayList<>();
+        }
+        syncBoxItemTrackings.add(syncBoxItemTracking);
+    }
+
     public boolean checkEmpty() {
         return (cameraTrackings == null || cameraTrackings.isEmpty())
                 && (browserWindowTrackings == null || browserWindowTrackings.isEmpty())
@@ -177,6 +193,7 @@ public class TrackingContainer {
                 && (playerBaseTrackings == null || playerBaseTrackings.isEmpty())
                 && (syncItemDeletedTrackings == null || syncItemDeletedTrackings.isEmpty())
                 && (syncBaseItemTrackings == null || syncBaseItemTrackings.isEmpty())
-                && (syncResourceItemTrackings == null || syncResourceItemTrackings.isEmpty());
+                && (syncResourceItemTrackings == null || syncResourceItemTrackings.isEmpty())
+                && (syncBoxItemTrackings == null || syncBoxItemTrackings.isEmpty());
     }
 }

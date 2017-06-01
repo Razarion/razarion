@@ -6,9 +6,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
-import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
-import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
-import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -16,7 +13,9 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -84,6 +83,7 @@ public class WorkerMarshaller {
             case PLAYBACK_SYNC_ITEM_DELETED:
             case PLAYBACK_SYNC_BASE_ITEM:
             case PLAYBACK_SYNC_RESOURCE_ITEM:
+            case PLAYBACK_SYNC_BOX_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -324,7 +324,10 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemInfo.class));
                 break;
             case PLAYBACK_SYNC_RESOURCE_ITEM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncResourceItemTracking.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncResourceItemInfo.class));
+                break;
+            case PLAYBACK_SYNC_BOX_ITEM:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBoxItemInfo.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

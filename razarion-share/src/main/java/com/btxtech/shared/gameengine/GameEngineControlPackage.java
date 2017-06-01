@@ -71,7 +71,8 @@ public class GameEngineControlPackage {
         PLAYBACK_PLAYER_BASE,
         PLAYBACK_SYNC_ITEM_DELETED,
         PLAYBACK_SYNC_BASE_ITEM,
-        PLAYBACK_SYNC_RESOURCE_ITEM;
+        PLAYBACK_SYNC_RESOURCE_ITEM,
+        PLAYBACK_SYNC_BOX_ITEM;
     }
 
     private Command command;

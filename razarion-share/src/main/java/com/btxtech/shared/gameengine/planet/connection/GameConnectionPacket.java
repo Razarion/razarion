@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -29,6 +30,7 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class),
     SYNC_RESOURCE_ITEM_CHANGED(SyncResourceItemInfo.class),
     SYNC_ITEM_DELETED(SyncItemDeletedInfo.class),
+    SYNC_BOX_ITEM_CHANGED(SyncBoxItemInfo.class),
     // Commands
     FACTORY_COMMAND(FactoryCommand.class),
     UNLOAD_CONTAINER_COMMAND(UnloadContainerCommand.class),
