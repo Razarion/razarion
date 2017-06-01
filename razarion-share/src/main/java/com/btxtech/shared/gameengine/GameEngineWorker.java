@@ -7,6 +7,8 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
+import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
+import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -23,7 +25,9 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -205,8 +209,14 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case PLAYBACK_PLAYER_BASE:
                 onPlayerBaseTracking((PlayerBaseTracking) controlPackage.getData(0));
                 break;
+            case PLAYBACK_SYNC_ITEM_DELETED:
+                onServerSyncItemDeleted((SyncItemDeletedInfo) controlPackage.getData(0));
+                break;
             case PLAYBACK_SYNC_BASE_ITEM:
-                onSyncBaseItemTracking((SyncBaseItemTracking) controlPackage.getData(0));
+                baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) controlPackage.getData(0));
+                break;
+            case PLAYBACK_SYNC_RESOURCE_ITEM:
+                resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -341,7 +351,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
         sendToClient(GameEngineControlPackage.Command.RESOURCE_DELETED, syncResourceItem.getId());
         if (workerTrackerHandler != null) {
-            workerTrackerHandler.onResourceDeleted(syncResourceItem);
+            workerTrackerHandler.onSyncItemDeleted(syncResourceItem, false);
         }
     }
 
@@ -367,7 +377,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void onSyncBoxDeleted(SyncBoxItem syncBoxItem) {
         sendToClient(GameEngineControlPackage.Command.BOX_DELETED, syncBoxItem.getId());
         if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncBoxDeleted(syncBoxItem);
+            workerTrackerHandler.onSyncItemDeleted(syncBoxItem, false);
         }
     }
 
@@ -475,7 +485,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
         if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncItemRemoved(target, true);
+            workerTrackerHandler.onSyncItemDeleted(target, true);
         }
     }
 
@@ -488,7 +498,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
         removed.add(syncBaseItem.createSyncBaseItemSimpleDto());
         if (workerTrackerHandler != null) {
-            workerTrackerHandler.onSyncItemRemoved(syncBaseItem, false);
+            workerTrackerHandler.onSyncItemDeleted(syncBaseItem, false);
         }
     }
 
@@ -579,16 +589,4 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             throw new IllegalArgumentException("GameEngineWorker.onPlayerBaseTracking() invalid input");
         }
     }
-
-    private void onSyncBaseItemTracking(SyncBaseItemTracking syncBaseItemTracking) {
-        if (syncBaseItemTracking.getSyncBaseItemInfo() != null) {
-            baseItemService.onSlaveSyncBaseItemChanged(syncBaseItemTracking.getSyncBaseItemInfo());
-        } else if (syncBaseItemTracking.getSyncItemDeletedInfo() != null) {
-            onServerSyncItemDeleted(syncBaseItemTracking.getSyncItemDeletedInfo());
-        } else {
-            throw new IllegalArgumentException("GameEngineWorker.onSyncBaseItemTracking() invalid input");
-        }
-    }
-
-
 }

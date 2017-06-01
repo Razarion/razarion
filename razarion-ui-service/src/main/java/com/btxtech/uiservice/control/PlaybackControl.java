@@ -9,6 +9,8 @@ import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
 import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
+import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
+import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -81,8 +83,12 @@ public abstract class PlaybackControl {
             displayMouseButton(mouseButtonTracking.getButton(), mouseButtonTracking.isDown());
         } else if (nextDetailedTracking instanceof PlayerBaseTracking) {
             gameEngineControl.playbackPlayerBase((PlayerBaseTracking) nextDetailedTracking);
+        } else if (nextDetailedTracking instanceof SyncItemDeletedTracking) {
+            gameEngineControl.playbackSyncItemDeleted(((SyncItemDeletedTracking) nextDetailedTracking).getSyncItemDeletedInfo());
         } else if (nextDetailedTracking instanceof SyncBaseItemTracking) {
-            gameEngineControl.playbackSyncBaseItem((SyncBaseItemTracking) nextDetailedTracking);
+            gameEngineControl.playbackSyncBaseItem(((SyncBaseItemTracking) nextDetailedTracking).getSyncBaseItemInfo());
+        } else if (nextDetailedTracking instanceof SyncResourceItemTracking) {
+            gameEngineControl.playbackSyncResourceItem(((SyncResourceItemTracking) nextDetailedTracking).getSyncResourceItemInfo());
         } else {
             logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
         }

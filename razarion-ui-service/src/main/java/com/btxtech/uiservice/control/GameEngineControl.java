@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
-import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
@@ -19,6 +18,9 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
@@ -103,7 +105,7 @@ public abstract class GameEngineControl {
     public void init(ColdGameUiControlConfig coldGameUiControlConfig, DeferredStartup initializationReferredStartup) {
         this.deferredStartup = initializationReferredStartup;
         SlaveSyncItemInfo slaveSyncItemInfo = coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo();
-        if(slaveSyncItemInfo == null) {
+        if (slaveSyncItemInfo == null) {
             // Errai can not handle top level null JSON
             slaveSyncItemInfo = new SlaveSyncItemInfo();
         }
@@ -257,12 +259,20 @@ public abstract class GameEngineControl {
         }
     }
 
-    public void playbackSyncBaseItem(SyncBaseItemTracking syncBaseItemTracking) {
-        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_BASE_ITEM, syncBaseItemTracking);
-    }
-
     public void playbackPlayerBase(PlayerBaseTracking playerBaseTracking) {
         sendToWorker(GameEngineControlPackage.Command.PLAYBACK_PLAYER_BASE, playerBaseTracking);
+    }
+
+    public void playbackSyncItemDeleted(SyncItemDeletedInfo syncItemDeletedInfo) {
+        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_ITEM_DELETED, syncItemDeletedInfo);
+    }
+
+    public void playbackSyncBaseItem(SyncBaseItemInfo syncBaseItemInfo) {
+        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_BASE_ITEM, syncBaseItemInfo);
+    }
+
+    public void playbackSyncResourceItem(SyncResourceItemInfo syncResourceItemInfo) {
+        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_RESOURCE_ITEM, syncResourceItemInfo);
     }
 
     protected void dispatch(GameEngineControlPackage controlPackage) {

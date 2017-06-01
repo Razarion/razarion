@@ -7,12 +7,16 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
+import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
+import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -76,8 +80,10 @@ public class WorkerMarshaller {
             case TERRAIN_OVERLAP:
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
             case TERRAIN_TILE_REQUEST:
-            case PLAYBACK_SYNC_BASE_ITEM:
             case PLAYBACK_PLAYER_BASE:
+            case PLAYBACK_SYNC_ITEM_DELETED:
+            case PLAYBACK_SYNC_BASE_ITEM:
+            case PLAYBACK_SYNC_RESOURCE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -308,11 +314,17 @@ public class WorkerMarshaller {
             case TERRAIN_TILE_RESPONSE:
                 data.add(demarshallTerrainTile(array.getObject(DATA_OFFSET_0)));
                 break;
-            case PLAYBACK_SYNC_BASE_ITEM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemTracking.class));
-                break;
             case PLAYBACK_PLAYER_BASE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseTracking.class));
+                break;
+            case PLAYBACK_SYNC_ITEM_DELETED:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncItemDeletedInfo.class));
+                break;
+            case PLAYBACK_SYNC_BASE_ITEM:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemInfo.class));
+                break;
+            case PLAYBACK_SYNC_RESOURCE_ITEM:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncResourceItemTracking.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

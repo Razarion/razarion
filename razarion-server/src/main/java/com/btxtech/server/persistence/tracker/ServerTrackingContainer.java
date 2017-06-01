@@ -61,8 +61,14 @@ public class ServerTrackingContainer {
             if (trackingContainer.getPlayerBaseTrackings() != null) {
                 result.getPlayerBaseTrackings().addAll(trackingContainer.getPlayerBaseTrackings());
             }
+            if (trackingContainer.getSyncItemDeletedTrackings() != null) {
+                result.getSyncItemDeletedTrackings().addAll(trackingContainer.getSyncItemDeletedTrackings());
+            }
             if (trackingContainer.getSyncBaseItemTrackings() != null) {
                 result.getSyncBaseItemTrackings().addAll(trackingContainer.getSyncBaseItemTrackings());
+            }
+            if (trackingContainer.getSyncResourceItemTrackings() != null) {
+                result.getSyncResourceItemTrackings().addAll(trackingContainer.getSyncResourceItemTrackings());
             }
         }
         result.getCameraTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
@@ -70,7 +76,9 @@ public class ServerTrackingContainer {
         result.getMouseMoveTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getMouseButtonTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getPlayerBaseTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getSyncItemDeletedTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getSyncBaseItemTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getSyncResourceItemTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         return result;
     }
 }

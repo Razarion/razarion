@@ -15,7 +15,9 @@ public class TrackingContainer {
     private List<MouseButtonTracking> mouseButtonTrackings = new ArrayList<>();
     private List<SelectionTracking> selectionTrackings = new ArrayList<>();
     private List<PlayerBaseTracking> playerBaseTrackings = new ArrayList<>();
+    private List<SyncItemDeletedTracking> syncItemDeletedTrackings = new ArrayList<>();
     private List<SyncBaseItemTracking> syncBaseItemTrackings = new ArrayList<>();
+    private List<SyncResourceItemTracking> syncResourceItemTrackings = new ArrayList<>();
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
@@ -79,12 +81,28 @@ public class TrackingContainer {
         this.playerBaseTrackings = playerBaseTrackings;
     }
 
+    public List<SyncItemDeletedTracking> getSyncItemDeletedTrackings() {
+        return syncItemDeletedTrackings;
+    }
+
+    public void setSyncItemDeletedTrackings(List<SyncItemDeletedTracking> syncItemDeletedTrackings) {
+        this.syncItemDeletedTrackings = syncItemDeletedTrackings;
+    }
+
     public List<SyncBaseItemTracking> getSyncBaseItemTrackings() {
         return syncBaseItemTrackings;
     }
 
     public void setSyncBaseItemTrackings(List<SyncBaseItemTracking> syncBaseItemTrackings) {
         this.syncBaseItemTrackings = syncBaseItemTrackings;
+    }
+
+    public List<SyncResourceItemTracking> getSyncResourceItemTrackings() {
+        return syncResourceItemTrackings;
+    }
+
+    public void setSyncResourceItemTrackings(List<SyncResourceItemTracking> syncResourceItemTrackings) {
+        this.syncResourceItemTrackings = syncResourceItemTrackings;
     }
 
     public void addCameraTracking(CameraTracking cameraTracking) {
@@ -129,11 +147,25 @@ public class TrackingContainer {
         playerBaseTrackings.add(playerBaseTracking);
     }
 
+    public void addSyncItemDeletedTrackings(SyncItemDeletedTracking syncItemDeletedTracking) {
+        if (syncItemDeletedTrackings == null) {
+            syncItemDeletedTrackings = new ArrayList<>();
+        }
+        syncItemDeletedTrackings.add(syncItemDeletedTracking);
+    }
+
     public void addSyncBaseItemTrackings(SyncBaseItemTracking syncBaseItemTracking) {
         if (syncBaseItemTrackings == null) {
             syncBaseItemTrackings = new ArrayList<>();
         }
         syncBaseItemTrackings.add(syncBaseItemTracking);
+    }
+
+    public void addSyncResourceItemTrackings(SyncResourceItemTracking syncResourceItemTracking) {
+        if (syncResourceItemTrackings == null) {
+            syncResourceItemTrackings = new ArrayList<>();
+        }
+        syncResourceItemTrackings.add(syncResourceItemTracking);
     }
 
     public boolean checkEmpty() {
@@ -143,6 +175,8 @@ public class TrackingContainer {
                 && (mouseMoveTrackings == null || mouseMoveTrackings.isEmpty())
                 && (mouseButtonTrackings == null || mouseButtonTrackings.isEmpty())
                 && (playerBaseTrackings == null || playerBaseTrackings.isEmpty())
-                && (syncBaseItemTrackings == null || syncBaseItemTrackings.isEmpty());
+                && (syncItemDeletedTrackings == null || syncItemDeletedTrackings.isEmpty())
+                && (syncBaseItemTrackings == null || syncBaseItemTrackings.isEmpty())
+                && (syncResourceItemTrackings == null || syncResourceItemTrackings.isEmpty());
     }
 }

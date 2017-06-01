@@ -3,21 +3,19 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
+import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
+import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.rest.TrackerProvider;
 import com.btxtech.shared.system.SimpleExecutorService;
 
 import javax.inject.Inject;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -50,20 +48,12 @@ public abstract class WorkerTrackerHandler {
         trackingContainer.addSyncBaseItemTrackings(initDetailedTracking(new SyncBaseItemTracking().setSyncBaseItemInfo(syncBaseItem.getSyncInfo())));
     }
 
-    public void onSyncItemRemoved(SyncItem syncItem, boolean explode) {
-        trackingContainer.addSyncBaseItemTrackings(initDetailedTracking(new SyncBaseItemTracking().setSyncItemDeletedInfo(new SyncItemDeletedInfo().setId(syncItem.getId()).setExplode(explode))));
+    public void onSyncItemDeleted(SyncItem syncItem, boolean explode) {
+        trackingContainer.addSyncItemDeletedTrackings(initDetailedTracking(new SyncItemDeletedTracking().setSyncItemDeletedInfo(new SyncItemDeletedInfo().setId(syncItem.getId()).setExplode(explode))));
     }
 
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
-
-    }
-
-    public void onResourceDeleted(SyncResourceItem syncResourceItem) {
-
-    }
-
-    public void onSyncBoxDeleted(SyncBoxItem syncBoxItem) {
-
+        trackingContainer.addSyncResourceItemTrackings(initDetailedTracking(new SyncResourceItemTracking().setSyncResourceItemInfo(syncResourceItem.getSyncInfo())));
     }
 
     private <T extends DetailedTracking> T initDetailedTracking(T t) {
@@ -84,5 +74,4 @@ public abstract class WorkerTrackerHandler {
         trackingContainer = new TrackingContainer();
         trackingContainer.setGameSessionUuid(gameSessionUuid);
     }
-
 }

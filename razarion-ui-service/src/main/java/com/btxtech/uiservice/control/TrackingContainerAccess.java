@@ -30,7 +30,9 @@ public class TrackingContainerAccess {
         bestFit.analyse(trackingContainer.getMouseMoveTrackings());
         bestFit.analyse(trackingContainer.getMouseButtonTrackings());
         bestFit.analyse(trackingContainer.getPlayerBaseTrackings());
+        bestFit.analyse(trackingContainer.getSyncItemDeletedTrackings());
         bestFit.analyse(trackingContainer.getSyncBaseItemTrackings());
+        bestFit.analyse(trackingContainer.getSyncResourceItemTrackings());
 
         return bestFit.removeBest();
     }
