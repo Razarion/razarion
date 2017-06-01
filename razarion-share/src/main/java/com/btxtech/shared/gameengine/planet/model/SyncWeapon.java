@@ -153,8 +153,11 @@ public class SyncWeapon extends SyncBaseAbility {
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
         if (syncBaseItemInfo.getTarget() != null) {
             target = syncItemContainerService.getSyncBaseItemSave(syncBaseItemInfo.getTarget());
+            targetPosition = target.getSyncPhysicalArea().getPosition2d();
+            targetPositionLastCheck = System.currentTimeMillis();
         } else {
             target = null;
+            targetPosition = null;
         }
         followTarget = syncBaseItemInfo.isFollowTarget();
         reloadProgress = syncBaseItemInfo.getReloadProgress();
