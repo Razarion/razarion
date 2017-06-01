@@ -66,7 +66,10 @@ public class GameEngineControlPackage {
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
         // Editor
-        EDITOR_OVERRIDE_TERRAIN;
+        EDITOR_OVERRIDE_TERRAIN,
+        // Playback
+        PLAYBACK_PLAYER_BASE,
+        PLAYBACK_SYNC_BASE_ITEM;
     }
 
     private Command command;

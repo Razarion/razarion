@@ -14,8 +14,8 @@ public class TrackingContainer {
     private List<MouseMoveTracking> mouseMoveTrackings = new ArrayList<>();
     private List<MouseButtonTracking> mouseButtonTrackings = new ArrayList<>();
     private List<SelectionTracking> selectionTrackings = new ArrayList<>();
-    // TODO private List<SyncItemInfo> syncItemInfos = new ArrayList<>();
-    // TODO private List<DialogTracking> dialogTrackings = new ArrayList<>();
+    private List<PlayerBaseTracking> playerBaseTrackings = new ArrayList<>();
+    private List<SyncBaseItemTracking> syncBaseItemTrackings = new ArrayList<>();
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
@@ -71,6 +71,22 @@ public class TrackingContainer {
         return this;
     }
 
+    public List<PlayerBaseTracking> getPlayerBaseTrackings() {
+        return playerBaseTrackings;
+    }
+
+    public void setPlayerBaseTrackings(List<PlayerBaseTracking> playerBaseTrackings) {
+        this.playerBaseTrackings = playerBaseTrackings;
+    }
+
+    public List<SyncBaseItemTracking> getSyncBaseItemTrackings() {
+        return syncBaseItemTrackings;
+    }
+
+    public void setSyncBaseItemTrackings(List<SyncBaseItemTracking> syncBaseItemTrackings) {
+        this.syncBaseItemTrackings = syncBaseItemTrackings;
+    }
+
     public void addCameraTracking(CameraTracking cameraTracking) {
         if (cameraTrackings == null) {
             cameraTrackings = new ArrayList<>();
@@ -106,11 +122,27 @@ public class TrackingContainer {
         mouseButtonTrackings.add(mouseButtonTracking);
     }
 
+    public void addPlayerBaseTrackings(PlayerBaseTracking playerBaseTracking) {
+        if (playerBaseTrackings == null) {
+            playerBaseTrackings = new ArrayList<>();
+        }
+        playerBaseTrackings.add(playerBaseTracking);
+    }
+
+    public void addSyncBaseItemTrackings(SyncBaseItemTracking syncBaseItemTracking) {
+        if (syncBaseItemTrackings == null) {
+            syncBaseItemTrackings = new ArrayList<>();
+        }
+        syncBaseItemTrackings.add(syncBaseItemTracking);
+    }
+
     public boolean checkEmpty() {
         return (cameraTrackings == null || cameraTrackings.isEmpty())
                 && (browserWindowTrackings == null || browserWindowTrackings.isEmpty())
                 && (selectionTrackings == null || selectionTrackings.isEmpty())
                 && (mouseMoveTrackings == null || mouseMoveTrackings.isEmpty())
-                && (mouseButtonTrackings == null || mouseButtonTrackings.isEmpty());
+                && (mouseButtonTrackings == null || mouseButtonTrackings.isEmpty())
+                && (playerBaseTrackings == null || playerBaseTrackings.isEmpty())
+                && (syncBaseItemTrackings == null || syncBaseItemTrackings.isEmpty());
     }
 }

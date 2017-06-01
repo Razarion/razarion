@@ -3,6 +3,8 @@ package com.btxtech.uiservice.control;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
+import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
@@ -33,6 +35,7 @@ import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.projectile.ProjectileUiService;
+import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.GameTipService;
@@ -75,6 +78,8 @@ public abstract class GameEngineControl {
     private TerrainUiService terrainUiService;
     @Inject
     private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private ClientRunner clientRunner;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
 
@@ -103,7 +108,8 @@ public abstract class GameEngineControl {
             slaveSyncItemInfo = new SlaveSyncItemInfo();
         }
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiControlConfig.getStaticGameConfig(), coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig(),
-                slaveSyncItemInfo, userUiService.getUserContext(), coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode());
+                slaveSyncItemInfo, userUiService.getUserContext(), coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode(), coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking(),
+                clientRunner.getGameSessionUuid());
     }
 
     public void initWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {
@@ -249,6 +255,14 @@ public abstract class GameEngineControl {
             deferredStartup.finished();
             deferredStartup = null;
         }
+    }
+
+    public void playbackSyncBaseItem(SyncBaseItemTracking syncBaseItemTracking) {
+        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_SYNC_BASE_ITEM, syncBaseItemTracking);
+    }
+
+    public void playbackPlayerBase(PlayerBaseTracking playerBaseTracking) {
+        sendToWorker(GameEngineControlPackage.Command.PLAYBACK_PLAYER_BASE, playerBaseTracking);
     }
 
     protected void dispatch(GameEngineControlPackage controlPackage) {

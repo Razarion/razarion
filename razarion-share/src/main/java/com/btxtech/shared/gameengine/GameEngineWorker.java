@@ -5,6 +5,8 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
+import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -99,6 +101,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private ObstacleContainer obstacleContainer;
     @Inject
     private Instance<AbstractServerGameConnection> connectionInstance;
+    @Inject
+    private Instance<WorkerTrackerHandler> workerTrackerHandlerInstance;
     private UserContext userContext;
     private PlayerBase playerBase;
     private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
@@ -107,6 +111,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private boolean sendTickUpdate;
     private AbstractServerGameConnection serverConnection;
     private GameEngineMode gameEngineMode;
+    private WorkerTrackerHandler workerTrackerHandler;
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 
@@ -119,7 +124,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
-                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (SlaveSyncItemInfo) controlPackage.getData(2), (UserContext) controlPackage.getData(3), (GameEngineMode) controlPackage.getData(4));
+                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (SlaveSyncItemInfo) controlPackage.getData(2),
+                        (UserContext) controlPackage.getData(3), (GameEngineMode) controlPackage.getData(4), (Boolean) controlPackage.getData(5), (String) controlPackage.getData(6));
                 break;
             case INITIALIZE_WARM:
                 initialiseWarm((PlanetConfig) controlPackage.getData(0), (SlaveSyncItemInfo) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3));
@@ -196,16 +202,27 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case EDITOR_OVERRIDE_TERRAIN:
                 overrideTerrain4Editor((List<TerrainSlopePosition>) controlPackage.getData(0), (List<TerrainObjectPosition>) controlPackage.getData(1));
                 break;
+            case PLAYBACK_PLAYER_BASE:
+                onPlayerBaseTracking((PlayerBaseTracking) controlPackage.getData(0));
+                break;
+            case PLAYBACK_SYNC_BASE_ITEM:
+                onSyncBaseItemTracking((SyncBaseItemTracking) controlPackage.getData(0));
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }
     }
 
-    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
+    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, boolean detailedTracking, String gameSessionUuid) {
         try {
             staticGameInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
             planetService.addTickListener(this);
-            initWarmInternal(planetConfig, slaveSyncItemInfo,userContext, gameEngineMode);
+            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode);
+            if (gameEngineMode == GameEngineMode.MASTER && detailedTracking) {
+                workerTrackerHandler = workerTrackerHandlerInstance.get();
+                workerTrackerHandler.start(gameSessionUuid);
+
+            }
             sendToClient(GameEngineControlPackage.Command.INITIALIZED);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -216,6 +233,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void initialiseWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
         try {
             initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode);
+            workerTrackerHandler = null;
             sendToClient(GameEngineControlPackage.Command.INITIALIZED);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -314,11 +332,17 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         syncResourceItemSimpleDto.setPosition3d(syncResourceItem.getSyncPhysicalArea().getPosition3d());
         syncResourceItemSimpleDto.setModel(syncResourceItem.getSyncPhysicalArea().getModelMatrices());
         sendToClient(GameEngineControlPackage.Command.RESOURCE_CREATED, syncResourceItemSimpleDto);
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onResourceCreated(syncResourceItem);
+        }
     }
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
         sendToClient(GameEngineControlPackage.Command.RESOURCE_DELETED, syncResourceItem.getId());
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onResourceDeleted(syncResourceItem);
+        }
     }
 
     @Override
@@ -342,6 +366,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncBoxDeleted(SyncBoxItem syncBoxItem) {
         sendToClient(GameEngineControlPackage.Command.BOX_DELETED, syncBoxItem.getId());
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBoxDeleted(syncBoxItem);
+        }
     }
 
     @Override
@@ -352,11 +379,35 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
         sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createSyncBaseItemSimpleDto());
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
+        }
+    }
+
+    @Override
+    public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
+        if (workerTrackerHandler != null) {
+            if (currentBuildup != null) {
+                workerTrackerHandler.onSyncBaseItem(currentBuildup);
+            }
+            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
+        }
+    }
+
+    @Override
+    public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBaseItem(createdBy);
+            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
+        }
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
         sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createSyncBaseItemSimpleDto());
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBaseItem(syncBaseItem);
+        }
     }
 
     @Override
@@ -365,6 +416,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             this.playerBase = playerBase;
         }
         sendBaseToClient(playerBase);
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onBaseCreated(playerBase);
+        }
     }
 
     @Override
@@ -398,6 +452,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             this.playerBase = null;
         }
         sendToClient(GameEngineControlPackage.Command.BASE_DELETED, playerBase.getBaseId());
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onBaseDeleted(playerBase);
+        }
     }
 
     @Override
@@ -417,6 +474,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (actor.getBase().getHumanPlayerId() != null && actor.getBase().getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
             xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncItemRemoved(target, true);
+        }
     }
 
     @Override
@@ -427,6 +487,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
         removed.add(syncBaseItem.createSyncBaseItemSimpleDto());
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncItemRemoved(syncBaseItem, false);
+        }
     }
 
     @Override
@@ -443,6 +506,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
         if (serverConnection != null) {
             serverConnection.onCommandSent(baseCommand);
+        }
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBaseItem(syncItem);
         }
     }
 
@@ -503,4 +569,26 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem);
         }
     }
+
+    public void onPlayerBaseTracking(PlayerBaseTracking playerBaseTracking) {
+        if (playerBaseTracking.getPlayerBaseInfo() != null) {
+            onServerBaseCreated(playerBaseTracking.getPlayerBaseInfo());
+        } else if (playerBaseTracking.getDeletedBaseId() != null) {
+            onServerBaseDeleted(playerBaseTracking.getDeletedBaseId());
+        } else {
+            throw new IllegalArgumentException("GameEngineWorker.onPlayerBaseTracking() invalid input");
+        }
+    }
+
+    private void onSyncBaseItemTracking(SyncBaseItemTracking syncBaseItemTracking) {
+        if (syncBaseItemTracking.getSyncBaseItemInfo() != null) {
+            baseItemService.onSlaveSyncBaseItemChanged(syncBaseItemTracking.getSyncBaseItemInfo());
+        } else if (syncBaseItemTracking.getSyncItemDeletedInfo() != null) {
+            onServerSyncItemDeleted(syncBaseItemTracking.getSyncItemDeletedInfo());
+        } else {
+            throw new IllegalArgumentException("GameEngineWorker.onSyncBaseItemTracking() invalid input");
+        }
+    }
+
+
 }

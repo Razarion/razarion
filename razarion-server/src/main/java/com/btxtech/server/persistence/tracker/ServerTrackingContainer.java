@@ -58,11 +58,19 @@ public class ServerTrackingContainer {
             if (trackingContainer.getMouseButtonTrackings() != null) {
                 result.getMouseButtonTrackings().addAll(trackingContainer.getMouseButtonTrackings());
             }
+            if (trackingContainer.getPlayerBaseTrackings() != null) {
+                result.getPlayerBaseTrackings().addAll(trackingContainer.getPlayerBaseTrackings());
+            }
+            if (trackingContainer.getSyncBaseItemTrackings() != null) {
+                result.getSyncBaseItemTrackings().addAll(trackingContainer.getSyncBaseItemTrackings());
+            }
         }
         result.getCameraTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getBrowserWindowTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getMouseMoveTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getMouseButtonTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getPlayerBaseTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getSyncBaseItemTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         return result;
     }
 }

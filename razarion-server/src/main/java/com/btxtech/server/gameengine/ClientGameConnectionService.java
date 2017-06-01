@@ -42,8 +42,7 @@ public class ClientGameConnectionService {
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {
-        PlayerBaseInfo playerBaseInfo = new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()).setCharacter(playerBase.getCharacter()).setHumanPlayerId(playerBase.getHumanPlayerId()).setResources(playerBase.getResources());
-        sendToClients(GameConnectionPacket.BASE_CREATED, playerBaseInfo);
+        sendToClients(GameConnectionPacket.BASE_CREATED, playerBase.getPlayerBaseInfo());
     }
 
     public void onBaseDeleted(PlayerBase playerBase) {

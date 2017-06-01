@@ -5,6 +5,8 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
+import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -36,6 +38,8 @@ public class WorkerMarshaller {
     private static final int DATA_OFFSET_2 = 3;
     private static final int DATA_OFFSET_3 = 4;
     private static final int DATA_OFFSET_4 = 5;
+    private static final int DATA_OFFSET_5 = 6;
+    private static final int DATA_OFFSET_6 = 7;
 
     public static JavaScriptObject marshall(GameEngineControlPackage controlPackage) {
         JsArrayMixed array = JavaScriptObject.createArray().cast();
@@ -72,6 +76,8 @@ public class WorkerMarshaller {
             case TERRAIN_OVERLAP:
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
             case TERRAIN_TILE_REQUEST:
+            case PLAYBACK_SYNC_BASE_ITEM:
+            case PLAYBACK_PLAYER_BASE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -109,13 +115,15 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 break;
-            // Quintuple  JSON data
+            // Multiple  JSON data
             case INITIALIZE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
+                array.set(DATA_OFFSET_5, toJson(controlPackage.getData(5)));
+                array.set(DATA_OFFSET_6, toJson(controlPackage.getData(6)));
                 break;
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
@@ -150,6 +158,8 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_2), SlaveSyncItemInfo.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_3), UserContext.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_4), GameEngineMode.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_5), Boolean.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_6), String.class));
                 break;
             case INITIALIZE_WARM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), PlanetConfig.class));
@@ -297,6 +307,12 @@ public class WorkerMarshaller {
                 break;
             case TERRAIN_TILE_RESPONSE:
                 data.add(demarshallTerrainTile(array.getObject(DATA_OFFSET_0)));
+                break;
+            case PLAYBACK_SYNC_BASE_ITEM:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemTracking.class));
+                break;
+            case PLAYBACK_PLAYER_BASE:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseTracking.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

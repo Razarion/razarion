@@ -7,6 +7,8 @@ import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
 import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
+import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
+import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.renderer.Camera;
@@ -28,6 +30,8 @@ public abstract class PlaybackControl {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private GameEngineControl gameEngineControl;
     private Date lastAction;
     private TrackingContainerAccess trackingContainerAccess;
     private DetailedTracking nextDetailedTracking;
@@ -75,6 +79,10 @@ public abstract class PlaybackControl {
         } else if (nextDetailedTracking instanceof MouseButtonTracking) {
             MouseButtonTracking mouseButtonTracking = (MouseButtonTracking) nextDetailedTracking;
             displayMouseButton(mouseButtonTracking.getButton(), mouseButtonTracking.isDown());
+        } else if (nextDetailedTracking instanceof PlayerBaseTracking) {
+            gameEngineControl.playbackPlayerBase((PlayerBaseTracking) nextDetailedTracking);
+        } else if (nextDetailedTracking instanceof SyncBaseItemTracking) {
+            gameEngineControl.playbackSyncBaseItem((SyncBaseItemTracking) nextDetailedTracking);
         } else {
             logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
         }
