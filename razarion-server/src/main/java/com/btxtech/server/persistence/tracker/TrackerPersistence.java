@@ -17,6 +17,7 @@ import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -50,7 +51,8 @@ public class TrackerPersistence {
     private PlanetPersistence planetPersistence;
     @PersistenceContext
     private EntityManager entityManager;
-    private TrackingContainerStore trackingContainerStore = new TrackingContainerStore();
+    @Inject
+    private TrackingContainerMongoDb trackingContainerMongoDb;
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
@@ -152,12 +154,12 @@ public class TrackerPersistence {
         entityManager.persist(fromPerfmonStatistic);
     }
 
-    public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) {
-        trackingContainerStore.onTrackingStart(httpSessionId, trackingStart);
+    public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) throws JsonProcessingException {
+        trackingContainerMongoDb.storeTrackingStart(httpSessionId, trackingStart);
     }
 
-    public void onDetailedTracking(String sessionId, TrackingContainer trackingContainer) {
-        trackingContainerStore.onDetailedTracking(sessionId, trackingContainer);
+    public void onDetailedTracking(String sessionId, TrackingContainer trackingContainer) throws JsonProcessingException {
+        trackingContainerMongoDb.storeDetailedTracking(sessionId, trackingContainer);
     }
 
     @Transactional
@@ -215,8 +217,8 @@ public class TrackerPersistence {
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
         List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
-        for (ServerTrackingContainer serverTrackingContainer : trackingContainerStore.getServerTrackingContainers(sessionId)) {
-            gameSessionDetails.add(new GameSessionDetail().setId(serverTrackingContainer.getGameSessionUuid()).setSessionId(sessionId).setTime(serverTrackingContainer.getTime()));
+        for (ServerTrackerStart serverTrackerStart : trackingContainerMongoDb.findServerTrackerStarts(sessionId)) {
+            gameSessionDetails.add(new GameSessionDetail().setId(serverTrackerStart.getTrackingStart().getGameSessionUuid()).setSessionId(sessionId).setTime(serverTrackerStart.getTimeStamp()));
         }
         sessionDetail.setGameSessionDetails(gameSessionDetails);
         return sessionDetail;
@@ -225,14 +227,14 @@ public class TrackerPersistence {
     @Transactional
     @SecurityCheck
     public WarmGameUiControlConfig setupWarmGameUiControlConfig(GameUiControlInput gameUiControlInput) {
-        ServerTrackingContainer serverTrackingContainer = trackingContainerStore.getServerTrackingContainer(gameUiControlInput);
-        PlanetEntity planetEntity = planetPersistence.loadPlanet(serverTrackingContainer.getPlanetId());
+        ServerTrackerStart serverTrackerStart = trackingContainerMongoDb.findServerTrackerStart(gameUiControlInput);
 
+        PlanetEntity planetEntity = planetPersistence.loadPlanet(serverTrackerStart.getTrackingStart().getPlanetId());
         WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameEngineMode(GameEngineMode.PLAYBACK);
         warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
 
         PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();
-        playbackGameUiControlConfig.setTrackingStart(serverTrackingContainer.getTrackingStart()).setTrackingContainer(serverTrackingContainer.generateTrackingContainer());
+        playbackGameUiControlConfig.setTrackingStart(serverTrackerStart.getTrackingStart()).setTrackingContainer(trackingContainerMongoDb.findServerTrackingContainer(gameUiControlInput));
         warmGameUiControlConfig.setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
         return warmGameUiControlConfig;
     }

@@ -18,6 +18,7 @@ public class DateUtil {
     public static final String DATE_FORMAT_STRING = "dd.MM.yyyy";
     public static final String FACEBOOK_DATE_TIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ssX";
     public static final String DB_DATE_TIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
+    public static final String JSON_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss.S";
 
     /**
      * Strip of: minutes, seconds and milli seconds

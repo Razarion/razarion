@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
-import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -14,7 +13,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -84,7 +82,6 @@ public class TrackerProviderImpl implements TrackerProvider {
             trackerPersistence.onTrackingStart(sessionHolder.getPlayerSession().getHttpSessionId(), trackingStart);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            throw t;
         }
     }
 
@@ -94,7 +91,6 @@ public class TrackerProviderImpl implements TrackerProvider {
             trackerPersistence.onDetailedTracking(sessionHolder.getPlayerSession().getHttpSessionId(), trackingContainer);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            throw t;
         }
     }
 }
