@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -37,7 +36,7 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigEntity(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(new DecimalPosition(50, 40), new DecimalPosition(100, 40), new DecimalPosition(100, 110), new DecimalPosition(50, 110)));
+        terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{
@@ -81,7 +80,7 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();
         terrainSlopePosition.setId(1);
         terrainSlopePosition.setSlopeConfigEntity(1);
-        terrainSlopePosition.setPolygon(Arrays.asList(new DecimalPosition(120, 120), new DecimalPosition(260, 120), new DecimalPosition(260, 250), new DecimalPosition(120, 250)));
+        terrainSlopePosition.setPolygon(Arrays.asList(createTerrainSlopeCorner(120, 120, null), createTerrainSlopeCorner(260, 120, null), createTerrainSlopeCorner(260, 250, null), createTerrainSlopeCorner(120, 250, null)));
         terrainSlopePositions.add(terrainSlopePosition);
 
         double[][] heights = new double[][]{

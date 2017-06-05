@@ -69,6 +69,9 @@ public class ObstacleContainerNode {
     }
 
     public Double getSlopHeight() {
+//        if(slopHeight == null) {
+//            return 0.0;
+//        }
         return slopHeight;
     }
 

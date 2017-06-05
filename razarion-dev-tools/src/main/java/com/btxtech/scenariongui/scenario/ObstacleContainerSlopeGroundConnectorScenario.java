@@ -82,13 +82,14 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigEntity(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(new DecimalPosition(50, 40), new DecimalPosition(100, 40), new DecimalPosition(100, 110), new DecimalPosition(50, 110)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
-
-        PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
-        planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 30, 30));
-        terrainService.setup(planetConfig);
+        // TODO terrainSlopePositionLand.setPolygon(Arrays.asList(new DecimalPosition(50, 40), new DecimalPosition(100, 40), new DecimalPosition(100, 110), new DecimalPosition(50, 110)));
+        throw new UnsupportedOperationException();
+//        terrainSlopePositions.add(terrainSlopePositionLand);
+//
+//        PlanetConfig planetConfig = new PlanetConfig();
+//        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
+//        planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 30, 30));
+//        terrainService.setup(planetConfig);
     }
 
     @Override

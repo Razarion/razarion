@@ -263,8 +263,12 @@ public class TerrainTileFactory {
                 Matrix4 transformationMatrix = verticalSegment.getTransformation();
                 for (int row = 0; row < slopeSkeletonConfig.getRows(); row++) {
                     SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), row);
-                    Vertex transformedPoint = transformationMatrix.multiply(slopeNode.getPosition(), 1.0);
-                    terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, setupSlopeFactor(slopeNode), terrainTileContext.interpolateSplattin(transformedPoint.toXY()));
+                    Vertex skeletonVertex = slopeNode.getPosition();
+                    if (verticalSegment.getDrivewayHeightFactor() < 1.0) {
+                        skeletonVertex = skeletonVertex.multiply(1.0, 1.0, verticalSegment.getDrivewayHeightFactor());
+                    }
+                    Vertex transformedPoint = transformationMatrix.multiply(skeletonVertex, 1.0);
+                    terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, setupSlopeFactor(slopeNode, verticalSegment.getDrivewayHeightFactor()), terrainTileContext.interpolateSplattin(transformedPoint.toXY()));
                 }
                 vertexColumn++;
             }
@@ -272,15 +276,15 @@ public class TerrainTileFactory {
         }
     }
 
-    private static double setupSlopeFactor(SlopeNode slopeNode) {
+    private static double setupSlopeFactor(SlopeNode slopeNode, double drivewayHeightFactor) {
         if (MathHelper.compareWithPrecision(1.0, slopeNode.getSlopeFactor())) {
-            return 1;
+            return 1 * drivewayHeightFactor;
         } else if (MathHelper.compareWithPrecision(0.0, slopeNode.getSlopeFactor())) {
             return 0;
         }
         // Why -shapeTemplateEntry.getNormShift() and not + is unclear
         // return (float) MathHelper.clamp(slopeSkeletonEntry.getSlopeFactor() - slopeSkeletonEntry.getNormShift(), 0.0, 1.0);
-        return slopeNode.getSlopeFactor();
+        return slopeNode.getSlopeFactor() * drivewayHeightFactor;
     }
 
     private void insertSlopeGroundConnectionPart(TerrainTileContext terrainTileContext) {

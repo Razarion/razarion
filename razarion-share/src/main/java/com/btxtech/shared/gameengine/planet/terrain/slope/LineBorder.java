@@ -12,13 +12,17 @@ public class LineBorder extends AbstractBorder {
     private DecimalPosition innerEnd;
     private DecimalPosition outerStart;
     private DecimalPosition outerEnd;
+    private double drivewayHeightFactorStart;
+    private double drivewayHeightFactorEnd;
 
-    public LineBorder(AbstractCornerBorder current, AbstractCornerBorder next, double distance) {
+    public LineBorder(AbstractCornerBorder current, double drivewayHeightFactorStart, AbstractCornerBorder next, double drivewayHeightFactorEnd, double distance) {
         super(distance);
         innerStart = current.getInnerEnd();
+        this.drivewayHeightFactorStart = drivewayHeightFactorStart;
         innerEnd = next.getInnerStart();
         outerStart = current.getOuterEnd();
         outerEnd = next.getOuterStart();
+        this.drivewayHeightFactorEnd = drivewayHeightFactorEnd;
     }
 
     public LineBorder(DecimalPosition current, DecimalPosition next) {
@@ -70,5 +74,15 @@ public class LineBorder extends AbstractBorder {
 
     public DecimalPosition getOuterEnd() {
         return outerEnd;
+    }
+
+    @Override
+    protected double getDrivewayHeightFactorStart() {
+        return drivewayHeightFactorStart;
+    }
+
+    @Override
+    protected double getDrivewayHeightFactorEnd() {
+        return drivewayHeightFactorEnd;
     }
 }

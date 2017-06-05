@@ -12,26 +12,26 @@ import java.util.Date;
 public class DevToolTrackerService implements TrackerService {
     @Override
     public void trackGameUiControl(Date startTimeStamp) {
-        System.out.println("DevToolTrackerService.trackGameUiControl() startTimeStamp: " + startTimeStamp);
+        // System.out.println("DevToolTrackerService.trackGameUiControl() startTimeStamp: " + startTimeStamp);
     }
 
     @Override
     public void trackScene(Date startTimeStamp, String sceneInternalName) {
-        System.out.println("DevToolTrackerService.trackScene() startTimeStamp: " + startTimeStamp + " sceneInternalName: " + sceneInternalName);
+        // System.out.println("DevToolTrackerService.trackScene() startTimeStamp: " + startTimeStamp + " sceneInternalName: " + sceneInternalName);
     }
 
     @Override
     public void startDetailedTracking(int planetId) {
-        System.out.println("DevToolTrackerService.startDetailedTracking()");
+        // System.out.println("DevToolTrackerService.startDetailedTracking()");
     }
 
     @Override
     public void stopDetailedTracking() {
-        System.out.println("DevToolTrackerService.stopDetailedTracking()");
+        // System.out.println("DevToolTrackerService.stopDetailedTracking()");
     }
 
     @Override
     public void onViewChanged(ViewField currentViewField) {
-        System.out.println("DevToolTrackerService.onViewChanged()");
+        // System.out.println("DevToolTrackerService.onViewChanged()");
     }
 }

@@ -93,6 +93,10 @@ public class Vertex {
         return new Vertex(x * w, y * w, z * w);
     }
 
+    public Vertex multiply(double x, double y, double z) {
+        return new Vertex(this.x * x, this.y * y, this.z * z);
+    }
+
     public Vertex divide(double w) {
         return new Vertex(x / w, y / w, z / w);
     }

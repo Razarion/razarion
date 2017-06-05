@@ -4,12 +4,14 @@ import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.TestTerrainSlopeTile;
 import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.TestTerrainWaterTile;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -103,6 +105,10 @@ public class TerrainServiceTestBase {
 
     protected SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
         return new SlopeNode().setPosition(new Vertex(x, 0, z)).setSlopeFactor(slopeFactor);
+    }
+
+    protected TerrainSlopeCorner createTerrainSlopeCorner(double x, double y, Integer slopeDrivewayId) {
+        return new TerrainSlopeCorner().setPosition(new DecimalPosition(x,y)).setSlopeDrivewayId(slopeDrivewayId);
     }
 
     protected double[][] toColumnRow(double[][] rowColumn) {

@@ -13,8 +13,8 @@ public class OuterCornerBorder extends AbstractCornerBorder {
     private DecimalPosition innerStart;
     private DecimalPosition innerEnd;
 
-    public OuterCornerBorder(DecimalPosition current, DecimalPosition previous, DecimalPosition next, double distance) {
-        super(distance);
+    public OuterCornerBorder(DecimalPosition current, DecimalPosition previous, DecimalPosition next, double distance, double drivewayHeightFactor) {
+        super(distance, drivewayHeightFactor);
         double halfOuterAngle = current.angle(previous, next) / 2.0;
         double angle = current.getAngle(next) - halfOuterAngle;
         double cornerDistance = distance / Math.sin(halfOuterAngle);

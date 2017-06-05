@@ -32,6 +32,10 @@ public class CollectionUtils {
         return getCorrectedIndex(index, list.size());
     }
 
+    public static <T> T getCorrectedElement(int index, List<T> list) {
+        return list.get(getCorrectedIndex(index, list.size()));
+    }
+
     public static double[][] to2dArray(List<List<Double>> list) {
         if (list == null) {
             return new double[0][0];

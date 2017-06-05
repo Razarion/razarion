@@ -2,6 +2,7 @@ package com.btxtech.persistence;
 
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.webglemulator.razarion.HttpConnectionEmu;
@@ -27,15 +28,14 @@ import java.util.Map;
  */
 @Singleton
 public class JsonProviderEmulator {
-    private static final String DEV_TOOL_RESOURCE_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
+    private static final String RAZARION_TMP_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
     private static final String FILE_NAME_TUTORIAL = "GameUiControlConfigTutorial.json";
     private static final String FILE_NAME_MULTI_PLAYER = "GameUiControlConfigMultiplayer.json";
     private static final String VERTEX_CONTAINER_BUFFERS_FILE_NAME = "VertexContainerBuffers.json";
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
-    private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH + "/" + RestUrl.WARM;
+    private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH + "/" + RestUrl.COLD;
     private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.SHAPE_3D_PROVIDER + "/" + RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
-    private static final String FACEBOOK_USER_LOGIN_INFO_STRING_TUTORIAL = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": null}";
-    private static final String FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER = "{\"accessToken\": null, \"expiresIn\": null, \"signedRequest\": null, \"userId\": 100003634094139}";
+    private static final String GAME_UI_CONTROL_INPUT = "{\"playbackGameSessionUuid\": null, \"playbackSessionUuid\": null}";
 
     public ColdGameUiControlConfig readFromServer() {
         return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(ColdGameUiControlConfig.class);
@@ -90,7 +90,7 @@ public class JsonProviderEmulator {
                     }
                 }
             });
-            String string = client.target(URL).request(MediaType.APPLICATION_JSON).post(Entity.entity(FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER, MediaType.APPLICATION_JSON_TYPE), String.class);
+            String string = client.target(URL).request(MediaType.APPLICATION_JSON).post(Entity.entity(GAME_UI_CONTROL_INPUT, MediaType.APPLICATION_JSON_TYPE), String.class);
             emu.setColdGameUiControlConfig(new ObjectMapper().readValue(string, ColdGameUiControlConfig.class));
             return emu;
         } catch (IOException e) {
@@ -108,7 +108,7 @@ public class JsonProviderEmulator {
         }
     }
 
-    public void gameUiControlConfigToFile(String fileName, Object object) {
+    public void toFile(String fileName, Object object) {
         try {
             File file = getFile(fileName);
             new ObjectMapper().writeValue(file, object);
@@ -119,12 +119,12 @@ public class JsonProviderEmulator {
     }
 
     public void gameUiControlConfigToTmpFile(Object object) {
-        gameUiControlConfigToFile(TMP_FILE_NAME, object);
+        toFile(TMP_FILE_NAME, object);
     }
 
     public void fromServerToFile() {
-        fromServerToFilePost(FILE_NAME_MULTI_PLAYER, URL, FACEBOOK_USER_LOGIN_INFO_STRING_MULTI_PLAYER);
-        fromServerToFilePost(FILE_NAME_TUTORIAL, URL, FACEBOOK_USER_LOGIN_INFO_STRING_TUTORIAL);
+        fromServerToFilePost(FILE_NAME_MULTI_PLAYER, URL, GAME_UI_CONTROL_INPUT);
+        fromServerToFilePost(FILE_NAME_TUTORIAL, URL, GAME_UI_CONTROL_INPUT);
     }
 
     public void fromServerToFileVertexContainerBuffer() {
@@ -132,6 +132,16 @@ public class JsonProviderEmulator {
     }
 
     private File getFile(String fileName) {
-        return new File(DEV_TOOL_RESOURCE_DIR, fileName);
+        return new File(RAZARION_TMP_DIR, fileName);
+    }
+
+    public static void main(String[] args) {
+        JsonProviderEmulator jsonProviderEmulator = new JsonProviderEmulator();
+        List<TerrainSlopePosition> terrainSlopePositions = jsonProviderEmulator.readFromFile(true).getWarmGameUiControlConfig().getPlanetConfig().getTerrainSlopePositions();
+        for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
+            if (terrainSlopePosition.getSlopeConfigEntity() == 1) {
+                jsonProviderEmulator.toFile( "slopedriveway.json", terrainSlopePosition.getPolygon());
+            }
+        }
     }
 }

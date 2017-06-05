@@ -45,11 +45,12 @@ public class SimpleTerrainScenario extends Scenario {
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigEntity(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(new DecimalPosition(50, 40), new DecimalPosition(100, 40), new DecimalPosition(100, 110), new DecimalPosition(50, 110)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
-
-        terrainTile1 = generateTerrainTileSlope(new Index(0, 0), splattings, terrainSlopePositions);
-        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTiles()[0];
+        // TODO terrainSlopePositionLand.setPolygon(Arrays.asList(new DecimalPosition(50, 40), new DecimalPosition(100, 40), new DecimalPosition(100, 110), new DecimalPosition(50, 110)));
+        throw new UnsupportedOperationException();
+//        terrainSlopePositions.add(terrainSlopePositionLand);
+//
+//        terrainTile1 = generateTerrainTileSlope(new Index(0, 0), splattings, terrainSlopePositions);
+//        TerrainSlopeTile terrainSlopeTile = terrainTile1.getTerrainSlopeTiles()[0];
 
     }
 

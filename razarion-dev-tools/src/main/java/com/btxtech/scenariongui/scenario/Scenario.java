@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Display Polygon", new DisplayPolygonScenario());
         register("Draw Polygon", new DrawPolygonScenario());
         register("Simple Terrain", new SimpleTerrainScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());

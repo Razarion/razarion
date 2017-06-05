@@ -23,6 +23,7 @@ public class TerrainTestApplication extends Application {
         Application.launch(TerrainTestApplication.class);
     }
 
+    @Override
     public void start(final Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TerrainTestApplication.fxml"));
         loader.setControllerFactory(param -> new TerrainTestController(expected, actual));

@@ -8,8 +8,11 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  * 23.01.2016.
  */
 public abstract class AbstractCornerBorder extends AbstractBorder {
-    public AbstractCornerBorder(double distance) {
+    private double drivewayHeightFactor;
+
+    public AbstractCornerBorder(double distance, double drivewayHeightFactor) {
         super(distance);
+        this.drivewayHeightFactor = drivewayHeightFactor;
     }
 
     public abstract DecimalPosition getInnerStart();
@@ -45,4 +48,13 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
         return 2.0 * Math.asin(verticalSpace / (2.0 * getDistance()));
     }
 
+    @Override
+    protected double getDrivewayHeightFactorStart() {
+        return drivewayHeightFactor;
+    }
+
+    @Override
+    protected double getDrivewayHeightFactorEnd() {
+        return drivewayHeightFactor;
+    }
 }

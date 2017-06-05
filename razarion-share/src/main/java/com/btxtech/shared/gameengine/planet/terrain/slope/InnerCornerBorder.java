@@ -13,8 +13,8 @@ public class InnerCornerBorder extends AbstractCornerBorder {
     private DecimalPosition outerStart;
     private DecimalPosition outerEnd;
 
-    public InnerCornerBorder(DecimalPosition current, DecimalPosition previous, DecimalPosition next, double distance) {
-        super(distance);
+    public InnerCornerBorder(DecimalPosition current, DecimalPosition previous, DecimalPosition next, double distance, double drivewayHeightFactor) {
+        super(distance, drivewayHeightFactor);
         innerCenter = current;
         double startAngle = current.getAngle(previous) + MathHelper.QUARTER_RADIANT;
         outerStart = current.getPointWithDistance(startAngle, distance);

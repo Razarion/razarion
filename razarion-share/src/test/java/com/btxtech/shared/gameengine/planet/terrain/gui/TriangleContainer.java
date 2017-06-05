@@ -18,8 +18,10 @@ public class TriangleContainer {
     private Collection<TriangleElement> nonexistentInExpected = new ArrayList<>();
 
     public TriangleContainer(Collection<TerrainTile> expected, Collection<TerrainTile> actual) {
-        for (TerrainTile terrainTile : expected) {
-            insertTerrainTile(expectedTriangleElements, terrainTile);
+        if (expected != null) {
+            for (TerrainTile terrainTile : expected) {
+                insertTerrainTile(expectedTriangleElements, terrainTile);
+            }
         }
         for (TerrainTile terrainTile : actual) {
             insertTerrainTile(actualTriangleElements, terrainTile);

@@ -6,21 +6,25 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.utils.DevUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * 23.01.2016.
  */
 public class Slope {
+    private static final double DRIVEWAY_LENGTH = 20; // TODO make configurable
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
@@ -29,10 +33,10 @@ public class Slope {
     private Polygon2D innerPolygon;
     private Polygon2D outerPolygon;
 
-    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<DecimalPosition> corners) {
+    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners) {
         this.slopeId = slopeId;
         this.slopeSkeletonConfig = slopeSkeletonConfig;
-        List<DecimalPosition> corners1 = new ArrayList<>(corners);
+        List<TerrainSlopeCorner> corners1 = new ArrayList<>(corners);
 
         if (slopeSkeletonConfig.getWidth() > 0.0) {
             setupSlopingBorder(corners1);
@@ -55,23 +59,59 @@ public class Slope {
         setupInnerOuter();
     }
 
-    private void setupStraightBorder(List<DecimalPosition> corners) {
-        for (int i = 0; i < corners.size(); i++) {
-            DecimalPosition current = corners.get(i);
-            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
-            borders.add(new LineBorder(current, next));
-        }
+    private void setupStraightBorder(List<TerrainSlopeCorner> corners) {
+//        for (int i = 0; i < corners.size(); i++) {
+//            DecimalPosition current = corners.get(i);
+//            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
+//            borders.add(new LineBorder(current, next));
+//        }
+        throw new UnsupportedOperationException("!!!! TODO !!!!");
     }
 
-    private void setupSlopingBorder(List<DecimalPosition> corners) {
+    private void setupSlopingBorder(List<TerrainSlopeCorner> terrainSlopeCorners) {
+        // Setup driveways
+        List<Corner> corners = new ArrayList<>();
+        for (int i = 0; i < terrainSlopeCorners.size(); i++) {
+            TerrainSlopeCorner current = terrainSlopeCorners.get(i);
+            if (current.getSlopeDrivewayId() != null) {
+                DecimalPosition start = current.getPosition();
+                int startIndex = i;
+                DecimalPosition end = null;
+                int endIndex = 0;
+                for (; CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getSlopeDrivewayId() != null; i++) {
+                    end = CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getPosition();
+                    endIndex = i + 1;
+                }
+                if (!start.equals(end) && endIndex - startIndex > 1) {
+                    corners.add(new Corner(start, 1.0));
+                    double startAngle = calculateDrivewayPerpendicular(startIndex, terrainSlopeCorners);
+                    double endAngle = calculateDrivewayPerpendicular(endIndex, terrainSlopeCorners);
+                    if (MathHelper.compareWithPrecision(startAngle, endAngle)) {
+                        for (int d = startIndex; d <= endIndex; d++) {
+                            DecimalPosition original = CollectionUtils.getCorrectedElement(d, terrainSlopeCorners).getPosition();
+                            corners.add(new Corner(original.getPointWithDistance(startAngle, DRIVEWAY_LENGTH), 1.0));
+                        }
+                    } else if (MathHelper.isCounterClock(startAngle, endAngle)) {
+                        fillDrivewayPositions(terrainSlopeCorners, corners, start, startIndex, end, endIndex, startAngle, endAngle, -DRIVEWAY_LENGTH);
+                    } else {
+                        fillDrivewayPositions(terrainSlopeCorners, corners, start, startIndex, end, endIndex, startAngle, endAngle, DRIVEWAY_LENGTH);
+                    }
+                    corners.add(new Corner(end, 1.0));
+                } else {
+                    corners.add(new Corner(current.getPosition(), 1.0));
+                }
+            } else {
+                corners.add(new Corner(current.getPosition(), 1.0));
+            }
+        }
         // Correct the borders. Outer corners can not be too close to other corners. It needs some safety distance
         boolean violationsFound = true;
         while (violationsFound) {
             violationsFound = false;
             for (int i = 0; i < corners.size(); i++) {
-                DecimalPosition previous = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
-                DecimalPosition current = corners.get(i);
-                DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
+                DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, corners).getPosition();
+                DecimalPosition current = corners.get(i).getPosition();
+                DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, corners).getPosition();
                 double innerAngle = current.angle(next, previous);
                 if (innerAngle > MathHelper.HALF_RADIANT) {
                     double safetyDistance = slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
@@ -86,7 +126,7 @@ public class Slope {
                         break;
                     }
 
-                    DecimalPosition afterNext = corners.get(CollectionUtils.getCorrectedIndex(i + 2, corners.size()));
+                    DecimalPosition afterNext = CollectionUtils.getCorrectedElement(i + 2, corners).getPosition();
                     double innerAngleNext = next.angle(afterNext, current);
                     if (innerAngleNext > MathHelper.HALF_RADIANT) {
                         double safetyDistanceNext = slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngleNext) / 2.0);
@@ -102,13 +142,13 @@ public class Slope {
         // Setup inner and outer corner
         List<AbstractCornerBorder> cornerBorders = new ArrayList<>();
         for (int i = 0; i < corners.size(); i++) {
-            DecimalPosition previous = corners.get(CollectionUtils.getCorrectedIndex(i - 1, corners.size()));
-            DecimalPosition current = corners.get(i);
-            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
-            if (current.angle(next, previous) > MathHelper.HALF_RADIANT) {
-                cornerBorders.add(new OuterCornerBorder(current, previous, next, slopeSkeletonConfig.getWidth()));
+            Corner previous = CollectionUtils.getCorrectedElement(i - 1, corners);
+            Corner current = corners.get(i);
+            Corner next = CollectionUtils.getCorrectedElement(i + 1, corners);
+            if (current.getPosition().angle(next.getPosition(), previous.getPosition()) > MathHelper.HALF_RADIANT) {
+                cornerBorders.add(new OuterCornerBorder(current.getPosition(), previous.getPosition(), next.getPosition(), slopeSkeletonConfig.getWidth(), current.getDrivewayHeightFactor()));
             } else {
-                cornerBorders.add(new InnerCornerBorder(current, previous, next, slopeSkeletonConfig.getWidth()));
+                cornerBorders.add(new InnerCornerBorder(current.getPosition(), previous.getPosition(), next.getPosition(), slopeSkeletonConfig.getWidth(), current.getDrivewayHeightFactor()));
             }
         }
         // Setup whole contour
@@ -116,8 +156,22 @@ public class Slope {
             AbstractCornerBorder current = cornerBorders.get(i);
             AbstractCornerBorder next = cornerBorders.get(CollectionUtils.getCorrectedIndex(i + 1, cornerBorders.size()));
             borders.add(current);
-            borders.add(new LineBorder(current, next, slopeSkeletonConfig.getWidth()));
+            borders.add(new LineBorder(current, current.getDrivewayHeightFactorStart(), next, next.getDrivewayHeightFactorStart(), slopeSkeletonConfig.getWidth()));
         }
+    }
+
+    private void fillDrivewayPositions(List<TerrainSlopeCorner> terrainSlopeCorners, List<Corner> corners, DecimalPosition start, int startIndex, DecimalPosition end, int endIndex, double startAngle, double endAngle, double length) {
+        DecimalPosition pivot = new Line(start, startAngle, 1.0).getCrossInfinite(new Line(end, endAngle, 1.0));
+        for (int d = startIndex; d <= endIndex; d++) {
+            DecimalPosition original = CollectionUtils.getCorrectedElement(d, terrainSlopeCorners).getPosition();
+            corners.add(new Corner(original.getPointWithDistance(length, pivot, true), 0.0));
+        }
+    }
+
+    private double calculateDrivewayPerpendicular(int index, List<TerrainSlopeCorner> terrainSlopeCorners) {
+        DecimalPosition previous = CollectionUtils.getCorrectedElement(index - 1, terrainSlopeCorners).getPosition();
+        DecimalPosition next = CollectionUtils.getCorrectedElement(index + 1, terrainSlopeCorners).getPosition();
+        return MathHelper.normaliseAngle(previous.getAngle(next) - MathHelper.QUARTER_RADIANT);
     }
 
     private void setupInnerOuter() {
@@ -241,5 +295,23 @@ public class Slope {
     @Override
     public int hashCode() {
         return slopeId;
+    }
+
+    private class Corner {
+        private DecimalPosition position;
+        private double drivewayHeightFactor;
+
+        public Corner(DecimalPosition position, double drivewayHeightFactor) {
+            this.position = position;
+            this.drivewayHeightFactor = drivewayHeightFactor;
+        }
+
+        public DecimalPosition getPosition() {
+            return position;
+        }
+
+        public double getDrivewayHeightFactor() {
+            return drivewayHeightFactor;
+        }
     }
 }

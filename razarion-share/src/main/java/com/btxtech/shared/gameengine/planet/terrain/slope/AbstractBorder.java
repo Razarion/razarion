@@ -24,6 +24,10 @@ public abstract class AbstractBorder {
 
     protected abstract DecimalPosition setupOuterPointFormStart(double verticalSpace, int count);
 
+    protected abstract double getDrivewayHeightFactorStart();
+
+    protected abstract double getDrivewayHeightFactorEnd();
+
     public double getDistance() {
         return distance;
     }
@@ -33,9 +37,18 @@ public abstract class AbstractBorder {
         int count = getSegmentCount(verticalSpace);
         double length = getSegmentLength(count);
         for (int i = 0; i < count; i++) {
-            VerticalSegment verticalSegment = new VerticalSegment(slope, i, setupInnerPointFormStart(length, i), setupOuterPointFormStart(length, i));
+            VerticalSegment verticalSegment = new VerticalSegment(slope, i, setupInnerPointFormStart(length, i), setupOuterPointFormStart(length, i), calculateDrivewayHeightFactor(i, count - 1));
             verticalSegments.add(verticalSegment);
         }
         return verticalSegments;
+    }
+
+    private double calculateDrivewayHeightFactor(int currentIndex, int lastIndex) {
+        double start = getDrivewayHeightFactorStart();
+        double end = getDrivewayHeightFactorEnd();
+        if (start == end) {
+            return start;
+        }
+        return start + (end - start) * (double) currentIndex / (double) lastIndex;
     }
 }

@@ -90,7 +90,8 @@ public class PlanetPersistence {
             TerrainSlopePositionEntity terrainSlopePositionEntity = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
             terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigEntity()));
             terrainSlopePositionEntity.getPolygon().clear();
-            terrainSlopePositionEntity.getPolygon().addAll(terrainSlopePosition.getPolygon());
+            throw new UnsupportedOperationException("!!!!! TODO !!!!!!");
+            // TODO terrainSlopePositionEntity.getPolygon().addAll(terrainSlopePosition.getPolygon());
         }
         entityManager.merge(planetEntity);
     }
@@ -102,8 +103,9 @@ public class PlanetPersistence {
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = new TerrainSlopePositionEntity();
             terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigEntity()));
-            terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
+            // TODO terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
             terrainSlopePositionEntities.add(terrainSlopePositionEntity);
+            throw new UnsupportedOperationException("!!!!! TODO !!!!!!");
         }
 
         PlanetEntity planetEntity = loadPlanet(planetId);

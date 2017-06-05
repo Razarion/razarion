@@ -11,7 +11,7 @@ import java.util.List;
 public class TerrainSlopePosition {
     private Integer id;
     private int slopeConfigEntity;
-    private List<DecimalPosition> polygon;
+    private List<TerrainSlopeCorner> polygon;
 
     public Integer getId() {
         return id;
@@ -31,11 +31,11 @@ public class TerrainSlopePosition {
         return this;
     }
 
-    public List<DecimalPosition> getPolygon() {
+    public List<TerrainSlopeCorner> getPolygon() {
         return polygon;
     }
 
-    public TerrainSlopePosition setPolygon(List<DecimalPosition> polygon) {
+    public TerrainSlopePosition setPolygon(List<TerrainSlopeCorner> polygon) {
         this.polygon = polygon;
         return this;
     }

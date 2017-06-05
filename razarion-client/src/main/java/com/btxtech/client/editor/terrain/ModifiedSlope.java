@@ -17,7 +17,8 @@ public class ModifiedSlope {
     public ModifiedSlope(TerrainSlopePosition original) {
         originalId = original.getId();
         slopeId = original.getSlopeConfigEntity();
-        polygon = new Polygon2D(original.getPolygon());
+        // polygon = new Polygon2D(original.getPolygon());
+        throw new UnsupportedOperationException("!!!! TODO !!!!");
     }
 
     public ModifiedSlope(int slopeId, Polygon2D polygon) {
@@ -30,11 +31,14 @@ public class ModifiedSlope {
     }
 
     public TerrainSlopePosition createTerrainSlopePositionNoId() {
-        return new TerrainSlopePosition().setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners());
+        // TODO return new TerrainSlopePosition().setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners());
+        throw new UnsupportedOperationException("!!!! TODO !!!!");
+
     }
 
     public TerrainSlopePosition createTerrainSlopePosition() {
-        return new TerrainSlopePosition().setId(originalId).setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners());
+        // TODO return new TerrainSlopePosition().setId(originalId).setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners());
+        throw new UnsupportedOperationException("!!!! TODO !!!!");
     }
 
     public Polygon2D combine(Polygon2D other) {
