@@ -75,32 +75,35 @@ public class TerrainTileFactory {
     private void insertGroundPart(TerrainTileContext terrainTileContext) {
         terrainTileContext.initGround();
 
-        SingleHolder<Integer> landNodes = new SingleHolder<>(0);
+        SingleHolder<Integer> landNodeCount = new SingleHolder<>(0);
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
             ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
             if (obstacleContainerNode != null) {
                 if (!obstacleContainerNode.isFullWater() && !obstacleContainerNode.isFractionWater()) {
-                    landNodes.setO(landNodes.getO() + 1);
+                    landNodeCount.setO(landNodeCount.getO() + 1);
                 }
                 if (obstacleContainerNode.isInSlope()) {
-                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getInsideSlopeHeight(nodeIndex));
+                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getGroundHeight(nodeIndex));
                     return;
                 }
                 if (obstacleContainerNode.isFullWater()) {
                     terrainTileContext.insertDisplayHeight(nodeIndex, terrainTypeService.getWaterConfig().getWaterLevel());
                     return;
                 }
+                if(obstacleContainerNode.getDriveway() != null) {
+                    return;
+                }
             } else {
-                landNodes.setO(landNodes.getO() + 1);
+                landNodeCount.setO(landNodeCount.getO() + 1);
             }
 
-            double slopeHeight = obstacleContainer.getInsideSlopeHeight(nodeIndex);
-            insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), slopeHeight, terrainTileContext);
+            double groundHeight = obstacleContainer.getGroundHeight(nodeIndex);
+            insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), groundHeight, terrainTileContext);
         });
 
         terrainTileContext.insertSlopeGroundConnection();
         terrainTileContext.setGroundVertexCount();
-        terrainTileContext.setLandWaterProportion((double) landNodes.getO() / (double) TerrainUtil.TERRAIN_TILE_TOTAL_NODES_COUNT);
+        terrainTileContext.setLandWaterProportion((double) landNodeCount.getO() / (double) TerrainUtil.TERRAIN_TILE_TOTAL_NODES_COUNT);
     }
 
     private void insertTerrainRectangle(int xNode, int yNode, double slopeHeight, TerrainTileContext terrainTileContext) {
@@ -299,8 +302,8 @@ public class TerrainTileFactory {
             if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
                 insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false);
             }
-            if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getSlopHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
+            if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null && obstacleContainerNode.getDriveway() == null) {
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
             }
         });
     }

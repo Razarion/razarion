@@ -82,11 +82,12 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
         setupTerrainService(heights, splattings, slopeSkeletonConfigs, terrainSlopePositions);
 
         Collection<TerrainTile> terrainTiles = new ArrayList<>();
+        terrainTiles.add(generateTerrainTile(new Index(0, 0)));
         terrainTiles.add(generateTerrainTile(new Index(0, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(0, 2)));
+        terrainTiles.add(generateTerrainTile(new Index(1, 0)));
         terrainTiles.add(generateTerrainTile(new Index(1, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 2)));
 
+        terrainTiles.add(generateTerrainTile(new Index(0, 0)));
         TerrainTestApplication.show(null, terrainTiles);
     }
 }

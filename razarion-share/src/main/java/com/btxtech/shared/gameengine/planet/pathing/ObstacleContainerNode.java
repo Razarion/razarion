@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 
 import java.util.ArrayList;
@@ -15,10 +16,11 @@ import java.util.List;
 public class ObstacleContainerNode {
     private Collection<Obstacle> obstacles;
     private List<VerticalSegment> slopeSegments;
-    private Double slopHeight;
+    private Double groundHeight;
     private boolean belongsToSlope;
     private boolean fullWater;
     private boolean fractionWater;
+    private Driveway driveway;
     private Collection<List<DecimalPosition>> outerSlopeGroundPiercingLine;
     private Collection<List<DecimalPosition>> innerSlopeGroundPiercingLine;
 
@@ -36,8 +38,8 @@ public class ObstacleContainerNode {
         slopeSegments.add(verticalSegment);
     }
 
-    public void setSlopHeight(Double slopHeight) {
-        this.slopHeight = slopHeight;
+    public void setGroundHeight(Double groundHeight) {
+        this.groundHeight = groundHeight;
     }
 
     public void setFullWater() {
@@ -68,11 +70,8 @@ public class ObstacleContainerNode {
         return fractionWater;
     }
 
-    public Double getSlopHeight() {
-//        if(slopHeight == null) {
-//            return 0.0;
-//        }
-        return slopHeight;
+    public Double getGroundHeight() {
+        return groundHeight;
     }
 
     public boolean isInSlope() {
@@ -151,6 +150,14 @@ public class ObstacleContainerNode {
     }
 
     public boolean isFree() {
-        return slopHeight == null && !belongsToSlope && !fullWater && !fractionWater && obstacles == null;
+        return groundHeight == null && !belongsToSlope && !fullWater && !fractionWater && obstacles == null;
+    }
+
+    public Driveway getDriveway() {
+        return driveway;
+    }
+
+    public void setDriveway(Driveway driveway) {
+        this.driveway = driveway;
     }
 }

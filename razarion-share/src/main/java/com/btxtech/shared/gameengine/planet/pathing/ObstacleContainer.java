@@ -12,6 +12,7 @@ import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -86,15 +87,26 @@ public class ObstacleContainer {
                     continue;
                 }
             } else {
+                Driveway driveway = slope.getDrivewayIfOneCornerInside(corners);
+                if (driveway != null) {
+                    // getOrCreate(node).setGroundHeight(driveway.getInterpolateDrivewayHeightFactor(terrainRect.getStart()) * slope.getHeight());
+                    getOrCreate(node).setDriveway(driveway);
+                    continue;
+                }
                 if (innerPolygon.isInside(corners)) {
-                    getOrCreate(node).setSlopHeight(slope.getHeight());
+                    getOrCreate(node).setGroundHeight(slope.getHeight());
                     continue;
                 }
             }
             if (outerPolygon.isOneCornerInside(corners)) {
                 ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
                 obstacleContainerNode.setBelongsToSlope();
-                obstacleContainerNode.setSlopHeight(slope.getHeight());
+                Driveway driveway = slope.getDriveway(terrainRect.getStart());
+                if (driveway != null) {
+                    obstacleContainerNode.setGroundHeight(driveway.getInterpolateDrivewayHeightFactor(terrainRect.getStart()) * slope.getHeight());
+                } else {
+                    obstacleContainerNode.setGroundHeight(slope.getHeight());
+                }
                 if (slope.hasWater()) {
                     obstacleContainerNode.setFractionWater();
                 }
@@ -204,15 +216,15 @@ public class ObstacleContainer {
         return GeometricUtil.rasterizeRectangleInclusive(rect, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
     }
 
-    public double getInsideSlopeHeight(Index index) {
+    public double getGroundHeight(Index index) {
         ObstacleContainerNode node = getObstacleContainerNodeIncludeOffset(index);
         if (node == null) {
             return 0;
         }
-        if (node.getSlopHeight() == null) {
+        if (node.getGroundHeight() == null) {
             return 0;
         }
-        return node.getSlopHeight();
+        return node.getGroundHeight();
     }
 
     public List<VerticalSegment> getVerticalSegments(Index index) {

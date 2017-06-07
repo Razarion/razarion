@@ -11,20 +11,19 @@ import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.utils.DevUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * 23.01.2016.
  */
 public class Slope {
-    private static final double DRIVEWAY_LENGTH = 20; // TODO make configurable
+    public static final double DRIVEWAY_LENGTH = 20; // TODO make configurable
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
@@ -32,6 +31,7 @@ public class Slope {
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
     private Polygon2D innerPolygon;
     private Polygon2D outerPolygon;
+    private Collection<Driveway> driveways;
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners) {
         this.slopeId = slopeId;
@@ -65,80 +65,43 @@ public class Slope {
 //            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
 //            borders.add(new LineBorder(current, next));
 //        }
-        throw new UnsupportedOperationException("!!!! TODO !!!!");
+        throw new UnsupportedOperationException("!!!! TODO: driveway not coded here !!!!");
     }
 
     private void setupSlopingBorder(List<TerrainSlopeCorner> terrainSlopeCorners) {
         // Setup driveways
         List<Corner> corners = new ArrayList<>();
-        for (int i = 0; i < terrainSlopeCorners.size(); i++) {
-            TerrainSlopeCorner current = terrainSlopeCorners.get(i);
-            if (current.getSlopeDrivewayId() != null) {
-                DecimalPosition start = current.getPosition();
-                int startIndex = i;
-                DecimalPosition end = null;
-                int endIndex = 0;
-                for (; CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getSlopeDrivewayId() != null; i++) {
-                    end = CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getPosition();
-                    endIndex = i + 1;
-                }
-                if (!start.equals(end) && endIndex - startIndex > 1) {
-                    corners.add(new Corner(start, 1.0));
-                    double startAngle = calculateDrivewayPerpendicular(startIndex, terrainSlopeCorners);
-                    double endAngle = calculateDrivewayPerpendicular(endIndex, terrainSlopeCorners);
-                    if (MathHelper.compareWithPrecision(startAngle, endAngle)) {
-                        for (int d = startIndex; d <= endIndex; d++) {
-                            DecimalPosition original = CollectionUtils.getCorrectedElement(d, terrainSlopeCorners).getPosition();
-                            corners.add(new Corner(original.getPointWithDistance(startAngle, DRIVEWAY_LENGTH), 1.0));
-                        }
-                    } else if (MathHelper.isCounterClock(startAngle, endAngle)) {
-                        fillDrivewayPositions(terrainSlopeCorners, corners, start, startIndex, end, endIndex, startAngle, endAngle, -DRIVEWAY_LENGTH);
-                    } else {
-                        fillDrivewayPositions(terrainSlopeCorners, corners, start, startIndex, end, endIndex, startAngle, endAngle, DRIVEWAY_LENGTH);
-                    }
-                    corners.add(new Corner(end, 1.0));
-                } else {
-                    corners.add(new Corner(current.getPosition(), 1.0));
-                }
-            } else {
-                corners.add(new Corner(current.getPosition(), 1.0));
-            }
-        }
-        // Correct the borders. Outer corners can not be too close to other corners. It needs some safety distance
-        boolean violationsFound = true;
-        while (violationsFound) {
-            violationsFound = false;
-            for (int i = 0; i < corners.size(); i++) {
-                DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, corners).getPosition();
-                DecimalPosition current = corners.get(i).getPosition();
-                DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, corners).getPosition();
-                double innerAngle = current.angle(next, previous);
-                if (innerAngle > MathHelper.HALF_RADIANT) {
-                    double safetyDistance = slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
-                    if (current.getDistance(previous) < safetyDistance) {
-                        violationsFound = true;
-                        corners.remove(i);
-                        break;
-                    }
-                    if (current.getDistance(next) < safetyDistance) {
-                        violationsFound = true;
-                        corners.remove(i);
-                        break;
-                    }
+        while (true) {
+            corners.clear();
+            for (int i = 0; i < terrainSlopeCorners.size(); i++) {
+                TerrainSlopeCorner current = terrainSlopeCorners.get(i);
+                if (current.getSlopeDrivewayId() != null) {
+                    Driveway driveway = new Driveway(current.getPosition(), i);
 
-                    DecimalPosition afterNext = CollectionUtils.getCorrectedElement(i + 2, corners).getPosition();
-                    double innerAngleNext = next.angle(afterNext, current);
-                    if (innerAngleNext > MathHelper.HALF_RADIANT) {
-                        double safetyDistanceNext = slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngleNext) / 2.0);
-                        if (current.getDistance(next) < safetyDistance + safetyDistanceNext) {
-                            violationsFound = true;
-                            corners.remove(i);
-                            break;
-                        }
+                    for (; CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getSlopeDrivewayId() != null; i++) {
+                        driveway.analyze(CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getPosition(), i + 1);
                     }
+                    if (driveway.computeVerify(terrainSlopeCorners)) {
+                        driveway.computeAndFillDrivewayPositions(terrainSlopeCorners, corners);
+                        if (driveways == null) {
+                            driveways = new ArrayList<>();
+                        }
+                        driveways.add(driveway);
+                    } else {
+                        corners.add(new Corner(current.getPosition(), 1.0, i));
+                    }
+                } else {
+                    corners.add(new Corner(current.getPosition(), 1.0, i));
                 }
             }
+            // Correct the borders. Outer corners can not be too close to other corners. It needs some safety distance
+            int violatedIndex = computeSafetyDistanceViolatedIndex(corners);
+            if (violatedIndex < 0) {
+                break;
+            }
+            terrainSlopeCorners.remove(corners.get(violatedIndex).getOrigIndex());
         }
+
         // Setup inner and outer corner
         List<AbstractCornerBorder> cornerBorders = new ArrayList<>();
         for (int i = 0; i < corners.size(); i++) {
@@ -160,18 +123,43 @@ public class Slope {
         }
     }
 
-    private void fillDrivewayPositions(List<TerrainSlopeCorner> terrainSlopeCorners, List<Corner> corners, DecimalPosition start, int startIndex, DecimalPosition end, int endIndex, double startAngle, double endAngle, double length) {
-        DecimalPosition pivot = new Line(start, startAngle, 1.0).getCrossInfinite(new Line(end, endAngle, 1.0));
-        for (int d = startIndex; d <= endIndex; d++) {
-            DecimalPosition original = CollectionUtils.getCorrectedElement(d, terrainSlopeCorners).getPosition();
-            corners.add(new Corner(original.getPointWithDistance(length, pivot, true), 0.0));
+    private int computeSafetyDistanceViolatedIndex(List<Corner> corners) {
+        for (int i = 0; i < corners.size(); i++) {
+            DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, corners).getPosition();
+            DecimalPosition current = corners.get(i).getPosition();
+            DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, corners).getPosition();
+            DecimalPosition afterNext = CollectionUtils.getCorrectedElement(i + 2, corners).getPosition();
+            if (!isSafetyDistanceValid(previous, current, next, afterNext)) {
+                return i;
+            }
         }
+        return -1;
     }
 
-    private double calculateDrivewayPerpendicular(int index, List<TerrainSlopeCorner> terrainSlopeCorners) {
-        DecimalPosition previous = CollectionUtils.getCorrectedElement(index - 1, terrainSlopeCorners).getPosition();
-        DecimalPosition next = CollectionUtils.getCorrectedElement(index + 1, terrainSlopeCorners).getPosition();
-        return MathHelper.normaliseAngle(previous.getAngle(next) - MathHelper.QUARTER_RADIANT);
+    private boolean isSafetyDistanceValid(DecimalPosition previous, DecimalPosition current, DecimalPosition next, DecimalPosition afterNext) {
+        double innerAngle = current.angle(next, previous);
+        if (innerAngle > MathHelper.HALF_RADIANT) {
+            double safetyDistance = calculateSafetyDistance(innerAngle);
+            if (current.getDistance(previous) < safetyDistance) {
+                return false;
+            }
+            if (current.getDistance(next) < safetyDistance) {
+                return false;
+            }
+
+            double innerAngleNext = next.angle(afterNext, current);
+            if (innerAngleNext > MathHelper.HALF_RADIANT) {
+                double safetyDistanceNext = calculateSafetyDistance(innerAngleNext);
+                if (current.getDistance(next) < safetyDistance + safetyDistanceNext) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private double calculateSafetyDistance(double innerAngle) {
+        return slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
     }
 
     private void setupInnerOuter() {
@@ -297,13 +285,29 @@ public class Slope {
         return slopeId;
     }
 
-    private class Corner {
+    public Driveway getDrivewayIfOneCornerInside(Collection<DecimalPosition> positions) {
+        if (driveways == null || driveways.isEmpty()) {
+            return null;
+        }
+        return driveways.stream().filter(driveway -> driveway.isOneCornerInside(positions)).findFirst().orElse(null);
+    }
+
+    public Driveway getDriveway(DecimalPosition position) {
+        if (driveways == null || driveways.isEmpty()) {
+            return null;
+        }
+        return driveways.stream().filter(driveway -> driveway.isInside(position)).findFirst().orElse(null);
+    }
+
+    public static class Corner {
         private DecimalPosition position;
         private double drivewayHeightFactor;
+        private int origIndex;
 
-        public Corner(DecimalPosition position, double drivewayHeightFactor) {
+        public Corner(DecimalPosition position, double drivewayHeightFactor, int origIndex) {
             this.position = position;
             this.drivewayHeightFactor = drivewayHeightFactor;
+            this.origIndex = origIndex;
         }
 
         public DecimalPosition getPosition() {
@@ -312,6 +316,10 @@ public class Slope {
 
         public double getDrivewayHeightFactor() {
             return drivewayHeightFactor;
+        }
+
+        public int getOrigIndex() {
+            return origIndex;
         }
     }
 }
