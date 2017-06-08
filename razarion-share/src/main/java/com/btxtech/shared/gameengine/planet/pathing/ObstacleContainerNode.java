@@ -20,7 +20,8 @@ public class ObstacleContainerNode {
     private boolean belongsToSlope;
     private boolean fullWater;
     private boolean fractionWater;
-    private Driveway driveway;
+    private Driveway fractionDriveway;
+    private Driveway fullDriveway;
     private Collection<List<DecimalPosition>> outerSlopeGroundPiercingLine;
     private Collection<List<DecimalPosition>> innerSlopeGroundPiercingLine;
 
@@ -153,11 +154,19 @@ public class ObstacleContainerNode {
         return groundHeight == null && !belongsToSlope && !fullWater && !fractionWater && obstacles == null;
     }
 
-    public Driveway getDriveway() {
-        return driveway;
+    public Driveway getFractionDriveway() {
+        return fractionDriveway;
     }
 
-    public void setDriveway(Driveway driveway) {
-        this.driveway = driveway;
+    public void setFractionDriveway(Driveway fractionDriveway) {
+        this.fractionDriveway = fractionDriveway;
+    }
+
+    public Driveway getFullDriveway() {
+        return fullDriveway;
+    }
+
+    public void setFullDriveway(Driveway fullDriveway) {
+        this.fullDriveway = fullDriveway;
     }
 }

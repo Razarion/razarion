@@ -14,6 +14,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -90,7 +91,13 @@ public class TerrainTileFactory {
                     terrainTileContext.insertDisplayHeight(nodeIndex, terrainTypeService.getWaterConfig().getWaterLevel());
                     return;
                 }
-                if(obstacleContainerNode.getDriveway() != null) {
+                if (obstacleContainerNode.getFullDriveway() != null) {
+                    double groundHeight = obstacleContainer.getGroundHeight(nodeIndex);
+                    insertDrivewayTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), groundHeight, obstacleContainerNode.getFullDriveway(), terrainTileContext);
+                    return;
+                }
+                if(obstacleContainerNode.getFractionDriveway() != null) {
+                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getGroundHeight(nodeIndex));
                     return;
                 }
             } else {
@@ -106,14 +113,14 @@ public class TerrainTileFactory {
         terrainTileContext.setLandWaterProportion((double) landNodeCount.getO() / (double) TerrainUtil.TERRAIN_TILE_TOTAL_NODES_COUNT);
     }
 
-    private void insertTerrainRectangle(int xNode, int yNode, double slopeHeight, TerrainTileContext terrainTileContext) {
+    private void insertTerrainRectangle(int xNode, int yNode, double groundHeight, TerrainTileContext terrainTileContext) {
         int rightXNode = xNode + 1;
         int topYNode = yNode + 1;
 
-        Vertex vertexBL = terrainTileContext.setupVertex(xNode, yNode, slopeHeight);
-        Vertex vertexBR = terrainTileContext.setupVertex(rightXNode, yNode, slopeHeight);
-        Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, slopeHeight);
-        Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, slopeHeight);
+        Vertex vertexBL = terrainTileContext.setupVertex(xNode, yNode, groundHeight);
+        Vertex vertexBR = terrainTileContext.setupVertex(rightXNode, yNode, groundHeight);
+        Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, groundHeight);
+        Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, groundHeight);
 
         Vertex normBL = terrainTileContext.setupNorm(xNode, yNode);
         Vertex normBR = terrainTileContext.setupNorm(rightXNode, yNode);
@@ -123,6 +130,49 @@ public class TerrainTileFactory {
         Vertex tangentBL = terrainTileContext.setupTangent(xNode, yNode);
         Vertex tangentBR = terrainTileContext.setupTangent(rightXNode, yNode);
         Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode);
+        Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode);
+
+        double splattingBL = terrainTileContext.getSplatting(xNode, yNode);
+        double splattingBR = terrainTileContext.getSplatting(rightXNode, yNode);
+        double splattingTR = terrainTileContext.getSplatting(rightXNode, topYNode);
+        double splattingTL = terrainTileContext.getSplatting(xNode, topYNode);
+
+        terrainTileContext.setSplatting(xNode, yNode, splattingBL, splattingBR, splattingTR, splattingTL);
+
+        // Triangle 1
+        terrainTileContext.insertTriangleCorner(vertexBL, normBL, tangentBL, splattingBL);
+        terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR);
+        terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL);
+        // Triangle 2
+        terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR);
+        terrainTileContext.insertTriangleCorner(vertexTR, normTR, tangentTR, splattingTR);
+        terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL);
+
+        terrainTileContext.insertDisplayHeight(new Index(xNode, yNode), vertexBL.getZ());
+    }
+
+    private void insertDrivewayTerrainRectangle(int xNode, int yNode, double groundHeight, Driveway driveway, TerrainTileContext terrainTileContext) {
+        int rightXNode = xNode + 1;
+        int topYNode = yNode + 1;
+
+        double drivewayHeightBL = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(xNode, yNode))) + groundHeight;
+        double drivewayHeightBR = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(rightXNode, yNode)))+ groundHeight;
+        double drivewayHeightTR = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(rightXNode, topYNode)))+ groundHeight;
+        double drivewayHeightTL = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(xNode, topYNode)))+ groundHeight;
+
+        Vertex vertexBL = terrainTileContext.setupVertex(xNode, yNode, drivewayHeightBL);
+        Vertex vertexBR = terrainTileContext.setupVertex(rightXNode, yNode, drivewayHeightBR);
+        Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, drivewayHeightTR);
+        Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, drivewayHeightTL);
+
+        Vertex normBL = terrainTileContext.setupNorm(xNode, yNode); // TODO add height
+        Vertex normBR = terrainTileContext.setupNorm(rightXNode, yNode); // TODO add height
+        Vertex normTR = terrainTileContext.setupNorm(rightXNode, topYNode); // TODO add height
+        Vertex normTL = terrainTileContext.setupNorm(xNode, topYNode); // TODO add height
+
+        Vertex tangentBL = terrainTileContext.setupTangent(xNode, yNode); // TODO add height
+        Vertex tangentBR = terrainTileContext.setupTangent(rightXNode, yNode); // TODO add height
+        Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode); // TODO add height
         Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode);
 
         double splattingBL = terrainTileContext.getSplatting(xNode, yNode);
@@ -299,16 +349,22 @@ public class TerrainTileFactory {
             if (obstacleContainerNode.isFullWater()) {
                 return;
             }
+            if (obstacleContainerNode.getFullDriveway() != null) {
+                return;
+            }
+            if (obstacleContainerNode.getFractionDriveway() != null) {
+                return;
+            }
             if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
                 insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false);
             }
-            if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null && obstacleContainerNode.getDriveway() == null) {
+            if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null && obstacleContainerNode.getFullDriveway() == null) {
                 insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
             }
         });
     }
 
-    private void insertSlopeGroundConnection(TerrainTileContext terrainTileContext, Index nodeIndex, Collection<List<DecimalPosition>> piercings, double additionHeight, Triangulator.Listener<Vertex> listener, boolean water) {
+    private void insertSlopeGroundConnection(TerrainTileContext terrainTileContext, Index nodeIndex, Collection<List<DecimalPosition>> piercings, double groundHeight, Triangulator.Listener<Vertex> listener, boolean water) {
         Rectangle2D absoluteRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
         for (List<DecimalPosition> piercingLine : piercings) {
             if (water) {
@@ -338,23 +394,23 @@ public class TerrainTileFactory {
                 endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine, piercingLine.get(piercingLine.size() - 1));
             }
 
-            addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross(), additionHeight));
+            addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross(), groundHeight));
             Side side = startRectanglePiercing.getSide();
             if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
                 if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
-                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight, water));
+                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, groundHeight, water));
                     side = side.getSuccessor();
                 }
             }
 
             while (side != endRectanglePiercing.side) {
-                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, additionHeight, water));
+                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, groundHeight, water));
                 side = side.getSuccessor();
             }
-            addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), additionHeight));
+            addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), groundHeight));
 
             for (int i = piercingLine.size() - 2; i > 0; i--) {
-                addOnlyXyUnique(polygon, toVertexSlope(piercingLine.get(i), additionHeight));
+                addOnlyXyUnique(polygon, toVertexSlope(piercingLine.get(i), groundHeight));
             }
 
             if (polygon.size() < 3) {
@@ -380,12 +436,12 @@ public class TerrainTileFactory {
         list.add(vertex);
     }
 
-    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext, double slopeHeight, boolean water) {
+    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext, double groundHeight, boolean water) {
         if (water) {
-            return new Vertex(position, slopeHeight);
+            return new Vertex(position, groundHeight);
         } else {
             Index nodeTile = obstacleContainer.toNode(position);
-            return new Vertex(position, terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY()) + slopeHeight);
+            return new Vertex(position, terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY()) + groundHeight);
         }
     }
 

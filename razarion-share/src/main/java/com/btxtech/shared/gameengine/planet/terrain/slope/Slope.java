@@ -60,6 +60,7 @@ public class Slope {
     }
 
     private void setupStraightBorder(List<TerrainSlopeCorner> corners) {
+        // TODO
 //        for (int i = 0; i < corners.size(); i++) {
 //            DecimalPosition current = corners.get(i);
 //            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
@@ -76,7 +77,7 @@ public class Slope {
             for (int i = 0; i < terrainSlopeCorners.size(); i++) {
                 TerrainSlopeCorner current = terrainSlopeCorners.get(i);
                 if (current.getSlopeDrivewayId() != null) {
-                    Driveway driveway = new Driveway(current.getPosition(), i);
+                    Driveway driveway = new Driveway(this, current.getPosition(), i);
 
                     for (; CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getSlopeDrivewayId() != null; i++) {
                         driveway.analyze(CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getPosition(), i + 1);
@@ -283,6 +284,13 @@ public class Slope {
     @Override
     public int hashCode() {
         return slopeId;
+    }
+
+    public Driveway getDriveway(Collection<DecimalPosition> positions) {
+        if (driveways == null || driveways.isEmpty()) {
+            return null;
+        }
+        return driveways.stream().filter(driveway -> driveway.isInside(positions)).findFirst().orElse(null);
     }
 
     public Driveway getDrivewayIfOneCornerInside(Collection<DecimalPosition> positions) {

@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.utils.DevUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.List;
  * on 06.06.2017.
  */
 public class Driveway {
+    private Slope slope;
     private DecimalPosition startSlopePosition;
     private int startSlopeIndex;
     private double startPerpendicularAngle;
@@ -25,7 +27,8 @@ public class Driveway {
     private Polygon2D innerPolygon;
     private List<Edge> edges;
 
-    public Driveway(DecimalPosition startSlopePosition, int startSlopeIndex) {
+    public Driveway(Slope slope, DecimalPosition startSlopePosition, int startSlopeIndex) {
+        this.slope = slope;
         this.startSlopePosition = startSlopePosition;
         this.startSlopeIndex = startSlopeIndex;
     }
@@ -92,8 +95,11 @@ public class Driveway {
         }
     }
 
+    public double getInterpolateDrivewayHeight(DecimalPosition position) {
+        return getInterpolateDrivewayHeightFactor(position) * slope.getHeight();
+    }
 
-    public double getInterpolateDrivewayHeightFactor(DecimalPosition position) {
+    private double getInterpolateDrivewayHeightFactor(DecimalPosition position) {
         double min = Double.MAX_VALUE;
         Edge bestFit = null;
         for (Edge edge : edges) {
@@ -107,6 +113,10 @@ public class Driveway {
             throw new IllegalStateException("Driveway.getInterpolateDrivewayHeightFactor() No best fit found for position: " + position);
         }
         return bestFit.getInterpolateDrivewayHeightFactor(position);
+    }
+
+    public boolean isInside(Collection<DecimalPosition> positions) {
+        return innerPolygon.isInside(positions);
     }
 
     public boolean isOneCornerInside(Collection<DecimalPosition> positions) {

@@ -13,13 +13,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
  * 25.06.2016.
  */
 public class TerrainTestRenderer {
+    private static  List<DecimalPosition> driveway1 = Arrays.asList(new DecimalPosition(151.5791764537405, 323.51025766525436), new DecimalPosition(150.40130510688527, 317.34276071913376), new DecimalPosition(150.6945631890857, 311.104609128963), new DecimalPosition(152.4164072176388, 305.17565539631994), new DecimalPosition(153.57064513635234, 303.07390726443987), new DecimalPosition(173.0173636420843, 307.7456456302757), new DecimalPosition(172.11217078445617, 308.6508384879038), new DecimalPosition(170.69177556525412, 311.4385210670791), new DecimalPosition(170.20234072820566, 314.52869101082854), new DecimalPosition(170.69177556525412, 317.618860954578));
+    private static List<DecimalPosition> driveway2 = Arrays.asList(new DecimalPosition(229.7228102503087, 93.74624780631167), new DecimalPosition(224.44156390181416, 91.23561877923918), new DecimalPosition(219.0301365178866, 90.70502016604792), new DecimalPosition(214.30867856773557, 88.31039033373416), new DecimalPosition(212.37667655561458, 86.47483517864345), new DecimalPosition(207.31656908016808, 85.89967758800603), new DecimalPosition(204.68721285618236, 84.5025556830088), new DecimalPosition(201.95858479347882, 84.16598884066639), new DecimalPosition(199.40632569408996, 82.78004554683035), new DecimalPosition(195.25122088488845, 82.22631874915169), new DecimalPosition(190.84172066846975, 80.18522262084939), new DecimalPosition(185.8680081341589, 79.44441571008328), new DecimalPosition(183.11608334016802, 77.86214096391089), new DecimalPosition(186.25459086571033, 58.10993170742229), new DecimalPosition(189.54143212205656, 59.78466097597894), new DecimalPosition(195.41275501518055, 60.71458716637102), new DecimalPosition(200.67024363412307, 62.9744566978259), new DecimalPosition(205.55178332828845, 63.7476166302083), new DecimalPosition(208.60088079313638, 65.30120938653725), new DecimalPosition(211.79012624775928, 65.80633624292527), new DecimalPosition(214.9227553360673, 67.40249048724473), new DecimalPosition(220.79407822919129, 68.33241667763681), new DecimalPosition(223.14086157692904, 70.36623966305281), new DecimalPosition(228.71622673527955, 73.20703010145694), new DecimalPosition(234.8965666227785, 74.18589977555386), new DecimalPosition(241.04158959742364, 77.25730502360652));
     private static final double LINE_WIDTH = 0.2;
     private static final int GRID_SPACING_100 = 100;
     private static final int GRID_SPACING_20 = 20;
@@ -157,9 +161,26 @@ public class TerrainTestRenderer {
 
 //        drawTriangleContainer();
 
+        strokePolygon(driveway1, 0.1, Color.PINK, true);
+        strokePolygon(driveway2, 0.1, Color.PINK, true);
+
         postRender();
     }
 
+    public void strokePolygon(List<DecimalPosition> polygon, double strokeWidth, Color color, boolean showPoint) {
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        gc.setLineWidth(strokeWidth);
+        for (int i = 0; i < polygon.size(); i++) {
+            DecimalPosition start = polygon.get(i);
+            DecimalPosition end = polygon.get(i + 1 < polygon.size() ? i + 1 : i - polygon.size() + 1);
+
+            gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+            if (showPoint) {
+                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
+            }
+        }
+    }
 
     public void drawTerrainTile(TerrainTile terrainTile) {
         gc.setLineWidth(LINE_WIDTH);

@@ -87,26 +87,24 @@ public class ObstacleContainer {
                     continue;
                 }
             } else {
-                Driveway driveway = slope.getDrivewayIfOneCornerInside(corners);
+                Driveway driveway = slope.getDriveway(corners);
                 if (driveway != null) {
                     // getOrCreate(node).setGroundHeight(driveway.getInterpolateDrivewayHeightFactor(terrainRect.getStart()) * slope.getHeight());
-                    getOrCreate(node).setDriveway(driveway);
+                    getOrCreate(node).setFullDriveway(driveway);
                     continue;
                 }
                 if (innerPolygon.isInside(corners)) {
-                    getOrCreate(node).setGroundHeight(slope.getHeight());
+                    ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
+                    obstacleContainerNode.setGroundHeight(slope.getHeight());
+                    obstacleContainerNode.setFractionDriveway(slope.getDrivewayIfOneCornerInside(corners));
                     continue;
                 }
             }
             if (outerPolygon.isOneCornerInside(corners)) {
                 ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
                 obstacleContainerNode.setBelongsToSlope();
-                Driveway driveway = slope.getDriveway(terrainRect.getStart());
-                if (driveway != null) {
-                    obstacleContainerNode.setGroundHeight(driveway.getInterpolateDrivewayHeightFactor(terrainRect.getStart()) * slope.getHeight());
-                } else {
-                    obstacleContainerNode.setGroundHeight(slope.getHeight());
-                }
+                obstacleContainerNode.setGroundHeight(slope.getHeight());
+                obstacleContainerNode.setFractionDriveway(slope.getDrivewayIfOneCornerInside(corners));
                 if (slope.hasWater()) {
                     obstacleContainerNode.setFractionWater();
                 }
