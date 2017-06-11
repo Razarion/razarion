@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
@@ -60,7 +61,6 @@ public class Slope {
     }
 
     private void setupStraightBorder(List<TerrainSlopeCorner> corners) {
-        // TODO
 //        for (int i = 0; i < corners.size(); i++) {
 //            DecimalPosition current = corners.get(i);
 //            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
@@ -73,6 +73,7 @@ public class Slope {
         // Setup driveways
         List<Corner> corners = new ArrayList<>();
         while (true) {
+            driveways = null;
             corners.clear();
             for (int i = 0; i < terrainSlopeCorners.size(); i++) {
                 TerrainSlopeCorner current = terrainSlopeCorners.get(i);
@@ -305,6 +306,48 @@ public class Slope {
             return null;
         }
         return driveways.stream().filter(driveway -> driveway.isInside(position)).findFirst().orElse(null);
+    }
+
+    public int getNearestInnerPolygon(DecimalPosition position) {
+        double mindDistance = Double.MAX_VALUE;
+        Integer index = null;
+        List<DecimalPosition> corners = innerPolygon.getCorners();
+        for (int i = 0; i < corners.size(); i++) {
+            DecimalPosition inner = corners.get(i);
+            double distance = inner.getDistance(position);
+            if (distance < mindDistance) {
+                index = i;
+                mindDistance = distance;
+            }
+        }
+        if (index == null) {
+            throw new IllegalStateException("Slope.getNearestInnerPolygon() index == null");
+        }
+        return index;
+    }
+
+    public List<DecimalPosition> getFirstOutOfRectCounterClock(int startIndex, Rectangle2D terrainRect) {
+        List<DecimalPosition> result = new ArrayList<>();
+        for (int i = 0; i < innerPolygon.size(); i++) {
+            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(i + startIndex, innerPolygon.getCorners());
+            result.add(decimalPosition);
+            if (!terrainRect.contains(decimalPosition)) {
+                return result;
+            }
+        }
+        throw new IllegalStateException("Slope.getFirstOutOfRectCounterClock()");
+    }
+
+    public List<DecimalPosition> getFirstOutOfRectClockWise(int startIndex, Rectangle2D terrainRect) {
+        List<DecimalPosition> result = new ArrayList<>();
+        for (int i = 0; i < innerPolygon.size(); i++) {
+            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(startIndex - i, innerPolygon.getCorners());
+            result.add(decimalPosition);
+            if (!terrainRect.contains(decimalPosition)) {
+                return result;
+            }
+        }
+        throw new IllegalStateException("Slope.getFirstOutOfRectClockWise()");
     }
 
     public static class Corner {

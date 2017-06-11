@@ -49,12 +49,14 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(6).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {createSlopeNode(0, 0, 0.3),},
                 {createSlopeNode(2, 5, 1),},
                 {createSlopeNode(4, 10, 0.7),},
                 {createSlopeNode(7, 20, 0.7),},
+                {createSlopeNode(10, 20, 0.7),},
+                {createSlopeNode(11, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);

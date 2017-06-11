@@ -74,7 +74,6 @@ public class ObstacleContainer {
 
     private void insertObstacleSlope(Slope slope) {
         slope.fillObstacleContainer(this);
-
         Polygon2D outerPolygon = slope.getOuterPolygon();
         Rectangle2D aabb = outerPolygon.toAabb();
         Polygon2D innerPolygon = slope.getInnerPolygon();
@@ -96,6 +95,13 @@ public class ObstacleContainer {
                 if (innerPolygon.isInside(corners)) {
                     ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
                     obstacleContainerNode.setGroundHeight(slope.getHeight());
+                    Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
+                    if(fractalDriveway != null) {
+                        obstacleContainerNode.setFractionDriveway(fractalDriveway);
+                        obstacleContainerNode.setDrivewayGroundPiercingLine(fractalDriveway.setupPiercingLine(terrainRect, true));
+                        obstacleContainerNode.setDrivewaySlopePiercingLine(fractalDriveway.setupPiercingLine(terrainRect, false));
+                    }
+
                     obstacleContainerNode.setFractionDriveway(slope.getDrivewayIfOneCornerInside(corners));
                     continue;
                 }
@@ -104,7 +110,12 @@ public class ObstacleContainer {
                 ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
                 obstacleContainerNode.setBelongsToSlope();
                 obstacleContainerNode.setGroundHeight(slope.getHeight());
-                obstacleContainerNode.setFractionDriveway(slope.getDrivewayIfOneCornerInside(corners));
+                Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
+                if(fractalDriveway != null) {
+                    obstacleContainerNode.setFractionDriveway(fractalDriveway);
+                    obstacleContainerNode.setDrivewayGroundPiercingLine(fractalDriveway.setupPiercingLine(terrainRect, true));
+                    obstacleContainerNode.setDrivewaySlopePiercingLine(fractalDriveway.setupPiercingLine(terrainRect, false));
+                }
                 if (slope.hasWater()) {
                     obstacleContainerNode.setFractionWater();
                 }
@@ -145,7 +156,7 @@ public class ObstacleContainer {
         obstacleContainerNode.addSlopeGroundPiercing(piercingLine, isOuter);
     }
 
-    private int findStart(Rectangle2D rect, int index, List<DecimalPosition> outerLine) {
+    public int findStart(Rectangle2D rect, int index, List<DecimalPosition> outerLine) {
         int protection = outerLine.size() + 1;
         do {
             index = CollectionUtils.getCorrectedIndex(index - 1, outerLine);

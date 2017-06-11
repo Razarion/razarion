@@ -24,6 +24,8 @@ public class ObstacleContainerNode {
     private Driveway fullDriveway;
     private Collection<List<DecimalPosition>> outerSlopeGroundPiercingLine;
     private Collection<List<DecimalPosition>> innerSlopeGroundPiercingLine;
+    private List<DecimalPosition> drivewayGroundPiercingLine;
+    private List<DecimalPosition> drivewaySlopePiercingLine;
 
     public void addObstacle(Obstacle obstacle) {
         if (obstacles == null) {
@@ -168,5 +170,21 @@ public class ObstacleContainerNode {
 
     public void setFullDriveway(Driveway fullDriveway) {
         this.fullDriveway = fullDriveway;
+    }
+
+    public List<DecimalPosition> getDrivewayGroundPiercingLine() {
+        return drivewayGroundPiercingLine;
+    }
+
+    public void setDrivewayGroundPiercingLine(List<DecimalPosition> drivewayGroundPiercingLine) {
+        this.drivewayGroundPiercingLine = drivewayGroundPiercingLine;
+    }
+
+    public List<DecimalPosition> getDrivewaySlopePiercingLine() {
+        return drivewaySlopePiercingLine;
+    }
+
+    public void setDrivewaySlopePiercingLine(List<DecimalPosition> drivewaySlopePiercingLine) {
+        this.drivewaySlopePiercingLine = drivewaySlopePiercingLine;
     }
 }

@@ -68,7 +68,12 @@ public class TerrainTileFactory {
         for (int xNode = xNodeStart; xNode < xNodeEnd; xNode++) {
             for (int yNode = yNodeStart; yNode < yNodeEnd; yNode++) {
                 Index index = new Index(xNode, yNode);
-                nodeCallback.accept(index);
+                try {
+                    nodeCallback.accept(index);
+                } catch (Throwable t) {
+                    logger.severe("TerrainTileFactory.iterateOverTerrainNodes: " + t.getMessage() + " index:" + index + " terrainTileIndex: " + terrainTileIndex + " ");
+                    throw t;
+                }
             }
         }
     }
@@ -96,7 +101,7 @@ public class TerrainTileFactory {
                     insertDrivewayTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), groundHeight, obstacleContainerNode.getFullDriveway(), terrainTileContext);
                     return;
                 }
-                if(obstacleContainerNode.getFractionDriveway() != null) {
+                if (obstacleContainerNode.getFractionDriveway() != null) {
                     terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getGroundHeight(nodeIndex));
                     return;
                 }
@@ -156,9 +161,9 @@ public class TerrainTileFactory {
         int topYNode = yNode + 1;
 
         double drivewayHeightBL = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(xNode, yNode))) + groundHeight;
-        double drivewayHeightBR = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(rightXNode, yNode)))+ groundHeight;
-        double drivewayHeightTR = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(rightXNode, topYNode)))+ groundHeight;
-        double drivewayHeightTL = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(xNode, topYNode)))+ groundHeight;
+        double drivewayHeightBR = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(rightXNode, yNode))) + groundHeight;
+        double drivewayHeightTR = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(rightXNode, topYNode))) + groundHeight;
+        double drivewayHeightTL = driveway.getInterpolateDrivewayHeight(TerrainUtil.toNodeAbsolute(new Index(xNode, topYNode))) + groundHeight;
 
         Vertex vertexBL = terrainTileContext.setupVertex(xNode, yNode, drivewayHeightBL);
         Vertex vertexBR = terrainTileContext.setupVertex(rightXNode, yNode, drivewayHeightBR);
@@ -352,13 +357,19 @@ public class TerrainTileFactory {
             if (obstacleContainerNode.getFullDriveway() != null) {
                 return;
             }
-            if (obstacleContainerNode.getFractionDriveway() != null) {
+            if (obstacleContainerNode.getDrivewayGroundPiercingLine() != null && obstacleContainerNode.getDrivewaySlopePiercingLine() != null) {
+                Collection<List<DecimalPosition>> piercingsGround = new ArrayList<>();
+                piercingsGround.add(obstacleContainerNode.getDrivewayGroundPiercingLine());
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, piercingsGround, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
+                Collection<List<DecimalPosition>> piercingsSlope = new ArrayList<>();
+                piercingsSlope.add(obstacleContainerNode.getDrivewaySlopePiercingLine());
+                insertSlopeGroundConnection(terrainTileContext, nodeIndex, piercingsSlope, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
                 return;
             }
             if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
                 insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false);
             }
-            if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null && obstacleContainerNode.getFullDriveway() == null) {
+            if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
                 insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
             }
         });
