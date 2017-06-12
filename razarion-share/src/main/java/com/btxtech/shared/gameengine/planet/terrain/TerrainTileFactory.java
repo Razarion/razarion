@@ -370,7 +370,7 @@ public class TerrainTileFactory {
                 insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
             }
             if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
+                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, obstacleContainerNode.getFractionDriveway());
             }
         });
     }
