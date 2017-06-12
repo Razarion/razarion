@@ -22,8 +22,7 @@ import java.util.List;
  * 25.06.2016.
  */
 public class TerrainTestRenderer {
-    private static List<DecimalPosition> breakingLine1 = Arrays.asList(new DecimalPosition(160.1798460539216, 320.85912914544997), new DecimalPosition(159.20400705505236, 314.7201496590594), new DecimalPosition(160.0769634207341, 308.5530812155919));
-    private static List<DecimalPosition> breakingLine2 = Arrays.asList(new DecimalPosition(234.81626095651043, 86.32622355409435), new DecimalPosition(229.17831391443627, 83.58279213226079), new DecimalPosition(223.4512023103252, 82.86516231242993), new DecimalPosition(218.37903135547973, 80.28213462730551), new DecimalPosition(210.88446410654316, 77.63441132086871), new DecimalPosition(208.0481261389225, 76.15029269998104), new DecimalPosition(205.13127871295106, 75.73968922821793), new DecimalPosition(202.37411594710184, 74.27863889846614), new DecimalPosition(197.9214698848437, 73.62547744117593), new DecimalPosition(193.16077509790924, 71.48160097950448), new DecimalPosition(187.8168635135957, 70.64863184830327));
+    private static List<DecimalPosition> breakingLine1 = Arrays.asList(new DecimalPosition(70.0, 29.0), new DecimalPosition(94.91934955049953, 30.161300899000924), new DecimalPosition(106.6, 31.2), new DecimalPosition(107.77817459305203, 42.22182540694798), new DecimalPosition(111.0, 80.0));
     private static final double LINE_WIDTH = 0.2;
     private static final int GRID_SPACING_100 = 100;
     private static final int GRID_SPACING_20 = 20;
@@ -162,7 +161,6 @@ public class TerrainTestRenderer {
 //        drawTriangleContainer();
 
         strokeLine(breakingLine1, 0.1, Color.AQUA, true);
-        strokeLine(breakingLine2, 0.1, Color.AQUA, true);
         // strokeLine(Arrays.asList(new DecimalPosition(100,130), new DecimalPosition(120, 130), new DecimalPosition(20, 30)), 0.1, Color.AQUA, true);
 
         postRender();

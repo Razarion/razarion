@@ -72,7 +72,7 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 10, 0, 0},
+                {0, 0, 0, 0},
                 {0, 0, 0, 0}
         };
         double[][] splattings = new double[][]{
