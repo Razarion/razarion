@@ -236,7 +236,7 @@ public class Driveway {
 
         public void init(DecimalPosition drivewayInner) {
             this.drivewayInner = drivewayInner;
-            drivewayBreaking =  drivewayInner.getPointWithDistance(slope.getSlopeSkeletonConfig().getWidth(), drivewayOuter, false);
+            drivewayBreaking = drivewayInner.getPointWithDistance(slope.getSlopeSkeletonConfig().getWidth(), drivewayOuter, false);
         }
 
         public double shortedDistance(DecimalPosition position) {
@@ -244,8 +244,11 @@ public class Driveway {
         }
 
         public double getInterpolateDrivewayHeightFactor(DecimalPosition position) {
+            Line line = new Line(drivewayBreaking, drivewayOuter);
+            DecimalPosition projection = line.getNearestPointOnLine(position);
+
             double wholeDistance = drivewayOuter.getDistance(drivewayBreaking);
-            return drivewayOuter.getDistance(position) / wholeDistance;
+            return drivewayOuter.getDistance(projection) / wholeDistance;
         }
 
         public DecimalPosition getDrivewayBreaking() {
