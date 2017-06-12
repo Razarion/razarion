@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,44 +12,49 @@ import java.util.List;
  */
 public abstract class AbstractBorder {
     private double distance;
+    private double drivewayHeightFactor;
 
-    public AbstractBorder(double distance) {
+    public AbstractBorder(double distance, double drivewayHeightFactor) {
         this.distance = distance;
+        this.drivewayHeightFactor = drivewayHeightFactor;
     }
 
     protected abstract int getSegmentCount(double verticalSpace);
 
     protected abstract double getSegmentLength(int count);
 
+    public abstract DecimalPosition getInnerStart();
+
     protected abstract DecimalPosition setupInnerPointFormStart(double verticalSpace, int count);
 
     protected abstract DecimalPosition setupOuterPointFormStart(double verticalSpace, int count);
-
-    protected abstract double getDrivewayHeightFactorStart();
-
-    protected abstract double getDrivewayHeightFactorEnd();
 
     public double getDistance() {
         return distance;
     }
 
-    public List<VerticalSegment> setupVerticalSegments(Slope slope, double verticalSpace) {
+    public List<VerticalSegment> setupVerticalSegments(Slope slope, double verticalSpace, AbstractBorder next) {
         List<VerticalSegment> verticalSegments = new ArrayList<>();
         int count = getSegmentCount(verticalSpace);
         double length = getSegmentLength(count);
         for (int i = 0; i < count; i++) {
-            VerticalSegment verticalSegment = new VerticalSegment(slope, i, setupInnerPointFormStart(length, i), setupOuterPointFormStart(length, i), calculateDrivewayHeightFactor(i, count - 1));
-            verticalSegments.add(verticalSegment);
+            DecimalPosition pointFromStart = setupInnerPointFormStart(length, i);
+             verticalSegments.add(new VerticalSegment(slope, i, pointFromStart, setupOuterPointFormStart(length, i), calculateDrivewayHeightFactor(pointFromStart, next)));
         }
         return verticalSegments;
     }
 
-    private double calculateDrivewayHeightFactor(int currentIndex, int lastIndex) {
-        double start = getDrivewayHeightFactorStart();
-        double end = getDrivewayHeightFactorEnd();
-        if (start == end) {
-            return start;
+    private double calculateDrivewayHeightFactor(DecimalPosition actualPosition, AbstractBorder next) {
+        if (drivewayHeightFactor == next.getDrivewayHeightFactor()) {
+            return drivewayHeightFactor;
         }
-        return start + (end - start) * (double) currentIndex / (double) lastIndex;
+        double wholeDistance = getInnerStart().getDistance(next.getInnerStart());
+        double actualDistance = getInnerStart().getDistance(actualPosition);
+        double factor = MathHelper.clamp(actualDistance / wholeDistance, 0.0, 1.0);
+        return factor * (next.getDrivewayHeightFactor() - drivewayHeightFactor) + drivewayHeightFactor;
+    }
+
+    public double getDrivewayHeightFactor() {
+        return drivewayHeightFactor;
     }
 }

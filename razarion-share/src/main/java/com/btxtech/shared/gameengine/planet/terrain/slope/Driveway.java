@@ -63,7 +63,7 @@ public class Driveway {
             for (int d = startSlopeIndex; d <= endSlopeIndex; d++) {
                 DecimalPosition original = CollectionUtils.getCorrectedElement(d, input).getPosition();
                 DecimalPosition drivewayPosition = original.getPointWithDistance(startPerpendicularAngle, Slope.DRIVEWAY_LENGTH);
-                output.add(new Slope.Corner(drivewayPosition, 1.0, d));
+                output.add(new Slope.Corner(drivewayPosition, 0.0, d));
                 drivewayPolygon.add(drivewayPosition);
             }
         } else if (MathHelper.isCounterClock(startPerpendicularAngle, endPerpendicularAngle)) {
@@ -75,17 +75,16 @@ public class Driveway {
 
         edges = new ArrayList<>();
         for (DecimalPosition decimalPosition : drivewayPolygon) {
-            edges.add(new Edge(decimalPosition));
+            edges.add(new Edge(slope, decimalPosition));
         }
 
         breakingLine = new ArrayList<>();
         for (int d = endSlopeIndex; d >= startSlopeIndex; d--) {
             DecimalPosition drivewayInner = CollectionUtils.getCorrectedElement(d, input).getPosition();
             Edge edge = edges.get(d - startSlopeIndex);
-            edge.setDrivewayInner(drivewayInner);
-            DecimalPosition breakingLinePoint = edge.getToOuterWithDistance(slope.getSlopeSkeletonConfig().getWidth());
-            drivewayPolygon.add(breakingLinePoint);
-            breakingLine.add(breakingLinePoint);
+            edge.init(drivewayInner);
+            drivewayPolygon.add(edge.getDrivewayBreaking());
+            breakingLine.add(edge.getDrivewayBreaking());
         }
         innerPolygon = new Polygon2D(drivewayPolygon);
         Collections.reverse(breakingLine);
@@ -172,9 +171,9 @@ public class Driveway {
             } else {
                 piercing = slope.getFirstOutOfRectClockWise(nearestIndex, terrainRect);
             }
-           // if (ground) {
+            // if (ground) {
             //    Collections.reverse(piercing);
-           // }
+            // }
             for (int i = breakingLine.size() - 1; i >= 0; i--) {
                 DecimalPosition decimalPosition = breakingLine.get(i);
                 piercing.add(0, decimalPosition);
@@ -224,16 +223,20 @@ public class Driveway {
         return null;
     }
 
-    private class Edge {
+    public static class Edge {
         private DecimalPosition drivewayInner;
+        private DecimalPosition drivewayBreaking;
+        private Slope slope;
         private DecimalPosition drivewayOuter;
 
-        public Edge(DecimalPosition drivewayOuter) {
+        public Edge(Slope slope, DecimalPosition drivewayOuter) {
+            this.slope = slope;
             this.drivewayOuter = drivewayOuter;
         }
 
-        public void setDrivewayInner(DecimalPosition drivewayInner) {
+        public void init(DecimalPosition drivewayInner) {
             this.drivewayInner = drivewayInner;
+            drivewayBreaking =  drivewayInner.getPointWithDistance(slope.getSlopeSkeletonConfig().getWidth(), drivewayOuter, false);
         }
 
         public double shortedDistance(DecimalPosition position) {
@@ -241,12 +244,12 @@ public class Driveway {
         }
 
         public double getInterpolateDrivewayHeightFactor(DecimalPosition position) {
-            double wholeDistance = drivewayInner.getDistance(drivewayOuter);
+            double wholeDistance = drivewayOuter.getDistance(drivewayBreaking);
             return drivewayOuter.getDistance(position) / wholeDistance;
         }
 
-        public DecimalPosition getToOuterWithDistance(double distance) {
-            return drivewayInner.getPointWithDistance(distance, drivewayOuter, false);
+        public DecimalPosition getDrivewayBreaking() {
+            return drivewayBreaking;
         }
     }
 }

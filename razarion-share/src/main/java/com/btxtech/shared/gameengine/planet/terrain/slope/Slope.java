@@ -46,8 +46,9 @@ public class Slope {
         }
 
         // Setup vertical segments
-        for (AbstractBorder border : borders) {
-            verticalSegments.addAll(border.setupVerticalSegments(this, slopeSkeletonConfig.getVerticalSpace()));
+        for (int i = 0; i < borders.size(); i++) {
+            AbstractBorder border = borders.get(i);
+            verticalSegments.addAll(border.setupVerticalSegments(this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders)));
         }
 
         // Set VerticalSegment predecessor and successor
@@ -121,7 +122,7 @@ public class Slope {
             AbstractCornerBorder current = cornerBorders.get(i);
             AbstractCornerBorder next = cornerBorders.get(CollectionUtils.getCorrectedIndex(i + 1, cornerBorders.size()));
             borders.add(current);
-            borders.add(new LineBorder(current, current.getDrivewayHeightFactorStart(), next, next.getDrivewayHeightFactorStart(), slopeSkeletonConfig.getWidth()));
+            borders.add(new LineBorder(current, next, slopeSkeletonConfig.getWidth(), current.getDrivewayHeightFactor()));
         }
     }
 

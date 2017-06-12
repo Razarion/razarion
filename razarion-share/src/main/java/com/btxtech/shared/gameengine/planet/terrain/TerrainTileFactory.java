@@ -360,22 +360,22 @@ public class TerrainTileFactory {
             if (obstacleContainerNode.getDrivewayGroundPiercingLine() != null && obstacleContainerNode.getDrivewaySlopePiercingLine() != null) {
                 Collection<List<DecimalPosition>> piercingsGround = new ArrayList<>();
                 piercingsGround.add(obstacleContainerNode.getDrivewayGroundPiercingLine());
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, piercingsGround, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
+                insertSlopeGroundConnection(nodeIndex, piercingsGround, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
                 Collection<List<DecimalPosition>> piercingsSlope = new ArrayList<>();
                 piercingsSlope.add(obstacleContainerNode.getDrivewaySlopePiercingLine());
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, piercingsSlope, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
+                insertSlopeGroundConnection(nodeIndex, piercingsSlope, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, obstacleContainerNode.getFractionDriveway());
                 return;
             }
             if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false);
+                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
             }
             if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false);
+                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
             }
         });
     }
 
-    private void insertSlopeGroundConnection(TerrainTileContext terrainTileContext, Index nodeIndex, Collection<List<DecimalPosition>> piercings, double groundHeight, Triangulator.Listener<Vertex> listener, boolean water) {
+    private void insertSlopeGroundConnection(Index nodeIndex, Collection<List<DecimalPosition>> piercings, double groundHeight, Triangulator.Listener<Vertex> listener, boolean water, Driveway driveway) {
         Rectangle2D absoluteRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
         for (List<DecimalPosition> piercingLine : piercings) {
             if (water) {
@@ -405,23 +405,23 @@ public class TerrainTileFactory {
                 endRectanglePiercing = getRectanglePiercing(absoluteRect, endLine, piercingLine.get(piercingLine.size() - 1));
             }
 
-            addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross(), groundHeight));
+            addOnlyXyUnique(polygon, toVertexSlope(startRectanglePiercing.getCross(), driveway, groundHeight));
             Side side = startRectanglePiercing.getSide();
             if (startRectanglePiercing.getSide() == endRectanglePiercing.getSide()) {
                 if (!startRectanglePiercing.getSide().isBefore(startRectanglePiercing.getCross(), endRectanglePiercing.getCross())) {
-                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, groundHeight, water));
+                    addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), driveway, groundHeight, water));
                     side = side.getSuccessor();
                 }
             }
 
             while (side != endRectanglePiercing.side) {
-                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), terrainTileContext, groundHeight, water));
+                addOnlyXyUnique(polygon, toVertexGround(getSuccessorCorner(absoluteRect, side), driveway, groundHeight, water));
                 side = side.getSuccessor();
             }
-            addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), groundHeight));
+            addOnlyXyUnique(polygon, toVertexSlope(endRectanglePiercing.getCross(), driveway, groundHeight));
 
             for (int i = piercingLine.size() - 2; i > 0; i--) {
-                addOnlyXyUnique(polygon, toVertexSlope(piercingLine.get(i), groundHeight));
+                addOnlyXyUnique(polygon, toVertexSlope(piercingLine.get(i), driveway, groundHeight));
             }
 
             if (polygon.size() < 3) {
@@ -447,17 +447,29 @@ public class TerrainTileFactory {
         list.add(vertex);
     }
 
-    private Vertex toVertexGround(DecimalPosition position, TerrainTileContext terrainTileContext, double groundHeight, boolean water) {
+    private Vertex toVertexGround(DecimalPosition position, Driveway driveway, double groundHeight, boolean water) {
         if (water) {
             return new Vertex(position, groundHeight);
         } else {
             Index nodeTile = obstacleContainer.toNode(position);
-            return new Vertex(position, terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY()) + groundHeight);
+            double height;
+            if (driveway != null) {
+                height = driveway.getInterpolateDrivewayHeight(position);
+            } else {
+                height = groundHeight;
+            }
+            return new Vertex(position, terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY()) + height);
         }
     }
 
-    private Vertex toVertexSlope(DecimalPosition position, double slopeHeight) {
-        return new Vertex(position, slopeHeight);
+    private Vertex toVertexSlope(DecimalPosition position, Driveway driveway, double groundHeight) {
+        double height;
+        if (driveway != null) {
+            height = driveway.getInterpolateDrivewayHeight(position);
+        } else {
+            height = groundHeight;
+        }
+        return new Vertex(position, height);
     }
 
     private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line, DecimalPosition reference) {
@@ -632,7 +644,7 @@ public class TerrainTileFactory {
                 return;
             }
             if (obstacleContainerNode.isFractionWater() && obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(terrainTileContext, nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), terrainTypeService.getWaterConfig().getWaterLevel(), terrainWaterTileContext::insertWaterRim, true);
+                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), terrainTypeService.getWaterConfig().getWaterLevel(), terrainWaterTileContext::insertWaterRim, true, null);
             }
         });
         terrainWaterTileContext.complete();
