@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.utils.DevUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ public class Driveway {
     private Polygon2D innerPolygon;
     private List<Edge> edges;
     private List<DecimalPosition> breakingLine;
+    private double additionalStart;
+    private double additionalEnd;
 
     public Driveway(Slope slope, DecimalPosition startSlopePosition, int startSlopeIndex) {
         this.slope = slope;
@@ -56,48 +59,71 @@ public class Driveway {
     }
 
     public void computeAndFillDrivewayPositions(List<TerrainSlopeCorner> input, List<Slope.Corner> output) {
-        List<DecimalPosition> drivewayPolygon = new ArrayList<>();
 
         output.add(new Slope.Corner(startSlopePosition, 1.0, startSlopeIndex));
+        edges = new ArrayList<>();
+
+        calculateAdditionalStart(input);
+        calculateAdditionalEnd(input);
         if (MathHelper.compareWithPrecision(startPerpendicularAngle, endPerpendicularAngle)) {
             for (int d = startSlopeIndex; d <= endSlopeIndex; d++) {
                 DecimalPosition original = CollectionUtils.getCorrectedElement(d, input).getPosition();
                 DecimalPosition drivewayPosition = original.getPointWithDistance(startPerpendicularAngle, Slope.DRIVEWAY_LENGTH);
                 output.add(new Slope.Corner(drivewayPosition, 0.0, d));
-                drivewayPolygon.add(drivewayPosition);
+                fillDrivewaPosition(edges, d, original, drivewayPosition);
             }
         } else if (MathHelper.isCounterClock(startPerpendicularAngle, endPerpendicularAngle)) {
-            computeAndFillDrivewayPositions(input, output, drivewayPolygon, -Slope.DRIVEWAY_LENGTH);
+            computeAndFillDrivewayPositions(input, output, edges, -Slope.DRIVEWAY_LENGTH);
         } else {
-            computeAndFillDrivewayPositions(input, output, drivewayPolygon, Slope.DRIVEWAY_LENGTH);
+            computeAndFillDrivewayPositions(input, output, edges, Slope.DRIVEWAY_LENGTH);
         }
         output.add(new Slope.Corner(endSlopePosition, 1.0, endSlopeIndex));
 
-        edges = new ArrayList<>();
-        for (DecimalPosition decimalPosition : drivewayPolygon) {
-            edges.add(new Edge(slope, decimalPosition));
-        }
-
         breakingLine = new ArrayList<>();
-        for (int d = endSlopeIndex; d >= startSlopeIndex; d--) {
-            DecimalPosition drivewayInner = CollectionUtils.getCorrectedElement(d, input).getPosition();
-            Edge edge = edges.get(d - startSlopeIndex);
-            edge.init(drivewayInner);
-            drivewayPolygon.add(edge.getDrivewayBreaking());
+        List<DecimalPosition> drivewayPolygon = new ArrayList<>();
+        for (Edge edge : edges) {
             breakingLine.add(edge.getDrivewayBreaking());
+            drivewayPolygon.add(edge.getDrivewayOuter());
+        }
+        for (int i = edges.size() - 1; i >= 0; i--) {
+            drivewayPolygon.add(edges.get(i).getDrivewayBreaking());
         }
         innerPolygon = new Polygon2D(drivewayPolygon);
-        Collections.reverse(breakingLine);
         // DevUtils.printPolygon(breakingLine);
+        // DevUtils.printPolygon(innerPolygon.getCorners());
     }
 
-    private void computeAndFillDrivewayPositions(List<TerrainSlopeCorner> input, List<Slope.Corner> output, List<DecimalPosition> drivewayPolygon, double length) {
+    private void calculateAdditionalStart(List<TerrainSlopeCorner> input) {
+        DecimalPosition last = CollectionUtils.getCorrectedElement(startSlopeIndex - 1, input).getPosition();
+        DecimalPosition next = CollectionUtils.getCorrectedElement(startSlopeIndex + 1, input).getPosition();
+        double angle = last.angle(next, startSlopePosition);
+        additionalStart = Math.tan(angle) * slope.getSlopeSkeletonConfig().getWidth();
+    }
+
+    private void calculateAdditionalEnd(List<TerrainSlopeCorner> input) {
+        DecimalPosition last = CollectionUtils.getCorrectedElement(endSlopeIndex - 1, input).getPosition();
+        DecimalPosition next = CollectionUtils.getCorrectedElement(endSlopeIndex + 1, input).getPosition();
+        double angle = next.angle(last, endSlopePosition);
+        additionalEnd = -Math.tan(angle) * slope.getSlopeSkeletonConfig().getWidth();
+    }
+
+    private void computeAndFillDrivewayPositions(List<TerrainSlopeCorner> input, List<Slope.Corner> output, List<Edge> edges, double length) {
         DecimalPosition pivot = new Line(startSlopePosition, startPerpendicularAngle, 1.0).getCrossInfinite(new Line(endSlopePosition, endPerpendicularAngle, 1.0));
         for (int d = startSlopeIndex; d <= endSlopeIndex; d++) {
             DecimalPosition original = CollectionUtils.getCorrectedElement(d, input).getPosition();
             DecimalPosition drivewayPosition = original.getPointWithDistance(length, pivot, true);
             output.add(new Slope.Corner(drivewayPosition, 0.0, d));
-            drivewayPolygon.add(drivewayPosition);
+            fillDrivewaPosition(edges, d, original, drivewayPosition);
+        }
+    }
+
+    private void fillDrivewaPosition(List<Edge> edges, int d, DecimalPosition original, DecimalPosition drivewayPosition) {
+        if (d == startSlopeIndex) {
+            edges.add(new Edge(slope, original, drivewayPosition, additionalStart));
+        } else if (d == endSlopeIndex) {
+            edges.add(new Edge(slope, original, drivewayPosition, additionalEnd));
+        } else {
+            edges.add(new Edge(slope, original, drivewayPosition, 0));
         }
     }
 
@@ -226,17 +252,16 @@ public class Driveway {
     public static class Edge {
         private DecimalPosition drivewayInner;
         private DecimalPosition drivewayBreaking;
-        private Slope slope;
         private DecimalPosition drivewayOuter;
 
-        public Edge(Slope slope, DecimalPosition drivewayOuter) {
-            this.slope = slope;
-            this.drivewayOuter = drivewayOuter;
+        public Edge(Slope slope, DecimalPosition original, DecimalPosition drivewayPosition, double additional) {
+            drivewayInner = original;
+            drivewayOuter = drivewayPosition;
+            drivewayBreaking = drivewayInner.getPointWithDistance(slope.getSlopeSkeletonConfig().getWidth() + additional, drivewayOuter, false);
         }
 
-        public void init(DecimalPosition drivewayInner) {
-            this.drivewayInner = drivewayInner;
-            drivewayBreaking = drivewayInner.getPointWithDistance(slope.getSlopeSkeletonConfig().getWidth(), drivewayOuter, false);
+        public DecimalPosition getDrivewayOuter() {
+            return drivewayOuter;
         }
 
         public double shortedDistance(DecimalPosition position) {

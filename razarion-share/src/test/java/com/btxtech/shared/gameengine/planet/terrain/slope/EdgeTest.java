@@ -23,10 +23,9 @@ public class EdgeTest {
         EasyMock.expect(slope.getSlopeSkeletonConfig()).andReturn(new SlopeSkeletonConfig().setWidth(3));
         EasyMock.replay(slope);
 
-        Driveway.Edge edge = new Driveway.Edge(slope, new DecimalPosition(0, 0));
-        edge.init(new DecimalPosition(20, 0));
+        Driveway.Edge edge = new Driveway.Edge(slope, new DecimalPosition(20, 0), new DecimalPosition(0, 0), 0);
 
-     //   Assert.assertEquals(0, edge.getInterpolateDrivewayHeightFactor(new DecimalPosition(0, 0)),0.0001);
+        Assert.assertEquals(0, edge.getInterpolateDrivewayHeightFactor(new DecimalPosition(0, 0)),0.0001);
         Assert.assertEquals(0.5, edge.getInterpolateDrivewayHeightFactor(new DecimalPosition(8.5, 0)),0.0001);
         Assert.assertEquals(1, edge.getInterpolateDrivewayHeightFactor(new DecimalPosition(17, 0)),0.0001);
     }
