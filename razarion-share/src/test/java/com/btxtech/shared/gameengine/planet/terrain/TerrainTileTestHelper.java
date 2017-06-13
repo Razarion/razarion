@@ -21,7 +21,7 @@ import java.util.List;
  * 09.04.2017.
  */
 public class TerrainTileTestHelper {
-    private static final boolean SHOW_GUI = true;
+    private static final boolean SHOW_GUI = false;
     private static final String DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private Collection<TerrainTile> expected;
 
