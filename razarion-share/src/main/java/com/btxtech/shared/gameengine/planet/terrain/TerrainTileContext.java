@@ -173,6 +173,7 @@ public class TerrainTileContext {
         triangleCornerIndex++;
     }
 
+    @Deprecated // Find better solution
     public void insertDisplayHeight(Index nodeIndex, double height) {
         Index relativeNodeIndex = new Index(nodeIndex.getX() - TerrainUtil.toNodeIndex(terrainTileIndex.getX()), nodeIndex.getY() - TerrainUtil.toNodeIndex(terrainTileIndex.getY()));
         terrainTile.setDisplayHeight(TerrainUtil.filedToArrayNodeIndex(relativeNodeIndex), height);

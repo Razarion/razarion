@@ -16,8 +16,9 @@ import java.util.List;
 public class ObstacleContainerNode {
     private Collection<Obstacle> obstacles;
     private List<VerticalSegment> slopeSegments;
-    private Double groundHeight;
-    private boolean belongsToSlope;
+    private double groundHeight;
+    private boolean fractionSlope;
+    private double fractionSlopeHeight;
     private boolean fullWater;
     private boolean fractionWater;
     private Driveway fractionDriveway;
@@ -41,8 +42,20 @@ public class ObstacleContainerNode {
         slopeSegments.add(verticalSegment);
     }
 
-    public void setGroundHeight(Double groundHeight) {
-        this.groundHeight = groundHeight;
+    public void setFractionSlope() {
+        fractionSlope = true;
+    }
+
+    public double getFractionSlopeHeight() {
+        return fractionSlopeHeight;
+    }
+
+    public void setFractionSlopeHeight(double fractionSlopeHeight) {
+        this.fractionSlopeHeight = fractionSlopeHeight;
+    }
+
+    public void addGroundHeight(double groundHeight) {
+        this.groundHeight += groundHeight;
     }
 
     public void setFullWater() {
@@ -53,16 +66,16 @@ public class ObstacleContainerNode {
         fractionWater = true;
     }
 
-    public void setBelongsToSlope() {
-        belongsToSlope = true;
-    }
-
     public Collection<Obstacle> getObstacles() {
         return obstacles;
     }
 
     public List<VerticalSegment> getSlopeSegments() {
         return slopeSegments;
+    }
+
+    public boolean isFractionSlope() {
+        return fractionSlope;
     }
 
     public boolean isFullWater() {
@@ -73,24 +86,8 @@ public class ObstacleContainerNode {
         return fractionWater;
     }
 
-    public Double getGroundHeight() {
+    public double getGroundHeight() {
         return groundHeight;
-    }
-
-    public boolean isInSlope() {
-        if (belongsToSlope) {
-            return true;
-        }
-        if (obstacles == null) {
-            return false;
-        }
-
-        for (Obstacle obstacle : obstacles) {
-            if (obstacle instanceof ObstacleSlope) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean exitsInSlopeGroundPiercing(DecimalPosition absolutePosition, boolean isOuter) {
@@ -153,7 +150,7 @@ public class ObstacleContainerNode {
     }
 
     public boolean isFree() {
-        return groundHeight == null && !belongsToSlope && !fullWater && !fractionWater && obstacles == null;
+        return !fractionSlope && !fullWater && !fractionWater && obstacles == null;
     }
 
     public Driveway getFractionDriveway() {

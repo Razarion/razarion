@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
@@ -26,6 +25,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -84,12 +84,13 @@ public class TerrainTileFactory {
         SingleHolder<Integer> landNodeCount = new SingleHolder<>(0);
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
             ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
+            double groundHeight;
             if (obstacleContainerNode != null) {
                 if (!obstacleContainerNode.isFullWater() && !obstacleContainerNode.isFractionWater()) {
                     landNodeCount.setO(landNodeCount.getO() + 1);
                 }
-                if (obstacleContainerNode.isInSlope()) {
-                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getGroundHeight(nodeIndex));
+                if (obstacleContainerNode.isFractionSlope()) {
+                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainerNode.getGroundHeight());
                     return;
                 }
                 if (obstacleContainerNode.isFullWater()) {
@@ -97,19 +98,19 @@ public class TerrainTileFactory {
                     return;
                 }
                 if (obstacleContainerNode.getFullDriveway() != null) {
-                    double groundHeight = obstacleContainer.getGroundHeight(nodeIndex);
-                    insertDrivewayTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), groundHeight, obstacleContainerNode.getFullDriveway(), terrainTileContext);
+                    insertDrivewayTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), obstacleContainerNode.getGroundHeight(), obstacleContainerNode.getFullDriveway(), terrainTileContext);
                     return;
                 }
                 if (obstacleContainerNode.getFractionDriveway() != null) {
-                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainer.getGroundHeight(nodeIndex));
+                    terrainTileContext.insertDisplayHeight(nodeIndex, obstacleContainerNode.getGroundHeight());
                     return;
                 }
+                groundHeight = obstacleContainerNode.getGroundHeight();
             } else {
                 landNodeCount.setO(landNodeCount.getO() + 1);
+                groundHeight = 0;
             }
 
-            double groundHeight = obstacleContainer.getGroundHeight(nodeIndex);
             insertTerrainRectangle(nodeIndex.getX(), nodeIndex.getY(), groundHeight, terrainTileContext);
         });
 
@@ -200,46 +201,35 @@ public class TerrainTileFactory {
     }
 
     private void insertSlopePart(TerrainTileContext terrainTileContext) {
-        MapList<Slope, List<VerticalSegment>> connectedSlopeSegments = new MapList<>();
+        Map<Slope, ConnectingSlopeSegmentContainer> connectedSlopeSegmentContainers = new HashMap<>();
         Rectangle2D absoluteTerrainTileRect = TerrainUtil.toAbsoluteTileRectangle(terrainTileContext.getTerrainTileIndex());
 
         // Find connecting VerticalSegment
         iterateOverTerrainNodes(terrainTileContext.getTerrainTileIndex(), nodeIndex -> {
-            List<VerticalSegment> nodeSegments = obstacleContainer.getVerticalSegments(nodeIndex);
+            ObstacleContainerNode node = obstacleContainer.getObstacleContainerNodeIncludeOffset(nodeIndex);
+            if (node == null) {
+                return;
+            }
+            List<VerticalSegment> nodeSegments = node.getSlopeSegments();
             if (nodeSegments == null) {
                 return;
             }
-            findConnectingSegments(connectedSlopeSegments, absoluteTerrainTileRect, nodeSegments);
+            findConnectingSegments(connectedSlopeSegmentContainers, absoluteTerrainTileRect, nodeSegments, node.getGroundHeight());
         });
-        for (Map.Entry<Slope, List<List<VerticalSegment>>> entry : connectedSlopeSegments.getMap().entrySet()) {
-            generateSlopeTerrainTile(terrainTileContext, entry.getKey(), entry.getValue());
+        for (Map.Entry<Slope, ConnectingSlopeSegmentContainer> entry : connectedSlopeSegmentContainers.entrySet()) {
+            generateSlopeTerrainTile(terrainTileContext, entry.getKey(), entry.getValue().getSegments());
         }
     }
 
-    private void findConnectingSegments(MapList<Slope, List<VerticalSegment>> connectedSlopeSegments, Rectangle2D absoluteTerrainTileRect, List<VerticalSegment> nodeSegments) {
+    private void findConnectingSegments(Map<Slope, ConnectingSlopeSegmentContainer> connectedSlopeSegments, Rectangle2D absoluteTerrainTileRect, List<VerticalSegment> nodeSegments, double groundHeight) {
         // Do performance optimization here
         for (VerticalSegment nodeSegment : nodeSegments) {
             Slope slope = nodeSegment.getSlope();
-            List<List<VerticalSegment>> existingSegments = connectedSlopeSegments.get(slope);
-            if (existingSegments != null) {
-                boolean found = false;
-                for (List<VerticalSegment> existingSegment : existingSegments) {
-                    for (VerticalSegment existing : existingSegment) {
-                        if (nodeSegment == existing) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found) {
-                        break;
-                    }
-                }
-                if (found) {
-                    continue;
-                }
+            ConnectingSlopeSegmentContainer existingContainer = connectedSlopeSegments.computeIfAbsent(slope, key -> new ConnectingSlopeSegmentContainer());
+            if (existingContainer.contains(nodeSegment)) {
+                continue;
             }
-            List<VerticalSegment> connected = followSlopeSegments(nodeSegment, absoluteTerrainTileRect);
-            connectedSlopeSegments.put(slope, connected);
+            existingContainer.add(followSlopeSegments(nodeSegment, absoluteTerrainTileRect), groundHeight);
         }
     }
 
@@ -312,12 +302,12 @@ public class TerrainTileFactory {
         return connectedVerticalSegment;
     }
 
-    private void generateSlopeTerrainTile(TerrainTileContext terrainTileContext, Slope slope, List<List<VerticalSegment>> connectedSegments) {
+    private void generateSlopeTerrainTile(TerrainTileContext terrainTileContext, Slope slope, List<ConnectingSlopeSegmentContainer.ConnectingSlopeSegment> connectedSegments) {
         SlopeSkeletonConfig slopeSkeletonConfig = slope.getSlopeSkeletonConfig();
-        for (List<VerticalSegment> connectedSegment : connectedSegments) {
-            TerrainSlopeTileContext terrainSlopeTileContext = terrainTileContext.createTerrainSlopeTileContext(slope, connectedSegment.size(), slopeSkeletonConfig.getRows());
+        for (ConnectingSlopeSegmentContainer.ConnectingSlopeSegment connectedSegment : connectedSegments) {
+            TerrainSlopeTileContext terrainSlopeTileContext = terrainTileContext.createTerrainSlopeTileContext(slope, connectedSegment.getSegment().size(), slopeSkeletonConfig.getRows());
             int vertexColumn = 0;
-            for (VerticalSegment verticalSegment : connectedSegment) {
+            for (VerticalSegment verticalSegment : connectedSegment.getSegment()) {
                 Matrix4 transformationMatrix = verticalSegment.getTransformation();
                 for (int row = 0; row < slopeSkeletonConfig.getRows(); row++) {
                     SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), row);
@@ -326,6 +316,7 @@ public class TerrainTileFactory {
                         skeletonVertex = skeletonVertex.multiply(1.0, 1.0, verticalSegment.getDrivewayHeightFactor());
                     }
                     Vertex transformedPoint = transformationMatrix.multiply(skeletonVertex, 1.0);
+                    transformedPoint = transformedPoint.add(0, 0, connectedSegment.getGroundHeight());
                     terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, setupSlopeFactor(slopeNode, verticalSegment.getDrivewayHeightFactor()), terrainTileContext.interpolateSplattin(transformedPoint.toXY()));
                 }
                 vertexColumn++;
@@ -360,17 +351,17 @@ public class TerrainTileFactory {
             if (obstacleContainerNode.getDrivewayGroundPiercingLine() != null && obstacleContainerNode.getDrivewaySlopePiercingLine() != null) {
                 Collection<List<DecimalPosition>> piercingsGround = new ArrayList<>();
                 piercingsGround.add(obstacleContainerNode.getDrivewayGroundPiercingLine());
-                insertSlopeGroundConnection(nodeIndex, piercingsGround, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
+                insertSlopeGroundConnection(nodeIndex, piercingsGround, obstacleContainerNode.getGroundHeight() + obstacleContainerNode.getFractionSlopeHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
                 Collection<List<DecimalPosition>> piercingsSlope = new ArrayList<>();
                 piercingsSlope.add(obstacleContainerNode.getDrivewaySlopePiercingLine());
                 insertSlopeGroundConnection(nodeIndex, piercingsSlope, obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, obstacleContainerNode.getFractionDriveway());
                 return;
             }
             if (obstacleContainerNode.getOuterSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), 0, terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
+                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getOuterSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, null);
             }
             if (!obstacleContainerNode.isFractionWater() && obstacleContainerNode.getInnerSlopeGroundPiercingLine() != null) {
-                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, obstacleContainerNode.getFractionDriveway());
+                insertSlopeGroundConnection(nodeIndex, obstacleContainerNode.getInnerSlopeGroundPiercingLine(), obstacleContainerNode.getGroundHeight() + obstacleContainerNode.getFractionSlopeHeight(), terrainTileContext::insertTriangleGroundSlopeConnection, false, obstacleContainerNode.getFractionDriveway());
             }
         });
     }

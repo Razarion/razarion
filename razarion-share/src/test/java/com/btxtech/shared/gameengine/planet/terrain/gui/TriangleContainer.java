@@ -31,9 +31,14 @@ public class TriangleContainer {
     }
 
     public void printTrianglesAt(DecimalPosition position) {
+        for (TriangleElement triangleElement : expectedTriangleElements) {
+            if (triangleElement.isInside(position)) {
+                System.out.println("Expected Triangle at '" + String.format("%.2f:%.2f", position.getX(), position.getY()) + "' " + triangleElement.toDisplayString());
+            }
+        }
         for (TriangleElement triangleElement : actualTriangleElements) {
             if (triangleElement.isInside(position)) {
-                System.out.println("Triangle at '" + String.format("%.2f:%.2f", position.getX(), position.getY()) + "' " + triangleElement.toDisplayString());
+                System.out.println("  Actual Triangle at '" + String.format("%.2f:%.2f", position.getX(), position.getY()) + "' " + triangleElement.toDisplayString());
             }
         }
     }

@@ -12,6 +12,7 @@ public class TerrainSlopePosition {
     private Integer id;
     private int slopeConfigEntity;
     private List<TerrainSlopeCorner> polygon;
+    private List<TerrainSlopePosition> children;
 
     public Integer getId() {
         return id;
@@ -38,5 +39,13 @@ public class TerrainSlopePosition {
     public TerrainSlopePosition setPolygon(List<TerrainSlopeCorner> polygon) {
         this.polygon = polygon;
         return this;
+    }
+
+    public List<TerrainSlopePosition> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<TerrainSlopePosition> children) {
+        this.children = children;
     }
 }

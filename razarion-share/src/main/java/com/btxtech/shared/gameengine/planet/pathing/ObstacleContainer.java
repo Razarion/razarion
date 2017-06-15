@@ -79,6 +79,9 @@ public class ObstacleContainer {
         Polygon2D innerPolygon = slope.getInnerPolygon();
         for (Index node : absoluteRectangleToNodesInclusive(aabb)) {
             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(node);
+//            if(terrainRect.getStart().equals(new DecimalPosition(128,112))) {
+//                System.out.println("ok");
+//            }
             Collection<DecimalPosition> corners = terrainRect.toCorners();
             if (slope.hasWater()) {
                 if (outerPolygon.isInside(corners)) {
@@ -92,26 +95,26 @@ public class ObstacleContainer {
                     getOrCreate(node).setFullDriveway(driveway);
                     continue;
                 }
-                if (innerPolygon.isInside(corners)) {
+                if (!getOrCreate(node).isFractionSlope() && innerPolygon.isInside(corners)) {
                     ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
-                    obstacleContainerNode.setGroundHeight(slope.getHeight());
                     Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
-                    if(fractalDriveway != null) {
+                    if (fractalDriveway != null) {
                         obstacleContainerNode.setFractionDriveway(fractalDriveway);
                         obstacleContainerNode.setDrivewayGroundPiercingLine(fractalDriveway.setupPiercingLine(terrainRect, true));
                         obstacleContainerNode.setDrivewaySlopePiercingLine(fractalDriveway.setupPiercingLine(terrainRect, false));
+                        obstacleContainerNode.setFractionSlopeHeight(slope.getHeight());
+                    } else {
+                        obstacleContainerNode.addGroundHeight(slope.getHeight());
                     }
-
-                    obstacleContainerNode.setFractionDriveway(slope.getDrivewayIfOneCornerInside(corners));
                     continue;
                 }
             }
             if (outerPolygon.isOneCornerInside(corners)) {
                 ObstacleContainerNode obstacleContainerNode = getOrCreate(node);
-                obstacleContainerNode.setBelongsToSlope();
-                obstacleContainerNode.setGroundHeight(slope.getHeight());
+                obstacleContainerNode.setFractionSlope();
+                obstacleContainerNode.setFractionSlopeHeight(slope.getHeight());
                 Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
-                if(fractalDriveway != null) {
+                if (fractalDriveway != null) {
                     obstacleContainerNode.setFractionDriveway(fractalDriveway);
                     obstacleContainerNode.setDrivewayGroundPiercingLine(fractalDriveway.setupPiercingLine(terrainRect, true));
                     obstacleContainerNode.setDrivewaySlopePiercingLine(fractalDriveway.setupPiercingLine(terrainRect, false));
@@ -119,6 +122,11 @@ public class ObstacleContainer {
                 if (slope.hasWater()) {
                     obstacleContainerNode.setFractionWater();
                 }
+            }
+        }
+        if (slope.getChildren() != null) {
+            for (Slope childSlope : slope.getChildren()) {
+                insertObstacleSlope(childSlope);
             }
         }
     }
@@ -129,7 +137,7 @@ public class ObstacleContainer {
         }
     }
 
-    public void addSlopeGroundConnector(List<DecimalPosition> slopeLine, int slopePositionIndex, DecimalPosition absolutePosition, boolean isOuter) {
+    public void addSlopeGroundConnector(List<DecimalPosition> slopeLine, int slopePositionIndex, DecimalPosition absolutePosition, boolean isOuter, double height) {
         Index nodeIndex = toNode(absolutePosition);
         ObstacleContainerNode obstacleContainerNode = getOrCreate(nodeIndex);
         if (!obstacleContainerNode.exitsInSlopeGroundPiercing(absolutePosition, isOuter)) {
@@ -145,15 +153,19 @@ public class ObstacleContainer {
             } while (nodeRect.contains(current));
 
             obstacleContainerNode.addSlopeGroundPiercing(piercingLine, isOuter);
+            obstacleContainerNode.setFractionSlope();
+            obstacleContainerNode.setFractionSlopeHeight(height);
         }
     }
 
-    public void addLeftOutSlopeGroundConnector(Index leftOutNodeIndex, DecimalPosition predecessor, DecimalPosition successor, boolean isOuter) {
+    public void addLeftOutSlopeGroundConnector(Index leftOutNodeIndex, DecimalPosition predecessor, DecimalPosition successor, boolean isOuter, double height) {
         ObstacleContainerNode obstacleContainerNode = getOrCreate(leftOutNodeIndex);
         List<DecimalPosition> piercingLine = new ArrayList<>();
         piercingLine.add(predecessor);
         piercingLine.add(successor);
         obstacleContainerNode.addSlopeGroundPiercing(piercingLine, isOuter);
+        obstacleContainerNode.setFractionSlope();
+        obstacleContainerNode.setFractionSlopeHeight(height);
     }
 
     public int findStart(Rectangle2D rect, int index, List<DecimalPosition> outerLine) {
@@ -223,25 +235,6 @@ public class ObstacleContainer {
         DecimalPosition start = absoluteRect.getStart().sub(absoluteOffset);
         Rectangle2D rect = new Rectangle2D(start.getX(), start.getY(), absoluteRect.width(), absoluteRect.height());
         return GeometricUtil.rasterizeRectangleInclusive(rect, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-    }
-
-    public double getGroundHeight(Index index) {
-        ObstacleContainerNode node = getObstacleContainerNodeIncludeOffset(index);
-        if (node == null) {
-            return 0;
-        }
-        if (node.getGroundHeight() == null) {
-            return 0;
-        }
-        return node.getGroundHeight();
-    }
-
-    public List<VerticalSegment> getVerticalSegments(Index index) {
-        ObstacleContainerNode node = getObstacleContainerNodeIncludeOffset(index);
-        if (node == null) {
-            return null;
-        }
-        return node.getSlopeSegments();
     }
 
     public Iterable<Obstacle> getObstacles(SyncPhysicalArea syncPhysicalArea) {

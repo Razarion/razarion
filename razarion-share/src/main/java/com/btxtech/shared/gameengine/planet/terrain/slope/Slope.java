@@ -33,6 +33,7 @@ public class Slope {
     private Polygon2D innerPolygon;
     private Polygon2D outerPolygon;
     private Collection<Driveway> driveways;
+    private Collection<Slope> children;
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners) {
         this.slopeId = slopeId;
@@ -59,6 +60,14 @@ public class Slope {
         }
 
         setupInnerOuter();
+    }
+
+    public Collection<Slope> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Collection<Slope> children) {
+        this.children = children;
     }
 
     private void setupStraightBorder(List<TerrainSlopeCorner> corners) {
@@ -233,7 +242,7 @@ public class Slope {
             obstacleContainer.addObstacleSlope(new ObstacleSlope(new Line(last, next)));
             DecimalPosition absolute = polygon.get(i);
             Index nodeIndex = TerrainUtil.toNode(absolute);
-            obstacleContainer.addSlopeGroundConnector(polygon, i, absolute, isOuter);
+            obstacleContainer.addSlopeGroundConnector(polygon, i, absolute, isOuter, slopeSkeletonConfig.getHeight());
             if (lastNodeIndex != null) {
                 // Check if some node are left out
                 if (nodeIndex.getX() != lastNodeIndex.getX() && nodeIndex.getY() != lastNodeIndex.getY()) {
@@ -243,7 +252,7 @@ public class Slope {
                     leftOut.remove(0);
                     leftOut.remove(leftOut.size() - 1);
                     for (Index leftOutNodeIndex : leftOut) {
-                        obstacleContainer.addLeftOutSlopeGroundConnector(leftOutNodeIndex, predecessor, successor, isOuter);
+                        obstacleContainer.addLeftOutSlopeGroundConnector(leftOutNodeIndex, predecessor, successor, isOuter, slopeSkeletonConfig.getHeight());
 
                     }
                 }

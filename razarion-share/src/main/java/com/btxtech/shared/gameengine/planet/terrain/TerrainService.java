@@ -88,12 +88,29 @@ public class TerrainService {
         Collection<Slope> slopes = new ArrayList<>();
         if (terrainSlopePositions != null) {
             for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-                SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigEntity());
-                slopes.add(new Slope(terrainSlopePosition.getSlopeConfigEntity(), slopeSkeletonConfig, terrainSlopePosition.getPolygon()));
+                slopes.add(setupSlope(terrainSlopePosition));
             }
         }
         logger.severe("Generate Slopes: " + (System.currentTimeMillis() - time));
         return slopes;
+    }
+
+    private Slope setupSlope(TerrainSlopePosition terrainSlopePosition) {
+        SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigEntity());
+        Slope slope = new Slope(terrainSlopePosition.getSlopeConfigEntity(), slopeSkeletonConfig, terrainSlopePosition.getPolygon());
+        setupSlopeChildren(slope, terrainSlopePosition.getChildren());
+        return slope;
+    }
+
+    private void setupSlopeChildren(Slope slope, List<TerrainSlopePosition> terrainSlopePositions) {
+        if(terrainSlopePositions == null || terrainSlopePositions.isEmpty()) {
+            return;
+        }
+        Collection<Slope> children = new ArrayList<>();
+        for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
+            children.add(setupSlope(terrainSlopePosition));
+        }
+        slope.setChildren(children);
     }
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex) {

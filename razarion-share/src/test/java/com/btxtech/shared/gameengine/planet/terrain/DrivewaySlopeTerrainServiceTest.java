@@ -28,7 +28,7 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
         Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
                 createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
-        // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
+        TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testDrivewayEdge1.json");
         terrainTileTestHelper.assertEquals(terrainTiles);
     }
