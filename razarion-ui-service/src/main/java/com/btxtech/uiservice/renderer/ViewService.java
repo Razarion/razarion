@@ -1,10 +1,8 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -33,6 +31,10 @@ public class ViewService {
         void onShadowLookupTransformationChanged(NativeMatrix shadowLookupMatrix);
     }
 
+    public interface ViewFieldListener {
+        void onViewChanged(ViewField viewField, Rectangle2D absAabbRect);
+    }
+
     @Inject
     private Camera camera;
     @Inject
@@ -41,10 +43,6 @@ public class ViewService {
     private ShadowUiService shadowUiService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
-    private TerrainUiService terrainUiService;
-    @Inject
-    private TrackerService trackerService;
     private NativeMatrix viewMatrix;
     private NativeMatrix viewNormMatrix;
     private NativeMatrix perspectiveMatrix;
@@ -55,6 +53,7 @@ public class ViewService {
     private Collection<TransformationNormListener> transformationNormListeners = new ArrayList<>();
     private Collection<ShadowTransformationListener> shadowTransformationListeners = new ArrayList<>();
     private Collection<ShadowLookupTransformationListener> shadowLookupTransformationListeners = new ArrayList<>();
+    private Collection<ViewFieldListener> viewFieldListeners = new ArrayList<>();
     private ViewField currentViewField;
     private Rectangle2D currentAabb;
 
@@ -94,14 +93,21 @@ public class ViewService {
         return () -> shadowLookupTransformationListeners.remove(listener);
     }
 
+    public void addViewFieldListeners(ViewFieldListener viewFieldListener) {
+        viewFieldListeners.add(viewFieldListener);
+    }
+
+    public void removeViewFieldListeners(ViewFieldListener viewFieldListener) {
+        viewFieldListeners.remove(viewFieldListener);
+    }
+
     public void onViewChanged() {
         updateTransformationMatrices();
         transformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewMatrix, perspectiveMatrix));
         transformationNormListeners.forEach(listeners -> listeners.onTransformationChanged(viewMatrix, viewNormMatrix, perspectiveMatrix));
         shadowTransformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewShadowMatrix, perspectiveShadowMatrix));
         shadowLookupTransformationListeners.forEach(listeners -> listeners.onShadowLookupTransformationChanged(shadowLookupMatrix));
-        terrainUiService.onViewChanged(currentViewField, currentAabb);
-        trackerService.onViewChanged(currentViewField);
+        viewFieldListeners.forEach(viewFieldListener -> viewFieldListener.onViewChanged(currentViewField, currentAabb));
     }
 
     private void updateTransformationMatrices() {

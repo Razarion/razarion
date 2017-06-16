@@ -215,7 +215,6 @@ public abstract class GameEngineControl {
 
     public void overrideTerrain4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         sendToWorker(GameEngineControlPackage.Command.EDITOR_OVERRIDE_TERRAIN, terrainSlopePositions, terrainObjectPositions);
-
     }
 
     private void onTickUpdate(Collection<SyncBaseItemSimpleDto> updatedSyncBaseItems, GameInfo gameInfo, Collection<SyncBaseItemSimpleDto> baseItemRemoved, Collection<SyncBaseItemSimpleDto> baseItemKilled) {

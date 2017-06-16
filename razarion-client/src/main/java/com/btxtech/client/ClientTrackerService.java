@@ -2,6 +2,7 @@ package com.btxtech.client;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
@@ -24,6 +25,7 @@ import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.system.boot.StartupProgressListener;
@@ -50,7 +52,7 @@ import java.util.logging.Logger;
  * 03.03.2017.
  */
 @ApplicationScoped
-public class ClientTrackerService implements TrackerService, StartupProgressListener {
+public class ClientTrackerService implements TrackerService, StartupProgressListener, ViewService.ViewFieldListener {
     private static final String WINDOW_CLOSE = "Window closed -> move to DB";
     private static final String START_UUID = "uuid";
     private static final int DETAILED_TRACKING_DELAY = 1000 * 5;
@@ -69,6 +71,8 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private GameCanvas gameCanvas;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ViewService viewService;
     private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
@@ -172,6 +176,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         createTrackingContainer();
         detailedTrackingFuture = detailedExecutionService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
 
+        viewService.addViewFieldListeners(this);
         Browser.getDocument().addEventListener(Event.MOUSEMOVE, this::onMouseMove, true);
         Browser.getDocument().addEventListener(Event.MOUSEDOWN, this::onMouseButtonDown, true);
         Browser.getDocument().addEventListener(Event.MOUSEUP, this::onMouseButtonUp, true);
@@ -192,6 +197,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     @Override
     public void stopDetailedTracking() {
         detailedTracking = false;
+        viewService.removeViewFieldListeners(this);
         // TODO DialogManager.getInstance().removeDialogListener(this);
         if (detailedTrackingFuture != null) {
             detailedTrackingFuture.cancel();
@@ -220,12 +226,13 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         trackingContainer.addSelectionTracking(selectionTracking);
     }
 
+
     @Override
-    public void onViewChanged(ViewField currentViewField) {
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         if (!detailedTracking) {
             return;
         }
-        if (currentViewField.hasNullPosition()) {
+        if (viewField.hasNullPosition()) {
             return;
         }
         CameraTracking cameraTracking = new CameraTracking();

@@ -1,7 +1,10 @@
 package com.btxtech.client.editor.terrain;
 
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -17,8 +20,7 @@ public class ModifiedSlope {
     public ModifiedSlope(TerrainSlopePosition original) {
         originalId = original.getId();
         slopeId = original.getSlopeConfigEntity();
-        // polygon = new Polygon2D(original.getPolygon());
-        throw new UnsupportedOperationException("!!!! TODO !!!!");
+        polygon = new Polygon2D(original.getPolygon().stream().map(TerrainSlopeCorner::getPosition).collect(Collectors.toList()));
     }
 
     public ModifiedSlope(int slopeId, Polygon2D polygon) {
@@ -31,14 +33,11 @@ public class ModifiedSlope {
     }
 
     public TerrainSlopePosition createTerrainSlopePositionNoId() {
-        // TODO return new TerrainSlopePosition().setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners());
-        throw new UnsupportedOperationException("!!!! TODO !!!!");
-
+        return new TerrainSlopePosition().setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
     }
 
     public TerrainSlopePosition createTerrainSlopePosition() {
-        // TODO return new TerrainSlopePosition().setId(originalId).setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners());
-        throw new UnsupportedOperationException("!!!! TODO !!!!");
+        return new TerrainSlopePosition().setId(originalId).setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
     }
 
     public Polygon2D combine(Polygon2D other) {

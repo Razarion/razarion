@@ -1,12 +1,17 @@
 package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -32,7 +37,7 @@ import java.util.logging.Logger;
  * 06.11.2015.
  */
 @Templated("TerrainEditorSidebar.html#terrainEditor")
-public class TerrainEditorSidebar extends LeftSideBarContent {
+public class TerrainEditorSidebar extends LeftSideBarContent implements ViewService.ViewFieldListener {
     private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
     private TerrainEditorImpl terrainEditor;
@@ -45,8 +50,31 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
+    private ViewService viewService;
+    @Inject
+    @DataField
+    private Span planetId;
+    @Inject
+    @DataField
+    private Span groundMeshDimension;
+    @Inject
+    @DataField
+    private Span playGround;
+    @Inject
     @DataField
     private Span terrainPositionLabel;
+    @Inject
+    @DataField
+    private DecimalPositionBox viewFiledCenter;
+    @Inject
+    @DataField
+    private Span viewFiledTop;
+    @Inject
+    @DataField
+    private Span viewFiledBottom;
+    @Inject
+    @DataField
+    private Span viewFiledHeight;
     @Inject
     @DataField
     private Button creationModeButton;
@@ -78,6 +106,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     @PostConstruct
     public void init() {
         terrainEditor.activate();
+        planetId.setTextContent(Integer.toString(terrainEditor.getPlanetConfig().getPlanetId()));
+        groundMeshDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toAbsoluteNodeRectangle(terrainEditor.getPlanetConfig().getGroundMeshDimension())));
+        playGround.setTextContent(DisplayUtils.handleRectangle2D(terrainEditor.getPlanetConfig().getPlayGround()));
         creationModeButton.setText(terrainEditor.getCreationModeText());
         cursorRadius.setValue(terrainEditor.getCursorRadius());
         cursorCorners.setValue(terrainEditor.getCursorCorners());
@@ -110,6 +141,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
             return false;
         }).getTerrainObjectNameIds();
         terrainEditor.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
+        viewService.addViewFieldListeners(this);
     }
 
     @EventHandler("creationModeButton")
@@ -118,9 +150,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
         creationModeButton.setText(terrainEditor.getCreationModeText());
     }
 
-
     @Override
     public void onClose() {
+        viewService.removeViewFieldListeners(this);
         terrainEditor.deactivate();
     }
 
@@ -162,5 +194,19 @@ public class TerrainEditorSidebar extends LeftSideBarContent {
     protected void onConfigureDialog() {
         registerSaveButton(terrainEditor::save);
         enableSaveButton(true);
+    }
+
+    @Override
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
+        viewFiledCenter.setValue(viewField.calculateCenter());
+        viewFiledTop.setTextContent(DisplayUtils.handleDouble2(viewField.getTopLeft().getDistance(viewField.getTopRight())));
+        viewFiledBottom.setTextContent(DisplayUtils.handleDouble2(viewField.getBottomLeft().getDistance(viewField.getBottomRight())));
+        viewFiledHeight.setTextContent(DisplayUtils.handleDouble2(viewField.getBottomLeft().getDistance(viewField.getTopLeft())));
+    }
+
+    @EventHandler("viewFiledCenter")
+    public void yFieldChanged(ChangeEvent e) {
+        camera.setTranslateXY(viewFiledCenter.getValue().getX(), viewFiledCenter.getValue().getY());
+        terrainScrollHandler.update();
     }
 }

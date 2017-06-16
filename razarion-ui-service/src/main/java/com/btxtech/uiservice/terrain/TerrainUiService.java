@@ -22,6 +22,7 @@ import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
@@ -41,7 +42,7 @@ import java.util.logging.Logger;
  * 09.08.2015.
  */
 @ApplicationScoped
-public class TerrainUiService {
+public class TerrainUiService implements ViewService.ViewFieldListener {
     private static final double HIGHEST_POINT_IN_VIEW = 20;
     private static final double LOWEST_POINT_IN_VIEW = -2;
     private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
@@ -70,6 +71,11 @@ public class TerrainUiService {
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
         lowestPointInView = LOWEST_POINT_IN_VIEW;
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        viewService.addViewFieldListeners(this);
     }
 
     public void init(PlanetConfig planetConfig) {
@@ -114,6 +120,7 @@ public class TerrainUiService {
         onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
     }
 
+    @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         Collection<Index> display = GeometricUtil.rasterizeTerrainViewField(absAabbRect, viewField.toPolygon());
 

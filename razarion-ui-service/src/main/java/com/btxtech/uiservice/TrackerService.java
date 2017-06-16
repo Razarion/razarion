@@ -16,6 +16,4 @@ public interface TrackerService {
     void startDetailedTracking(int planetId);
 
     void stopDetailedTracking();
-
-    void onViewChanged(ViewField currentViewField);
 }

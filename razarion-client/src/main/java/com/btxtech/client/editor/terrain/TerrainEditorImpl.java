@@ -11,6 +11,7 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.TerrainEditor;
@@ -262,14 +263,11 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     private Collection<ModifiedSlope> setupModifiedSlopes() {
-        throw new UnsupportedOperationException("... TODO ...");
-        // TODO return gameUiControl.getColdGameUiControlConfig().getStaticGameConfig().getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
+        return getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
     }
 
     private Collection<ModifiedTerrainObject> setupModifiedTerrainObjects() {
-        throw new UnsupportedOperationException("... TODO ...");
-        // TODO return gameUiControl.getColdGameUiControlConfig().getStaticGameConfig().getPlanetConfig().getTerrainObjectPositions()
-        // TODO         .stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
+        return getPlanetConfig().getTerrainObjectPositions().stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
     }
 
     private List<ModelMatrices> setupModelMatrices() {
@@ -459,7 +457,10 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     private int getPlanetId() {
-        throw new UnsupportedOperationException("... TODO ...");
-        // TODO return gameUiControl.getColdGameUiControlConfig().getStaticGameConfig().getPlanetConfig().getPlanetId();
+        return getPlanetConfig().getPlanetId();
+    }
+
+    public PlanetConfig getPlanetConfig() {
+        return gameUiControl.getPlanetConfig();
     }
 }

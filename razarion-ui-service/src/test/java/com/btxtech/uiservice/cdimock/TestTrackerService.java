@@ -29,9 +29,4 @@ public class TestTrackerService implements TrackerService {
     public void stopDetailedTracking() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void onViewChanged(ViewField currentViewField) {
-        throw new UnsupportedOperationException();
-    }
 }

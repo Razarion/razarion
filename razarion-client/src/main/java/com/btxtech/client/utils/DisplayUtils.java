@@ -1,5 +1,9 @@
 package com.btxtech.client.utils;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -77,6 +81,38 @@ public class DisplayUtils {
     public static String handleDouble3(Double value) {
         if (value != null) {
             return NUMBER_FORMATTER_X_XXX.format(value);
+        } else {
+            return "-";
+        }
+    }
+
+    public static String handleIndex(Index index) {
+        if (index != null) {
+            return "x:"  + index.getX() + " y: " + index.getY();
+        } else {
+            return "-";
+        }
+    }
+
+    public static String handleRectangle(Rectangle rectangle) {
+        if (rectangle != null) {
+            return handleIndex(rectangle.getStart()) + " / " + handleIndex(rectangle.getEnd());
+        } else {
+            return "-";
+        }
+    }
+
+    public static String handleDecimalPosition(DecimalPosition decimalPosition) {
+        if (decimalPosition != null) {
+            return "x:"  + NUMBER_FORMATTER_X_XX.format(decimalPosition.getX()) + " y: " + NUMBER_FORMATTER_X_XX.format(decimalPosition.getY());
+        } else {
+            return "-";
+        }
+    }
+
+    public static String handleRectangle2D(Rectangle2D rectangle2D) {
+        if (rectangle2D != null) {
+            return handleDecimalPosition(rectangle2D.getStart()) + " / " + handleDecimalPosition(rectangle2D.getEnd());
         } else {
             return "-";
         }

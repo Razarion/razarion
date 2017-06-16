@@ -29,9 +29,4 @@ public class DevToolTrackerService implements TrackerService {
     public void stopDetailedTracking() {
         // System.out.println("DevToolTrackerService.stopDetailedTracking()");
     }
-
-    @Override
-    public void onViewChanged(ViewField currentViewField) {
-        // System.out.println("DevToolTrackerService.onViewChanged()");
-    }
 }

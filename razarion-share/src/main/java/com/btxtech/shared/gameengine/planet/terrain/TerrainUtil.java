@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 
 /**
@@ -38,6 +39,10 @@ public interface TerrainUtil {
     static Rectangle2D toAbsoluteNodeRectangle(Index tile) {
         DecimalPosition start = toNodeAbsolute(tile);
         return new Rectangle2D(start.getX(), start.getY(), GROUND_NODE_ABSOLUTE_LENGTH, GROUND_NODE_ABSOLUTE_LENGTH);
+    }
+
+    static Rectangle2D toAbsoluteNodeRectangle(Rectangle node) {
+        return new Rectangle2D(toNodeAbsolute(node.getStart()), toNodeAbsolute(node.getEnd()));
     }
 
     static int filedToArrayNodeIndex(Index index) {
