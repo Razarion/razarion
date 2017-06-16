@@ -195,12 +195,12 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public SlopeConfigEntity getSlopeConfigEntity(long slopeId) {
+    public SlopeConfigEntity getSlopeConfigEntity(int slopeId) {
         return entityManager.find(SlopeConfigEntity.class, slopeId);
     }
 
     @Transactional
-    public TerrainObjectEntity getTerrainObjectEntity(long terrainObjectId) {
+    public TerrainObjectEntity getTerrainObjectEntity(int terrainObjectId) {
         return entityManager.find(TerrainObjectEntity.class, terrainObjectId);
     }
 }

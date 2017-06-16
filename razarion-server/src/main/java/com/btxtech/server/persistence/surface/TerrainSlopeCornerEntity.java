@@ -28,6 +28,10 @@ public class TerrainSlopeCornerEntity {
         return new TerrainSlopeCorner().setPosition(position).setSlopeDrivewayId(TMP_slopeDrivewayId);
     }
 
+    public void fromTerrainSlopeCorner(DecimalPosition position) {
+        this.position = position;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

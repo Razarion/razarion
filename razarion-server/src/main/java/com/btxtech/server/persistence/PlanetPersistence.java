@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
+import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.PlanetVisualConfig;
@@ -15,6 +16,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -90,8 +92,11 @@ public class PlanetPersistence {
             TerrainSlopePositionEntity terrainSlopePositionEntity = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
             terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigEntity()));
             terrainSlopePositionEntity.getPolygon().clear();
-            throw new UnsupportedOperationException("!!!!! TODO !!!!!!");
-            // TODO terrainSlopePositionEntity.getPolygon().addAll(terrainSlopePosition.getPolygon());
+            terrainSlopePositionEntity.getPolygon().addAll(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
+                TerrainSlopeCornerEntity terrainSlopeCornerEntity = new TerrainSlopeCornerEntity();
+                terrainSlopeCornerEntity.fromTerrainSlopeCorner(terrainSlopeCorner.getPosition());
+                return terrainSlopeCornerEntity;
+            }).collect(Collectors.toList()));
         }
         entityManager.merge(planetEntity);
     }
@@ -103,11 +108,13 @@ public class PlanetPersistence {
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = new TerrainSlopePositionEntity();
             terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigEntity()));
-            // TODO terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon());
+            terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
+                TerrainSlopeCornerEntity terrainSlopeCornerEntity = new TerrainSlopeCornerEntity();
+                terrainSlopeCornerEntity.fromTerrainSlopeCorner(terrainSlopeCorner.getPosition());
+                return terrainSlopeCornerEntity;
+            }).collect(Collectors.toList()));
             terrainSlopePositionEntities.add(terrainSlopePositionEntity);
-            throw new UnsupportedOperationException("!!!!! TODO !!!!!!");
         }
-
         PlanetEntity planetEntity = loadPlanet(planetId);
         planetEntity.getTerrainSlopePositionEntities().addAll(terrainSlopePositionEntities);
         entityManager.persist(planetEntity);
