@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.terrain;
 
+import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.client.utils.DisplayUtils;
@@ -77,6 +78,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private Span viewFiledHeight;
     @Inject
     @DataField
+    private Button topViewButton;
+    @Inject
+    @DataField
     private Button creationModeButton;
     @Inject
     @DataField
@@ -98,7 +102,10 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private DoubleBox terrainObjectRandomScale;
     @Inject
     @DataField
-    private Button topViewButton;
+    private RadarPanel radarPanel;
+    @Inject
+    @DataField
+    private Button generateMiniTerrain;
     @Inject
     @DataField
     private Button sculptButton;
@@ -208,5 +215,10 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     public void yFieldChanged(ChangeEvent e) {
         camera.setTranslateXY(viewFiledCenter.getValue().getX(), viewFiledCenter.getValue().getY());
         terrainScrollHandler.update();
+    }
+
+    @EventHandler("generateMiniTerrain")
+    private void generateMiniTerrain(ClickEvent event) {
+        radarPanel.generateMiniTerrain();
     }
 }
