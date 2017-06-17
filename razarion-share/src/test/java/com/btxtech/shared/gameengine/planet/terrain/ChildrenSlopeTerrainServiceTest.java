@@ -37,8 +37,8 @@ public class ChildrenSlopeTerrainServiceTest extends TerrainServiceTestBase {
         Collection<TerrainTile> terrainTiles = setup(parent);
 
         // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testSingleChild1.json");
-        // TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testSingleChild1.json");
-        // terrainTileTestHelper.assertEquals(terrainTiles);
+        TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testSingleChild1.json");
+        terrainTileTestHelper.assertEquals(terrainTiles);
         // TerrainTestApplication.show(null, terrainTiles);
 
     }
