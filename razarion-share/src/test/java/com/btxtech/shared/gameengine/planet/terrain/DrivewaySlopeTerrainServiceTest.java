@@ -5,14 +5,8 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.planet.terrain.gui.TerrainTestApplication;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -70,7 +64,7 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigEntity(1);
+        terrainSlopePositionLand.setSlopeConfigId(1);
         terrainSlopePositionLand.setPolygon(Arrays.asList(slopePolygon));
         terrainSlopePositions.add(terrainSlopePositionLand);
 

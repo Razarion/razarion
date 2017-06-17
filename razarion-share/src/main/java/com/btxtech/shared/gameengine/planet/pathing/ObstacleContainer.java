@@ -48,7 +48,9 @@ public class ObstacleContainer {
         yCount = groundMeshDimension.height();
         obstacleContainerNodes = new ObstacleContainerNode[xCount][yCount];
         for (Slope slope : slopes) {
+            //long time2 = System.currentTimeMillis();
             insertObstacleSlope(slope);
+            //logger.severe("Setup slope in ObstacleContainer. Slope Id " + slope.getSlopeId() + " Time: " + (System.currentTimeMillis() - time2));
         }
         terrainObjectConfigPositions.iterate((terrainObject, position) -> {
             insertObstacleTerrainObject(new ObstacleTerrainObject(new Circle2D(position.getPosition(), terrainObject.getRadius())));

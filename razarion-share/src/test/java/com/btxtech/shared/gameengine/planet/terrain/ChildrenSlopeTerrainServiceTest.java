@@ -3,10 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.planet.terrain.gui.TerrainTestApplication;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -27,13 +24,13 @@ public class ChildrenSlopeTerrainServiceTest extends TerrainServiceTestBase {
 
         TerrainSlopePosition child = new TerrainSlopePosition();
         child.setId(2);
-        child.setSlopeConfigEntity(SKELETON_CONFIG_ID_1);
+        child.setSlopeConfigId(SKELETON_CONFIG_ID_1);
         child.setPolygon(Arrays.asList(createTerrainSlopeCorner(100, 90, null), createTerrainSlopeCorner(170, 90, null), createTerrainSlopeCorner(170, 140, null), createTerrainSlopeCorner(100, 140, null)));
         children.add(child);
 
         TerrainSlopePosition parent = new TerrainSlopePosition();
         parent.setId(1);
-        parent.setSlopeConfigEntity(SKELETON_CONFIG_ID_1);
+        parent.setSlopeConfigId(SKELETON_CONFIG_ID_1);
         parent.setPolygon(Arrays.asList(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(220, 40, null), createTerrainSlopeCorner(220, 200, null), createTerrainSlopeCorner(50, 200, null)));
         parent.setChildren(children);
 

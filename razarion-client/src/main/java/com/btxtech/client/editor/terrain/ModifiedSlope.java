@@ -19,7 +19,7 @@ public class ModifiedSlope {
 
     public ModifiedSlope(TerrainSlopePosition original) {
         originalId = original.getId();
-        slopeId = original.getSlopeConfigEntity();
+        slopeId = original.getSlopeConfigId();
         polygon = new Polygon2D(original.getPolygon().stream().map(TerrainSlopeCorner::getPosition).collect(Collectors.toList()));
     }
 
@@ -33,11 +33,11 @@ public class ModifiedSlope {
     }
 
     public TerrainSlopePosition createTerrainSlopePositionNoId() {
-        return new TerrainSlopePosition().setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
+        return new TerrainSlopePosition().setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
     }
 
     public TerrainSlopePosition createTerrainSlopePosition() {
-        return new TerrainSlopePosition().setId(originalId).setSlopeConfigEntity(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
+        return new TerrainSlopePosition().setId(originalId).setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
     }
 
     public Polygon2D combine(Polygon2D other) {

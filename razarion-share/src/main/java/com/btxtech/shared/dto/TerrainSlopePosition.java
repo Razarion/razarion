@@ -1,7 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-
 import java.util.List;
 
 /**
@@ -10,7 +8,7 @@ import java.util.List;
  */
 public class TerrainSlopePosition {
     private Integer id;
-    private int slopeConfigEntity;
+    private int slopeConfigId;
     private List<TerrainSlopeCorner> polygon;
     private List<TerrainSlopePosition> children;
 
@@ -23,12 +21,12 @@ public class TerrainSlopePosition {
         return this;
     }
 
-    public int getSlopeConfigEntity() {
-        return slopeConfigEntity;
+    public int getSlopeConfigId() {
+        return slopeConfigId;
     }
 
-    public TerrainSlopePosition setSlopeConfigEntity(int slopeConfigEntity) {
-        this.slopeConfigEntity = slopeConfigEntity;
+    public TerrainSlopePosition setSlopeConfigId(int slopeConfigId) {
+        this.slopeConfigId = slopeConfigId;
         return this;
     }
 

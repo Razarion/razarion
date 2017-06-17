@@ -90,7 +90,7 @@ public class PlanetPersistence {
         PlanetEntity planetEntity = loadPlanet(planetId);
         for (TerrainSlopePosition terrainSlopePosition : updatedSlopes) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
-            terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigEntity()));
+            terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigId()));
             terrainSlopePositionEntity.getPolygon().clear();
             terrainSlopePositionEntity.getPolygon().addAll(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
                 TerrainSlopeCornerEntity terrainSlopeCornerEntity = new TerrainSlopeCornerEntity();
@@ -107,7 +107,7 @@ public class PlanetPersistence {
         List<TerrainSlopePositionEntity> terrainSlopePositionEntities = new ArrayList<>();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             TerrainSlopePositionEntity terrainSlopePositionEntity = new TerrainSlopePositionEntity();
-            terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigEntity()));
+            terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigId()));
             terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
                 TerrainSlopeCornerEntity terrainSlopeCornerEntity = new TerrainSlopeCornerEntity();
                 terrainSlopeCornerEntity.fromTerrainSlopeCorner(terrainSlopeCorner.getPosition());

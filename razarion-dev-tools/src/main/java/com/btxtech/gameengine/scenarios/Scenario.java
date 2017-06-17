@@ -170,7 +170,7 @@ public class Scenario {
     }
 
     protected TerrainSlopePosition createRectangleSlope(int slopeSkeletonId, double x, double y, double width, double height) {
-       // TODO return new TerrainSlopePosition().setId(slopeId++).setSlopeConfigEntity(slopeSkeletonId).setPolygon(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
+       // TODO return new TerrainSlopePosition().setId(slopeId++).setSlopeConfigId(slopeSkeletonId).setPolygon(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
         throw new UnsupportedOperationException("!!!! TODO !!!!");
     }
 

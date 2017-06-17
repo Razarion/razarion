@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence.surface;
 
-import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
 import javax.persistence.CascadeType;
@@ -42,7 +41,7 @@ public class TerrainSlopePositionEntity {
     }
 
     public TerrainSlopePosition toTerrainSlopePosition() {
-        TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition().setId(id).setSlopeConfigEntity(slopeConfigEntity.getId());
+        TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition().setId(id).setSlopeConfigId(slopeConfigEntity.getId());
         return terrainSlopePosition.setPolygon(polygon.stream().map(TerrainSlopeCornerEntity::toTerrainSlopeCorner).collect(Collectors.toList()));
     }
 

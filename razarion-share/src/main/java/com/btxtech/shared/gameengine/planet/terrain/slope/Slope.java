@@ -297,6 +297,10 @@ public class Slope {
         return slopeId;
     }
 
+    public int getSlopeId() {
+        return slopeId;
+    }
+
     public Driveway getDriveway(Collection<DecimalPosition> positions) {
         if (driveways == null || driveways.isEmpty()) {
             return null;

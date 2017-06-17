@@ -35,7 +35,7 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigEntity(1);
+        terrainSlopePositionLand.setSlopeConfigId(1);
         terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
@@ -79,7 +79,7 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();
         terrainSlopePosition.setId(1);
-        terrainSlopePosition.setSlopeConfigEntity(1);
+        terrainSlopePosition.setSlopeConfigId(1);
         terrainSlopePosition.setPolygon(Arrays.asList(createTerrainSlopeCorner(120, 120, null), createTerrainSlopeCorner(260, 120, null), createTerrainSlopeCorner(260, 250, null), createTerrainSlopeCorner(120, 250, null)));
         terrainSlopePositions.add(terrainSlopePosition);
 

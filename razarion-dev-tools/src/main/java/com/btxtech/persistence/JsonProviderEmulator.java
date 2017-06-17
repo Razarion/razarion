@@ -139,7 +139,7 @@ public class JsonProviderEmulator {
         JsonProviderEmulator jsonProviderEmulator = new JsonProviderEmulator();
         List<TerrainSlopePosition> terrainSlopePositions = jsonProviderEmulator.fromServer().getColdGameUiControlConfig().getWarmGameUiControlConfig().getPlanetConfig().getTerrainSlopePositions();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-            if (terrainSlopePosition.getSlopeConfigEntity() == 1) {
+            if (terrainSlopePosition.getSlopeConfigId() == 1) {
                 jsonProviderEmulator.toFile("slopedriveway.json", terrainSlopePosition.getPolygon());
             }
         }

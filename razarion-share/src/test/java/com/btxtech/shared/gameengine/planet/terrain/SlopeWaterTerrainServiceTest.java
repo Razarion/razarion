@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -37,7 +36,7 @@ public class SlopeWaterTerrainServiceTest extends TerrainServiceTestBase {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigEntity(10);
+        terrainSlopePositionLand.setSlopeConfigId(10);
         terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(22.250, 48.000, null), createTerrainSlopeCorner(56.250, 50.000, null), createTerrainSlopeCorner(55.750, 20.500, null), createTerrainSlopeCorner(94.750, 20.000, null), createTerrainSlopeCorner(93.750, 51.000, null), createTerrainSlopeCorner(114.750, 51.500, null), createTerrainSlopeCorner(114.750, 86.500, null), createTerrainSlopeCorner(94.750, 85.500, null), createTerrainSlopeCorner(91.750, 114.500, null), createTerrainSlopeCorner(56.750, 112.500, null), createTerrainSlopeCorner(59.750, 84.000, null), createTerrainSlopeCorner(19.750, 82.000, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
@@ -82,7 +81,7 @@ public class SlopeWaterTerrainServiceTest extends TerrainServiceTestBase {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigEntity(10);
+        terrainSlopePositionLand.setSlopeConfigId(10);
         terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(292.500, 280.000, null), createTerrainSlopeCorner(276.500, 300.000, null), createTerrainSlopeCorner(248.500, 300.000, null), createTerrainSlopeCorner(236.500, 300.000, null), createTerrainSlopeCorner(222.500, 301.000, null), createTerrainSlopeCorner(212.500, 275.000, null), createTerrainSlopeCorner(182.500, 252.000, null), createTerrainSlopeCorner(174.500, 264.000, null), createTerrainSlopeCorner(143.500, 299.000, null), createTerrainSlopeCorner(121.500, 300.000, null), createTerrainSlopeCorner(96.500, 300.000, null), createTerrainSlopeCorner(69.500, 298.000, null), createTerrainSlopeCorner(40.500, 254.000, null), createTerrainSlopeCorner(31.500, 193.000, null), createTerrainSlopeCorner(53.500, 139.000, null), createTerrainSlopeCorner(63.500, 102.000, null), createTerrainSlopeCorner(78.500, 74.000, null), createTerrainSlopeCorner(113.500, 112.000, null), createTerrainSlopeCorner(136.500, 134.000, null), createTerrainSlopeCorner(157.500, 89.000, null), createTerrainSlopeCorner(165.500, 49.000, null), createTerrainSlopeCorner(201.500, 34.000, null), createTerrainSlopeCorner(237.500, 44.000, null), createTerrainSlopeCorner(263.500, 65.000, null), createTerrainSlopeCorner(275.500, 100.000, null), createTerrainSlopeCorner(268.500, 131.000, null), createTerrainSlopeCorner(262.500, 177.000, null), createTerrainSlopeCorner(270.500, 196.000, null), createTerrainSlopeCorner(280.500, 218.000, null), createTerrainSlopeCorner(287.500, 257.000, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 

@@ -1,7 +1,6 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -18,7 +17,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -44,7 +42,7 @@ public class SimpleTerrainScenario extends Scenario {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigEntity(1);
+        terrainSlopePositionLand.setSlopeConfigId(1);
         // TODO terrainSlopePositionLand.setPolygon(Arrays.asList(new DecimalPosition(50, 40), new DecimalPosition(100, 40), new DecimalPosition(100, 110), new DecimalPosition(50, 110)));
         throw new UnsupportedOperationException();
 //        terrainSlopePositions.add(terrainSlopePositionLand);

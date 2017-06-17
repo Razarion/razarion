@@ -15,11 +15,9 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -96,8 +94,8 @@ public class TerrainService {
     }
 
     private Slope setupSlope(TerrainSlopePosition terrainSlopePosition) {
-        SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigEntity());
-        Slope slope = new Slope(terrainSlopePosition.getSlopeConfigEntity(), slopeSkeletonConfig, terrainSlopePosition.getPolygon());
+        SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
+        Slope slope = new Slope(terrainSlopePosition.getId(), slopeSkeletonConfig, terrainSlopePosition.getPolygon());
         setupSlopeChildren(slope, terrainSlopePosition.getChildren());
         return slope;
     }
