@@ -103,6 +103,10 @@ public class TerrainShape {
         return terrainImpactCallback.inSubNode(terrainShapeSubNode, nodeRelative, nodeRelativeIndex, tileRelative, tileIndex);
     }
 
+    public void terrainRegionImpactCallback(DecimalPosition absolutePosition, double radius, TerrainRegionImpactCallback terrainRegionImpactCallback) {
+        terrainRegionImpactCallback(absolutePosition, radius, new SimpleControl(), terrainRegionImpactCallback);
+    }
+
     public void terrainRegionImpactCallback(DecimalPosition absolutePosition, double radius, TerrainRegionImpactCallback.Control control, TerrainRegionImpactCallback terrainRegionImpactCallback) {
         Circle2D circle2D = new Circle2D(absolutePosition, radius);
         for (Index tileIndex : GeometricUtil.rasterizeCircle(circle2D, (int) TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH)) {
@@ -163,4 +167,20 @@ public class TerrainShape {
     GroundSkeletonConfig getGroundSkeletonConfig() {
         return groundSkeletonConfig;
     }
+
+
+    private static class SimpleControl implements TerrainRegionImpactCallback.Control {
+        private boolean stop;
+
+        @Override
+        public void doStop() {
+            stop = true;
+        }
+
+        @Override
+        public boolean isStop() {
+            return stop;
+        }
+    }
+
 }

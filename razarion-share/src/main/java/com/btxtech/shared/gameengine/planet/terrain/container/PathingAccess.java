@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -17,7 +18,8 @@ public class PathingAccess {
     private class IterationControl implements TerrainRegionImpactCallback.Control {
         private boolean notLane;
 
-        private void setNotLand() {
+        @Override
+        public void doStop() {
             notLane = true;
         }
 
@@ -68,14 +70,14 @@ public class PathingAccess {
             @Override
             public void inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
                 if (!terrainShapeTile.isLand()) {
-                    iterationControl.setNotLand();
+                    iterationControl.doStop();
                 }
             }
 
             @Override
             public void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, Index tileIndex) {
                 if (terrainShapeNode.isFullWater()) {
-                    iterationControl.setNotLand();
+                    iterationControl.doStop();
                 }
             }
         });
@@ -107,11 +109,27 @@ public class PathingAccess {
         return tileX >= 0;
     }
 
-    // --------------------------------------
-
     public Collection<Obstacle> getObstacles(SyncPhysicalMovable syncPhysicalMovable) {
-        throw new UnsupportedOperationException();
+        Collection<Obstacle> obstacles = new ArrayList<>();
+        terrainShape.terrainRegionImpactCallback(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius(), new TerrainRegionImpactCallback() {
+            @Override
+            public void inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
+                if (terrainShapeTile.getObstacles() != null) {
+                    obstacles.addAll(terrainShapeTile.getObstacles());
+                }
+            }
+
+            @Override
+            public void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, Index tileIndex) {
+                if (terrainShapeNode.getObstacles() != null) {
+                    obstacles.addAll(terrainShapeNode.getObstacles());
+                }
+            }
+        });
+        return obstacles;
     }
+
+    // --------------------------------------
 
     public boolean isInSight(SyncPhysicalArea syncPhysicalArea, DecimalPosition target) {
         throw new UnsupportedOperationException();

@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Index;
  */
 public interface TerrainRegionImpactCallback {
     interface Control {
+        void doStop();
         boolean isStop();
     }
 

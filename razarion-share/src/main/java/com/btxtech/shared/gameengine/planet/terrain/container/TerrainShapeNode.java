@@ -3,7 +3,9 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ public class TerrainShapeNode {
     private List<List<Vertex>> groundSlopeConnections;
     private List<List<Vertex>> waterSegments;
     private Boolean water;
-
+    private Collection<Obstacle> obstacles;
 
     public boolean isFullDriveway() {
         return fullDrivewayHeights != null;
@@ -49,6 +51,10 @@ public class TerrainShapeNode {
 
     public List<List<Vertex>> getWaterSegments() {
         return waterSegments;
+    }
+
+    public Collection<Obstacle> getObstacles() {
+        return obstacles;
     }
 
     public double getDrivewayHeightBL() {

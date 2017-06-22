@@ -1,8 +1,10 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,6 +40,7 @@ public class TerrainShapeTile {
     private Boolean water;
     private Double uniformGroundHeight;
     private List<FractionalSlope> fractionalSlopes;
+    private Collection<Obstacle> obstacles;
 
     public boolean isLand() {
         return water == null || !water;
@@ -104,5 +107,9 @@ public class TerrainShapeTile {
 
     public List<FractionalSlope> getFractionalSlopes() {
         return fractionalSlopes;
+    }
+
+    public Collection<Obstacle> getObstacles() {
+        return obstacles;
     }
 }
