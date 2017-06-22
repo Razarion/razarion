@@ -11,7 +11,6 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -24,7 +23,6 @@ import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -62,8 +60,6 @@ public class TerrainUiService implements ViewService.ViewFieldListener {
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
     private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
-    private MapCollection<DecimalPosition, Consumer<Boolean>> overlapConsumers = new MapCollection<>();
-    private Map<Integer, Consumer<Boolean>> overlapTypeConsumers = new HashMap<>();
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
@@ -99,8 +95,6 @@ public class TerrainUiService implements ViewService.ViewFieldListener {
     public void clear() {
         terrainObjectConfigModelMatrices.clear();
         terrainZConsumers.clear();
-        overlapConsumers.clear();
-        overlapTypeConsumers.clear();
         clearTerrainTiles();
     }
 
@@ -184,19 +178,19 @@ public class TerrainUiService implements ViewService.ViewFieldListener {
         }
     }
 
-    public void overlap(DecimalPosition position, Consumer<Boolean> callback) {
-        boolean contains = overlapConsumers.containsKey(position);
-        overlapConsumers.put(position, callback);
-        if (contains) {
-            return;
-        }
-        gameEngineControl.askOverlap(position);
+    public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition) {
+        Index terrainTile = TerrainUtil.toTile(terrainPosition);
+        return displayTerrainTiles.get(terrainTile).isTerrainFree(terrainPosition);
     }
 
-    public void overlap(Collection<DecimalPosition> positions, BaseItemType baseItemType, Consumer<Boolean> callback) {
-        int uuid = (int) (Math.random() * Integer.MAX_VALUE);
-        overlapTypeConsumers.put(uuid, callback);
-        gameEngineControl.askOverlapType(uuid, positions, baseItemType.getId());
+    public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
+        for (DecimalPosition terrainPosition : terrainPositions) {
+            Index terrainTile = TerrainUtil.toTile(terrainPosition);
+            if(!displayTerrainTiles.get(terrainTile).isTerrainFree(terrainPosition, baseItemType)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public Vertex calculateMousePositionGroundMesh(Line3d worldPickRay) {
@@ -232,17 +226,6 @@ public class TerrainUiService implements ViewService.ViewFieldListener {
         for (BiConsumer<DecimalPosition, Double> consumer : consumers) {
             consumer.accept(position, null);
         }
-    }
-
-    public void onOverlapAnswer(DecimalPosition position, boolean overlap) {
-        Collection<Consumer<Boolean>> consumers = overlapConsumers.remove(position);
-        for (Consumer<Boolean> consumer : consumers) {
-            consumer.accept(overlap);
-        }
-    }
-
-    public void onOverlapTypeAnswer(int uuid, boolean overlaps) {
-        overlapTypeConsumers.remove(uuid).accept(overlaps);
     }
 
     public void requestTerrainTile(Index terrainTileIndex, Consumer<TerrainTile> terrainTileConsumer) {

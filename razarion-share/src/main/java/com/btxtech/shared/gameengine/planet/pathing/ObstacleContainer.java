@@ -28,10 +28,11 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 /**
- * Created by Beat
+ * Created by BeatF
  * 21.01.2017.
  */
 @ApplicationScoped
+@Deprecated
 public class ObstacleContainer {
     private Logger logger = Logger.getLogger(ObstacleContainer.class.getName());
     private ObstacleContainerNode[][] obstacleContainerNodes;
@@ -271,22 +272,6 @@ public class ObstacleContainer {
             }
         }
         return true;
-    }
-
-    public boolean hasNorthSuccessorNode(int currentNodePositionY) {
-        return currentNodePositionY < yCount - 1;
-    }
-
-    public boolean hasEastSuccessorNode(int currentNodePositionX) {
-        return currentNodePositionX < xCount - 1;
-    }
-
-    public boolean hasSouthSuccessorNode(int currentNodePositionY) {
-        return currentNodePositionY > 0;
-    }
-
-    public boolean hasWestSuccessorNode(int currentNodePositionX) {
-        return currentNodePositionX > 0;
     }
 
     public boolean isInSight(SyncPhysicalArea syncPhysicalArea, DecimalPosition target) {

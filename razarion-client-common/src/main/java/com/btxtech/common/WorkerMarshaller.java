@@ -76,7 +76,6 @@ public class WorkerMarshaller {
             case PERFMON_RESPONSE:
             case INITIALISING_FAILED:
             case SINGLE_Z_TERRAIN:
-            case TERRAIN_OVERLAP:
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
             case TERRAIN_TILE_REQUEST:
             case PLAYBACK_PLAYER_BASE:
@@ -98,8 +97,6 @@ public class WorkerMarshaller {
             case SPAWN_BASE_ITEMS:
             case PROJECTILE_DETONATION:
             case SINGLE_Z_TERRAIN_ANSWER:
-            case TERRAIN_OVERLAP_ANSWER:
-            case TERRAIN_OVERLAP_TYPE_ANSWER:
             case EDITOR_OVERRIDE_TERRAIN:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
@@ -107,7 +104,6 @@ public class WorkerMarshaller {
             // Triple JSON data
             case COMMAND_BUILD:
             case PROJECTILE_FIRED:
-            case TERRAIN_OVERLAP_TYPE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
@@ -287,22 +283,6 @@ public class WorkerMarshaller {
                 break;
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
-                break;
-            case TERRAIN_OVERLAP:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
-                break;
-            case TERRAIN_OVERLAP_ANSWER:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Boolean.class));
-                break;
-            case TERRAIN_OVERLAP_TYPE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), Integer.class));
-                break;
-            case TERRAIN_OVERLAP_TYPE_ANSWER:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Boolean.class));
                 break;
             case EDITOR_OVERRIDE_TERRAIN:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));

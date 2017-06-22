@@ -1,16 +1,9 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +14,7 @@ import java.util.Map;
  */
 public class PlanetConfig {
     private int planetId;
-    private Rectangle groundMeshDimension;
+    private Rectangle terrainTileDimension; // In terrain tiles TerrainUtil.TERRAIN_TILE_NODES_COUNT
     private Rectangle2D playGround;
     private List<TerrainSlopePosition> terrainSlopePositions;
     private List<TerrainObjectPosition> terrainObjectPositions;
@@ -39,12 +32,12 @@ public class PlanetConfig {
         return this;
     }
 
-    public Rectangle getGroundMeshDimension() {
-        return groundMeshDimension;
+    public Rectangle getTerrainTileDimension() {
+        return terrainTileDimension;
     }
 
-    public PlanetConfig setGroundMeshDimension(Rectangle groundMeshDimension) {
-        this.groundMeshDimension = groundMeshDimension;
+    public PlanetConfig setTerrainTileDimension(Rectangle terrainTileDimension) {
+        this.terrainTileDimension = terrainTileDimension;
         return this;
     }
 

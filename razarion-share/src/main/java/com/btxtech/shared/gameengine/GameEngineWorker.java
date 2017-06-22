@@ -6,9 +6,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
-import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
-import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
-import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -49,7 +46,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
@@ -102,8 +98,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private TerrainService terrainService;
     @Inject
     private ItemTypeService itemTypeService;
-    @Inject
-    private ObstacleContainer obstacleContainer;
     @Inject
     private Instance<AbstractServerGameConnection> connectionInstance;
     @Inject
@@ -194,12 +188,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case SINGLE_Z_TERRAIN:
                 getTerrainZ((DecimalPosition) controlPackage.getData(0));
-                break;
-            case TERRAIN_OVERLAP:
-                getTerrainOverlap((DecimalPosition) controlPackage.getData(0));
-                break;
-            case TERRAIN_OVERLAP_TYPE:
-                getTerrainOverlapBaseItemType((int) controlPackage.getData(0), (List<DecimalPosition>) controlPackage.getData(1), (int) controlPackage.getData(2));
                 break;
             case TERRAIN_TILE_REQUEST:
                 getTerrainTile((Index) controlPackage.getData(0));
@@ -535,28 +523,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void getTerrainZ(DecimalPosition position) {
         try {
-            double z = terrainService.getInterpolatedZ(position);
+            double z = terrainService.getSurfaceAccess().getInterpolatedZ(position);
             sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER, position, z);
         } catch (NoInterpolatedTerrainTriangleException e) {
             logger.warning("GameEngineWorker.getTerrainZ() " + e.getMessage());
             sendToClient(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN_ANSWER_FAIL, position);
         }
-    }
-
-    private void getTerrainOverlap(DecimalPosition position) {
-        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_ANSWER, position, !obstacleContainer.isFree(position));
-    }
-
-    private void getTerrainOverlapBaseItemType(int uuid, List<DecimalPosition> positions, int baseItemType) {
-        boolean overlaps = false;
-        double radius = itemTypeService.getBaseItemType(baseItemType).getPhysicalAreaConfig().getRadius();
-        for (DecimalPosition position : positions) {
-            if (!obstacleContainer.isFree(position, radius)) {
-                overlaps = true;
-                break;
-            }
-        }
-        sendToClient(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE_ANSWER, uuid, overlaps);
     }
 
     private void getTerrainTile(Index terrainTileIndex) {

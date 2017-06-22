@@ -1,9 +1,8 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,23 +13,22 @@ import java.util.Map;
  * Created by Beat
  * 28.01.2017.
  */
-@Dependent
 public class AStar {
     private static final int MAX_CLOSED_LIST_SIZE = 100000;
-    @Inject
-    private ObstacleContainer obstacleContainer;
     private Map<Index, AStarNode> closedList = new HashMap<>();
     private AStarOpenList openList = new AStarOpenList();
     private Index startTile;
     private AStarNode destinationNode;
+    private final PathingAccess pathingAccess;
     private boolean pathFound;
     private List<Index> tilePath;
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
 
-    public void init(Index startTile, Index destinationTile) {
+    public AStar(Index startTile, Index destinationTile, PathingAccess pathingAccess) {
         this.startTile = startTile;
         destinationNode = new AStarNode(destinationTile);
+        this.pathingAccess = pathingAccess;
         openList.add(new AStarNode(startTile));
     }
 
@@ -60,25 +58,25 @@ public class AStar {
 
     private void handleAllSuccessorNodes(AStarNode current) {
         // North
-        if (obstacleContainer.hasNorthSuccessorNode(current.getTileIndex().getY())) {
+        if (pathingAccess.hasNorthSuccessorNode(current.getTileIndex().getY())) {
             handleSuccessorNode(current, current.getTileIndex().add(0, 1));
         }
         // East
-        if (obstacleContainer.hasEastSuccessorNode(current.getTileIndex().getX())) {
+        if (pathingAccess.hasEastSuccessorNode(current.getTileIndex().getX())) {
             handleSuccessorNode(current, current.getTileIndex().add(1, 0));
         }
         // South
-        if (obstacleContainer.hasSouthSuccessorNode(current.getTileIndex().getY())) {
+        if (pathingAccess.hasSouthSuccessorNode(current.getTileIndex().getY())) {
             handleSuccessorNode(current, current.getTileIndex().add(0, -1));
         }
         // West
-        if (obstacleContainer.hasWestSuccessorNode(current.getTileIndex().getX())) {
+        if (pathingAccess.hasWestSuccessorNode(current.getTileIndex().getX())) {
             handleSuccessorNode(current, current.getTileIndex().add(-1, 0));
         }
     }
 
     private void handleSuccessorNode(AStarNode current, Index successorTilePosition) {
-        if (!obstacleContainer.isFree(successorTilePosition)) {
+        if (!pathingAccess.isTileFree(successorTilePosition)) {
             return;
         }
 

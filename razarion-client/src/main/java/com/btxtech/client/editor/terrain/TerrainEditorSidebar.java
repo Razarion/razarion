@@ -114,7 +114,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     public void init() {
         terrainEditor.activate();
         planetId.setTextContent(Integer.toString(terrainEditor.getPlanetConfig().getPlanetId()));
-        groundMeshDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toAbsoluteNodeRectangle(terrainEditor.getPlanetConfig().getGroundMeshDimension())));
+        groundMeshDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toAbsoluteNodeRectangle(terrainEditor.getPlanetConfig().getTerrainTileDimension())));
         playGround.setTextContent(DisplayUtils.handleRectangle2D(terrainEditor.getPlanetConfig().getPlayGround()));
         creationModeButton.setText(terrainEditor.getCreationModeText());
         cursorRadius.setValue(terrainEditor.getCursorRadius());

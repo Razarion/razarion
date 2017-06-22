@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -183,5 +184,13 @@ public class UiTerrainTile {
             uiTerrainWaterTile.dispose();
             uiTerrainWaterTile = null;
         }
+    }
+
+    public boolean isTerrainFree(DecimalPosition terrainPosition) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isTerrainFree(DecimalPosition terrainPosition, BaseItemType baseItemType) {
+        throw new UnsupportedOperationException();
     }
 }

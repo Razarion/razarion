@@ -33,7 +33,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -52,7 +52,7 @@ public class SyncBuilder extends SyncBaseAbility {
     @Inject
     private BaseItemService baseItemService;
     @Inject
-    private ObstacleContainer obstacleContainer;
+    private TerrainService terrainService;
     @Inject
     private UnlockService unlockService;
     @Inject
@@ -211,7 +211,7 @@ public class SyncBuilder extends SyncBaseAbility {
         if (unlockService.isItemLocked(tmpToBeBuiltType, getSyncBaseItem().getBase())) {
             throw new IllegalArgumentException(this + " item is locked: " + builderCommand.getToBeBuiltId());
         }
-        if (!obstacleContainer.isFree(builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType.getPhysicalAreaConfig().getRadius())) {
+        if (!terrainService.getPathingAccess().isTerrainFree(builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType.getPhysicalAreaConfig().getRadius())) {
             throw new PositionTakenException(builderCommand.getPositionToBeBuilt(), builderCommand.getToBeBuiltId());
         }
 

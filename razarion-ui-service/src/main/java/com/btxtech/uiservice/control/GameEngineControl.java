@@ -201,14 +201,6 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.SINGLE_Z_TERRAIN, position);
     }
 
-    public void askOverlap(DecimalPosition position) {
-        sendToWorker(GameEngineControlPackage.Command.TERRAIN_OVERLAP, position);
-    }
-
-    public void askOverlapType(int uuid, Collection<DecimalPosition> positions, int baseItemTypeId) {
-        sendToWorker(GameEngineControlPackage.Command.TERRAIN_OVERLAP_TYPE, uuid, new ArrayList<>(positions), baseItemTypeId);
-    }
-
     public void requestTerrainTile(Index terrainTileIndex) {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
     }
@@ -342,12 +334,6 @@ public abstract class GameEngineControl {
                 break;
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
                 terrainUiService.onTerrainZAnswerFail((DecimalPosition) controlPackage.getData(0));
-                break;
-            case TERRAIN_OVERLAP_ANSWER:
-                terrainUiService.onOverlapAnswer((DecimalPosition) controlPackage.getData(0), (boolean) controlPackage.getData(1));
-                break;
-            case TERRAIN_OVERLAP_TYPE_ANSWER:
-                terrainUiService.onOverlapTypeAnswer((int) controlPackage.getData(0), (boolean) controlPackage.getData(1));
                 break;
             case TERRAIN_TILE_RESPONSE:
                 terrainUiService.onTerrainTileResponse((TerrainTile) controlPackage.getData(0));

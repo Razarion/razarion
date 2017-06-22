@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.Path;
-import com.btxtech.shared.gameengine.datatypes.command.PathToDestinationCommand;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -12,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -31,10 +31,6 @@ public class PathingService {
     @Inject
     private TerrainService terrainService;
     @Inject
-    private ObstacleContainer obstacleContainer;
-    @Inject
-    private Instance<AStar> instanceAStar;
-    @Inject
     private Instance<Path> instancePath;
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
@@ -53,22 +49,21 @@ public class PathingService {
     private SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
         SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
-        Index startTile = obstacleContainer.toNode(syncItem.getSyncPhysicalArea().getPosition2d());
-        Index destinationTile = obstacleContainer.toNode(destination);
-        if (startTile.equals(destinationTile)) {
+        Index startNode = TerrainUtil.toNode(syncItem.getSyncPhysicalArea().getPosition2d());
+        Index destinationNode = TerrainUtil.toNode(destination);
+        if (startNode.equals(destinationNode)) {
             positions.add(destination);
             path.setWayPositions(positions);
             path.setTotalRange(totalRange);
             return path;
         }
-        if(!obstacleContainer.isFree(destinationTile)) {
-            throw new IllegalArgumentException("Destination start tile is not free: " + destinationTile);
+        if (!terrainService.getPathingAccess().isTerrainFree(destination)) {
+            throw new IllegalArgumentException("Destination start tile is not free: " + destination);
         }
-        AStar aStar = instanceAStar.get();
-        aStar.init(startTile, destinationTile);
+        AStar aStar = new AStar(startNode, destinationNode, terrainService.getPathingAccess());
         aStar.expandAllNodes();
         for (Index index : aStar.convertPath()) {
-            positions.add(obstacleContainer.toAbsoluteMiddle(index));
+            positions.add(TerrainUtil.toAbsoluteMiddle(index));
         }
         positions.add(destination);
         path.setWayPositions(positions);
@@ -123,7 +118,7 @@ public class PathingService {
     }
 
     private void findObstacleContacts(SyncPhysicalMovable item, Collection<Contact> contacts) {
-        for (Obstacle obstacle : obstacleContainer.getObstacles(item)) {
+        for (Obstacle obstacle : terrainService.getPathingAccess().getObstacles(item)) {
             Contact contact = obstacle.hasContact(item);
             if (contact != null) {
                 contacts.add(contact);
@@ -238,7 +233,7 @@ public class PathingService {
             }
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
 
-            for (Obstacle obstacle : obstacleContainer.getObstacles(syncPhysicalMovable)) {
+            for (Obstacle obstacle : terrainService.getPathingAccess().getObstacles(syncPhysicalMovable)) {
                 // There is no check if the unit is inside the restricted area
                 DecimalPosition projection = obstacle.project(syncPhysicalMovable.getPosition2d());
                 double distance = projection.getDistance(syncPhysicalMovable.getPosition2d()) - syncPhysicalMovable.getRadius();

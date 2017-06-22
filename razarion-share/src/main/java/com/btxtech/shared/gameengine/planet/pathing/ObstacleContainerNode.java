@@ -13,6 +13,7 @@ import java.util.List;
  * Created by Beat
  * 21.01.2017.
  */
+@Deprecated
 public class ObstacleContainerNode {
     private Collection<Obstacle> obstacles;
     private List<VerticalSegment> slopeSegments;

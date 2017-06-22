@@ -59,10 +59,6 @@ public class GameEngineControlPackage {
         SINGLE_Z_TERRAIN,
         SINGLE_Z_TERRAIN_ANSWER,
         SINGLE_Z_TERRAIN_ANSWER_FAIL,
-        TERRAIN_OVERLAP,
-        TERRAIN_OVERLAP_ANSWER,
-        TERRAIN_OVERLAP_TYPE,
-        TERRAIN_OVERLAP_TYPE_ANSWER,
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
         // Editor

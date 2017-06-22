@@ -19,15 +19,15 @@ public class TerrainSlopeTileContext {
     private Logger logger = Logger.getLogger(TerrainSlopeTileContext.class.getName());
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
-    private Slope slope;
+    private int slopeSkeletonConfigId;
     private int xCount;
     private int yCount;
     private SlopeVertex[][] verticesVertices;
     private TerrainSlopeTile terrainSlopeTile;
     private TerrainTileContext terrainTileContext;
 
-    public void init(Slope slope, int xCount, int yCount, TerrainTileContext terrainTileContext) {
-        this.slope = slope;
+    public void init(int slopeSkeletonConfigId, int xCount, int yCount, TerrainTileContext terrainTileContext) {
+        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
         this.xCount = xCount;
         this.yCount = yCount;
         this.terrainTileContext = terrainTileContext;
@@ -45,7 +45,7 @@ public class TerrainSlopeTileContext {
     public void triangulation() {
         terrainSlopeTile = jsInteropObjectFactory.generateTerrainSlopeTile();
         int verticesCount = (xCount - 1) * (yCount - 1) * 6;
-        terrainSlopeTile.init(slope.getSlopeSkeletonConfig().getId(), verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
+        terrainSlopeTile.init(slopeSkeletonConfigId, verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
         int triangleIndex = 0;
         for (int x = 1; x < xCount - 2; x++) {
             for (int y = 0; y < yCount - 1; y++) {

@@ -18,7 +18,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -28,7 +28,7 @@ import java.util.List;
 @Dependent
 public class Path {
     @Inject
-    private ObstacleContainer obstacleContainer;
+    private TerrainService terrainService;
     private List<DecimalPosition> wayPositions;
     private int currentWayPointIndex;
     private double totalRange;
@@ -50,7 +50,7 @@ public class Path {
     }
 
     public void setupCurrentWayPoint(SyncPhysicalArea syncPhysicalArea) {
-        if (obstacleContainer.isInSight(syncPhysicalArea, wayPositions.get(currentWayPointIndex))) {
+        if (terrainService.getPathingAccess().isInSight(syncPhysicalArea, wayPositions.get(currentWayPointIndex))) {
             aheadTrack(syncPhysicalArea);
         } else {
             backtrack(syncPhysicalArea);
@@ -60,7 +60,7 @@ public class Path {
     private void aheadTrack(SyncPhysicalArea syncPhysicalArea) {
         int tmpCurrentWayPointIndex = currentWayPointIndex + 1;
         while (tmpCurrentWayPointIndex < wayPositions.size()) {
-            if (obstacleContainer.isInSight(syncPhysicalArea, new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
+            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea, new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
                 currentWayPointIndex = tmpCurrentWayPointIndex;
                 tmpCurrentWayPointIndex++;
             } else {
@@ -72,7 +72,7 @@ public class Path {
     private void backtrack(SyncPhysicalArea syncPhysicalArea) {
         int tmpCurrentWayPointIndex = currentWayPointIndex - 1;
         while (tmpCurrentWayPointIndex >= 0) {
-            if (obstacleContainer.isInSight(syncPhysicalArea, new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
+            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea, new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
                 currentWayPointIndex = tmpCurrentWayPointIndex;
                 return;
             }

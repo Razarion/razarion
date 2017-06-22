@@ -32,8 +32,16 @@ public interface TerrainUtil {
         return absolute.divide(GROUND_NODE_ABSOLUTE_LENGTH).toIndexFloor();
     }
 
-    static DecimalPosition toNodeAbsolute(Index tile) {
-        return new DecimalPosition(tile.scale(GROUND_NODE_ABSOLUTE_LENGTH));
+    static DecimalPosition toNodeAbsolute(Index node) {
+        return new DecimalPosition(node.scale(GROUND_NODE_ABSOLUTE_LENGTH));
+    }
+
+    static DecimalPosition toNodeAbsolute(DecimalPosition node) {
+        return node.divide(GROUND_NODE_ABSOLUTE_LENGTH);
+    }
+
+    static Index toNodeAbsoluteIndex(Index node) {
+        return node.scale(GROUND_NODE_ABSOLUTE_LENGTH);
     }
 
     static Rectangle2D toAbsoluteNodeRectangle(Index tile) {
@@ -43,6 +51,18 @@ public interface TerrainUtil {
 
     static Rectangle2D toAbsoluteNodeRectangle(Rectangle node) {
         return new Rectangle2D(toNodeAbsolute(node.getStart()), toNodeAbsolute(node.getEnd()));
+    }
+
+    static DecimalPosition toAbsoluteMiddle(Index node) {
+        return toNodeAbsolute(node).add(GROUND_NODE_ABSOLUTE_LENGTH / 2.0, GROUND_NODE_ABSOLUTE_LENGTH / 2.0);
+    }
+
+    static Index nodeToTile(Index nodeIndex) {
+        return nodeIndex.scaleInverse(TERRAIN_TILE_NODES_COUNT);
+    }
+
+    static Index tileToNode(Index tileIndex) {
+        return tileIndex.scale(TERRAIN_TILE_NODES_COUNT);
     }
 
     static int filedToArrayNodeIndex(Index index) {

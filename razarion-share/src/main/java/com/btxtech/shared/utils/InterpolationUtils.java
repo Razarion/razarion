@@ -1,6 +1,11 @@
 package com.btxtech.shared.utils;
 
-import java.util.Collection;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Triangle2d;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+
 import java.util.List;
 
 /**
@@ -45,5 +50,27 @@ public class InterpolationUtils {
 
     public static double mix(double value1, double value2, double mix) {
         return value1 * (1 - mix) + value2 * mix;
+    }
+
+    /**
+     * Assumption: rectangle with bl, br, tr, tl
+     *
+     * @param offset 0:0 bl, 1:1 tr
+     * @param bl bottom left
+     * @param br bottom right
+     * @param tr top right
+     * @param tl top left
+     * @return interpolation
+     */
+    public static double rectangleInterpolate(DecimalPosition offset, double bl, double br, double tr, double tl) {
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
+        if (triangle1.isInside(offset)) {
+            Vertex weight = triangle1.interpolate(offset);
+            return weight.getX() * bl + weight.getY() * br + weight.getZ() * tl;
+        } else {
+            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
+            Vertex weight = triangle2.interpolate(offset);
+            return weight.getX() * br + weight.getY() * tr + weight.getZ() * tl;
+        }
     }
 }

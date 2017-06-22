@@ -14,6 +14,7 @@ public abstract class TerrainTile {
 
     public native void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting);
 
+    @Deprecated
     public native void setDisplayHeight(int index, double height);
 
     public native int getIndexX();
@@ -28,6 +29,7 @@ public abstract class TerrainTile {
 
     public native double[] getGroundSplattings();
 
+    @Deprecated
     public native double[] getDisplayHeights();
 
     public native void setGroundVertexCount(int groundVertexCount);

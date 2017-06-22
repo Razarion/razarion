@@ -17,8 +17,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -49,7 +49,7 @@ public class CommandService { // Is part of the Base service
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private ObstacleContainer obstacleContainer;
+    private TerrainService terrainService;
 
     public void move(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
         for (int syncBaseItemId : syncBaseItemIds) {
@@ -59,7 +59,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void move(SyncBaseItem syncBaseItem, DecimalPosition destination) {
-        if (!obstacleContainer.isFree(destination)) {
+        if (!terrainService.getPathingAccess().isTerrainFree(destination)) {
             return;
         }
         MoveCommand moveCommand = new MoveCommand();
@@ -76,7 +76,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void build(SyncBaseItem builder, DecimalPosition positionToBeBuild, BaseItemType itemTypeToBuild) {
-        if (!obstacleContainer.isFree(positionToBeBuild)) {
+        if (!terrainService.getPathingAccess().isTerrainFree(positionToBeBuild)) {
             return;
         }
         BuilderCommand builderCommand = new BuilderCommand();

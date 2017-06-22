@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.utils.CollectionUtils;
 
@@ -82,9 +81,9 @@ public class TerrainTileContext {
         return terrainTileIndex;
     }
 
-    public TerrainSlopeTileContext createTerrainSlopeTileContext(Slope slope, int xCount, int yCount) {
+    public TerrainSlopeTileContext createTerrainSlopeTileContext(int slopeSkeletonConfigId, int xCount, int yCount) {
         TerrainSlopeTileContext terrainSlopeTileContext = terrainSlopeTileContextInstance.get();
-        terrainSlopeTileContext.init(slope, xCount, yCount, this);
+        terrainSlopeTileContext.init(slopeSkeletonConfigId, xCount, yCount, this);
         if (terrainSlopeTileContexts == null) {
             terrainSlopeTileContexts = new ArrayList<>();
         }
@@ -247,5 +246,9 @@ public class TerrainTileContext {
 
     public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
         terrainTile.setTerrainWaterTile(terrainWaterTile);
+    }
+
+    public Index toAbsoluteNodeIndex(Index nodeRelativeIndex) {
+        return new Index(offsetIndexX, offsetIndexY).add(nodeRelativeIndex);
     }
 }

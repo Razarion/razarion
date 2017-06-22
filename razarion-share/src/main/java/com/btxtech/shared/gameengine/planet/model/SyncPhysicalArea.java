@@ -77,11 +77,11 @@ public class SyncPhysicalArea {
             return;
         }
         if (fixVerticalNorm) {
-            position3d = new Vertex(position2d, terrainService.getHighestZInRegion(position2d, radius));
+            position3d = new Vertex(position2d, terrainService.getSurfaceAccess().getHighestZInRegion(position2d, radius));
             norm = Vertex.Z_NORM;
         } else {
-            position3d = new Vertex(position2d, terrainService.getInterpolatedZ(position2d));
-            norm = terrainService.getNorm(position2d);
+            position3d = new Vertex(position2d, terrainService.getSurfaceAccess().getInterpolatedZ(position2d));
+            norm = terrainService.getSurfaceAccess().getInterpolatedNorm(position2d);
         }
         modelMatrices = null;
     }

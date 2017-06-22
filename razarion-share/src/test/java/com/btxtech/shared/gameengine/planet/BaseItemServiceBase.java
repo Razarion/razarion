@@ -85,7 +85,7 @@ public class BaseItemServiceBase {
             SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
             SimpleTestEnvironment.injectService("syncItemContainerService", syncPhysicalMovable, syncItemContainerService);
             TerrainService terrainServiceMock = EasyMock.createNiceMock(TerrainService.class);
-            EasyMock.expect(terrainServiceMock.getInterpolatedZ(EasyMock.anyObject(DecimalPosition.class))).andReturn(-1.7);
+            EasyMock.expect(terrainServiceMock.getSurfaceAccess().getInterpolatedZ(EasyMock.anyObject(DecimalPosition.class))).andReturn(-1.7);
             EasyMock.replay(terrainServiceMock);
             SimpleTestEnvironment.injectService("terrainService", syncPhysicalMovable, SyncPhysicalArea.class, terrainServiceMock);
             return syncPhysicalMovable;

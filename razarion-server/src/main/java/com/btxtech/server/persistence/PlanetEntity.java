@@ -93,7 +93,7 @@ public class PlanetEntity {
             terrainObjectPositions.add(terrainObjectPositionEntity.toTerrainObjectPosition());
         }
         planetConfig.setTerrainObjectPositions(terrainObjectPositions);
-        planetConfig.setGroundMeshDimension(groundMeshDimension);
+        planetConfig.setTerrainTileDimension(groundMeshDimension);
         planetConfig.setPlayGround(playGround);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         if (this.itemTypeLimitation != null) {

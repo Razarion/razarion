@@ -136,7 +136,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         planetConfig.setTerrainSlopePositions(Collections.emptyList());
         planetConfig.setTerrainObjectPositions(Collections.emptyList());
         planetConfig.setHouseSpace(10);
-        planetConfig.setGroundMeshDimension(new Rectangle(0, 0, 64, 64));
+        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setPlayGround(new Rectangle2D(50, 40, 310, 320));
         planetConfig.setStartRazarion(550);
         return planetConfig;

@@ -43,7 +43,7 @@ public class BaseBotServiceTest {
         baseItemService = weldContainer.instance().select(BaseItemService.class).get();
         // Setup game environment
         BaseItemServiceBase.setupItemTypeService(itemTypeService);
-        PlanetConfig planetConfig = new PlanetConfig().setGroundMeshDimension(new Rectangle(0, 0, 1000, 1000));
+        PlanetConfig planetConfig = new PlanetConfig().setTerrainTileDimension(new Rectangle(0, 0, 1000, 1000));
         terrainService.setup(planetConfig);
         terrainTypeService.init(new StaticGameConfig().setGroundSkeletonConfig(new GroundSkeletonConfig().setHeights(new double[][]{{0.0}}).setHeightXCount(1).setHeightYCount(1)));
         baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, GameEngineMode.MASTER, null, null, PlanetActivationEvent.Type.INITIALIZE));

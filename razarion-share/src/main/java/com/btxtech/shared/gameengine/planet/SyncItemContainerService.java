@@ -19,7 +19,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -52,7 +52,7 @@ public class SyncItemContainerService {
     @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
     private Instance<SyncPhysicalMovable> syncPhysicalMovableInstance;
     @Inject
-    private ObstacleContainer obstacleContainer;
+    private TerrainService terrainService;
 
     public void clear() {
         items.clear();
@@ -343,7 +343,7 @@ public class SyncItemContainerService {
     }
 
     private boolean isFree(DecimalPosition position, double radius) {
-        return obstacleContainer.isFree(position, radius) && !hasItemsInRange(position, radius);
+        return terrainService.getPathingAccess().isTerrainFree(position, radius) && !hasItemsInRange(position, radius);
     }
 
     public boolean isFree(DecimalPosition position, BaseItemType baseItemType) {
