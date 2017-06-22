@@ -2,10 +2,12 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -129,9 +131,18 @@ public class PathingAccess {
         return obstacles;
     }
 
-    // --------------------------------------
-
     public boolean isInSight(SyncPhysicalArea syncPhysicalArea, DecimalPosition target) {
-        throw new UnsupportedOperationException();
+        if (syncPhysicalArea.getPosition2d().equals(target)) {
+            return true;
+        }
+        double angel = syncPhysicalArea.getPosition2d().getAngle(target);
+        double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
+        double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
+
+        Line line = new Line(syncPhysicalArea.getPosition2d(), target);
+        Line line1 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel1, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel1, syncPhysicalArea.getRadius()));
+        Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
+
+        return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
     }
 }

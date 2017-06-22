@@ -3,13 +3,18 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.GeometricUtil;
+
+import java.util.List;
 
 /**
  * Created by Beat
@@ -168,6 +173,25 @@ public class TerrainShape {
         return groundSkeletonConfig;
     }
 
+    private List<Index> absoluteLineToNodes(Line absoluteLine) {
+        Line line = new Line(TerrainUtil.toNodeAbsolute(absoluteLine.getPoint1()), TerrainUtil.toNodeAbsolute(absoluteLine.getPoint2()));
+        return GeometricUtil.rasterizeLine(line, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+    }
+
+    public boolean isSightBlocked(Line line) {
+        List<Index> nodeIndices = absoluteLineToNodes(line);
+        for (Index nodeIndex : nodeIndices) {
+            TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
+            if (terrainShapeNode != null && terrainShapeNode.getObstacles() != null) {
+                for (Obstacle obstacle : terrainShapeNode.getObstacles()) {
+                    if (obstacle.isPiercing(line)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     private static class SimpleControl implements TerrainRegionImpactCallback.Control {
         private boolean stop;
