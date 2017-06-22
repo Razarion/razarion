@@ -61,6 +61,10 @@ public interface TerrainUtil {
         return nodeIndex.scaleInverse(TERRAIN_TILE_NODES_COUNT);
     }
 
+    static int nodeToTile(int nodeIndex) {
+        return nodeIndex / TERRAIN_TILE_NODES_COUNT;
+    }
+
     static Index tileToNode(Index tileIndex) {
         return tileIndex.scale(TERRAIN_TILE_NODES_COUNT);
     }

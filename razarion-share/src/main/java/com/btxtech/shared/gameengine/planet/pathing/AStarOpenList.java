@@ -16,12 +16,12 @@ class AStarOpenList {
 
     public void add(AStarNode node) {
         sortedList.add(node);
-        map.put(node.getTileIndex(), node);
+        map.put(node.getTerrainShapeNodeIndex(), node);
     }
 
     public AStarNode removeFirst() {
         AStarNode node = sortedList.poll();
-        map.remove(node.getTileIndex());
+        map.remove(node.getTerrainShapeNodeIndex());
         return node;
     }
 

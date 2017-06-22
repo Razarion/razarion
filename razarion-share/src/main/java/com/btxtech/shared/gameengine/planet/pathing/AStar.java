@@ -17,7 +17,7 @@ public class AStar {
     private static final int MAX_CLOSED_LIST_SIZE = 100000;
     private Map<Index, AStarNode> closedList = new HashMap<>();
     private AStarOpenList openList = new AStarOpenList();
-    private Index startTile;
+    private Index startNode;
     private AStarNode destinationNode;
     private final PathingAccess pathingAccess;
     private boolean pathFound;
@@ -25,11 +25,11 @@ public class AStar {
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
 
-    public AStar(Index startTile, Index destinationTile, PathingAccess pathingAccess) {
-        this.startTile = startTile;
-        destinationNode = new AStarNode(destinationTile);
+    public AStar(Index startNode, Index destinationNode, PathingAccess pathingAccess) {
+        this.startNode = startNode;
+        this.destinationNode = new AStarNode(destinationNode);
         this.pathingAccess = pathingAccess;
-        openList.add(new AStarNode(startTile));
+        openList.add(new AStarNode(startNode));
     }
 
     public void expandAllNodes() {
@@ -50,28 +50,28 @@ public class AStar {
 
     private void expandNode(AStarNode current) {
         handleAllSuccessorNodes(current);
-        closedList.put(current.getTileIndex(), current);
+        closedList.put(current.getTerrainShapeNodeIndex(), current);
         if (closedList.size() > MAX_CLOSED_LIST_SIZE) {
-            throw new IllegalStateException("AStar max closed list size reached. startTile: " + startTile + " destinationTile: " + destinationNode.getTileIndex());
+            throw new IllegalStateException("AStar max closed list size reached. startNode: " + startNode + " destinationTile: " + destinationNode.getTerrainShapeNodeIndex());
         }
     }
 
     private void handleAllSuccessorNodes(AStarNode current) {
         // North
-        if (pathingAccess.hasNorthSuccessorNode(current.getTileIndex().getY())) {
-            handleSuccessorNode(current, current.getTileIndex().add(0, 1));
+        if (pathingAccess.hasNorthSuccessorNode(current.getTerrainShapeNodeIndex().getY())) {
+            handleSuccessorNode(current, current.getTerrainShapeNodeIndex().add(0, 1));
         }
         // East
-        if (pathingAccess.hasEastSuccessorNode(current.getTileIndex().getX())) {
-            handleSuccessorNode(current, current.getTileIndex().add(1, 0));
+        if (pathingAccess.hasEastSuccessorNode(current.getTerrainShapeNodeIndex().getX())) {
+            handleSuccessorNode(current, current.getTerrainShapeNodeIndex().add(1, 0));
         }
         // South
-        if (pathingAccess.hasSouthSuccessorNode(current.getTileIndex().getY())) {
-            handleSuccessorNode(current, current.getTileIndex().add(0, -1));
+        if (pathingAccess.hasSouthSuccessorNode(current.getTerrainShapeNodeIndex().getY())) {
+            handleSuccessorNode(current, current.getTerrainShapeNodeIndex().add(0, -1));
         }
         // West
-        if (pathingAccess.hasWestSuccessorNode(current.getTileIndex().getX())) {
-            handleSuccessorNode(current, current.getTileIndex().add(-1, 0));
+        if (pathingAccess.hasWestSuccessorNode(current.getTerrainShapeNodeIndex().getX())) {
+            handleSuccessorNode(current, current.getTerrainShapeNodeIndex().add(-1, 0));
         }
     }
 
@@ -81,11 +81,11 @@ public class AStar {
         }
 
         if (!closedList.containsKey(successorTilePosition)) {
-            double tentativeG = current.getG() + current.getTileIndex().getDistanceDouble(successorTilePosition);
+            double tentativeG = current.getG() + current.getTerrainShapeNodeIndex().getDistanceDouble(successorTilePosition);
             AStarNode successor = openList.get(successorTilePosition);
             if (successor == null || tentativeG < successor.getG()) {
                 if (successor == null) {
-                    if (successorTilePosition.equals(destinationNode.getTileIndex())) {
+                    if (successorTilePosition.equals(destinationNode.getTerrainShapeNodeIndex())) {
                         successor = destinationNode;
                     } else {
                         successor = new AStarNode(successorTilePosition);
@@ -95,7 +95,7 @@ public class AStar {
                 }
                 successor.setPredecessor(current);
                 successor.setG(tentativeG);
-                double heuristic = successorTilePosition.getDistanceDouble(destinationNode.getTileIndex());
+                double heuristic = successorTilePosition.getDistanceDouble(destinationNode.getTerrainShapeNodeIndex());
                 successor.setF(tentativeG + heuristic);
                 openList.add(successor);
                 if (smallestHeuristic > heuristic) {
@@ -115,7 +115,7 @@ public class AStar {
     }
 
     public Index getBestFitTile() {
-        return bestFitNode.getTileIndex();
+        return bestFitNode.getTerrainShapeNodeIndex();
     }
 
     public List<Index> convertPath() {
@@ -131,7 +131,7 @@ public class AStar {
         }
         // Omit start
         while (tempNode != null && tempNode.getPredecessor() != null) {
-            tilePath.add(tempNode.getTileIndex());
+            tilePath.add(tempNode.getTerrainShapeNodeIndex());
             tempNode = tempNode.getPredecessor();
         }
         Collections.reverse(tilePath);

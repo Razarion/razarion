@@ -7,22 +7,22 @@ import com.btxtech.shared.datatypes.Index;
  * on 10.11.2014.
  */
 class AStarNode implements Comparable<AStarNode> {
-    private Index tileIndex;
+    private Index terrainShapeNodeIndex;
     private double f = 0;
     private double g; // Cost to this node
     private AStarNode predecessor;
 
-    AStarNode(Index tileIndex) {
-        this.tileIndex = tileIndex;
+    AStarNode(Index terrainShapeNodeIndex) {
+        this.terrainShapeNodeIndex = terrainShapeNodeIndex;
     }
 
     @Override
     public int hashCode() {
-        return tileIndex.hashCode();
+        return terrainShapeNodeIndex.hashCode();
     }
 
-    public Index getTileIndex() {
-        return tileIndex;
+    public Index getTerrainShapeNodeIndex() {
+        return terrainShapeNodeIndex;
     }
 
     public double getF() {
@@ -65,6 +65,6 @@ class AStarNode implements Comparable<AStarNode> {
 
         AStarNode node = (AStarNode) o;
 
-        return tileIndex.equals(node.tileIndex);
+        return terrainShapeNodeIndex.equals(node.terrainShapeNodeIndex);
     }
 }

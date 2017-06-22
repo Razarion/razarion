@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
 import java.util.Collection;
 
@@ -86,25 +87,27 @@ public class PathingAccess {
         return terrainShapeNode == null || !terrainShapeNode.isFullWater();
     }
 
-    // --------------------------------------
-
     public boolean hasNorthSuccessorNode(int currentNodePositionY) {
-        // return currentNodePositionY < yCount - 1;
-        throw new UnsupportedOperationException();
+        int tileY = TerrainUtil.nodeToTile(currentNodePositionY + 1);
+        return tileY - terrainShape.getTileOffset().getY() < terrainShape.getTileYCount() - 1;
     }
 
     public boolean hasEastSuccessorNode(int currentNodePositionX) {
-        // return currentNodePositionX < xCount - 1;
-        throw new UnsupportedOperationException();
+        int tileX = TerrainUtil.nodeToTile(currentNodePositionX + 1);
+        return tileX - terrainShape.getTileOffset().getX() < terrainShape.getTileXCount() - 1;
     }
 
     public boolean hasSouthSuccessorNode(int currentNodePositionY) {
-        return currentNodePositionY > 0;
+        int tileY = TerrainUtil.nodeToTile(currentNodePositionY - 1);
+        return tileY >= 0;
     }
 
     public boolean hasWestSuccessorNode(int currentNodePositionX) {
-        return currentNodePositionX > 0;
+        int tileX = TerrainUtil.nodeToTile(currentNodePositionX - 1);
+        return tileX >= 0;
     }
+
+    // --------------------------------------
 
     public Collection<Obstacle> getObstacles(SyncPhysicalMovable syncPhysicalMovable) {
         throw new UnsupportedOperationException();

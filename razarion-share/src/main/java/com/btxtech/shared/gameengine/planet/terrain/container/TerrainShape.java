@@ -34,6 +34,18 @@ public class TerrainShape {
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
     }
 
+    public Index getTileOffset() {
+        return tileOffset;
+    }
+
+    public int getTileXCount() {
+        return tileXCount;
+    }
+
+    public int getTileYCount() {
+        return tileYCount;
+    }
+
     public TerrainShapeTile getTerrainShapeTile(Index terrainTileIndex) {
         Index fieldIndex = terrainTileIndex.sub(tileOffset);
         if (fieldIndex.getX() < 0) {
