@@ -60,6 +60,10 @@ public class TerrainShapeNode {
         waterSegments.add(waterSegment);
     }
 
+    public boolean isFullLand() {
+        return groundSlopeConnections == null && waterSegments == null && !isFullDriveway() && !isFullWater();
+    }
+
     public boolean isFullDriveway() {
         return fullDrivewayHeights != null;
     }

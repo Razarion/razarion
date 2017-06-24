@@ -41,15 +41,7 @@ public class TerrainTileFactory {
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
         terrainTileContext.init(terrainTileIndex, terrainTypeService.getGroundSkeletonConfig());
-        if (terrainShapeTile != null) {
-            try {
-                terrainTileContext.setLandWaterProportion(terrainShapeTile.getLandWaterProportion());
-            } catch (Exception e) {
-                exceptionHandler.handleException(e);
-            }
-        } else {
-            terrainTileContext.setLandWaterProportion(1);
-        }
+        insertLandWaterProportion(terrainShapeTile, terrainTileContext);
         insertSlopeGroundConnectionPart(terrainTileContext, terrainShapeTile);
         insertGroundPart(terrainTileContext, terrainShapeTile);
         insertSlopePart(terrainTileContext, terrainShapeTile);
@@ -60,15 +52,31 @@ public class TerrainTileFactory {
         return terrainTile;
     }
 
+    private void insertLandWaterProportion(TerrainShapeTile terrainShapeTile, TerrainTileContext terrainTileContext) {
+        if (terrainShapeTile != null) {
+            try {
+                terrainTileContext.setLandWaterProportion(terrainShapeTile.getLandWaterProportion());
+            } catch (Exception e) {
+                exceptionHandler.handleException(e);
+            }
+        } else {
+            terrainTileContext.setLandWaterProportion(1);
+        }
+    }
+
     private void insertGroundPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
         terrainTileContext.initGround();
 
-        if(terrainShapeTile != null) {
+        if (terrainShapeTile != null) {
             terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
                 if (terrainShapeTile.isLand() && terrainShapeNode == null) {
                     insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), terrainTileContext);
-                } else if (terrainShapeNode != null && terrainShapeNode.isFullDriveway()) {
-                    insertDrivewayTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainTileContext);
+                } else if (terrainShapeNode != null) {
+                    if (terrainShapeNode.isFullDriveway()) {
+                        insertDrivewayTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainTileContext);
+                    } else if(terrainShapeNode.isFullLand()) {
+                        insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getUniformGroundHeight(), terrainTileContext);
+                    }
                 }
             });
             terrainTileContext.insertSlopeGroundConnection();
@@ -165,7 +173,7 @@ public class TerrainTileFactory {
     }
 
     private void insertSlopePart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
-        if(terrainShapeTile == null) {
+        if (terrainShapeTile == null) {
             return;
         }
         if (terrainShapeTile.getFractionalSlopes() != null) {
@@ -206,7 +214,7 @@ public class TerrainTileFactory {
     }
 
     private void insertSlopeGroundConnectionPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
-        if (terrainTileContext != null) {
+        if (terrainShapeTile == null) {
             return;
         }
         terrainShapeTile.iterateOverTerrainNodes((nodeIndex, terrainShapeNode, iterationControl) -> {
@@ -217,7 +225,7 @@ public class TerrainTileFactory {
     }
 
     private void insertWaterPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
-        if(terrainShapeTile == null) {
+        if (terrainShapeTile == null) {
             return;
         }
         TerrainWaterTileContext terrainWaterTileContext = terrainWaterTileContextInstance.get();

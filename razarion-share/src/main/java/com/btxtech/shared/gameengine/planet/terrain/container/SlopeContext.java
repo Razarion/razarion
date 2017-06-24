@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class SlopeContext {
         if (isOuter) {
             outerPiercings.computeIfAbsent(nodeIndex, index -> new ArrayList<>()).add(piercingLine);
         } else {
+            Collections.reverse(piercingLine);
             innerPiercings.computeIfAbsent(nodeIndex, index -> new ArrayList<>()).add(piercingLine);
         }
     }

@@ -108,29 +108,50 @@ public class TerrainShapeSetup {
                     continue;
                 }
 
-                if (!slopeContext.isFractionSlope(nodeIndex) && innerPolygon.isInside(corners)) {
+                List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
+                List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
+                if (innerPiercings != null || outerPiercings != null) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                    Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
-                    if (fractalDriveway != null) {
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, true), slope.getGroundHeight(), false, fractalDriveway));
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getGroundHeight(), false, fractalDriveway));
+                    if (innerPiercings != null) {
+                        for (List<DecimalPosition> innerPiercing : innerPiercings) {
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getHeight() + slope.getGroundHeight(), false, null));
+                        }
                     }
-                    terrainShapeNode.setUniformGroundHeight(slope.getHeight());
-                    continue;
+                    if (outerPiercings != null) {
+                        for (List<DecimalPosition> outerPiercing : outerPiercings) {
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
+                        }
+                    }
+                } else {
+                    if(innerPolygon.isInside(corners)) {
+                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                        terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
+                    }
                 }
+//
+//                if (!slopeContext.isFractionSlope(nodeIndex) && innerPolygon.isInside(corners)) {
+//                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+//                    Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
+//                    if (fractalDriveway != null) {
+//                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, true), slope.getGroundHeight(), false, fractalDriveway));
+//                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getGroundHeight(), false, fractalDriveway));
+//                    }
+//                    terrainShapeNode.setUniformGroundHeight(slope.getHeight());
+//                    continue;
+//                }
             }
-            if (outerPolygon.isOneCornerInside(corners)) {
-                TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                terrainShapeNode.setUniformGroundHeight(slope.getGroundHeight());
-                Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
-                if (fractalDriveway != null) {
-                    terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, true), slope.getGroundHeight(), false, fractalDriveway));
-                    terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getGroundHeight(), false, fractalDriveway));
-                }
-                if (slope.hasWater()) {
-                    slopeContext.getOuterPiercings(nodeIndex).forEach(outerPiercings -> terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercings, slope.getGroundHeight(), true, null)));
-                }
-            }
+//            if (outerPolygon.isOneCornerInside(corners)) {
+//                TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+//                terrainShapeNode.setUniformGroundHeight(slope.getGroundHeight());
+//                Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
+//                if (fractalDriveway != null) {
+//                    terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, true), slope.getGroundHeight(), false, fractalDriveway));
+//                    terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getGroundHeight(), false, fractalDriveway));
+//                }
+//                if (slope.hasWater()) {
+//                    slopeContext.getOuterPiercings(nodeIndex).forEach(outerPiercings -> terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercings, slope.getGroundHeight(), true, null)));
+//                }
+//            }
         }
         if (slope.getChildren() != null) {
             for (Slope childSlope : slope.getChildren()) {
