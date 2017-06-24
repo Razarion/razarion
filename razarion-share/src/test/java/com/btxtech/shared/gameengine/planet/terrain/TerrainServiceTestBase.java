@@ -17,7 +17,6 @@ import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import java.util.List;
@@ -39,11 +38,8 @@ public class TerrainServiceTestBase {
         TerrainTileFactory terrainTileFactory = new TerrainTileFactory();
         injectTerrainTileContextInstance(terrainTileFactory);
         injectTerrainWaterTileContextInstance(terrainTileFactory);
+        SimpleTestEnvironment.injectExceptionHandler(terrainTileFactory);
         SimpleTestEnvironment.injectService("terrainTileFactory", terrainService, terrainTileFactory);
-
-        ObstacleContainer obstacleContainer = new ObstacleContainer();
-        SimpleTestEnvironment.injectService("obstacleContainer", terrainService, obstacleContainer);
-        SimpleTestEnvironment.injectService("obstacleContainer", terrainTileFactory, obstacleContainer);
 
         TerrainTypeService terrainTypeService = new TerrainTypeService();
         StaticGameConfig staticGameConfig = new StaticGameConfig();
@@ -65,7 +61,7 @@ public class TerrainServiceTestBase {
 
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
-        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 64, 64));
+        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 4, 4));
         terrainService.setup(planetConfig);
     }
 

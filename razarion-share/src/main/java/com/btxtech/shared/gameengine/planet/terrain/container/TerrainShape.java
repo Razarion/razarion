@@ -7,20 +7,23 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 17.06.2017.
  */
 public class TerrainShape {
+    private static Logger logger = Logger.getLogger(TerrainShape.class.getName());
     private GroundSkeletonConfig groundSkeletonConfig;
     private TerrainShapeTile[][] terrainShapeTiles;
     private SurfaceAccess surfaceAccess;
@@ -29,7 +32,8 @@ public class TerrainShape {
     private int tileXCount;
     private int tileYCount;
 
-    public TerrainShape(PlanetConfig planetConfig, GroundSkeletonConfig groundSkeletonConfig) {
+    public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+        long time = System.currentTimeMillis();
         this.groundSkeletonConfig = groundSkeletonConfig;
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
@@ -37,6 +41,10 @@ public class TerrainShape {
         tileXCount = planetConfig.getTerrainTileDimension().width();
         tileYCount = planetConfig.getTerrainTileDimension().height();
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
+        TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
+        terrainShapeSetup.processSlopes(terrainSlopePositions);
+        terrainShapeSetup.processTerrainObject(terrainObjectPositions);
+        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time));
     }
 
     public Index getTileOffset() {
@@ -53,17 +61,8 @@ public class TerrainShape {
 
     public TerrainShapeTile getTerrainShapeTile(Index terrainTileIndex) {
         Index fieldIndex = terrainTileIndex.sub(tileOffset);
-        if (fieldIndex.getX() < 0) {
-            throw new IllegalArgumentException("fieldIndex X < 0: " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
-        }
-        if (fieldIndex.getY() < 0) {
-            throw new IllegalArgumentException("fieldIndex Y < 0: " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
-        }
-        if (fieldIndex.getX() >= tileXCount) {
-            throw new IllegalArgumentException("fieldIndex X >= " + tileXCount + ": " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
-        }
-        if (fieldIndex.getY() >= tileYCount) {
-            throw new IllegalArgumentException("fieldIndex Y >= " + tileYCount + ": " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        if (fieldIndex.getX() < 0 || fieldIndex.getY() < 0 || fieldIndex.getX() >= tileXCount || fieldIndex.getY() >= tileYCount) {
+            return null;
         }
         return terrainShapeTiles[fieldIndex.getX()][fieldIndex.getY()];
     }
@@ -76,6 +75,39 @@ public class TerrainShape {
         }
         Index nodeRelativeIndex = terrainNodeIndex.sub(TerrainUtil.tileToNode(terrainTileIndex));
         return terrainShapeTile.getTerrainShapeNode(nodeRelativeIndex);
+    }
+
+    public TerrainShapeNode getOrCreateTerrainShapeNode(Index terrainNodeIndex) {
+        TerrainShapeNode terrainShapeNode = getTerrainShapeNode(terrainNodeIndex);
+        if (terrainShapeNode != null) {
+            return terrainShapeNode;
+        }
+        Index terrainTileIndex = TerrainUtil.nodeToTile(terrainNodeIndex);
+        TerrainShapeTile terrainShapeTile = getTerrainShapeTile(terrainTileIndex);
+        if (terrainShapeTile == null) {
+            terrainShapeTile = createTerrainShapeTile(terrainTileIndex);
+        }
+        Index nodeRelativeIndex = terrainNodeIndex.sub(TerrainUtil.tileToNode(terrainTileIndex));
+        return terrainShapeTile.createTerrainShapeNode(nodeRelativeIndex);
+    }
+
+    private TerrainShapeTile createTerrainShapeTile(Index terrainTileIndex) {
+        Index fieldIndex = terrainTileIndex.sub(tileOffset);
+        if (fieldIndex.getX() < 0) {
+            throw new IllegalArgumentException("fieldIndex X < 0: " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        }
+        if (fieldIndex.getY() < 0) {
+            throw new IllegalArgumentException("fieldIndex Y < 0: " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        }
+        if (fieldIndex.getX() >= tileXCount) {
+            throw new IllegalArgumentException("fieldIndex X >= " + tileXCount + ": " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        }
+        if (fieldIndex.getY() >= tileYCount) {
+            throw new IllegalArgumentException("fieldIndex Y >= " + tileYCount + ": " + fieldIndex + " for terrainTileIndex: " + terrainTileIndex);
+        }
+        TerrainShapeTile terrainShapeTile = new TerrainShapeTile();
+        terrainShapeTiles[fieldIndex.getX()][fieldIndex.getY()] = terrainShapeTile;
+        return terrainShapeTile;
     }
 
     public <T> T terrainImpactCallback(DecimalPosition absolutePosition, TerrainImpactCallback<T> terrainImpactCallback) {
@@ -157,10 +189,6 @@ public class TerrainShape {
         groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
     }
 
-    public TerrainShapeTile getTerrainTileContainer(Index terrainTileIndex) {
-        return null;
-    }
-
     public PathingAccess getPathingAccess() {
         return pathingAccess;
     }
@@ -173,13 +201,8 @@ public class TerrainShape {
         return groundSkeletonConfig;
     }
 
-    private List<Index> absoluteLineToNodes(Line absoluteLine) {
-        Line line = new Line(TerrainUtil.toNodeAbsolute(absoluteLine.getPoint1()), TerrainUtil.toNodeAbsolute(absoluteLine.getPoint2()));
-        return GeometricUtil.rasterizeLine(line, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-    }
-
     public boolean isSightBlocked(Line line) {
-        List<Index> nodeIndices = absoluteLineToNodes(line);
+        List<Index> nodeIndices = GeometricUtil.rasterizeLine(line, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
         for (Index nodeIndex : nodeIndices) {
             TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
             if (terrainShapeNode != null && terrainShapeNode.getObstacles() != null) {

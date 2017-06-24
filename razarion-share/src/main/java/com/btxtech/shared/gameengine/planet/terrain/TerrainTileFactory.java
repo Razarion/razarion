@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSeg
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -32,14 +33,23 @@ public class TerrainTileFactory {
     private Instance<TerrainWaterTileContext> terrainWaterTileContextInstance;
     @Inject
     private TerrainTypeService terrainTypeService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
         long time = System.currentTimeMillis();
-        TerrainShapeTile terrainShapeTile = terrainShape.getTerrainTileContainer(terrainTileIndex);
+        TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
         terrainTileContext.init(terrainTileIndex, terrainTypeService.getGroundSkeletonConfig());
-        terrainTileContext.setLandWaterProportion(terrainShapeTile.getLandWaterProportion());
-
+        if (terrainShapeTile != null) {
+            try {
+                terrainTileContext.setLandWaterProportion(terrainShapeTile.getLandWaterProportion());
+            } catch (Exception e) {
+                exceptionHandler.handleException(e);
+            }
+        } else {
+            terrainTileContext.setLandWaterProportion(1);
+        }
         insertSlopeGroundConnectionPart(terrainTileContext, terrainShapeTile);
         insertGroundPart(terrainTileContext, terrainShapeTile);
         insertSlopePart(terrainTileContext, terrainShapeTile);
@@ -53,15 +63,23 @@ public class TerrainTileFactory {
     private void insertGroundPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
         terrainTileContext.initGround();
 
-        terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-            if (terrainShapeTile.isLand() && terrainShapeNode == null) {
-                insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), terrainTileContext);
-            } else if (terrainShapeNode != null && terrainShapeNode.isFullDriveway()) {
-                insertDrivewayTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainTileContext);
+        if(terrainShapeTile != null) {
+            terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
+                if (terrainShapeTile.isLand() && terrainShapeNode == null) {
+                    insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), terrainTileContext);
+                } else if (terrainShapeNode != null && terrainShapeNode.isFullDriveway()) {
+                    insertDrivewayTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainTileContext);
+                }
+            });
+            terrainTileContext.insertSlopeGroundConnection();
+        } else {
+            for (int xNode = 0; xNode < TerrainUtil.TERRAIN_TILE_NODES_COUNT; xNode++) {
+                for (int yNode = 0; yNode < TerrainUtil.TERRAIN_TILE_NODES_COUNT; yNode++) {
+                    Index nodeRelativeIndex = new Index(xNode, yNode);
+                    insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), 0, terrainTileContext);
+                }
             }
-        });
-
-        terrainTileContext.insertSlopeGroundConnection();
+        }
         terrainTileContext.setGroundVertexCount();
     }
 
@@ -147,6 +165,9 @@ public class TerrainTileFactory {
     }
 
     private void insertSlopePart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
+        if(terrainShapeTile == null) {
+            return;
+        }
         if (terrainShapeTile.getFractionalSlopes() != null) {
             terrainShapeTile.getFractionalSlopes().forEach(fractionalSlope -> generateSlopeTerrainTile(terrainTileContext, fractionalSlope));
         }
@@ -185,6 +206,9 @@ public class TerrainTileFactory {
     }
 
     private void insertSlopeGroundConnectionPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
+        if (terrainTileContext != null) {
+            return;
+        }
         terrainShapeTile.iterateOverTerrainNodes((nodeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode != null && terrainShapeNode.getGroundSlopeConnections() != null) {
                 terrainShapeNode.getGroundSlopeConnections().forEach(connections -> Triangulator.calculate(connections, terrainTileContext::insertTriangleGroundSlopeConnection));
@@ -193,6 +217,9 @@ public class TerrainTileFactory {
     }
 
     private void insertWaterPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
+        if(terrainShapeTile == null) {
+            return;
+        }
         TerrainWaterTileContext terrainWaterTileContext = terrainWaterTileContextInstance.get();
         terrainWaterTileContext.init(terrainTileContext);
 
@@ -210,7 +237,11 @@ public class TerrainTileFactory {
     }
 
     private void insertHeight(TerrainTileContext terrainTileContext) {
-        throw new UnsupportedOperationException("... TODO ...");
+        try {
+            throw new UnsupportedOperationException("TerrainTileFactory.insertHeight() ... TODO ...");
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
     }
 
 }

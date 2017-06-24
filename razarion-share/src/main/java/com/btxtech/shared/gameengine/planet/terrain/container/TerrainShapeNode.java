@@ -1,10 +1,10 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,6 +20,45 @@ public class TerrainShapeNode {
     private List<List<Vertex>> waterSegments;
     private Boolean water;
     private Collection<Obstacle> obstacles;
+
+    public void addObstacle(Obstacle obstacle) {
+        if (obstacles == null) {
+            obstacles = new ArrayList<>();
+        }
+        obstacles.add(obstacle);
+    }
+
+    public void setFullWater() {
+        water = true;
+    }
+
+    public void setFullDrivewayHeights(double[] fullDrivewayHeights) {
+        this.fullDrivewayHeights = fullDrivewayHeights;
+    }
+
+    public void setUniformGroundHeight(Double uniformGroundHeight) {
+        this.uniformGroundHeight = uniformGroundHeight;
+    }
+
+    public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection) {
+        if (groundSlopeConnection == null) {
+            return;
+        }
+        if (groundSlopeConnections == null) {
+            groundSlopeConnections = new ArrayList<>();
+        }
+        groundSlopeConnections.add(groundSlopeConnection);
+    }
+
+    public void addWaterSegments(List<Vertex> waterSegment) {
+        if (waterSegment == null) {
+            return;
+        }
+        if (waterSegments == null) {
+            waterSegments = new ArrayList<>();
+        }
+        waterSegments.add(waterSegment);
+    }
 
     public boolean isFullDriveway() {
         return fullDrivewayHeights != null;

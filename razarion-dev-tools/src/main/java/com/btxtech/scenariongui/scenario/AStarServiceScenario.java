@@ -2,13 +2,9 @@ package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.model.DevToolHelper;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import javafx.scene.paint.Color;
 
 /**
  * Created by Beat
@@ -20,29 +16,29 @@ public class AStarServiceScenario extends AbstractTerrainScenario {
 
     @Override
     public void render(ExtendedGraphicsContext extendedGraphicsContext) {
-        ObstacleContainer obstacleContainer = getBean(ObstacleContainer.class);
-
-        // Draw ObstacleContainer
-        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
-            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
-                Index index = new Index(x, y);
-                if (obstacleContainer.getObstacleContainerNode(index) != null) {
-                    DecimalPosition absolutePosition = obstacleContainer.toAbsolute(index);
-                    extendedGraphicsContext.getGc().setFill(Color.GREEN);
-                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-                    extendedGraphicsContext.getGc().setFill(Color.RED);
-                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
-                }
-            }
-        }
-
-        if (path != null) {
-            extendedGraphicsContext.strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.BLUE, true);
-        }
-
-        if (start != null) {
-            extendedGraphicsContext.drawPosition(start, 0.5, Color.BLACK);
-        }
+//        ObstacleContainer obstacleContainer = getBean(ObstacleContainer.class);
+//
+//        // Draw ObstacleContainer
+//        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
+//            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
+//                Index index = new Index(x, y);
+//                if (obstacleContainer.getObstacleContainerNode(index) != null) {
+//                    DecimalPosition absolutePosition = obstacleContainer.toAbsolute(index);
+//                    extendedGraphicsContext.getGc().setFill(Color.GREEN);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+//                    extendedGraphicsContext.getGc().setFill(Color.RED);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
+//                }
+//            }
+//        }
+//
+//        if (path != null) {
+//            extendedGraphicsContext.strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.BLUE, true);
+//        }
+//
+//        if (start != null) {
+//            extendedGraphicsContext.drawPosition(start, 0.5, Color.BLACK);
+//        }
     }
 
     @Override

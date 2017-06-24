@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.utils.DevUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -247,6 +246,15 @@ public class Driveway {
             }
         }
         return null;
+    }
+
+    public double[] generateDrivewayHeights(List<DecimalPosition> corners) {
+        double[] drivewayHeights = new double[4];
+        drivewayHeights[0] = getInterpolateDrivewayHeight(corners.get(0)) + slope.getGroundHeight();
+        drivewayHeights[1] = getInterpolateDrivewayHeight(corners.get(1)) + slope.getGroundHeight();
+        drivewayHeights[2] = getInterpolateDrivewayHeight(corners.get(2)) + slope.getGroundHeight();
+        drivewayHeights[3] = getInterpolateDrivewayHeight(corners.get(3)) + slope.getGroundHeight();
+        return drivewayHeights;
     }
 
     public static class Edge {

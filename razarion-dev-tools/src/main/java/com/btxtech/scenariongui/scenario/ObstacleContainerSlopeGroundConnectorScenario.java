@@ -1,7 +1,6 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
@@ -9,11 +8,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,16 +18,16 @@ import java.util.List;
  * 05.04.2017.
  */
 public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
-    private ObstacleContainer obstacleContainer;
+    // private ObstacleContainer obstacleContainer;
     private TerrainService terrainService;
 
     @Override
     public void init() {
         super.init();
         terrainService = new TerrainService();
-        obstacleContainer = new ObstacleContainer();
+        // obstacleContainer = new ObstacleContainer();
         TerrainTypeService terrainTypeService = new TerrainTypeService();
-        FrameworkHelper.injectService("obstacleContainer", terrainService, obstacleContainer);
+        // FrameworkHelper.injectService("obstacleContainer", terrainService, obstacleContainer);
 
         double[][] heights = new double[][]{
                 {0, 0, 0, 0},
@@ -91,30 +86,30 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
 
     @Override
     public void render(ExtendedGraphicsContext extendedGraphicsContext) {
-        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
-            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
-                Index index = new Index(x, y);
-                ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNode(index);
-                DecimalPosition absolutePosition = obstacleContainer.toAbsolute(index);
-                extendedGraphicsContext.getGc().setFill(Color.BLACK);
-                extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-                if (obstacleContainerNode != null) {
-                    extendedGraphicsContext.getGc().setFill(Color.GREEN);
-                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
-                } else {
-                    extendedGraphicsContext.getGc().setFill(Color.LIGHTGRAY);
-                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
-                }
-            }
-        }
+//        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
+//            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
+//                Index index = new Index(x, y);
+//                ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNode(index);
+//                DecimalPosition absolutePosition = obstacleContainer.toAbsolute(index);
+//                extendedGraphicsContext.getGc().setFill(Color.BLACK);
+//                extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+//                if (obstacleContainerNode != null) {
+//                    extendedGraphicsContext.getGc().setFill(Color.GREEN);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
+//                } else {
+//                    extendedGraphicsContext.getGc().setFill(Color.LIGHTGRAY);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
+//                }
+//            }
+//        }
 
 
         System.out.println("-------------------------------------------------------------");
         Index testPintIndex = new Index(15, 5);
-        DecimalPosition absolutePosition = obstacleContainer.toAbsolute(testPintIndex);
-        extendedGraphicsContext.getGc().setFill(Color.YELLOW);
-        extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-        List<DecimalPosition> vertices1 = new ArrayList<>(obstacleContainer.getObstacleContainerNode(testPintIndex).getOuterSlopeGroundPiercingLine()).get(0);
+//        DecimalPosition absolutePosition = obstacleContainer.toAbsolute(testPintIndex);
+//        extendedGraphicsContext.getGc().setFill(Color.YELLOW);
+//        extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+//        List<DecimalPosition> vertices1 = new ArrayList<>(obstacleContainer.getObstacleContainerNode(testPintIndex).getOuterSlopeGroundPiercingLine()).get(0);
         // extendedGraphicsContext.strokeCurve(vertices1, 0.2, Color.RED, true);
 
 //        for (Slope slope : terrainService.getSlopes()) {

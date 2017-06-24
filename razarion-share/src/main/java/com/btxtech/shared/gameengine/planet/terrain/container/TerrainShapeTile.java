@@ -14,7 +14,6 @@ import java.util.logging.Logger;
  */
 public class TerrainShapeTile {
     static private Logger logger = Logger.getLogger(TerrainShapeTile.class.getName());
-
     public interface TerrainShapeNodeConsumer {
         /**
          * @param nodeRelativeIndex the relative node index in the tile. 0,0 is bottom left . TerrainUtil.TERRAIN_TILE_NODES_COUNT is top or left
@@ -58,10 +57,25 @@ public class TerrainShapeTile {
         }
     }
 
+    public TerrainShapeNode createTerrainShapeNode(Index nodeRelativeIndex) {
+        if(terrainShapeNodes == null) {
+            terrainShapeNodes = new TerrainShapeNode[TerrainUtil.TERRAIN_TILE_NODES_COUNT][TerrainUtil.TERRAIN_TILE_NODES_COUNT];
+        }
+        checkNodeIndex(nodeRelativeIndex);
+        TerrainShapeNode terrainShapeNode = new TerrainShapeNode();
+        terrainShapeNodes[nodeRelativeIndex.getX()][nodeRelativeIndex.getY()] = terrainShapeNode;
+        return terrainShapeNode;
+    }
+
     public TerrainShapeNode getTerrainShapeNode(Index nodeRelativeIndex) {
         if (!hasNodes()) {
             return null;
         }
+        checkNodeIndex(nodeRelativeIndex);
+        return terrainShapeNodes[nodeRelativeIndex.getX()][nodeRelativeIndex.getY()];
+    }
+
+    private void checkNodeIndex(Index nodeRelativeIndex) {
         if (nodeRelativeIndex.getX() < 0) {
             throw new IllegalArgumentException("nodeRelativeIndex X < 0: " + nodeRelativeIndex);
         }
@@ -74,11 +88,10 @@ public class TerrainShapeTile {
         if (nodeRelativeIndex.getY() >= TerrainUtil.TERRAIN_TILE_NODES_COUNT) {
             throw new IllegalArgumentException("nodeRelativeIndex Y >= " + TerrainUtil.TERRAIN_TILE_NODES_COUNT + ": " + nodeRelativeIndex);
         }
-        return terrainShapeNodes[nodeRelativeIndex.getX()][nodeRelativeIndex.getY()];
     }
 
     public double getLandWaterProportion() {
-        throw new UnsupportedOperationException("");
+        throw new UnsupportedOperationException(".... TODO .... TerrainShapeTile.getLandWaterProportion()");
     }
 
     public void iterateOverTerrainNodes(TerrainShapeNodeConsumer terrainShapeNodeConsumer) {

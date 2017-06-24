@@ -8,9 +8,8 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
@@ -19,8 +18,6 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static org.easymock.EasyMock.createNiceMock;
 
 /**
  * Created by Beat
@@ -75,8 +72,8 @@ public class SimpleTerrainScenario extends Scenario {
         TerrainService terrainService = new TerrainService();
         FrameworkHelper.injectTerrainTileContextInstance(terrainService);
         // Mock ObstacleContainer
-        ObstacleContainer obstacleContainer = new ObstacleContainer();
-        FrameworkHelper.injectService("obstacleContainer", terrainService, obstacleContainer);
+        // ObstacleContainer obstacleContainer = new ObstacleContainer();
+        // FrameworkHelper.injectService("obstacleContainer", terrainService, obstacleContainer);
 
         double[][] heights = new double[][]{
                 {0, 0, 0, 0},

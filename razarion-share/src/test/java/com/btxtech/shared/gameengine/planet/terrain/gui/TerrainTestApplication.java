@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Created by Beat
@@ -21,6 +22,14 @@ public class TerrainTestApplication extends Application {
         TerrainTestApplication.expected = expected;
         TerrainTestApplication.actual = actual;
         Application.launch(TerrainTestApplication.class);
+    }
+
+    public static void show(Collection<TerrainTile> actual) {
+        show(null, actual);
+    }
+
+    public static void show(TerrainTile actual) {
+        show(null, Collections.singletonList(actual));
     }
 
     @Override

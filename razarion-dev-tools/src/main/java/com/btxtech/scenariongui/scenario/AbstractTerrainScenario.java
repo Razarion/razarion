@@ -2,15 +2,10 @@ package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.persistence.JsonProviderEmulator;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainerNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import javafx.scene.paint.Color;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
@@ -43,18 +38,18 @@ public abstract class AbstractTerrainScenario extends Scenario {
     }
 
     protected void drawObstacle(ExtendedGraphicsContext extendedGraphicsContext) {
-        ObstacleContainer obstacleContainer = getBean(ObstacleContainer.class);
-
-        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
-            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
-                Index index = new Index(x, y);
-                ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNode(index);
-                if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
-                    for (Obstacle obstacle : obstacleContainerNode.getObstacles()) {
-                        extendedGraphicsContext.drawObstacle(obstacle, Color.BROWN, Color.BROWN);
-                    }
-                }
-            }
-        }
+//        ObstacleContainer obstacleContainer = getBean(ObstacleContainer.class);
+//
+//        for (int x = 0; x < obstacleContainer.getXCount(); x++) {
+//            for (int y = 0; y < obstacleContainer.getYCount(); y++) {
+//                Index index = new Index(x, y);
+//                ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNode(index);
+//                if (obstacleContainerNode != null && obstacleContainerNode.getObstacles() != null) {
+//                    for (Obstacle obstacle : obstacleContainerNode.getObstacles()) {
+//                        extendedGraphicsContext.drawObstacle(obstacle, Color.BROWN, Color.BROWN);
+//                    }
+//                }
+//            }
+//        }
     }
 }

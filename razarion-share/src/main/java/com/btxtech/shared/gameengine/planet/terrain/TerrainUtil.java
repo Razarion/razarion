@@ -1,9 +1,14 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.utils.GeometricUtil;
+
+import java.util.List;
 
 /**
  * Created by Beat

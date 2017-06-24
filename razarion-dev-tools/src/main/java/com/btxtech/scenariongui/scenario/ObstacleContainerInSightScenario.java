@@ -4,7 +4,6 @@ import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.model.DevToolHelper;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
 import javafx.scene.paint.Color;
 
 /**
@@ -43,7 +42,7 @@ public class ObstacleContainerInSightScenario extends AbstractTerrainScenario {
         if (start != null) {
             destination = position;
             SyncPhysicalArea syncPhysicalArea = DevToolHelper.generateSyncPhysicalArea(start, RADIUS);
-            isInSight = getBean(ObstacleContainer.class).isInSight(syncPhysicalArea, position);
+            // isInSight = getBean(ObstacleContainer.class).isInSight(syncPhysicalArea, position);
         }
         return true;
     }

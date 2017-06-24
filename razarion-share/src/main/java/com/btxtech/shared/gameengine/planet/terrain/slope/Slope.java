@@ -1,18 +1,12 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleContainer;
-import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -28,6 +22,7 @@ public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
+    private final double groundHeight;
     private List<AbstractBorder> borders = new ArrayList<>();
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
     private Polygon2D innerPolygon;
@@ -35,9 +30,10 @@ public class Slope {
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
 
-    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners) {
+    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight) {
         this.slopeId = slopeId;
         this.slopeSkeletonConfig = slopeSkeletonConfig;
+        this.groundHeight = groundHeight;
         List<TerrainSlopeCorner> corners1 = new ArrayList<>(corners);
 
         if (slopeSkeletonConfig.getWidth() > 0.0) {
@@ -60,6 +56,10 @@ public class Slope {
         }
 
         setupInnerOuter();
+    }
+
+    public double getGroundHeight() {
+        return groundHeight;
     }
 
     public Collection<Slope> getChildren() {
@@ -221,45 +221,6 @@ public class Slope {
 
     public SlopeSkeletonConfig getSlopeSkeletonConfig() {
         return slopeSkeletonConfig;
-    }
-
-    public void fillObstacleContainer(ObstacleContainer obstacleContainer) {
-        fillObstacle(innerPolygon.getCorners(), obstacleContainer, false);
-        fillObstacle(outerPolygon.getCorners(), obstacleContainer, true);
-        for (VerticalSegment verticalSegment : verticalSegments) {
-            obstacleContainer.addSlopeSegment(verticalSegment);
-        }
-    }
-
-    private void fillObstacle(List<DecimalPosition> polygon, ObstacleContainer obstacleContainer, boolean isOuter) {
-        DecimalPosition last = polygon.get(0);
-        Index lastNodeIndex = null;
-        for (int i = 0; i < polygon.size(); i++) {
-            DecimalPosition next = polygon.get(CollectionUtils.getCorrectedIndex(i + 1, polygon.size()));
-            if (last.equals(next)) {
-                continue;
-            }
-            obstacleContainer.addObstacleSlope(new ObstacleSlope(new Line(last, next)));
-            DecimalPosition absolute = polygon.get(i);
-            Index nodeIndex = TerrainUtil.toNode(absolute);
-            obstacleContainer.addSlopeGroundConnector(polygon, i, absolute, isOuter, slopeSkeletonConfig.getHeight());
-            if (lastNodeIndex != null) {
-                // Check if some node are left out
-                if (nodeIndex.getX() != lastNodeIndex.getX() && nodeIndex.getY() != lastNodeIndex.getY()) {
-                    DecimalPosition predecessor = polygon.get(i - 1);
-                    DecimalPosition successor = polygon.get(i);
-                    List<Index> leftOut = GeometricUtil.rasterizeLine(new Line(predecessor, successor), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
-                    leftOut.remove(0);
-                    leftOut.remove(leftOut.size() - 1);
-                    for (Index leftOutNodeIndex : leftOut) {
-                        obstacleContainer.addLeftOutSlopeGroundConnector(leftOutNodeIndex, predecessor, successor, isOuter, slopeSkeletonConfig.getHeight());
-
-                    }
-                }
-            }
-            lastNodeIndex = nodeIndex;
-            last = next;
-        }
     }
 
     public Polygon2D getOuterPolygon() {

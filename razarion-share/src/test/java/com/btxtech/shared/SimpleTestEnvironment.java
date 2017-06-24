@@ -1,5 +1,6 @@
 package com.btxtech.shared;
 
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.inject.Instance;
@@ -15,6 +16,30 @@ import java.util.function.Supplier;
  * 23.09.2016.
  */
 public class SimpleTestEnvironment {
+    private static ExceptionHandler exceptionHandler = new ExceptionHandler() {
+        @Override
+        public void handleException(Throwable t) {
+            t.printStackTrace();
+        }
+
+        @Override
+        public void handleException(String message, Throwable t) {
+            System.out.println(message);
+            t.printStackTrace();
+        }
+    };
+
+    public static void injectExceptionHandler(Object service) {
+        try {
+            Field field = service.getClass().getDeclaredField("exceptionHandler");
+            field.setAccessible(true);
+            field.set(service, exceptionHandler);
+            field.setAccessible(false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void injectJsInteropObjectFactory(String fieldName, Object service, JsInteropObjectFactory jsInteropObjectFactory) {
         try {
             Field field = service.getClass().getDeclaredField(fieldName);
