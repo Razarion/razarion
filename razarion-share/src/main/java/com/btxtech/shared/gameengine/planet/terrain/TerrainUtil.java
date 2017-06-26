@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.utils.GeometricUtil;
+import com.sun.org.apache.xerces.internal.impl.xs.opti.DefaultXMLDocumentHandler;
 
 import java.util.List;
 
@@ -33,6 +34,11 @@ public interface TerrainUtil {
         return new Rectangle2D(start.getX(), start.getY(), TERRAIN_TILE_ABSOLUTE_LENGTH, TERRAIN_TILE_ABSOLUTE_LENGTH);
     }
 
+    static Rectangle2D toAbsoluteTileRectangle(DecimalPosition absolute) {
+        Index tileIndex = toTile(absolute);
+        return toAbsoluteTileRectangle(tileIndex);
+    }
+
     static Index toNode(DecimalPosition absolute) {
         return absolute.divide(GROUND_NODE_ABSOLUTE_LENGTH).toIndexFloor();
     }
@@ -49,8 +55,8 @@ public interface TerrainUtil {
         return node.scale(GROUND_NODE_ABSOLUTE_LENGTH);
     }
 
-    static Rectangle2D toAbsoluteNodeRectangle(Index tile) {
-        DecimalPosition start = toNodeAbsolute(tile);
+    static Rectangle2D toAbsoluteNodeRectangle(Index node) {
+        DecimalPosition start = toNodeAbsolute(node);
         return new Rectangle2D(start.getX(), start.getY(), GROUND_NODE_ABSOLUTE_LENGTH, GROUND_NODE_ABSOLUTE_LENGTH);
     }
 

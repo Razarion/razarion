@@ -77,16 +77,21 @@ public class TerrainShape {
         return terrainShapeTile.getTerrainShapeNode(nodeRelativeIndex);
     }
 
+    public TerrainShapeTile getOrCreateTerrainShapeTile(Index terrainTileIndex) {
+        TerrainShapeTile terrainShapeTile = getTerrainShapeTile(terrainTileIndex);
+        if (terrainShapeTile == null) {
+            terrainShapeTile = createTerrainShapeTile(terrainTileIndex);
+        }
+        return terrainShapeTile;
+    }
+
     public TerrainShapeNode getOrCreateTerrainShapeNode(Index terrainNodeIndex) {
         TerrainShapeNode terrainShapeNode = getTerrainShapeNode(terrainNodeIndex);
         if (terrainShapeNode != null) {
             return terrainShapeNode;
         }
         Index terrainTileIndex = TerrainUtil.nodeToTile(terrainNodeIndex);
-        TerrainShapeTile terrainShapeTile = getTerrainShapeTile(terrainTileIndex);
-        if (terrainShapeTile == null) {
-            terrainShapeTile = createTerrainShapeTile(terrainTileIndex);
-        }
+        TerrainShapeTile terrainShapeTile = getOrCreateTerrainShapeTile(terrainTileIndex);
         Index nodeRelativeIndex = terrainNodeIndex.sub(TerrainUtil.tileToNode(terrainTileIndex));
         return terrainShapeTile.createTerrainShapeNode(nodeRelativeIndex);
     }

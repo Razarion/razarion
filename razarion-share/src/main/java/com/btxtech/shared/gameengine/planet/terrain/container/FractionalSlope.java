@@ -22,4 +22,16 @@ public class FractionalSlope {
     public List<FractionalSlopeSegment> getFractionalSlopeSegments() {
         return fractionalSlopeSegments;
     }
+
+    public void setSlopeSkeletonConfigId(int slopeSkeletonConfigId) {
+        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
+    }
+
+    public void setGroundHeight(double groundHeight) {
+        this.groundHeight = groundHeight;
+    }
+
+    public void setFractionalSlopeSegments(List<FractionalSlopeSegment> fractionalSlopeSegments) {
+        this.fractionalSlopeSegments = fractionalSlopeSegments;
+    }
 }

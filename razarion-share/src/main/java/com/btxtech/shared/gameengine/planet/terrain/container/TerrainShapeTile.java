@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
@@ -14,6 +15,7 @@ import java.util.logging.Logger;
  */
 public class TerrainShapeTile {
     static private Logger logger = Logger.getLogger(TerrainShapeTile.class.getName());
+
     public interface TerrainShapeNodeConsumer {
         /**
          * @param nodeRelativeIndex the relative node index in the tile. 0,0 is bottom left . TerrainUtil.TERRAIN_TILE_NODES_COUNT is top or left
@@ -58,7 +60,7 @@ public class TerrainShapeTile {
     }
 
     public TerrainShapeNode createTerrainShapeNode(Index nodeRelativeIndex) {
-        if(terrainShapeNodes == null) {
+        if (terrainShapeNodes == null) {
             terrainShapeNodes = new TerrainShapeNode[TerrainUtil.TERRAIN_TILE_NODES_COUNT][TerrainUtil.TERRAIN_TILE_NODES_COUNT];
         }
         checkNodeIndex(nodeRelativeIndex);
@@ -116,6 +118,13 @@ public class TerrainShapeTile {
                 }
             }
         }
+    }
+
+    public void addFractionalSlope(FractionalSlope fractionalSlope) {
+        if (fractionalSlopes == null) {
+            fractionalSlopes = new ArrayList<>();
+        }
+        fractionalSlopes.add(fractionalSlope);
     }
 
     public List<FractionalSlope> getFractionalSlopes() {

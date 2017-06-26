@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.DoubleHolder;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -17,6 +18,7 @@ import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
+import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 
@@ -87,6 +89,7 @@ public class TerrainShapeSetup {
 
     private void processSlope(Slope slope) {
         SlopeContext slopeContext = new SlopeContext(slope);
+        prepareVerticalSegments(slope);
         prepareSlopeContext(slope.getInnerPolygon().getCorners(), false, slopeContext);
         prepareSlopeContext(slope.getOuterPolygon().getCorners(), true, slopeContext);
         Polygon2D outerPolygon = slope.getOuterPolygon();
@@ -123,7 +126,7 @@ public class TerrainShapeSetup {
                         }
                     }
                 } else {
-                    if(innerPolygon.isInside(corners)) {
+                    if (innerPolygon.isInside(corners)) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
                     }
@@ -158,6 +161,94 @@ public class TerrainShapeSetup {
                 processSlope(childSlope);
             }
         }
+    }
+
+    private void prepareVerticalSegments(Slope slope) {
+        // Find start
+        int start = -1;
+        for (int i = 0; i < slope.getVerticalSegments().size(); i++) {
+            Index currentTileIndex = TerrainUtil.toTile(CollectionUtils.getCorrectedElement(i, slope.getVerticalSegments()).getInner());
+            Index predecessorTileIndex = TerrainUtil.toTile(CollectionUtils.getCorrectedElement(i - 1, slope.getVerticalSegments()).getPredecessor().getInner());
+            if (!currentTileIndex.equals(predecessorTileIndex)) {
+                start = i;
+                break;
+            }
+        }
+        if (start < 0) {
+            // Slope is completely inside a tile
+            FractionalSlope fractionalSlope = new FractionalSlope();
+            fractionalSlope.setSlopeSkeletonConfigId(slope.getSlopeSkeletonConfig().getId());
+            fractionalSlope.setGroundHeight(slope.getGroundHeight());
+            List<FractionalSlopeSegment> fractionalSlopeSegments = new ArrayList<>();
+            fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(-1, slope.getVerticalSegments()))); // Norm tangent extra. Used in light calculation
+            slope.getVerticalSegments().forEach(verticalSegment -> fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(verticalSegment)));
+            fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(0, slope.getVerticalSegments()))); // Connect end to start
+            fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(1, slope.getVerticalSegments()))); // Norm tangent extra. Used in light calculation
+            fractionalSlope.setFractionalSlopeSegments(fractionalSlopeSegments);
+            terrainShape.getOrCreateTerrainShapeTile(TerrainUtil.toTile(slope.getVerticalSegments().get(0).getInner())).addFractionalSlope(fractionalSlope);
+        } else {
+            // Slope is in multiply tiles
+            for (int i = 0; i < slope.getVerticalSegments().size(); i++) {
+                DoubleHolder<FractionalSlope, Integer> holder = findFractionalSlope(slope, slope.getVerticalSegments(), start + i);
+                Index currentTileIndex = TerrainUtil.toTile(CollectionUtils.getCorrectedElement(start + i, slope.getVerticalSegments()).getInner());
+                terrainShape.getOrCreateTerrainShapeTile(currentTileIndex).addFractionalSlope(holder.getO1());
+                i = holder.getO2() - start;
+            }
+        }
+    }
+
+    private DoubleHolder<FractionalSlope, Integer> findFractionalSlope(Slope slope, List<VerticalSegment> verticalSegments, int startIndex) {
+        VerticalSegment predecessor = CollectionUtils.getCorrectedElement(startIndex - 1, verticalSegments);
+        VerticalSegment start = CollectionUtils.getCorrectedElement(startIndex, verticalSegments);
+        Rectangle2D absoluteTerrainTileRect = TerrainUtil.toAbsoluteTileRectangle(start.getInner());
+
+        // find start
+        double totalDistance = start.getInner().getDistance(predecessor.getInner());
+        Collection<DecimalPosition> crossPoints = absoluteTerrainTileRect.getCrossPointsLine(new Line(start.getInner(), predecessor.getInner()));
+        if (crossPoints.size() != 1) {
+            throw new IllegalStateException("Exactly one cross point expected in start finding: " + crossPoints.size());
+        }
+        double innerDistance = CollectionUtils.getFirst(crossPoints).getDistance(start.getInner());
+        List<FractionalSlopeSegment> fractionalSlopeSegments = new ArrayList<>();
+        if (innerDistance * 2.0 > totalDistance) {
+            // Norm tangent extra. Used in light calculation
+            fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(startIndex - 2, verticalSegments)));
+            fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(startIndex - 1, verticalSegments)));
+        } else {
+            // Norm tangent extra. Used in light calculation
+            fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(startIndex - 1, verticalSegments)));
+        }
+
+        // insert
+        for (int i = 0; i < verticalSegments.size(); i++) {
+            VerticalSegment current = CollectionUtils.getCorrectedElement(i + startIndex, verticalSegments);
+            fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(current));
+            // Check for end
+            VerticalSegment successor = CollectionUtils.getCorrectedElement(i + startIndex + 1, verticalSegments);
+            if (!TerrainUtil.toTile(current.getInner()).equals(TerrainUtil.toTile(successor.getInner()))) {
+                totalDistance = current.getInner().getDistance(successor.getInner());
+                crossPoints = absoluteTerrainTileRect.getCrossPointsLine(new Line(current.getInner(), successor.getInner()));
+                if (crossPoints.size() != 1) {
+                    throw new IllegalStateException("Exactly one cross point expected in end: " + crossPoints.size());
+                }
+                innerDistance = CollectionUtils.getFirst(crossPoints).getDistance(current.getInner());
+                if (innerDistance * 2.0 > totalDistance) {
+                    fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(successor));
+                    // Norm tangent extra. Used in light calculation
+                    fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(i + startIndex + 2, verticalSegments)));
+                } else {
+                    // Norm tangent extra. Used in light calculation
+                    fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(successor));
+                }
+                FractionalSlope fractionalSlope = new FractionalSlope();
+                fractionalSlope.setSlopeSkeletonConfigId(slope.getSlopeSkeletonConfig().getId());
+                fractionalSlope.setGroundHeight(slope.getGroundHeight());
+                fractionalSlope.setFractionalSlopeSegments(fractionalSlopeSegments);
+                return new DoubleHolder<>(fractionalSlope, i + startIndex);
+            }
+        }
+
+        throw new IllegalStateException("TerrainShapeSetup.findFractionalSlope() end not found");
     }
 
     private void prepareSlopeContext(List<DecimalPosition> polygon, boolean isOuter, SlopeContext slopeContext) {

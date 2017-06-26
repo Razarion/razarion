@@ -51,10 +51,6 @@ public class SlopeContext {
         }
     }
 
-    public boolean isFractionSlope(Index nodeIndex) {
-        return false;
-    }
-
     public List<List<DecimalPosition>> getInnerPiercings(Index nodeIndex) {
         return innerPiercings.get(nodeIndex);
     }

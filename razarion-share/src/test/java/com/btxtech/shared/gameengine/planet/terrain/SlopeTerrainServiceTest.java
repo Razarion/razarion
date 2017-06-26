@@ -57,7 +57,6 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
 
         TerrainTile terrainTile = generateTerrainTile(new Index(0, 0));
 
-        // TerrainTestApplication.show(terrainTile);
         // TerrainTileTestHelper.saveTerrainTile(terrainTile, "testTerrainSlopeTileGeneration.json");
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testTerrainSlopeTileGeneration.json");
         terrainTileTestHelper.assertEquals(terrainTile);
@@ -105,6 +104,7 @@ public class SlopeTerrainServiceTest extends TerrainServiceTestBase {
         terrainTiles.add(generateTerrainTile(new Index(0, 1)));
         terrainTiles.add(generateTerrainTile(new Index(1, 0)));
         terrainTiles.add(generateTerrainTile(new Index(1, 1)));
+        // TerrainTestApplication.show(terrainTiles);
         // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testTerrainSlopeTileGeneration4Tiles.json");
 
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testTerrainSlopeTileGeneration4Tiles.json");

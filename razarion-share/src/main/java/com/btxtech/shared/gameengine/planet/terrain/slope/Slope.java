@@ -219,6 +219,10 @@ public class Slope {
         outerPolygon = new Polygon2D(outerLine);
     }
 
+    public List<VerticalSegment> getVerticalSegments() {
+        return verticalSegments;
+    }
+
     public SlopeSkeletonConfig getSlopeSkeletonConfig() {
         return slopeSkeletonConfig;
     }

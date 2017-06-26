@@ -74,7 +74,7 @@ public class TerrainTileFactory {
                 } else if (terrainShapeNode != null) {
                     if (terrainShapeNode.isFullDriveway()) {
                         insertDrivewayTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainTileContext);
-                    } else if(terrainShapeNode.isFullLand()) {
+                    } else if (terrainShapeNode.isFullLand()) {
                         insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getUniformGroundHeight(), terrainTileContext);
                     }
                 }
