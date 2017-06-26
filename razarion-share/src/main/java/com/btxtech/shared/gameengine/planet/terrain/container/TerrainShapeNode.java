@@ -18,7 +18,7 @@ public class TerrainShapeNode {
     private Double uniformGroundHeight;
     private List<List<Vertex>> groundSlopeConnections;
     private List<List<Vertex>> waterSegments;
-    private Boolean water;
+    private Double fullWaterLevel;
     private Collection<Obstacle> obstacles;
 
     public void addObstacle(Obstacle obstacle) {
@@ -28,8 +28,8 @@ public class TerrainShapeNode {
         obstacles.add(obstacle);
     }
 
-    public void setFullWater() {
-        water = true;
+    public void setFullWaterLevel(Double fullWaterLevel) {
+        this.fullWaterLevel = fullWaterLevel;
     }
 
     public void setFullDrivewayHeights(double[] fullDrivewayHeights) {
@@ -69,7 +69,11 @@ public class TerrainShapeNode {
     }
 
     public boolean isFullWater() {
-        return water != null && water;
+        return fullWaterLevel != null;
+    }
+
+    public Double getFullWaterLevel() {
+        return fullWaterLevel;
     }
 
     public boolean hasSubNodes() {

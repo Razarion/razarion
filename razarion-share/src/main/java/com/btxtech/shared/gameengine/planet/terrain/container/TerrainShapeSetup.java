@@ -101,8 +101,15 @@ public class TerrainShapeSetup {
             List<DecimalPosition> corners = terrainRect.toCorners();
             if (slope.hasWater()) {
                 if (outerPolygon.isInside(corners)) {
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setFullWater();
-                    continue;
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
+                } else {
+                    List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
+                    if (outerPiercings != null) {
+                        for (List<DecimalPosition> outerPiercing : outerPiercings) {
+                            terrainShape.getOrCreateTerrainShapeNode(nodeIndex).addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
+                            terrainShape.getOrCreateTerrainShapeNode(nodeIndex).addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
+                        }
+                    }
                 }
             } else {
                 Driveway driveway = slope.getDriveway(corners);

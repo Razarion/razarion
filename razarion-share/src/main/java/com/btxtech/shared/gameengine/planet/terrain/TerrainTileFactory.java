@@ -235,7 +235,7 @@ public class TerrainTileFactory {
             if (terrainShapeNode == null && !terrainShapeTile.isLand()) {
                 terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight());
             } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
-                terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight());
+                terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel());
             } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
                 terrainShapeNode.getWaterSegments().forEach(segment -> Triangulator.calculate(segment, terrainWaterTileContext::insertWaterRim));
             }
