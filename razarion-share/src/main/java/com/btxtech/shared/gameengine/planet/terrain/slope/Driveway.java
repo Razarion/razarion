@@ -159,9 +159,9 @@ public class Driveway {
     }
 
     public List<DecimalPosition> setupPiercingLine(Rectangle2D terrainRect, boolean ground) {
-//        if (terrainRect.getStart().equals(new DecimalPosition(184, 64))) {
-//            System.out.println("ok");
-//        }
+        if (terrainRect.getStart().equals(new DecimalPosition(112, 56))) {
+            System.out.println("ok");
+        }
         if (terrainRect.contains(breakingLine.get(0)) && terrainRect.contains(breakingLine.get(breakingLine.size() - 1))) {
             System.out.println("Driveway.setupPiercingLine() driveway too small, start and end are in the same node");
             return null;
