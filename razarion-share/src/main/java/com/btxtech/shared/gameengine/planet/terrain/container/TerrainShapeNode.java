@@ -20,6 +20,7 @@ public class TerrainShapeNode {
     private List<List<Vertex>> waterSegments;
     private Double fullWaterLevel;
     private Collection<Obstacle> obstacles;
+    private Boolean hiddenUnderSlope;
 
     public void addObstacle(Obstacle obstacle) {
         if (obstacles == null) {
@@ -38,6 +39,10 @@ public class TerrainShapeNode {
 
     public void setUniformGroundHeight(Double uniformGroundHeight) {
         this.uniformGroundHeight = uniformGroundHeight;
+    }
+
+    public void setHiddenUnderSlope() {
+        hiddenUnderSlope = true;
     }
 
     public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection) {
@@ -61,7 +66,7 @@ public class TerrainShapeNode {
     }
 
     public boolean isFullLand() {
-        return groundSlopeConnections == null && waterSegments == null && !isFullDriveway() && !isFullWater();
+        return groundSlopeConnections == null && waterSegments == null && !isFullDriveway() && !isFullWater() && !isHiddenUnderSlope();
     }
 
     public boolean isFullDriveway() {
@@ -78,6 +83,10 @@ public class TerrainShapeNode {
 
     public boolean hasSubNodes() {
         return terrainShapeSubNodes != null;
+    }
+
+    public boolean isHiddenUnderSlope() {
+        return hiddenUnderSlope != null && hiddenUnderSlope;
     }
 
     public double getUniformGroundHeight() {
