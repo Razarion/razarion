@@ -115,13 +115,6 @@ public class PathingAccess {
         Collection<Obstacle> obstacles = new ArrayList<>();
         terrainShape.terrainRegionImpactCallback(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius(), new TerrainRegionImpactCallback() {
             @Override
-            public void inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                if (terrainShapeTile.getObstacles() != null) {
-                    obstacles.addAll(terrainShapeTile.getObstacles());
-                }
-            }
-
-            @Override
             public void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, Index tileIndex) {
                 if (terrainShapeNode.getObstacles() != null) {
                     obstacles.addAll(terrainShapeNode.getObstacles());

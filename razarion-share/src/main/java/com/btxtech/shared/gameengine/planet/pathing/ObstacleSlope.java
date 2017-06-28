@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 
 /**
  * Created by Beat
@@ -26,6 +27,16 @@ public class ObstacleSlope extends Obstacle {
 
     public Line getLine() {
         return line;
+    }
+
+    @Override
+    public NativeObstacle toNativeObstacle() {
+        NativeObstacle nativeObstacle = new NativeObstacle();
+        nativeObstacle.x1 = line.getPoint1().getX();
+        nativeObstacle.y1 = line.getPoint1().getY();
+        nativeObstacle.x2 = line.getPoint2().getX();
+        nativeObstacle.y2 = line.getPoint2().getY();
+        return nativeObstacle;
     }
 
     @Override

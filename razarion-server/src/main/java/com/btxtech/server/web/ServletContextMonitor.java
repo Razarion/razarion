@@ -1,6 +1,8 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.gameengine.GameEngineService;
+import com.btxtech.server.gameengine.TerrainShapeService;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
@@ -15,10 +17,23 @@ import javax.servlet.annotation.WebListener;
 public class ServletContextMonitor implements ServletContextListener {
     @Inject
     private GameEngineService gameEngineService;
+    @Inject
+    private TerrainShapeService terrainShapeService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        gameEngineService.start();
+        try {
+            gameEngineService.start();
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
+        try {
+            terrainShapeService.start();
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
     }
 
     @Override

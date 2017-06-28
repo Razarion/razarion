@@ -1,11 +1,12 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -38,17 +39,24 @@ public class TerrainShapeTile {
     }
 
     private TerrainShapeNode[][] terrainShapeNodes;
-    private Boolean water;
+    private Double fullWaterLevel;
     private Double uniformGroundHeight;
     private List<FractionalSlope> fractionalSlopes;
-    private Collection<Obstacle> obstacles;
 
     public boolean isLand() {
-        return water == null || !water;
+        return fullWaterLevel == null;
+    }
+
+    public void setFullWaterLevel(Double fullWaterLevel) {
+        this.fullWaterLevel = fullWaterLevel;
     }
 
     public boolean hasNodes() {
         return terrainShapeNodes != null;
+    }
+
+    public void setUniformGroundHeight(Double uniformGroundHeight) {
+        this.uniformGroundHeight = uniformGroundHeight;
     }
 
     public double getUniformGroundHeight() {
@@ -131,7 +139,30 @@ public class TerrainShapeTile {
         return fractionalSlopes;
     }
 
-    public Collection<Obstacle> getObstacles() {
-        return obstacles;
+    public void setTerrainShapeNodes(TerrainShapeNode[][] terrainShapeNodes) {
+        this.terrainShapeNodes = terrainShapeNodes;
     }
+
+
+    public NativeTerrainShapeTile toNativeTerrainShapeTile() {
+        NativeTerrainShapeTile nativeTerrainShapeTile = new NativeTerrainShapeTile();
+        nativeTerrainShapeTile.fullWaterLevel = fullWaterLevel;
+        if (fractionalSlopes != null) {
+            nativeTerrainShapeTile.fractionalSlopes = fractionalSlopes.stream().map(FractionalSlope::toNativeFractionalSlope).toArray(NativeFractionalSlope[]::new);
+        }
+        nativeTerrainShapeTile.uniformGroundHeight = uniformGroundHeight;
+        if (terrainShapeNodes != null) {
+            nativeTerrainShapeTile.nativeTerrainShapeNodes = new NativeTerrainShapeNode[TerrainUtil.TERRAIN_TILE_NODES_COUNT][TerrainUtil.TERRAIN_TILE_NODES_COUNT];
+            for (int x = 0; x < TerrainUtil.TERRAIN_TILE_NODES_COUNT; x++) {
+                for (int y = 0; y < TerrainUtil.TERRAIN_TILE_NODES_COUNT; y++) {
+                    TerrainShapeNode terrainShapeNode = terrainShapeNodes[x][y];
+                    if (terrainShapeNode != null) {
+                        nativeTerrainShapeTile.nativeTerrainShapeNodes[x][y] = terrainShapeNode.toNativeTerrainShapeNode();
+                    }
+                }
+            }
+        }
+        return nativeTerrainShapeTile;
+    }
+
 }

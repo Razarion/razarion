@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 
 /**
  * Created by Beat
@@ -30,4 +31,6 @@ public abstract class Obstacle {
         DecimalPosition nearestPointOnObstacle = project(item.getPosition2d());
         return nearestPointOnObstacle.getDistance(item.getPosition2d()) - item.getRadius();
     }
+
+    public abstract NativeObstacle toNativeObstacle();
 }

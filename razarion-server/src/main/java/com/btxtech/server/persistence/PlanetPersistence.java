@@ -7,11 +7,15 @@ import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -163,4 +167,14 @@ public class PlanetPersistence {
         planetEntity.fromPlanetVisualConfig(planetVisualConfig);
         entityManager.merge(planetEntity);
     }
+
+    @Transactional
+    public Collection<PlanetConfig> loadAllPlanetConfig() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PlanetEntity> criteriaQuery = criteriaBuilder.createQuery(PlanetEntity.class);
+        Root<PlanetEntity> root = criteriaQuery.from(PlanetEntity.class);
+        CriteriaQuery<PlanetEntity> userSelect = criteriaQuery.select(root);
+        return entityManager.createQuery(userSelect).getResultList().stream().map(PlanetEntity::toPlanetConfig).collect(Collectors.toList());
+    }
+
 }

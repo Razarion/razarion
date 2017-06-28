@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 
 /**
@@ -13,6 +14,18 @@ public class FractionalSlopeSegment {
     private DecimalPosition outer;
     private int index;
     private double drivewayHeightFactor;
+
+    public FractionalSlopeSegment() {
+    }
+
+    public FractionalSlopeSegment(NativeFractionalSlopeSegment nativeFractionalSlopeSegment) {
+        inner = new DecimalPosition(nativeFractionalSlopeSegment.xI, nativeFractionalSlopeSegment.yI);
+        outer = new DecimalPosition(nativeFractionalSlopeSegment.xO, nativeFractionalSlopeSegment.yO);
+        index = nativeFractionalSlopeSegment.index;
+        if (nativeFractionalSlopeSegment.drivewayHeightFactor != null) {
+            drivewayHeightFactor = nativeFractionalSlopeSegment.drivewayHeightFactor;
+        }
+    }
 
     public int getIndex() {
         return index;
@@ -54,5 +67,18 @@ public class FractionalSlopeSegment {
         fractionalSlopeSegment.setOuter(verticalSegment.getOuter());
         fractionalSlopeSegment.setDrivewayHeightFactor(verticalSegment.getDrivewayHeightFactor());
         return fractionalSlopeSegment;
+    }
+
+    public NativeFractionalSlopeSegment toNativeFractionalSlopeSegment() {
+        NativeFractionalSlopeSegment nativeFractionalSlopeSegment = new NativeFractionalSlopeSegment();
+        nativeFractionalSlopeSegment.xI = inner.getX();
+        nativeFractionalSlopeSegment.yI = inner.getY();
+        nativeFractionalSlopeSegment.xO = outer.getX();
+        nativeFractionalSlopeSegment.yO = outer.getY();
+        nativeFractionalSlopeSegment.index = index;
+        if (drivewayHeightFactor != 0) {
+            nativeFractionalSlopeSegment.drivewayHeightFactor = drivewayHeightFactor;
+        }
+        return nativeFractionalSlopeSegment;
     }
 }

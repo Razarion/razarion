@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 
 /**
  * Created by Beat
@@ -27,6 +28,15 @@ public class ObstacleTerrainObject extends Obstacle {
 
     public Circle2D getCircle() {
         return circle;
+    }
+
+    @Override
+    public NativeObstacle toNativeObstacle() {
+        NativeObstacle nativeObstacle = new NativeObstacle();
+        nativeObstacle.xC = circle.getCenter().getX();
+        nativeObstacle.yC = circle.getCenter().getY();
+        nativeObstacle.r = circle.getRadius();
+        return nativeObstacle;
     }
 
     @Override

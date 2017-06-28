@@ -13,6 +13,10 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.List;
@@ -34,7 +38,6 @@ public class TerrainShape {
 
     public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
-        this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         tileOffset = planetConfig.getTerrainTileDimension().getStart();
@@ -44,7 +47,65 @@ public class TerrainShape {
         TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
-        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time));
+        logger.severe("Setup TerrainShape Mate: " + (System.currentTimeMillis() - time));
+    }
+
+    public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainAccess nativeTerrainAccess, Runnable runnable) {
+        this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
+        surfaceAccess = new SurfaceAccess(this);
+        pathingAccess = new PathingAccess(this);
+        nativeTerrainAccess.load(nativeTerrainShape -> {
+            long time = System.currentTimeMillis();
+            tileXCount = nativeTerrainShape.tileXCount;
+            tileYCount = nativeTerrainShape.tileYCount;
+            tileOffset = new Index(nativeTerrainShape.tileXOffset, nativeTerrainShape.tileYOffset);
+            terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
+            for (int x = 0; x < tileXCount; x++) {
+                for (int y = 0; y < tileYCount; y++) {
+                    NativeTerrainShapeTile nativeTerrainShapeTile = nativeTerrainShape.nativeTerrainShapeTiles[x][y];
+                    if (nativeTerrainShapeTile != null) {
+                        TerrainShapeTile terrainShapeTile = new TerrainShapeTile();
+                        terrainShapeTiles[x][y] = terrainShapeTile;
+                        terrainShapeTile.setFullWaterLevel(nativeTerrainShapeTile.fullWaterLevel);
+                        terrainShapeTile.setUniformGroundHeight(nativeTerrainShapeTile.uniformGroundHeight);
+                        if (nativeTerrainShapeTile.fractionalSlopes != null) {
+                            for (NativeFractionalSlope nativeFractionalSlope : nativeTerrainShapeTile.fractionalSlopes) {
+                                terrainShapeTile.addFractionalSlope(new FractionalSlope(nativeFractionalSlope));
+                            }
+                        }
+                        if (nativeTerrainShapeTile.nativeTerrainShapeNodes != null) {
+                            TerrainShapeNode[][] terrainShapeNodes = new TerrainShapeNode[TerrainUtil.TERRAIN_TILE_NODES_COUNT][TerrainUtil.TERRAIN_TILE_NODES_COUNT];
+                            for (int nodeX = 0; nodeX < TerrainUtil.TERRAIN_TILE_NODES_COUNT; nodeX++) {
+                                for (int nodeY = 0; nodeY < TerrainUtil.TERRAIN_TILE_NODES_COUNT; nodeY++) {
+                                    terrainShapeNodes[nodeX][nodeY] = new TerrainShapeNode(nativeTerrainShapeTile.nativeTerrainShapeNodes[nodeX][nodeY]);
+                                }
+                            }
+                            terrainShapeTile.setTerrainShapeNodes(terrainShapeNodes);
+                        }
+                    }
+                }
+            }
+            logger.severe("Setup TerrainShape Net: " + (System.currentTimeMillis() - time));
+            runnable.run();
+        });
+    }
+
+    public NativeTerrainShape toNativeTerrainShape() {
+        NativeTerrainShape nativeTerrainShape = new NativeTerrainShape();
+        nativeTerrainShape.tileXCount = tileXCount;
+        nativeTerrainShape.tileYCount = tileYCount;
+        nativeTerrainShape.tileXOffset = tileOffset.getX();
+        nativeTerrainShape.tileYOffset = tileOffset.getY();
+        nativeTerrainShape.nativeTerrainShapeTiles = new NativeTerrainShapeTile[tileXCount][tileYCount];
+        for (int x = 0; x < tileXCount; x++) {
+            for (int y = 0; y < tileYCount; y++) {
+                TerrainShapeTile terrainShapeTile = terrainShapeTiles[x][y];
+                if (terrainShapeTile != null) {
+                    nativeTerrainShape.nativeTerrainShapeTiles[x][y] = terrainShapeTile.toNativeTerrainShapeTile();
+                }
+            }
+        }
+        return nativeTerrainShape;
     }
 
     public Index getTileOffset() {
