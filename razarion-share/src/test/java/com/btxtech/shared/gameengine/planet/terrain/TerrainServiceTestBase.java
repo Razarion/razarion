@@ -62,7 +62,7 @@ public class TerrainServiceTestBase {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 4, 4));
-        terrainService.setup(planetConfig);
+        terrainService.setup(planetConfig, null, null);
     }
 
     protected TerrainTile generateTerrainTile(Index terrainTileIndex) {

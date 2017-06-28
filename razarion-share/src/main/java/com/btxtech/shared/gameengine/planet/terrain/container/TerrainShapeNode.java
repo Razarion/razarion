@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeVertex;
@@ -58,13 +59,21 @@ public class TerrainShapeNode {
         if (nativeTerrainShapeNode.groundSlopeConnections != null) {
             groundSlopeConnections = new ArrayList<>();
             for (NativeVertex[] nativeGroundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
-                groundSlopeConnections.add(Arrays.stream(nativeGroundSlopeConnection).map(nativeVertex -> new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z)).collect(Collectors.toList()));
+                List<Vertex> groundSlopeConnection = new ArrayList<>();
+                for (NativeVertex nativeVertex : nativeGroundSlopeConnection) {
+                    groundSlopeConnection.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
+                }
+                groundSlopeConnections.add(groundSlopeConnection);
             }
         }
         if (nativeTerrainShapeNode.waterSegments != null) {
             waterSegments = new ArrayList<>();
-            for (NativeVertex[] waterSegment : nativeTerrainShapeNode.waterSegments) {
-                waterSegments.add(Arrays.stream(waterSegment).map(nativeVertex -> new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z)).collect(Collectors.toList()));
+            for (NativeVertex[] nativeWaterSegment : nativeTerrainShapeNode.waterSegments) {
+                List<Vertex> waterSegment = new ArrayList<>();
+                for (NativeVertex nativeVertex : nativeWaterSegment) {
+                    waterSegment.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
+                }
+                waterSegments.add(waterSegment);
             }
         }
     }
@@ -196,14 +205,14 @@ public class TerrainShapeNode {
             nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
             for (int i = 0; i < groundSlopeConnections.size(); i++) {
                 List<Vertex> groundSlopeConnection = groundSlopeConnections.get(i);
-                nativeTerrainShapeNode.groundSlopeConnections[i] = groundSlopeConnection.stream().map(NativeVertex::fromVertex).toArray(NativeVertex[]::new);
+                nativeTerrainShapeNode.groundSlopeConnections[i] = groundSlopeConnection.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
             }
         }
         if (waterSegments != null) {
             nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
             for (int i = 0; i < waterSegments.size(); i++) {
                 List<Vertex> waterSegment = waterSegments.get(i);
-                nativeTerrainShapeNode.waterSegments[i] = waterSegment.stream().map(NativeVertex::fromVertex).toArray(NativeVertex[]::new);
+                nativeTerrainShapeNode.waterSegments[i] = waterSegment.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
             }
         }
         nativeTerrainShapeNode.fullWaterLevel = fullWaterLevel;

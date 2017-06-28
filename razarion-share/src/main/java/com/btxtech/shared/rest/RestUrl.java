@@ -47,6 +47,10 @@ public class RestUrl {
         return "/" + APPLICATION_PATH + "/" + SHAPE_3D_PROVIDER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     }
 
+    public static String terrainShapeProvider(int planetId) {
+        return "/" + APPLICATION_PATH + "/" + TERRAIN_SHAPE_PROVIDER + "/" + planetId;
+    }
+
     public static String fbClickTrackingReceiver() {
         return "https://www.razarion.com/" + APPLICATION_PATH + "/" + MARKETING + "/" + FB_CLICK_TRACKING_TAGS_RECEIVER;
     }

@@ -11,10 +11,13 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.SurfaceAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainAccess;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -22,7 +25,7 @@ import java.util.List;
  */
 @Singleton
 public class TerrainService {
-    // private Logger logger = Logger.getLogger(TerrainService.class.getName());
+    private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
@@ -32,9 +35,9 @@ public class TerrainService {
     private TerrainShape terrainShape;
     private PlanetConfig planetConfig;
 
-    public void setup(PlanetConfig planetConfig) {
+    public void setup(PlanetConfig planetConfig, Runnable finishCallback, Consumer<String> failCallback) {
         this.planetConfig = planetConfig;
-        setup(planetConfig.getTerrainSlopePositions(), planetConfig.getTerrainObjectPositions());
+        setup(finishCallback, failCallback);
     }
 
     public void clean() {
@@ -42,11 +45,11 @@ public class TerrainService {
     }
 
     public void override4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-        setup(terrainSlopePositions, terrainObjectPositions);
+        // TODO setup(terrainSlopePositions, terrainObjectPositions);
     }
 
-    private void setup(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-        terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, terrainObjectPositions);
+    private void setup(Runnable finishCallback, Consumer<String> failCallback) {
+        terrainShape = new TerrainShape(planetConfig, terrainTypeService, new NativeTerrainAccess(), finishCallback, failCallback);
     }
 
     public PlanetConfig getPlanetConfig() {

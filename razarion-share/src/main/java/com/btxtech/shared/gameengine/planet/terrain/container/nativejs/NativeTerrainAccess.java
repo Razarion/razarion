@@ -14,5 +14,10 @@ public class NativeTerrainAccess {
         void onLoaded(NativeTerrainShape nativeTerrainShape);
     }
 
-    public native void load(LoadedCallback loadedCallback);
+    @JsFunction
+    public interface FailCallback {
+        void onFail(String failString);
+    }
+
+    public native void load(String url, LoadedCallback loadedCallback, FailCallback failCallback);
 }

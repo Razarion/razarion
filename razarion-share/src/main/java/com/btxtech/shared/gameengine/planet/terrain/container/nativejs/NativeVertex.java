@@ -13,11 +13,4 @@ public class NativeVertex {
     public double y;
     public double z;
 
-    public static NativeVertex fromVertex(Vertex vertex) {
-        NativeVertex nativeVertex = new NativeVertex();
-        nativeVertex.x = vertex.getX();
-        nativeVertex.y = vertex.getY();
-        nativeVertex.z = vertex.getZ();
-        return nativeVertex;
-    }
 }

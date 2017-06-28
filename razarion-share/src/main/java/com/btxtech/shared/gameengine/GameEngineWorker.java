@@ -62,6 +62,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 /**
@@ -219,13 +220,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         try {
             staticGameInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
             planetService.addTickListener(this);
-            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode);
-            if (gameEngineMode == GameEngineMode.MASTER && detailedTracking) {
-                workerTrackerHandler = workerTrackerHandlerInstance.get();
-                workerTrackerHandler.start(gameSessionUuid);
+            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode, () -> {
+                if (gameEngineMode == GameEngineMode.MASTER && detailedTracking) {
+                    workerTrackerHandler = workerTrackerHandlerInstance.get();
+                    workerTrackerHandler.start(gameSessionUuid);
 
-            }
-            sendToClient(GameEngineControlPackage.Command.INITIALIZED);
+                }
+                sendToClient(GameEngineControlPackage.Command.INITIALIZED);
+            }, failString -> {
+                sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString);
+            });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
@@ -234,16 +238,19 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void initialiseWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
         try {
-            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode);
-            workerTrackerHandler = null;
-            sendToClient(GameEngineControlPackage.Command.INITIALIZED);
+            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode, () -> {
+                workerTrackerHandler = null;
+                sendToClient(GameEngineControlPackage.Command.INITIALIZED);
+            }, failString -> {
+                sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, failString);
+            });
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             sendToClient(GameEngineControlPackage.Command.INITIALISING_FAILED, ExceptionUtil.setupStackTrace(null, t));
         }
     }
 
-    private void initWarmInternal(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
+    private void initWarmInternal(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, Runnable finishCallback, Consumer<String> failCallback) {
         this.gameEngineMode = gameEngineMode;
         this.userContext = userContext;
         if (gameEngineMode == GameEngineMode.SLAVE) {
@@ -253,7 +260,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (gameEngineMode == GameEngineMode.SLAVE && slaveSyncItemInfo.getActualBaseId() != null) {
             playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
         }
-        planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo);
+        planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo, finishCallback, failCallback);
     }
 
     private void createHumanBaseWithBaseItem(int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {

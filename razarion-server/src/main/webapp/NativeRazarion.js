@@ -547,7 +547,25 @@ com = {
                         this.vertices = array[1];
                     };
 
+                },
+
+                NativeTerrainAccess: function () {
+                    this.load = function (url, loadedCallback, failCallback) {
+                        var oReq = new XMLHttpRequest();
+                        oReq.addEventListener("load", function (evt) {
+                            loadedCallback(JSON.parse(evt.currentTarget.responseText));
+                        });
+                        oReq.addEventListener("error", function (evt) {
+                            failCallback("error: " + evt);
+                        });
+                        oReq.addEventListener("abort", function (evt) {
+                            failCallback("abort: " + evt);
+                        });
+                        oReq.open("GET", url);
+                        oReq.send();
+                    };
                 }
+
             }
         }
     }

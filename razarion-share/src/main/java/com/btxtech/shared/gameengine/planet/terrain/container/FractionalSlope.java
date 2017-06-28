@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlopeSegment;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +23,11 @@ public class FractionalSlope {
     public FractionalSlope(NativeFractionalSlope nativeFractionalSlope) {
         slopeSkeletonConfigId = nativeFractionalSlope.slopeSkeletonConfigId;
         groundHeight = nativeFractionalSlope.groundHeight;
-        fractionalSlopeSegments = Arrays.stream(nativeFractionalSlope.fractionalSlopeSegments).map(FractionalSlopeSegment::new).collect(Collectors.toList());
+        fractionalSlopeSegments = new ArrayList<>();
+        for (NativeFractionalSlopeSegment fractionalSlopeSegment : nativeFractionalSlope.fractionalSlopeSegments) {
+            FractionalSlopeSegment slopeSegment = new FractionalSlopeSegment(fractionalSlopeSegment);
+            fractionalSlopeSegments.add(slopeSegment);
+        }
     }
 
     public int getSlopeSkeletonConfigId() {
