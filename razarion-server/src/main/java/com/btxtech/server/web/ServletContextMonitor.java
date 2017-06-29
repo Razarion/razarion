@@ -18,19 +18,12 @@ public class ServletContextMonitor implements ServletContextListener {
     @Inject
     private GameEngineService gameEngineService;
     @Inject
-    private TerrainShapeService terrainShapeService;
-    @Inject
     private ExceptionHandler exceptionHandler;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
             gameEngineService.start();
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
-        }
-        try {
-            terrainShapeService.start();
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }

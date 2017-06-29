@@ -5,8 +5,8 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 
-import javax.ejb.Singleton;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
 

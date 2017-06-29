@@ -7,7 +7,7 @@ import jsinterop.annotations.JsType;
  * Created by Beat
  * on 27.06.2017.
  */
-@JsType(name = "NativeTerrainAccess", isNative = true, namespace = "com.btxtech.shared.nativejs")
+@JsType(name = "NativeTerrainShapeTile", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeTerrainShapeTile {
     public Double fullWaterLevel;
     public NativeFractionalSlope[] fractionalSlopes;

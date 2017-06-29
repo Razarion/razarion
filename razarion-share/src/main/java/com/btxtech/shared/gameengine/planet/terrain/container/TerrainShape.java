@@ -14,11 +14,9 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
-import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.btxtech.shared.utils.GeometricUtil;
 
@@ -41,6 +39,9 @@ public class TerrainShape {
     private int tileXCount;
     private int tileYCount;
 
+    public TerrainShape() {
+    }
+
     public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
         surfaceAccess = new SurfaceAccess(this);
@@ -55,11 +56,11 @@ public class TerrainShape {
         logger.severe("Setup TerrainShape Mate: " + (System.currentTimeMillis() - time));
     }
 
-    public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainAccess nativeTerrainAccess, Runnable finishCallback, Consumer<String> failCallback) {
+    public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, TerrainShapeAccess terrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
         this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
-        nativeTerrainAccess.load(RestUrl.terrainShapeProvider(planetConfig.getPlanetId()), nativeTerrainShape -> {
+        terrainShapeAccess.load(planetConfig.getPlanetId(), nativeTerrainShape -> {
             try {
                 long time = System.currentTimeMillis();
                 tileXCount = nativeTerrainShape.tileXCount;
@@ -84,7 +85,7 @@ public class TerrainShape {
                                 for (int nodeX = 0; nodeX < TerrainUtil.TERRAIN_TILE_NODES_COUNT; nodeX++) {
                                     for (int nodeY = 0; nodeY < TerrainUtil.TERRAIN_TILE_NODES_COUNT; nodeY++) {
                                         NativeTerrainShapeNode nativeTerrainShapeNode = nativeTerrainShapeTile.nativeTerrainShapeNodes[nodeX][nodeY];
-                                        if(nativeTerrainShapeNode != null) {
+                                        if (nativeTerrainShapeNode != null) {
                                             terrainShapeNodes[nodeX][nodeY] = new TerrainShapeNode(nativeTerrainShapeNode);
                                         }
                                     }
@@ -97,10 +98,10 @@ public class TerrainShape {
                 logger.severe("Setup TerrainShape Net: " + (System.currentTimeMillis() - time));
                 finishCallback.run();
             } catch (Throwable t) {
-                logger.log(Level.SEVERE, "NativeTerrainAccess load callback failed", t);
-                failCallback.accept(ExceptionUtil.setupStackTrace("NativeTerrainAccess load callback failed", t));
+                logger.log(Level.SEVERE, "TerrainShapeAccess load callback failed", t);
+                failCallback.accept(ExceptionUtil.setupStackTrace("TerrainShapeAccess load callback failed", t));
             }
-        }, failCallback::accept);
+        }, failCallback);
     }
 
     public NativeTerrainShape toNativeTerrainShape() {

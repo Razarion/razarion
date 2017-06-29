@@ -10,8 +10,8 @@ import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.SurfaceAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainAccess;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -32,6 +32,8 @@ public class TerrainService {
     private ItemTypeService itemTypeService;
     @Inject
     private TerrainTileFactory terrainTileFactory;
+    @Inject
+    private TerrainShapeAccess terrainShapeAccess;
     private TerrainShape terrainShape;
     private PlanetConfig planetConfig;
 
@@ -49,7 +51,8 @@ public class TerrainService {
     }
 
     private void setup(Runnable finishCallback, Consumer<String> failCallback) {
-        terrainShape = new TerrainShape(planetConfig, terrainTypeService, new NativeTerrainAccess(), finishCallback, failCallback);
+        terrainShape = new TerrainShape();
+        terrainShape.lazyInit(planetConfig, terrainTypeService, terrainShapeAccess, finishCallback, failCallback);
     }
 
     public PlanetConfig getPlanetConfig() {

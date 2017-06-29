@@ -1,0 +1,38 @@
+package com.btxtech.common;
+
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.rest.RestUrl;
+import com.google.gwt.xhr.client.XMLHttpRequest;
+import elemental.js.util.Xhr;
+import elemental.json.Json;
+import elemental.json.JsonObject;
+
+import javax.enterprise.context.ApplicationScoped;
+import java.util.function.Consumer;
+
+/**
+ * Created by Beat
+ * on 28.06.2017.
+ */
+@ApplicationScoped
+public class ClientTerrainShapeAccess implements TerrainShapeAccess {
+    @Override
+    public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
+        Xhr.get(RestUrl.terrainShapeProvider(planetId), new Xhr.Callback() {
+            @Override
+            public void onFail(XMLHttpRequest xhr) {
+                failCallback.accept("TerrainShapeProvider call failed: " + xhr.getStatusText() + " Status: " + xhr.getStatus());
+            }
+
+            @Override
+            public void onSuccess(XMLHttpRequest xhr) {
+                loadedCallback.accept(cast(Json.parse(xhr.getResponseText())));
+            }
+        });
+    }
+
+    private native NativeTerrainShape cast(JsonObject jsonObject) /*-{
+        return jsonObject;
+    }-*/;
+}

@@ -2,11 +2,9 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
-import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -22,6 +20,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -29,6 +28,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class GameEngineService implements GameLogicListener {
+    private Logger logger = Logger.getLogger(GameEngineService.class.getName());
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
     @Inject
@@ -43,14 +43,18 @@ public class GameEngineService implements GameLogicListener {
     private ClientGameConnectionService clientGameConnectionService;
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
+    @Inject
+    private TerrainShapeService terrainShapeService;
+
 
     public void start() {
         try {
             gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
-            // TODO
-//            planetService.initialise(serverGameEnginePersistence.readPlanetConfig(), GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null);
-//            gameLogicService.setGameLogicListener(this);
-//            planetService.start(serverGameEnginePersistence.readBotConfigs());
+            terrainShapeService.start();
+            planetService.initialise(serverGameEnginePersistence.readPlanetConfig(), GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null, () -> {
+                gameLogicService.setGameLogicListener(this);
+                planetService.start(serverGameEnginePersistence.readBotConfigs());
+            }, failText -> logger.severe("TerrainSetup failed: " + failText));
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
