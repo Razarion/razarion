@@ -1,10 +1,11 @@
 package com.btxtech.uiservice.tip.visualization;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.terrain.TerrainScrollListener;
+import com.btxtech.uiservice.renderer.ViewService;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
  * Created by Beat
  * 16.12.2016.
  */
-public class InGameDirectionVisualization implements TerrainScrollListener {
+public class InGameDirectionVisualization implements ViewService.ViewFieldListener {
     private NativeMatrixFactory nativeMatrixFactory;
     private Integer shape3DId;
     private DecimalPosition terrainPositionHint;
@@ -42,7 +43,7 @@ public class InGameDirectionVisualization implements TerrainScrollListener {
     }
 
     @Override
-    public void onScroll(ViewField viewField) {
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         this.viewField = viewField;
     }
 

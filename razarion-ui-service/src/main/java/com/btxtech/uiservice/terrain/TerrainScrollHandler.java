@@ -13,8 +13,6 @@ import com.btxtech.uiservice.renderer.ViewService;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -55,7 +53,6 @@ public class TerrainScrollHandler {
     private boolean scrollDisabled;
     private SimpleScheduledFuture simpleScheduledFuture;
     private SimpleScheduledFuture moveHandler;
-    private Collection<TerrainScrollListener> terrainScrollListeners = new ArrayList<>();
     private Rectangle2D playGround;
     private long lastAutoScrollTimeStamp;
 
@@ -258,7 +255,6 @@ public class TerrainScrollHandler {
         if (playGround != null) {
             if (viewService.getCurrentViewField() == null || viewService.getCurrentAabb() == null) {
                 camera.setTranslateXY(correctedXPosition, correctedYPosition);
-                update();
             }
             double deltaX = position.getX() - camera.getTranslateX();
             double deltaY = position.getY() - camera.getTranslateY();
@@ -284,25 +280,6 @@ public class TerrainScrollHandler {
             }
         }
         camera.setTranslateXY(correctedXPosition, correctedYPosition);
-        update();
-    }
-
-    public void update() {
-        for (TerrainScrollListener terrainScrollListener : terrainScrollListeners) {
-            try {
-                terrainScrollListener.onScroll(viewService.getCurrentViewField());
-            } catch (Throwable t) {
-                exceptionHandler.handleException("TerrainScrollHandler notify listeners", t);
-            }
-        }
-    }
-
-    public void addTerrainScrollListener(TerrainScrollListener terrainScrollListener) {
-        terrainScrollListeners.add(terrainScrollListener);
-    }
-
-    public void removeTerrainScrollListener(TerrainScrollListener terrainScrollListener) {
-        terrainScrollListeners.remove(terrainScrollListener);
     }
 
     private double setupScrollDistance(double scrollSpeed) {

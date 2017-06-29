@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -13,8 +14,8 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainScrollListener;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.user.UserUiService;
 
@@ -29,12 +30,14 @@ import java.util.logging.Logger;
  */
 @Dependent
 // Better name: something with game-control
-public class Scene implements TerrainScrollListener {
+public class Scene implements ViewService.ViewFieldListener {
     private Logger logger = Logger.getLogger(Scene.class.getName());
     @Inject
     private ScreenCover screenCover;
     @Inject
     private TerrainScrollHandler terrainScrollHandler;
+    @Inject
+    private ViewService viewService;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -153,7 +156,7 @@ public class Scene implements TerrainScrollListener {
             scrollBouncePrevention = false;
             questVisualizer.showSideBar(sceneConfig.getScrollUiQuest());
             audioService.onQuestActivated();
-            terrainScrollHandler.addTerrainScrollListener(this);
+            viewService.addViewFieldListeners(this);
         }
         if (sceneConfig.getBoxItemPositions() != null) {
             gameEngineControl.dropBoxes(sceneConfig.getBoxItemPositions());
@@ -186,7 +189,7 @@ public class Scene implements TerrainScrollListener {
     }
 
     @Override
-    public void onScroll(ViewField viewField) {
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         if (!scrollBouncePrevention && viewField.isInside(sceneConfig.getScrollUiQuest().getScrollTargetRectangle())) {
             scrollBouncePrevention = true;
             onQuestPassed();
@@ -220,7 +223,7 @@ public class Scene implements TerrainScrollListener {
             gameTipService.stop();
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            terrainScrollHandler.removeTerrainScrollListener(this);
+            viewService.removeViewFieldListeners(this);
             questVisualizer.showSideBar(null);
         }
     }

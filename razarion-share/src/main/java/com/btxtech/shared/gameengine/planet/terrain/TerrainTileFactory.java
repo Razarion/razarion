@@ -41,7 +41,6 @@ public class TerrainTileFactory {
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
         terrainTileContext.init(terrainTileIndex, terrainTypeService.getGroundSkeletonConfig());
-        insertLandWaterProportion(terrainShapeTile, terrainTileContext);
         insertSlopeGroundConnectionPart(terrainTileContext, terrainShapeTile);
         insertGroundPart(terrainTileContext, terrainShapeTile);
         insertSlopePart(terrainTileContext, terrainShapeTile);
@@ -50,18 +49,6 @@ public class TerrainTileFactory {
         TerrainTile terrainTile = terrainTileContext.complete();
         logger.severe("generateTerrainTile: " + (System.currentTimeMillis() - time));
         return terrainTile;
-    }
-
-    private void insertLandWaterProportion(TerrainShapeTile terrainShapeTile, TerrainTileContext terrainTileContext) {
-        if (terrainShapeTile != null) {
-            try {
-                terrainTileContext.setLandWaterProportion(terrainShapeTile.getLandWaterProportion());
-            } catch (Exception e) {
-                exceptionHandler.handleException(e);
-            }
-        } else {
-            terrainTileContext.setLandWaterProportion(1);
-        }
     }
 
     private void insertGroundPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
@@ -222,8 +209,14 @@ public class TerrainTileFactory {
 
     private void insertWaterPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
         if (terrainShapeTile == null) {
+            terrainTileContext.setLandWaterProportion(1);
             return;
         }
+        if(!terrainShapeTile.isLand()) {
+            // TODO fill water part
+            terrainTileContext.setLandWaterProportion(0);
+        }
+
         TerrainWaterTileContext terrainWaterTileContext = terrainWaterTileContextInstance.get();
         terrainWaterTileContext.init(terrainTileContext);
 
@@ -238,6 +231,8 @@ public class TerrainTileFactory {
         });
 
         terrainWaterTileContext.complete();
+
+        terrainTileContext.setLandWaterProportion(1.0 - (double)terrainWaterTileContext.getWaterNodeCount() / (double)(TerrainUtil.TERRAIN_TILE_NODES_COUNT * TerrainUtil.TERRAIN_TILE_NODES_COUNT));
     }
 
     private void insertHeight(TerrainTileContext terrainTileContext) {

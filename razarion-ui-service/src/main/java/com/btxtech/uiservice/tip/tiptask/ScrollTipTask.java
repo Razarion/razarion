@@ -1,12 +1,11 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainScrollListener;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
 import com.btxtech.uiservice.tip.visualization.SplashTipVisualization;
@@ -19,11 +18,11 @@ import javax.inject.Inject;
  * 16.12.2016.
  */
 @Dependent
-public class ScrollTipTask extends AbstractTipTask implements TerrainScrollListener {
+public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFieldListener {
     private static final long SCROLL_DELAY = 3000;
     private static final long TIMER_DELAY = 1000;
     @Inject
-    private TerrainScrollHandler terrainScrollHandler;
+    private ViewService viewService;
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private SimpleScheduledFuture simpleScheduledFuture;
@@ -44,19 +43,19 @@ public class ScrollTipTask extends AbstractTipTask implements TerrainScrollListe
 
     @Override
     protected void internalStart() {
-        terrainScrollHandler.addTerrainScrollListener(this);
+        viewService.addViewFieldListeners(this);
         lastScrollTimestamp = System.currentTimeMillis();
         startTimer();
     }
 
     @Override
     protected void internalCleanup() {
-        terrainScrollHandler.removeTerrainScrollListener(this);
+        viewService.removeViewFieldListeners(this);
         stopTimer();
     }
 
     @Override
-    public void onScroll(ViewField viewField) {
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         lastScrollTimestamp = System.currentTimeMillis();
         setSplashVisible(false);
         startTimer();

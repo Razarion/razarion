@@ -2,13 +2,14 @@ package com.btxtech.uiservice.tip.visualization;
 
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.terrain.TerrainScrollListener;
+import com.btxtech.uiservice.renderer.ViewService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +20,7 @@ import java.util.List;
  * Date: 21.08.12
  * Time: 22:51
  */
-public abstract class InGameTipVisualization implements TerrainScrollListener {
+public abstract class InGameTipVisualization implements ViewService.ViewFieldListener {
     private static final int READY_CHECK_DELAY = 500;
     private List<Vertex> cornerVertices;
     private final double moveDistance;
@@ -159,7 +160,7 @@ public abstract class InGameTipVisualization implements TerrainScrollListener {
     }
 
     @Override
-    public void onScroll(ViewField viewField) {
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         this.viewField = viewField;
         checkInView();
     }

@@ -9,7 +9,6 @@ import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
@@ -40,8 +39,6 @@ public class GameTipService {
     private TipTaskFactory tipTaskFactory;
     @Inject
     private BaseItemUiService baseItemUiService;
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private SimpleExecutorService simpleExecutorService;
     @Inject
@@ -158,14 +155,14 @@ public class GameTipService {
     private void startVisualization(AbstractTipTask currentTipTask) {
         inGameTipVisualization = currentTipTask.createInGameTipVisualization();
         if (inGameTipVisualization != null) {
-            terrainScrollHandler.addTerrainScrollListener(inGameTipVisualization);
-            inGameTipVisualization.onScroll(viewService.getCurrentViewField());
+            viewService.addViewFieldListeners(inGameTipVisualization);
+            inGameTipVisualization.onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
             tipRenderTask.activate(inGameTipVisualization);
         }
         inGameDirectionVisualization = currentTipTask.createInGameDirectionVisualization();
         if (inGameDirectionVisualization != null) {
-            terrainScrollHandler.addTerrainScrollListener(inGameDirectionVisualization);
-            inGameDirectionVisualization.onScroll(viewService.getCurrentViewField());
+            viewService.addViewFieldListeners(inGameDirectionVisualization);
+            inGameDirectionVisualization.onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
             tipRenderTask.activate(inGameDirectionVisualization);
         }
         guiTipVisualization = currentTipTask.createGuiTipVisualization();
@@ -178,13 +175,13 @@ public class GameTipService {
     private void cleanupVisualization() {
         if (inGameTipVisualization != null) {
             tipRenderTask.deactivate();
-            terrainScrollHandler.removeTerrainScrollListener(inGameTipVisualization);
+            viewService.removeViewFieldListeners(inGameTipVisualization);
             inGameTipVisualization.cleanup();
             inGameTipVisualization = null;
         }
         if (inGameDirectionVisualization != null) {
             tipRenderTask.deactivate();
-            terrainScrollHandler.removeTerrainScrollListener(inGameDirectionVisualization);
+            viewService.removeViewFieldListeners(inGameDirectionVisualization);
             inGameDirectionVisualization = null;
         }
         if (guiTipVisualization != null) {

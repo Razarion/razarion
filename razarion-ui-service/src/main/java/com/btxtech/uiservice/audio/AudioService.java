@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.audio;
 
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -9,8 +10,6 @@ import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
-import com.btxtech.uiservice.terrain.TerrainScrollListener;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.annotation.PostConstruct;
@@ -21,9 +20,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 24.12.2016.
  */
-public abstract class AudioService implements TerrainScrollListener {
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
+public abstract class AudioService implements ViewService.ViewFieldListener {
     @Inject
     private ViewService viewService;
     @Inject
@@ -40,9 +37,9 @@ public abstract class AudioService implements TerrainScrollListener {
     public abstract void muteTerrainLoopAudio();
 
 
-        @PostConstruct
+    @PostConstruct
     public void postConstruct() {
-        terrainScrollHandler.addTerrainScrollListener(this);
+        viewService.addViewFieldListeners(this);
     }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
@@ -123,7 +120,7 @@ public abstract class AudioService implements TerrainScrollListener {
     }
 
     @Override
-    public void onScroll(ViewField viewField) {
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         double landWaterProportion = terrainUiService.calculateLandWaterProportion();
         if (MathHelper.compareWithPrecision(lastLandWaterProportion, landWaterProportion, 0.05)) {
             return;

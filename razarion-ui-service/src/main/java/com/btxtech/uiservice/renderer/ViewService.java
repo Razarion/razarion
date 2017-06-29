@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -43,6 +44,8 @@ public class ViewService {
     private ShadowUiService shadowUiService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private TerrainUiService terrainUiService;
     private NativeMatrix viewMatrix;
     private NativeMatrix viewNormMatrix;
     private NativeMatrix perspectiveMatrix;
@@ -107,6 +110,7 @@ public class ViewService {
         transformationNormListeners.forEach(listeners -> listeners.onTransformationChanged(viewMatrix, viewNormMatrix, perspectiveMatrix));
         shadowTransformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewShadowMatrix, perspectiveShadowMatrix));
         shadowLookupTransformationListeners.forEach(listeners -> listeners.onShadowLookupTransformationChanged(shadowLookupMatrix));
+        terrainUiService.onViewChanged(currentViewField, currentAabb);
         viewFieldListeners.forEach(viewFieldListener -> viewFieldListener.onViewChanged(currentViewField, currentAabb));
     }
 

@@ -20,6 +20,7 @@ public class TerrainWaterTileContext {
     private JsInteropObjectFactory jsInteropObjectFactory;
     private TerrainTileContext terrainTileContext;
     private List<Vertex> triangleCorners = new ArrayList<>();
+    private int waterNodeCount;
 
     public void init(TerrainTileContext terrainTileContext) {
         this.terrainTileContext = terrainTileContext;
@@ -35,6 +36,7 @@ public class TerrainWaterTileContext {
         triangleCorners.add(new Vertex(rect.cornerBottomRight(), waterLevel));
         triangleCorners.add(new Vertex(rect.cornerTopRight(), waterLevel));
         triangleCorners.add(new Vertex(rect.cornerTopLeft(), waterLevel));
+        waterNodeCount++;
     }
 
     public void insertWaterRim(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
@@ -55,5 +57,9 @@ public class TerrainWaterTileContext {
         }
         terrainWaterTile.setVertexCount(triangleCorners.size());
         terrainTileContext.setTerrainWaterTile(terrainWaterTile);
+    }
+
+    public int getWaterNodeCount() {
+        return waterNodeCount;
     }
 }

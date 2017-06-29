@@ -189,7 +189,6 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
         terrainScrollHandler.setPlayGround(null);
         terrainScrollHandler.setScrollDisabled(false, null);
         camera.setTop();
-        terrainScrollHandler.update();
     }
 
     @EventHandler("sculptButton")
@@ -214,7 +213,6 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     @EventHandler("viewFiledCenter")
     public void yFieldChanged(ChangeEvent e) {
         camera.setTranslateXY(viewFiledCenter.getValue().getX(), viewFiledCenter.getValue().getY());
-        terrainScrollHandler.update();
     }
 
     @EventHandler("generateMiniTerrain")
