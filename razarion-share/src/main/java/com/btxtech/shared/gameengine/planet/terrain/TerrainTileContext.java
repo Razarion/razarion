@@ -27,7 +27,6 @@ public class TerrainTileContext {
     private Instance<TerrainSlopeTileContext> terrainSlopeTileContextInstance;
     private Index terrainTileIndex;
     private TerrainTile terrainTile;
-    private double[][] splattings;
     private int offsetIndexX;
     private int offsetIndexY;
     private Collection<TerrainSlopeTileContext> terrainSlopeTileContexts;
@@ -43,7 +42,6 @@ public class TerrainTileContext {
         this.groundSkeletonConfig = groundSkeletonConfig;
         this.terrainTile = jsInteropObjectFactory.generateTerrainTile();
         terrainTile.init(terrainTileIndex.getX(), terrainTileIndex.getY());
-        splattings = new double[TerrainUtil.TERRAIN_TILE_NODES_COUNT + 1][TerrainUtil.TERRAIN_TILE_NODES_COUNT + 1];
         offsetIndexX = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         offsetIndexY = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
     }
@@ -60,25 +58,6 @@ public class TerrainTileContext {
 
     public void setLandWaterProportion(double landWaterProportion) {
         terrainTile.setLandWaterProportion(landWaterProportion);
-    }
-
-    public void setSplatting(int xNode, int yNode, double splattingBL, double splattingBR, double splattingTR, double splattingTL) {
-        int x = xNode - offsetIndexX;
-        int y = yNode - offsetIndexY;
-        splattings[x][y] = splattingBL;
-        if (x == TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1) {
-            splattings[x + 1][y] = splattingBR;
-        }
-        if (y == TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1) {
-            splattings[x][y + 1] = splattingTL;
-        }
-        if (x == TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1 && y == TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1) {
-            splattings[x + 1][y + 1] = splattingTR;
-        }
-    }
-
-    public Index getTerrainTileIndex() {
-        return terrainTileIndex;
     }
 
     public TerrainSlopeTileContext createTerrainSlopeTileContext(int slopeSkeletonConfigId, int xCount, int yCount) {

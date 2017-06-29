@@ -117,8 +117,6 @@ public class TerrainTileFactory {
         double splattingTR = terrainTileContext.getSplatting(rightXNode, topYNode);
         double splattingTL = terrainTileContext.getSplatting(xNode, topYNode);
 
-        terrainTileContext.setSplatting(xNode, yNode, splattingBL, splattingBR, splattingTR, splattingTL);
-
         // Triangle 1
         terrainTileContext.insertTriangleCorner(vertexBL, normBL, tangentBL, splattingBL);
         terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR);
@@ -159,8 +157,6 @@ public class TerrainTileFactory {
         double splattingBR = terrainTileContext.getSplatting(rightXNode, yNode);
         double splattingTR = terrainTileContext.getSplatting(rightXNode, topYNode);
         double splattingTL = terrainTileContext.getSplatting(xNode, topYNode);
-
-        terrainTileContext.setSplatting(xNode, yNode, splattingBL, splattingBR, splattingTR, splattingTL);
 
         // Triangle 1
         terrainTileContext.insertTriangleCorner(vertexBL, normBL, tangentBL, splattingBL);
