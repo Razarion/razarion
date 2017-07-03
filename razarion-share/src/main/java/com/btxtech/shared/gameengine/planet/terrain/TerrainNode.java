@@ -7,10 +7,14 @@ import jsinterop.annotations.JsType;
  * on 30.06.2017.
  */
 @JsType(isNative = true, name = "TerrainNode", namespace = "com.btxtech.shared.nativejs")
-public class TerrainNode {
+public abstract class TerrainNode {
     public native TerrainSubNode[][] getTerrainSubNodes();
 
+    public native void setTerrainSubNode(TerrainSubNode[][] terrainSubNodes);
+
     public native boolean isLand();
+
+    public native void setLand(Boolean land);
 
     public native double getHeight();
 }

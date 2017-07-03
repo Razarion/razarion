@@ -1,6 +1,8 @@
 package com.btxtech.shared.system;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 
@@ -15,4 +17,12 @@ public interface JsInteropObjectFactory {
     TerrainSlopeTile generateTerrainSlopeTile();
 
     TerrainWaterTile generateTerrainWaterTile();
+
+    TerrainNode[][] generateTerrainNodeField(int edgeCount);
+
+    TerrainNode generateTerrainNode();
+
+    TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount);
+
+    TerrainSubNode generateTerrainSubNode();
 }

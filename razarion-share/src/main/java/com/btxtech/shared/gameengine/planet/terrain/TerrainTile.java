@@ -14,8 +14,6 @@ public abstract class TerrainTile {
 
     public native void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting);
 
-    // TODO public native void insertTerrainNode(int index, double height, TerrainNode terrainNode);
-
     public native int getIndexX();
 
     public native int getIndexY();
@@ -29,6 +27,8 @@ public abstract class TerrainTile {
     public native double[] getGroundSplattings();
 
     public native TerrainNode[][] getTerrainNodes();
+
+    public native void setTerrainNodes(TerrainNode[][] terrainNodes);
 
     public native void setGroundVertexCount(int groundVertexCount);
 
@@ -50,5 +50,7 @@ public abstract class TerrainTile {
 
     public native int fromArray(Object object);
 
-    public native boolean isLand();
+    public native Boolean isLand();
+
+    public native void setLand(Boolean land);
 }

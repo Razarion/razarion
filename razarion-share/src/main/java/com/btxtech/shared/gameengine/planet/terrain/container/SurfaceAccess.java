@@ -117,15 +117,7 @@ public class SurfaceAccess {
     }
 
     private double interpolateHeightFromGroundSkeletonConfig(DecimalPosition absolutePosition) {
-        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
-
-        double zBL = heightFromGroundSkeletonConfig(bottomLeft);
-        double zBR = heightFromGroundSkeletonConfig(bottomLeft.add(1, 0));
-        double zTR = heightFromGroundSkeletonConfig(bottomLeft.add(1, 1));
-        double zTL = heightFromGroundSkeletonConfig(bottomLeft.add(0, 1));
-
-        return InterpolationUtils.rectangleInterpolate(offset, zBL, zBR, zTR, zTL);
+        return TerrainHelper.interpolateHeightFromGroundSkeletonConfig(absolutePosition, terrainShape.getGroundSkeletonConfig());
     }
 
     private double heightFromGroundSkeletonConfig(Index nodeIndex) {

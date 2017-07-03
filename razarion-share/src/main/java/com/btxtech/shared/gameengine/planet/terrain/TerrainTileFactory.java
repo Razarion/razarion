@@ -11,8 +11,10 @@ import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -35,6 +37,8 @@ public class TerrainTileFactory {
     private TerrainTypeService terrainTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private JsInteropObjectFactory jsInteropObjectFactory;
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
         long time = System.currentTimeMillis();
@@ -45,7 +49,7 @@ public class TerrainTileFactory {
         insertGroundPart(terrainTileContext, terrainShapeTile);
         insertSlopePart(terrainTileContext, terrainShapeTile);
         insertWaterPart(terrainTileContext, terrainShapeTile);
-        insertHeight(terrainTileContext);
+        insertHeightAndType(terrainTileContext, terrainShapeTile);
         TerrainTile terrainTile = terrainTileContext.complete();
         logger.severe("generateTerrainTile: " + (System.currentTimeMillis() - time));
         return terrainTile;
@@ -212,7 +216,7 @@ public class TerrainTileFactory {
             terrainTileContext.setLandWaterProportion(1);
             return;
         }
-        if(!terrainShapeTile.isLand()) {
+        if (!terrainShapeTile.isLand()) {
             // TODO fill water part
             terrainTileContext.setLandWaterProportion(0);
         }
@@ -232,15 +236,65 @@ public class TerrainTileFactory {
 
         terrainWaterTileContext.complete();
 
-        terrainTileContext.setLandWaterProportion(1.0 - (double)terrainWaterTileContext.getWaterNodeCount() / (double)(TerrainUtil.TERRAIN_TILE_NODES_COUNT * TerrainUtil.TERRAIN_TILE_NODES_COUNT));
+        terrainTileContext.setLandWaterProportion(1.0 - (double) terrainWaterTileContext.getWaterNodeCount() / (double) (TerrainUtil.TERRAIN_TILE_NODES_COUNT * TerrainUtil.TERRAIN_TILE_NODES_COUNT));
     }
 
-    private void insertHeight(TerrainTileContext terrainTileContext) {
-        try {
-            throw new UnsupportedOperationException("TerrainTileFactory.insertHeight() ... TODO ...");
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
+    private void insertHeightAndType(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
+        if(terrainShapeTile == null) {
+            return;
         }
+        if (!terrainShapeTile.hasNodes()) {
+            return;
+        }
+        TerrainNode[][] terrainNodes = jsInteropObjectFactory.generateTerrainNodeField(TerrainUtil.TERRAIN_TILE_NODES_COUNT);
+
+        terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
+            if (terrainShapeNode != null) {
+                TerrainNode terrainNode = jsInteropObjectFactory.generateTerrainNode();
+                if (terrainShapeNode.isFullLand()) {
+                    terrainNode.setLand(true);
+                }
+                if (terrainShapeNode.hasSubNodes()) {
+                    terrainNode.setTerrainSubNode(createTerrainSubNodes(terrainShapeNode.getTerrainShapeSubNodes()));
+                }
+                terrainNodes[nodeRelativeIndex.getY()][nodeRelativeIndex.getY()] = terrainNode;
+            }
+        });
+        terrainTileContext.setTerrainNode(terrainNodes);
+    }
+
+    private TerrainSubNode[][] createTerrainSubNodes(TerrainShapeSubNode[] children) {
+        if (children == null) {
+            return null;
+        }
+        int edgeCount = children.length;
+        TerrainSubNode[][] terrainSubNodes = jsInteropObjectFactory.generateTerrainSubNodeField(edgeCount);
+        TerrainShapeSubNode bottomLeftShape = children[0];
+        if (bottomLeftShape != null) {
+            terrainSubNodes[0][0] = createTerrainSubNode(bottomLeftShape);
+        }
+        TerrainShapeSubNode bottomRightShape = children[1];
+        if (bottomRightShape != null) {
+            terrainSubNodes[1][0] = createTerrainSubNode(bottomRightShape);
+        }
+        TerrainShapeSubNode topRightShape = children[2];
+        if (topRightShape != null) {
+            terrainSubNodes[1][1] = createTerrainSubNode(topRightShape);
+        }
+        TerrainShapeSubNode topLeftShape = children[3];
+        if (topLeftShape != null) {
+            terrainSubNodes[0][1] = createTerrainSubNode(topLeftShape);
+        }
+        return terrainSubNodes;
+    }
+
+    private TerrainSubNode createTerrainSubNode(TerrainShapeSubNode terrainShapeSubNode) {
+        TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
+        if (terrainShapeSubNode.isLand()) {
+            terrainSubNode.setLand(true);
+        }
+        terrainSubNode.setTerrainSubNodes(createTerrainSubNodes(terrainShapeSubNode.getTerrainShapeSubNodes()));
+        return terrainSubNode;
     }
 
 }

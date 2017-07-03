@@ -1,5 +1,6 @@
 package com.btxtech.webglemulator.razarion;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
@@ -22,6 +23,8 @@ public class DevToolTerrainTile extends TerrainTile {
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
     private TerrainWaterTile terrainWaterTile;
     private double landWaterProportion;
+    private TerrainNode[][] terrainNodes;
+    private Boolean land;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -83,6 +86,11 @@ public class DevToolTerrainTile extends TerrainTile {
     }
 
     @Override
+    public TerrainNode[][] getTerrainNodes() {
+        return terrainNodes;
+    }
+
+    @Override
     public void setGroundVertexCount(int groundVertexCount) {
         this.groundVertexCount = groundVertexCount;
     }
@@ -136,5 +144,20 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public int fromArray(Object object) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setTerrainNodes(TerrainNode[][] terrainNodes) {
+        this.terrainNodes = terrainNodes;
+    }
+
+    @Override
+    public Boolean isLand() {
+        return land;
+    }
+
+    @Override
+    public void setLand(Boolean land) {
+        this.land = land;
     }
 }

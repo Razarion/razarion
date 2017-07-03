@@ -230,4 +230,8 @@ public class TerrainTileContext {
     public Index toAbsoluteNodeIndex(Index nodeRelativeIndex) {
         return new Index(offsetIndexX, offsetIndexY).add(nodeRelativeIndex);
     }
+
+    public void setTerrainNode(TerrainNode[][] terrainNodes) {
+        terrainTile.setTerrainNodes(terrainNodes);
+    }
 }

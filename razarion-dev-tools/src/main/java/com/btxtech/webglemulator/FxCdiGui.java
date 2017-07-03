@@ -26,8 +26,8 @@ public class FxCdiGui {
         Parent root = loader.load();
         stage.setTitle("WebGL FX Emulator");
         stage.setScene(new Scene(root));
-        stage.setX(-1279);
-        stage.setY(182);
+//        stage.setX(-1279);
+//        stage.setY(182);
         stage.setWidth(1277);
         stage.setHeight(984);
         stage.show();

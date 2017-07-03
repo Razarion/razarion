@@ -1,6 +1,8 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -25,6 +27,26 @@ public class TestJsInteropObjectFactory implements JsInteropObjectFactory {
 
     @Override
     public TerrainWaterTile generateTerrainWaterTile() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TerrainNode[][] generateTerrainNodeField(int edgeCount) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TerrainNode generateTerrainNode() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public TerrainSubNode generateTerrainSubNode() {
         throw new UnsupportedOperationException();
     }
 }

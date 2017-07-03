@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
@@ -147,8 +148,7 @@ public class UiTerrainTile {
 
             @Override
             public Double onTerrainTile() {
-                // return terraintile.interpolate();
-                throw new UnsupportedOperationException();
+                return TerrainHelper.interpolateHeightFromGroundSkeletonConfig(terrainPosition, groundSkeletonConfig);
             }
 
             @Override
@@ -161,37 +161,7 @@ public class UiTerrainTile {
                 return terrainSubNode.getHeight();
             }
         });
-
-
-//        Index bottomLeft = TerrainUtil.toNode(absoluteTilePosition);
-//        DecimalPosition offset = absoluteTilePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
-//
-//        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-//        double heightBR = getHeight(bottomLeft.getX() + 1, bottomLeft.getY());
-//        double heightTL = getHeight(bottomLeft.getX(), bottomLeft.getY() + 1);
-//        if (triangle1.isInside(offset)) {
-//            Vertex weight = triangle1.interpolate(offset);
-//            double heightBL = getHeight(bottomLeft.getX(), bottomLeft.getY());
-//            return heightBL * weight.getX() + heightBR * weight.getY() + heightTL * weight.getZ();
-//        } else {
-//            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
-//            Vertex weight = triangle2.interpolate(offset);
-//            double heightTR = getHeight(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
-//            return heightBR * weight.getX() + heightTR * weight.getY() + heightTL * weight.getZ();
-//        }
     }
-
-//    private double getHeight(int nodeX, int nodeY) {
-//        // Simple trick to avoid asking the neighbour terrain tile if the point is on the border
-//        // This leads to imprecision. Since this is only used to display purposes, it ok
-//        nodeX = Math.min(nodeX, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
-//        nodeY = Math.min(nodeY, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
-//
-//        if (terrainTile == null) {
-//            throw new IllegalStateException("Terrain Tile is null. TerrainTile index: " + index);
-//        }
-//        return terrainTile.getDisplayHeights()[TerrainUtil.filedToArrayNodeIndex(new Index(nodeX, nodeY))];
-//    }
 
     public void dispose() {
         if (modelRenderer != null) {
@@ -219,7 +189,7 @@ public class UiTerrainTile {
 
             @Override
             public Boolean onTerrainTile() {
-                return terrainTile.isLand();
+                return terrainTile.isLand() != null && terrainTile.isLand();
             }
 
             @Override
@@ -229,7 +199,7 @@ public class UiTerrainTile {
 
             @Override
             public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return terrainSubNode.isLand();
+                return terrainSubNode.isLand() != null && terrainSubNode.isLand();
             }
         });
     }

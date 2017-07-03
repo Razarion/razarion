@@ -141,7 +141,7 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
-    public boolean isLand() {
+    public Boolean isLand() {
         return false;
     }
 }
