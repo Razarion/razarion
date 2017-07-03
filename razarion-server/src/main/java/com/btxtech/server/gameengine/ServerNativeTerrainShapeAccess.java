@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 
 import javax.inject.Inject;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * on 28.06.2017.
  */
 @Singleton
-public class ServerTerrainShapeAccess implements TerrainShapeAccess {
+public class ServerNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Inject
     private TerrainShapeService terrainShapeService;
 

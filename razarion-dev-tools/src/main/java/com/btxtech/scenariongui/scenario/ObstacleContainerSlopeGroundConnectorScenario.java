@@ -92,13 +92,13 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
 //                ObstacleContainerNode obstacleContainerNode = obstacleContainer.getObstacleContainerNode(index);
 //                DecimalPosition absolutePosition = obstacleContainer.toAbsolute(index);
 //                extendedGraphicsContext.getGc().setFill(Color.BLACK);
-//                extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+//                extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //                if (obstacleContainerNode != null) {
 //                    extendedGraphicsContext.getGc().setFill(Color.GREEN);
-//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
 //                } else {
 //                    extendedGraphicsContext.getGc().setFill(Color.LIGHTGRAY);
-//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
 //                }
 //            }
 //        }
@@ -108,7 +108,7 @@ public class ObstacleContainerSlopeGroundConnectorScenario extends Scenario {
         Index testPintIndex = new Index(15, 5);
 //        DecimalPosition absolutePosition = obstacleContainer.toAbsolute(testPintIndex);
 //        extendedGraphicsContext.getGc().setFill(Color.YELLOW);
-//        extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+//        extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //        List<DecimalPosition> vertices1 = new ArrayList<>(obstacleContainer.getObstacleContainerNode(testPintIndex).getOuterSlopeGroundPiercingLine()).get(0);
         // extendedGraphicsContext.strokeCurve(vertices1, 0.2, Color.RED, true);
 

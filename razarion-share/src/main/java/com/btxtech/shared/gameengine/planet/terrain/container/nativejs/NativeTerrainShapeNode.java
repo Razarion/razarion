@@ -16,5 +16,5 @@ public class NativeTerrainShapeNode {
     public Double fullWaterLevel;
     public NativeObstacle[] obstacles;
     public Boolean hiddenUnderSlope;
-
+    public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes;
 }

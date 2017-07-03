@@ -3,9 +3,10 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.gui.TerrainTestApplication;
+import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 
@@ -31,7 +32,9 @@ public class TerrainTileTestHelper {
             throw new RuntimeException("Resource does not exist: " + theClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + resourceName);
         }
         try {
-            expected = new ObjectMapper().readValue(inputStream, new TypeReference<List<TestTerrainTile>>() {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            expected = objectMapper.readValue(inputStream, new TypeReference<List<TestTerrainTile>>() {
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -43,7 +46,7 @@ public class TerrainTileTestHelper {
 
     public void assertEquals(Collection<TerrainTile> actual) {
         if (SHOW_GUI) {
-            TerrainTestApplication.show(expected, actual);
+            TerrainTileTestDisplay.show(expected, actual);
         }
 
         if (expected.size() != actual.size()) {
@@ -67,7 +70,7 @@ public class TerrainTileTestHelper {
 
     public void assertEquals(TerrainTile actual) {
         if (SHOW_GUI) {
-            TerrainTestApplication.show(expected, Collections.singletonList(actual));
+            TerrainTileTestDisplay.show(expected, Collections.singletonList(actual));
         }
 
         if (expected.size() != 1) {

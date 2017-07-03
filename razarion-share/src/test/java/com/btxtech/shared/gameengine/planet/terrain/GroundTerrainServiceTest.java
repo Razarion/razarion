@@ -1,14 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.gui.TerrainTestApplication;
-import org.junit.Assert;
 import org.junit.Test;
-
-import java.io.File;
-import java.util.Collections;
 
 /**
  * Created by Beat

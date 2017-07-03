@@ -51,6 +51,14 @@ public class FractionalSlopeSegment {
         this.outer = outer;
     }
 
+    public DecimalPosition getInner() {
+        return inner;
+    }
+
+    public DecimalPosition getOuter() {
+        return outer;
+    }
+
     public Matrix4 setupTransformation() {
         Matrix4 translationMatrix = Matrix4.createTranslation(outer.getX(), outer.getY(), 0);
         if (inner.equals(outer)) {

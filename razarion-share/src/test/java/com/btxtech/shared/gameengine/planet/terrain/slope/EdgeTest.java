@@ -20,7 +20,7 @@ public class EdgeTest {
 
     @Test
     public void test() {
-        EasyMock.expect(slope.getSlopeSkeletonConfig()).andReturn(new SlopeSkeletonConfig().setWidth(3));
+        EasyMock.expect(slope.getSlopeSkeletonConfig()).andReturn(new SlopeSkeletonConfig().setWidth(3)).anyTimes();
         EasyMock.replay(slope);
 
         Driveway.Edge edge = new Driveway.Edge(slope, new DecimalPosition(20, 0), new DecimalPosition(0, 0), 0);

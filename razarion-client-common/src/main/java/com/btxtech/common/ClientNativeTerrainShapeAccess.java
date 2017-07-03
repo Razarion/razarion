@@ -1,6 +1,6 @@
 package com.btxtech.common;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 import com.btxtech.shared.rest.RestUrl;
 import com.google.gwt.xhr.client.XMLHttpRequest;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * on 28.06.2017.
  */
 @ApplicationScoped
-public class ClientTerrainShapeAccess implements TerrainShapeAccess {
+public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
         Xhr.get(RestUrl.terrainShapeProvider(planetId), new Xhr.Callback() {

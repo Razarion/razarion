@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.terrain.gui;
+package com.btxtech.shared.gameengine.planet.terrain.gui.teraintile;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Triangle2d;

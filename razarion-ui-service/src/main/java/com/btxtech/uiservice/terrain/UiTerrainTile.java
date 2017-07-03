@@ -2,12 +2,12 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Triangle2d;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.uiservice.renderer.ModelRenderer;
@@ -138,36 +138,60 @@ public class UiTerrainTile {
         return groundSkeletonConfig.getBottomBmDepth();
     }
 
-    public double interpolateDisplayHeight(DecimalPosition absoluteTilePosition) {
-        Index bottomLeft = TerrainUtil.toNode(absoluteTilePosition);
-        DecimalPosition offset = absoluteTilePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+    public double interpolateDisplayHeight(DecimalPosition terrainPosition) {
+        return findNode(terrainPosition, new TerrainTileAccess<Double>() {
+            @Override
+            public Double terrainTileNoLoaded() {
+                return 0.0;
+            }
 
-        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-        double heightBR = getHeight(bottomLeft.getX() + 1, bottomLeft.getY());
-        double heightTL = getHeight(bottomLeft.getX(), bottomLeft.getY() + 1);
-        if (triangle1.isInside(offset)) {
-            Vertex weight = triangle1.interpolate(offset);
-            double heightBL = getHeight(bottomLeft.getX(), bottomLeft.getY());
-            return heightBL * weight.getX() + heightBR * weight.getY() + heightTL * weight.getZ();
-        } else {
-            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
-            Vertex weight = triangle2.interpolate(offset);
-            double heightTR = getHeight(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
-            return heightBR * weight.getX() + heightTR * weight.getY() + heightTL * weight.getZ();
-        }
+            @Override
+            public Double onTerrainTile() {
+                // return terraintile.interpolate();
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Double onTerrainNode(TerrainNode terrainNode) {
+                return terrainNode.getHeight();
+            }
+
+            @Override
+            public Double onTerrainSubNode(TerrainSubNode terrainSubNode) {
+                return terrainSubNode.getHeight();
+            }
+        });
+
+
+//        Index bottomLeft = TerrainUtil.toNode(absoluteTilePosition);
+//        DecimalPosition offset = absoluteTilePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+//
+//        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
+//        double heightBR = getHeight(bottomLeft.getX() + 1, bottomLeft.getY());
+//        double heightTL = getHeight(bottomLeft.getX(), bottomLeft.getY() + 1);
+//        if (triangle1.isInside(offset)) {
+//            Vertex weight = triangle1.interpolate(offset);
+//            double heightBL = getHeight(bottomLeft.getX(), bottomLeft.getY());
+//            return heightBL * weight.getX() + heightBR * weight.getY() + heightTL * weight.getZ();
+//        } else {
+//            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
+//            Vertex weight = triangle2.interpolate(offset);
+//            double heightTR = getHeight(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
+//            return heightBR * weight.getX() + heightTR * weight.getY() + heightTL * weight.getZ();
+//        }
     }
 
-    private double getHeight(int nodeX, int nodeY) {
-        // Simple trick to avoid asking the neighbour terrain tile if the point is on the border
-        // This leads to imprecision. Since this is only used to display purposes, it ok
-        nodeX = Math.min(nodeX, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
-        nodeY = Math.min(nodeY, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
-
-        if (terrainTile == null) {
-            throw new IllegalStateException("Terrain Tile is null. TerrainTile index: " + index);
-        }
-        return terrainTile.getDisplayHeights()[TerrainUtil.filedToArrayNodeIndex(new Index(nodeX, nodeY))];
-    }
+//    private double getHeight(int nodeX, int nodeY) {
+//        // Simple trick to avoid asking the neighbour terrain tile if the point is on the border
+//        // This leads to imprecision. Since this is only used to display purposes, it ok
+//        nodeX = Math.min(nodeX, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
+//        nodeY = Math.min(nodeY, TerrainUtil.TERRAIN_TILE_NODES_COUNT - 1);
+//
+//        if (terrainTile == null) {
+//            throw new IllegalStateException("Terrain Tile is null. TerrainTile index: " + index);
+//        }
+//        return terrainTile.getDisplayHeights()[TerrainUtil.filedToArrayNodeIndex(new Index(nodeX, nodeY))];
+//    }
 
     public void dispose() {
         if (modelRenderer != null) {
@@ -187,10 +211,53 @@ public class UiTerrainTile {
     }
 
     public boolean isTerrainFree(DecimalPosition terrainPosition) {
-        throw new UnsupportedOperationException();
+        return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
+            @Override
+            public Boolean terrainTileNoLoaded() {
+                return false;
+            }
+
+            @Override
+            public Boolean onTerrainTile() {
+                return terrainTile.isLand();
+            }
+
+            @Override
+            public Boolean onTerrainNode(TerrainNode terrainNode) {
+                return terrainNode.isLand();
+            }
+
+            @Override
+            public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
+                return terrainSubNode.isLand();
+            }
+        });
     }
 
-    public boolean isTerrainFree(DecimalPosition terrainPosition, BaseItemType baseItemType) {
-        throw new UnsupportedOperationException();
+    private <T> T findNode(DecimalPosition terrainPosition, TerrainTileAccess<T> terrainTileAccess) {
+        if (terrainTile != null) {
+            if (terrainTile.getTerrainNodes() == null) {
+                return terrainTileAccess.onTerrainTile();
+            }
+            Index relativeNodeIndex = TerrainUtil.toNode(terrainPosition.sub(TerrainUtil.toTileAbsolute(index)));
+            TerrainNode terrainNode = terrainTile.getTerrainNodes()[relativeNodeIndex.getX()][relativeNodeIndex.getY()];
+            if (terrainNode == null) {
+                return terrainTileAccess.onTerrainTile();
+
+            }
+            if (terrainNode.getTerrainSubNodes() == null) {
+                return terrainTileAccess.onTerrainNode(terrainNode);
+            }
+            // Subnodes quadtree access
+            DecimalPosition relativeNode = terrainPosition.sub(TerrainUtil.toNodeAbsolute(terrainPosition));
+            TerrainSubNode terrainSubNode = QuadTreeAccess.getSubNode(relativeNode, terrainNode.getTerrainSubNodes());
+            if (terrainSubNode != null) {
+                return terrainTileAccess.onTerrainSubNode(terrainSubNode);
+            } else {
+                return terrainTileAccess.onTerrainNode(terrainNode);
+            }
+        } else {
+            return terrainTileAccess.terrainTileNoLoaded();
+        }
     }
 }

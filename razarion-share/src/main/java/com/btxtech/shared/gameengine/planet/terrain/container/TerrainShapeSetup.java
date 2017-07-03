@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
 /**
@@ -50,7 +51,7 @@ public class TerrainShapeSetup {
         for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
             ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius()));
-            for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH)) {
+            for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
                 TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                 terrainShapeNode.addObstacle(obstacleTerrainObject);
             }
@@ -96,7 +97,7 @@ public class TerrainShapeSetup {
         Rectangle2D aabb = outerPolygon.toAabb();
         Polygon2D innerPolygon = slope.getInnerPolygon();
 
-        for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH)) {
+        for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
             List<DecimalPosition> corners = terrainRect.toCorners();
             if (slope.hasWater()) {
@@ -120,6 +121,25 @@ public class TerrainShapeSetup {
 
                 List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
+                if (outerPiercings != null) {
+                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    for (List<DecimalPosition> outerPiercing : outerPiercings) {
+                        List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null);
+                        if (landPolygon != null) {
+                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode);
+                        }
+                    }
+                }
+                if (innerPiercings != null) {
+                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    for (List<DecimalPosition> innerPiercing : innerPiercings) {
+                        List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getHeight() + slope.getGroundHeight(), false, null);
+                        if (landPolygon != null) {
+                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode);
+                        }
+                    }
+                }
+
                 Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
                 if (innerPiercings == null && fractalDriveway != null) {
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
@@ -156,7 +176,7 @@ public class TerrainShapeSetup {
                     if (innerPolygon.isInside(corners)) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
-                    } else if(outerPolygon.isInside(corners) && !innerPolygon.isOneCornerInside(corners)) {
+                    } else if (outerPolygon.isInside(corners) && !innerPolygon.isOneCornerInside(corners)) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setHiddenUnderSlope();
                     }
@@ -175,7 +195,7 @@ public class TerrainShapeSetup {
         int start = -1;
         for (int i = 0; i < slope.getVerticalSegments().size(); i++) {
             Index currentTileIndex = TerrainUtil.toTile(CollectionUtils.getCorrectedElement(i, slope.getVerticalSegments()).getInner());
-            Index predecessorTileIndex = TerrainUtil.toTile(CollectionUtils.getCorrectedElement(i - 1, slope.getVerticalSegments()).getPredecessor().getInner());
+            Index predecessorTileIndex = TerrainUtil.toTile(CollectionUtils.getCorrectedElement(i - 1, slope.getVerticalSegments()).getInner());
             if (!currentTileIndex.equals(predecessorTileIndex)) {
                 start = i;
                 break;
@@ -275,7 +295,7 @@ public class TerrainShapeSetup {
                 if (nodeIndex.getX() != lastNodeIndex.getX() && nodeIndex.getY() != lastNodeIndex.getY()) {
                     DecimalPosition predecessor = polygon.get(i - 1);
                     DecimalPosition successor = polygon.get(i);
-                    List<Index> leftOut = GeometricUtil.rasterizeLine(new Line(predecessor, successor), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+                    List<Index> leftOut = GeometricUtil.rasterizeLine(new Line(predecessor, successor), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
                     leftOut.remove(0);
                     leftOut.remove(leftOut.size() - 1);
                     for (Index leftOutNodeIndex : leftOut) {
@@ -289,7 +309,7 @@ public class TerrainShapeSetup {
     }
 
     private void addObstacleSlope(ObstacleSlope obstacleSlope) {
-        for (Index nodeIndex : GeometricUtil.rasterizeLine(obstacleSlope.getLine(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH)) {
+        for (Index nodeIndex : GeometricUtil.rasterizeLine(obstacleSlope.getLine(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
             TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
             terrainShapeNode.addObstacle(obstacleSlope);
         }
@@ -564,7 +584,6 @@ public class TerrainShapeSetup {
         }
 
         abstract boolean isBefore(DecimalPosition position1, DecimalPosition position2);
-
     }
 
     public DecimalPosition getSuccessorCorner(Rectangle2D rectangle, Side side) {
@@ -581,4 +600,61 @@ public class TerrainShapeSetup {
                 throw new IllegalArgumentException("getCorner: don't know how to handle side: " + side);
         }
     }
+
+    private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode) {
+        Polygon2D landPolygon = new Polygon2D(Vertex.toXY(landVertexPolygon));
+
+        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
+            if(slope.isInsidePassableDriveway(terrainRect)) {
+                terrainShapeSubNode.setLand();
+                return false;
+            }
+            int insideCornerCount = landPolygon.insideCornerCount(rectangle2D, 0.2);
+            if (insideCornerCount == 0) {
+                // Full slope
+                return false;
+            } else if (insideCornerCount == 4) {
+                // Full land
+                terrainShapeSubNode.setLand();
+                return false;
+            } else {
+                // Partial
+                return true;
+            }
+        });
+        terrainShapeNode.setTerrainShapeSubNodes(terrainShapeSubNodes);
+    }
+
+    private TerrainShapeSubNode[] quartering(int depth, Rectangle2D terrainRect, BiFunction<Rectangle2D, TerrainShapeSubNode, Boolean> subNodeHandler) {
+        if (depth >= TerrainShapeSubNode.DEPTH) {
+            return null;
+        }
+
+        double subLength = TerrainUtil.calculateSubNodeLength(depth);
+
+        TerrainShapeSubNode bottomLeftSubNode = new TerrainShapeSubNode();
+        TerrainShapeSubNode bottomRightSubNode = new TerrainShapeSubNode();
+        TerrainShapeSubNode topRightSubNode = new TerrainShapeSubNode();
+        TerrainShapeSubNode topLeftSubNode = new TerrainShapeSubNode();
+
+        Rectangle2D bottomLeftRect = new Rectangle2D(terrainRect.startX(), terrainRect.startY(), subLength, subLength);
+        if (subNodeHandler.apply(bottomLeftRect, bottomLeftSubNode)) {
+            bottomLeftSubNode.setTerrainShapeSubNodes(quartering(depth + 1, bottomLeftRect, subNodeHandler));
+        }
+        Rectangle2D bottomRightRect = new Rectangle2D(terrainRect.startX() + subLength, terrainRect.startY(), subLength, subLength);
+        if (subNodeHandler.apply(bottomRightRect, bottomRightSubNode)) {
+            bottomRightSubNode.setTerrainShapeSubNodes(quartering(depth + 1, bottomRightRect, subNodeHandler));
+        }
+        Rectangle2D topRightRect = new Rectangle2D(terrainRect.startX() + subLength, terrainRect.startY() + subLength, subLength, subLength);
+        if (subNodeHandler.apply(topRightRect, topRightSubNode)) {
+            topRightSubNode.setTerrainShapeSubNodes(quartering(depth + 1, topRightRect, subNodeHandler));
+        }
+        Rectangle2D topLeftRect = new Rectangle2D(terrainRect.startX(), terrainRect.startY() + subLength, subLength, subLength);
+        if (subNodeHandler.apply(topLeftRect, topLeftSubNode)) {
+            topLeftSubNode.setTerrainShapeSubNodes(quartering(depth + 1, topLeftRect, subNodeHandler));
+        }
+
+        return new TerrainShapeSubNode[]{bottomLeftSubNode, bottomRightSubNode, topRightSubNode, topLeftSubNode};
+    }
+
 }

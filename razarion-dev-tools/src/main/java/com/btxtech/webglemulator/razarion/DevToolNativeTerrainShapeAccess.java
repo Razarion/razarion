@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.persistence.JsonProviderEmulator;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 
 import javax.inject.Inject;
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * on 29.06.2017.
  */
 @Singleton
-public class DevToolTerrainShapeAccess implements TerrainShapeAccess {
+public class DevToolNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Inject
     private JsonProviderEmulator jsonProviderEmulator;
 

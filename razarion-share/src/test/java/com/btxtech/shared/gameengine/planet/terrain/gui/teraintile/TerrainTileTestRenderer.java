@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.terrain.gui;
+package com.btxtech.shared.gameengine.planet.terrain.gui.teraintile;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
@@ -6,149 +6,29 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
-import javafx.event.Event;
-import javafx.scene.canvas.Canvas;
+import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Beat
  * 25.06.2016.
  */
-public class TerrainTestRenderer {
-    private static final double LINE_WIDTH = 0.1;
-    private static final int GRID_SPACING_100 = 100;
-    private static final int GRID_SPACING_20 = 20;
+public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     private final Collection<TerrainTile> expectedTiles;
     private final Collection<TerrainTile> actualTiles;
     private TriangleContainer triangleContainer;
-    private Canvas canvas;
-    private GraphicsContext gc;
-    private double scale;
-    private DecimalPosition shift = new DecimalPosition(0, 0);
-    private DecimalPosition lastShiftPosition;
 
-    public TerrainTestRenderer(Collection<TerrainTile> expectedTiles, Collection<TerrainTile> actualTiles, TriangleContainer triangleContainer) {
+    public TerrainTileTestRenderer(Collection<TerrainTile> expectedTiles, Collection<TerrainTile> actualTiles, TriangleContainer triangleContainer) {
         this.expectedTiles = expectedTiles;
         this.actualTiles = actualTiles;
         this.triangleContainer = triangleContainer;
     }
 
-    public void init(Canvas canvas, double scale) {
-        this.canvas = canvas;
-        this.scale = scale;
-    }
-
-    public DecimalPosition convertMouseToModel(Event event) {
-        MouseEvent mouseEvent = (MouseEvent) event;
-        DecimalPosition decimalPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
-        return decimalPosition.add(-canvas.getWidth() / 2.0, -canvas.getHeight() / 2.0).divide(scale, -scale).sub(shift);
-    }
-
-    public boolean shifting(Event event) {
-        MouseEvent mouseEvent = (MouseEvent) event;
-        DecimalPosition decimalPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
-        DecimalPosition position = decimalPosition.add(-canvas.getWidth() / 2.0, -canvas.getHeight() / 2.0).divide(scale, -scale);
-
-        boolean isShifted = false;
-        if (lastShiftPosition != null) {
-            DecimalPosition delta = position.sub(lastShiftPosition);
-            if (!delta.equalsDeltaZero()) {
-                shift = shift.add(delta);
-                isShifted = true;
-            }
-        }
-        lastShiftPosition = position;
-        return isShifted;
-    }
-
-    public void stopShift() {
-        lastShiftPosition = null;
-    }
-
-    protected void preRender() {
-        double canvasWidth = canvas.getWidth();
-        double canvasHeight = canvas.getHeight();
-
-        gc = canvas.getGraphicsContext2D();
-
-        gc.translate(0, 0);
-        gc.scale(1.0, 1.0);
-        gc.clearRect(0, 0, canvasWidth, canvasHeight);
-
-        gc.save();
-
-        // draw grid
-        drawGrid(gc, canvasWidth, canvasHeight);
-
-        gc.translate(canvasWidth / 2.0, canvasHeight / 2.0);
-        gc.scale(scale, -scale);
-        gc.translate(shift.getX(), shift.getY());
-    }
-
-    protected void postRender() {
-        gc.restore();
-        gc = null;
-    }
-
-    private void drawGrid(GraphicsContext gc, double canvasWidth, double canvasHeight) {
-        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_100 * scale), Color.GRAY);
-        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_20 * scale), Color.LIGHTGRAY);
-
-        gc.setStroke(Color.BLACK);
-        gc.strokeLine(shift.getX() * scale + canvasWidth / 2.0, 0, shift.getX() * scale + canvasWidth / 2.0, canvasHeight);
-        gc.strokeLine(0, canvasHeight / 2.0 - shift.getY() * scale, canvasWidth, canvasHeight / 2.0 - shift.getY() * scale);
-    }
-
-    private void drawGrid(GraphicsContext gc, double canvasWidth, double canvasHeight, int gridSpacing, Paint color) {
-        gc.setLineWidth(1);
-        gc.setStroke(color);
-
-        int verticalGrid = (int) Math.ceil(canvasWidth / gridSpacing) * gridSpacing;
-        int verticalOffset = (int) (shift.getX() * scale + canvasWidth / 2.0) % gridSpacing;
-        for (int x = 0; x <= verticalGrid; x += gridSpacing) {
-            gc.strokeLine(x + verticalOffset, 0, x + verticalOffset, canvasHeight);
-        }
-        int horizontalGrid = (int) Math.ceil(canvasHeight / gridSpacing) * gridSpacing;
-        int horizontalOffset = (int) (canvasHeight / 2.0 - shift.getY() * scale) % gridSpacing;
-        for (int y = 0; y <= horizontalGrid; y += gridSpacing) {
-            gc.strokeLine(0, y + horizontalOffset, canvasWidth, y + horizontalOffset);
-        }
-    }
-
-
-    public void setZoom(double zoom) {
-        if (zoom > 1.0) {
-            scale = zoom;
-        } else if (zoom < -1.0) {
-            scale = -1.0 / zoom;
-        } else {
-            scale = 1.0;
-        }
-    }
-
-    public double getZoom() {
-        if (scale > 1.0) {
-            return scale;
-        } else if (scale < 1.0) {
-            return -1.0 / scale;
-        } else {
-            return 1.0;
-        }
-    }
-
-    public double getScale() {
-        return scale;
-    }
-
-    public void render() {
-        preRender();
-
+    @Override
+    protected void doRender() {
         for (TerrainTile actual : actualTiles) {
             drawTerrainTile(actual);
         }
@@ -158,52 +38,18 @@ public class TerrainTestRenderer {
             }
             drawTriangleContainer();
         }
-
-        postRender();
     }
 
-    public void strokePolygon(List<DecimalPosition> polygon, double strokeWidth, Color color, boolean showPoint) {
-        gc.setStroke(color);
-        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
-        gc.setLineWidth(strokeWidth);
-        for (int i = 0; i < polygon.size(); i++) {
-            DecimalPosition start = polygon.get(i);
-            DecimalPosition end = polygon.get(i + 1 < polygon.size() ? i + 1 : i - polygon.size() + 1);
-
-            gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
-            if (showPoint) {
-                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
-            }
-        }
-    }
-
-    public void strokeLine(List<DecimalPosition> line, double strokeWidth, Color color, boolean showPoint) {
-        gc.setStroke(color);
-        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
-        gc.setLineWidth(strokeWidth);
-        for (int i = 0; i < line.size() - 1; i++) {
-            DecimalPosition start = line.get(i);
-            DecimalPosition end = line.get(i + 1);
-
-            gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
-            if (showPoint) {
-                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
-                if (i == line.size() - 1) {
-                    gc.fillOval(end.getX() - strokeWidth * 5.0, end.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
-                }
-            }
-        }
-    }
-
+    
     public void drawTerrainTile(TerrainTile terrainTile) {
-        gc.setLineWidth(LINE_WIDTH);
+        getGc().setLineWidth(LINE_WIDTH);
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
             double[] xCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 6]};
             double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
-            gc.setStroke(Color.LIGHTGREEN);
-            gc.strokePolygon(xCorners, yCorners, 3);
+            getGc().setStroke(Color.LIGHTGREEN);
+            getGc().strokePolygon(xCorners, yCorners, 3);
         }
 
         if (terrainTile.getTerrainSlopeTiles() != null) {
@@ -220,19 +66,19 @@ public class TerrainTestRenderer {
     }
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
-        gc.setLineWidth(LINE_WIDTH);
+        getGc().setLineWidth(LINE_WIDTH);
         for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
             double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
             double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
-            gc.setStroke(Color.GRAY);
-            gc.strokePolygon(xCorners, yCorners, 3);
-            // gc.setFill(Color.color(1, 0, 0, 0.3));
-            // gc.fillPolygon(xCorners, yCorners, 3);
+            getGc().setStroke(Color.GRAY);
+            getGc().strokePolygon(xCorners, yCorners, 3);
+            // getGc().setFill(Color.color(1, 0, 0, 0.3));
+            // getGc().fillPolygon(xCorners, yCorners, 3);
         }
 //        // Norm
-//        gc.setStroke(Color.RED);
+//        getGc().setStroke(Color.RED);
 //        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
 //            int vertexScalarIndex = vertexIndex * 3;
 //
@@ -248,12 +94,12 @@ public class TerrainTestRenderer {
 //            double normX2 = terrainSlopeTile.getNorms()[vertexScalarIndex + 6] * AMPLIFIER;
 //            double normY2 = terrainSlopeTile.getNorms()[vertexScalarIndex + 7] * AMPLIFIER;
 //
-//            gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + normX0, yCorners[0] + normY0);
-//            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
-//            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
+//            getGc().strokeLine(xCorners[0], yCorners[0], xCorners[0] + normX0, yCorners[0] + normY0);
+//            getGc().strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
+//            getGc().strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
 //        }
 //        // Tangent
-//        gc.setStroke(Color.BLUE);
+//        getGc().setStroke(Color.BLUE);
 //        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
 //            int vertexScalarIndex = vertexIndex * 3;
 //
@@ -269,9 +115,9 @@ public class TerrainTestRenderer {
 //            double tangentX2 = terrainSlopeTile.getTangents()[vertexScalarIndex + 6] * AMPLIFIER;
 //            double tangentY2 = terrainSlopeTile.getTangents()[vertexScalarIndex + 7] * AMPLIFIER;
 //
-//            gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + tangentX0, yCorners[0] + tangentY0);
-//            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + tangentX1, yCorners[1] + tangentY1);
-//            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + tangentX2, yCorners[2] + tangentY2);
+//            getGc().strokeLine(xCorners[0], yCorners[0], xCorners[0] + tangentX0, yCorners[0] + tangentY0);
+//            getGc().strokeLine(xCorners[1], yCorners[1], xCorners[1] + tangentX1, yCorners[1] + tangentY1);
+//            getGc().strokeLine(xCorners[2], yCorners[2], xCorners[2] + tangentX2, yCorners[2] + tangentY2);
 //
 //        }
 //        // SlopeFactor
@@ -283,14 +129,14 @@ public class TerrainTestRenderer {
 //
 //            double slopeFactor = terrainSlopeTile.getSlopeFactors()[vertexIndex];
 //
-//            gc.setFill(Color.color(slopeFactor, 0, 0, 0.1));
+//            getGc().setFill(Color.color(slopeFactor, 0, 0, 0.1));
 //
 //            double radius = 1;
-//            gc.fillOval(xCorner - radius, yCorner - radius, radius * 2.0, radius * 2.0);
+//            getGc().fillOval(xCorner - radius, yCorner - radius, radius * 2.0, radius * 2.0);
 //        }
 //        // Splattings
-//        gc.setStroke(Color.GREEN);
-//        gc.setLineWidth(0.3);
+//        getGc().setStroke(Color.GREEN);
+//        getGc().setLineWidth(0.3);
 //        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
 //            int vertexScalarIndex = vertexIndex * 3;
 //
@@ -301,28 +147,28 @@ public class TerrainTestRenderer {
 //
 //            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
 //            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-//            gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
+//            getGc().strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
 //        }
 
     }
 
     private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
-        gc.setLineWidth(LINE_WIDTH);
-        gc.setStroke(Color.BLUE);
+        getGc().setLineWidth(LINE_WIDTH);
+        getGc().setStroke(Color.BLUE);
         for (int vertexIndex = 0; vertexIndex < terrainWaterTile.getVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
             double[] xCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex], terrainWaterTile.getVertices()[vertexScalarIndex + 3], terrainWaterTile.getVertices()[vertexScalarIndex + 6]};
             double[] yCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex + 1], terrainWaterTile.getVertices()[vertexScalarIndex + 4], terrainWaterTile.getVertices()[vertexScalarIndex + 7]};
-            gc.strokePolygon(xCorners, yCorners, 3);
-            // gc.setFill(Color.color(1, 0, 0, 0.3));
-            // gc.fillPolygon(xCorners, yCorners, 3);
+            getGc().strokePolygon(xCorners, yCorners, 3);
+            // getGc().setFill(Color.color(1, 0, 0, 0.3));
+            // getGc().fillPolygon(xCorners, yCorners, 3);
         }
     }
 
     private void drawDisplayHeight(double[] displayHeights, int tileX, int tileY) {
-        gc.setLineWidth(LINE_WIDTH * 2);
-        gc.setStroke(Color.RED);
+        getGc().setLineWidth(LINE_WIDTH * 2);
+        getGc().setStroke(Color.RED);
 
         Index offset = new Index(TerrainUtil.toNodeIndex(tileX), TerrainUtil.toNodeIndex(tileY));
 
@@ -330,24 +176,24 @@ public class TerrainTestRenderer {
             double height = displayHeights[i] * 0.1;
             Index nodeIndex = TerrainUtil.arrayToFiledNodeIndex(i).add(offset);
             DecimalPosition position = TerrainUtil.toNodeAbsolute(nodeIndex);
-            gc.strokeLine(position.getX(), position.getY(), position.getX(), position.getY() + height);
+            getGc().strokeLine(position.getX(), position.getY(), position.getX(), position.getY() + height);
 
         }
     }
 
     private void drawTriangleContainer() {
-        gc.setLineWidth(0.1);
+        getGc().setLineWidth(0.1);
         for (TriangleElement missing : triangleContainer.getMissingInExpected()) {
             double[] xCorners = new double[]{missing.getVertexA().getX(), missing.getVertexB().getX(), missing.getVertexC().getX()};
             double[] yCorners = new double[]{missing.getVertexA().getY(), missing.getVertexB().getY(), missing.getVertexC().getY()};
-            gc.setStroke(Color.RED);
-            gc.strokePolygon(xCorners, yCorners, 3);
+            getGc().setStroke(Color.RED);
+            getGc().strokePolygon(xCorners, yCorners, 3);
         }
         for (TriangleElement missing : triangleContainer.getNonexistentInExpected()) {
             double[] xCorners = new double[]{missing.getVertexA().getX(), missing.getVertexB().getX(), missing.getVertexC().getX()};
             double[] yCorners = new double[]{missing.getVertexA().getY(), missing.getVertexB().getY(), missing.getVertexC().getY()};
-            gc.setStroke(Color.YELLOWGREEN);
-            gc.strokePolygon(xCorners, yCorners, 3);
+            getGc().setStroke(Color.YELLOWGREEN);
+            getGc().strokePolygon(xCorners, yCorners, 3);
         }
     }
 

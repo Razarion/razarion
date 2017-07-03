@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
 import com.btxtech.shared.utils.ExceptionUtil;
@@ -53,14 +54,14 @@ public class TerrainShape {
         TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
-        logger.severe("Setup TerrainShape Mate: " + (System.currentTimeMillis() - time));
+        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time));
     }
 
-    public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, TerrainShapeAccess terrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
+    public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
         this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
-        terrainShapeAccess.load(planetConfig.getPlanetId(), nativeTerrainShape -> {
+        nativeTerrainShapeAccess.load(planetConfig.getPlanetId(), nativeTerrainShape -> {
             try {
                 long time = System.currentTimeMillis();
                 tileXCount = nativeTerrainShape.tileXCount;
@@ -98,8 +99,8 @@ public class TerrainShape {
                 logger.severe("Setup TerrainShape Net: " + (System.currentTimeMillis() - time));
                 finishCallback.run();
             } catch (Throwable t) {
-                logger.log(Level.SEVERE, "TerrainShapeAccess load callback failed", t);
-                failCallback.accept(ExceptionUtil.setupStackTrace("TerrainShapeAccess load callback failed", t));
+                logger.log(Level.SEVERE, "NativeTerrainShapeAccess load callback failed", t);
+                failCallback.accept(ExceptionUtil.setupStackTrace("NativeTerrainShapeAccess load callback failed", t));
             }
         }, failCallback);
     }
@@ -211,7 +212,7 @@ public class TerrainShape {
             return terrainImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileRelative, tileIndex);
         }
 
-        DecimalPosition nodeRelative = tileRelative.sub(TerrainUtil.toTileAbsolute(nodeRelativeIndex));
+        DecimalPosition nodeRelative = tileRelative.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex));
         TerrainShapeSubNode terrainShapeSubNode = terrainShapeNode.getTerrainShapeSubNode(nodeRelative);
         if (terrainShapeSubNode == null) {
             return terrainImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileRelative, tileIndex);
@@ -278,7 +279,7 @@ public class TerrainShape {
     }
 
     public boolean isSightBlocked(Line line) {
-        List<Index> nodeIndices = GeometricUtil.rasterizeLine(line, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+        List<Index> nodeIndices = GeometricUtil.rasterizeLine(line, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         for (Index nodeIndex : nodeIndices) {
             TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
             if (terrainShapeNode != null && terrainShapeNode.getObstacles() != null) {

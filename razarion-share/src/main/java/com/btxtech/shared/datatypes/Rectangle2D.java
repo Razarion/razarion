@@ -360,6 +360,11 @@ public class Rectangle2D {
         return new Rectangle2D(startX() + deltaX, startY() + deltaY, width(), height());
     }
 
+
+    public Rectangle2D shrink(double shrink) {
+        return new Rectangle2D(startX() + shrink, startY() + shrink, width() - 2.0 * shrink, height() - 2.0 * shrink);
+    }
+
     @Override
     public String toString() {
         return "Rectangle2D{" +

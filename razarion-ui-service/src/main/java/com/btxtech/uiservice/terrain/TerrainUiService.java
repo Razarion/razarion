@@ -180,7 +180,7 @@ public class TerrainUiService {
     public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
         for (DecimalPosition terrainPosition : terrainPositions) {
             Index terrainTile = TerrainUtil.toTile(terrainPosition);
-            if (!displayTerrainTiles.get(terrainTile).isTerrainFree(terrainPosition, baseItemType)) {
+            if (!displayTerrainTiles.get(terrainTile).isTerrainFree(terrainPosition/*, baseItemType*/)) { // TODO baseItemType
                 return false;
             }
         }
@@ -192,7 +192,7 @@ public class TerrainUiService {
         Index terrainTile = TerrainUtil.toTile(groundPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
         DecimalPosition tileGroundPosition = groundPosition.sub(TerrainUtil.toTileAbsolute(terrainTile));
-        return new Vertex(groundPosition, uiTerrainTile.interpolateDisplayHeight(tileGroundPosition));
+        return new Vertex(groundPosition, uiTerrainTile.interpolateDisplayHeight(groundPosition));
     }
 
     public void getTerrainZ(DecimalPosition position, BiConsumer<DecimalPosition, Double> callback) {

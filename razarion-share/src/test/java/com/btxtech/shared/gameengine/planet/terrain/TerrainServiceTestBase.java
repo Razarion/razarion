@@ -15,33 +15,28 @@ import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.system.JsInteropObjectFactory;
+import org.junit.Assert;
 
 import java.util.List;
 
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 /**
  * Created by Beat
  * 03.04.2017.
  */
 public class TerrainServiceTestBase {
+    private TerrainTypeService terrainTypeService;
+    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainService terrainService;
 
-    protected void setupTerrainService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
-        terrainService = new TerrainService();
-
-        TerrainTileFactory terrainTileFactory = new TerrainTileFactory();
-        injectTerrainTileContextInstance(terrainTileFactory);
-        injectTerrainWaterTileContextInstance(terrainTileFactory);
-        SimpleTestEnvironment.injectExceptionHandler(terrainTileFactory);
-        SimpleTestEnvironment.injectService("terrainTileFactory", terrainService, terrainTileFactory);
-
-        TerrainTypeService terrainTypeService = new TerrainTypeService();
+    protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs) {
+        terrainTypeService = new TerrainTypeService();
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
@@ -52,17 +47,39 @@ public class TerrainServiceTestBase {
         groundSkeletonConfig.setSplattings(toColumnRow(splattings));
         groundSkeletonConfig.setSplattingXCount(splattings[0].length);
         groundSkeletonConfig.setSplattingYCount(splattings.length);
-
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
 
         terrainTypeService.init(staticGameConfig);
+    }
+
+    protected void setupNativeTerrainShapeAccess(PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions) {
+        TerrainShape terrainShape = new TerrainShape(planetConfig, getTerrainTypeService(), terrainSlopePositions, null);
+        nativeTerrainShapeAccess = (planetId, loadedCallback, failCallback) -> loadedCallback.accept(terrainShape.toNativeTerrainShape());
+    }
+
+    protected void setupTerrainService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
+        terrainService = new TerrainService();
+
+        TerrainTileFactory terrainTileFactory = new TerrainTileFactory();
+        injectTerrainTileContextInstance(terrainTileFactory);
+        injectTerrainWaterTileContextInstance(terrainTileFactory);
+        SimpleTestEnvironment.injectExceptionHandler(terrainTileFactory);
+        SimpleTestEnvironment.injectService("terrainTileFactory", terrainService, terrainTileFactory);
+
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs);
+
         SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
         SimpleTestEnvironment.injectService("terrainTypeService", terrainTileFactory, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 4, 4));
-        terrainService.setup(planetConfig, null, null);
+
+        setupNativeTerrainShapeAccess(planetConfig, terrainSlopePositions);
+
+        SimpleTestEnvironment.injectService("nativeTerrainShapeAccess", terrainService, nativeTerrainShapeAccess);
+        terrainService.setup(planetConfig, () -> {
+        }, Assert::fail);
     }
 
     protected TerrainTile generateTerrainTile(Index terrainTileIndex) {
@@ -104,7 +121,7 @@ public class TerrainServiceTestBase {
     }
 
     protected TerrainSlopeCorner createTerrainSlopeCorner(double x, double y, Integer slopeDrivewayId) {
-        return new TerrainSlopeCorner().setPosition(new DecimalPosition(x,y)).setSlopeDrivewayId(slopeDrivewayId);
+        return new TerrainSlopeCorner().setPosition(new DecimalPosition(x, y)).setSlopeDrivewayId(slopeDrivewayId);
     }
 
     protected double[][] toColumnRow(double[][] rowColumn) {
@@ -131,4 +148,7 @@ public class TerrainServiceTestBase {
         return columnRow;
     }
 
+    protected TerrainTypeService getTerrainTypeService() {
+        return terrainTypeService;
+    }
 }

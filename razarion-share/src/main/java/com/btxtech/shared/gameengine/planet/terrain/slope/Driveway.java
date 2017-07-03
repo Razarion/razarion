@@ -30,6 +30,7 @@ public class Driveway {
     private List<DecimalPosition> breakingLine;
     private double additionalStart;
     private double additionalEnd;
+    private Polygon2D passableSlopePolygon;
 
     public Driveway(Slope slope, DecimalPosition startSlopePosition, int startSlopeIndex) {
         this.slope = slope;
@@ -80,16 +81,19 @@ public class Driveway {
 
         breakingLine = new ArrayList<>();
         List<DecimalPosition> drivewayPolygon = new ArrayList<>();
+        List<DecimalPosition> passableSlopePart = new ArrayList<>();
         for (Edge edge : edges) {
             breakingLine.add(edge.getDrivewayBreaking());
             drivewayPolygon.add(edge.getDrivewayOuter());
+            passableSlopePart.add(edge.getDrivewayOuterSlope());
         }
         for (int i = edges.size() - 1; i >= 0; i--) {
-            drivewayPolygon.add(edges.get(i).getDrivewayBreaking());
+            Edge edge = edges.get(i);
+            drivewayPolygon.add(edge.getDrivewayBreaking());
+            passableSlopePart.add(edge.getDrivewayOuter());
         }
         innerPolygon = new Polygon2D(drivewayPolygon);
-        // DevUtils.printPolygon(breakingLine);
-        // DevUtils.printPolygon(innerPolygon.getCorners());
+        passableSlopePolygon = new Polygon2D(passableSlopePart);
     }
 
     private void calculateAdditionalStart(List<TerrainSlopeCorner> input) {
@@ -156,6 +160,10 @@ public class Driveway {
 
     public boolean isInside(DecimalPosition position) {
         return innerPolygon.isInside(position);
+    }
+
+    public boolean isInsidePassableSlopePolygon(Rectangle2D rect) {
+        return passableSlopePolygon.isOneCornerInside(rect.toCorners());
     }
 
     public List<DecimalPosition> setupPiercingLine(Rectangle2D terrainRect, boolean ground) {
@@ -261,11 +269,13 @@ public class Driveway {
         private DecimalPosition drivewayInner;
         private DecimalPosition drivewayBreaking;
         private DecimalPosition drivewayOuter;
+        private DecimalPosition drivewayOuterSlope;
 
         public Edge(Slope slope, DecimalPosition original, DecimalPosition drivewayPosition, double additional) {
             drivewayInner = original;
             drivewayOuter = drivewayPosition;
             drivewayBreaking = drivewayInner.getPointWithDistance(slope.getSlopeSkeletonConfig().getWidth() + additional, drivewayOuter, false);
+            drivewayOuterSlope = drivewayOuter.getPointWithDistance(-slope.getSlopeSkeletonConfig().getWidth(), original, true);
         }
 
         public DecimalPosition getDrivewayOuter() {
@@ -286,6 +296,10 @@ public class Driveway {
 
         public DecimalPosition getDrivewayBreaking() {
             return drivewayBreaking;
+        }
+
+        public DecimalPosition getDrivewayOuterSlope() {
+            return drivewayOuterSlope;
         }
     }
 }

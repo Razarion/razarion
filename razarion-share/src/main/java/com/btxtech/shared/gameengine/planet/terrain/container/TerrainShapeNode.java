@@ -2,22 +2,22 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeVertex;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class TerrainShapeNode {
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());
     private double[] fullDrivewayHeights; // bl, br, tr, tl
-    private TerrainShapeSubNode[][] terrainShapeSubNodes;
+    private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
     private Double uniformGroundHeight;
     private List<List<Vertex>> groundSlopeConnections;
     private List<List<Vertex>> waterSegments;
@@ -76,6 +76,7 @@ public class TerrainShapeNode {
                 waterSegments.add(waterSegment);
             }
         }
+        terrainShapeSubNodes = TerrainShapeSubNode.fromNativeTerrainShapeSubNode(nativeTerrainShapeNode.nativeTerrainShapeSubNodes);
     }
 
     public void addObstacle(Obstacle obstacle) {
@@ -141,6 +142,14 @@ public class TerrainShapeNode {
         return terrainShapeSubNodes != null;
     }
 
+    public TerrainShapeSubNode[] getTerrainShapeSubNodes() {
+        return terrainShapeSubNodes;
+    }
+
+    public void setTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
+        this.terrainShapeSubNodes = terrainShapeSubNodes;
+    }
+
     public boolean isHiddenUnderSlope() {
         return hiddenUnderSlope != null && hiddenUnderSlope;
     }
@@ -154,7 +163,7 @@ public class TerrainShapeNode {
     }
 
     public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition nodeRelative) {
-        throw new UnsupportedOperationException();
+        return TerrainShapeSubNode.getTerrainShapeSubNode(nodeRelative, terrainShapeSubNodes);
     }
 
     public List<List<Vertex>> getGroundSlopeConnections() {
@@ -220,6 +229,7 @@ public class TerrainShapeNode {
             nativeTerrainShapeNode.obstacles = obstacles.stream().map(Obstacle::toNativeObstacle).toArray(NativeObstacle[]::new);
         }
         nativeTerrainShapeNode.hiddenUnderSlope = hiddenUnderSlope;
+        nativeTerrainShapeNode.nativeTerrainShapeSubNodes = TerrainShapeSubNode.toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         return nativeTerrainShapeNode;
     }
 }

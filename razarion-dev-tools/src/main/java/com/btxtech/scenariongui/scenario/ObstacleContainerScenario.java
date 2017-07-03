@@ -21,9 +21,9 @@ public class ObstacleContainerScenario extends AbstractTerrainScenario {
 //                if (obstacleContainer.getObstacleContainerNode(index) != null) {
 //                    DecimalPosition absolutePosition = obstacleContainer.toAbsolute(index);
 //                    extendedGraphicsContext.getGc().setFill(Color.GREEN);
-//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //                    extendedGraphicsContext.getGc().setFill(Color.RED);
-//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH - 0.1);
+//                    extendedGraphicsContext.getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
 //                }
 //            }
 //        }

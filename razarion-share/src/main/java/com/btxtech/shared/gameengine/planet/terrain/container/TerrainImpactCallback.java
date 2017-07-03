@@ -46,7 +46,7 @@ public interface TerrainImpactCallback<T> {
      * Called if node found on terrain position. The node does not have any sub nodes. It is also full water or full land inside a plateau
      *
      * @param terrainShapeSubNode  TerrainShapeSubNode
-     * @param nodeRelative      the relative position in the node. 0,0 is bottom left . TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH is top or left
+     * @param nodeRelative      the relative position in the node. 0,0 is bottom left . TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH is top or left
      * @param nodeRelativeIndex the relative node index in the tile. 0,0 is bottom left . TerrainUtil.TERRAIN_TILE_NODES_COUNT is top or left
      * @param tileRelative      the relative position inside the tile. E.g. 0,0 is bottom left. TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH is top or left
      * @param tileIndex         the index of the tile. Eg: 0,0 is the tile on bottom left

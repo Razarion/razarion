@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.planet.terrain.gui.TerrainTestApplication;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class SlopeWaterTerrainServiceTest extends TerrainServiceTestBase {
 
         TerrainTile terrainTile = generateTerrainTile(new Index(0, 0));
 
-        // TerrainTestApplication.show(terrainTile);
+        // TerrainTileTestDisplay.show(terrainTile);
         // TerrainTileTestHelper.saveTerrainTile(terrainTile, "testTerrainSlopeWaterTileGeneration.json");
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testTerrainSlopeWaterTileGeneration.json");
         terrainTileTestHelper.assertEquals(terrainTile);

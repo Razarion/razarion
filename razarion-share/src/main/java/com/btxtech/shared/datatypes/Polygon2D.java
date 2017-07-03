@@ -50,6 +50,18 @@ public class Polygon2D {
         return c;
     }
 
+    public int insideCornerCount(Rectangle2D rect, double shrink) {
+        Rectangle2D shrunken = rect.shrink(shrink);
+        Collection<DecimalPosition> positions = shrunken.toCorners();
+        int insideCornerCount = 0;
+        for (DecimalPosition position : positions) {
+            if (isInside(position)) {
+                insideCornerCount++;
+            }
+        }
+        return insideCornerCount;
+    }
+
     public boolean isInside(Collection<DecimalPosition> positions) {
         for (DecimalPosition position : positions) {
             if (!isInside(position)) {

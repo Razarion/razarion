@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.terrain.container;
+package com.btxtech.shared.gameengine.planet.terrain.container.nativejs;
 
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 
@@ -8,6 +8,6 @@ import java.util.function.Consumer;
  * Created by Beat
  * on 27.06.2017.
  */
-public interface TerrainShapeAccess {
+public interface NativeTerrainShapeAccess {
     void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback);
 }

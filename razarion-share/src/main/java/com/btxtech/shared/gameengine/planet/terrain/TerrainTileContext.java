@@ -72,7 +72,7 @@ public class TerrainTileContext {
 
     public double interpolateSplattin(DecimalPosition absolutePosition) {
         Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
         double splattingBR = getSplatting(bottomLeft.getX() + 1, bottomLeft.getY());
@@ -91,7 +91,7 @@ public class TerrainTileContext {
 
     public double interpolateHeight(DecimalPosition absolutePosition) {
         Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
         double heightBR = groundSkeletonConfig.getHeight(bottomLeft.getX() + 1, bottomLeft.getY());
@@ -110,7 +110,7 @@ public class TerrainTileContext {
 
     public Vertex interpolateNorm(DecimalPosition absolutePosition) {
         Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
         Vertex normBR = setupNorm(bottomLeft.getX() + 1, bottomLeft.getY());
@@ -129,7 +129,7 @@ public class TerrainTileContext {
 
     public Vertex interpolateTangent(DecimalPosition absolutePosition) {
         Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
         Vertex tangentBR = setupTangent(bottomLeft.getX() + 1, bottomLeft.getY());
@@ -154,7 +154,7 @@ public class TerrainTileContext {
     @Deprecated // Find better solution
     public void insertDisplayHeight(Index nodeIndex, double height) {
         Index relativeNodeIndex = new Index(nodeIndex.getX() - TerrainUtil.toNodeIndex(terrainTileIndex.getX()), nodeIndex.getY() - TerrainUtil.toNodeIndex(terrainTileIndex.getY()));
-        terrainTile.setDisplayHeight(TerrainUtil.filedToArrayNodeIndex(relativeNodeIndex), height);
+        // TODO terrainTile.setDisplayHeight(TerrainUtil.filedToArrayNodeIndex(relativeNodeIndex), height);
     }
 
     public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
@@ -189,8 +189,8 @@ public class TerrainTileContext {
     }
 
     public Vertex setupVertex(int x, int y, double additionHeight) {
-        double absoluteX = x * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
-        double absoluteY = y * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH;
+        double absoluteX = x * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
+        double absoluteY = y * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
         return new Vertex(absoluteX, absoluteY, groundSkeletonConfig.getHeight(x, y) + additionHeight);
     }
 
@@ -204,7 +204,7 @@ public class TerrainTileContext {
         double zEast = groundSkeletonConfig.getHeight(xEast, y);
         double zSouth = groundSkeletonConfig.getHeight(x, ySouth);
         double zWest = groundSkeletonConfig.getHeight(xWest, y);
-        return new Vertex(zWest - zEast, zSouth - zNorth, 2 * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+        return new Vertex(zWest - zEast, zSouth - zNorth, 2 * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).normalize(1.0);
     }
 
     public Vertex setupTangent(int x, int y) {
@@ -214,7 +214,7 @@ public class TerrainTileContext {
         double zEast = groundSkeletonConfig.getHeight(xEast, y);
         double zWest = groundSkeletonConfig.getHeight(xWest, y);
 
-        return new Vertex(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH * 2.0, 0, zEast - zWest).normalize(1.0);
+        return new Vertex(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH * 2.0, 0, zEast - zWest).normalize(1.0);
     }
 
     public void insertSlopeGroundConnection() {

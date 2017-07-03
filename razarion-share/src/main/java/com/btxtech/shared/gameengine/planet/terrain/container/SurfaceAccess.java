@@ -102,23 +102,23 @@ public class SurfaceAccess {
 
     public Vertex interpolateNormFromGroundSkeletonConfig(DecimalPosition absolutePosition, double additionZBL, double additionZBR, double additionZTR, double additionZTL) {
         Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
         double zBR = heightFromGroundSkeletonConfig(bottomLeft.add(1, 0)) + additionZBR;
         double zTL = heightFromGroundSkeletonConfig(bottomLeft.add(0, 1)) + additionZTL;
         if (triangle1.isInside(offset)) {
             double zBL = heightFromGroundSkeletonConfig(bottomLeft) + additionZBL;
-            return new Vertex(zBL - zBR, zBL - zTL, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+            return new Vertex(zBL - zBR, zBL - zTL, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).normalize(1.0);
         } else {
             double zTR = heightFromGroundSkeletonConfig(bottomLeft.add(1, 1)) + additionZTR;
-            return new Vertex(zBR - zTR, zTL - zTR, TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+            return new Vertex(zBR - zTR, zTL - zTR, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).normalize(1.0);
         }
     }
 
     private double interpolateHeightFromGroundSkeletonConfig(DecimalPosition absolutePosition) {
         Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
+        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
 
         double zBL = heightFromGroundSkeletonConfig(bottomLeft);
         double zBR = heightFromGroundSkeletonConfig(bottomLeft.add(1, 0));

@@ -52,10 +52,10 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
 
 //            // Ground Mesh
 //            Rectangle groundRect = gameUiControl.getPlanetConfig().getGroundMeshDimension();
-//            Rectangle2D groundMesh = new Rectangle2D(groundRect.startX() * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH,
-//                    groundRect.startY() * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH,
-//                    groundRect.width() * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH,
-//                    groundRect.height() * TerrainUtil.GROUND_NODE_ABSOLUTE_LENGTH);
+//            Rectangle2D groundMesh = new Rectangle2D(groundRect.startX() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH,
+//                    groundRect.startY() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH,
+//                    groundRect.width() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH,
+//                    groundRect.height() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //            egc.strokeRectangle(groundMesh, 1.0, Color.RED);
 //
 //            // Play ground

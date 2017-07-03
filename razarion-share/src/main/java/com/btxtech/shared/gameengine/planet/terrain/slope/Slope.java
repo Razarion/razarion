@@ -18,7 +18,7 @@ import java.util.List;
  * 23.01.2016.
  */
 public class Slope {
-    public static final double DRIVEWAY_LENGTH = 20; // TODO make configurable
+    public static final double DRIVEWAY_LENGTH = 22; // TODO make configurable
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
@@ -51,8 +51,7 @@ public class Slope {
         // Set VerticalSegment predecessor and successor
         for (int i = 0; i < verticalSegments.size(); i++) {
             VerticalSegment current = verticalSegments.get(i);
-            current.setPredecessor(verticalSegments.get(CollectionUtils.getCorrectedIndex(i - 1, verticalSegments)));
-            current.setSuccessor(verticalSegments.get(CollectionUtils.getCorrectedIndex(i + 1, verticalSegments)));
+            VerticalSegment next = CollectionUtils.getCorrectedElement(i + 1, verticalSegments);
         }
 
         setupInnerOuter();
@@ -285,6 +284,10 @@ public class Slope {
             return null;
         }
         return driveways.stream().filter(driveway -> driveway.isInside(position)).findFirst().orElse(null);
+    }
+
+    public boolean isInsidePassableDriveway(Rectangle2D rect) {
+        return !(driveways == null || driveways.isEmpty()) && driveways.stream().anyMatch(driveway -> driveway.isInsidePassableSlopePolygon(rect));
     }
 
     public int getNearestInnerPolygon(DecimalPosition position) {
