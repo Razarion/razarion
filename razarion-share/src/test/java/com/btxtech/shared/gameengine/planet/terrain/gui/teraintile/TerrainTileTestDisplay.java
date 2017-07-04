@@ -39,8 +39,8 @@ public class TerrainTileTestDisplay extends Application {
         Parent root = loader.load();
         stage.setTitle("Terrain Tile Gui");
         stage.setScene(new Scene(root));
-        stage.setX(-1279);
-        stage.setY(182);
+//        stage.setX(-1279);
+//        stage.setY(182);
         stage.setWidth(1277);
         stage.setHeight(1016);
         stage.show();

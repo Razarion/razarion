@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainServiceTestBase;
 import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestDisplay;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
     public void testSimpleSlope() {
         TerrainShape terrainShape = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
+        Assert.fail("TODO assert");
     }
 
     @Test
@@ -76,5 +78,6 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
                 createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
         // TerrainShapeTestDisplay.show(terrainShape);
+        Assert.fail("TODO assert");
     }
 }

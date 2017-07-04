@@ -50,7 +50,7 @@ public abstract class TerrainTile {
 
     public native int fromArray(Object object);
 
-    public native Boolean isLand();
+    public native Boolean isFullWater();
 
-    public native void setLand(Boolean land);
+    public native void setFullWater(Boolean fullWater);
 }

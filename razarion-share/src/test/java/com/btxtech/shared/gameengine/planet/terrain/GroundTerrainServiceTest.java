@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 /**
@@ -26,6 +27,8 @@ public class GroundTerrainServiceTest extends TerrainServiceTestBase {
 
         TerrainTile terrainTile = generateTerrainTile(new Index(0, 0));
 
+        // TerrainTileTestDisplay.show(terrainTile);
+
         // TerrainTileTestHelper.saveTerrainTile(terrainTile, "testGroundTileGeneration1.json");
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testGroundTileGeneration1.json");
         terrainTileTestHelper.assertEquals(terrainTile);
@@ -49,6 +52,7 @@ public class GroundTerrainServiceTest extends TerrainServiceTestBase {
 
         TerrainTile terrainTile = generateTerrainTile(new Index(0, 0));
 
+        // TerrainTileTestDisplay.show(terrainTile);
         // TerrainTileTestHelper.saveTerrainTile(terrainTile, "testGroundTileGeneration2.json");
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testGroundTileGeneration2.json");
         terrainTileTestHelper.assertEquals(terrainTile);

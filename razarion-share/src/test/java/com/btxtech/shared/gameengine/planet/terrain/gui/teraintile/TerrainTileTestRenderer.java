@@ -2,12 +2,13 @@ package com.btxtech.shared.gameengine.planet.terrain.gui.teraintile;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 import java.util.Collection;
@@ -40,7 +41,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-    
+
     public void drawTerrainTile(TerrainTile terrainTile) {
         getGc().setLineWidth(LINE_WIDTH);
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
@@ -62,7 +63,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
             drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
         }
 
-        // drawDisplayHeight(terrainTile.getDisplayHeights(), terrainTile.getIndexX(), terrainTile.getIndexY());
+        drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
     }
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
@@ -166,19 +167,56 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-    private void drawDisplayHeight(double[] displayHeights, int tileX, int tileY) {
-        getGc().setLineWidth(LINE_WIDTH * 2);
-        getGc().setStroke(Color.RED);
 
-        Index offset = new Index(TerrainUtil.toNodeIndex(tileX), TerrainUtil.toNodeIndex(tileY));
-
-        for (int i = 0; i < displayHeights.length; i++) {
-            double height = displayHeights[i] * 0.1;
-            Index nodeIndex = TerrainUtil.arrayToFiledNodeIndex(i).add(offset);
-            DecimalPosition position = TerrainUtil.toNodeAbsolute(nodeIndex);
-            getGc().strokeLine(position.getX(), position.getY(), position.getX(), position.getY() + height);
-
+    private void drawNodes(TerrainNode[][] terrainNodes, int indexX, int indexY) {
+        if (terrainNodes == null) {
+            return;
         }
+        for (int x = 0; x < TerrainUtil.TERRAIN_TILE_NODES_COUNT; x++) {
+            for (int y = 0; y < TerrainUtil.TERRAIN_TILE_NODES_COUNT; y++) {
+                TerrainNode terrainNode = terrainNodes[x][y];
+                if (terrainNode != null) {
+                    DecimalPosition absoluteNodePosition = TerrainUtil.toTileAbsolute(new Index(indexX, indexY)).add(TerrainUtil.toNodeAbsolute(new Index(x, y)));
+                    drawNode(terrainNode, absoluteNodePosition);
+                }
+            }
+        }
+    }
+
+    private void drawNode(TerrainNode terrainNode, DecimalPosition absoluteNodePosition) {
+//        getGc().setFill(new Color(0.5, 0.5, 0.5, 0.5));
+//        getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+//        if (!terrainNode.isLand()) {
+//            getGc().setFill(new Color(1, 0, 0, 0.5));
+//            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+//        }
+        drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
+    }
+
+    private void drawSubNodes(TerrainSubNode[][] terrainSubNodes, DecimalPosition absolutePosition, int depth) {
+        if (terrainSubNodes == null) {
+            return;
+        }
+        double subNodeLength = TerrainUtil.calculateSubNodeLength(depth);
+        for (int x = 0; x < terrainSubNodes.length; x++) {
+            for (int y = 0; y < terrainSubNodes.length; y++) {
+                TerrainSubNode terrainSubNode = terrainSubNodes[x][y];
+                if (terrainSubNode != null) {
+                    drawSubNode(terrainSubNode, absolutePosition.add(x * subNodeLength, y * subNodeLength), subNodeLength, depth);
+                }
+            }
+        }
+    }
+
+    private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
+         getGc().setStroke(new Color(0, 0, 1, 1));
+         getGc().strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+        if (terrainSubNode.getTerrainSubNodes() == null && (terrainSubNode.isLand() == null || !terrainSubNode.isLand())) {
+            getGc().setFill(new Color(1, 0, 0, 0.5));
+            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+        }
+        drawSubNodes(terrainSubNode.getTerrainSubNodes(), absolutePosition, depth + 1);
+
     }
 
     private void drawTriangleContainer() {

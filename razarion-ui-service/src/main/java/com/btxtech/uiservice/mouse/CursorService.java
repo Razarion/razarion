@@ -126,7 +126,7 @@ public abstract class CursorService {
         } else {
             Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
             if (!movables.isEmpty()) {
-                setCursor(CursorType.GO, !terrainUiService.isTerrainFreeInDisplay(terrainPosition));
+                setCursor(CursorType.GO, terrainUiService.isTerrainFreeInDisplay(terrainPosition));
             } else {
                 setPointerCursor();
             }

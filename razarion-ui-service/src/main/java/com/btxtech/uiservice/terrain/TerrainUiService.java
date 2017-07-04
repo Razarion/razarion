@@ -191,7 +191,6 @@ public class TerrainUiService {
         DecimalPosition groundPosition = worldPickRay.calculatePositionOnHeightLevel(0).toXY();
         Index terrainTile = TerrainUtil.toTile(groundPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
-        DecimalPosition tileGroundPosition = groundPosition.sub(TerrainUtil.toTileAbsolute(terrainTile));
         return new Vertex(groundPosition, uiTerrainTile.interpolateDisplayHeight(groundPosition));
     }
 

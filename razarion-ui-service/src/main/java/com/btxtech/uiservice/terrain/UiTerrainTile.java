@@ -139,6 +139,23 @@ public class UiTerrainTile {
         return groundSkeletonConfig.getBottomBmDepth();
     }
 
+    public void dispose() {
+        if (modelRenderer != null) {
+            groundRenderTask.remove(modelRenderer);
+            modelRenderer.dispose();
+        }
+        if (uiTerrainSlopeTiles != null) {
+            for (UiTerrainSlopeTile uiTerrainSlopeTile : uiTerrainSlopeTiles) {
+                uiTerrainSlopeTile.dispose();
+            }
+            uiTerrainSlopeTiles = null;
+        }
+        if (uiTerrainWaterTile != null) {
+            uiTerrainWaterTile.dispose();
+            uiTerrainWaterTile = null;
+        }
+    }
+
     public double interpolateDisplayHeight(DecimalPosition terrainPosition) {
         return findNode(terrainPosition, new TerrainTileAccess<Double>() {
             @Override
@@ -163,23 +180,6 @@ public class UiTerrainTile {
         });
     }
 
-    public void dispose() {
-        if (modelRenderer != null) {
-            groundRenderTask.remove(modelRenderer);
-            modelRenderer.dispose();
-        }
-        if (uiTerrainSlopeTiles != null) {
-            for (UiTerrainSlopeTile uiTerrainSlopeTile : uiTerrainSlopeTiles) {
-                uiTerrainSlopeTile.dispose();
-            }
-            uiTerrainSlopeTiles = null;
-        }
-        if (uiTerrainWaterTile != null) {
-            uiTerrainWaterTile.dispose();
-            uiTerrainWaterTile = null;
-        }
-    }
-
     public boolean isTerrainFree(DecimalPosition terrainPosition) {
         return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
             @Override
@@ -189,7 +189,7 @@ public class UiTerrainTile {
 
             @Override
             public Boolean onTerrainTile() {
-                return terrainTile.isLand() != null && terrainTile.isLand();
+                return terrainTile.isFullWater() == null || !terrainTile.isFullWater();
             }
 
             @Override
@@ -219,7 +219,7 @@ public class UiTerrainTile {
                 return terrainTileAccess.onTerrainNode(terrainNode);
             }
             // Subnodes quadtree access
-            DecimalPosition relativeNode = terrainPosition.sub(TerrainUtil.toNodeAbsolute(terrainPosition));
+            DecimalPosition relativeNode = terrainPosition.sub(TerrainUtil.toNodeAbsolute(TerrainUtil.toNode(terrainPosition)));
             TerrainSubNode terrainSubNode = QuadTreeAccess.getSubNode(relativeNode, terrainNode.getTerrainSubNodes());
             if (terrainSubNode != null) {
                 return terrainTileAccess.onTerrainSubNode(terrainSubNode);

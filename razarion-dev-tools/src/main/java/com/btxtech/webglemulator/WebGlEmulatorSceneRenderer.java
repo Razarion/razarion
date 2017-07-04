@@ -3,6 +3,7 @@ package com.btxtech.webglemulator;
 import com.btxtech.Abstract2dRenderer;
 import com.btxtech.DevToolUtil;
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -42,25 +43,11 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
         try {
             ExtendedGraphicsContext egc = createExtendedGraphicsContext();
 
-            drawTerrain(egc);
-
             // Camera view filed
             ViewField cameraView = projectionTransformation.calculateViewField(0);
             if (!cameraView.hasNullPosition()) {
                 egc.strokePolygon(cameraView.toList(), 2.0, Color.BLACK, false);
             }
-
-//            // Ground Mesh
-//            Rectangle groundRect = gameUiControl.getPlanetConfig().getGroundMeshDimension();
-//            Rectangle2D groundMesh = new Rectangle2D(groundRect.startX() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH,
-//                    groundRect.startY() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH,
-//                    groundRect.width() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH,
-//                    groundRect.height() * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-//            egc.strokeRectangle(groundMesh, 1.0, Color.RED);
-//
-//            // Play ground
-//            egc.strokeRectangle(gameUiControl.getPlanetConfig().getPlayGround(), 1.0, Color.BLACK);
-            // egc.strokeRectangle(new Rectangle2D(50, 40, 310, 320), 1.0, Color.BLACK);
 
             renderTerrainTiles(egc);
         } catch (Exception e) {
@@ -70,45 +57,37 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
         postRender();
     }
 
-    private void drawTerrain(ExtendedGraphicsContext egc) {
-//        // Ground mesh
-//        egc.strokeVertexList(terrainUiService.getGroundUi().getVertices(), 0.2, Color.BLUE);
-//
-//        // Slopes
-//        for (SlopeUi slope : terrainUiService.getSlopes()) {
-//            egc.strokeVertexList(slope.getVertices(), 0.2, Color.RED);
-//        }
-
-        // Terrain objects
-//        egc.getGc().setFill(Color.GREEN);
-//        for (Map.Entry<TerrainObjectConfig, Collection<TerrainObjectPosition>> entry : terrainUiService.getTerrainObjectPositions().getMap().entrySet()) {
-//            TerrainObjectConfig terrainObjectConfig = entry.getKey();
-//            for (TerrainObjectPosition terrainObjectPosition : entry.getValue()) {
-//                egc.getGc().fillOval(terrainObjectPosition.getPosition().getX() - terrainObjectConfig.getRadius(),
-//                        terrainObjectPosition.getPosition().getY() - terrainObjectConfig.getRadius(),
-//                        2 * terrainObjectConfig.getRadius(), 2 * terrainObjectConfig.getRadius());
-//            }
-//
-//        }
-
-    }
-
     private void renderTerrainTiles(ExtendedGraphicsContext egc) {
         displayTerrainTiles = (Map<Index, UiTerrainTile>) DevToolUtil.readServiceFiled("displayTerrainTiles", terrainUiService);
         cacheTerrainTiles = (Map<Index, UiTerrainTile>) DevToolUtil.readServiceFiled("cacheTerrainTiles", terrainUiService);
 
-        egc.getGc().setFill(Color.color(0.0, 1.0, 0.0, 0.5));
         for (UiTerrainTile active : displayTerrainTiles.values()) {
             Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
+            renderIsFree(egc, active, rectangle2D.getStart());
+            egc.getGc().setFill(Color.color(0.0, 1.0, 0.0, 0.5));
             egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
         }
 
-        egc.getGc().setFill(Color.color(1.0, 0.0, 0.0, 0.5));
         for (UiTerrainTile active : cacheTerrainTiles.values()) {
             Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
+            //renderIsFree(egc, active, rectangle2D.getStart());
+            egc.getGc().setFill(Color.color(1.0, 0.0, 0.0, 0.5));
             egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
         }
 
 
+    }
+
+    private void renderIsFree(ExtendedGraphicsContext egc, UiTerrainTile uiTerrainTile, DecimalPosition offset) {
+        for (double x = 0; x < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; x++) {
+            for (double y = 0; y < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; y++) {
+                DecimalPosition terrainPosition = new DecimalPosition(x, y).add(offset);
+                if (uiTerrainTile.isTerrainFree(terrainPosition.add(0.5, 0.5))) {
+                } else {
+                    egc.getGc().setFill(Color.color(0, 0, 0, 1));
+                    egc.getGc().fillRect(terrainPosition.getX(), terrainPosition.getY(), 1, 1);
+                }
+            }
+        }
     }
 }

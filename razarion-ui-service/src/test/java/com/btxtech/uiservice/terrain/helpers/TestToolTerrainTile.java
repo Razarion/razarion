@@ -1,10 +1,9 @@
-package com.btxtech.shared;
+package com.btxtech.uiservice.terrain.helpers;
 
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -13,8 +12,7 @@ import java.util.Collection;
  * Created by Beat
  * 31.03.2017.
  */
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
-public class TestTerrainTile extends TerrainTile {
+public class TestToolTerrainTile extends TerrainTile {
     private int indexX;
     private int indexY;
     private int groundVertexCount;
@@ -22,10 +20,11 @@ public class TestTerrainTile extends TerrainTile {
     private double[] groundNorms;
     private double[] groundTangents;
     private double[] groundSplattings;
-    private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
-    private TestTerrainWaterTile terrainWaterTile;
+    private Collection<TerrainSlopeTile> terrainSlopeTiles;
+    private TerrainWaterTile terrainWaterTile;
     private double landWaterProportion;
-    private TestTerrainNode[][] testTerrainNodes;
+    private TerrainNode[][] terrainNodes;
+    private Boolean land;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -87,6 +86,11 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
+    public TerrainNode[][] getTerrainNodes() {
+        return terrainNodes;
+    }
+
+    @Override
     public void setGroundVertexCount(int groundVertexCount) {
         this.groundVertexCount = groundVertexCount;
     }
@@ -101,7 +105,7 @@ public class TestTerrainTile extends TerrainTile {
         if (terrainSlopeTiles == null) {
             terrainSlopeTiles = new ArrayList<>();
         }
-        terrainSlopeTiles.add((TestTerrainSlopeTile) terrainSlopeTile);
+        terrainSlopeTiles.add(terrainSlopeTile);
     }
 
     @Override
@@ -114,7 +118,7 @@ public class TestTerrainTile extends TerrainTile {
 
     @Override
     public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
-        this.terrainWaterTile = (TestTerrainWaterTile) terrainWaterTile;
+        this.terrainWaterTile = terrainWaterTile;
     }
 
     @Override
@@ -143,17 +147,17 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
-    public Boolean isFullWater() {
-        return false;
-    }
-
-    @Override
-    public TerrainNode[][] getTerrainNodes() {
-        return testTerrainNodes;
-    }
-
-    @Override
     public void setTerrainNodes(TerrainNode[][] terrainNodes) {
-        this.testTerrainNodes = (TestTerrainNode[][]) terrainNodes;
+        this.terrainNodes = terrainNodes;
+    }
+
+    @Override
+    public Boolean isFullWater() {
+        return land;
+    }
+
+    @Override
+    public void setFullWater(Boolean fullWater) {
+        this.land = fullWater;
     }
 }

@@ -271,8 +271,8 @@ public class WebGlEmulatorController implements Initializable {
             AnchorPane root = loader.load();
             stage.setTitle("Scene");
             stage.setScene(new Scene(root));
-            stage.setX(-1288);
-            stage.setY(168);
+//            stage.setX(-1288);
+//            stage.setY(168);
             stage.setOnCloseRequest(we -> sceneController = null);
             stage.show();
             stage.setOnCloseRequest(we -> sceneController.close());

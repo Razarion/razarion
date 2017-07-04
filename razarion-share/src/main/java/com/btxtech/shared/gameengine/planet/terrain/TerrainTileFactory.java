@@ -240,7 +240,7 @@ public class TerrainTileFactory {
     }
 
     private void insertHeightAndType(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
-        if(terrainShapeTile == null) {
+        if (terrainShapeTile == null) {
             return;
         }
         if (!terrainShapeTile.hasNodes()) {
@@ -257,7 +257,7 @@ public class TerrainTileFactory {
                 if (terrainShapeNode.hasSubNodes()) {
                     terrainNode.setTerrainSubNode(createTerrainSubNodes(terrainShapeNode.getTerrainShapeSubNodes()));
                 }
-                terrainNodes[nodeRelativeIndex.getY()][nodeRelativeIndex.getY()] = terrainNode;
+                terrainNodes[nodeRelativeIndex.getX()][nodeRelativeIndex.getY()] = terrainNode;
             }
         });
         terrainTileContext.setTerrainNode(terrainNodes);
@@ -267,7 +267,7 @@ public class TerrainTileFactory {
         if (children == null) {
             return null;
         }
-        int edgeCount = children.length;
+        int edgeCount = (int) Math.sqrt(children.length);
         TerrainSubNode[][] terrainSubNodes = jsInteropObjectFactory.generateTerrainSubNodeField(edgeCount);
         TerrainShapeSubNode bottomLeftShape = children[0];
         if (bottomLeftShape != null) {

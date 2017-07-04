@@ -24,7 +24,7 @@ public class QuadTreeAccess {
         if (terrainSubNode.getTerrainSubNodes() == null) {
             return terrainSubNode;
         }
-        TerrainSubNode terrainSubSubNode = getSubNode(relativePosition, depth + 1, terrainSubNode.getTerrainSubNodes());
+        TerrainSubNode terrainSubSubNode = getSubNode(relativePosition.sub(new DecimalPosition(index).multiply(divisor)), depth + 1, terrainSubNode.getTerrainSubNodes());
         if (terrainSubSubNode != null) {
             return terrainSubSubNode;
         } else {

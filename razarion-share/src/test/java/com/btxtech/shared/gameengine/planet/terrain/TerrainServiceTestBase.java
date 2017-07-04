@@ -1,7 +1,9 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.SimpleTestEnvironment;
+import com.btxtech.shared.TestTerrainNode;
 import com.btxtech.shared.TestTerrainSlopeTile;
+import com.btxtech.shared.TestTerrainSubNode;
 import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.TestTerrainWaterTile;
 import com.btxtech.shared.datatypes.DecimalPosition;
@@ -63,6 +65,7 @@ public class TerrainServiceTestBase {
         TerrainTileFactory terrainTileFactory = new TerrainTileFactory();
         injectTerrainTileContextInstance(terrainTileFactory);
         injectTerrainWaterTileContextInstance(terrainTileFactory);
+
         SimpleTestEnvironment.injectExceptionHandler(terrainTileFactory);
         SimpleTestEnvironment.injectService("terrainTileFactory", terrainService, terrainTileFactory);
 
@@ -87,15 +90,47 @@ public class TerrainServiceTestBase {
     }
 
     private void mockJsInteropObjectFactory(Object object) {
-        JsInteropObjectFactory mockJsInteropObjectFactory = createNiceMock(JsInteropObjectFactory.class);
-        expect(mockJsInteropObjectFactory.generateTerrainTile()).andReturn(new TestTerrainTile());
-        expect(mockJsInteropObjectFactory.generateTerrainSlopeTile()).andReturn(new TestTerrainSlopeTile());
-        expect(mockJsInteropObjectFactory.generateTerrainWaterTile()).andReturn(new TestTerrainWaterTile());
-        SimpleTestEnvironment.injectJsInteropObjectFactory("jsInteropObjectFactory", object, mockJsInteropObjectFactory);
-        replay(mockJsInteropObjectFactory);
+        JsInteropObjectFactory jsInteropObjectFactory = new JsInteropObjectFactory() {
+            @Override
+            public TerrainTile generateTerrainTile() {
+                return new TestTerrainTile();
+            }
+
+            @Override
+            public TerrainSlopeTile generateTerrainSlopeTile() {
+                return new TestTerrainSlopeTile();
+            }
+
+            @Override
+            public TerrainWaterTile generateTerrainWaterTile() {
+                return new TestTerrainWaterTile();
+            }
+
+            @Override
+            public TerrainNode[][] generateTerrainNodeField(int edgeCount) {
+                return new TestTerrainNode[edgeCount][edgeCount];
+            }
+
+            @Override
+            public TerrainNode generateTerrainNode() {
+                return new TestTerrainNode();
+            }
+
+            @Override
+            public TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount) {
+                return new TestTerrainSubNode[edgeCount][edgeCount];
+            }
+
+            @Override
+            public TerrainSubNode generateTerrainSubNode() {
+                return new TestTerrainSubNode();
+            }
+        };
+        SimpleTestEnvironment.injectJsInteropObjectFactory("jsInteropObjectFactory", object, jsInteropObjectFactory);
     }
 
     private void injectTerrainTileContextInstance(TerrainTileFactory terrainTileFactory) {
+        mockJsInteropObjectFactory(terrainTileFactory);
         SimpleTestEnvironment.injectInstance("terrainTileContextInstance", terrainTileFactory, () -> {
             TerrainTileContext terrainTileContext = new TerrainTileContext();
             mockJsInteropObjectFactory(terrainTileContext);
