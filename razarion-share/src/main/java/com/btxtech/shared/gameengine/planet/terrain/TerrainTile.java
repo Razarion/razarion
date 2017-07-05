@@ -53,4 +53,8 @@ public abstract class TerrainTile {
     public native Boolean isFullWater();
 
     public native void setFullWater(Boolean fullWater);
+
+    public native void setHeight(double height);
+
+    public native double getHeight();
 }

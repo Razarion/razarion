@@ -26,6 +26,8 @@ public class TestTerrainTile extends TerrainTile {
     private TestTerrainWaterTile terrainWaterTile;
     private double landWaterProportion;
     private TestTerrainNode[][] testTerrainNodes;
+    private double height;
+    private Boolean fullWater;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -143,11 +145,6 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
-    public Boolean isFullWater() {
-        return false;
-    }
-
-    @Override
     public TerrainNode[][] getTerrainNodes() {
         return testTerrainNodes;
     }
@@ -155,5 +152,25 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public void setTerrainNodes(TerrainNode[][] terrainNodes) {
         this.testTerrainNodes = (TestTerrainNode[][]) terrainNodes;
+    }
+
+    @Override
+    public void setFullWater(Boolean fullWater) {
+        this.fullWater = fullWater;
+    }
+
+    @Override
+    public Boolean isFullWater() {
+        return fullWater;
+    }
+
+    @Override
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    @Override
+    public double getHeight() {
+        return height;
     }
 }

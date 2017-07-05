@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.utils.CollectionUtils;
 
@@ -37,13 +38,16 @@ public class TerrainTileContext {
     private List<Double> groundSlopeConnectionSplattings = new ArrayList<>();
     private int triangleCornerIndex;
 
-    public void init(Index terrainTileIndex, GroundSkeletonConfig groundSkeletonConfig) {
+    public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, GroundSkeletonConfig groundSkeletonConfig) {
         this.terrainTileIndex = terrainTileIndex;
         this.groundSkeletonConfig = groundSkeletonConfig;
         this.terrainTile = jsInteropObjectFactory.generateTerrainTile();
         terrainTile.init(terrainTileIndex.getX(), terrainTileIndex.getY());
         offsetIndexX = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         offsetIndexY = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
+        if (terrainShapeTile != null) {
+            terrainTile.setHeight(terrainShapeTile.getUniformGroundHeight());
+        }
     }
 
     public void initGround() {

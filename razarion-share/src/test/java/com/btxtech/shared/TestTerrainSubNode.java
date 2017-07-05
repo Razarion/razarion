@@ -35,4 +35,9 @@ public class TestTerrainSubNode extends TerrainSubNode {
     public double getHeight() {
         return height;
     }
+
+    @Override
+    public void setHeight(double height) {
+        this.height = height;
+    }
 }

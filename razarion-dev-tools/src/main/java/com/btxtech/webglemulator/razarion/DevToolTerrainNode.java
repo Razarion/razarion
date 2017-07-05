@@ -33,6 +33,11 @@ public class DevToolTerrainNode extends TerrainNode {
     }
 
     @Override
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    @Override
     public double getHeight() {
         return height;
     }

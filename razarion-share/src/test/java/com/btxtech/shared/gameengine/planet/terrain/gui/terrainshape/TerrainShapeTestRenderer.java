@@ -136,13 +136,18 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
     private void displaySubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
         if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
-            if (terrainShapeSubNode.isLand()) {
-                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
-                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-            } else {
-                getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
-                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-            }
+//            if (terrainShapeSubNode.isLand()) {
+//                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
+//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+//            } else {
+//                getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
+//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+//            }
+
+
+            double v = terrainShapeSubNode.getHeight() / 20.0;
+            getGc().setFill(new Color(v, v, v, 1f));
+            getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
         }
         getGc().setStroke(Color.BLUEVIOLET);
         getGc().setLineWidth(LINE_WIDTH);

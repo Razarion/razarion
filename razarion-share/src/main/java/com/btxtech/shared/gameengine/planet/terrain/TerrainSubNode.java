@@ -17,4 +17,6 @@ public abstract class TerrainSubNode {
     public native void setLand(Boolean land);
 
     public native double getHeight();
+
+    public native void setHeight(double height);
 }

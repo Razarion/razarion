@@ -126,7 +126,7 @@ public class TerrainShapeSetup {
                     for (List<DecimalPosition> outerPiercing : outerPiercings) {
                         List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null);
                         if (landPolygon != null) {
-                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode);
+                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), true);
                         }
                     }
                 }
@@ -135,7 +135,7 @@ public class TerrainShapeSetup {
                     for (List<DecimalPosition> innerPiercing : innerPiercings) {
                         List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getHeight() + slope.getGroundHeight(), false, null);
                         if (landPolygon != null) {
-                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode);
+                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), false);
                         }
                     }
                 }
@@ -601,24 +601,33 @@ public class TerrainShapeSetup {
         }
     }
 
-    private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode) {
+    private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight, boolean isOuter) {
         Polygon2D landPolygon = new Polygon2D(Vertex.toXY(landVertexPolygon));
-
         TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
-            if(slope.isInsidePassableDriveway(terrainRect)) {
+            if (slope.isInsidePassableDriveway(terrainRect)) {
+                // TODO set height
                 terrainShapeSubNode.setLand();
                 return false;
             }
             int insideCornerCount = landPolygon.insideCornerCount(rectangle2D, 0.2);
             if (insideCornerCount == 0) {
                 // Full slope
+                terrainShapeSubNode.setHeight(groundHeight + slope.getHeight());
                 return false;
             } else if (insideCornerCount == 4) {
                 // Full land
+                double height;
+                if (isOuter) {
+                    height = groundHeight;
+                } else {
+                    height = groundHeight + slope.getHeight();
+                }
+                terrainShapeSubNode.setHeight(height);
                 terrainShapeSubNode.setLand();
                 return false;
             } else {
                 // Partial
+                terrainShapeSubNode.setHeight(groundHeight + slope.getHeight());
                 return true;
             }
         });

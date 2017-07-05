@@ -159,13 +159,13 @@ public class UiTerrainTile {
     public double interpolateDisplayHeight(DecimalPosition terrainPosition) {
         return findNode(terrainPosition, new TerrainTileAccess<Double>() {
             @Override
-            public Double terrainTileNoLoaded() {
+            public Double terrainTileNotLoaded() {
                 return 0.0;
             }
 
             @Override
             public Double onTerrainTile() {
-                return TerrainHelper.interpolateHeightFromGroundSkeletonConfig(terrainPosition, groundSkeletonConfig);
+                return terrainTile.getHeight() + TerrainHelper.interpolateHeightFromGroundSkeletonConfig(terrainPosition, groundSkeletonConfig);
             }
 
             @Override
@@ -183,7 +183,7 @@ public class UiTerrainTile {
     public boolean isTerrainFree(DecimalPosition terrainPosition) {
         return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
             @Override
-            public Boolean terrainTileNoLoaded() {
+            public Boolean terrainTileNotLoaded() {
                 return false;
             }
 
@@ -227,7 +227,7 @@ public class UiTerrainTile {
                 return terrainTileAccess.onTerrainNode(terrainNode);
             }
         } else {
-            return terrainTileAccess.terrainTileNoLoaded();
+            return terrainTileAccess.terrainTileNotLoaded();
         }
     }
 }

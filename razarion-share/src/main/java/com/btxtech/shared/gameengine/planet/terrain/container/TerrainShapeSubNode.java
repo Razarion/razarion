@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTer
 public class TerrainShapeSubNode {
     public static final int DEPTH = 3;
     private Boolean land;
+    private double height;
     private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
 
     public TerrainShapeSubNode() {
@@ -21,11 +22,16 @@ public class TerrainShapeSubNode {
 
     public TerrainShapeSubNode(NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
         land = nativeTerrainShapeSubNode.land;
+        height = nativeTerrainShapeSubNode.height;
         terrainShapeSubNodes = fromNativeTerrainShapeSubNode(nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
     }
 
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
     public double getHeight() {
-        return 0; // TODO
+        return height;
     }
 
     public Vertex getNorm() {
@@ -51,8 +57,13 @@ public class TerrainShapeSubNode {
     public NativeTerrainShapeSubNode toNativeTerrainShapeSubNode() {
         NativeTerrainShapeSubNode nativeTerrainShapeSubNode = new NativeTerrainShapeSubNode();
         nativeTerrainShapeSubNode.land = land;
+        nativeTerrainShapeSubNode.height = height;
         nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes = toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         return nativeTerrainShapeSubNode;
+    }
+
+    public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition subNodeRelative) {
+        return getTerrainShapeSubNode(subNodeRelative, terrainShapeSubNodes);
     }
 
     public static NativeTerrainShapeSubNode[] toNativeTerrainShapeSubNode(TerrainShapeSubNode[] terrainShapeSubNodes) {
@@ -81,10 +92,6 @@ public class TerrainShapeSubNode {
             }
         }
         return terrainShapeSubNodes;
-    }
-
-    public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition subNodeRelative) {
-        return getTerrainShapeSubNode(subNodeRelative, terrainShapeSubNodes);
     }
 
     public static TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition nodeRelative, TerrainShapeSubNode[] terrainShapeSubNodes) {

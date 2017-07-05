@@ -77,7 +77,7 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
         TerrainShape terrainShape = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
                 createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
-        // TerrainShapeTestDisplay.show(terrainShape);
+        TerrainShapeTestDisplay.show(terrainShape);
         Assert.fail("TODO assert");
     }
 }

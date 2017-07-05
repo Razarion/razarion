@@ -63,9 +63,10 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
 
         for (UiTerrainTile active : displayTerrainTiles.values()) {
             Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
-            renderIsFree(egc, active, rectangle2D.getStart());
+            // renderIsFree(egc, active, rectangle2D.getStart());
             egc.getGc().setFill(Color.color(0.0, 1.0, 0.0, 0.5));
             egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
+            renderHeight(egc, active, rectangle2D.getStart());
         }
 
         for (UiTerrainTile active : cacheTerrainTiles.values()) {
@@ -74,19 +75,28 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
             egc.getGc().setFill(Color.color(1.0, 0.0, 0.0, 0.5));
             egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
         }
-
-
     }
 
     private void renderIsFree(ExtendedGraphicsContext egc, UiTerrainTile uiTerrainTile, DecimalPosition offset) {
         for (double x = 0; x < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; x++) {
             for (double y = 0; y < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; y++) {
                 DecimalPosition terrainPosition = new DecimalPosition(x, y).add(offset);
-                if (uiTerrainTile.isTerrainFree(terrainPosition.add(0.5, 0.5))) {
-                } else {
+                if (!uiTerrainTile.isTerrainFree(terrainPosition.add(0.5, 0.5))) {
                     egc.getGc().setFill(Color.color(0, 0, 0, 1));
                     egc.getGc().fillRect(terrainPosition.getX(), terrainPosition.getY(), 1, 1);
                 }
+            }
+        }
+    }
+
+    private void renderHeight(ExtendedGraphicsContext egc, UiTerrainTile uiTerrainTile, DecimalPosition offset) {
+        for (double x = 0; x < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; x++) {
+            for (double y = 0; y < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; y++) {
+                DecimalPosition terrainPosition = new DecimalPosition(x, y).add(offset);
+                double height = uiTerrainTile.interpolateDisplayHeight(terrainPosition.add(0.5, 0.5));
+                double v = (height + 10) / 20;
+                egc.getGc().setFill(Color.color(v, v, v, 1));
+                egc.getGc().fillRect(terrainPosition.getX(), terrainPosition.getY(), 1, 1);
             }
         }
     }

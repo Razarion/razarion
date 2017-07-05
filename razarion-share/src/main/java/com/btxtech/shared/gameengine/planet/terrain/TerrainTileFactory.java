@@ -44,7 +44,7 @@ public class TerrainTileFactory {
         long time = System.currentTimeMillis();
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
-        terrainTileContext.init(terrainTileIndex, terrainTypeService.getGroundSkeletonConfig());
+        terrainTileContext.init(terrainTileIndex, terrainShapeTile, terrainTypeService.getGroundSkeletonConfig());
         insertSlopeGroundConnectionPart(terrainTileContext, terrainShapeTile);
         insertGroundPart(terrainTileContext, terrainShapeTile);
         insertSlopePart(terrainTileContext, terrainShapeTile);
@@ -254,6 +254,7 @@ public class TerrainTileFactory {
                 if (terrainShapeNode.isFullLand()) {
                     terrainNode.setLand(true);
                 }
+                terrainNode.setHeight(terrainShapeNode.getUniformGroundHeight());
                 if (terrainShapeNode.hasSubNodes()) {
                     terrainNode.setTerrainSubNode(createTerrainSubNodes(terrainShapeNode.getTerrainShapeSubNodes()));
                 }
@@ -293,6 +294,7 @@ public class TerrainTileFactory {
         if (terrainShapeSubNode.isLand()) {
             terrainSubNode.setLand(true);
         }
+        terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
         terrainSubNode.setTerrainSubNodes(createTerrainSubNodes(terrainShapeSubNode.getTerrainShapeSubNodes()));
         return terrainSubNode;
     }

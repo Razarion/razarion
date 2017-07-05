@@ -36,4 +36,9 @@ public class TestTerrainNode extends TerrainNode {
     public double getHeight() {
         return height;
     }
+
+    @Override
+    public void setHeight(double height) {
+        this.height = height;
+    }
 }

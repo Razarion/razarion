@@ -25,6 +25,7 @@ public class DevToolTerrainTile extends TerrainTile {
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private Boolean fullWater;
+    private double height;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -159,5 +160,15 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public void setFullWater(Boolean fullWater) {
         this.fullWater = fullWater;
+    }
+
+    @Override
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    @Override
+    public double getHeight() {
+        return height;
     }
 }

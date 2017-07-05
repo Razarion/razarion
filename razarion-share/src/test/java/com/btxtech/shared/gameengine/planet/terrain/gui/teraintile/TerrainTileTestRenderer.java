@@ -209,10 +209,17 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
-         getGc().setStroke(new Color(0, 0, 1, 1));
-         getGc().strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
-        if (terrainSubNode.getTerrainSubNodes() == null && (terrainSubNode.isLand() == null || !terrainSubNode.isLand())) {
-            getGc().setFill(new Color(1, 0, 0, 0.5));
+        getGc().setStroke(new Color(0, 0, 1, 1));
+        getGc().strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+        if (terrainSubNode.getTerrainSubNodes() == null) {
+            if (terrainSubNode.isLand() == null || !terrainSubNode.isLand()) {
+                getGc().setFill(new Color(1, 0, 0, 0.5));
+                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+            }
+
+            double height = terrainSubNode.getHeight();
+            double v = height / 20.0;
+            getGc().setFill(Color.color(v, v, v, 0.5));
             getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
         }
         drawSubNodes(terrainSubNode.getTerrainSubNodes(), absolutePosition, depth + 1);

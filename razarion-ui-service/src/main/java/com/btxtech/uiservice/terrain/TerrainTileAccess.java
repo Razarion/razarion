@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
  * on 30.06.2017.
  */
 public interface TerrainTileAccess<T> {
-    T terrainTileNoLoaded();
+    T terrainTileNotLoaded();
 
     T onTerrainTile();
 
