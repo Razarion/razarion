@@ -107,8 +107,13 @@ public class TerrainShapeSetup {
                     List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
                     if (outerPiercings != null) {
                         for (List<DecimalPosition> outerPiercing : outerPiercings) {
-                            terrainShape.getOrCreateTerrainShapeNode(nodeIndex).addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
-                            terrainShape.getOrCreateTerrainShapeNode(nodeIndex).addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
+                            TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
+                            List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null);
+                            terrainShapeNode.addGroundSlopeConnections(landPolygon);
+                            if (landPolygon != null) {
+                                fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), true);
+                            }
                         }
                     }
                 }

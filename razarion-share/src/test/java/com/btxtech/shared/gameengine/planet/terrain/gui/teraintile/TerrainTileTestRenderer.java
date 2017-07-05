@@ -218,7 +218,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
             }
 
             double height = terrainSubNode.getHeight();
-            double v = height / 20.0;
+            double v = (height + 5) / 25.0;
             getGc().setFill(Color.color(v, v, v, 0.5));
             getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
         }

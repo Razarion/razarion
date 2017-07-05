@@ -21,10 +21,10 @@ import java.util.List;
  */
 public class TerrainShapeTest extends TerrainServiceTestBase {
 
-    protected TerrainShape setup(TerrainSlopeCorner... terrainSlopeCorners) {
+    protected TerrainShape setup(SlopeSkeletonConfig.Type type, TerrainSlopeCorner... terrainSlopeCorners) {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
+        slopeSkeletonConfigLand.setId(1).setType(type);
         slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {createSlopeNode(0, 0, 0.3),},
@@ -67,16 +67,23 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
 
     @Test
     public void testSimpleSlope() {
-        TerrainShape terrainShape = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
+        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
         Assert.fail("TODO assert");
     }
 
     @Test
     public void testSlopeDriveway() {
-        TerrainShape terrainShape = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
+        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
                 createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
+        TerrainShapeTestDisplay.show(terrainShape);
+        Assert.fail("TODO assert");
+    }
+
+    @Test
+    public void testWater() {
+        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.WATER, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
         Assert.fail("TODO assert");
     }
