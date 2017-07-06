@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
                 createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
         // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
+        TerrainTileTestDisplay.show(terrainTiles);
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testDrivewayEdge1.json");
         terrainTileTestHelper.assertEquals(terrainTiles);
     }
@@ -33,6 +35,7 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
                 createTerrainSlopeCorner(70, 40, 1), createTerrainSlopeCorner(90, 40, 1), createTerrainSlopeCorner(100, 40, 1), createTerrainSlopeCorner(100, 50, 1), createTerrainSlopeCorner(100, 80, 1),// driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
         // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
+        TerrainTileTestDisplay.show(terrainTiles);
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testDrivewayCorner1.json");
         terrainTileTestHelper.assertEquals(terrainTiles);
     }

@@ -33,6 +33,7 @@ public class TerrainShapeNode {
     private Double fullWaterLevel;
     private Collection<Obstacle> obstacles;
     private Boolean hiddenUnderSlope;
+    private Boolean drivewayBreakingLine;
 
     public TerrainShapeNode() {
     }
@@ -42,6 +43,7 @@ public class TerrainShapeNode {
         uniformGroundHeight = nativeTerrainShapeNode.uniformGroundHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
         hiddenUnderSlope = nativeTerrainShapeNode.hiddenUnderSlope;
+        drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
 
         if (nativeTerrainShapeNode.obstacles != null) {
             Collection<Obstacle> obstacles = new ArrayList<>();
@@ -230,6 +232,15 @@ public class TerrainShapeNode {
         }
         nativeTerrainShapeNode.hiddenUnderSlope = hiddenUnderSlope;
         nativeTerrainShapeNode.nativeTerrainShapeSubNodes = TerrainShapeSubNode.toNativeTerrainShapeSubNode(terrainShapeSubNodes);
+        nativeTerrainShapeNode.drivewayBreakingLine = drivewayBreakingLine;
         return nativeTerrainShapeNode;
+    }
+
+    public void setDrivewayBreakingLine(Boolean drivewayBreakingLine) {
+        this.drivewayBreakingLine = drivewayBreakingLine;
+    }
+
+    public boolean istDrivewayBreakingLine() {
+        return drivewayBreakingLine != null && drivewayBreakingLine;
     }
 }

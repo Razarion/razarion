@@ -254,6 +254,12 @@ public class TerrainTileFactory {
                 if (terrainShapeNode.isFullLand()) {
                     terrainNode.setLand(true);
                 }
+                if(terrainShapeNode.istDrivewayBreakingLine()) {
+                    terrainNode.setLand(true);
+                }
+                if(terrainShapeNode.isFullDriveway()) {
+                    terrainNode.setLand(true);
+                }
                 terrainNode.setHeight(terrainShapeNode.getUniformGroundHeight());
                 if (terrainShapeNode.hasSubNodes()) {
                     terrainNode.setTerrainSubNode(createTerrainSubNodes(terrainShapeNode.getTerrainShapeSubNodes()));
