@@ -87,6 +87,16 @@ public class DevToolTerrainTile extends TerrainTile {
     }
 
     @Override
+    public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
+        terrainNodes = new TerrainNode[terrainTileNodesEdgeCount][terrainTileNodesEdgeCount];
+    }
+
+    @Override
+    public void insertTerrainNode(int x, int y, TerrainNode terrainNode) {
+        terrainNodes[x][y] = terrainNode;
+    }
+
+    @Override
     public TerrainNode[][] getTerrainNodes() {
         return terrainNodes;
     }
@@ -145,11 +155,6 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public int fromArray(Object object) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setTerrainNodes(TerrainNode[][] terrainNodes) {
-        this.terrainNodes = terrainNodes;
     }
 
     @Override

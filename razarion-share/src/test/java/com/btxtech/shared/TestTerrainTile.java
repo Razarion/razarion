@@ -145,13 +145,18 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
-    public TerrainNode[][] getTerrainNodes() {
-        return testTerrainNodes;
+    public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
+        testTerrainNodes = new TestTerrainNode[terrainTileNodesEdgeCount][terrainTileNodesEdgeCount];
     }
 
     @Override
-    public void setTerrainNodes(TerrainNode[][] terrainNodes) {
-        this.testTerrainNodes = (TestTerrainNode[][]) terrainNodes;
+    public void insertTerrainNode(int x, int y, TerrainNode terrainNode) {
+        testTerrainNodes[x][y] = (TestTerrainNode)terrainNode;
+    }
+
+    @Override
+    public TerrainNode[][] getTerrainNodes() {
+        return testTerrainNodes;
     }
 
     @Override

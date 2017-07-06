@@ -246,7 +246,8 @@ public class TerrainTileFactory {
         if (!terrainShapeTile.hasNodes()) {
             return;
         }
-        TerrainNode[][] terrainNodes = jsInteropObjectFactory.generateTerrainNodeField(TerrainUtil.TERRAIN_TILE_NODES_COUNT);
+
+        terrainTileContext.initTerrainNodeField(TerrainUtil.TERRAIN_TILE_NODES_COUNT);
 
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode != null) {
@@ -254,45 +255,39 @@ public class TerrainTileFactory {
                 if (terrainShapeNode.isFullLand()) {
                     terrainNode.setLand(true);
                 }
-                if(terrainShapeNode.istDrivewayBreakingLine()) {
+                if (terrainShapeNode.istDrivewayBreakingLine()) {
                     terrainNode.setLand(true);
                 }
-                if(terrainShapeNode.isFullDriveway()) {
+                if (terrainShapeNode.isFullDriveway()) {
                     terrainNode.setLand(true);
                 }
                 terrainNode.setHeight(terrainShapeNode.getUniformGroundHeight());
                 if (terrainShapeNode.hasSubNodes()) {
-                    terrainNode.setTerrainSubNode(createTerrainSubNodes(terrainShapeNode.getTerrainShapeSubNodes()));
+                    terrainNode.initTerrainSubNodeField((int) Math.sqrt(terrainShapeNode.getTerrainShapeSubNodes().length));
+                    createTerrainSubNodes(terrainShapeNode.getTerrainShapeSubNodes(), terrainNode::insertTerrainSubNode);
                 }
-                terrainNodes[nodeRelativeIndex.getX()][nodeRelativeIndex.getY()] = terrainNode;
+                terrainTileContext.setTerrainNode(nodeRelativeIndex.getX(), nodeRelativeIndex.getY(), terrainNode);
             }
         });
-        terrainTileContext.setTerrainNode(terrainNodes);
     }
 
-    private TerrainSubNode[][] createTerrainSubNodes(TerrainShapeSubNode[] children) {
-        if (children == null) {
-            return null;
-        }
-        int edgeCount = (int) Math.sqrt(children.length);
-        TerrainSubNode[][] terrainSubNodes = jsInteropObjectFactory.generateTerrainSubNodeField(edgeCount);
+    private void createTerrainSubNodes(TerrainShapeSubNode[] children, SubNodeFeeder subNodeFeeder) {
         TerrainShapeSubNode bottomLeftShape = children[0];
         if (bottomLeftShape != null) {
-            terrainSubNodes[0][0] = createTerrainSubNode(bottomLeftShape);
+            subNodeFeeder.insertNode(0, 0, createTerrainSubNode(bottomLeftShape));
         }
         TerrainShapeSubNode bottomRightShape = children[1];
         if (bottomRightShape != null) {
-            terrainSubNodes[1][0] = createTerrainSubNode(bottomRightShape);
+            subNodeFeeder.insertNode(1, 0, createTerrainSubNode(bottomRightShape));
         }
         TerrainShapeSubNode topRightShape = children[2];
         if (topRightShape != null) {
-            terrainSubNodes[1][1] = createTerrainSubNode(topRightShape);
+            subNodeFeeder.insertNode(1, 1, createTerrainSubNode(topRightShape));
         }
         TerrainShapeSubNode topLeftShape = children[3];
         if (topLeftShape != null) {
-            terrainSubNodes[0][1] = createTerrainSubNode(topLeftShape);
+            subNodeFeeder.insertNode(0, 1, createTerrainSubNode(topLeftShape));
         }
-        return terrainSubNodes;
     }
 
     private TerrainSubNode createTerrainSubNode(TerrainShapeSubNode terrainShapeSubNode) {
@@ -301,8 +296,15 @@ public class TerrainTileFactory {
             terrainSubNode.setLand(true);
         }
         terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
-        terrainSubNode.setTerrainSubNodes(createTerrainSubNodes(terrainShapeSubNode.getTerrainShapeSubNodes()));
+        if(terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+            terrainSubNode.initTerrainSubNodeField(2);
+            createTerrainSubNodes(terrainShapeSubNode.getTerrainShapeSubNodes(), terrainSubNode::insertTerrainSubNode);
+        }
         return terrainSubNode;
+    }
+
+    private interface SubNodeFeeder {
+        void insertNode(int x, int y, TerrainSubNode terrainSubNode);
     }
 
 }

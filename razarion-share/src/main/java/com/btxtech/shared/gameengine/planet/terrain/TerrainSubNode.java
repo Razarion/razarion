@@ -8,9 +8,11 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainSubNode", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainSubNode {
+    public native void initTerrainSubNodeField(int terrainSubNodeEdgeCount);
+
     public native TerrainSubNode[][] getTerrainSubNodes();
 
-    public native void setTerrainSubNodes(TerrainSubNode[][] terrainSubNodes);
+    public native void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode);
 
     public native Boolean isLand();
 

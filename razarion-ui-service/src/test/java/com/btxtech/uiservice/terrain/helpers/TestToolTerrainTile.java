@@ -25,6 +25,7 @@ public class TestToolTerrainTile extends TerrainTile {
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private Boolean land;
+    private double height;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -83,6 +84,16 @@ public class TestToolTerrainTile extends TerrainTile {
     @Override
     public double[] getGroundSplattings() {
         return groundSplattings;
+    }
+
+    @Override
+    public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
+        terrainNodes = new TerrainNode[terrainTileNodesEdgeCount][terrainTileNodesEdgeCount];
+    }
+
+    @Override
+    public void insertTerrainNode(int x, int y, TerrainNode terrainNode) {
+        terrainNodes[x][y] = terrainNode;
     }
 
     @Override
@@ -147,13 +158,18 @@ public class TestToolTerrainTile extends TerrainTile {
     }
 
     @Override
-    public void setTerrainNodes(TerrainNode[][] terrainNodes) {
-        this.terrainNodes = terrainNodes;
+    public Boolean isFullWater() {
+        return land;
     }
 
     @Override
-    public Boolean isFullWater() {
-        return land;
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    @Override
+    public double getHeight() {
+        return height;
     }
 
     @Override

@@ -26,8 +26,6 @@ import org.junit.Assert;
 
 import java.util.List;
 
-import static org.easymock.EasyMock.*;
-
 /**
  * Created by Beat
  * 03.04.2017.
@@ -107,18 +105,8 @@ public class TerrainServiceTestBase {
             }
 
             @Override
-            public TerrainNode[][] generateTerrainNodeField(int edgeCount) {
-                return new TestTerrainNode[edgeCount][edgeCount];
-            }
-
-            @Override
             public TerrainNode generateTerrainNode() {
                 return new TestTerrainNode();
-            }
-
-            @Override
-            public TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount) {
-                return new TestTerrainSubNode[edgeCount][edgeCount];
             }
 
             @Override

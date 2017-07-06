@@ -31,18 +31,8 @@ public class DevToolJsInteropObjectFactory implements JsInteropObjectFactory {
     }
 
     @Override
-    public TerrainNode[][] generateTerrainNodeField(int edgeCount) {
-        return new DevToolTerrainNode[edgeCount][edgeCount];
-    }
-
-    @Override
     public TerrainNode generateTerrainNode() {
         return new DevToolTerrainNode();
-    }
-
-    @Override
-    public TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount) {
-        return new DevToolTerrainSubNode[edgeCount][edgeCount];
     }
 
     @Override

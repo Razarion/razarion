@@ -18,8 +18,13 @@ public class DevToolTerrainNode extends TerrainNode {
     }
 
     @Override
-    public void setTerrainSubNode(TerrainSubNode[][] terrainSubNodes) {
-        this.terrainSubNodes = terrainSubNodes;
+    public void initTerrainSubNodeField(int terrainSubNodeEdgeCount) {
+        terrainSubNodes = new TerrainSubNode[terrainSubNodeEdgeCount][terrainSubNodeEdgeCount];
+    }
+
+    @Override
+    public void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode) {
+        terrainSubNodes[x][y] = terrainSubNode;
     }
 
     @Override

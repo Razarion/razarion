@@ -18,11 +18,7 @@ public interface JsInteropObjectFactory {
 
     TerrainWaterTile generateTerrainWaterTile();
 
-    TerrainNode[][] generateTerrainNodeField(int edgeCount);
-
     TerrainNode generateTerrainNode();
-
-    TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount);
 
     TerrainSubNode generateTerrainSubNode();
 }

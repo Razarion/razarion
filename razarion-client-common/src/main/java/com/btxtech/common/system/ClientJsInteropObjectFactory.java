@@ -33,19 +33,9 @@ public class ClientJsInteropObjectFactory implements JsInteropObjectFactory {
     }
 
     @Override
-    public TerrainNode[][] generateTerrainNodeField(int edgeCount) {
-        return new TerrainNode[edgeCount][edgeCount];
-    }
-
-    @Override
     public TerrainNode generateTerrainNode() {
         return new TerrainNode() {
         };
-    }
-
-    @Override
-    public TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount) {
-        return new TerrainSubNode[edgeCount][edgeCount];
     }
 
     @Override

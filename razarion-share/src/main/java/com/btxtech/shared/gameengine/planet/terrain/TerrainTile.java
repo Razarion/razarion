@@ -26,10 +26,6 @@ public abstract class TerrainTile {
 
     public native double[] getGroundSplattings();
 
-    public native TerrainNode[][] getTerrainNodes();
-
-    public native void setTerrainNodes(TerrainNode[][] terrainNodes);
-
     public native void setGroundVertexCount(int groundVertexCount);
 
     public native int getGroundVertexCount();
@@ -46,10 +42,6 @@ public abstract class TerrainTile {
 
     public native void setLandWaterProportion(double landWaterProportion);
 
-    public native Object toArray();
-
-    public native int fromArray(Object object);
-
     public native Boolean isFullWater();
 
     public native void setFullWater(Boolean fullWater);
@@ -57,4 +49,15 @@ public abstract class TerrainTile {
     public native void setHeight(double height);
 
     public native double getHeight();
+
+    public native void initTerrainNodeField(int terrainTileNodesEdgeCount);
+
+    public native void insertTerrainNode(int x, int y, TerrainNode terrainNode);
+
+    public native TerrainNode[][] getTerrainNodes();
+
+    public native Object toArray();
+
+    public native int fromArray(Object object);
+
 }

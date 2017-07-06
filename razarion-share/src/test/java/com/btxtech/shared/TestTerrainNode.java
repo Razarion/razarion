@@ -13,13 +13,18 @@ public class TestTerrainNode extends TerrainNode {
     private double height;
 
     @Override
+    public void initTerrainSubNodeField(int terrainSubNodeEdgeCount) {
+        terrainSubNodes = new TerrainSubNode[terrainSubNodeEdgeCount][terrainSubNodeEdgeCount];
+    }
+
+    @Override
     public TerrainSubNode[][] getTerrainSubNodes() {
         return terrainSubNodes;
     }
 
     @Override
-    public void setTerrainSubNode(TerrainSubNode[][] terrainSubNodes) {
-        this.terrainSubNodes = terrainSubNodes;
+    public void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode) {
+        terrainSubNodes[x][y] = terrainSubNode;
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.uiservice.UiTestHelper;
@@ -82,50 +81,42 @@ public class UiTerrainTileTest {
     @Test
     public void testNodes() {
         TestToolTerrainTile testToolTerrainTile = new TestToolTerrainTile();
-        TestTerrainNode[][] testTerrainNodes = new TestTerrainNode[TerrainUtil.TERRAIN_TILE_NODES_COUNT][TerrainUtil.TERRAIN_TILE_NODES_COUNT];
+        testToolTerrainTile.initTerrainNodeField(TerrainUtil.TERRAIN_TILE_NODES_COUNT);
         // Node
         TestTerrainNode testTerrainNode = new TestTerrainNode();
         testTerrainNode.setLand(false);
-        testTerrainNodes[0][0] = testTerrainNode;
+        testToolTerrainTile.insertTerrainNode(0, 0, testTerrainNode);
         // Sub node depth = 1
         testTerrainNode = new TestTerrainNode();
-        testTerrainNodes[3][4] = testTerrainNode;
-        TerrainSubNode[][] terrainSubNodes1 = new TerrainSubNode[2][2];
-        testTerrainNode.setTerrainSubNode(terrainSubNodes1);
+        testToolTerrainTile.insertTerrainNode(3, 4, testTerrainNode);
+        testTerrainNode.initTerrainSubNodeField(2);
         TestTerrainSubNode terrainSubNode1 = new TestTerrainSubNode();
         terrainSubNode1.setLand(true);
-        terrainSubNodes1[0][0] = terrainSubNode1;
+        testTerrainNode.insertTerrainSubNode(0, 0, terrainSubNode1);
         // Sub node depth = 2
         testTerrainNode = new TestTerrainNode();
-        testTerrainNodes[5][6] = testTerrainNode;
-        terrainSubNodes1 = new TerrainSubNode[2][2];
-        testTerrainNode.setTerrainSubNode(terrainSubNodes1);
+        testToolTerrainTile.insertTerrainNode(5, 6, testTerrainNode);
+        testTerrainNode.initTerrainSubNodeField(2);
         terrainSubNode1 = new TestTerrainSubNode();
-        terrainSubNodes1[0][0] = terrainSubNode1;
-        TerrainSubNode[][] terrainSubNodes2 = new TerrainSubNode[2][2];
-        terrainSubNode1.setTerrainSubNodes(terrainSubNodes2);
+        testTerrainNode.insertTerrainSubNode(0, 0, terrainSubNode1);
+        terrainSubNode1.initTerrainSubNodeField(2);
         TestTerrainSubNode terrainSubNode2 = new TestTerrainSubNode();
         terrainSubNode2.setLand(true);
-        terrainSubNodes2[0][1] = terrainSubNode2;
+        terrainSubNode1.insertTerrainSubNode(0, 1, terrainSubNode2);
         // Sub node depth = 3
         testTerrainNode = new TestTerrainNode();
-        testTerrainNodes[2][6] = testTerrainNode;
-        terrainSubNodes1 = new TerrainSubNode[2][2];
-        testTerrainNode.setTerrainSubNode(terrainSubNodes1);
+        testToolTerrainTile.insertTerrainNode(2, 6, testTerrainNode);
+        testTerrainNode.initTerrainSubNodeField(2);
         terrainSubNode1 = new TestTerrainSubNode();
-        terrainSubNodes1[0][1] = terrainSubNode1;
-        terrainSubNodes2 = new TerrainSubNode[2][2];
-        terrainSubNode1.setTerrainSubNodes(terrainSubNodes2);
+        testTerrainNode.insertTerrainSubNode(0, 1, terrainSubNode1);
+        terrainSubNode1.initTerrainSubNodeField(2);
         terrainSubNode2 = new TestTerrainSubNode();
-        terrainSubNodes2[1][1] = terrainSubNode2;
-        TerrainSubNode[][] terrainSubNodes3 = new TerrainSubNode[2][2];
-        terrainSubNode2.setTerrainSubNodes(terrainSubNodes3);
+        terrainSubNode1.insertTerrainSubNode(1, 1, terrainSubNode2);
+        terrainSubNode2.initTerrainSubNodeField(2);
         TestTerrainSubNode terrainSubNode3 = new TestTerrainSubNode();
         terrainSubNode3.setLand(true);
-        terrainSubNodes3[1][0] = terrainSubNode3;
+        terrainSubNode2.insertTerrainSubNode(1, 0, terrainSubNode3);
 
-
-        testToolTerrainTile.setTerrainNodes(testTerrainNodes);
         UiTerrainTile uiTerrainTile = setup(testToolTerrainTile);
         UiTestGuiDisplay.show(new TestUiTerrainTileRenderer(uiTerrainTile));
         Assert.fail("TODO assert");

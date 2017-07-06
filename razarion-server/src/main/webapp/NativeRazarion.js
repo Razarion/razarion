@@ -168,13 +168,18 @@ com = {
                     this.multiply = function (other) {
                         var out = new Float32Array(16);
 
-                        var a00 = this.float32Array[0], a01 = this.float32Array[1], a02 = this.float32Array[2], a03 = this.float32Array[3],
-                            a10 = this.float32Array[4], a11 = this.float32Array[5], a12 = this.float32Array[6], a13 = this.float32Array[7],
-                            a20 = this.float32Array[8], a21 = this.float32Array[9], a22 = this.float32Array[10], a23 = this.float32Array[11],
-                            a30 = this.float32Array[12], a31 = this.float32Array[13], a32 = this.float32Array[14], a33 = this.float32Array[15];
+                        var a00 = this.float32Array[0], a01 = this.float32Array[1], a02 = this.float32Array[2],
+                            a03 = this.float32Array[3],
+                            a10 = this.float32Array[4], a11 = this.float32Array[5], a12 = this.float32Array[6],
+                            a13 = this.float32Array[7],
+                            a20 = this.float32Array[8], a21 = this.float32Array[9], a22 = this.float32Array[10],
+                            a23 = this.float32Array[11],
+                            a30 = this.float32Array[12], a31 = this.float32Array[13], a32 = this.float32Array[14],
+                            a33 = this.float32Array[15];
 
                         // Cache only the current line of the second matrix
-                        var b0 = other.float32Array[0], b1 = other.float32Array[1], b2 = other.float32Array[2], b3 = other.float32Array[3];
+                        var b0 = other.float32Array[0], b1 = other.float32Array[1], b2 = other.float32Array[2],
+                            b3 = other.float32Array[3];
                         out[0] = b0 * a00 + b1 * a10 + b2 * a20 + b3 * a30;
                         out[1] = b0 * a01 + b1 * a11 + b2 * a21 + b3 * a31;
                         out[2] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
@@ -213,10 +218,14 @@ com = {
                     this.invert = function () {
                         var out = new Float32Array(16);
 
-                        var a00 = this.float32Array[0], a01 = this.float32Array[1], a02 = this.float32Array[2], a03 = this.float32Array[3],
-                            a10 = this.float32Array[4], a11 = this.float32Array[5], a12 = this.float32Array[6], a13 = this.float32Array[7],
-                            a20 = this.float32Array[8], a21 = this.float32Array[9], a22 = this.float32Array[10], a23 = this.float32Array[11],
-                            a30 = this.float32Array[12], a31 = this.float32Array[13], a32 = this.float32Array[14], a33 = this.float32Array[15],
+                        var a00 = this.float32Array[0], a01 = this.float32Array[1], a02 = this.float32Array[2],
+                            a03 = this.float32Array[3],
+                            a10 = this.float32Array[4], a11 = this.float32Array[5], a12 = this.float32Array[6],
+                            a13 = this.float32Array[7],
+                            a20 = this.float32Array[8], a21 = this.float32Array[9], a22 = this.float32Array[10],
+                            a23 = this.float32Array[11],
+                            a30 = this.float32Array[12], a31 = this.float32Array[13], a32 = this.float32Array[14],
+                            a33 = this.float32Array[15],
 
                             b00 = a00 * a11 - a01 * a10,
                             b01 = a00 * a12 - a02 * a10,
@@ -318,7 +327,6 @@ com = {
                         this.groundNorms = new Float32Array(groundSizeVec);
                         this.groundTangents = new Float32Array(groundSizeVec);
                         this.groundSplattings = new Float32Array(groundSizeScalar);
-                        this.displayHeights = new Float32Array(nodes);
                     };
 
                     this.setGroundTriangleCorner = function (triangleCornerIndex, vertexX, vertexY, vertexZ, normX, normY, normZ, tangentX, tangentY, tangentZ, splatting) {
@@ -333,10 +341,6 @@ com = {
                         this.groundTangents[cornerScalarIndex + 1] = tangentY;
                         this.groundTangents[cornerScalarIndex + 2] = tangentZ;
                         this.groundSplattings[triangleCornerIndex] = splatting;
-                    };
-
-                    this.setDisplayHeight = function (index, height) {
-                        return this.displayHeights[index] = height;
                     };
 
                     this.getIndexX = function () {
@@ -363,10 +367,6 @@ com = {
                         return this.groundSplattings;
                     };
 
-                    this.getDisplayHeights = function () {
-                        return this.displayHeights;
-                    };
-
                     this.setGroundVertexCount = function (groundVertexCount) {
                         this.groundVertexCount = groundVertexCount;
                     };
@@ -376,7 +376,7 @@ com = {
                     };
 
                     this.addTerrainSlopeTile = function (terrainSlopeTile) {
-                        if (typeof this.terrainSlopeTiles == 'undefined') {
+                        if (typeof this.terrainSlopeTiles === 'undefined') {
                             this.terrainSlopeTiles = [];
                         }
                         this.terrainSlopeTiles.push(terrainSlopeTile)
@@ -402,18 +402,64 @@ com = {
                         return this.landWaterProportion;
                     };
 
+                    this.isFullWater = function () {
+                        return this.fullWater;
+                    };
+
+                    this.setFullWater = function (fullWater) {
+                        this.fullWater = fullWater;
+                    };
+
+                    this.setHeight = function (height) {
+                        this.height = height;
+                    };
+
+                    this.getHeight = function () {
+                        return this.height;
+                    };
+
+                    this.initTerrainNodeField = function (terrainTileNodesEdgeCount) {
+                        this.terrainNodes = new Array(terrainTileNodesEdgeCount);
+                        for (var i = 0; i < terrainTileNodesEdgeCount; i++) {
+                            this.terrainNodes[i] = new Array(terrainTileNodesEdgeCount);
+                        }
+                    };
+
+                    this.insertTerrainNode = function (x, y, terrainNodes) {
+                        this.terrainNodes[x][y] = terrainNodes;
+                    };
+
+                    this.getTerrainNodes = function () {
+                        return this.terrainNodes;
+                    };
+
                     this.toArray = function () {
                         var terrainSlopeTilesArray = [];
-                        if (typeof this.terrainSlopeTiles != 'undefined') {
+                        if (typeof this.terrainSlopeTiles !== 'undefined') {
                             for (var i = 0; i < this.terrainSlopeTiles.length; i++) {
                                 terrainSlopeTilesArray.push(this.terrainSlopeTiles[i].toArray());
                             }
                         }
                         var terrainWaterTile = [];
-                        if (typeof this.terrainWaterTile != 'undefined') {
+                        if (typeof this.terrainWaterTile !== 'undefined') {
                             terrainWaterTile = this.terrainWaterTile.toArray();
                         }
-                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, this.displayHeights, terrainSlopeTilesArray, terrainWaterTile, this.landWaterProportion];
+
+                        var terrainNodesField = [];
+                        if (typeof this.terrainNodes !== 'undefined' && this.terrainNodes.length > 0) {
+                            terrainNodesField = new Array(this.terrainNodes.length);
+                            for (var x = 0; x < this.terrainNodes.length; x++) {
+                                terrainNodesField[x] = new Array(this.terrainNodes[x].length);
+                                for (var y = 0; y < this.terrainNodes[x].length; y++) {
+                                    var terrainNode = this.terrainNodes[x][y];
+                                    if (typeof terrainNode !== 'undefined') {
+                                        terrainNodesField[x][y] = terrainNode.toArray();
+                                    }
+                                }
+                            }
+                        }
+
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray, terrainWaterTile, this.landWaterProportion, this.fullWater, this.height, terrainNodesField];
                     };
 
                     this.fromArray = function (array) {
@@ -424,21 +470,38 @@ com = {
                         this.groundNorms = array[4];
                         this.groundTangents = array[5];
                         this.groundSplattings = array[6];
-                        this.displayHeights = array[7];
-                        var terrainSlopeTilesArray = array[8];
-                        if (typeof terrainSlopeTilesArray != 'undefined') {
+                        var terrainSlopeTilesArray = array[7];
+                        if (typeof terrainSlopeTilesArray !== 'undefined') {
                             for (var i = 0; i < terrainSlopeTilesArray.length; i++) {
                                 var terrainSlopeTile = new com.btxtech.shared.nativejs.TerrainSlopeTile();
                                 terrainSlopeTile.fromArray(terrainSlopeTilesArray[i]);
                                 this.addTerrainSlopeTile(terrainSlopeTile);
                             }
                         }
-                        var terrainWaterTile = array[9];
-                        if (typeof terrainWaterTile != 'undefined') {
+                        var terrainWaterTile = array[8];
+                        if (typeof terrainWaterTile !== 'undefined') {
                             this.terrainWaterTile = new com.btxtech.shared.nativejs.TerrainWaterTile();
                             this.terrainWaterTile.fromArray(terrainWaterTile);
                         }
-                        this.landWaterProportion = array[10];
+                        this.landWaterProportion = array[9];
+
+                        this.fullWater = array[10];
+                        this.height = array[11];
+                        var terrainNodesField = array[12];
+                        if (typeof terrainNodesField !== 'undefined' && terrainNodesField.length > 0) {
+                            this.terrainNodes = new Array(terrainNodesField.length);
+                            for (var x = 0; x < terrainNodesField.length; x++) {
+                                this.terrainNodes[x] = new Array(terrainNodesField[x].length);
+                                for (var y = 0; y < terrainNodesField[x].length; y++) {
+                                    var terrainNodeArray = terrainNodesField[x][y];
+                                    if (typeof terrainNodeArray !== 'undefined') {
+                                        var terrainNode = new com.btxtech.shared.nativejs.TerrainNode();
+                                        terrainNode.fromArray(terrainNodeArray);
+                                        this.terrainNodes[x][y] = terrainNode;
+                                    }
+                                }
+                            }
+                        }
                     }
                 },
 
@@ -547,6 +610,148 @@ com = {
                         this.vertices = array[1];
                     };
 
+                },
+
+                TerrainNode: function () {
+                    this.initTerrainSubNodeField = function (terrainSubNodeEdgeCount) {
+                        this.terrainSubNodes = new Array(terrainSubNodeEdgeCount);
+                        for (var i = 0; i < terrainSubNodeEdgeCount; i++) {
+                            this.terrainSubNodes[i] = new Array(terrainSubNodeEdgeCount);
+                        }
+                    };
+
+                    this.getTerrainSubNodes = function () {
+                        return this.terrainSubNodes;
+                    };
+
+                    this.insertTerrainSubNode = function (x, y, terrainSubNode) {
+                        this.terrainSubNodes[x][y] = terrainSubNode;
+                    };
+
+                    this.isLand = function () {
+                        return this.land;
+                    };
+
+                    this.setLand = function (land) {
+                        this.land = land;
+                    };
+
+                    this.getHeight = function () {
+                        return this.height;
+                    };
+
+                    this.setHeight = function (height) {
+                        this.height = height;
+                    };
+
+                    this.toArray = function () {
+                        var terrainSubNodesField = [];
+                        if (typeof this.terrainSubNodes !== 'undefined' && this.terrainSubNodes.length > 0) {
+                            terrainSubNodesField = new Array(this.terrainSubNodes.length);
+                            for (var x = 0; x < this.terrainSubNodes.length; x++) {
+                                terrainSubNodesField[x] = new Array(this.terrainSubNodes[x].length);
+                                for (var y = 0; y < this.terrainSubNodes[x].length; y++) {
+                                    var terrainSubNode = this.terrainSubNodes[x][y];
+                                    if (typeof terrainSubNode !== 'undefined') {
+                                        terrainSubNodesField[x][y] = terrainSubNode.toArray();
+                                    }
+                                }
+                            }
+                        }
+                        return [this.land, this.height, terrainSubNodesField];
+                    };
+
+                    this.fromArray = function (terrainNodeArray) {
+                        this.land = terrainNodeArray[0];
+                        this.height = terrainNodeArray[1];
+
+                        var terrainSubNodesField = terrainNodeArray[2];
+                        if (typeof terrainSubNodesField !== 'undefined' && terrainSubNodesField.length > 0) {
+                            this.terrainSubNodes = new Array(terrainSubNodesField.length);
+                            for (var x = 0; x < terrainSubNodesField.length; x++) {
+                                this.terrainSubNodes[x] = new Array(terrainSubNodesField[x].length);
+                                for (var y = 0; y < terrainSubNodesField[x].length; y++) {
+                                    var terrainSubNodeArray = terrainSubNodesField[x][y];
+                                    if (typeof terrainSubNodeArray !== 'undefined') {
+                                        var terrainSubNode = new com.btxtech.shared.nativejs.TerrainSubNode();
+                                        terrainSubNode.fromArray(terrainSubNodeArray);
+                                        this.terrainSubNodes[x][y] = terrainSubNode;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                },
+
+                TerrainSubNode: function () {
+                    this.initTerrainSubNodeField = function (terrainSubNodeEdgeCount) {
+                        this.terrainSubNodes = new Array(terrainSubNodeEdgeCount);
+                        for (var i = 0; i < terrainSubNodeEdgeCount; i++) {
+                            this.terrainSubNodes[i] = new Array(terrainSubNodeEdgeCount);
+                        }
+                    };
+
+                    this.getTerrainSubNodes = function () {
+                        return this.terrainSubNodes;
+                    };
+
+                    this.insertTerrainSubNode = function (x, y, terrainSubNode) {
+                        this.terrainSubNodes[x][y] = terrainSubNode;
+                    };
+
+                    this.isLand = function () {
+                        return this.land;
+                    };
+
+                    this.setLand = function (land) {
+                        this.land = land;
+                    };
+
+                    this.getHeight = function () {
+                        return this.height;
+                    };
+
+                    this.setHeight = function (height) {
+                        this.height = height;
+                    };
+
+                    this.toArray = function () {
+                        var terrainSubNodesField = [];
+                        if (typeof this.terrainSubNodes !== 'undefined' && this.terrainSubNodes.length > 0) {
+                            terrainSubNodesField = new Array(this.terrainSubNodes);
+                            for (var x = 0; x < this.terrainSubNodes.length; x++) {
+                                terrainSubNodesField[x] = new Array(this.terrainSubNodes[x].length);
+                                for (var y = 0; y < this.terrainSubNodes[x].length; y++) {
+                                    var terrainSubNod = this.terrainSubNodes[x][y];
+                                    if (typeof terrainSubNod !== 'undefined') {
+                                        terrainSubNodesField[x][y] = terrainSubNod.toArray();
+                                    }
+                                }
+                            }
+                        }
+                        return [this.land, this.height, terrainSubNodesField];
+                    };
+
+                    this.fromArray = function (terrainNodeArray) {
+                        this.land = terrainNodeArray[0];
+                        this.height = terrainNodeArray[1];
+
+                        var terrainSubNodesField = terrainNodeArray[2];
+                        if (typeof terrainSubNodesField !== 'undefined' && terrainSubNodesField.length > 0) {
+                            this.terrainSubNodes = new Array(terrainSubNodesField.length);
+                            for (var x = 0; x < terrainSubNodesField.length; x++) {
+                                this.terrainSubNodes[x] = new Array(terrainSubNodesField[x].length);
+                                for (var y = 0; y < terrainSubNodesField[x].length; y++) {
+                                    var terrainSubNodeArray = terrainSubNodesField[x][y];
+                                    if (typeof terrainSubNodeArray !== 'undefined') {
+                                        var terrainSubNode = new com.btxtech.shared.nativejs.TerrainSubNode();
+                                        terrainSubNode.fromArray(terrainSubNodeArray);
+                                        this.terrainSubNodes[x][y] = terrainSubNode;
+                                    }
+                                }
+                            }
+                        }
+                    };
                 }
             }
         }

@@ -31,17 +31,7 @@ public class TestJsInteropObjectFactory implements JsInteropObjectFactory {
     }
 
     @Override
-    public TerrainNode[][] generateTerrainNodeField(int edgeCount) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public TerrainNode generateTerrainNode() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public TerrainSubNode[][] generateTerrainSubNodeField(int edgeCount) {
         throw new UnsupportedOperationException();
     }
 

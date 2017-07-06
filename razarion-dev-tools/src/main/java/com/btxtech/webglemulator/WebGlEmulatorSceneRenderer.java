@@ -17,6 +17,7 @@ import com.btxtech.uiservice.terrain.UiTerrainTile;
 import javafx.scene.paint.Color;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -61,7 +62,8 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
         displayTerrainTiles = (Map<Index, UiTerrainTile>) DevToolUtil.readServiceFiled("displayTerrainTiles", terrainUiService);
         cacheTerrainTiles = (Map<Index, UiTerrainTile>) DevToolUtil.readServiceFiled("cacheTerrainTiles", terrainUiService);
 
-        for (UiTerrainTile active : displayTerrainTiles.values()) {
+
+        for (UiTerrainTile active : new ArrayList<>(displayTerrainTiles.values())) {
             Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
             renderIsFree(egc, active, rectangle2D.getStart());
             egc.getGc().setFill(Color.color(0.0, 1.0, 0.0, 0.5));
@@ -69,7 +71,7 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
             // renderHeight(egc, active, rectangle2D.getStart());
         }
 
-        for (UiTerrainTile active : cacheTerrainTiles.values()) {
+        for (UiTerrainTile active : new ArrayList<>(cacheTerrainTiles.values())) {
             Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
             //renderIsFree(egc, active, rectangle2D.getStart());
             egc.getGc().setFill(Color.color(1.0, 0.0, 0.0, 0.5));

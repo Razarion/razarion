@@ -47,6 +47,8 @@ public class TerrainTileContext {
         offsetIndexY = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         if (terrainShapeTile != null) {
             terrainTile.setHeight(terrainShapeTile.getUniformGroundHeight());
+        } else {
+            terrainTile.setHeight(0);
         }
     }
 
@@ -235,7 +237,11 @@ public class TerrainTileContext {
         return new Index(offsetIndexX, offsetIndexY).add(nodeRelativeIndex);
     }
 
-    public void setTerrainNode(TerrainNode[][] terrainNodes) {
-        terrainTile.setTerrainNodes(terrainNodes);
+    public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
+        terrainTile.initTerrainNodeField(terrainTileNodesEdgeCount);
+    }
+
+    public void setTerrainNode(int x, int y, TerrainNode terrainNode) {
+        terrainTile.insertTerrainNode(x,y,terrainNode);
     }
 }
