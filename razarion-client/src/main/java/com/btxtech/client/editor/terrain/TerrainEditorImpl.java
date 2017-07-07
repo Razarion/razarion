@@ -282,10 +282,10 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     public void sculpt() {
-        List<TerrainSlopePosition> terrainSlopePositions = modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
-        List<TerrainObjectPosition> terrainObjectPositions = modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList());
+        // TODO List<TerrainSlopePosition> terrainSlopePositions = modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
+        // TODO List<TerrainObjectPosition> terrainObjectPositions = modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList());
         // TODO gameEngineControl.reloadTerrainShape4Editor(terrainSlopePositions, terrainObjectPositions);
-        terrainUiService.clearTerrainTilesForEditor();
+        // TODO terrainUiService.clearTerrainTilesForEditor();
     }
 
     public void save() {
@@ -472,5 +472,9 @@ public class TerrainEditorImpl implements TerrainEditor {
 
     public PlanetConfig getPlanetConfig() {
         return gameUiControl.getPlanetConfig();
+    }
+
+    public List<TerrainSlopePosition> generateTerrainSlopePositions() {
+        return modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
     }
 }

@@ -2,6 +2,7 @@ package com.btxtech.client.cockpit.radar;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -17,6 +18,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -62,8 +64,8 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
         camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
     }
 
-    public void generateMiniTerrain() {
-        // TODO  miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), gameUiControl.getPlanetConfig().getTerrainSlopePositions());
+    public void generateMiniTerrain(List<TerrainSlopePosition> terrainSlopePositions) {
+        miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), terrainSlopePositions);
     }
 
     @Override

@@ -221,6 +221,6 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
 
     @EventHandler("generateMiniTerrain")
     private void generateMiniTerrain(ClickEvent event) {
-        radarPanel.generateMiniTerrain();
+        radarPanel.generateMiniTerrain(terrainEditor.generateTerrainSlopePositions());
     }
 }
