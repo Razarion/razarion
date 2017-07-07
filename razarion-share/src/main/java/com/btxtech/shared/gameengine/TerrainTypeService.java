@@ -1,9 +1,9 @@
 package com.btxtech.shared.gameengine;
 
+import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
@@ -11,7 +11,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,6 +22,7 @@ public class TerrainTypeService {
     private Map<Integer, SlopeSkeletonConfig> slopeSkeletonConfigs = new HashMap<>();
     private GroundSkeletonConfig groundSkeletonConfig;
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
+    private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
     private WaterConfig waterConfig;
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
@@ -34,6 +34,7 @@ public class TerrainTypeService {
         groundSkeletonConfig = staticGameConfig.getGroundSkeletonConfig();
         setSlopeSkeletonConfigs(staticGameConfig.getSlopeSkeletonConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
+        setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
     }
 
     public void setSlopeSkeletonConfigs(Collection<SlopeSkeletonConfig> slopeSkeletonConfigs) {
@@ -50,6 +51,15 @@ public class TerrainTypeService {
         if (terrainObjectConfigs != null) {
             for (TerrainObjectConfig terrainObjectConfig : terrainObjectConfigs) {
                 this.terrainObjectConfigs.put(terrainObjectConfig.getId(), terrainObjectConfig);
+            }
+        }
+    }
+
+    public void setDrivewayConfigs(Collection<DrivewayConfig> drivewayConfigs) {
+        this.drivewayConfigs.clear();
+        if (drivewayConfigs != null) {
+            for (DrivewayConfig drivewayConfig : drivewayConfigs) {
+                this.drivewayConfigs.put(drivewayConfig.getId(), drivewayConfig);
             }
         }
     }
@@ -84,6 +94,14 @@ public class TerrainTypeService {
 
     public WaterConfig getWaterConfig() {
         return waterConfig;
+    }
+
+    public DrivewayConfig getDrivewayConfig(Integer drivewayConfigId) {
+        DrivewayConfig drivewayConfig = drivewayConfigs.get(drivewayConfigId);
+        if (drivewayConfig == null) {
+            throw new IllegalArgumentException("No DrivewayConfig for drivewayConfigId: " + drivewayConfigId);
+        }
+        return drivewayConfig;
     }
 
     // Methods used by the editors -----------------------------------------------------------------

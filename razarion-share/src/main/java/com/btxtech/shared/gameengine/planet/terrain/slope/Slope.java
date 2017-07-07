@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
@@ -18,11 +19,11 @@ import java.util.List;
  * 23.01.2016.
  */
 public class Slope {
-    public static final double DRIVEWAY_LENGTH = 22; // TODO make configurable
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
     private final double groundHeight;
+    private final TerrainTypeService terrainTypeService;
     private List<AbstractBorder> borders = new ArrayList<>();
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
     private Polygon2D innerPolygon;
@@ -30,10 +31,11 @@ public class Slope {
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
 
-    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight) {
+    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
         this.slopeSkeletonConfig = slopeSkeletonConfig;
         this.groundHeight = groundHeight;
+        this.terrainTypeService = terrainTypeService;
         List<TerrainSlopeCorner> corners1 = new ArrayList<>(corners);
 
         if (slopeSkeletonConfig.getWidth() > 0.0) {
@@ -87,7 +89,7 @@ public class Slope {
             for (int i = 0; i < terrainSlopeCorners.size(); i++) {
                 TerrainSlopeCorner current = terrainSlopeCorners.get(i);
                 if (current.getSlopeDrivewayId() != null) {
-                    Driveway driveway = new Driveway(this, current.getPosition(), i);
+                    Driveway driveway = new Driveway(this, current.getPosition(), i, terrainTypeService.getDrivewayConfig(current.getSlopeDrivewayId()));
 
                     for (; CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getSlopeDrivewayId() != null; i++) {
                         driveway.analyze(CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getPosition(), i + 1);

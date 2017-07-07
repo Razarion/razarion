@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -25,6 +26,7 @@ public class StaticGameConfig {
     private List<BoxItemType> boxItemTypes;
     private List<LevelConfig> levelConfigs;
     private List<InventoryItem> inventoryItems;
+    private List<DrivewayConfig> drivewayConfigs;
 
     public GroundSkeletonConfig getGroundSkeletonConfig() {
         return groundSkeletonConfig;
@@ -103,6 +105,15 @@ public class StaticGameConfig {
 
     public StaticGameConfig setInventoryItems(List<InventoryItem> inventoryItems) {
         this.inventoryItems = inventoryItems;
+        return this;
+    }
+
+    public List<DrivewayConfig> getDrivewayConfigs() {
+        return drivewayConfigs;
+    }
+
+    public StaticGameConfig setDrivewayConfigs(List<DrivewayConfig> drivewayConfigs) {
+        this.drivewayConfigs = drivewayConfigs;
         return this;
     }
 }

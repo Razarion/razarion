@@ -72,7 +72,7 @@ public class TerrainShapeSetup {
 
     private Slope setupSlope(TerrainSlopePosition terrainSlopePosition, double groundHeight) {
         SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
-        Slope slope = new Slope(terrainSlopePosition.getId(), slopeSkeletonConfig, terrainSlopePosition.getPolygon(), groundHeight);
+        Slope slope = new Slope(terrainSlopePosition.getId(), slopeSkeletonConfig, terrainSlopePosition.getPolygon(), groundHeight, terrainTypeService);
         setupSlopeChildren(slope, terrainSlopePosition.getChildren(), groundHeight + slope.getHeight());
         return slope;
     }

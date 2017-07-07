@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
@@ -31,11 +32,13 @@ public class Driveway {
     private double additionalStart;
     private double additionalEnd;
     private Polygon2D passableSlopePolygon;
+    private double drivewayLength;
 
-    public Driveway(Slope slope, DecimalPosition startSlopePosition, int startSlopeIndex) {
+    public Driveway(Slope slope, DecimalPosition startSlopePosition, int startSlopeIndex, DrivewayConfig drivewayConfig) {
         this.slope = slope;
         this.startSlopePosition = startSlopePosition;
         this.startSlopeIndex = startSlopeIndex;
+        drivewayLength = drivewayConfig.calculateDrivewayLength(slope.getHeight());
     }
 
     public void analyze(DecimalPosition endSlopePosition, int endSlopeIndex) {
@@ -68,14 +71,14 @@ public class Driveway {
         if (MathHelper.compareWithPrecision(startPerpendicularAngle, endPerpendicularAngle)) {
             for (int d = startSlopeIndex; d <= endSlopeIndex; d++) {
                 DecimalPosition original = CollectionUtils.getCorrectedElement(d, input).getPosition();
-                DecimalPosition drivewayPosition = original.getPointWithDistance(startPerpendicularAngle, Slope.DRIVEWAY_LENGTH);
+                DecimalPosition drivewayPosition = original.getPointWithDistance(startPerpendicularAngle, drivewayLength);
                 output.add(new Slope.Corner(drivewayPosition, 0.0, d));
                 fillDrivewaPosition(edges, d, original, drivewayPosition);
             }
         } else if (MathHelper.isCounterClock(startPerpendicularAngle, endPerpendicularAngle)) {
-            computeAndFillDrivewayPositions(input, output, edges, -Slope.DRIVEWAY_LENGTH);
+            computeAndFillDrivewayPositions(input, output, edges, -drivewayLength);
         } else {
-            computeAndFillDrivewayPositions(input, output, edges, Slope.DRIVEWAY_LENGTH);
+            computeAndFillDrivewayPositions(input, output, edges, drivewayLength);
         }
         output.add(new Slope.Corner(endSlopePosition, 1.0, endSlopeIndex));
 
