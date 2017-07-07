@@ -125,7 +125,7 @@ public class SimpleTerrainScenario extends Scenario {
         FrameworkHelper.injectService("terrainTypeService", terrainService, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
+        // TODO planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 64, 64));
         terrainService.setup(planetConfig, null, null);
 

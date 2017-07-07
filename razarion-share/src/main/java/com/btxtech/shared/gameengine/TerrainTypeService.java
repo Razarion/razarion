@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
@@ -10,6 +11,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**

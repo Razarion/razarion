@@ -63,7 +63,7 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     }
 
     public void generateMiniTerrain() {
-        miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), gameUiControl.getPlanetConfig().getTerrainSlopePositions());
+        // TODO  miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), gameUiControl.getPlanetConfig().getTerrainSlopePositions());
     }
 
     @Override

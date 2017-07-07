@@ -16,7 +16,6 @@ public class PlanetConfig {
     private int planetId;
     private Rectangle terrainTileDimension; // In terrain tiles TerrainUtil.TERRAIN_TILE_NODES_COUNT
     private Rectangle2D playGround;
-    private List<TerrainSlopePosition> terrainSlopePositions;
     private List<TerrainObjectPosition> terrainObjectPositions;
     private Map<Integer, Integer> itemTypeLimitation;
     private int houseSpace;
@@ -38,15 +37,6 @@ public class PlanetConfig {
 
     public PlanetConfig setTerrainTileDimension(Rectangle terrainTileDimension) {
         this.terrainTileDimension = terrainTileDimension;
-        return this;
-    }
-
-    public List<TerrainSlopePosition> getTerrainSlopePositions() {
-        return terrainSlopePositions;
-    }
-
-    public PlanetConfig setTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions) {
-        this.terrainSlopePositions = terrainSlopePositions;
         return this;
     }
 

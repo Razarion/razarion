@@ -177,4 +177,17 @@ public class PlanetPersistence {
         return entityManager.createQuery(userSelect).getResultList().stream().map(PlanetEntity::toPlanetConfig).collect(Collectors.toList());
     }
 
+    @Transactional
+    public List<TerrainSlopePosition> getTerrainSlopePositions(int planetId) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetId);
+        }
+
+        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+        for (TerrainSlopePositionEntity terrainSlopePositionEntity : planetEntity.getTerrainSlopePositionEntities()) {
+            terrainSlopePositions.add(terrainSlopePositionEntity.toTerrainSlopePosition());
+        }
+        return terrainSlopePositions;
+    }
 }

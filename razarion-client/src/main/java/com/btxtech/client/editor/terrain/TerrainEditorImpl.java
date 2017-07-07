@@ -263,7 +263,8 @@ public class TerrainEditorImpl implements TerrainEditor {
     }
 
     private Collection<ModifiedSlope> setupModifiedSlopes() {
-        return getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
+        // TODO return getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
+        throw new UnsupportedOperationException();
     }
 
     private Collection<ModifiedTerrainObject> setupModifiedTerrainObjects() {

@@ -338,7 +338,7 @@ public class ScenarioService implements QuestListener {
     private PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(-70, -70, 140, 140)).setHouseSpace(1000).setStartRazarion(100);
-        planetConfig.setTerrainSlopePositions(new ArrayList<>());
+        // TODO planetConfig.setTerrainSlopePositions(new ArrayList<>());
         planetConfig.setTerrainObjectPositions(new ArrayList<>());
         // TODO planetConfig.setGameEngineMode(GameEngineMode.MASTER);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();

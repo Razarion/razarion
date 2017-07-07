@@ -148,12 +148,13 @@ public class JsonProviderEmulator {
     }
 
     public static void main(String[] args) {
-        JsonProviderEmulator jsonProviderEmulator = new JsonProviderEmulator();
-        List<TerrainSlopePosition> terrainSlopePositions = jsonProviderEmulator.fromServer().getColdGameUiControlConfig().getWarmGameUiControlConfig().getPlanetConfig().getTerrainSlopePositions();
-        for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-            if (terrainSlopePosition.getSlopeConfigId() == 1) {
-                jsonProviderEmulator.toFile("slopedriveway.json", terrainSlopePosition.getPolygon());
-            }
-        }
+        // TODO
+//        JsonProviderEmulator jsonProviderEmulator = new JsonProviderEmulator();
+//        List<TerrainSlopePosition> terrainSlopePositions = jsonProviderEmulator.fromServer().getColdGameUiControlConfig().getWarmGameUiControlConfig().getPlanetConfig().getTerrainSlopePositions();
+//        for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
+//            if (terrainSlopePosition.getSlopeConfigId() == 1) {
+//                jsonProviderEmulator.toFile("slopedriveway.json", terrainSlopePosition.getPolygon());
+//            }
+//        }
     }
 }

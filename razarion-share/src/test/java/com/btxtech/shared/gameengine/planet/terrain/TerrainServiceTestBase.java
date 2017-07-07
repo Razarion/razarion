@@ -73,7 +73,7 @@ public class TerrainServiceTestBase {
         SimpleTestEnvironment.injectService("terrainTypeService", terrainTileFactory, terrainTypeService);
 
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
+        // TODO planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 4, 4));
 
         setupNativeTerrainShapeAccess(planetConfig, terrainSlopePositions);

@@ -2,6 +2,7 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 
@@ -25,7 +26,7 @@ public class TerrainShapeService {
     public void start() {
         terrainShapes.clear();
         planetPersistence.loadAllPlanetConfig().forEach(planetConfig -> {
-            TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetConfig.getTerrainSlopePositions(), planetConfig.getTerrainObjectPositions());
+            TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetPersistence.getTerrainSlopePositions(planetConfig.getPlanetId()), planetConfig.getTerrainObjectPositions());
             terrainShapes.put(planetConfig.getPlanetId(), terrainShape.toNativeTerrainShape());
         });
     }

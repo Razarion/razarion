@@ -41,10 +41,10 @@ public class PlanetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<TerrainSlopePositionEntity> terrainSlopePositionEntities;
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private List<TerrainObjectPositionEntity> terrainObjectPositionEntities;
     @AttributeOverrides({
@@ -83,11 +83,6 @@ public class PlanetEntity {
     public PlanetConfig toPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setPlanetId(id);
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        for (TerrainSlopePositionEntity terrainSlopePositionEntity : terrainSlopePositionEntities) {
-            terrainSlopePositions.add(terrainSlopePositionEntity.toTerrainSlopePosition());
-        }
-        planetConfig.setTerrainSlopePositions(terrainSlopePositions);
         List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
         for (TerrainObjectPositionEntity terrainObjectPositionEntity : terrainObjectPositionEntities) {
             terrainObjectPositions.add(terrainObjectPositionEntity.toTerrainObjectPosition());
