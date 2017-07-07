@@ -64,7 +64,6 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
         return new TerrainShape(planetConfig, getTerrainTypeService(), terrainSlopePositions, null);
     }
 
-
     @Test
     public void testSimpleSlope() {
         TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));

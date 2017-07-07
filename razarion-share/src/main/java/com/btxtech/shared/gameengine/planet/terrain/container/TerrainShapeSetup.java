@@ -91,8 +91,8 @@ public class TerrainShapeSetup {
     private void processSlope(Slope slope) {
         SlopeContext slopeContext = new SlopeContext(slope);
         prepareVerticalSegments(slope);
-        prepareSlopeContext(slope.getInnerPolygon().getCorners(), false, slopeContext);
-        prepareSlopeContext(slope.getOuterPolygon().getCorners(), true, slopeContext);
+        prepareSlopeContext(slope.getInnerPolygon().getCorners(), slope.getDriveways(), false, slopeContext);
+        prepareSlopeContext(slope.getOuterPolygon().getCorners(), slope.getDriveways(), true, slopeContext);
         Polygon2D outerPolygon = slope.getOuterPolygon();
         Rectangle2D aabb = outerPolygon.toAabb();
         Polygon2D innerPolygon = slope.getInnerPolygon();
@@ -284,15 +284,41 @@ public class TerrainShapeSetup {
         throw new IllegalStateException("TerrainShapeSetup.findFractionalSlope() end not found");
     }
 
-    private void prepareSlopeContext(List<DecimalPosition> polygon, boolean isOuter, SlopeContext slopeContext) {
+    private void prepareSlopeContext(List<DecimalPosition> polygon, Collection<Driveway> driveways, boolean isOuter, SlopeContext slopeContext) {
         DecimalPosition last = polygon.get(0);
         Index lastNodeIndex = null;
+        boolean inDriveway = false;
         for (int i = 0; i < polygon.size(); i++) {
             DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, polygon);
             if (last.equals(next)) {
                 continue;
             }
-            addObstacleSlope(new ObstacleSlope(new Line(last, next)));
+            if (driveways != null) {
+                Driveway currentDriveway = null;
+                for (Driveway driveway : driveways) {
+                    if (driveway.isDrivewayPosition(last)) {
+                        currentDriveway = driveway;
+                    }
+                }
+                if (!inDriveway && currentDriveway != null) {
+                    inDriveway = true;
+                    if (isOuter) {
+                        // Termination
+                        addObstacleSlope(new ObstacleSlope(new Line(last, currentDriveway.getOuter4SlopeOuter(last))));
+                    }
+                } else if (inDriveway && currentDriveway != null) {
+                    inDriveway = false;
+                    if (isOuter) {
+                        // Termination
+                        addObstacleSlope(new ObstacleSlope(new Line(last, currentDriveway.getOuter4SlopeOuter(last))));
+                    }
+                }
+            }
+            if (!inDriveway) {
+                addObstacleSlope(new ObstacleSlope(new Line(last, next)));
+            }
+
+
             DecimalPosition absolute = polygon.get(i);
             Index nodeIndex = TerrainUtil.toNode(absolute);
             addSlopeGroundConnector(polygon, i, nodeIndex, absolute, isOuter, slopeContext);

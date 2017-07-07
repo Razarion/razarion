@@ -265,6 +265,20 @@ public class Driveway {
         return drivewayHeights;
     }
 
+    public boolean isDrivewayPosition(DecimalPosition position) {
+        return edges.get(0).isOuterOrOuterSlope(position) || edges.get(edges.size() - 1).isOuterOrOuterSlope(position);
+    }
+
+    public DecimalPosition getOuter4SlopeOuter(DecimalPosition outer) {
+        if (edges.get(0).getDrivewayOuterSlope().equals(outer)) {
+            return edges.get(0).getDrivewayOuter();
+        }
+        if (edges.get(edges.size() - 1).getDrivewayOuterSlope().equals(outer)) {
+            return edges.get(edges.size() - 1).getDrivewayOuter();
+        }
+        throw new IllegalArgumentException("Driveway.getOuter4SlopeOuter() outer: " + outer);
+    }
+
     public static class Edge {
         private DecimalPosition drivewayInner;
         private DecimalPosition drivewayBreaking;
@@ -300,6 +314,10 @@ public class Driveway {
 
         public DecimalPosition getDrivewayOuterSlope() {
             return drivewayOuterSlope;
+        }
+
+        public boolean isOuterOrOuterSlope(DecimalPosition position) {
+            return drivewayOuter.equals(position) || drivewayOuterSlope.equals(position);
         }
     }
 }
