@@ -23,6 +23,10 @@ public interface TerrainUtil {
         return new DecimalPosition(tile.scale(TERRAIN_TILE_ABSOLUTE_LENGTH));
     }
 
+    static Rectangle2D toTileAbsolute(Rectangle tile) {
+        return new Rectangle2D(toTileAbsolute(tile.getStart()), toTileAbsolute(tile.getEnd()));
+    }
+
     static Rectangle2D toAbsoluteTileRectangle(Index tile) {
         DecimalPosition start = toTileAbsolute(tile);
         return new Rectangle2D(start.getX(), start.getY(), TERRAIN_TILE_ABSOLUTE_LENGTH, TERRAIN_TILE_ABSOLUTE_LENGTH);

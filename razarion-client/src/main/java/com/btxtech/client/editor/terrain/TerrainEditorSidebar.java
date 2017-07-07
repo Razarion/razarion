@@ -60,6 +60,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private Span terrainTileDimension;
     @Inject
     @DataField
+    private Span terrainTiles;
+    @Inject
+    @DataField
     private Span playGround;
     @Inject
     @DataField
@@ -114,7 +117,8 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     public void init() {
         terrainEditor.activate();
         planetId.setTextContent(Integer.toString(terrainEditor.getPlanetConfig().getPlanetId()));
-        terrainTileDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toAbsoluteNodeRectangle(terrainEditor.getPlanetConfig().getTerrainTileDimension())));
+        terrainTiles.setTextContent(DisplayUtils.handleRectangle(terrainEditor.getPlanetConfig().getTerrainTileDimension()));
+        terrainTileDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toTileAbsolute(terrainEditor.getPlanetConfig().getTerrainTileDimension())));
         playGround.setTextContent(DisplayUtils.handleRectangle2D(terrainEditor.getPlanetConfig().getPlayGround()));
         creationModeButton.setText(terrainEditor.getCreationModeText());
         cursorRadius.setValue(terrainEditor.getCursorRadius());
