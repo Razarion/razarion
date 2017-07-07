@@ -1,15 +1,16 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.gameengine.TerrainShapeService;
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
@@ -17,12 +18,12 @@ import java.util.List;
  * 08.07.2016.
  */
 public class PlanetEditorProviderImpl implements PlanetEditorProvider {
-    @PersistenceContext
-    private EntityManager entityManager;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private PlanetPersistence persistenceService;
+    @Inject
+    private TerrainShapeService terrainShapeService;
 
     @Override
     public void createTerrainObjectPositions(int planetId, List<TerrainObjectPosition> createdTerrainObjects) {
@@ -55,9 +56,9 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     }
 
     @Override
-    public void createTerrainSlopePositions(int planetId, List<TerrainSlopePosition> createdSlopes) {
+    public List<TerrainSlopePosition> readTerrainSlopePositions(int planetId) {
         try {
-            persistenceService.createTerrainSlopePositions(planetId, createdSlopes);
+            return persistenceService.getTerrainSlopePositions(planetId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -65,19 +66,18 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     }
 
     @Override
-    public void updateTerrainSlopePositions(int planetId, List<TerrainSlopePosition> updatedSlopes) {
+    public void updateTerrain(int planetId, TerrainEditorUpdate terrainEditorUpdate) {
         try {
-            persistenceService.updateTerrainSlopePositions(planetId, updatedSlopes);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void deleteTerrainSlopePositionIds(int planetId, List<Integer> deletedSlopeIds) {
-        try {
-            persistenceService.deleteTerrainSlopePositions(planetId, deletedSlopeIds);
+            if (terrainEditorUpdate.getCreatedSlopes() != null) {
+                persistenceService.createTerrainSlopePositions(planetId, terrainEditorUpdate.getCreatedSlopes());
+            }
+            if (terrainEditorUpdate.getUpdatedSlopes() != null) {
+                persistenceService.updateTerrainSlopePositions(planetId, terrainEditorUpdate.getUpdatedSlopes());
+            }
+            if (terrainEditorUpdate.getDeletedSlopeIds() != null) {
+                persistenceService.deleteTerrainSlopePositions(planetId, terrainEditorUpdate.getDeletedSlopeIds());
+            }
+            terrainShapeService.setupTerrainShape(persistenceService.loadPlanetConfig(planetId));
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

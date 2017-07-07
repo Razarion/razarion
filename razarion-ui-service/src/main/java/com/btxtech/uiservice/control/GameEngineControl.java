@@ -9,8 +9,6 @@ import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
-import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -32,6 +30,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.TerrainEditor;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -45,6 +44,7 @@ import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.user.UserUiService;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -83,6 +83,8 @@ public abstract class GameEngineControl {
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private ClientRunner clientRunner;
+    @Inject
+    private Instance<TerrainEditor> terrainEditorInstance;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
 
@@ -205,8 +207,8 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
     }
 
-    public void overrideTerrain4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-        sendToWorker(GameEngineControlPackage.Command.EDITOR_OVERRIDE_TERRAIN, terrainSlopePositions, terrainObjectPositions);
+    public void reloadTerrainShape4Editor() {
+        sendToWorker(GameEngineControlPackage.Command.EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST);
     }
 
     private void onTickUpdate(Collection<SyncBaseItemSimpleDto> updatedSyncBaseItems, GameInfo gameInfo, Collection<SyncBaseItemSimpleDto> baseItemRemoved, Collection<SyncBaseItemSimpleDto> baseItemKilled) {
@@ -340,6 +342,9 @@ public abstract class GameEngineControl {
                 break;
             case STOP_RESPONSE:
                 onStopped();
+                break;
+            case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
+                terrainEditorInstance.get().onTerrainShapeReloaded((String) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

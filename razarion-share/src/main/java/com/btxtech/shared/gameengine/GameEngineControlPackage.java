@@ -62,7 +62,8 @@ public class GameEngineControlPackage {
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
         // Editor
-        EDITOR_OVERRIDE_TERRAIN,
+        EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST,
+        EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE,
         // Playback
         PLAYBACK_PLAYER_BASE,
         PLAYBACK_SYNC_ITEM_DELETED,

@@ -10,8 +10,6 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
-import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -193,8 +191,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case TERRAIN_TILE_REQUEST:
                 getTerrainTile((Index) controlPackage.getData(0));
                 break;
-            case EDITOR_OVERRIDE_TERRAIN:
-                overrideTerrain4Editor((List<TerrainSlopePosition>) controlPackage.getData(0), (List<TerrainObjectPosition>) controlPackage.getData(1));
+            case EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST:
+                reloadPlanetShape4Editor();
                 break;
             case PLAYBACK_PLAYER_BASE:
                 onPlayerBaseTracking((PlayerBaseTracking) controlPackage.getData(0));
@@ -543,14 +541,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
     }
 
-    private void overrideTerrain4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+    private void reloadPlanetShape4Editor() {
         try {
-            terrainService.override4Editor(terrainSlopePositions, terrainObjectPositions);
-            logger.warning("overrideTerrain4Editor done");
+            terrainService.setup(() -> sendToClient(GameEngineControlPackage.Command.EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE, ""), s -> sendToClient(GameEngineControlPackage.Command.EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE, s));
+            logger.warning("reloadPlanetShape4Editor done");
         } catch (NoInterpolatedTerrainTriangleException e) {
-            exceptionHandler.handleException("overrideTerrain4Editor failed", e);
+            exceptionHandler.handleException("reloadPlanetShape4Editor failed", e);
         }
-
     }
 
     public void onServerSyncItemDeleted(SyncItemDeletedInfo syncItemDeletedInfo) {

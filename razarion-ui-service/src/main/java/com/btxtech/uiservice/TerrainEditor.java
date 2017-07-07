@@ -16,4 +16,6 @@ public interface TerrainEditor {
     void onSpaceKeyDown(boolean down);
 
     void onMouseUp();
+
+    void onTerrainShapeReloaded(String errorString);
 }

@@ -178,6 +178,15 @@ public class PlanetPersistence {
     }
 
     @Transactional
+    public PlanetConfig loadPlanetConfig(int planetId) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetId);
+        }
+        return planetEntity.toPlanetConfig();
+    }
+
+    @Transactional
     public List<TerrainSlopePosition> getTerrainSlopePositions(int planetId) {
         PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
         if (planetEntity == null) {

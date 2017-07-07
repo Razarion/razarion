@@ -25,10 +25,12 @@ public class TerrainShapeService {
 
     public void start() {
         terrainShapes.clear();
-        planetPersistence.loadAllPlanetConfig().forEach(planetConfig -> {
-            TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetPersistence.getTerrainSlopePositions(planetConfig.getPlanetId()), planetConfig.getTerrainObjectPositions());
-            terrainShapes.put(planetConfig.getPlanetId(), terrainShape.toNativeTerrainShape());
-        });
+        planetPersistence.loadAllPlanetConfig().forEach(this::setupTerrainShape);
+    }
+
+    public void setupTerrainShape(PlanetConfig planetConfig) {
+        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetPersistence.getTerrainSlopePositions(planetConfig.getPlanetId()), planetConfig.getTerrainObjectPositions());
+        terrainShapes.put(planetConfig.getPlanetId(), terrainShape.toNativeTerrainShape());
     }
 
     public NativeTerrainShape getNativeTerrainShape(int planetId) {

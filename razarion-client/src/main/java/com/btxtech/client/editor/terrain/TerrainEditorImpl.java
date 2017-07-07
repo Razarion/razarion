@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -23,6 +24,7 @@ import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -208,13 +210,22 @@ public class TerrainEditorImpl implements TerrainEditor {
         }
         active = true;
         cursor = setupCursor();
-        modifiedSlopes = setupModifiedSlopes();
         modifiedTerrainObjects = setupModifiedTerrainObjects();
         terrainObjectModelMatrices = setupModelMatrices();
         renderService.addRenderTask(terrainEditorRenderTask, "Terrain Editor");
         terrainMouseHandler.setTerrainEditor(this);
         keyboardEventHandler.setTerrainEditor(this);
-        terrainEditorRenderTask.activate(cursor, modifiedSlopes);
+        modifiedSlopes = new ArrayList<>();
+        planetEditorServiceCaller.call(new RemoteCallback<List<TerrainSlopePosition>>() {
+            @Override
+            public void callback(List<TerrainSlopePosition> response) {
+                modifiedSlopes = response.stream().map(ModifiedSlope::new).collect(Collectors.toList());
+                terrainEditorRenderTask.activate(cursor, modifiedSlopes);
+            }
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "readTerrainSlopePositions failed: " + message, throwable);
+            return false;
+        }).readTerrainSlopePositions(getPlanetId());
     }
 
     public void deactivate() {
@@ -262,11 +273,6 @@ public class TerrainEditorImpl implements TerrainEditor {
         return new Polygon2D(corners);
     }
 
-    private Collection<ModifiedSlope> setupModifiedSlopes() {
-        // TODO return getPlanetConfig().getTerrainSlopePositions().stream().map(ModifiedSlope::new).collect(Collectors.toList());
-        throw new UnsupportedOperationException();
-    }
-
     private Collection<ModifiedTerrainObject> setupModifiedTerrainObjects() {
         return getPlanetConfig().getTerrainObjectPositions().stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
     }
@@ -278,16 +284,16 @@ public class TerrainEditorImpl implements TerrainEditor {
     public void sculpt() {
         List<TerrainSlopePosition> terrainSlopePositions = modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
         List<TerrainObjectPosition> terrainObjectPositions = modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList());
-        gameEngineControl.overrideTerrain4Editor(terrainSlopePositions, terrainObjectPositions);
+        // TODO gameEngineControl.reloadTerrainShape4Editor(terrainSlopePositions, terrainObjectPositions);
         terrainUiService.clearTerrainTilesForEditor();
     }
 
     public void save() {
-        saveSlope();
+        saveInternal();
         saveTerrainObjects();
     }
 
-    private void saveSlope() {
+    private void saveInternal() {
         List<TerrainSlopePosition> createdSlopes = new ArrayList<>();
         List<TerrainSlopePosition> updatedSlopes = new ArrayList<>();
         List<Integer> deletedSlopeIds = new ArrayList<>();
@@ -305,26 +311,20 @@ public class TerrainEditorImpl implements TerrainEditor {
             }
         }
         modifiedSlopes.clear();
-
-        if (!createdSlopes.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Slopes Created"), (message, throwable) -> {
-                logger.log(Level.SEVERE, "createTerrainSlopePositions failed: " + message, throwable);
+        if (!createdSlopes.isEmpty() || !updatedSlopes.isEmpty() || !deletedSlopeIds.isEmpty()) {
+            TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
+            terrainEditorUpdate.setCreatedSlopes(createdSlopes);
+            terrainEditorUpdate.setUpdatedSlopes(updatedSlopes);
+            terrainEditorUpdate.setDeletedSlopeIds(deletedSlopeIds);
+            planetEditorServiceCaller.call(ignore -> {
+                gameEngineControl.reloadTerrainShape4Editor();
+            }, (message, throwable) -> {
+                logger.log(Level.SEVERE, "updateTerrain failed: " + message, throwable);
                 return false;
-            }).createTerrainSlopePositions(getPlanetId(), createdSlopes);
-        }
-        if (!updatedSlopes.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Slopes Updated"), (message, throwable) -> {
-                logger.log(Level.SEVERE, "updateTerrainSlopePositions failed: " + message, throwable);
-                return false;
-            }).updateTerrainSlopePositions(getPlanetId(), updatedSlopes);
-        }
-        if (!deletedSlopeIds.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Slopes Deleted"), (message, throwable) -> {
-                logger.log(Level.SEVERE, "deleteTerrainSlopePositionIds failed: " + message, throwable);
-                return false;
-            }).deleteTerrainSlopePositionIds(getPlanetId(), deletedSlopeIds);
+            }).updateTerrain(getPlanetId(), terrainEditorUpdate);
         }
     }
+
 
     private void saveTerrainObjects() {
         List<TerrainObjectPosition> createdTerrainObjects = new ArrayList<>();
@@ -362,6 +362,15 @@ public class TerrainEditorImpl implements TerrainEditor {
                 logger.log(Level.SEVERE, "deleteTerrainObjectPositionIds failed: " + message, throwable);
                 return false;
             }).deleteTerrainObjectPositionIds(getPlanetId(), deletedTerrainObjectsIds);
+        }
+    }
+
+    @Override
+    public void onTerrainShapeReloaded(String errorString) {
+        if (errorString.trim().isEmpty()) {
+            terrainUiService.clearTerrainTilesForEditor();
+        } else {
+            modalDialogManager.showMessageDialog("Terrain Editor", "Terrain saved failed: " + errorString);
         }
     }
 

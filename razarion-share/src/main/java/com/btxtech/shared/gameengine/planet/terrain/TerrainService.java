@@ -46,11 +46,7 @@ public class TerrainService {
         terrainShape = null;
     }
 
-    public void override4Editor(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-        // TODO setup(terrainSlopePositions, terrainObjectPositions);
-    }
-
-    private void setup(Runnable finishCallback, Consumer<String> failCallback) {
+    public void setup(Runnable finishCallback, Consumer<String> failCallback) {
         terrainShape = new TerrainShape();
         terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess, finishCallback, failCallback);
     }
