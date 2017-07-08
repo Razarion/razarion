@@ -28,6 +28,7 @@ public class StaticGameConfigPersistence {
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
+        staticGameConfig.setDrivewayConfigs(terrainElementPersistence.loadDrivewayConfigs());
         staticGameConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
         staticGameConfig.setWaterConfig(terrainElementPersistence.readWaterConfig());

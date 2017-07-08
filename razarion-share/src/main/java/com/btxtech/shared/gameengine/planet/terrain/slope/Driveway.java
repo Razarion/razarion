@@ -38,7 +38,7 @@ public class Driveway {
         this.slope = slope;
         this.startSlopePosition = startSlopePosition;
         this.startSlopeIndex = startSlopeIndex;
-        drivewayLength = drivewayConfig.calculateDrivewayLength(slope.getHeight());
+        drivewayLength = drivewayConfig.calculateDrivewayLength(slope.getHeight()) + slope.getSlopeSkeletonConfig().getWidth();
     }
 
     public void analyze(DecimalPosition endSlopePosition, int endSlopeIndex) {

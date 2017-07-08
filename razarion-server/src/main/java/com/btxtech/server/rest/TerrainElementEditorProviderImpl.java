@@ -16,7 +16,6 @@ import java.util.List;
  * 20.11.2015.
  */
 public class TerrainElementEditorProviderImpl implements TerrainElementEditorProvider {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -103,7 +102,6 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    @Deprecated
     public List<ObjectNameId> getTerrainObjectNameIds() {
         try {
             return persistenceService.getTerrainObjectNameIds();
@@ -124,7 +122,6 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    @Deprecated
     public TerrainObjectConfig readTerrainObjectConfig(int id) {
         try {
             return persistenceService.readTerrainObjectConfig(id);
@@ -158,6 +155,16 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     public void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {
         try {
             persistenceService.deleteTerrainObjectConfig(terrainObjectConfig);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public List<ObjectNameId> readDrivewayObjectNameIds() {
+        try {
+            return persistenceService.readDrivewayObjectNameIds();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

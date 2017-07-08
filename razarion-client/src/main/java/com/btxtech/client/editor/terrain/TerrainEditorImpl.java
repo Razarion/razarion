@@ -73,11 +73,13 @@ public class TerrainEditorImpl implements TerrainEditor {
     private GameEngineControl gameEngineControl;
     private boolean active;
     private boolean newSlopeMode = true;
+    private boolean drivewayMode;
     private Polygon2D cursor;
     private double cursorRadius = 10;
     private int cursorCorners = 20;
     private ObjectNameId slope4New;
     private ObjectNameId terrainObject4New;
+    private ObjectNameId driveway4New;
     private ModifiedSlope hoverSlope;
     private ModifiedTerrainObject hoverTerrainObject;
     private ModifiedTerrainObject modifyingTerrainObject;
@@ -476,5 +478,17 @@ public class TerrainEditorImpl implements TerrainEditor {
 
     public List<TerrainSlopePosition> generateTerrainSlopePositions() {
         return modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
+    }
+
+    public void setDrivewayModeChanged(boolean drivewayMode) {
+        this.drivewayMode = drivewayMode;
+    }
+
+    public boolean isDrivewayMode() {
+        return drivewayMode;
+    }
+
+    public void setDriveway4New(ObjectNameId driveway4New) {
+        this.driveway4New = driveway4New;
     }
 }

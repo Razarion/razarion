@@ -76,7 +76,6 @@ public interface TerrainElementEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readTerrainObjectConfig/{id}")
-    @Deprecated
     TerrainObjectConfig readTerrainObjectConfig(@PathParam("id") int id);
 
     @GET
@@ -93,4 +92,9 @@ public interface TerrainElementEditorProvider {
     @Path("deleteTerrainObjectConfig")
     @Consumes(MediaType.APPLICATION_JSON)
     void deleteTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readDrivewayObjectNameIds")
+    List<ObjectNameId> readDrivewayObjectNameIds();
 }

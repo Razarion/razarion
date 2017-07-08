@@ -2,11 +2,14 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity_;
+import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
+import com.btxtech.server.persistence.surface.DrivewayConfigEntity_;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -202,5 +205,26 @@ public class TerrainElementPersistence {
     @Transactional
     public TerrainObjectEntity getTerrainObjectEntity(int terrainObjectId) {
         return entityManager.find(TerrainObjectEntity.class, terrainObjectId);
+    }
+
+    @Transactional
+    public List<ObjectNameId> readDrivewayObjectNameIds() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<DrivewayConfigEntity> root = cq.from(DrivewayConfigEntity.class);
+        cq.multiselect(root.get(DrivewayConfigEntity_.id), root.get(DrivewayConfigEntity_.internalName));
+        List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
+        return tupleResult.stream().map(t -> new ObjectNameId((int) t.get(0), (String) t.get(1))).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<DrivewayConfig> loadDrivewayConfigs() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<DrivewayConfigEntity> userQuery = criteriaBuilder.createQuery(DrivewayConfigEntity.class);
+        Root<DrivewayConfigEntity> root = userQuery.from(DrivewayConfigEntity.class);
+        CriteriaQuery<DrivewayConfigEntity> userSelect = userQuery.select(root);
+        Collection<DrivewayConfigEntity> drivewayConfigEntities = entityManager.createQuery(userSelect).getResultList();
+
+        return drivewayConfigEntities.stream().map(DrivewayConfigEntity::toDrivewayConfig).collect(Collectors.toList());
     }
 }

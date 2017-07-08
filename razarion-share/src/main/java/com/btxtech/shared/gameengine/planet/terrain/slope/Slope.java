@@ -50,12 +50,6 @@ public class Slope {
             verticalSegments.addAll(border.setupVerticalSegments(this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders)));
         }
 
-        // Set VerticalSegment predecessor and successor
-        for (int i = 0; i < verticalSegments.size(); i++) {
-            VerticalSegment current = verticalSegments.get(i);
-            VerticalSegment next = CollectionUtils.getCorrectedElement(i + 1, verticalSegments);
-        }
-
         setupInnerOuter();
     }
 
@@ -260,10 +254,6 @@ public class Slope {
 
     @Override
     public int hashCode() {
-        return slopeId;
-    }
-
-    public int getSlopeId() {
         return slopeId;
     }
 

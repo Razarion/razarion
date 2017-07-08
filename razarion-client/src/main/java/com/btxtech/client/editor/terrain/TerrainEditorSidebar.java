@@ -17,6 +17,7 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ValueListBox;
@@ -96,6 +97,12 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private ValueListBox<ObjectNameId> slopeSelection;
     @Inject
     @DataField
+    private CheckBox drivewayMode;
+    @Inject
+    @DataField
+    private ValueListBox<ObjectNameId> drivewaySelection;
+    @Inject
+    @DataField
     private ValueListBox<ObjectNameId> terrainObjectSelection;
     @Inject
     @DataField
@@ -138,6 +145,20 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
             logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
             return false;
         }).getSlopeNameIds();
+        drivewayMode.setValue(terrainEditor.isDrivewayMode());
+        drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
+        elementEditorProvider.call(new RemoteCallback<Collection<ObjectNameId>>() {
+            @Override
+            public void callback(Collection<ObjectNameId> objectNameIds) {
+                ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
+                drivewaySelection.setAcceptableValues(objectNameIds);
+                drivewaySelection.setValue(objectNameId);
+                terrainEditor.setDriveway4New(objectNameId);
+            }
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "readDrivewayObjectNameIds failed: " + message, throwable);
+            return false;
+        }).readDrivewayObjectNameIds();
         terrainObjectSelection.addValueChangeHandler(event -> terrainEditor.setTerrainObject4New(terrainObjectSelection.getValue()));
         elementEditorProvider.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
@@ -159,6 +180,11 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private void creationModeButtonClick(ClickEvent event) {
         terrainEditor.toggleCreationMode();
         creationModeButton.setText(terrainEditor.getCreationModeText());
+    }
+
+    @EventHandler("drivewayMode")
+    public void drivewayModeChanged(ChangeEvent e) {
+        terrainEditor.setDrivewayModeChanged(drivewayMode.getValue());
     }
 
     @Override
