@@ -5,9 +5,12 @@ import com.btxtech.shared.dto.TerrainSlopeCorner;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -22,14 +25,25 @@ public class TerrainSlopeCornerEntity {
     private Integer id;
     @Embedded
     private DecimalPosition position;
-    private Integer TMP_slopeDrivewayId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private DrivewayConfigEntity drivewayConfigEntity;
 
     public TerrainSlopeCorner toTerrainSlopeCorner() {
-        return new TerrainSlopeCorner().setPosition(position).setSlopeDrivewayId(TMP_slopeDrivewayId);
+        TerrainSlopeCorner terrainSlopeCorner = new TerrainSlopeCorner();
+        terrainSlopeCorner.setPosition(position);
+        if (drivewayConfigEntity != null) {
+            terrainSlopeCorner.setSlopeDrivewayId(drivewayConfigEntity.getId());
+        }
+        return terrainSlopeCorner;
     }
 
-    public void fromTerrainSlopeCorner(DecimalPosition position) {
+    public void setPosition(DecimalPosition position) {
         this.position = position;
+    }
+
+    public void setDrivewayConfigEntity(DrivewayConfigEntity drivewayConfigEntity) {
+        this.drivewayConfigEntity = drivewayConfigEntity;
     }
 
     @Override

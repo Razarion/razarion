@@ -227,4 +227,16 @@ public class TerrainElementPersistence {
 
         return drivewayConfigEntities.stream().map(DrivewayConfigEntity::toDrivewayConfig).collect(Collectors.toList());
     }
+
+    @Transactional
+    public DrivewayConfigEntity getDrivewayConfigEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        DrivewayConfigEntity drivewayConfigEntity = entityManager.find(DrivewayConfigEntity.class, id);
+        if (drivewayConfigEntity == null) {
+            throw new IllegalArgumentException("No DrivewayConfigEntity for id: " + id);
+        }
+        return drivewayConfigEntity;
+    }
 }

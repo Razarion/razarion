@@ -98,7 +98,8 @@ public class PlanetPersistence {
             terrainSlopePositionEntity.getPolygon().clear();
             terrainSlopePositionEntity.getPolygon().addAll(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
                 TerrainSlopeCornerEntity terrainSlopeCornerEntity = new TerrainSlopeCornerEntity();
-                terrainSlopeCornerEntity.fromTerrainSlopeCorner(terrainSlopeCorner.getPosition());
+                terrainSlopeCornerEntity.setPosition(terrainSlopeCorner.getPosition());
+                terrainSlopeCornerEntity.setDrivewayConfigEntity(terrainElementPersistence.getDrivewayConfigEntity(terrainSlopeCorner.getSlopeDrivewayId()));
                 return terrainSlopeCornerEntity;
             }).collect(Collectors.toList()));
         }
@@ -114,7 +115,8 @@ public class PlanetPersistence {
             terrainSlopePositionEntity.setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigId()));
             terrainSlopePositionEntity.setPolygon(terrainSlopePosition.getPolygon().stream().map(terrainSlopeCorner -> {
                 TerrainSlopeCornerEntity terrainSlopeCornerEntity = new TerrainSlopeCornerEntity();
-                terrainSlopeCornerEntity.fromTerrainSlopeCorner(terrainSlopeCorner.getPosition());
+                terrainSlopeCornerEntity.setPosition(terrainSlopeCorner.getPosition());
+                terrainSlopeCornerEntity.setDrivewayConfigEntity(terrainElementPersistence.getDrivewayConfigEntity(terrainSlopeCorner.getSlopeDrivewayId()));
                 return terrainSlopeCornerEntity;
             }).collect(Collectors.toList()));
             terrainSlopePositionEntities.add(terrainSlopePositionEntity);

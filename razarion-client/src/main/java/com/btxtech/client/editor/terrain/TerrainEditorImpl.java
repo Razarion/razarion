@@ -152,7 +152,11 @@ public class TerrainEditorImpl implements TerrainEditor {
                     terrainEditorRenderTask.removeSlope(hoverSlope);
                 }
             } else {
-                hoverSlope.combine(movedCursor);
+                if(drivewayMode) {
+                    hoverSlope.createDriveway(movedCursor, terrainTypeService.getDrivewayConfig(driveway4New.getId()));
+                } else {
+                    hoverSlope.combine(movedCursor);
+                }
                 terrainEditorRenderTask.updateSlope(hoverSlope);
             }
         } else {
@@ -408,7 +412,7 @@ public class TerrainEditorImpl implements TerrainEditor {
     private ModifiedSlope getSlopeAtTerrain(Vertex terrainPosition) {
         Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
         for (ModifiedSlope modifiedSlope : modifiedSlopes) {
-            if (modifiedSlope.contains(movedCursor)) {
+            if (modifiedSlope.touches(movedCursor)) {
                 return modifiedSlope;
             }
         }

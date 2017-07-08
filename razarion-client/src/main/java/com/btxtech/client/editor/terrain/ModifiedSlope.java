@@ -1,9 +1,15 @@
 package com.btxtech.client.editor.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -16,11 +22,19 @@ public class ModifiedSlope {
     private Polygon2D polygon;
     private boolean hover;
     private boolean dirty;
+    private Map<DecimalPosition, Integer> drivewayPositions = new HashMap<>();
 
     public ModifiedSlope(TerrainSlopePosition original) {
         originalId = original.getId();
         slopeId = original.getSlopeConfigId();
-        polygon = new Polygon2D(original.getPolygon().stream().map(TerrainSlopeCorner::getPosition).collect(Collectors.toList()));
+        List<DecimalPosition> positions = new ArrayList<>();
+        for (TerrainSlopeCorner terrainSlopeCorner : original.getPolygon()) {
+            positions.add(terrainSlopeCorner.getPosition());
+            if (terrainSlopeCorner.getSlopeDrivewayId() != null) {
+                drivewayPositions.put(terrainSlopeCorner.getPosition(), terrainSlopeCorner.getSlopeDrivewayId());
+            }
+        }
+        polygon = new Polygon2D(positions);
     }
 
     public ModifiedSlope(int slopeId, Polygon2D polygon) {
@@ -33,11 +47,21 @@ public class ModifiedSlope {
     }
 
     public TerrainSlopePosition createTerrainSlopePositionNoId() {
-        return new TerrainSlopePosition().setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
+        return new TerrainSlopePosition().setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
     }
 
     public TerrainSlopePosition createTerrainSlopePosition() {
-        return new TerrainSlopePosition().setId(originalId).setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(position -> new TerrainSlopeCorner().setPosition(position)).collect(Collectors.toList()));
+        return new TerrainSlopePosition().setId(originalId).setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
+    }
+
+    private TerrainSlopeCorner createTerrainSlopeCorner(DecimalPosition position) {
+        TerrainSlopeCorner terrainSlopeCorner = new TerrainSlopeCorner();
+        terrainSlopeCorner.setPosition(position);
+        Integer drivewayConfigId = drivewayPositions.get(position);
+        if(drivewayConfigId != null) {
+            terrainSlopeCorner.setSlopeDrivewayId(drivewayConfigId);
+        }
+        return terrainSlopeCorner;
     }
 
     public Polygon2D combine(Polygon2D other) {
@@ -76,7 +100,25 @@ public class ModifiedSlope {
         return originalId;
     }
 
-    public boolean contains(Polygon2D cursor) {
-        return polygon != null && polygon.adjoins(cursor);
+    public boolean touches(Polygon2D cursor) {
+        return polygon != null && polygon.isLineCrossing(cursor);
+    }
+
+    public void createDriveway(Polygon2D cursor, DrivewayConfig drivewayConfig) {
+        for (DecimalPosition drivewayPosition : cursor.getCorners()) {
+            if (drivewayPositions.containsKey(drivewayPosition)) {
+                return;
+            }
+        }
+        for (DecimalPosition slopePosition : polygon.getCorners()) {
+            if (cursor.isInside(slopePosition)) {
+                dirty = true;
+                drivewayPositions.put(slopePosition, drivewayConfig.getId());
+            }
+        }
+    }
+
+    public List<DecimalPosition> getDrivewayPositions() {
+        return new ArrayList<>(drivewayPositions.keySet());
     }
 }

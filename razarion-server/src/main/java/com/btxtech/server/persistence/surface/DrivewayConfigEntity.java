@@ -23,6 +23,10 @@ public class DrivewayConfigEntity implements ObjectNameIdProvider {
     private String internalName;
     double angle;
 
+    public Integer getId() {
+        return id;
+    }
+
     public DrivewayConfig toDrivewayConfig() {
         return new DrivewayConfig().setId(id).setAngle(angle);
     }

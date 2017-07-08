@@ -80,6 +80,24 @@ public class Polygon2D {
         return false;
     }
 
+
+    /**
+     * Returns true if polygons do cross. Returns false if one polygon is inside the other.
+     *
+     * @param other Polygon
+     * @return true if crossing
+     */
+    public boolean isLineCrossing(Polygon2D other) {
+        for (Line line : lines) {
+            for (Line otherLine : other.getLines()) {
+                if (line.getCrossInclusive(otherLine) != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean isLineCrossing(Line testLine) {
         for (Line line : lines) {
             if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {

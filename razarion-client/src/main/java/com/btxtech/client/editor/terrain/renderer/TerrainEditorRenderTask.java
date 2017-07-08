@@ -25,6 +25,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     private boolean active;
     private TerrainEditorCursorRenderUnit cursorRenderer;
     private Map<ModifiedSlope, TerrainEditorSlopeRenderUnit> slopeRenderers = new HashMap<>();
+    private Map<ModifiedSlope, TerrainEditorSlopeDrivewayRenderUnit> slopeDrivewayRenderers = new HashMap<>();
 
     @Override
     protected boolean isActive() {
@@ -43,6 +44,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
         active = false;
         cursorRenderer = null;
         slopeRenderers.clear();
+        slopeDrivewayRenderers.clear();
         clear();
     }
 
@@ -52,14 +54,17 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
 
     public void updateSlope(ModifiedSlope modifiedSlope) {
         slopeRenderers.get(modifiedSlope).update();
+        slopeDrivewayRenderers.get(modifiedSlope).update();
     }
 
     public void newSlope(ModifiedSlope modifiedSlope) {
         setupModifiedSlope(modifiedSlope);
+        setupModifiedSlopeDriveways(modifiedSlope);
     }
 
     public void removeSlope(ModifiedSlope modifiedSlope) {
         remove(slopeRenderers.remove(modifiedSlope).getRenderComposite().getModelRenderer());
+        remove(slopeDrivewayRenderers.remove(modifiedSlope).getRenderComposite().getModelRenderer());
     }
 
     private void setupCursor(Polygon2D cursor) {
@@ -75,6 +80,7 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
     private void setupModifiedSlopes(Collection<ModifiedSlope> modifiedSlopes) {
         for (ModifiedSlope modifiedSlope : modifiedSlopes) {
             setupModifiedSlope(modifiedSlope);
+            setupModifiedSlopeDriveways(modifiedSlope);
         }
     }
 
@@ -82,13 +88,23 @@ public class TerrainEditorRenderTask extends AbstractRenderTask<Void> {
         ModelRenderer<ModifiedSlope, CommonRenderComposite<TerrainEditorSlopeRenderUnit, ModifiedSlope>, TerrainEditorSlopeRenderUnit, ModifiedSlope> modelRenderer = create();
         CommonRenderComposite<TerrainEditorSlopeRenderUnit, ModifiedSlope> renderComposite = modelRenderer.create();
         renderComposite.init(modifiedSlope);
-        TerrainEditorSlopeRenderUnit cursorRenderer = renderComposite.setRenderUnit(TerrainEditorSlopeRenderUnit.class);
-        slopeRenderers.put(modifiedSlope, cursorRenderer);
+        TerrainEditorSlopeRenderUnit slopeRenderer = renderComposite.setRenderUnit(TerrainEditorSlopeRenderUnit.class);
+        slopeRenderers.put(modifiedSlope, slopeRenderer);
         modelRenderer.add(RenderUnitControl.SELECTION_FRAME, renderComposite);
         add(modelRenderer);
         renderComposite.fillBuffers();
     }
 
+    private void setupModifiedSlopeDriveways(ModifiedSlope modifiedSlope) {
+        ModelRenderer<ModifiedSlope, CommonRenderComposite<TerrainEditorSlopeDrivewayRenderUnit, ModifiedSlope>, TerrainEditorSlopeDrivewayRenderUnit, ModifiedSlope> modelRenderer = create();
+        CommonRenderComposite<TerrainEditorSlopeDrivewayRenderUnit, ModifiedSlope> renderComposite = modelRenderer.create();
+        renderComposite.init(modifiedSlope);
+        TerrainEditorSlopeDrivewayRenderUnit drivewayRenderer = renderComposite.setRenderUnit(TerrainEditorSlopeDrivewayRenderUnit.class);
+        slopeDrivewayRenderers.put(modifiedSlope, drivewayRenderer);
+        modelRenderer.add(RenderUnitControl.START_POINT_CIRCLE, renderComposite);
+        add(modelRenderer);
+        renderComposite.fillBuffers();
+    }
 
     private void setupModifiedTerrainObject() {
         ModelRenderer<Void, CommonRenderComposite<TerrainEditorTerrainObjectRendererUnit, Void>, TerrainEditorTerrainObjectRendererUnit, Void> modelRenderer = create();
