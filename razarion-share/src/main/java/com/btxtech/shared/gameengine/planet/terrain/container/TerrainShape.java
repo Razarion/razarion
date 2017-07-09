@@ -214,11 +214,11 @@ public class TerrainShape {
 
         DecimalPosition nodeRelative = tileRelative.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex));
         TerrainShapeSubNode terrainShapeSubNode = terrainShapeNode.getTerrainShapeSubNode(nodeRelative);
-        if (terrainShapeSubNode == null) {
+        if (terrainShapeSubNode != null) {
+            return terrainImpactCallback.inSubNode(terrainShapeSubNode, nodeRelative, nodeRelativeIndex, tileRelative, tileIndex);
+        } else {
             return terrainImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileRelative, tileIndex);
         }
-
-        return terrainImpactCallback.inSubNode(terrainShapeSubNode, nodeRelative, nodeRelativeIndex, tileRelative, tileIndex);
     }
 
     public void terrainRegionImpactCallback(DecimalPosition absolutePosition, double radius, TerrainRegionImpactCallback terrainRegionImpactCallback) {

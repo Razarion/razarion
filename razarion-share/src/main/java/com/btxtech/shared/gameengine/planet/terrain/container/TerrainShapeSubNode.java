@@ -62,8 +62,8 @@ public class TerrainShapeSubNode {
         return nativeTerrainShapeSubNode;
     }
 
-    public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition subNodeRelative) {
-        return getTerrainShapeSubNode(subNodeRelative, terrainShapeSubNodes);
+    public TerrainShapeSubNode getTerrainShapeSubNode(int depth, DecimalPosition subNodeRelative) {
+        return getTerrainShapeSubNode(depth, subNodeRelative, terrainShapeSubNodes);
     }
 
     public static NativeTerrainShapeSubNode[] toNativeTerrainShapeSubNode(TerrainShapeSubNode[] terrainShapeSubNodes) {
@@ -94,26 +94,26 @@ public class TerrainShapeSubNode {
         return terrainShapeSubNodes;
     }
 
-    public static TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition nodeRelative, TerrainShapeSubNode[] terrainShapeSubNodes) {
+    public static TerrainShapeSubNode getTerrainShapeSubNode(int depth, DecimalPosition nodeRelative, TerrainShapeSubNode[] terrainShapeSubNodes) {
         if (terrainShapeSubNodes == null) {
             return null;
         }
-        double subLength = TerrainUtil.calculateSubNodeLength(0);
+        double subLength = TerrainUtil.calculateSubNodeLength(depth);
         Index subNodeIndex = nodeRelative.divide(subLength).toIndex();
         if (subNodeIndex.getX() == 0 && subNodeIndex.getY() == 0) {
-            return accessSubNode(terrainShapeSubNodes, 0, nodeRelative);
+            return accessSubNode(depth + 1, terrainShapeSubNodes, 0, nodeRelative);
         } else if (subNodeIndex.getX() == 1 && subNodeIndex.getY() == 0) {
-            return accessSubNode(terrainShapeSubNodes, 1, nodeRelative.sub(subLength, 0));
+            return accessSubNode(depth + 1, terrainShapeSubNodes, 1, nodeRelative.sub(subLength, 0));
         } else if (subNodeIndex.getX() == 1 && subNodeIndex.getY() == 1) {
-            return accessSubNode(terrainShapeSubNodes, 2, nodeRelative.sub(subLength, subLength));
+            return accessSubNode(depth + 1, terrainShapeSubNodes, 2, nodeRelative.sub(subLength, subLength));
         } else if (subNodeIndex.getX() == 0 && subNodeIndex.getY() == 1) {
-            return accessSubNode(terrainShapeSubNodes, 2, nodeRelative.sub(0, subLength));
+            return accessSubNode(depth + 1, terrainShapeSubNodes, 2, nodeRelative.sub(0, subLength));
         } else {
             throw new IllegalArgumentException("TerrainShapeNode.getTerrainShapeSubNode() unknown index: " + subNodeIndex + " nodeRelative: " + nodeRelative);
         }
     }
 
-    private static TerrainShapeSubNode accessSubNode(TerrainShapeSubNode[] terrainShapeSubNodes, int index, DecimalPosition subNodeRelative) {
+    private static TerrainShapeSubNode accessSubNode(int depth, TerrainShapeSubNode[] terrainShapeSubNodes, int index, DecimalPosition subNodeRelative) {
         TerrainShapeSubNode terrainShapeSubNode = terrainShapeSubNodes[index];
         if (terrainShapeSubNode == null) {
             return null;
@@ -121,7 +121,7 @@ public class TerrainShapeSubNode {
         if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
             return terrainShapeSubNode;
         }
-        TerrainShapeSubNode subNode = terrainShapeSubNode.getTerrainShapeSubNode(subNodeRelative);
+        TerrainShapeSubNode subNode = terrainShapeSubNode.getTerrainShapeSubNode(depth, subNodeRelative);
         if (subNode != null) {
             return subNode;
         } else {

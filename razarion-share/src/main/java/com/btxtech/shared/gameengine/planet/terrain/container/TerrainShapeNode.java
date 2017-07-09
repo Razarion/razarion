@@ -165,7 +165,7 @@ public class TerrainShapeNode {
     }
 
     public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition nodeRelative) {
-        return TerrainShapeSubNode.getTerrainShapeSubNode(nodeRelative, terrainShapeSubNodes);
+        return TerrainShapeSubNode.getTerrainShapeSubNode(0, nodeRelative, terrainShapeSubNodes);
     }
 
     public List<List<Vertex>> getGroundSlopeConnections() {
