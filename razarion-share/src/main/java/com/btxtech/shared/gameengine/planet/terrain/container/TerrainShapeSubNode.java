@@ -107,7 +107,7 @@ public class TerrainShapeSubNode {
         } else if (subNodeIndex.getX() == 1 && subNodeIndex.getY() == 1) {
             return accessSubNode(depth + 1, terrainShapeSubNodes, 2, nodeRelative.sub(subLength, subLength));
         } else if (subNodeIndex.getX() == 0 && subNodeIndex.getY() == 1) {
-            return accessSubNode(depth + 1, terrainShapeSubNodes, 2, nodeRelative.sub(0, subLength));
+            return accessSubNode(depth + 1, terrainShapeSubNodes, 3, nodeRelative.sub(0, subLength));
         } else {
             throw new IllegalArgumentException("TerrainShapeNode.getTerrainShapeSubNode() unknown index: " + subNodeIndex + " nodeRelative: " + nodeRelative);
         }
