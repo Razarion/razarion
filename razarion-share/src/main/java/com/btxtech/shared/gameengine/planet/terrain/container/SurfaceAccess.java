@@ -42,12 +42,14 @@ public class SurfaceAccess {
 
             @Override
             public Double inNode(TerrainShapeNode terrainShapeNode, Index nodeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                if (!terrainShapeNode.isFullWater() && !terrainShapeNode.isFullDriveway()) {
+                if (!terrainShapeNode.isFullWater() && !terrainShapeNode.isFullDriveway() && !terrainShapeNode.isHiddenUnderSlope()) {
                     return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getUniformGroundHeight();
                 } else if (terrainShapeNode.isFullWater()) {
                     return terrainShapeNode.getFullWaterLevel();
                 } else if (terrainShapeNode.isFullDriveway()) {
                     return InterpolationUtils.rectangleInterpolate(absolutePosition.sub(TerrainUtil.toTileAbsolute(nodeIndex)), terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
+                } else if (terrainShapeNode.isHiddenUnderSlope()) {
+                    return terrainShapeNode.getUniformGroundHeight();
                 } else {
                     throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() unknown state");
                 }

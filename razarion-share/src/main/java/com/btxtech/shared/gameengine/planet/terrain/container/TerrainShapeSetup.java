@@ -185,6 +185,7 @@ public class TerrainShapeSetup {
                     } else if (outerPolygon.isInside(corners) && !innerPolygon.isOneCornerInside(corners)) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setHiddenUnderSlope();
+                        terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
                     }
                 }
             }
