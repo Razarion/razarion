@@ -33,6 +33,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class UserService {
+    private static final int DEBUG_LEVEL_ID = 5;
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -92,7 +93,11 @@ public class UserService {
     private UserContext createUnregisteredUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        userContext.setLevelId(levelPersistence.getStarterLevel().getId());
+        if(filePropertiesService.isDeveloperMode()) {
+            userContext.setLevelId(DEBUG_LEVEL_ID);
+        } else {
+            userContext.setLevelId(levelPersistence.getStarterLevel().getId());
+        }
         userContext.setName("Unregistered User");
         return userContext;
     }
