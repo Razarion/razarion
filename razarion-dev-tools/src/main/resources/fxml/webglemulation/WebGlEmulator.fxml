@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
@@ -17,143 +14,184 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.webglemulator.WebGlEmulatorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.btxtech.webglemulator.WebGlEmulatorController">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
                 <HBox alignment="CENTER" spacing="5.0">
                     <children>
-                        <TextField fx:id="mousePosition" editable="false" prefColumnCount="5" />
+                        <TextField fx:id="mousePosition" editable="false" prefColumnCount="5"/>
                     </children>
                 </HBox>
-            <Button mnemonicParsing="false" onAction="#onTestCaseButtonClicked" text="Test Case" />
-            <Button mnemonicParsing="false" onAction="#onTickButtonClicked" text="Tick" />
-            <Button mnemonicParsing="false" onAction="#onRestartButtonClicked" text="Restart" />
-            <Button mnemonicParsing="false" onAction="#onShadowButtonClicked" text="Shadow" />
-            <Button mnemonicParsing="false" onAction="#onSceneButtonClicked" text="Scene" />
-            <Separator orientation="VERTICAL" />
-            <Button mnemonicParsing="false" onAction="#onPerfomButtonClicked" text="Perfmon" />
-            <CheckBox fx:id="showRenderTimeCheckBox" mnemonicParsing="false" onAction="#onShowRenderTimeCheckBox" text="Display Render Time" />
-            <Button mnemonicParsing="false" onAction="#getJsonButtonClicked" text="Get JSON" />
-            <Separator orientation="VERTICAL" />
-            <Button mnemonicParsing="false" onAction="#onInventoryButtonClicked" text="Inventory" />
-            <Label fx:id="resourceLabel" prefHeight="17.0" prefWidth="59.0" text="Label" />
-            <Label prefHeight="17.0" prefWidth="54.0" text="Label" fx:id="xpLabel" />
-            <Label fx:id="levelLabel" prefHeight="17.0" prefWidth="60.0" text="Label" />
+                <Button mnemonicParsing="false" onAction="#onTestCaseButtonClicked" text="Test Case"/>
+                <Button mnemonicParsing="false" onAction="#onTickButtonClicked" text="Tick"/>
+                <Button mnemonicParsing="false" onAction="#onRestartButtonClicked" text="Restart"/>
+                <Button mnemonicParsing="false" onAction="#onShadowButtonClicked" text="Shadow"/>
+                <Button mnemonicParsing="false" onAction="#onWorkerViewButtonClicked" text="Worker View"/>
+                <Button mnemonicParsing="false" onAction="#onClientViewButtonClicked" text="Client View"/>
+                <Separator orientation="VERTICAL"/>
+                <Button mnemonicParsing="false" onAction="#onPerfomButtonClicked" text="Perfmon"/>
+                <CheckBox fx:id="showRenderTimeCheckBox" mnemonicParsing="false" onAction="#onShowRenderTimeCheckBox"
+                          text="Display Render Time"/>
+                <Button mnemonicParsing="false" onAction="#getJsonButtonClicked" text="Get JSON"/>
+                <Separator orientation="VERTICAL"/>
+                <Button mnemonicParsing="false" onAction="#onInventoryButtonClicked" text="Inventory"/>
+                <Label fx:id="resourceLabel" prefHeight="17.0" prefWidth="59.0" text="Label"/>
+                <Label prefHeight="17.0" prefWidth="54.0" text="Label" fx:id="xpLabel"/>
+                <Label fx:id="levelLabel" prefHeight="17.0" prefWidth="60.0" text="Label"/>
             </items>
         </ToolBar>
     </top>
     <center>
-        <SplitPane dividerPositions="0.1636060100166945" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <SplitPane dividerPositions="0.1636060100166945" prefHeight="160.0" prefWidth="200.0"
+                   BorderPane.alignment="CENTER">
             <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <children>
                         <VBox prefHeight="537.0" prefWidth="215.0">
                             <children>
-                        <GridPane>
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <children>
-                              <Label text="Show Norm" />
-                              <CheckBox fx:id="showNormCheckBox" mnemonicParsing="false" onAction="#onShowNormCheckBox" text="Show" GridPane.columnIndex="1" />
-                           </children>
-                        </GridPane>
-                                <GridPane prefHeight="122.0" prefWidth="192.0">
+                                <GridPane>
                                     <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0" prefWidth="81.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0" prefWidth="119.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                                     </columnConstraints>
                                     <rowConstraints>
-                                        <RowConstraints />
-                                        <RowConstraints maxHeight="42.0" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="23.0" vgrow="SOMETIMES" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
                                     </rowConstraints>
                                     <children>
-                                        <Label text="FoV" GridPane.rowIndex="1" />
-                                        <Slider fx:id="fovSlider" majorTickUnit="30.0" max="180.0" min="1.0" minorTickCount="0" prefHeight="38.0" prefWidth="130.0" showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                        <Label text="Aspect Ratio" GridPane.rowIndex="2" />
-                                        <Label fx:id="aspectRatioLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                        <Button mnemonicParsing="false" onAction="#onDumpProjectionTransformatioClicked" text="Dump" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                                        <Label text="Perspective" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
+                                        <Label text="Show Norm"/>
+                                        <CheckBox fx:id="showNormCheckBox" mnemonicParsing="false"
+                                                  onAction="#onShowNormCheckBox" text="Show" GridPane.columnIndex="1"/>
+                                    </children>
+                                </GridPane>
+                                <GridPane prefHeight="122.0" prefWidth="192.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="94.0" minWidth="10.0"
+                                                           prefWidth="81.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="143.0" minWidth="10.0"
+                                                           prefWidth="119.0"/>
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints/>
+                                        <RowConstraints maxHeight="42.0" minHeight="10.0" prefHeight="42.0"
+                                                        vgrow="SOMETIMES"/>
+                                        <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="25.0"
+                                                        vgrow="SOMETIMES"/>
+                                        <RowConstraints maxHeight="25.0" minHeight="10.0" prefHeight="23.0"
+                                                        vgrow="SOMETIMES"/>
+                                    </rowConstraints>
+                                    <children>
+                                        <Label text="FoV" GridPane.rowIndex="1"/>
+                                        <Slider fx:id="fovSlider" majorTickUnit="30.0" max="180.0" min="1.0"
+                                                minorTickCount="0" prefHeight="38.0" prefWidth="130.0"
+                                                showTickLabels="true" showTickMarks="true" GridPane.columnIndex="1"
+                                                GridPane.rowIndex="1"/>
+                                        <Label text="Aspect Ratio" GridPane.rowIndex="2"/>
+                                        <Label fx:id="aspectRatioLabel" text="Label" GridPane.columnIndex="1"
+                                               GridPane.rowIndex="2"/>
+                                        <Button mnemonicParsing="false" onAction="#onDumpProjectionTransformatioClicked"
+                                                text="Dump" GridPane.columnSpan="2147483647"
+                                                GridPane.halignment="CENTER" GridPane.rowIndex="3"/>
+                                        <Label text="Perspective" GridPane.columnSpan="2147483647"
+                                               GridPane.halignment="CENTER">
                                             <font>
-                                                <Font size="22.0" />
+                                                <Font size="22.0"/>
                                             </font>
                                         </Label>
                                     </children>
                                 </GridPane>
                                 <GridPane prefHeight="196.0" prefWidth="216.0">
                                     <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
                                     </columnConstraints>
                                     <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="60.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="54.0" minHeight="0.0" prefHeight="29.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="36.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="37.0" minHeight="9.0" prefHeight="37.0" />
-                                        <RowConstraints maxHeight="37.0" minHeight="9.0" prefHeight="37.0" />
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints maxHeight="60.0" minHeight="10.0" prefHeight="30.0"
+                                                        vgrow="SOMETIMES"/>
+                                        <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="28.0"
+                                                        vgrow="SOMETIMES"/>
+                                        <RowConstraints maxHeight="54.0" minHeight="0.0" prefHeight="29.0"
+                                                        vgrow="SOMETIMES"/>
+                                        <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="36.0"
+                                                        vgrow="SOMETIMES"/>
+                                        <RowConstraints maxHeight="37.0" minHeight="9.0" prefHeight="37.0"/>
+                                        <RowConstraints maxHeight="37.0" minHeight="9.0" prefHeight="37.0"/>
                                     </rowConstraints>
                                     <children>
-                                        <Label text="Camera" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
+                                        <Label text="Camera" GridPane.columnSpan="2147483647"
+                                               GridPane.halignment="CENTER">
                                             <font>
-                                                <Font size="22.0" />
+                                                <Font size="22.0"/>
                                             </font>
                                         </Label>
-                                        <Label text="X Translate" GridPane.rowIndex="1" />
-                                        <Label text="Y Translate" GridPane.rowIndex="2" />
-                                        <Label text="Z Translate" GridPane.rowIndex="3" />
-                                        <Label text="X Rotation" GridPane.rowIndex="4" />
-                                        <Label text="Z Rotation" GridPane.rowIndex="5" />
-                                        <TextField onAction="#xTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="1" fx:id="xTranslationField" />
-                                        <TextField fx:id="yTranslationField" onAction="#yTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                        <TextField fx:id="zTranslationField" onAction="#zTranslationFieldChanged" prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                                        <Slider fx:id="cameraXRotationSlider" majorTickUnit="45.0" max="360" min="0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                        <Slider fx:id="cameraZRotationSlider" majorTickUnit="45.0" max="180.0" min="-180.0" prefHeight="19.0" prefWidth="108.0" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                                        <Button mnemonicParsing="false" onAction="#onDumpCameraClicked" text="Dump" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
+                                        <Label text="X Translate" GridPane.rowIndex="1"/>
+                                        <Label text="Y Translate" GridPane.rowIndex="2"/>
+                                        <Label text="Z Translate" GridPane.rowIndex="3"/>
+                                        <Label text="X Rotation" GridPane.rowIndex="4"/>
+                                        <Label text="Z Rotation" GridPane.rowIndex="5"/>
+                                        <TextField onAction="#xTranslationFieldChanged" prefWidth="108.0"
+                                                   GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                                   fx:id="xTranslationField"/>
+                                        <TextField fx:id="yTranslationField" onAction="#yTranslationFieldChanged"
+                                                   prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                        <TextField fx:id="zTranslationField" onAction="#zTranslationFieldChanged"
+                                                   prefWidth="108.0" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                                        <Slider fx:id="cameraXRotationSlider" majorTickUnit="45.0" max="360" min="0"
+                                                showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                                        <Slider fx:id="cameraZRotationSlider" majorTickUnit="45.0" max="180.0"
+                                                min="-180.0" prefHeight="19.0" prefWidth="108.0" showTickLabels="true"
+                                                GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                                        <Button mnemonicParsing="false" onAction="#onDumpCameraClicked" text="Dump"
+                                                GridPane.columnSpan="2147483647" GridPane.halignment="CENTER"
+                                                GridPane.rowIndex="6"/>
                                     </children>
                                 </GridPane>
-                        <GridPane>
-                          <columnConstraints>
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="103.0" minWidth="10.0" prefWidth="66.0" />
-                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="149.0" minWidth="10.0" prefWidth="149.0" />
-                          </columnConstraints>
-                          <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                          </rowConstraints>
-                           <children>
-                              <Label text="Shadow" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
-                                 <font>
-                                    <Font size="22.0" />
-                                 </font>
-                              </Label>
-                              <Label text="X Rotation" GridPane.rowIndex="1" />
-                              <Label text="Y Rotation" GridPane.rowIndex="2" />
-                              <Slider fx:id="shadowXRotationSlider" majorTickUnit="45.0" max="90.0" min="-90" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                              <Slider fx:id="shadowYRotationSlider" majorTickUnit="45.0" max="90.0" min="-90" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                           </children>
-                        </GridPane>
+                                <GridPane>
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="103.0" minWidth="10.0"
+                                                           prefWidth="66.0"/>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="149.0" minWidth="10.0"
+                                                           prefWidth="149.0"/>
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                    </rowConstraints>
+                                    <children>
+                                        <Label text="Shadow" GridPane.columnSpan="2147483647"
+                                               GridPane.halignment="CENTER">
+                                            <font>
+                                                <Font size="22.0"/>
+                                            </font>
+                                        </Label>
+                                        <Label text="X Rotation" GridPane.rowIndex="1"/>
+                                        <Label text="Y Rotation" GridPane.rowIndex="2"/>
+                                        <Slider fx:id="shadowXRotationSlider" majorTickUnit="45.0" max="90.0" min="-90"
+                                                showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                                        <Slider fx:id="shadowYRotationSlider" majorTickUnit="45.0" max="90.0" min="-90"
+                                                showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                                    </children>
+                                </GridPane>
                             </children>
                         </VBox>
                     </children>
                 </AnchorPane>
                 <AnchorPane fx:id="centerPanel" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                     <children>
-                        <Canvas fx:id="canvas" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" onMouseDragged="#onMouseDragged" onMouseExited="#onMouseOut" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER" />
-                  <Pane fx:id="itemCockpitPanel" layoutX="14.0" layoutY="744.0" prefHeight="200.0" prefWidth="200.0" />
+                        <Canvas fx:id="canvas" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased"
+                                onMouseDragged="#onMouseDragged" onMouseExited="#onMouseOut"
+                                onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed"
+                                onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER"/>
+                        <Pane fx:id="itemCockpitPanel" layoutX="14.0" layoutY="744.0" prefHeight="200.0"
+                              prefWidth="200.0"/>
                     </children>
                 </AnchorPane>
             </items>

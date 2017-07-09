@@ -24,7 +24,7 @@ import java.util.Map;
  * Created by Beat
  * 28.12.2016.
  */
-public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
+public class ClientViewRenderer extends Abstract2dRenderer {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -65,10 +65,10 @@ public class WebGlEmulatorSceneRenderer extends Abstract2dRenderer {
 
         for (UiTerrainTile active : new ArrayList<>(displayTerrainTiles.values())) {
             Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(active.getTerrainTile().getIndexX(), active.getTerrainTile().getIndexY()));
-            renderIsFree(egc, active, rectangle2D.getStart());
+            // renderIsFree(egc, active, rectangle2D.getStart());
+            renderHeight(egc, active, rectangle2D.getStart());
             egc.getGc().setFill(Color.color(0.0, 1.0, 0.0, 0.5));
             egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
-            // renderHeight(egc, active, rectangle2D.getStart());
         }
 
         for (UiTerrainTile active : new ArrayList<>(cacheTerrainTiles.values())) {

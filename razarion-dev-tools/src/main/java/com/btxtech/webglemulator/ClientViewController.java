@@ -1,9 +1,6 @@
 package com.btxtech.webglemulator;
 
-import com.btxtech.DevToolUtil;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.uiservice.terrain.UiTerrainTile;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,8 +12,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -24,16 +19,16 @@ import java.util.ResourceBundle;
  * 31.05.2016.
  */
 @Singleton
-public class WebGlEmulatorSceneController implements Initializable {
+public class ClientViewController implements Initializable {
     @FXML
     private Canvas canvas;
     @FXML
     private AnchorPane mainPanel;
     @Inject
-    private Instance<WebGlEmulatorSceneRenderer> instance;
+    private Instance<ClientViewRenderer> instance;
     @Inject
     private TerrainUiService terrainUiService;
-    private WebGlEmulatorSceneRenderer webGlEmulatorSceneRenderer;
+    private ClientViewRenderer clientViewRenderer;
     private double zoom = 1.0;
 
     @Override
@@ -46,25 +41,25 @@ public class WebGlEmulatorSceneController implements Initializable {
             canvas.setHeight(height.doubleValue());
             update();
         });
-        webGlEmulatorSceneRenderer = instance.get();
-        webGlEmulatorSceneRenderer.init(canvas, zoom);
+        clientViewRenderer = instance.get();
+        clientViewRenderer.init(canvas, zoom);
     }
 
     public void update() {
-        if (webGlEmulatorSceneRenderer == null) {
+        if (clientViewRenderer == null) {
             return;
         }
-        webGlEmulatorSceneRenderer.render();
+        clientViewRenderer.render();
     }
 
     public void onMouseDragged(Event event) {
-        webGlEmulatorSceneRenderer.shifting(event);
-        webGlEmulatorSceneRenderer.render();
+        clientViewRenderer.shifting(event);
+        clientViewRenderer.render();
     }
 
     public void onMouseReleased() {
-        webGlEmulatorSceneRenderer.stopShift();
-        webGlEmulatorSceneRenderer.render();
+        clientViewRenderer.stopShift();
+        clientViewRenderer.render();
     }
 
     public void onScroll(ScrollEvent scrollEvent) {
@@ -73,15 +68,15 @@ public class WebGlEmulatorSceneController implements Initializable {
         } else {
             zoom--;
         }
-        webGlEmulatorSceneRenderer.setZoom(zoom);
-        webGlEmulatorSceneRenderer.render();
+        clientViewRenderer.setZoom(zoom);
+        clientViewRenderer.render();
     }
 
     boolean isActive() {
-        return webGlEmulatorSceneRenderer != null;
+        return clientViewRenderer != null;
     }
 
     void close() {
-        webGlEmulatorSceneRenderer = null;
+        clientViewRenderer = null;
     }
 }

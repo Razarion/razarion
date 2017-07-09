@@ -25,6 +25,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
@@ -109,7 +110,9 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private WebGlEmulatorShadowController shadowController;
     @Inject
-    private WebGlEmulatorSceneController sceneController;
+    private WorkerViewController workerViewController;
+    @Inject
+    private ClientViewController clientViewController;
     @Inject
     private TerrainMouseHandler terrainMouseHandler;
     @Inject
@@ -162,12 +165,12 @@ public class WebGlEmulatorController implements Initializable {
         shadowXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             visualUiService.getPlanetVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
             shadowUiService.setupMatrices();
-            sceneController.update();
+            clientViewController.update();
         });
         shadowYRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             visualUiService.getPlanetVisualConfig().setShadowRotationY(Math.toRadians(shadowYRotationSlider.getValue()));
             shadowUiService.setupMatrices();
-            sceneController.update();
+            clientViewController.update();
         });
 
         showRenderTimeCheckBox.setSelected(razarionEmulator.isShowRenderTime());
@@ -259,25 +262,48 @@ public class WebGlEmulatorController implements Initializable {
         }
     }
 
-    public void onSceneButtonClicked() {
-        if (sceneController.isActive()) {
-            sceneController.update();
+    public void onWorkerViewButtonClicked() {
+        if (workerViewController.isActive()) {
+            workerViewController.update();
             return;
         }
         try {
             final Stage stage = new Stage();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WebGlEmulatorScene.fxml"));
-            loader.setControllerFactory(param -> sceneController);
-            AnchorPane root = loader.load();
-            stage.setTitle("Scene");
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/WorkerView.fxml"));
+            loader.setControllerFactory(param -> workerViewController);
+            Parent root = loader.load();
+            stage.setTitle("Worker View");
             stage.setScene(new Scene(root));
 //            stage.setX(-1288);
 //            stage.setY(168);
-            stage.setOnCloseRequest(we -> sceneController = null);
             stage.show();
-            stage.setOnCloseRequest(we -> sceneController.close());
+            stage.setOnCloseRequest(we -> workerViewController.close());
 
-            sceneController.update();
+            workerViewController.update();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void onClientViewButtonClicked() {
+        if (clientViewController.isActive()) {
+            clientViewController.update();
+            return;
+        }
+        try {
+            final Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/ClientView.fxml"));
+            loader.setControllerFactory(param -> clientViewController);
+            AnchorPane root = loader.load();
+            stage.setTitle("Client View");
+            stage.setScene(new Scene(root));
+//            stage.setX(-1288);
+//            stage.setY(168);
+            stage.show();
+            stage.setOnCloseRequest(we -> clientViewController.close());
+
+            clientViewController.update();
         } catch (IOException e) {
             e.printStackTrace();
         }

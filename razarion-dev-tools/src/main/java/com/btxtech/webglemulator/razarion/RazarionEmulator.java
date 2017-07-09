@@ -5,7 +5,7 @@ import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.webglemulator.WebGlEmulatorController;
-import com.btxtech.webglemulator.WebGlEmulatorSceneController;
+import com.btxtech.webglemulator.ClientViewController;
 import javafx.application.Platform;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -24,7 +24,7 @@ public class RazarionEmulator {
     @Inject
     private WebGlEmulatorController controller;
     @Inject
-    private WebGlEmulatorSceneController sceneController;
+    private ClientViewController sceneController;
     @Inject
     private GameUiControl gameUiControl;
     @Inject

@@ -4,7 +4,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.canvas.*?>
 
-<AnchorPane fx:id="mainPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.webglemulator.WebGlEmulatorSceneController">
+<AnchorPane fx:id="mainPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.webglemulator.ClientViewController">
    <children>
       <Canvas fx:id="canvas" height="200.0" width="200.0" onMouseDragged="#onMouseDragged" onMouseReleased="#onMouseReleased" onScroll="#onScroll"/>
    </children>

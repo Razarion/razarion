@@ -36,6 +36,7 @@ public class JsonProviderEmulator {
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
     private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH + "/" + RestUrl.COLD;
     private static final String URL_TERRAIN_SHAPE = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.TERRAIN_SHAPE_PROVIDER + "/";
+    private static final String URL_SLOPES_PROVIDER = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.PLANET_EDITOR_SERVICE_PATH + "/" + "readTerrainSlopePositions/";
     private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.SHAPE_3D_PROVIDER + "/" + RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     private static final String GAME_UI_CONTROL_INPUT = "{\"playbackGameSessionUuid\": null, \"playbackSessionUuid\": null}";
 
@@ -105,6 +106,17 @@ public class JsonProviderEmulator {
             Client client = ClientBuilder.newClient();
             String string = client.target(URL_TERRAIN_SHAPE + planetId).request(MediaType.APPLICATION_JSON).get(String.class);
             return new ObjectMapper().readValue(string, NativeTerrainShape.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<TerrainSlopePosition> readSlopes(int planetId) {
+        try {
+            Client client = ClientBuilder.newClient();
+            String string = client.target(URL_SLOPES_PROVIDER + planetId).request(MediaType.APPLICATION_JSON).get(String.class);
+            return new ObjectMapper().readValue(string, new TypeReference<List<TerrainSlopePosition>>() {
+            });
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
