@@ -36,7 +36,10 @@ import java.util.stream.Collectors;
  * 28.12.2016.
  */
 public class WorkerViewRenderer extends Abstract2dRenderer {
+    private static final DecimalPosition FROM = new DecimalPosition(0, 0);
     private static final double LENGTH = 500;
+    // private static final DecimalPosition FROM = new DecimalPosition(208, 148);
+    // private static final double LENGTH = 4;
     private static final double LINE_WIDTH = 0.1;
     @Inject
     private TerrainService terrainService;
@@ -94,8 +97,8 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
     private void renderTerrainShapeAccess(ExtendedGraphicsContext egc) {
         double min = Double.MAX_VALUE;
         double max = Double.MIN_VALUE;
-        for (double x = 0; x < LENGTH; x++) {
-            for (double y = 0; y < LENGTH; y++) {
+        for (double x = FROM.getX(); x < FROM.getX() + LENGTH; x++) {
+            for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
                 double z = terrainService.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(x + 0.5, y + 0.5));
                 if (z > max) {
                     max = z;
@@ -106,8 +109,8 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
             }
         }
 
-        for (double x = 0; x < LENGTH; x++) {
-            for (double y = 0; y < LENGTH; y++) {
+        for (double x = FROM.getX(); x < FROM.getX() + LENGTH; x++) {
+            for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
                 boolean free = terrainService.getPathingAccess().isTerrainFree(samplePosition);
