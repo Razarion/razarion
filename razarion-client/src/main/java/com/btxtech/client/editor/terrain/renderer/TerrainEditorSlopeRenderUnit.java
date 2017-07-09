@@ -5,6 +5,7 @@ import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -28,6 +29,8 @@ import java.util.List;
 @ColorBufferRenderer
 @Dependent
 public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlope> {
+    private static final Color COLOR_HOVER = new Color(1.0, 1.0, 0.0, 1.0);
+    private static final Color COLOR_NORMAL = new Color(1.0, 1.0, 1.0, 1.0);
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -36,13 +39,13 @@ public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlo
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute vertices;
     private ModifiedSlope modifiedSlope;
-    private WebGLUniformLocation uHover;
+    private WebGLUniformLocation uColor;
 
     @PostConstruct
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.terrainEditorVertexShader(), Shaders.INSTANCE.terrainEditorFragmentShader()).enableTransformation(false));
         vertices = webGlFacade.createVertexShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        uHover = webGlFacade.getUniformLocation("uHover");
+        uColor = webGlFacade.getUniformLocation("uColor");
     }
 
     @Override
@@ -78,7 +81,11 @@ public class TerrainEditorSlopeRenderUnit extends AbstractRenderUnit<ModifiedSlo
     public void draw(ModelMatrices modelMatrices) {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform1b(uHover, modifiedSlope.isHover());
+        if (modifiedSlope.isHover()) {
+            webGlFacade.uniform4f(uColor, COLOR_HOVER);
+        } else {
+            webGlFacade.uniform4f(uColor, COLOR_NORMAL);
+        }
 
         vertices.activate();
 

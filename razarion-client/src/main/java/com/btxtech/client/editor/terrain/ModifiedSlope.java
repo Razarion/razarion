@@ -58,7 +58,7 @@ public class ModifiedSlope {
         TerrainSlopeCorner terrainSlopeCorner = new TerrainSlopeCorner();
         terrainSlopeCorner.setPosition(position);
         Integer drivewayConfigId = drivewayPositions.get(position);
-        if(drivewayConfigId != null) {
+        if (drivewayConfigId != null) {
             terrainSlopeCorner.setSlopeDrivewayId(drivewayConfigId);
         }
         return terrainSlopeCorner;
@@ -104,21 +104,40 @@ public class ModifiedSlope {
         return polygon != null && polygon.isLineCrossing(cursor);
     }
 
-    public void createDriveway(Polygon2D cursor, DrivewayConfig drivewayConfig) {
+    public void increaseDriveway(Polygon2D cursor, DrivewayConfig drivewayConfig) {
+        Integer foundDrivewayConfigId = null;
         for (DecimalPosition drivewayPosition : cursor.getCorners()) {
-            if (drivewayPositions.containsKey(drivewayPosition)) {
+            Integer drivewayConfigId = drivewayPositions.get(drivewayPosition);
+            if (drivewayConfigId == null) {
+                break;
+            }
+            if (foundDrivewayConfigId == null) {
+                foundDrivewayConfigId = drivewayConfigId;
+            } else if (foundDrivewayConfigId.equals(drivewayConfigId)) {
                 return;
             }
         }
+        if (foundDrivewayConfigId == null) {
+            foundDrivewayConfigId = drivewayConfig.getId();
+        }
         for (DecimalPosition slopePosition : polygon.getCorners()) {
             if (cursor.isInside(slopePosition)) {
+                drivewayPositions.put(slopePosition, foundDrivewayConfigId);
                 dirty = true;
-                drivewayPositions.put(slopePosition, drivewayConfig.getId());
             }
         }
     }
 
-    public List<DecimalPosition> getDrivewayPositions() {
-        return new ArrayList<>(drivewayPositions.keySet());
+    public void decreaseDriveway(Polygon2D cursor) {
+        for (DecimalPosition slopePosition : polygon.getCorners()) {
+            if (cursor.isInside(slopePosition)) {
+                drivewayPositions.remove(slopePosition);
+                dirty = true;
+            }
+        }
+    }
+
+    public boolean isPositionInDriveway(DecimalPosition position) {
+        return drivewayPositions.containsKey(position);
     }
 }

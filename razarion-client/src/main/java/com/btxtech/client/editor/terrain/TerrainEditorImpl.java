@@ -145,15 +145,20 @@ public class TerrainEditorImpl implements TerrainEditor {
         } else if (hoverSlope != null) {
             Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
             if (deletePressed) {
-                Polygon2D newPolygon = hoverSlope.remove(movedCursor);
-                if (newPolygon != null) {
+                if (drivewayMode) {
+                    hoverSlope.decreaseDriveway(movedCursor);
                     terrainEditorRenderTask.updateSlope(hoverSlope);
                 } else {
-                    terrainEditorRenderTask.removeSlope(hoverSlope);
+                    Polygon2D newPolygon = hoverSlope.remove(movedCursor);
+                    if (newPolygon != null) {
+                        terrainEditorRenderTask.updateSlope(hoverSlope);
+                    } else {
+                        terrainEditorRenderTask.removeSlope(hoverSlope);
+                    }
                 }
             } else {
-                if(drivewayMode) {
-                    hoverSlope.createDriveway(movedCursor, terrainTypeService.getDrivewayConfig(driveway4New.getId()));
+                if (drivewayMode) {
+                    hoverSlope.increaseDriveway(movedCursor, terrainTypeService.getDrivewayConfig(driveway4New.getId()));
                 } else {
                     hoverSlope.combine(movedCursor);
                 }
@@ -222,9 +227,16 @@ public class TerrainEditorImpl implements TerrainEditor {
         terrainMouseHandler.setTerrainEditor(this);
         keyboardEventHandler.setTerrainEditor(this);
         modifiedSlopes = new ArrayList<>();
+        loadFromServer();
+    }
+
+    private void loadFromServer() {
         planetEditorServiceCaller.call(new RemoteCallback<List<TerrainSlopePosition>>() {
             @Override
             public void callback(List<TerrainSlopePosition> response) {
+                hoverSlope = null;
+                hoverTerrainObject = null;
+                terrainEditorRenderTask.deactivate();
                 modifiedSlopes = response.stream().map(ModifiedSlope::new).collect(Collectors.toList());
                 terrainEditorRenderTask.activate(cursor, modifiedSlopes);
             }
@@ -324,6 +336,7 @@ public class TerrainEditorImpl implements TerrainEditor {
             terrainEditorUpdate.setDeletedSlopeIds(deletedSlopeIds);
             planetEditorServiceCaller.call(ignore -> {
                 gameEngineControl.reloadTerrainShape4Editor();
+                loadFromServer();
             }, (message, throwable) -> {
                 logger.log(Level.SEVERE, "updateTerrain failed: " + message, throwable);
                 return false;

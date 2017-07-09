@@ -8,6 +8,7 @@ import java.util.List;
  * Date: 12.02.2012
  * Time: 11:53:32
  */
+@Deprecated
 public enum RadarMode {
     DISABLED(0),
     NONE(1),
