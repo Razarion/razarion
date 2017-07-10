@@ -151,7 +151,11 @@ public class TerrainShapeSetup {
                     if (breakingGroundPiercing != null) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setDrivewayBreakingLine(true);
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getHeight() + slope.getGroundHeight(), false, null));
+                        List<Vertex> groundPolygon = setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getHeight() + slope.getGroundHeight(), false, null);
+                        terrainShapeNode.addGroundSlopeConnections(groundPolygon);
+                        if (groundPolygon != null) {
+                            fillSlopeBreakingLineSubNodes(slope, groundPolygon, fractalDriveway, terrainRect, terrainShapeNode, slope.getGroundHeight());
+                        }
                         terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getHeight() + slope.getGroundHeight(), false, fractalDriveway));
                     }
                 } else if (innerPiercings != null || outerPiercings != null) {
@@ -657,6 +661,28 @@ public class TerrainShapeSetup {
                 }
                 terrainShapeSubNode.setHeight(height);
                 terrainShapeSubNode.setLand();
+                return false;
+            } else {
+                // Partial
+                terrainShapeSubNode.setHeight(groundHeight + slope.getHeight());
+                return true;
+            }
+        });
+        terrainShapeNode.setTerrainShapeSubNodes(terrainShapeSubNodes);
+    }
+
+    private void fillSlopeBreakingLineSubNodes(Slope slope, List<Vertex> groundVertexPolygon, Driveway driveway, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight) {
+        Polygon2D landPolygon = new Polygon2D(Vertex.toXY(groundVertexPolygon));
+        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
+            terrainShapeSubNode.setLand();
+            int insideCornerCount = landPolygon.insideCornerCount(rectangle2D, 0.2);
+            if (insideCornerCount == 0) {
+                // Full slope
+                terrainShapeSubNode.setHeight(driveway.getInterpolateDrivewayHeight(rectangle2D.center()));
+                return true;
+            } else if (insideCornerCount == 4) {
+                // Full ground
+                terrainShapeSubNode.setHeight(groundHeight + slope.getHeight());
                 return false;
             } else {
                 // Partial

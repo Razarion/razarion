@@ -77,7 +77,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         getGc().setLineWidth(LINE_WIDTH);
         getGc().setStroke(Color.BLACK);
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-        // displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
+        displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
         displayObstacles(terrainShapeNode);
         //displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
     }
@@ -143,9 +143,9 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
                 getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
                 getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
             }
-//            double v = terrainShapeSubNode.getHeight() / 20.0;
-//            getGc().setFill(new Color(v, v, v, 1f));
-//            getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+            double v = terrainShapeSubNode.getHeight() / 20.0;
+            getGc().setFill(new Color(v, v, v, 1f));
+            getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
         }
         getGc().setStroke(Color.BLUEVIOLET);
         getGc().setLineWidth(LINE_WIDTH);

@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
  * 28.12.2016.
  */
 public class WorkerViewRenderer extends Abstract2dRenderer {
-    private static final DecimalPosition FROM = new DecimalPosition(0, 0);
-    private static final double LENGTH = 500;
+    private static final DecimalPosition FROM = new DecimalPosition(130, 200);
+    private static final double LENGTH = 100;
     // private static final DecimalPosition FROM = new DecimalPosition(208, 148);
     // private static final double LENGTH = 4;
     private static final double LINE_WIDTH = 0.1;
@@ -231,9 +231,9 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
 //                egc.getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
 //                egc.getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
 //            }
-//            double v = terrainShapeSubNode.getHeight() / 20.0;
-//            egc.getGc().setFill(new Color(v, v, v, 1f));
-//            egc.getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+            double v = (terrainShapeSubNode.getHeight() + 10) / 20.0;
+            egc.getGc().setFill(new Color(v, v, v, 1f));
+            egc.getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
         }
         egc.getGc().setStroke(Color.BLUEVIOLET);
         egc.getGc().setLineWidth(LINE_WIDTH);

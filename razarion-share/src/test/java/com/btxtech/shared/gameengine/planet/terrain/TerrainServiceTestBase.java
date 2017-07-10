@@ -10,6 +10,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -22,8 +23,10 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.system.JsInteropObjectFactory;
+import com.btxtech.shared.utils.MathHelper;
 import org.junit.Assert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,7 +51,9 @@ public class TerrainServiceTestBase {
         groundSkeletonConfig.setSplattingXCount(splattings[0].length);
         groundSkeletonConfig.setSplattingYCount(splattings.length);
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
-
+        List<DrivewayConfig> drivewayConfigs =  new ArrayList<>();
+        drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(45)));
+        staticGameConfig.setDrivewayConfigs(drivewayConfigs);
         terrainTypeService.init(staticGameConfig);
     }
 
