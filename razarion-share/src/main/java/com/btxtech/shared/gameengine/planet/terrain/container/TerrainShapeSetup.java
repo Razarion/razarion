@@ -112,7 +112,7 @@ public class TerrainShapeSetup {
                             List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null);
                             terrainShapeNode.addGroundSlopeConnections(landPolygon);
                             if (landPolygon != null) {
-                                fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), true);
+                                fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), true, null);
                             }
                         }
                     }
@@ -126,26 +126,27 @@ public class TerrainShapeSetup {
 
                 List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
+                Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
+
                 if (outerPiercings != null) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     for (List<DecimalPosition> outerPiercing : outerPiercings) {
-                        List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null);
+                        List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, fractalDriveway);
                         if (landPolygon != null) {
-                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), true);
+                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), true, null);
                         }
                     }
                 }
                 if (innerPiercings != null) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                        List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getHeight() + slope.getGroundHeight(), false, null);
+                        List<Vertex> landPolygon = setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getHeight() + slope.getGroundHeight(), false, fractalDriveway);
                         if (landPolygon != null) {
-                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), false);
+                            fillLandSubNodes(slope, landPolygon, terrainRect, terrainShapeNode, slope.getGroundHeight(), false, fractalDriveway);
                         }
                     }
                 }
 
-                Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
                 if (innerPiercings == null && fractalDriveway != null) {
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
@@ -638,11 +639,16 @@ public class TerrainShapeSetup {
         }
     }
 
-    private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight, boolean isOuter) {
+    private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight, boolean isOuter, Driveway fractalDriveway) {
         Polygon2D landPolygon = new Polygon2D(Vertex.toXY(landVertexPolygon));
         TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
+            if(fractalDriveway != null && fractalDriveway.isOneCornerInside(terrainRect.toCorners())) {
+                terrainShapeSubNode.setLand();
+                terrainShapeSubNode.setHeight(fractalDriveway.getInterpolateDrivewayHeight(rectangle2D.center()));
+                return true;
+            }
             if (slope.isInsidePassableDriveway(terrainRect)) {
-                // TODO set height
+                terrainShapeSubNode.setHeight(groundHeight);
                 terrainShapeSubNode.setLand();
                 return false;
             }
