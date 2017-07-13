@@ -706,10 +706,10 @@ public class TerrainShapeSetup {
 
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
 
-        TerrainShapeSubNode bottomLeftSubNode = new TerrainShapeSubNode();
-        TerrainShapeSubNode bottomRightSubNode = new TerrainShapeSubNode();
-        TerrainShapeSubNode topRightSubNode = new TerrainShapeSubNode();
-        TerrainShapeSubNode topLeftSubNode = new TerrainShapeSubNode();
+        TerrainShapeSubNode bottomLeftSubNode = new TerrainShapeSubNode(depth);
+        TerrainShapeSubNode bottomRightSubNode = new TerrainShapeSubNode(depth);
+        TerrainShapeSubNode topRightSubNode = new TerrainShapeSubNode(depth);
+        TerrainShapeSubNode topLeftSubNode = new TerrainShapeSubNode(depth);
 
         Rectangle2D bottomLeftRect = new Rectangle2D(terrainRect.startX(), terrainRect.startY(), subLength, subLength);
         if (subNodeHandler.apply(bottomLeftRect, bottomLeftSubNode)) {

@@ -17,6 +17,7 @@ import java.util.Collection;
  * on 19.06.2017.
  */
 public class PathingAccess {
+
     private class IterationControl implements TerrainRegionImpactCallback.Control {
         private boolean notLane;
 
@@ -86,31 +87,6 @@ public class PathingAccess {
         return !iterationControl.isNotLane();
     }
 
-    public boolean isTileFree(Index nodeIndex) {
-        TerrainShapeNode terrainShapeNode = terrainShape.getTerrainShapeNode(nodeIndex);
-        return terrainShapeNode == null || !terrainShapeNode.isFullWater();
-    }
-
-    public boolean hasNorthSuccessorNode(int currentNodePositionY) {
-        int tileY = TerrainUtil.nodeToTile(currentNodePositionY + 1);
-        return tileY - terrainShape.getTileOffset().getY() < terrainShape.getTileYCount() - 1;
-    }
-
-    public boolean hasEastSuccessorNode(int currentNodePositionX) {
-        int tileX = TerrainUtil.nodeToTile(currentNodePositionX + 1);
-        return tileX - terrainShape.getTileOffset().getX() < terrainShape.getTileXCount() - 1;
-    }
-
-    public boolean hasSouthSuccessorNode(int currentNodePositionY) {
-        int tileY = TerrainUtil.nodeToTile(currentNodePositionY - 1);
-        return tileY >= 0;
-    }
-
-    public boolean hasWestSuccessorNode(int currentNodePositionX) {
-        int tileX = TerrainUtil.nodeToTile(currentNodePositionX - 1);
-        return tileX >= 0;
-    }
-
     public Collection<Obstacle> getObstacles(SyncPhysicalMovable syncPhysicalMovable) {
         Collection<Obstacle> obstacles = new ArrayList<>();
         terrainShape.terrainRegionImpactCallback(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius(), new TerrainRegionImpactCallback() {
@@ -137,5 +113,62 @@ public class PathingAccess {
         Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
 
         return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
+    }
+
+    public PathingNodeWrapper getPathingNodeWrapper(DecimalPosition terrainPosition) {
+        return terrainShape.terrainImpactCallback(terrainPosition, new TerrainImpactCallback<PathingNodeWrapper>() {
+            @Override
+            public PathingNodeWrapper landNoTile(Index tileIndex) {
+                return new PathingNodeWrapper(PathingAccess.this, true, TerrainUtil.toNode(terrainPosition));
+            }
+
+            @Override
+            public PathingNodeWrapper inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
+                return new PathingNodeWrapper(PathingAccess.this, terrainShapeTile.isLand(), TerrainUtil.toNode(terrainPosition));
+            }
+
+            @Override
+            public PathingNodeWrapper inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+                return new PathingNodeWrapper(PathingAccess.this, terrainShapeNode, nodeRelativeIndex.add(TerrainUtil.tileToNode(tileIndex)));
+            }
+
+            @Override
+            public PathingNodeWrapper inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+                return new PathingNodeWrapper(PathingAccess.this, terrainShapeSubNode, nodeRelativeIndex.add(TerrainUtil.tileToNode(tileIndex)), nodeRelative);
+            }
+        });
+    }
+
+    public boolean isNodeInBoundary(Index nodeIndex) {
+        Index fieldIndex = TerrainUtil.nodeToTile(nodeIndex).sub(terrainShape.getTileOffset());
+        return fieldIndex.getX() >= 0 && fieldIndex.getY() >= 0 && fieldIndex.getX() < terrainShape.getTileXCount() && fieldIndex.getY() < terrainShape.getTileYCount();
+    }
+
+    public TerrainShape getTerrainShape() {
+        return terrainShape;
+    }
+
+    public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition terrainPosition) {
+        return terrainShape.terrainImpactCallback(terrainPosition, new TerrainImpactCallback<TerrainShapeSubNode>() {
+            @Override
+            public TerrainShapeSubNode landNoTile(Index tileIndex) {
+                return null;
+            }
+
+            @Override
+            public TerrainShapeSubNode inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
+                return null;
+            }
+
+            @Override
+            public TerrainShapeSubNode inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+                return null;
+            }
+
+            @Override
+            public TerrainShapeSubNode inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+                return terrainShapeSubNode;
+            }
+        });
     }
 }

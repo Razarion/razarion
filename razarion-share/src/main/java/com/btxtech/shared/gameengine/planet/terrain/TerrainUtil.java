@@ -62,16 +62,16 @@ public interface TerrainUtil {
         return new Rectangle2D(toNodeAbsolute(node.getStart()), toNodeAbsolute(node.getEnd()));
     }
 
-    static DecimalPosition toAbsoluteMiddle(Index node) {
+    static DecimalPosition toAbsoluteNodeCenter(Index node) {
         return toNodeAbsolute(node).add(TERRAIN_NODE_ABSOLUTE_LENGTH / 2.0, TERRAIN_NODE_ABSOLUTE_LENGTH / 2.0);
     }
 
     static Index nodeToTile(Index nodeIndex) {
-        return nodeIndex.scaleInverse(TERRAIN_TILE_NODES_COUNT);
+        return nodeIndex.divide(TERRAIN_TILE_NODES_COUNT).toIndexFloor();
     }
 
     static int nodeToTile(int nodeIndex) {
-        return nodeIndex / TERRAIN_TILE_NODES_COUNT;
+        return (int) Math.floor((double)nodeIndex / (double)TERRAIN_TILE_NODES_COUNT);
     }
 
     static Index tileToNode(Index tileIndex) {

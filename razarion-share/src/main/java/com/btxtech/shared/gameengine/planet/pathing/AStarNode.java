@@ -1,28 +1,28 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 
 /**
  * Created by beat
  * on 10.11.2014.
  */
-class AStarNode implements Comparable<AStarNode> {
-    private Index terrainShapeNodeIndex;
+public class AStarNode implements Comparable<AStarNode> {
+    private PathingNodeWrapper pathingNodeWrapper;
     private double f = 0;
     private double g; // Cost to this node
     private AStarNode predecessor;
 
-    AStarNode(Index terrainShapeNodeIndex) {
-        this.terrainShapeNodeIndex = terrainShapeNodeIndex;
+    AStarNode(PathingNodeWrapper pathingNodeWrapper) {
+        this.pathingNodeWrapper = pathingNodeWrapper;
     }
 
     @Override
     public int hashCode() {
-        return terrainShapeNodeIndex.hashCode();
+        return pathingNodeWrapper.hashCode();
     }
 
-    public Index getTerrainShapeNodeIndex() {
-        return terrainShapeNodeIndex;
+    public PathingNodeWrapper getPathingNodeWrapper() {
+        return pathingNodeWrapper;
     }
 
     public double getF() {
@@ -65,6 +65,6 @@ class AStarNode implements Comparable<AStarNode> {
 
         AStarNode node = (AStarNode) o;
 
-        return terrainShapeNodeIndex.equals(node.terrainShapeNodeIndex);
+        return pathingNodeWrapper.equals(node.pathingNodeWrapper);
     }
 }

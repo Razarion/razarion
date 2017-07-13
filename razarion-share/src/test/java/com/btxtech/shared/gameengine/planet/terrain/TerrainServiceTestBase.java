@@ -179,4 +179,12 @@ public class TerrainServiceTestBase {
     protected TerrainTypeService getTerrainTypeService() {
         return terrainTypeService;
     }
+
+    protected TerrainService getTerrainService() {
+        return terrainService;
+    }
+
+    protected TerrainShape getTerrainShape() {
+        return (TerrainShape) SimpleTestEnvironment.readField("terrainShape", terrainService);
+    }
 }

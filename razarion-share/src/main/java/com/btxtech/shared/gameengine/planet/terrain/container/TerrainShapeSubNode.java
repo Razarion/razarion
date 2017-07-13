@@ -14,16 +14,18 @@ public class TerrainShapeSubNode {
     public static final int DEPTH = 3;
     private Boolean land;
     private double height;
+    private int depth;
     private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
 
-    public TerrainShapeSubNode() {
-
+    public TerrainShapeSubNode(int depth) {
+        this.depth = depth;
     }
 
-    public TerrainShapeSubNode(NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
+    public TerrainShapeSubNode(int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
+        this.depth = depth;
         land = nativeTerrainShapeSubNode.land;
         height = nativeTerrainShapeSubNode.height;
-        terrainShapeSubNodes = fromNativeTerrainShapeSubNode(nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
+        terrainShapeSubNodes = fromNativeTerrainShapeSubNode(depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
     }
 
     public void setHeight(double height) {
@@ -66,6 +68,10 @@ public class TerrainShapeSubNode {
         return getTerrainShapeSubNode(depth, subNodeRelative, terrainShapeSubNodes);
     }
 
+    public int getDepth() {
+        return depth;
+    }
+
     public static NativeTerrainShapeSubNode[] toNativeTerrainShapeSubNode(TerrainShapeSubNode[] terrainShapeSubNodes) {
         if (terrainShapeSubNodes == null) {
             return null;
@@ -80,7 +86,7 @@ public class TerrainShapeSubNode {
         return nativeTerrainShapeSubNodes;
     }
 
-    public static TerrainShapeSubNode[] fromNativeTerrainShapeSubNode(NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes) {
+    public static TerrainShapeSubNode[] fromNativeTerrainShapeSubNode(int depth, NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes) {
         if (nativeTerrainShapeSubNodes == null) {
             return null;
         }
@@ -88,7 +94,7 @@ public class TerrainShapeSubNode {
         for (int i = 0; i < nativeTerrainShapeSubNodes.length; i++) {
             NativeTerrainShapeSubNode nativeTerrainShapeSubNode = nativeTerrainShapeSubNodes[i];
             if (nativeTerrainShapeSubNode != null) {
-                terrainShapeSubNodes[i] = new TerrainShapeSubNode(nativeTerrainShapeSubNode);
+                terrainShapeSubNodes[i] = new TerrainShapeSubNode(depth, nativeTerrainShapeSubNode);
             }
         }
         return terrainShapeSubNodes;

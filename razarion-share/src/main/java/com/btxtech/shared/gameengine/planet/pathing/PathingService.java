@@ -1,9 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
-import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -11,9 +9,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -30,8 +27,6 @@ public class PathingService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
-    @Inject
-    private Instance<Path> instancePath;
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, destination, 0);
@@ -49,21 +44,21 @@ public class PathingService {
     private SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
         SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
-        Index startNode = TerrainUtil.toNode(syncItem.getSyncPhysicalArea().getPosition2d());
-        Index destinationNode = TerrainUtil.toNode(destination);
+        PathingNodeWrapper startNode = terrainService.getPathingAccess().getPathingNodeWrapper(syncItem.getSyncPhysicalArea().getPosition2d());
+        PathingNodeWrapper destinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destination);
         if (startNode.equals(destinationNode)) {
             positions.add(destination);
             path.setWayPositions(positions);
             path.setTotalRange(totalRange);
             return path;
         }
-        if (!terrainService.getPathingAccess().isTerrainFree(destination)) {
+        if (!destinationNode.isFree()) {
             throw new IllegalArgumentException("Destination start tile is not free: " + destination);
         }
-        AStar aStar = new AStar(startNode, destinationNode, terrainService.getPathingAccess());
+        AStar aStar = new AStar(startNode, destinationNode);
         aStar.expandAllNodes();
-        for (Index index : aStar.convertPath()) {
-            positions.add(TerrainUtil.toAbsoluteMiddle(index));
+        for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
+            positions.add(pathingNodeWrapper.getCenter());
         }
         positions.add(destination);
         path.setWayPositions(positions);

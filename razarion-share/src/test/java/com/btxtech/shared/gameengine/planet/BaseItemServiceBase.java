@@ -173,4 +173,11 @@ public class BaseItemServiceBase {
         return levelLimitation;
     }
 
+    public static SyncBaseItem createMockSyncBaseItem(DecimalPosition position) {
+        SyncBaseItem syncBaseItem = new SyncBaseItem();
+        SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
+        SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
+        syncBaseItem.init(-99,null, syncPhysicalMovable);
+        return syncBaseItem;
+    }
 }
