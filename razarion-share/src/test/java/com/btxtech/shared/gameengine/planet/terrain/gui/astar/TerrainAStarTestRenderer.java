@@ -74,16 +74,9 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
         Map<PathingNodeWrapper, AStarNode> closedList = (Map<PathingNodeWrapper, AStarNode>) SimpleTestEnvironment.readField("closedList", aStar);
         for (Map.Entry<PathingNodeWrapper, AStarNode> entry : closedList.entrySet()) {
             PathingNodeWrapper pathingNodeWrapper = entry.getKey();
-            if (pathingNodeWrapper.getTerrainShapeSubNode() == null) {
-                getGc().setFill(new Color(0, 1, 1, 0.3));
-                DecimalPosition start = TerrainUtil.toNodeAbsolute(pathingNodeWrapper.getNodeIndex());
-                getGc().fillRect(start.getX(), start.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
-            } else {
-                getGc().setFill(new Color(0, 0, 1, 0.3));
-                DecimalPosition start = TerrainUtil.toNodeAbsolute(pathingNodeWrapper.getNodeIndex()).add(pathingNodeWrapper.getNodeRelative());
-                double length = TerrainUtil.calculateSubNodeLength(pathingNodeWrapper.getTerrainShapeSubNode().getDepth());
-                getGc().fillRect(start.getX(), start.getY(), length - 0.1, length - 0.1);
-            }
+            getGc().setFill(new Color(0, 1, 1, 0.3));
+            Index start = pathingNodeWrapper.getSubNodeIndex();
+            getGc().fillRect(start.getX(), start.getY(), TerrainUtil.MIN_SUB_NODE_LENGTH - 0.1, TerrainUtil.MIN_SUB_NODE_LENGTH - 0.1);
         }
     }
 

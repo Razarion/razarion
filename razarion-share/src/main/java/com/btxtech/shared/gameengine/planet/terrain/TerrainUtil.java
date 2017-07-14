@@ -14,6 +14,8 @@ public interface TerrainUtil {
     int TERRAIN_TILE_NODES_COUNT = 20;
     int TERRAIN_TILE_TOTAL_NODES_COUNT = TERRAIN_TILE_NODES_COUNT * TERRAIN_TILE_NODES_COUNT;
     double TERRAIN_TILE_ABSOLUTE_LENGTH = TERRAIN_NODE_ABSOLUTE_LENGTH * TERRAIN_TILE_NODES_COUNT;
+    int MAX_DEPTH = 2;
+    double MIN_SUB_NODE_LENGTH = calculateSubNodeLength(MAX_DEPTH);
 
     static Index toTile(DecimalPosition absolute) {
         return absolute.divide(TERRAIN_TILE_ABSOLUTE_LENGTH).toIndexFloor();
@@ -71,7 +73,7 @@ public interface TerrainUtil {
     }
 
     static int nodeToTile(int nodeIndex) {
-        return (int) Math.floor((double)nodeIndex / (double)TERRAIN_TILE_NODES_COUNT);
+        return (int) Math.floor((double) nodeIndex / (double) TERRAIN_TILE_NODES_COUNT);
     }
 
     static Index tileToNode(Index tileIndex) {
@@ -98,5 +100,28 @@ public interface TerrainUtil {
      */
     static double calculateSubNodeLength(int depth) {
         return TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH / (double) (1 << depth + 1);
+    }
+
+    /**
+     * The index of the smallest possible sub node.
+     * At the moment, the smallest sub node is 1, therefore just the integer value of the position is used
+     *
+     * @param terrainAbsolute absolute terrain position
+     * @return sub node index
+     */
+    static Index smallestSubNodeIndex(DecimalPosition terrainAbsolute) {
+        return terrainAbsolute.toIndexFloor();
+    }
+
+    static DecimalPosition smallestSubNodeAbsolute(Index subNodeIndex) {
+        return new DecimalPosition(subNodeIndex);
+    }
+
+    static DecimalPosition smallestSubNodeCenter(Index subNodeIndex) {
+        return smallestSubNodeAbsolute(subNodeIndex).add(0.5, 0.5);
+    }
+
+    static Index smallestSubNodeToNode(Index subNodeIndex) {
+        return subNodeIndex.scaleInverse(TERRAIN_NODE_ABSOLUTE_LENGTH);
     }
 }

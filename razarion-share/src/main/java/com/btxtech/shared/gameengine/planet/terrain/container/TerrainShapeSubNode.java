@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTer
  * on 20.06.2017.
  */
 public class TerrainShapeSubNode {
-    public static final int DEPTH = 3;
     private Boolean land;
     private double height;
     private int depth;

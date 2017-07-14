@@ -119,22 +119,22 @@ public class PathingAccess {
         return terrainShape.terrainImpactCallback(terrainPosition, new TerrainImpactCallback<PathingNodeWrapper>() {
             @Override
             public PathingNodeWrapper landNoTile(Index tileIndex) {
-                return new PathingNodeWrapper(PathingAccess.this, true, TerrainUtil.toNode(terrainPosition));
+                return new PathingNodeWrapper(PathingAccess.this, null, null, null, terrainPosition);
             }
 
             @Override
             public PathingNodeWrapper inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                return new PathingNodeWrapper(PathingAccess.this, terrainShapeTile.isLand(), TerrainUtil.toNode(terrainPosition));
+                return new PathingNodeWrapper(PathingAccess.this, terrainShapeTile, null, null, terrainPosition);
             }
 
             @Override
             public PathingNodeWrapper inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return new PathingNodeWrapper(PathingAccess.this, terrainShapeNode, nodeRelativeIndex.add(TerrainUtil.tileToNode(tileIndex)));
+                return new PathingNodeWrapper(PathingAccess.this, null, terrainShapeNode, null, terrainPosition);
             }
 
             @Override
             public PathingNodeWrapper inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return new PathingNodeWrapper(PathingAccess.this, terrainShapeSubNode, nodeRelativeIndex.add(TerrainUtil.tileToNode(tileIndex)), nodeRelative);
+                return new PathingNodeWrapper(PathingAccess.this, null, null, terrainShapeSubNode, terrainPosition);
             }
         });
     }
@@ -142,33 +142,5 @@ public class PathingAccess {
     public boolean isNodeInBoundary(Index nodeIndex) {
         Index fieldIndex = TerrainUtil.nodeToTile(nodeIndex).sub(terrainShape.getTileOffset());
         return fieldIndex.getX() >= 0 && fieldIndex.getY() >= 0 && fieldIndex.getX() < terrainShape.getTileXCount() && fieldIndex.getY() < terrainShape.getTileYCount();
-    }
-
-    public TerrainShape getTerrainShape() {
-        return terrainShape;
-    }
-
-    public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition terrainPosition) {
-        return terrainShape.terrainImpactCallback(terrainPosition, new TerrainImpactCallback<TerrainShapeSubNode>() {
-            @Override
-            public TerrainShapeSubNode landNoTile(Index tileIndex) {
-                return null;
-            }
-
-            @Override
-            public TerrainShapeSubNode inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                return null;
-            }
-
-            @Override
-            public TerrainShapeSubNode inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return null;
-            }
-
-            @Override
-            public TerrainShapeSubNode inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return terrainShapeSubNode;
-            }
-        });
     }
 }

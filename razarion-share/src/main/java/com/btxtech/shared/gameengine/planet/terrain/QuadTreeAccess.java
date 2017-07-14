@@ -2,8 +2,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 
 /**
  * Created by Beat
@@ -15,7 +13,7 @@ public class QuadTreeAccess {
     }
 
     private static TerrainSubNode getSubNode(DecimalPosition relativePosition, int depth, TerrainSubNode[][] terrainSubNodes) {
-        int divisor = 1 << TerrainShapeSubNode.DEPTH - depth - 1;
+        int divisor = 1 << TerrainUtil.MAX_DEPTH - depth;
         Index index = relativePosition.divide(divisor).toIndex();
         TerrainSubNode terrainSubNode = terrainSubNodes[index.getX()][index.getY()];
         if (terrainSubNode == null) {

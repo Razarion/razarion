@@ -700,7 +700,7 @@ public class TerrainShapeSetup {
     }
 
     private TerrainShapeSubNode[] quartering(int depth, Rectangle2D terrainRect, BiFunction<Rectangle2D, TerrainShapeSubNode, Boolean> subNodeHandler) {
-        if (depth >= TerrainShapeSubNode.DEPTH) {
+        if (depth > TerrainUtil.MAX_DEPTH) {
             return null;
         }
 

@@ -13,7 +13,7 @@ import java.util.Map;
  * 28.01.2017.
  */
 public class AStar {
-    private static final int MAX_CLOSED_LIST_SIZE = 1000;
+    private static final int MAX_CLOSED_LIST_SIZE = 100000;
     private Map<PathingNodeWrapper, AStarNode> closedList = new HashMap<>();
     private AStarOpenList openList = new AStarOpenList();
     private PathingNodeWrapper startNode;
@@ -47,7 +47,6 @@ public class AStar {
 
     private void expandNode(AStarNode current) {
         handleAllSuccessorNodes(current);
-        System.out.println("closedList.put: " + current.getPathingNodeWrapper());
         closedList.put(current.getPathingNodeWrapper(), current);
         if (closedList.size() > MAX_CLOSED_LIST_SIZE) {
             throw new IllegalStateException("AStar max closed list size reached. startNode: " + startNode + " destinationTile: " + destinationNode.getPathingNodeWrapper());

@@ -113,12 +113,12 @@ public class AStarTest extends TerrainServiceTestBase {
             e.printStackTrace();
             return aStar;
         }
-        for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
-            positions.add(pathingNodeWrapper.getCenter());
-        }
-        positions.add(destination);
-        path.setWayPositions(positions);
-        path.setTotalRange(totalRange);
+//        for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
+//            positions.add(pathingNodeWrapper.getCenter());
+//        }
+//        positions.add(destination);
+//        path.setWayPositions(positions);
+//        path.setTotalRange(totalRange);
         return aStar;
     }
 
