@@ -73,7 +73,7 @@ public class Driveway {
                 DecimalPosition original = CollectionUtils.getCorrectedElement(d, input).getPosition();
                 DecimalPosition drivewayPosition = original.getPointWithDistance(startPerpendicularAngle, drivewayLength);
                 output.add(new Slope.Corner(drivewayPosition, 0.0, d));
-                fillDrivewaPosition(edges, d, original, drivewayPosition);
+                fillDrivewayPosition(edges, d, original, drivewayPosition);
             }
         } else if (MathHelper.isCounterClock(startPerpendicularAngle, endPerpendicularAngle)) {
             computeAndFillDrivewayPositions(input, output, edges, -drivewayLength);
@@ -119,11 +119,11 @@ public class Driveway {
             DecimalPosition original = CollectionUtils.getCorrectedElement(d, input).getPosition();
             DecimalPosition drivewayPosition = original.getPointWithDistance(length, pivot, true);
             output.add(new Slope.Corner(drivewayPosition, 0.0, d));
-            fillDrivewaPosition(edges, d, original, drivewayPosition);
+            fillDrivewayPosition(edges, d, original, drivewayPosition);
         }
     }
 
-    private void fillDrivewaPosition(List<Edge> edges, int d, DecimalPosition original, DecimalPosition drivewayPosition) {
+    private void fillDrivewayPosition(List<Edge> edges, int d, DecimalPosition original, DecimalPosition drivewayPosition) {
         if (d == startSlopeIndex) {
             edges.add(new Edge(slope, original, drivewayPosition, additionalStart));
         } else if (d == endSlopeIndex) {

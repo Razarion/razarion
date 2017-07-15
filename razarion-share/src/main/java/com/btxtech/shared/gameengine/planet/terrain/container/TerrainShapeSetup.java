@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
@@ -91,8 +93,8 @@ public class TerrainShapeSetup {
     private void processSlope(Slope slope) {
         SlopeContext slopeContext = new SlopeContext(slope);
         prepareVerticalSegments(slope);
-        prepareSlopeContext(slope.getInnerPolygon().getCorners(), slope.getDriveways(), false, slopeContext);
-        prepareSlopeContext(slope.getOuterPolygon().getCorners(), slope.getDriveways(), true, slopeContext);
+        prepareSlopeContext(slope.getInnerPolygon().getCorners(), slope.getInnerDriveway(), null, false, slopeContext);
+        prepareSlopeContext(slope.getOuterPolygon().getCorners(), slope.getOuterDriveway(), slope.getOuterToInnerDriveway(), true, slopeContext);
         Polygon2D outerPolygon = slope.getOuterPolygon();
         Rectangle2D aabb = outerPolygon.toAabb();
         Polygon2D innerPolygon = slope.getInnerPolygon();
@@ -290,7 +292,7 @@ public class TerrainShapeSetup {
         throw new IllegalStateException("TerrainShapeSetup.findFractionalSlope() end not found");
     }
 
-    private void prepareSlopeContext(List<DecimalPosition> polygon, Collection<Driveway> driveways, boolean isOuter, SlopeContext slopeContext) {
+    private void prepareSlopeContext(List<DecimalPosition> polygon, Collection<DecimalPosition> drivewayPositions, Map<DecimalPosition, DecimalPosition> drivewayOuterToInner, boolean isOuter, SlopeContext slopeContext) {
         DecimalPosition last = polygon.get(0);
         Index lastNodeIndex = null;
         boolean inDriveway = false;
@@ -299,31 +301,27 @@ public class TerrainShapeSetup {
             if (last.equals(next)) {
                 continue;
             }
-            if (driveways != null) {
-                Driveway currentDriveway = null;
-                for (Driveway driveway : driveways) {
-                    if (driveway.isDrivewayPosition(last)) {
-                        currentDriveway = driveway;
-                    }
-                }
-                if (!inDriveway && currentDriveway != null) {
-                    inDriveway = true;
+            if (drivewayPositions.contains(next)) {
+                if (!inDriveway) {
                     if (isOuter) {
                         // Termination
-                        addObstacleSlope(new ObstacleSlope(new Line(last, currentDriveway.getOuter4SlopeOuter(last))));
+                        addObstacleSlope(new ObstacleSlope(new Line(next, drivewayOuterToInner.get(next))));
                     }
-                } else if (inDriveway && currentDriveway != null) {
-                    inDriveway = false;
+                    addObstacleSlope(new ObstacleSlope(new Line(last, next)));
+                }
+                inDriveway = true;
+            } else {
+                if (inDriveway) {
                     if (isOuter) {
                         // Termination
-                        addObstacleSlope(new ObstacleSlope(new Line(last, currentDriveway.getOuter4SlopeOuter(last))));
+                        addObstacleSlope(new ObstacleSlope(new Line(last, drivewayOuterToInner.get(last))));
                     }
+                    addObstacleSlope(new ObstacleSlope(new Line(last, next)));
+                } else {
+                    addObstacleSlope(new ObstacleSlope(new Line(last, next)));
                 }
+                inDriveway = false;
             }
-            if (!inDriveway) {
-                addObstacleSlope(new ObstacleSlope(new Line(last, next)));
-            }
-
 
             DecimalPosition absolute = polygon.get(i);
             Index nodeIndex = TerrainUtil.toNode(absolute);

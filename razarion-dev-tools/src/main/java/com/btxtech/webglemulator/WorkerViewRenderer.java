@@ -86,7 +86,7 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
             renderTerrainShapeAccess(egc);
             renderTerrainShapeTiles(egc);
         }
-        renderSlopes(egc);
+        // renderSlopes(egc);
         postRender();
     }
 
@@ -166,7 +166,7 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
         egc.getGc().setStroke(Color.BLACK);
         egc.getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         displaySubNodes(egc, 0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
-        // displayObstacles(egc, terrainShapeNode);
+        displayObstacles(egc, terrainShapeNode);
         //displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
     }
 

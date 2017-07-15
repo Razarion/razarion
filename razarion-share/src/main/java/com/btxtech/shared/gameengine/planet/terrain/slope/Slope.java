@@ -12,7 +12,11 @@ import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -30,6 +34,8 @@ public class Slope {
     private Polygon2D outerPolygon;
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
+    private Set<DecimalPosition> innerDriveway = new HashSet<>();
+    private Map<DecimalPosition, DecimalPosition> outerDriveway = new HashMap<>();
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
@@ -183,6 +189,11 @@ public class Slope {
             DecimalPosition inner = verticalSegment.getInner().getPointWithDistance(innerNode.getPosition().getX(), verticalSegment.getOuter(), true);
             DecimalPosition outer = verticalSegment.getInner().getPointWithDistance(outerNode.getPosition().getX(), verticalSegment.getOuter(), true);
 
+            if (verticalSegment.getDrivewayHeightFactor() <= 0) {
+                innerDriveway.add(inner);
+                outerDriveway.put(outer, inner);
+            }
+
             if (lastInner != null) {
                 if (!lastInner.equalsDelta(inner)) {
                     innerLine.add(inner);
@@ -319,6 +330,18 @@ public class Slope {
             }
         }
         throw new IllegalStateException("Slope.getFirstOutOfRectClockWise()");
+    }
+
+    public Collection<DecimalPosition> getInnerDriveway() {
+        return innerDriveway;
+    }
+
+    public Collection<DecimalPosition> getOuterDriveway() {
+        return outerDriveway.keySet();
+    }
+
+    public Map<DecimalPosition, DecimalPosition> getOuterToInnerDriveway() {
+        return outerDriveway;
     }
 
     public static class Corner {
