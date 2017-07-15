@@ -7,12 +7,15 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -40,6 +43,7 @@ import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.webglemulator.razarion.DevToolNativeTerrainShapeAccess;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 
 import javax.annotation.PostConstruct;
@@ -95,6 +99,8 @@ public class ScenarioService implements QuestListener {
     private JsonProviderEmulator jsonProviderEmulator;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private DevToolNativeTerrainShapeAccess devToolNativeTerrainShapeAccess;
     private List<ScenarioSuite> scenarioSuites = new ArrayList<>();
     private Scenario currentScenario;
 
@@ -266,35 +272,44 @@ public class ScenarioService implements QuestListener {
 
         StaticGameConfig staticGameConfig = currentScenario.setupGameEngineConfig();
         if (staticGameConfig == null) {
-            staticGameConfig = setupGameEngineConfig();
+            staticGameConfig = setupStaticGameConfig();
         }
-        // TODO currentScenario.setupTerrain(staticGameConfig.getPlanetConfig().getTerrainSlopePositions(), staticGameConfig.getPlanetConfig().getTerrainObjectPositions());
+        PlanetConfig planetConfig = setupPlanetConfig();
+        MasterPlanetConfig masterPlanetConfig = setupMasterPlanetConfig();
+
+        List<TerrainSlopePosition> slopePositions = new ArrayList<>();
+        devToolNativeTerrainShapeAccess.setPlanetConfig(planetConfig);
+        devToolNativeTerrainShapeAccess.setTerrainSlopePositions(slopePositions);
+        currentScenario.setupTerrain(slopePositions, planetConfig.getTerrainObjectPositions());
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
         currentScenario.setupResourceRegionConfig(resourceRegionConfigs);
-        // TODO staticGameConfig.getPlanetConfig().setResourceRegionConfigs(resourceRegionConfigs);
+        masterPlanetConfig.setResourceRegionConfigs(resourceRegionConfigs);
         UserContext userContext = new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("User 1").setLevelId(LEVEL_1_ID);
         try {
             gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
-            // TODO planetService.initialise(staticGameConfig.getPlanetConfig());
-            currentScenario.setupBots(botService);
-            // TODO planetService.start();
-            PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName());
-            currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService, syncItemContainerService);
-            List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
-            currentScenario.setupBotCommands(botCommandConfigs);
-            botService.executeCommands(botCommandConfigs);
-            QuestConfig questConfig = currentScenario.setupQuest();
-            if (questConfig != null) {
-                questService.activateCondition(userContext.getHumanPlayerId(), questConfig);
-            }
-            currentScenario.executeCommands(commandService);
+            planetService.initialise(planetConfig, GameEngineMode.MASTER, masterPlanetConfig, null, () -> {
+                currentScenario.setupBots(botService);
+                planetService.start(null);
+                PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName());
+                currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService, syncItemContainerService);
+                List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
+                currentScenario.setupBotCommands(botCommandConfigs);
+                botService.executeCommands(botCommandConfigs);
+                QuestConfig questConfig = currentScenario.setupQuest();
+                if (questConfig != null) {
+                    questService.activateCondition(userContext.getHumanPlayerId(), questConfig);
+                }
+                currentScenario.executeCommands(commandService);
+            }, s -> {
+                throw new RuntimeException(s);
+            });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             jsonProviderEmulator.gameUiControlConfigToTmpFile(staticGameConfig);
         }
     }
 
-    public StaticGameConfig setupGameEngineConfig() {
+    private StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setGroundSkeletonConfig(setupGroundSkeletonConfig());
         staticGameConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
@@ -305,7 +320,6 @@ public class ScenarioService implements QuestListener {
         staticGameConfig.setResourceItemTypes(Arrays.asList(RESOURCE_ITEM_TYPE, RESOURCE_LITTLE_ITEM_TYPE));
         staticGameConfig.setBoxItemTypes(Collections.singletonList(BOX_ITEM_TYPE));
         staticGameConfig.setInventoryItems(Collections.singletonList(INVENTORY_ITEM));
-        // TODO staticGameConfig.setPlanetConfig(setupPlanetConfig());
         return staticGameConfig;
     }
 
@@ -335,12 +349,17 @@ public class ScenarioService implements QuestListener {
         return terrainObjectConfigs;
     }
 
+    private MasterPlanetConfig setupMasterPlanetConfig() {
+        MasterPlanetConfig masterPlanetConfig = new MasterPlanetConfig();
+        masterPlanetConfig.setResourceRegionConfigs(new ArrayList<>());
+        return masterPlanetConfig;
+    }
+
     private PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setTerrainTileDimension(new Rectangle(-70, -70, 140, 140)).setHouseSpace(1000).setStartRazarion(100);
-        // TODO planetConfig.setTerrainSlopePositions(new ArrayList<>());
+        planetConfig.setTerrainTileDimension(new Rectangle(-7, -7, 14, 14)).setHouseSpace(1000).setStartRazarion(100);
+        // planetConfig.setTerrainSlopePositions(new ArrayList<>());
         planetConfig.setTerrainObjectPositions(new ArrayList<>());
-        // TODO planetConfig.setGameEngineMode(GameEngineMode.MASTER);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE.getId(), 1000);

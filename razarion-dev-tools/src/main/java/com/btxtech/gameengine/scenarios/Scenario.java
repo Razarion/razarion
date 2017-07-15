@@ -4,12 +4,13 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
+import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -170,8 +171,11 @@ public class Scenario {
     }
 
     protected TerrainSlopePosition createRectangleSlope(int slopeSkeletonId, double x, double y, double width, double height) {
-       // TODO return new TerrainSlopePosition().setId(slopeId++).setSlopeConfigId(slopeSkeletonId).setPolygon(Arrays.asList(new DecimalPosition(x, y), new DecimalPosition(x + width, y), new DecimalPosition(x + width, y + height), new DecimalPosition(x, y + height)));
-        throw new UnsupportedOperationException("!!!! TODO !!!!");
+        return new TerrainSlopePosition().setId(slopeId++).setSlopeConfigId(slopeSkeletonId).setPolygon(Arrays.asList(
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(x, y)),
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(x + width, y)),
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(x + width, y + height)),
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(x, y + height))));
     }
 
     protected SyncBaseItem getCreatedSyncBaseItem(int index) {
@@ -203,7 +207,7 @@ public class Scenario {
     }
 
     protected SyncResourceItem getSyncResourceItem(int resourceItemTypeId) {
-        return CollectionUtils.getFirst(syncItemContainerService.findResourceItemWithPlace(resourceItemTypeId, new PlaceConfig(){
+        return CollectionUtils.getFirst(syncItemContainerService.findResourceItemWithPlace(resourceItemTypeId, new PlaceConfig() {
             @Override
             public boolean checkInside(SyncItem syncItem) {
                 return true;

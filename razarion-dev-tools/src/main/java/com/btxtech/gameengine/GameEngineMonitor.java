@@ -19,8 +19,8 @@ public class GameEngineMonitor {
         Parent root = loader.load();
         primaryStage.setTitle("GameEngineWorker Monitor");
         primaryStage.setScene(new Scene(root));
-        primaryStage.setX(-1279);
-        primaryStage.setY(182);
+//        primaryStage.setX(-1279);
+//        primaryStage.setY(182);
         primaryStage.setWidth(1277);
         primaryStage.setHeight(1016);
         primaryStage.show();

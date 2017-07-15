@@ -61,11 +61,6 @@ public class ResourceScenarioSuite extends ScenarioSuite {
             }
 
             @Override
-            public boolean isStart() {
-                return true;
-            }
-
-            @Override
             public void stop() {
                 if (backgroundWorker != null) {
                     backgroundWorker.cancel(true);

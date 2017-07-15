@@ -20,7 +20,7 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Frontal") {
             @Override
             public void createSyncItems() {
-                DecimalPosition direction = new DecimalPosition(10, 0);
+                DecimalPosition direction = new DecimalPosition(40, 0);
                 createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 0), 0, direction);
             }
 
@@ -28,6 +28,7 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 5, -20, 20, 40));
             }
+
         });
         addScenario(new Scenario("Not frontal") {
             @Override
@@ -39,6 +40,11 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 5, 1, 20, 40));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
         addScenario(new Scenario("1") {
