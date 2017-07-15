@@ -23,6 +23,7 @@ import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -221,10 +222,6 @@ public class TerrainShape {
         }
     }
 
-    public void terrainRegionImpactCallback(DecimalPosition absolutePosition, double radius, TerrainRegionImpactCallback terrainRegionImpactCallback) {
-        terrainRegionImpactCallback(absolutePosition, radius, new SimpleControl(), terrainRegionImpactCallback);
-    }
-
     public void terrainRegionImpactCallback(DecimalPosition absolutePosition, double radius, TerrainRegionImpactCallback.Control control, TerrainRegionImpactCallback terrainRegionImpactCallback) {
         Circle2D circle2D = new Circle2D(absolutePosition, radius);
         for (Index tileIndex : GeometricUtil.rasterizeCircle(circle2D, (int) TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH)) {
@@ -240,18 +237,31 @@ public class TerrainShape {
             }
 
             SingleHolder<Boolean> tileCallbackCalled = new SingleHolder<>(false);
+
+            Index bottomLeftNodeIndex = TerrainUtil.tileToNode(tileIndex);
             terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-                Rectangle2D absoluteNodeRect = TerrainUtil.toAbsoluteNodeRectangle(nodeRelativeIndex);
+                Index absoluteNodeIndex = nodeRelativeIndex.add(bottomLeftNodeIndex);
+                Rectangle2D absoluteNodeRect = TerrainUtil.toAbsoluteNodeRectangle(absoluteNodeIndex);
                 if (circle2D.intersects(absoluteNodeRect)) {
                     if (terrainShapeNode != null) {
-                        // TODO if (terrainShapeNode.hasSubNodes()) {
-                        // TODO    terrainShapeNode.iterateOverTerrainSubNodes();
-                        // TODO} else {
-                        terrainRegionImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileIndex);
-                        if (control.isStop()) {
-                            iterationControl.doStop();
+                        if (terrainShapeNode.hasSubNodes()) {
+                            terrainShapeNode.iterateOverTerrainSubNodes(new TerrainShapeNode.TerrainShapeSubNodeConsumer() {
+                                @Override
+                                public void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition relativeOffset, int depth) {
+                                    DecimalPosition absoluteSubNode = absoluteNodeRect.getStart().add(relativeOffset);
+                                    double subNodeLength = TerrainUtil.calculateSubNodeLength(depth);
+                                    Rectangle2D absoluteSubNodeRect = new Rectangle2D(absoluteSubNode.getX(), absoluteSubNode.getY(), subNodeLength, subNodeLength);
+                                    if (circle2D.intersects(absoluteSubNodeRect)) {
+                                        terrainRegionImpactCallback.inSubNode(terrainShapeSubNode);
+                                    }
+                                }
+                            });
+                        } else {
+                            terrainRegionImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileIndex);
+                            if (control.isStop()) {
+                                iterationControl.doStop();
+                            }
                         }
-                        // TODO}
                     } else {
                         if (!tileCallbackCalled.getO()) {
                             terrainRegionImpactCallback.inTile(terrainShapeTile, tileIndex);
@@ -265,6 +275,27 @@ public class TerrainShape {
             });
         }
     }
+
+    /**
+     * Get all nodes touching the circle
+     *
+     * @param absolutePosition center
+     * @param radius           radius
+     * @param nodeCallback     callback. Return false to stop iteration
+     */
+
+    public void terrainNodesInCircleCallback(DecimalPosition absolutePosition, double radius, Function<TerrainShapeNode, Boolean> nodeCallback) {
+        List<Index> nodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(absolutePosition, radius), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+        for (Index nodeIndex : nodeIndices) {
+            TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
+            if (terrainShapeNode != null) {
+                if (!nodeCallback.apply(terrainShapeNode)) {
+                    return;
+                }
+            }
+        }
+    }
+
 
     public PathingAccess getPathingAccess() {
         return pathingAccess;

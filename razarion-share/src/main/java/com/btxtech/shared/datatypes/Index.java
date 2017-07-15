@@ -267,8 +267,12 @@ public class Index {
         return new Index((int) (x / scale), (int) (y / scale));
     }
 
-    public DecimalPosition divide(double scale) {
-        return new DecimalPosition(x / scale, y / scale);
+    public DecimalPosition divide(double factor) {
+        return new DecimalPosition(x / factor, y / factor);
+    }
+
+    public DecimalPosition multiply(double factor) {
+        return new DecimalPosition(x * factor, y * factor);
     }
 
     public Index add(Index point) {

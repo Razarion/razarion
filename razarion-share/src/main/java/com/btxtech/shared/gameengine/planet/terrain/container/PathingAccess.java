@@ -83,19 +83,24 @@ public class PathingAccess {
                     iterationControl.doStop();
                 }
             }
+
+            @Override
+            public void inSubNode(TerrainShapeSubNode terrainShapeSubNode) {
+                if (!terrainShapeSubNode.isLand()) {
+                    iterationControl.doStop();
+                }
+            }
         });
         return !iterationControl.isNotLane();
     }
 
     public Collection<Obstacle> getObstacles(SyncPhysicalMovable syncPhysicalMovable) {
         Collection<Obstacle> obstacles = new ArrayList<>();
-        terrainShape.terrainRegionImpactCallback(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius(), new TerrainRegionImpactCallback() {
-            @Override
-            public void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, Index tileIndex) {
-                if (terrainShapeNode.getObstacles() != null) {
-                    obstacles.addAll(terrainShapeNode.getObstacles());
-                }
+        terrainShape.terrainNodesInCircleCallback(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius(), terrainShapeNode -> {
+            if (terrainShapeNode.getObstacles() != null) {
+                obstacles.addAll(terrainShapeNode.getObstacles());
             }
+            return true;
         });
         return obstacles;
     }

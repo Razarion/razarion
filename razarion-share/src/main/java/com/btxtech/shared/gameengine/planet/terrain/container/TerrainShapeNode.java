@@ -2,11 +2,14 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
@@ -22,6 +25,17 @@ import java.util.logging.Logger;
  * on 18.06.2017.
  */
 public class TerrainShapeNode {
+    public interface TerrainShapeSubNodeConsumer {
+        /**
+         * Iterates through all sub nodes
+         *
+         * @param terrainShapeSubNode sub node
+         * @param relativeOffset absolute offset from the node bottom left
+         * @param depth depth 0 is the top most
+         */
+        void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition relativeOffset, int depth);
+    }
+
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());
     private double[] fullDrivewayHeights; // bl, br, tr, tl
     private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
@@ -148,6 +162,19 @@ public class TerrainShapeNode {
 
     public void setTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
         this.terrainShapeSubNodes = terrainShapeSubNodes;
+    }
+
+    public void iterateOverTerrainSubNodes(TerrainShapeSubNodeConsumer terrainShapeSubNodeConsumer) {
+        double subNodeLength = TerrainUtil.calculateSubNodeLength(0);
+        for (int i = 0; i < terrainShapeSubNodes.length; i++) {
+            DecimalPosition relativeOffset = TerrainShapeSubNode.numberToSubNodeIndex(i).multiply(subNodeLength);
+            TerrainShapeSubNode terrainShapeSubNode = terrainShapeSubNodes[i];
+            if (terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+                terrainShapeSubNode.iterateOverTerrainSubNodes(terrainShapeSubNodeConsumer, relativeOffset, 0);
+            } else {
+                terrainShapeSubNodeConsumer.onTerrainShapeSubNode(terrainShapeSubNode, relativeOffset, 0);
+            }
+        }
     }
 
     public boolean isHiddenUnderSlope() {

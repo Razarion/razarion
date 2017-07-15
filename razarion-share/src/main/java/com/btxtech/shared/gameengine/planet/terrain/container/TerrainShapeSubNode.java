@@ -67,6 +67,20 @@ public class TerrainShapeSubNode {
         return getTerrainShapeSubNode(depth, subNodeRelative, terrainShapeSubNodes);
     }
 
+    public void iterateOverTerrainSubNodes(TerrainShapeNode.TerrainShapeSubNodeConsumer terrainShapeSubNodeConsumer, DecimalPosition relativeOffsetParent, int depthParent) {
+        int depth = depthParent + 1;
+        double subNodeLength = TerrainUtil.calculateSubNodeLength(0);
+        for (int i = 0; i < terrainShapeSubNodes.length; i++) {
+            DecimalPosition relativeOffset = TerrainShapeSubNode.numberToSubNodeIndex(i).multiply(subNodeLength).add(relativeOffsetParent);
+            TerrainShapeSubNode terrainShapeSubNode = terrainShapeSubNodes[i];
+            if (terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+                terrainShapeSubNode.iterateOverTerrainSubNodes(terrainShapeSubNodeConsumer, relativeOffset, depth + 1);
+            } else {
+                terrainShapeSubNodeConsumer.onTerrainShapeSubNode(this, relativeOffset, depth);
+            }
+        }
+    }
+
     public int getDepth() {
         return depth;
     }
@@ -134,4 +148,17 @@ public class TerrainShapeSubNode {
         }
     }
 
+    public static Index numberToSubNodeIndex(int number) {
+        switch (number) {
+            case 0:
+                return new Index(0, 0);
+            case 1:
+                return new Index(1, 0);
+            case 2:
+                return new Index(1, 1);
+            case 3:
+                return new Index(0, 1);
+        }
+        throw new IllegalArgumentException("TerrainShapeSubNode.numberToSubNodeIndex(): " + number);
+    }
 }

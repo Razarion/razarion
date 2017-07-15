@@ -98,8 +98,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
             return;
         }
         try {
-            pathingService.tick();
             questService.checkPositionCondition();
+            pathingService.tick();
             baseItemService.tick();
             boxService.tick();
             projectileService.tick();

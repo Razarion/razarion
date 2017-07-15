@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 
 /**
@@ -9,6 +10,7 @@ import com.btxtech.shared.datatypes.Index;
 public interface TerrainRegionImpactCallback {
     interface Control {
         void doStop();
+
         boolean isStop();
     }
 
@@ -42,17 +44,7 @@ public interface TerrainRegionImpactCallback {
     default void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, Index tileIndex) {
     }
 
-//    /**
-//     * Called if node found on terrain position. The node does not have any sub nodes. It is also full water or full land inside a plateau
-//     *
-//     * @param terrainShapeSubNode  TerrainShapeSubNode
-//     * @param nodeRelative      the relative position in the node. 0,0 is bottom left . TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH is top or left
-//     * @param nodeRelativeIndex the relative node index in the tile. 0,0 is bottom left . TerrainUtil.TERRAIN_TILE_NODES_COUNT is top or left
-//     * @param tileRelative      the relative position inside the tile. E.g. 0,0 is bottom left. TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH is top or left
-//     * @param tileIndex         the index of the tile. Eg: 0,0 is the tile on bottom left
-//     * @return result
-//     */
-//    default T inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-//        return null;
-//    }
+    default void inSubNode(TerrainShapeSubNode terrainShapeSubNode) {
+
+    }
 }
