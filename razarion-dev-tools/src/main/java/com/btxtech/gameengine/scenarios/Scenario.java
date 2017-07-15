@@ -32,6 +32,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -126,6 +127,21 @@ public class Scenario {
     }
 
     protected SyncBaseItem createSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, double angle, DecimalPosition destination) {
+        try {
+            SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, angle, playerBase, true);
+            if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
+                SimplePath path = new SimplePath();
+                path.setWayPositions(Collections.singletonList(destination));
+                ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
+            }
+            createdSyncBaseItems.add(syncBaseItem);
+            return syncBaseItem;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected SyncBaseItem createSyncBaseItemAStar(BaseItemType baseItemType, DecimalPosition position, double angle, DecimalPosition destination) {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(baseItemType, position, angle, playerBase, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {

@@ -278,9 +278,9 @@ public class ScenarioService implements QuestListener {
         MasterPlanetConfig masterPlanetConfig = setupMasterPlanetConfig();
 
         List<TerrainSlopePosition> slopePositions = new ArrayList<>();
+        currentScenario.setupTerrain(slopePositions, planetConfig.getTerrainObjectPositions());
         devToolNativeTerrainShapeAccess.setPlanetConfig(planetConfig);
         devToolNativeTerrainShapeAccess.setTerrainSlopePositions(slopePositions);
-        currentScenario.setupTerrain(slopePositions, planetConfig.getTerrainObjectPositions());
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
         currentScenario.setupResourceRegionConfig(resourceRegionConfigs);
         masterPlanetConfig.setResourceRegionConfigs(resourceRegionConfigs);
@@ -337,8 +337,8 @@ public class ScenarioService implements QuestListener {
     private List<SlopeSkeletonConfig> setupSlopeSkeletonConfigs() {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(1).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(0.2).setWidth(0.5);
-        slopeSkeletonConfig.setSlopeNodes(new SlopeNode[][]{{new SlopeNode().setPosition(new Vertex(0, 0, 0)), new SlopeNode().setPosition(new Vertex(0.5, 0, 10))}});
+        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(1).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(0.2).setWidth(8);
+        slopeSkeletonConfig.setSlopeNodes(new SlopeNode[][]{{new SlopeNode().setPosition(new Vertex(0, 0, 0)), new SlopeNode().setPosition(new Vertex(8, 0, 10))}});
         slopeSkeletonConfigs.add(slopeSkeletonConfig);
         return slopeSkeletonConfigs;
     }

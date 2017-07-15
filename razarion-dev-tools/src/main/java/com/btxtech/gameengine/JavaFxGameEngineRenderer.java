@@ -2,6 +2,7 @@ package com.btxtech.gameengine;
 
 import com.btxtech.Abstract2dRenderer;
 import com.btxtech.ExtendedGraphicsContext;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
@@ -10,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
+import com.btxtech.shared.utils.InterpolationUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
 
@@ -21,23 +23,16 @@ import java.lang.reflect.Field;
  * 17.05.2016.
  */
 public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
+    private static final DecimalPosition FROM = new DecimalPosition(-100, -100);
+    private static final double LENGTH = 200;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
     @Inject
     private ProjectileService projectileService;
-    private TerrainShape terrainShape;
 
     public void init(Canvas canvas, double scale) {
-        try {
-            Field field = TerrainService.class.getDeclaredField("terrainShape");
-            field.setAccessible(true);
-            terrainShape = (TerrainShape) field.get(terrainService);
-            field.setAccessible(false);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         super.init(canvas, scale);
 
     }
@@ -46,7 +41,17 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
         preRender();
 
         ExtendedGraphicsContext extendedGraphicsContext = createExtendedGraphicsContext();
+        renderFree(extendedGraphicsContext);
         // Obstacles
+        TerrainShape terrainShape;
+        try {
+            Field field = TerrainService.class.getDeclaredField("terrainShape");
+            field.setAccessible(true);
+            terrainShape = (TerrainShape) field.get(terrainService);
+            field.setAccessible(false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         for (int x = terrainShape.getTileOffset().getX(); x < terrainShape.getTileOffset().getX() + terrainShape.getTileYCount(); x++) {
             for (int y = terrainShape.getTileOffset().getY(); y < terrainShape.getTileOffset().getY() + terrainShape.getTileYCount(); y++) {
                 Index index = new Index(x, y);
@@ -73,5 +78,24 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
         }
 
         postRender();
+    }
+
+    private void renderFree(ExtendedGraphicsContext egc) {
+        for (double x = FROM.getX(); x < FROM.getX() + LENGTH; x++) {
+            for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
+                DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
+                // double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
+                boolean free = terrainService.getPathingAccess().isTerrainFree(samplePosition);
+                // double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
+                // egc.getGc().setFill(new Color(v, v, v, 1));
+                // egc.getGc().fillRect(x, y, 1, 1);
+                if (free) {
+                    egc.getGc().setFill(Color.GREEN);
+                } else {
+                    egc.getGc().setFill(Color.RED);
+                }
+                egc.getGc().fillRect(x, y, 0.6, 0.6);
+            }
+        }
     }
 }
