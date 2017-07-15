@@ -46,7 +46,6 @@ public abstract class Scenario {
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
         register("ObstacleContainer InSight", new ObstacleContainerInSightScenario());
         register("Terrain", new TerrainScenario());
-        register("AStar Test", new AStarServiceScenario());
         register("Obstacle Container Test", new ObstacleContainerScenario());
         register("Bresenhams Test", new FillCircleScenario());
         register("Rectangle 2D", new Rectangle2DScenario());
