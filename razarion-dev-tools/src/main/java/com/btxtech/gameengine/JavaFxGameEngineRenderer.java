@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.utils.InterpolationUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.paint.Color;
@@ -55,11 +56,13 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
         for (int x = terrainShape.getTileOffset().getX(); x < terrainShape.getTileOffset().getX() + terrainShape.getTileYCount(); x++) {
             for (int y = terrainShape.getTileOffset().getY(); y < terrainShape.getTileOffset().getY() + terrainShape.getTileYCount(); y++) {
                 Index index = new Index(x, y);
-                TerrainShapeNode terrainShapeNode = terrainShape.getTerrainShapeNode(index);
-                if (terrainShapeNode != null && terrainShapeNode.getObstacles() != null) {
-                    for (Obstacle obstacle : terrainShapeNode.getObstacles()) {
-                        extendedGraphicsContext.drawObstacle(obstacle, Color.BLACK, Color.BLACK);
-                    }
+                TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(index);
+                if (terrainShapeTile != null) {
+                    terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
+                        if (terrainShapeNode != null && terrainShapeNode.getObstacles() != null) {
+                            terrainShapeNode.getObstacles().forEach(obstacle -> extendedGraphicsContext.drawObstacle(obstacle, Color.BLACK, Color.BLACK));
+                        }
+                    });
                 }
             }
         }

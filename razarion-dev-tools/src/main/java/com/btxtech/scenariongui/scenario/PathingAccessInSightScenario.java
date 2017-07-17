@@ -4,13 +4,14 @@ import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.model.DevToolHelper;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import javafx.scene.paint.Color;
 
 /**
  * Created by Beat
  * 29.01.2017.
  */
-public class ObstacleContainerInSightScenario extends AbstractTerrainScenario {
+public class PathingAccessInSightScenario extends AbstractTerrainScenario {
     private static final double RADIUS = 2;
     private DecimalPosition start;
     private DecimalPosition destination;
@@ -18,6 +19,8 @@ public class ObstacleContainerInSightScenario extends AbstractTerrainScenario {
 
     @Override
     public void render(ExtendedGraphicsContext extendedGraphicsContext) {
+        renderFree(extendedGraphicsContext);
+
         if (start != null && destination != null) {
             if (isInSight) {
                 extendedGraphicsContext.getGc().setStroke(Color.GREEN);
@@ -42,7 +45,7 @@ public class ObstacleContainerInSightScenario extends AbstractTerrainScenario {
         if (start != null) {
             destination = position;
             SyncPhysicalArea syncPhysicalArea = DevToolHelper.generateSyncPhysicalArea(start, RADIUS);
-            // isInSight = getBean(ObstacleContainer.class).isInSight(syncPhysicalArea, position);
+            isInSight = getTerrainService().getPathingAccess().isInSight(syncPhysicalArea, position);
         }
         return true;
     }

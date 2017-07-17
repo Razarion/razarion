@@ -28,12 +28,6 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 20, -20, 5, 40));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
-
         });
         addScenario(new Scenario("Frontal AStar") {
             @Override
@@ -45,6 +39,11 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 20, -20, 5, 40));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
 
         });

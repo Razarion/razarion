@@ -110,14 +110,14 @@ public class PathingAccess {
             return true;
         }
         double angel = syncPhysicalArea.getPosition2d().getAngle(target);
-        double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
-        double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
+        // double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
+        // double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
 
         Line line = new Line(syncPhysicalArea.getPosition2d(), target);
-        Line line1 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel1, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel1, syncPhysicalArea.getRadius()));
-        Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
+        // Line line1 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel1, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel1, syncPhysicalArea.getRadius()));
+        // Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
 
-        return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
+        return !terrainShape.isSightBlocked(line) /*&& !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2)*/;
     }
 
     public PathingNodeWrapper getPathingNodeWrapper(DecimalPosition terrainPosition) {

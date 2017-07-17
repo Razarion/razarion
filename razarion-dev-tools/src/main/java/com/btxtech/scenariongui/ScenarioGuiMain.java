@@ -15,8 +15,8 @@ public class ScenarioGuiMain extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/ScenarioGui.fxml"));
         stage.setTitle("Scenario Gui");
         stage.setScene(new Scene(root));
-        stage.setX(-1279);
-        stage.setY(182);
+//        stage.setX(-1279);
+//        stage.setY(182);
         stage.setWidth(1277);
         stage.setHeight(1016);
         stage.show();
