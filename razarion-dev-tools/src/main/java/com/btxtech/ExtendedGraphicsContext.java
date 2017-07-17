@@ -252,6 +252,12 @@ public class ExtendedGraphicsContext {
         }
     }
 
+    public void drawSyncPhysicalArea(SyncPhysicalArea syncPhysicalArea, Color color) {
+        DecimalPosition position = syncPhysicalArea.getPosition2d();
+        gc.setFill(color);
+        gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
+    }
+
     private void fillPolygon(SyncItem syncItem) {
         DecimalPosition middle = syncItem.getSyncPhysicalArea().getPosition2d();
         double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;

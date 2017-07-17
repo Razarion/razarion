@@ -24,6 +24,7 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
 import com.btxtech.shared.gameengine.planet.pathing.Contact;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -44,9 +45,13 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
+    private TerrainService terrainService;
+    @Inject
     private Instance<Path> instancePath;
-    private final static int LOOK_AHEAD_TICKS = 20;
-    private double lookAheadDistance;
+    private final static int LOOK_AHEAD_TICKS_ITEM = 20;
+    private final static int LOOK_AHEAD_TICKS_TERRAIN = 3;
+    private double lookAheadItemDistance;
+    private double lookAheadTerrainDistance;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second
@@ -59,7 +64,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         maxSpeed = physicalAreaConfig.getSpeed();
         angularVelocity = physicalAreaConfig.getAngularVelocity();
         acceleration = physicalAreaConfig.getAcceleration();
-        lookAheadDistance = LOOK_AHEAD_TICKS * maxSpeed * PlanetService.TICK_FACTOR;
+        lookAheadItemDistance = LOOK_AHEAD_TICKS_ITEM * maxSpeed * PlanetService.TICK_FACTOR;
+        lookAheadTerrainDistance = LOOK_AHEAD_TICKS_TERRAIN * maxSpeed * PlanetService.TICK_FACTOR;
     }
 
     public void setupForTick() {
@@ -162,7 +168,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
             // Check if other is too far away
             double distance = getDistance(other);
-            if (distance > lookAheadDistance) {
+            if (distance > lookAheadItemDistance) {
                 return null;
             }
 
@@ -193,6 +199,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
             return null;
         });
+
+        terrainService.getPathingAccess().getObstacles(getPosition2d(), getRadius() + lookAheadTerrainDistance).forEach(clearanceHole::addOther);
 
         // calculate push away force with velocity - obstacle
         double direction = clearanceHole.getFreeAngle(desiredVelocity.angle());
@@ -293,7 +301,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {
         SyncPhysicalAreaInfo syncPhysicalAreaInfo = super.getSyncPhysicalAreaInfo();
         syncPhysicalAreaInfo.setVelocity(velocity);
-        if(path != null) {
+        if (path != null) {
             path.fillSyncPhysicalAreaInfo(syncPhysicalAreaInfo);
         }
         return syncPhysicalAreaInfo;

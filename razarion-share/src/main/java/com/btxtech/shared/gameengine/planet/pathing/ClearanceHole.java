@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -33,8 +34,45 @@ public class ClearanceHole {
         angleSegments.add(new AngleSegment(distanceVector.angle(), halfBlockingAngle));
     }
 
+    public void addOther(Obstacle obstacle) {
+        // Bad solution if slope line is piercing
+        if (obstacle instanceof ObstacleSlope) {
+            ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
+            DecimalPosition point1;
+            DecimalPosition point2;
+            if (MathHelper.isCounterClock(syncPhysicalMovable.getPosition2d().getAngle(obstacleSlope.getLine().getPoint1()), syncPhysicalMovable.getPosition2d().getAngle(obstacleSlope.getLine().getPoint2()))) {
+                point1 = obstacleSlope.getLine().getPoint1();
+                point2 = obstacleSlope.getLine().getPoint2();
+            } else {
+                point1 = obstacleSlope.getLine().getPoint2();
+                point2 = obstacleSlope.getLine().getPoint1();
+            }
+
+            double circleAngle1;
+            double distance1 = syncPhysicalMovable.getPosition2d().getDistance(point1);
+            if (distance1 > syncPhysicalMovable.getRadius()) {
+                circleAngle1 = Math.atan(syncPhysicalMovable.getRadius() / distance1);
+            } else {
+                circleAngle1 = MathHelper.QUARTER_RADIANT;
+            }
+            double circleAngle2;
+            double distance2 = syncPhysicalMovable.getPosition2d().getDistance(point2);
+            if (distance2 > syncPhysicalMovable.getRadius()) {
+                circleAngle2 = Math.atan(syncPhysicalMovable.getRadius() / distance2);
+            } else {
+                circleAngle2 = MathHelper.QUARTER_RADIANT;
+            }
+
+            double startAngle = MathHelper.normaliseAngle(syncPhysicalMovable.getPosition2d().getAngle(point1) - circleAngle1);
+            double endAngle = MathHelper.normaliseAngle(syncPhysicalMovable.getPosition2d().getAngle(point2) + circleAngle2);
+            double half = MathHelper.getAngle(startAngle, endAngle) / 2.0;
+            double middle = MathHelper.normaliseAngle(startAngle + half);
+            angleSegments.add(new AngleSegment(middle, half));
+        }
+    }
+
     public double getFreeAngle(double desiredAngle) {
-        List<AngleSegment> blockingSegments = findBlockingSegments();
+        List<AngleSegment> blockingSegments = mergeSegments();
         if (blockingSegments.isEmpty()) {
             return desiredAngle;
         }
@@ -46,35 +84,36 @@ public class ClearanceHole {
         return desiredAngle;
     }
 
-    private List<AngleSegment> findBlockingSegments() {
+    private List<AngleSegment> mergeSegments() {
         List<AngleSegment> angleSegmentClone = new ArrayList<>(angleSegments);
-        List<AngleSegment> blockingSegments = new ArrayList<>();
+        List<AngleSegment> mergedSegments = new ArrayList<>();
 
         if (angleSegmentClone.isEmpty()) {
-            return blockingSegments;
+            return mergedSegments;
         }
         AngleSegment angleSegment = angleSegmentClone.remove(0);
         while (angleSegment != null) {
             boolean keepSearching = true;
             while (keepSearching) {
                 keepSearching = false;
-                for (AngleSegment segment : angleSegmentClone) {
+                for (Iterator<AngleSegment> iterator = angleSegmentClone.iterator(); iterator.hasNext(); ) {
+                    AngleSegment segment = iterator.next();
                     if (angleSegment.overlaps(segment)) {
                         angleSegment = angleSegment.combines(segment);
-                        angleSegmentClone.remove(0);
+                        iterator.remove();
                         keepSearching = true;
                         break;
                     }
                 }
             }
-            blockingSegments.add(angleSegment);
+            mergedSegments.add(angleSegment);
             if (angleSegmentClone.isEmpty()) {
                 angleSegment = null;
             } else {
                 angleSegment = angleSegmentClone.remove(0);
             }
         }
-        return blockingSegments;
+        return mergedSegments;
     }
 
     public static class AngleSegment {

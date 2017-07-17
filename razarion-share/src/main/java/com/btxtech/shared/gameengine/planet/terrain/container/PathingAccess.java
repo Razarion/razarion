@@ -94,15 +94,19 @@ public class PathingAccess {
         return !iterationControl.isNotLane();
     }
 
-    public Collection<Obstacle> getObstacles(SyncPhysicalMovable syncPhysicalMovable) {
+    public Collection<Obstacle> getObstacles(DecimalPosition position, double radius) {
         Collection<Obstacle> obstacles = new ArrayList<>();
-        terrainShape.terrainNodesInCircleCallback(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius(), terrainShapeNode -> {
+        terrainShape.terrainNodesInCircleCallback(position, radius, terrainShapeNode -> {
             if (terrainShapeNode.getObstacles() != null) {
                 obstacles.addAll(terrainShapeNode.getObstacles());
             }
             return true;
         });
         return obstacles;
+    }
+
+    public Collection<Obstacle> getObstacles(SyncPhysicalMovable syncPhysicalMovable) {
+        return getObstacles(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius());
     }
 
     public boolean isInSight(SyncPhysicalArea syncPhysicalArea, DecimalPosition target) {

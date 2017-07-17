@@ -1,7 +1,11 @@
 package com.btxtech.scenariongui.scenario;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeNode;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTileContext;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileContext;
@@ -16,9 +20,7 @@ import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.function.Supplier;
 
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 /**
  * Created by Beat
@@ -111,15 +113,19 @@ public class FrameworkHelper {
         }
     }
 
-    public static void injectService(String fieldName, Object service, Object serviceToInject) {
+    public static void injectService(String fieldName, Object service, Class clazz, Object serviceToInject) {
         try {
-            Field field = service.getClass().getDeclaredField(fieldName);
+            Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(service, serviceToInject);
             field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void injectService(String fieldName, Object service, Object serviceToInject) {
+        injectService(fieldName, service, service.getClass(), serviceToInject);
     }
 
     public static Object readField(String fieldName, Object bean) {
@@ -161,6 +167,13 @@ public class FrameworkHelper {
 
     public static SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
         return new SlopeNode().setPosition(new Vertex(x, 0, z)).setSlopeFactor(slopeFactor);
+    }
+
+    public static SyncPhysicalMovable createSyncPhysicalMovable(DecimalPosition position, double radius) {
+        SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
+        injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
+        injectService("radius", syncPhysicalMovable, SyncPhysicalArea.class, radius);
+        return syncPhysicalMovable;
     }
 
 }

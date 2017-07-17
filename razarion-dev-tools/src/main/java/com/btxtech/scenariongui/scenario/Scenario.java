@@ -37,12 +37,12 @@ public abstract class Scenario {
     }
 
     static {
+        register("Clearance Hole", new ClearanceHoleScenario());
         register("PathingAccess InSight", new PathingAccessInSightScenario());
         register("Display Polygon", new DisplayPolygonScenario());
         register("Draw Polygon", new DrawPolygonScenario());
         register("Simple Terrain", new SimpleTerrainScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
-        register("Obstacle Container Slope Ground Connector", new ObstacleContainerSlopeGroundConnectorScenario());
         register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
         register("Bresenhams Test", new FillCircleScenario());
