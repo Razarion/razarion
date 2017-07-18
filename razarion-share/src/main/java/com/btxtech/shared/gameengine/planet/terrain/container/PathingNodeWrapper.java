@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -47,32 +48,34 @@ public class PathingNodeWrapper {
         return TerrainUtil.smallestSubNodeCenter(subNodeIndex);
     }
 
-    public void provideNorthSuccessors(Consumer<PathingNodeWrapper> northNodeHandler) {
-        provideSuccessors(new Index(0, 1), northNodeHandler);
+    public void provideNorthSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
+        provideSuccessors(new Index(0, 1), northNodeHandler, subNodeIndexScope);
     }
 
-    public void provideEastSuccessors(Consumer<PathingNodeWrapper> eastNodeHandler) {
-        provideSuccessors(new Index(1, 0), eastNodeHandler);
+    public void provideEastSuccessors(List<Index> subNodeIndexScope,Consumer<PathingNodeWrapper> eastNodeHandler) {
+        provideSuccessors(new Index(1, 0), eastNodeHandler, subNodeIndexScope);
     }
 
-    public void provideSouthSuccessors(Consumer<PathingNodeWrapper> southNodeHandler) {
-        provideSuccessors(new Index(0, -1), southNodeHandler);
+    public void provideSouthSuccessors(List<Index> subNodeIndexScope,Consumer<PathingNodeWrapper> southNodeHandler) {
+        provideSuccessors(new Index(0, -1), southNodeHandler, subNodeIndexScope);
     }
 
-    public void provideWestSuccessors(Consumer<PathingNodeWrapper> westNodeHandler) {
-        provideSuccessors(new Index(-1, 0), westNodeHandler);
+    public void provideWestSuccessors(List<Index> subNodeIndexScope,Consumer<PathingNodeWrapper> westNodeHandler) {
+        provideSuccessors(new Index(-1, 0), westNodeHandler, subNodeIndexScope);
     }
 
-    private void provideSuccessors(Index direction, Consumer<PathingNodeWrapper> northNodeHandler) {
+    private void provideSuccessors(Index direction, Consumer<PathingNodeWrapper> northNodeHandler, List<Index> scope) {
         Index successorSubNodeIndex = subNodeIndex.add(direction);
         if (!pathingAccess.isNodeInBoundary(TerrainUtil.smallestSubNodeToNode(successorSubNodeIndex))) {
             return;
         }
-        PathingNodeWrapper successorNode = pathingAccess.getPathingNodeWrapper(TerrainUtil.smallestSubNodeCenter(successorSubNodeIndex));
-        if(!successorNode.isFree()) {
-            return;
+        for (Index scopeIndex : scope) {
+            PathingNodeWrapper successorNode = pathingAccess.getPathingNodeWrapper(TerrainUtil.smallestSubNodeCenter(scopeIndex.add(successorSubNodeIndex)));
+            if (!successorNode.isFree()) {
+                return;
+            }
         }
-        northNodeHandler.accept(successorNode);
+        northNodeHandler.accept(pathingAccess.getPathingNodeWrapper(TerrainUtil.smallestSubNodeCenter(successorSubNodeIndex)));
     }
 
     public Index getSubNodeIndex() {

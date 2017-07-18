@@ -63,7 +63,7 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
         }
         displayClosedList();
         if (simplePath != null) {
-            strokeLine(simplePath.getWayPositions(), LINE_WIDTH * 2, Color.RED, true);
+            strokeLine(simplePath.getWayPositions(), LINE_WIDTH, Color.OLIVEDRAB, true);
         }
     }
 

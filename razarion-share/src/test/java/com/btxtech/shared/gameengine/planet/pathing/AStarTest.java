@@ -1,7 +1,9 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.SimpleTestEnvironment;
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -12,8 +14,10 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemServiceBase;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainServiceTestBase;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.gui.astar.TerrainAStarTestDisplay;
+import com.btxtech.shared.utils.GeometricUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -74,7 +78,7 @@ public class AStarTest extends TerrainServiceTestBase {
 
     @Test
     public void expandAllNodes() throws Exception {
-        PathingService pathingService =setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
+        PathingService pathingService = setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
                 createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
 
@@ -85,9 +89,21 @@ public class AStarTest extends TerrainServiceTestBase {
 
 
         /////////
-        SimplePath simplePath = new SimplePath();
-        simplePath.setWayPositions(Arrays.asList(new DecimalPosition(50, 15), new DecimalPosition(72, 56)));
+//        SimplePath simplePath = new SimplePath();
+//        simplePath.setWayPositions(Arrays.asList(new DecimalPosition(50, 15), new DecimalPosition(72, 56)));
         ////////
+
+
+        List<DecimalPosition> positions = new ArrayList<>();
+        for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
+            positions.add(pathingNodeWrapper.getCenter());
+        }
+        SimplePath simplePath = new SimplePath();
+        positions.add(new DecimalPosition(72, 56));
+        simplePath.setWayPositions(positions);
+        simplePath.setTotalRange(0);
+
+
         TerrainAStarTestDisplay.show(getTerrainShape(), simplePath, aStar);
         Assert.fail("TODO assert");
     }
@@ -106,10 +122,11 @@ public class AStarTest extends TerrainServiceTestBase {
         if (!destinationNode.isFree()) {
             throw new IllegalArgumentException("Destination start tile is not free: " + destination);
         }
-        AStar aStar = new AStar(startNode, destinationNode);
+        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 1), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope);
         try {
             aStar.expandAllNodes();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return aStar;
         }

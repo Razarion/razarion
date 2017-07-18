@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 
 import java.util.ArrayList;
@@ -22,10 +23,12 @@ public class AStar {
     private List<PathingNodeWrapper> tilePath;
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
+    private List<Index> subNodeIndexScope;
 
-    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode) {
+    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode, List<Index> subNodeIndexScope) {
         this.startNode = startNode;
         this.destinationNode = new AStarNode(destinationNode);
+        this.subNodeIndexScope = subNodeIndexScope;
         openList.add(new AStarNode(startNode));
     }
 
@@ -55,13 +58,13 @@ public class AStar {
 
     private void handleAllSuccessorNodes(AStarNode current) {
         // North
-        current.getPathingNodeWrapper().provideNorthSuccessors(northSuccessor -> handleSuccessorNode(current, northSuccessor));
+        current.getPathingNodeWrapper().provideNorthSuccessors(subNodeIndexScope, northSuccessor -> handleSuccessorNode(current, northSuccessor));
         // East
-        current.getPathingNodeWrapper().provideEastSuccessors(eastSuccessor -> handleSuccessorNode(current, eastSuccessor));
+        current.getPathingNodeWrapper().provideEastSuccessors(subNodeIndexScope, eastSuccessor -> handleSuccessorNode(current, eastSuccessor));
         // South
-        current.getPathingNodeWrapper().provideSouthSuccessors(southSuccessor -> handleSuccessorNode(current, southSuccessor));
+        current.getPathingNodeWrapper().provideSouthSuccessors(subNodeIndexScope, southSuccessor -> handleSuccessorNode(current, southSuccessor));
         // West
-        current.getPathingNodeWrapper().provideWestSuccessors(westSuccessor -> handleSuccessorNode(current, westSuccessor));
+        current.getPathingNodeWrapper().provideWestSuccessors(subNodeIndexScope, westSuccessor -> handleSuccessorNode(current, westSuccessor));
     }
 
     private void handleSuccessorNode(AStarNode current, PathingNodeWrapper successorTilePosition) {

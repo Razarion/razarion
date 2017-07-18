@@ -222,93 +222,93 @@ public class PathingAccessTest extends TerrainServiceTestBase {
 //        nodeHandlerHelper.assertCount(4);
 //    }
 
-    @Test
-    public void testSuccessorNodeNotInScope1() {
-        setup();
-
-        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
-
-        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(0, 0));
-        pathingNodeWrapper.provideNorthSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        pathingNodeWrapper.provideEastSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        pathingNodeWrapper.provideSouthSuccessors(actual -> {
-            Assert.fail();
-        });
-        pathingNodeWrapper.provideWestSuccessors(actual -> {
-            Assert.fail();
-        });
-        nodeHandlerHelper.assertCount(2);
-    }
-
-    @Test
-    public void testSuccessorNodeNotInScope2() {
-        setup();
-
-        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
-
-        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(632, 0));
-        pathingNodeWrapper.provideNorthSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        pathingNodeWrapper.provideEastSuccessors(actual -> {
-            Assert.fail();
-        });
-        pathingNodeWrapper.provideSouthSuccessors(actual -> {
-            Assert.fail();
-        });
-        pathingNodeWrapper.provideWestSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        nodeHandlerHelper.assertCount(2);
-    }
-
-    @Test
-    public void testSuccessorNodeNotInScope3() {
-        setup();
-
-        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
-
-        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(632, 632));
-        pathingNodeWrapper.provideNorthSuccessors(actual -> {
-            Assert.fail();
-        });
-        pathingNodeWrapper.provideEastSuccessors(actual -> {
-            Assert.fail();
-        });
-        pathingNodeWrapper.provideSouthSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        pathingNodeWrapper.provideWestSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        nodeHandlerHelper.assertCount(2);
-    }
-
-    @Test
-    public void testSuccessorNodeNotInScope4() {
-        setup();
-
-        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
-
-        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(0, 632));
-        pathingNodeWrapper.provideNorthSuccessors(actual -> {
-            Assert.fail();
-        });
-        pathingNodeWrapper.provideEastSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        pathingNodeWrapper.provideSouthSuccessors(actual -> {
-            nodeHandlerHelper.increaseActualCount();
-        });
-        pathingNodeWrapper.provideWestSuccessors(actual -> {
-            Assert.fail();
-        });
-        nodeHandlerHelper.assertCount(2);
-    }
+//    @Test
+//    public void testSuccessorNodeNotInScope1() {
+//        setup();
+//
+//        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
+//
+//        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(0, 0));
+//        pathingNodeWrapper.provideNorthSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        pathingNodeWrapper.provideEastSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        pathingNodeWrapper.provideSouthSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        pathingNodeWrapper.provideWestSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        nodeHandlerHelper.assertCount(2);
+//    }
+//
+//    @Test
+//    public void testSuccessorNodeNotInScope2() {
+//        setup();
+//
+//        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
+//
+//        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(632, 0));
+//        pathingNodeWrapper.provideNorthSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        pathingNodeWrapper.provideEastSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        pathingNodeWrapper.provideSouthSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        pathingNodeWrapper.provideWestSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        nodeHandlerHelper.assertCount(2);
+//    }
+//
+//    @Test
+//    public void testSuccessorNodeNotInScope3() {
+//        setup();
+//
+//        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
+//
+//        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(632, 632));
+//        pathingNodeWrapper.provideNorthSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        pathingNodeWrapper.provideEastSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        pathingNodeWrapper.provideSouthSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        pathingNodeWrapper.provideWestSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        nodeHandlerHelper.assertCount(2);
+//    }
+//
+//    @Test
+//    public void testSuccessorNodeNotInScope4() {
+//        setup();
+//
+//        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
+//
+//        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(0, 632));
+//        pathingNodeWrapper.provideNorthSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        pathingNodeWrapper.provideEastSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        pathingNodeWrapper.provideSouthSuccessors(actual -> {
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        pathingNodeWrapper.provideWestSuccessors(actual -> {
+//            Assert.fail();
+//        });
+//        nodeHandlerHelper.assertCount(2);
+//    }
 //
 //    @Test
 //    public void testSuccessorSubNode8North() {
@@ -388,25 +388,25 @@ public class PathingAccessTest extends TerrainServiceTestBase {
 //        nodeHandlerHelper.assertExpectedPosition();
 //    }
 
-    @Test
-    public void testSuccessorSubNodeEast() {
-        setup();
-
-        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
-        nodeHandlerHelper.addExpectedDecimalPosition(6, 0).addExpectedDecimalPosition(6, 2);
-        nodeHandlerHelper.addExpectedDecimalPosition(6, 4).addExpectedDecimalPosition(6, 6);
-
-        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(40, 41));
-        pathingNodeWrapper.provideEastSuccessors(actual -> {
-            System.out.println("actual: " + actual);
-//            Assert.assertTrue(actual.isFree());
-//            Assert.assertNull(actual.getTerrainShapeNode());
-//            Assert.assertNotNull(actual.getTerrainShapeSubNode());
-//            Assert.assertEquals(1, actual.getTerrainShapeSubNode().getDepth());
-//            Assert.assertEquals(new Index(13, 9), actual.getNodeIndex());
-//            nodeHandlerHelper.handleExpectedPosition(actual.getRelativeSubNodeOrigin());
-        });
-        TerrainAStarTestDisplay.show(getTerrainShape(), null, null);
-        // nodeHandlerHelper.assertExpectedPosition();
-    }
+//    @Test
+//    public void testSuccessorSubNodeEast() {
+//        setup();
+//
+//        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
+//        nodeHandlerHelper.addExpectedDecimalPosition(6, 0).addExpectedDecimalPosition(6, 2);
+//        nodeHandlerHelper.addExpectedDecimalPosition(6, 4).addExpectedDecimalPosition(6, 6);
+//
+//        PathingNodeWrapper pathingNodeWrapper = getTerrainShape().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(40, 41));
+//        pathingNodeWrapper.provideEastSuccessors(actual -> {
+//            System.out.println("actual: " + actual);
+////            Assert.assertTrue(actual.isFree());
+////            Assert.assertNull(actual.getTerrainShapeNode());
+////            Assert.assertNotNull(actual.getTerrainShapeSubNode());
+////            Assert.assertEquals(1, actual.getTerrainShapeSubNode().getDepth());
+////            Assert.assertEquals(new Index(13, 9), actual.getNodeIndex());
+////            nodeHandlerHelper.handleExpectedPosition(actual.getRelativeSubNodeOrigin());
+//        });
+//        TerrainAStarTestDisplay.show(getTerrainShape(), null, null);
+//        // nodeHandlerHelper.assertExpectedPosition();
+//    }
 }

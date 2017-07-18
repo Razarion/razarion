@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -9,7 +11,9 @@ import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -55,7 +59,10 @@ public class PathingService {
         if (!destinationNode.isFree()) {
             throw new IllegalArgumentException("Destination start tile is not free: " + destination);
         }
-        AStar aStar = new AStar(startNode, destinationNode);
+
+        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+
+        AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope);
         aStar.expandAllNodes();
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
             positions.add(pathingNodeWrapper.getCenter());
