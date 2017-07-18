@@ -15,7 +15,11 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: beat
@@ -23,35 +27,45 @@ import com.btxtech.shared.utils.MathHelper;
  * Time: 11:55:18
  */
 public class GroupSelectionFrame {
-    private DecimalPosition start;
-    private Rectangle2D rectangle;
+    private Vertex start;
+    private Rectangle2D rectangle2D;
+    private List<Vertex> corners;
 
-    public GroupSelectionFrame(DecimalPosition start) {
+    public GroupSelectionFrame(Vertex start) {
         this.start = start;
     }
 
-    public void onMove(DecimalPosition position) {
-        generateSelectionRectangle(position);
-    }
-
-    private void generateSelectionRectangle(DecimalPosition position) {
-        DecimalPosition delta = start.sub(position);
+    public void onMove(Vertex position) {
+        DecimalPosition delta = start.toXY().sub(position.toXY());
         if (MathHelper.compareWithPrecision(delta.getX(), 0.0) || MathHelper.compareWithPrecision(delta.getY(), 0.0)) {
-            rectangle = null;
+            rectangle2D = null;
         } else {
             double x = Math.min(start.getX(), position.getX());
             double y = Math.min(start.getY(), position.getY());
             double width = Math.abs(start.getX() - position.getX());
             double height = Math.abs(start.getY() - position.getY());
-            rectangle = new Rectangle2D(x, y, width, height);
+            rectangle2D = new Rectangle2D(x, y, width, height);
         }
+        setupCorner4Renderer(position);
     }
 
-    public Rectangle2D getRectangle() {
-        return rectangle;
+    public Rectangle2D getRectangle2D() {
+        return rectangle2D;
     }
 
-    public DecimalPosition getStart() {
-        return start;
+    public DecimalPosition getStart2D() {
+        return start.toXY();
+    }
+
+    public List<Vertex> getCorners() {
+        return corners;
+    }
+
+    private void setupCorner4Renderer(Vertex end) {
+        corners = new ArrayList<>();
+        corners.add(new Vertex(start.getX(), start.getY(), end.getZ()));
+        corners.add(new Vertex(end.getX(), start.getY(), end.getZ()));
+        corners.add(end);
+        corners.add(new Vertex(start.getX(), end.getY(), end.getZ()));
     }
 }

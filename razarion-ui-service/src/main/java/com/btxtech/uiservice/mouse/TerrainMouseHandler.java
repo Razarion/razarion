@@ -99,7 +99,7 @@ public class TerrainMouseHandler {
 
             if (primaryButtonDown) {
                 if (groupSelectionFrame != null) {
-                    groupSelectionFrame.onMove(terrainPosition.toXY());
+                    groupSelectionFrame.onMove(terrainPosition);
                     renderTask.onMove(groupSelectionFrame);
                 } else {
                     logger.warning("TerrainMouseHandler.onMouseMove(): groupSelectionFrame != null");
@@ -163,7 +163,7 @@ public class TerrainMouseHandler {
             }
 
             if (primaryButtonPressed) {
-                groupSelectionFrame = new GroupSelectionFrame(terrainPosition.toXY());
+                groupSelectionFrame = new GroupSelectionFrame(terrainPosition);
                 renderTask.startGroupSelection(groupSelectionFrame);
             } else if (secondaryButtonPressed) {
                 if (!selectionHandler.hasOwnSelection()) {
@@ -230,11 +230,11 @@ public class TerrainMouseHandler {
             if (primaryButtonReleased) {
                 if (groupSelectionFrame != null) {
                     renderTask.stop();
-                    groupSelectionFrame.onMove(terrainPosition.toXY());
-                    if (groupSelectionFrame.getRectangle() != null) {
-                        selectionHandler.selectRectangle(groupSelectionFrame.getRectangle());
+                    groupSelectionFrame.onMove(terrainPosition);
+                    if (groupSelectionFrame.getRectangle2D() != null) {
+                        selectionHandler.selectRectangle(groupSelectionFrame.getRectangle2D());
                     } else {
-                        selectionHandler.selectPosition(groupSelectionFrame.getStart());
+                        selectionHandler.selectPosition(groupSelectionFrame.getStart2D());
                     }
                     groupSelectionFrame = null;
                 } else {

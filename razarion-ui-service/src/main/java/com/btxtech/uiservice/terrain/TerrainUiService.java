@@ -189,9 +189,14 @@ public class TerrainUiService {
 
     public Vertex calculateMousePositionGroundMesh(Line3d worldPickRay) {
         DecimalPosition groundPosition = worldPickRay.calculatePositionOnHeightLevel(0).toXY();
+        double z = calculateMousePositionGroundMesh(groundPosition);
+        return worldPickRay.calculatePositionOnHeightLevel(z);
+    }
+
+    public double calculateMousePositionGroundMesh(DecimalPosition groundPosition) {
         Index terrainTile = TerrainUtil.toTile(groundPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
-        return new Vertex(groundPosition, uiTerrainTile.interpolateDisplayHeight(groundPosition));
+        return uiTerrainTile.interpolateDisplayHeight(groundPosition);
     }
 
     public void getTerrainZ(DecimalPosition position, BiConsumer<DecimalPosition, Double> callback) {
