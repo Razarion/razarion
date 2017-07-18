@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.logging.Logger;
 
@@ -640,12 +639,12 @@ public class TerrainShapeSetup {
     private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight, boolean isOuter, Driveway fractalDriveway) {
         Polygon2D landPolygon = new Polygon2D(Vertex.toXY(landVertexPolygon));
         TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
-            if(fractalDriveway != null && fractalDriveway.isOneCornerInside(terrainRect.toCorners())) {
+            if (fractalDriveway != null && fractalDriveway.isInside(rectangle2D.toCorners())) {
                 terrainShapeSubNode.setLand();
                 terrainShapeSubNode.setHeight(fractalDriveway.getInterpolateDrivewayHeight(rectangle2D.center()));
                 return true;
             }
-            if (slope.isInsidePassableDriveway(terrainRect)) {
+            if (slope.isInsidePassableDriveway(rectangle2D)) {
                 terrainShapeSubNode.setHeight(groundHeight);
                 terrainShapeSubNode.setLand();
                 return false;
