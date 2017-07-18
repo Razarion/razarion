@@ -647,7 +647,7 @@ public class TerrainShapeSetup {
             if (slope.isInsidePassableDriveway(rectangle2D)) {
                 terrainShapeSubNode.setHeight(groundHeight);
                 terrainShapeSubNode.setLand();
-                return false;
+                return true;
             }
             int insideCornerCount = landPolygon.insideCornerCount(rectangle2D, 0.2);
             if (insideCornerCount == 0) {

@@ -31,7 +31,6 @@ public class Driveway {
     private List<DecimalPosition> breakingLine;
     private double additionalStart;
     private double additionalEnd;
-    private Polygon2D passableSlopePolygon;
     private double drivewayLength;
 
     public Driveway(Slope slope, DecimalPosition startSlopePosition, int startSlopeIndex, DrivewayConfig drivewayConfig) {
@@ -84,19 +83,15 @@ public class Driveway {
 
         breakingLine = new ArrayList<>();
         List<DecimalPosition> drivewayPolygon = new ArrayList<>();
-        List<DecimalPosition> passableSlopePart = new ArrayList<>();
         for (Edge edge : edges) {
             breakingLine.add(edge.getDrivewayBreaking());
             drivewayPolygon.add(edge.getDrivewayOuter());
-            passableSlopePart.add(edge.getDrivewayOuterSlope());
         }
         for (int i = edges.size() - 1; i >= 0; i--) {
             Edge edge = edges.get(i);
             drivewayPolygon.add(edge.getDrivewayBreaking());
-            passableSlopePart.add(edge.getDrivewayOuter());
         }
         innerPolygon = new Polygon2D(drivewayPolygon);
-        passableSlopePolygon = new Polygon2D(passableSlopePart);
     }
 
     private void calculateAdditionalStart(List<TerrainSlopeCorner> input) {
@@ -163,10 +158,6 @@ public class Driveway {
 
     public boolean isInside(DecimalPosition position) {
         return innerPolygon.isInside(position);
-    }
-
-    public boolean isInsidePassableSlopePolygon(Rectangle2D rect) {
-        return passableSlopePolygon.isOneCornerInside(rect.toCorners());
     }
 
     public List<DecimalPosition> setupPiercingLine(Rectangle2D terrainRect, boolean ground) {

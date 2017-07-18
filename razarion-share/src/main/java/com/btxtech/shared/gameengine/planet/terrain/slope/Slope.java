@@ -12,6 +12,7 @@ import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -36,6 +37,7 @@ public class Slope {
     private Collection<Slope> children;
     private Set<DecimalPosition> innerDriveway = new HashSet<>();
     private Map<DecimalPosition, DecimalPosition> outerDriveway = new HashMap<>();
+    private Collection<Polygon2D> passableDrivewaySlope = new ArrayList<>();
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
@@ -182,6 +184,8 @@ public class Slope {
         DecimalPosition lastInner = null;
         DecimalPosition lastOuter = null;
 
+        List<DecimalPosition> passableDrivewayInner = null;
+        List<DecimalPosition> passableDrivewayOuter = null;
         for (VerticalSegment verticalSegment : verticalSegments) {
             SlopeNode innerNode = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), 0);
             SlopeNode outerNode = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1);
@@ -190,8 +194,24 @@ public class Slope {
             DecimalPosition outer = verticalSegment.getInner().getPointWithDistance(outerNode.getPosition().getX(), verticalSegment.getOuter(), true);
 
             if (verticalSegment.getDrivewayHeightFactor() <= 0) {
+                if (passableDrivewayInner == null) {
+                    passableDrivewayInner = new ArrayList<>();
+                    passableDrivewayOuter = new ArrayList<>();
+                }
                 innerDriveway.add(inner);
                 outerDriveway.put(outer, inner);
+                if (!passableDrivewayInner.contains(inner)) {
+                    passableDrivewayInner.add(inner);
+                }
+                if (!passableDrivewayOuter.contains(outer)) {
+                    passableDrivewayOuter.add(outer);
+                }
+            } else if (passableDrivewayInner != null) {
+                Collections.reverse(passableDrivewayOuter);
+                passableDrivewayInner.addAll(passableDrivewayOuter);
+                passableDrivewaySlope.add(new Polygon2D(passableDrivewayInner));
+                passableDrivewayInner = null;
+                passableDrivewayOuter = null;
             }
 
             if (lastInner != null) {
@@ -287,7 +307,12 @@ public class Slope {
     }
 
     public boolean isInsidePassableDriveway(Rectangle2D rect) {
-        return !(driveways == null || driveways.isEmpty()) && driveways.stream().anyMatch(driveway -> driveway.isInsidePassableSlopePolygon(rect));
+        for (Polygon2D passable : passableDrivewaySlope) {
+            if (passable.isOneCornerInside(rect.toCorners())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int getNearestInnerPolygon(DecimalPosition position) {
