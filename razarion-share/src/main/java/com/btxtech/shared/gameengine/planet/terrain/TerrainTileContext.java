@@ -197,6 +197,12 @@ public class TerrainTileContext {
     public Vertex setupVertex(int x, int y, double additionHeight) {
         double absoluteX = x * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
         double absoluteY = y * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
+        return new Vertex(absoluteX, absoluteY, additionHeight);
+    }
+
+    public Vertex setupVertexWithGroundSkeletonHeight(int x, int y, double additionHeight) {
+        double absoluteX = x * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
+        double absoluteY = y * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
         return new Vertex(absoluteX, absoluteY, groundSkeletonConfig.getHeight(x, y) + additionHeight);
     }
 
@@ -242,6 +248,6 @@ public class TerrainTileContext {
     }
 
     public void setTerrainNode(int x, int y, TerrainNode terrainNode) {
-        terrainTile.insertTerrainNode(x,y,terrainNode);
+        terrainTile.insertTerrainNode(x, y, terrainNode);
     }
 }

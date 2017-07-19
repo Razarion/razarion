@@ -88,10 +88,10 @@ public class TerrainTileFactory {
         int rightXNode = xNode + 1;
         int topYNode = yNode + 1;
 
-        Vertex vertexBL = terrainTileContext.setupVertex(xNode, yNode, groundHeight);
-        Vertex vertexBR = terrainTileContext.setupVertex(rightXNode, yNode, groundHeight);
-        Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, groundHeight);
-        Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, groundHeight);
+        Vertex vertexBL = terrainTileContext.setupVertexWithGroundSkeletonHeight(xNode, yNode, groundHeight);
+        Vertex vertexBR = terrainTileContext.setupVertexWithGroundSkeletonHeight(rightXNode, yNode, groundHeight);
+        Vertex vertexTR = terrainTileContext.setupVertexWithGroundSkeletonHeight(rightXNode, topYNode, groundHeight);
+        Vertex vertexTL = terrainTileContext.setupVertexWithGroundSkeletonHeight(xNode, topYNode, groundHeight);
 
         Vertex normBL = terrainTileContext.setupNorm(xNode, yNode);
         Vertex normBR = terrainTileContext.setupNorm(rightXNode, yNode);
