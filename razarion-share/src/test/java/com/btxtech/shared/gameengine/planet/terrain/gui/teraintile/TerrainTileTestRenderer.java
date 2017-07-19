@@ -190,7 +190,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
 //            getGc().setFill(new Color(1, 0, 0, 0.5));
 //            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //        }
-        drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
+//        drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
     }
 
     private void drawSubNodes(TerrainSubNode[][] terrainSubNodes, DecimalPosition absolutePosition, int depth) {

@@ -20,9 +20,9 @@ import java.util.List;
 public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
     @Test
     public void testEdge() {
-        Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
-                createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
-                createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
+        Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(103, 40, null),
+                createTerrainSlopeCorner(103, 60, 1), createTerrainSlopeCorner(103, 90, 1), // driveway
+                createTerrainSlopeCorner(103, 110, null), createTerrainSlopeCorner(50, 110, null));
         // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
         TerrainTileTestDisplay.show(terrainTiles);
         TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testDrivewayEdge1.json");
@@ -72,11 +72,11 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0}
+                {5, 5, 5, 5},
+                {5, 5, 5, 5},
+                {5, 5, 5, 5},
+                {5, 5, 5, 5},
+                {5, 5, 5, 5}
         };
         double[][] splattings = new double[][]{
                 {0.7, 0.8, 0.9},

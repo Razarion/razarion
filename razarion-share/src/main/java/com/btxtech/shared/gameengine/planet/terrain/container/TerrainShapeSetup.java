@@ -461,9 +461,9 @@ public class TerrainShapeSetup {
             if (driveway != null) {
                 height = driveway.getInterpolateDrivewayHeight(position);
             } else {
-                height = groundHeight;
+                height = groundHeight + terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY());
             }
-            return new Vertex(position, terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY()) + height);
+            return new Vertex(position, height);
         }
     }
 

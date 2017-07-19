@@ -13,12 +13,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 06.06.2017.
  */
 public class Driveway {
+    private static Logger logger = Logger.getLogger(Driveway.class.getName());
     private Slope slope;
     private DecimalPosition startSlopePosition;
     private int startSlopeIndex;
@@ -129,23 +131,25 @@ public class Driveway {
     }
 
     public double getInterpolateDrivewayHeight(DecimalPosition position) {
-        return getInterpolateDrivewayHeightFactor(position) * slope.getHeight();
-    }
-
-    private double getInterpolateDrivewayHeightFactor(DecimalPosition position) {
-        double min = Double.MAX_VALUE;
-        Edge bestFit = null;
-        for (Edge edge : edges) {
-            double distance = edge.shortedDistance(position);
-            if (distance < min) {
-                min = distance;
-                bestFit = edge;
+        double breakingLineDistance = Double.MAX_VALUE;
+        double outerLineDistance = Double.MAX_VALUE;
+        for (int i = 0; i < edges.size(); i++) {
+            Edge current = edges.get(i);
+            Edge next = CollectionUtils.getCorrectedElement(i + 1, edges);
+            Line breakingLine = new Line(current.getDrivewayBreaking(), next.getDrivewayBreaking());
+            double currentBreakingLineDistance = breakingLine.getNearestPointOnLine(position).getDistance(position);
+            if(breakingLineDistance > currentBreakingLineDistance) {
+                breakingLineDistance = currentBreakingLineDistance;
+            }
+            Line outerLine = new Line(current.getDrivewayOuter(), next.getDrivewayOuter());
+            double currentOuterLineDistance = outerLine.getNearestPointOnLine(position).getDistance(position);
+            if(outerLineDistance > currentOuterLineDistance) {
+                outerLineDistance = currentOuterLineDistance;
             }
         }
-        if (bestFit == null) {
-            throw new IllegalStateException("Driveway.getInterpolateDrivewayHeightFactor() No best fit found for position: " + position);
-        }
-        return bestFit.getInterpolateDrivewayHeightFactor(position);
+
+        double total = breakingLineDistance + outerLineDistance;
+        return outerLineDistance / total * slope.getHeight();
     }
 
     public boolean isInside(Collection<DecimalPosition> positions) {
@@ -161,11 +165,8 @@ public class Driveway {
     }
 
     public List<DecimalPosition> setupPiercingLine(Rectangle2D terrainRect, boolean ground) {
-        if (terrainRect.getStart().equals(new DecimalPosition(112, 56))) {
-            System.out.println("ok");
-        }
         if (terrainRect.contains(breakingLine.get(0)) && terrainRect.contains(breakingLine.get(breakingLine.size() - 1))) {
-            System.out.println("Driveway.setupPiercingLine() driveway too small, start and end are in the same node");
+            logger.warning("Driveway.setupPiercingLine() driveway too small, start and end are in the same node");
             return null;
         }
         if (terrainRect.contains(breakingLine.get(0))) {
@@ -257,20 +258,6 @@ public class Driveway {
         drivewayHeights[2] = getInterpolateDrivewayHeight(corners.get(2)) + slope.getGroundHeight();
         drivewayHeights[3] = getInterpolateDrivewayHeight(corners.get(3)) + slope.getGroundHeight();
         return drivewayHeights;
-    }
-
-    public boolean isDrivewayPosition(DecimalPosition position) {
-        return edges.get(0).isOuterOrOuterSlope(position) || edges.get(edges.size() - 1).isOuterOrOuterSlope(position);
-    }
-
-    public DecimalPosition getOuter4SlopeOuter(DecimalPosition outer) {
-        if (edges.get(0).getDrivewayOuterSlope().equals(outer)) {
-            return edges.get(0).getDrivewayOuter();
-        }
-        if (edges.get(edges.size() - 1).getDrivewayOuterSlope().equals(outer)) {
-            return edges.get(edges.size() - 1).getDrivewayOuter();
-        }
-        throw new IllegalArgumentException("Driveway.getOuter4SlopeOuter() outer: " + outer);
     }
 
     public static class Edge {
