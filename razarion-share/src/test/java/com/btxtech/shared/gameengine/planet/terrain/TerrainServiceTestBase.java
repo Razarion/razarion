@@ -52,7 +52,7 @@ public class TerrainServiceTestBase {
         groundSkeletonConfig.setSplattingYCount(splattings.length);
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
         List<DrivewayConfig> drivewayConfigs =  new ArrayList<>();
-        drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(60)));
+        drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(20)));
         staticGameConfig.setDrivewayConfigs(drivewayConfigs);
         terrainTypeService.init(staticGameConfig);
     }

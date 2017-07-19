@@ -32,7 +32,7 @@ public class PathingNodeWrapper {
         } else if (terrainShapeTile != null && terrainShapeNode == null && terrainShapeSubNode == null) {
             return terrainShapeTile.isLand();
         } else if (terrainShapeTile == null && terrainShapeNode != null && terrainShapeSubNode == null) {
-            return terrainShapeNode.isFullLand();
+            return terrainShapeNode.isFullLand() || terrainShapeNode.isFullDriveway();
         } else if (terrainShapeTile == null && terrainShapeNode == null) {
             return terrainShapeSubNode.isLand();
         } else {

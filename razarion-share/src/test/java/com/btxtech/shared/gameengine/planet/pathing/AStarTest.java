@@ -122,7 +122,7 @@ public class AStarTest extends TerrainServiceTestBase {
         if (!destinationNode.isFree()) {
             throw new IllegalArgumentException("Destination start tile is not free: " + destination);
         }
-        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 1), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope);
         try {
             aStar.expandAllNodes();
