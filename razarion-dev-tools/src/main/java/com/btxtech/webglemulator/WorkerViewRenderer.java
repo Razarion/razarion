@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
  * 28.12.2016.
  */
 public class WorkerViewRenderer extends Abstract2dRenderer {
-    private static final DecimalPosition FROM = new DecimalPosition(120, 200);
-    private static final double LENGTH = 100;
+    private static final DecimalPosition FROM = new DecimalPosition(50, 100);
+    private static final double LENGTH = 200;
     // private static final DecimalPosition FROM = new DecimalPosition(208, 148);
     // private static final double LENGTH = 4;
     private static final double LINE_WIDTH = 0.1;
