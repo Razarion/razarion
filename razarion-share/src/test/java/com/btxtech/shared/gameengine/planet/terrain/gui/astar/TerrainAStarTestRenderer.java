@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.gui.astar;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.pathing.AStar;
@@ -74,9 +75,16 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
         Map<PathingNodeWrapper, AStarNode> closedList = (Map<PathingNodeWrapper, AStarNode>) SimpleTestEnvironment.readField("closedList", aStar);
         for (Map.Entry<PathingNodeWrapper, AStarNode> entry : closedList.entrySet()) {
             PathingNodeWrapper pathingNodeWrapper = entry.getKey();
-            getGc().setFill(new Color(0, 1, 1, 0.3));
-            Index start = pathingNodeWrapper.getSubNodeIndex();
-            getGc().fillRect(start.getX(), start.getY(), TerrainUtil.MIN_SUB_NODE_LENGTH - 0.1, TerrainUtil.MIN_SUB_NODE_LENGTH - 0.1);
+            if(pathingNodeWrapper.getNodeIndex() != null) {
+                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(pathingNodeWrapper.getNodeIndex());
+                getGc().setFill(new Color(0, 1, 1, 0.3));
+                getGc().fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
+            }
+            if(pathingNodeWrapper.getTerrainShapeSubNode() != null) {
+                double length = TerrainUtil.calculateSubNodeLength(pathingNodeWrapper.getTerrainShapeSubNode().getDepth());
+                getGc().setFill(new Color(1, 0, 1, 0.3));
+                getGc().fillRect(pathingNodeWrapper.getSubNodePosition().getX(), pathingNodeWrapper.getSubNodePosition().getY(), length - 0.1, length - 0.1);
+            }
         }
     }
 

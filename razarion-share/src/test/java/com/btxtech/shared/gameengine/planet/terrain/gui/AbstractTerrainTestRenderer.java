@@ -1,12 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,7 +18,7 @@ import java.util.List;
 public abstract class AbstractTerrainTestRenderer {
     protected static final double LINE_WIDTH = 0.1;
     protected static final int GRID_SPACING_100 = 100;
-    protected static final int GRID_SPACING_20 = 20;
+    protected static final int GRID_SPACING_08 = 8;
     private Canvas canvas;
     private GraphicsContext gc;
     private double scale;
@@ -96,7 +91,7 @@ public abstract class AbstractTerrainTestRenderer {
 
     private void drawGrid(GraphicsContext gc, double canvasWidth, double canvasHeight) {
         drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_100 * scale), Color.GRAY);
-        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_20 * scale), Color.LIGHTGRAY);
+        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_08 * scale), Color.LIGHTGRAY);
 
         gc.setStroke(Color.BLACK);
         gc.strokeLine(shift.getX() * scale + canvasWidth / 2.0, 0, shift.getX() * scale + canvasWidth / 2.0, canvasHeight);

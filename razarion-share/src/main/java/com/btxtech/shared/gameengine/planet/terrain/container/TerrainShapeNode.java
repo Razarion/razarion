@@ -8,7 +8,6 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
@@ -30,10 +29,16 @@ public class TerrainShapeNode {
          * Iterates through all sub nodes
          *
          * @param terrainShapeSubNode sub node
-         * @param relativeOffset absolute offset from the node bottom left
-         * @param depth depth 0 is the top most
+         * @param relativeOffset      absolute offset from the node bottom left
+         * @param depth               depth 0 is the top most
          */
         void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition relativeOffset, int depth);
+    }
+
+    public interface DirectionConsumer {
+        void onTerrainShapeNode(TerrainShapeNode terrainShapeNode);
+
+        void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition subNodePosition);
     }
 
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());
@@ -267,5 +272,33 @@ public class TerrainShapeNode {
 
     public boolean istDrivewayBreakingLine() {
         return drivewayBreakingLine != null && drivewayBreakingLine;
+    }
+
+    public void outerDirectionCallback(Index outerDirection, DecimalPosition nodePosition, DirectionConsumer directionConsumer) {
+        if (!hasSubNodes()) {
+            directionConsumer.onTerrainShapeNode(this);
+        } else if (outerDirection.getX() > 0) {
+            // Access from west
+            double length = TerrainUtil.calculateSubNodeLength(0);
+            terrainShapeSubNodes[0].outerDirectionCallback(outerDirection, nodePosition, directionConsumer);
+            terrainShapeSubNodes[3].outerDirectionCallback(outerDirection, nodePosition.add(0, length), directionConsumer);
+        } else if (outerDirection.getX() < 0) {
+            // Access from east
+            double length = TerrainUtil.calculateSubNodeLength(0);
+            terrainShapeSubNodes[1].outerDirectionCallback(outerDirection, nodePosition.add(length, 0), directionConsumer);
+            terrainShapeSubNodes[2].outerDirectionCallback(outerDirection, nodePosition.add(length, length), directionConsumer);
+        } else if (outerDirection.getY() > 0) {
+            // Access from south
+            double length = TerrainUtil.calculateSubNodeLength(0);
+            terrainShapeSubNodes[0].outerDirectionCallback(outerDirection, nodePosition, directionConsumer);
+            terrainShapeSubNodes[1].outerDirectionCallback(outerDirection, nodePosition.add(length, 0),directionConsumer);
+        } else if (outerDirection.getY() < 0) {
+            // Access from north
+            double length = TerrainUtil.calculateSubNodeLength(0);
+            terrainShapeSubNodes[2].outerDirectionCallback(outerDirection, nodePosition.add(length, length),directionConsumer);
+            terrainShapeSubNodes[3].outerDirectionCallback(outerDirection, nodePosition.add(0, length), directionConsumer);
+        } else {
+            throw new IllegalArgumentException("TerrainShapeNode.outerDirectionCallback() outerDirection: " + outerDirection);
+        }
     }
 }

@@ -124,4 +124,9 @@ public interface TerrainUtil {
     static Index smallestSubNodeToNode(Index subNodeIndex) {
         return subNodeIndex.scaleInverse(TERRAIN_NODE_ABSOLUTE_LENGTH);
     }
+
+    static DecimalPosition toSubNodeAbsolute(DecimalPosition terrainAbsolute, int depth) {
+        double length = calculateSubNodeLength(depth);
+        return terrainAbsolute.divide(length).toIndexFloor().multiply(length);
+    }
 }
