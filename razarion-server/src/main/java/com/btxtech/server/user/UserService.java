@@ -93,11 +93,11 @@ public class UserService {
     private UserContext createUnregisteredUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        if(filePropertiesService.isDeveloperMode()) {
-            userContext.setLevelId(DEBUG_LEVEL_ID);
-        } else {
+//        if(filePropertiesService.isDeveloperMode()) {
+//            userContext.setLevelId(DEBUG_LEVEL_ID);
+//        } else {
             userContext.setLevelId(levelPersistence.getStarterLevel().getId());
-        }
+//        }
         userContext.setName("Unregistered User");
         return userContext;
     }

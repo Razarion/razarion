@@ -14,6 +14,7 @@ import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
@@ -23,7 +24,6 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.system.JsInteropObjectFactory;
-import com.btxtech.shared.utils.MathHelper;
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class TerrainServiceTestBase {
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;
     private TerrainService terrainService;
 
-    protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs) {
+    protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs) {
         terrainTypeService = new TerrainTypeService();
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
@@ -51,7 +51,8 @@ public class TerrainServiceTestBase {
         groundSkeletonConfig.setSplattingXCount(splattings[0].length);
         groundSkeletonConfig.setSplattingYCount(splattings.length);
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
-        List<DrivewayConfig> drivewayConfigs =  new ArrayList<>();
+        staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
+        List<DrivewayConfig> drivewayConfigs = new ArrayList<>();
         drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(20)));
         staticGameConfig.setDrivewayConfigs(drivewayConfigs);
         terrainTypeService.init(staticGameConfig);
@@ -72,7 +73,7 @@ public class TerrainServiceTestBase {
         SimpleTestEnvironment.injectExceptionHandler(terrainTileFactory);
         SimpleTestEnvironment.injectService("terrainTileFactory", terrainService, terrainTileFactory);
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null);
 
         SimpleTestEnvironment.injectService("terrainTypeService", terrainService, terrainTypeService);
         SimpleTestEnvironment.injectService("terrainTypeService", terrainTileFactory, terrainTypeService);

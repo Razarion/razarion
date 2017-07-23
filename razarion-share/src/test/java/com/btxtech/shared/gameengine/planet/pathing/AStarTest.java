@@ -64,7 +64,7 @@ public class AStarTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null);
 
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 1, 1));

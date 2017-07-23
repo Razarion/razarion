@@ -103,7 +103,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
             } else if (obstacle instanceof ObstacleTerrainObject) {
                 ObstacleTerrainObject obstacleTerrainObject = (ObstacleTerrainObject) obstacle;
                 getGc().setStroke(Color.RED);
-                getGc().fillOval(obstacleTerrainObject.getCircle().getCenter().getX() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getCenter().getY() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius());
+                getGc().strokeOval(obstacleTerrainObject.getCircle().getCenter().getX() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getCenter().getY() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius());
             } else {
                 throw new IllegalArgumentException("Unknown: " + obstacle);
             }

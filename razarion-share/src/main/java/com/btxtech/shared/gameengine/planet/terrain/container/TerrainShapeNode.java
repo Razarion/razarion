@@ -165,8 +165,14 @@ public class TerrainShapeNode {
         return terrainShapeSubNodes;
     }
 
-    public void setTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
-        this.terrainShapeSubNodes = terrainShapeSubNodes;
+    public void mergeTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
+        if(this.terrainShapeSubNodes == null) {
+            this.terrainShapeSubNodes = terrainShapeSubNodes;
+            return;
+        }
+        for (int i = 0; i < this.terrainShapeSubNodes.length; i++) {
+            this.terrainShapeSubNodes[i].merge(terrainShapeSubNodes[i]);
+        }
     }
 
     public void iterateOverTerrainSubNodes(TerrainShapeSubNodeConsumer terrainShapeSubNodeConsumer) {

@@ -69,12 +69,25 @@ public class Circle2D {
     }
 
     public boolean intersects(Rectangle2D rectangle2D) {
-        if(rectangle2D.contains(center)) {
+        if (rectangle2D.contains(center)) {
             return true;
         }
         DecimalPosition nearestPointOnRect = rectangle2D.getNearestPoint(center);
 
         return nearestPointOnRect.getDistance(center) <= radius;
+    }
+
+    public boolean inside(DecimalPosition position) {
+        return position.getDistance(center) < radius;
+    }
+
+    public boolean inside(Rectangle2D rectangle) {
+        for (DecimalPosition corner : rectangle.toCorners()) {
+            if (!inside(corner)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

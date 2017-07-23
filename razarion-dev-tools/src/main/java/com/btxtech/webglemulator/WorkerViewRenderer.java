@@ -36,8 +36,8 @@ import java.util.stream.Collectors;
  * 28.12.2016.
  */
 public class WorkerViewRenderer extends Abstract2dRenderer {
-    private static final DecimalPosition FROM = new DecimalPosition(50, 100);
-    private static final double LENGTH = 200;
+    private static final DecimalPosition FROM = new DecimalPosition(0, 0);
+    private static final double LENGTH = 400;
     // private static final DecimalPosition FROM = new DecimalPosition(208, 148);
     // private static final double LENGTH = 4;
     private static final double LINE_WIDTH = 0.1;
@@ -115,6 +115,9 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
                 double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
                 boolean free = terrainService.getPathingAccess().isTerrainFree(samplePosition);
                 double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
+                if (v < 0) {
+                    v = 0;
+                }
                 egc.getGc().setFill(new Color(v, v, v, 1));
                 egc.getGc().fillRect(x, y, 1, 1);
                 if (free) {

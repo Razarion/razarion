@@ -209,4 +209,20 @@ public class TerrainShapeSubNode {
         }
 
     }
+
+    public void merge(TerrainShapeSubNode terrainShapeSubNode) {
+        if (isLand()) {
+            land = terrainShapeSubNode.land;
+        }
+        height = Math.min(height, terrainShapeSubNode.height);
+        if (terrainShapeSubNodes == null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+            terrainShapeSubNodes = terrainShapeSubNode.getTerrainShapeSubNodes();
+            return;
+        } else if (terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
+            return;
+        } else  if(terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() != null)
+        for (int i = 0; i < terrainShapeSubNodes.length; i++) {
+            terrainShapeSubNodes[i].merge(terrainShapeSubNode.getTerrainShapeSubNodes()[i]);
+        }
+    }
 }

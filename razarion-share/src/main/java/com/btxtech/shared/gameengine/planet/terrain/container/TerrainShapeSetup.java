@@ -51,10 +51,14 @@ public class TerrainShapeSetup {
         long time = System.currentTimeMillis();
         for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
-            ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius()));
+            Circle2D terrainObjectArea = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius());
+            ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectArea);
             for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
                 TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                 terrainShapeNode.addObstacle(obstacleTerrainObject);
+                if (!terrainShapeNode.isFullWater() && !terrainShapeNode.isHiddenUnderSlope()) {
+                    fillTerrainObjectSubNodes(terrainShapeNode, nodeIndex, terrainObjectArea);
+                }
             }
         }
         logger.severe("Generate Terrain Objects: " + (System.currentTimeMillis() - time));
@@ -671,7 +675,7 @@ public class TerrainShapeSetup {
                 return true;
             }
         });
-        terrainShapeNode.setTerrainShapeSubNodes(terrainShapeSubNodes);
+        terrainShapeNode.mergeTerrainShapeSubNodes(terrainShapeSubNodes);
     }
 
     private void fillSlopeBreakingLineSubNodes(Slope slope, List<Vertex> groundVertexPolygon, Driveway driveway, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight) {
@@ -693,7 +697,7 @@ public class TerrainShapeSetup {
                 return true;
             }
         });
-        terrainShapeNode.setTerrainShapeSubNodes(terrainShapeSubNodes);
+        terrainShapeNode.mergeTerrainShapeSubNodes(terrainShapeSubNodes);
     }
 
     private TerrainShapeSubNode[] quartering(int depth, Rectangle2D terrainRect, BiFunction<Rectangle2D, TerrainShapeSubNode, Boolean> subNodeHandler) {
@@ -726,6 +730,22 @@ public class TerrainShapeSetup {
         }
 
         return new TerrainShapeSubNode[]{bottomLeftSubNode, bottomRightSubNode, topRightSubNode, topLeftSubNode};
+    }
+
+    private void fillTerrainObjectSubNodes(TerrainShapeNode terrainShapeNode, Index nodeIndex, Circle2D terrainObjectArea) {
+        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
+            if (terrainObjectArea.inside(rectangle2D)) {
+                return false;
+            } else if (terrainObjectArea.intersects(rectangle2D)) {
+                return true;
+            } else {
+                terrainShapeSubNode.setLand();
+                return false;
+            }
+        });
+        // Megre with existing sub nodes from slope
+        terrainShapeNode.mergeTerrainShapeSubNodes(terrainShapeSubNodes);
     }
 
 }

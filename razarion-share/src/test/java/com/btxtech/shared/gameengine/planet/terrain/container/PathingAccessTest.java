@@ -59,7 +59,7 @@ public class PathingAccessTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null);
         setupTerrainService(heights, splattings, slopeSkeletonConfigs, terrainSlopePositions);
     }
 

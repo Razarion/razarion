@@ -187,7 +187,7 @@ public class PathingNodeWrapper {
 
     private Consumer<PathingNodeWrapper> checkScopeAdapter(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
         return pathingNodeWrapper -> {
-            if (pathingNodeWrapper.getTerrainShapeSubNode() != null && pathingNodeWrapper.getTerrainShapeSubNode().getDepth() >= TerrainUtil.MAX_DEPTH) {
+            if (pathingNodeWrapper.getTerrainShapeSubNode() != null) {
                 for (Index index : subNodeIndexScope) {
                     if (!pathingAccess.isTerrainFree(pathingNodeWrapper.getSubNodePosition().add(index.getX(), index.getY()))) {
                         return;
