@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.persistence.AttributeOverride;
@@ -42,10 +41,10 @@ public class PlanetEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "planet")
     private List<TerrainSlopePositionEntity> terrainSlopePositionEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, name = "planet")
     private List<TerrainObjectPositionEntity> terrainObjectPositionEntities;
     @AttributeOverrides({
             @AttributeOverride(name = "start.x", column = @Column(name = "groundMeshDimensionStartX")),
