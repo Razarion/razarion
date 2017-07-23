@@ -61,22 +61,22 @@ public class PathingNodeWrapper {
     }
 
     public void provideNorthSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
-        provideSuccessors(new Index(0, 1), northNodeHandler, subNodeIndexScope);
+        provideSuccessors(new Index(0, 1), checkScopeAdapter(subNodeIndexScope, northNodeHandler));
     }
 
     public void provideEastSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> eastNodeHandler) {
-        provideSuccessors(new Index(1, 0), eastNodeHandler, subNodeIndexScope);
+        provideSuccessors(new Index(1, 0), checkScopeAdapter(subNodeIndexScope, eastNodeHandler));
     }
 
     public void provideSouthSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> southNodeHandler) {
-        provideSuccessors(new Index(0, -1), southNodeHandler, subNodeIndexScope);
+        provideSuccessors(new Index(0, -1), checkScopeAdapter(subNodeIndexScope, southNodeHandler));
     }
 
     public void provideWestSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> westNodeHandler) {
-        provideSuccessors(new Index(-1, 0), westNodeHandler, subNodeIndexScope);
+        provideSuccessors(new Index(-1, 0), checkScopeAdapter(subNodeIndexScope, westNodeHandler));
     }
 
-    private void provideSuccessors(Index direction, Consumer<PathingNodeWrapper> northNodeHandler, List<Index> scope) {
+    private void provideSuccessors(Index direction, Consumer<PathingNodeWrapper> northNodeHandler) {
         if (nodeIndex != null && terrainShapeSubNode == null) {
             Index neighborNodeIndex = nodeIndex.add(direction);
             if (!pathingAccess.isNodeInBoundary(neighborNodeIndex)) {
@@ -183,6 +183,21 @@ public class PathingNodeWrapper {
 
     public DecimalPosition getSubNodePosition() {
         return subNodePosition;
+    }
+
+    private Consumer<PathingNodeWrapper> checkScopeAdapter(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
+        return pathingNodeWrapper -> {
+            if (pathingNodeWrapper.getTerrainShapeSubNode() != null && pathingNodeWrapper.getTerrainShapeSubNode().getDepth() >= TerrainUtil.MAX_DEPTH) {
+                for (Index index : subNodeIndexScope) {
+                    if (!pathingAccess.isTerrainFree(pathingNodeWrapper.getSubNodePosition().add(index.getX(), index.getY()))) {
+                        return;
+                    }
+                }
+                northNodeHandler.accept(pathingNodeWrapper);
+            } else {
+                northNodeHandler.accept(pathingNodeWrapper);
+            }
+        };
     }
 
     @Override
