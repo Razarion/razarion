@@ -57,8 +57,19 @@ public class SurfaceAccess {
             }
 
             @Override
-            public Double inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return terrainShapeSubNode.getHeight();
+            public Double inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+                if (terrainShapeSubNode.getHeight() != null) {
+                    return terrainShapeSubNode.getHeight();
+                } else {
+                    if(terrainShapeNode.isFullDriveway()) {
+                        DecimalPosition relative = TerrainUtil.toNodeAbsolute(absolutePosition.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(TerrainUtil.toTileAbsolute(tileIndex))));
+                        return InterpolationUtils.rectangleInterpolate(relative, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
+                    } else if(terrainShapeNode.isHiddenUnderSlope()) {
+                        return terrainShapeNode.getUniformGroundHeight();
+                    } else {
+                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getUniformGroundHeight();
+                    }
+                }
             }
         });
     }
@@ -93,7 +104,7 @@ public class SurfaceAccess {
             }
 
             @Override
-            public Vertex inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+            public Vertex inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
                 return terrainShapeSubNode.getNorm();
             }
         });

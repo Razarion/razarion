@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
+import com.btxtech.shared.utils.InterpolationUtils;
 import javafx.scene.paint.Color;
 
 import java.lang.reflect.Field;
@@ -26,6 +27,8 @@ import java.util.List;
  * on 30.06.2017.
  */
 public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
+    private static final DecimalPosition FROM = new DecimalPosition(0, 0);
+    private static final double LENGTH = 160;
     private TerrainShape actual;
     private TerrainShapeTile[][] terrainShapeTiles;
 
@@ -43,6 +46,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
 
     @Override
     protected void doRender() {
+        renderPathingAccess();
         for (int x = 0; x < actual.getTileXCount(); x++) {
             for (int y = 0; y < actual.getTileYCount(); y++) {
                 displayTerrainShapeTile(new Index(x, y).add(actual.getTileOffset()), terrainShapeTiles[x][y]);
@@ -136,16 +140,18 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
     private void displaySubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
         if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
-            if (terrainShapeSubNode.isLand()) {
-                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
-                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-            } else {
-                getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
-                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-            }
-//            double v = terrainShapeSubNode.getHeight() / 20.0;
-//            getGc().setFill(new Color(v, v, v, 1f));
-//            getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+//            if (terrainShapeSubNode.isLand()) {
+//                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
+//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+//            } else {
+//                getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
+//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+//            }
+//            if (terrainShapeSubNode.getHeight() != null) {
+//                double v = terrainShapeSubNode.getHeight() / 20.0;
+//                getGc().setFill(new Color(v, v, v, 1f));
+//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+//            }
         }
         getGc().setStroke(Color.BLUEVIOLET);
         getGc().setLineWidth(LINE_WIDTH);
@@ -168,4 +174,40 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
             strokeLine(outer, LINE_WIDTH, Color.AQUA, true);
         }
     }
+
+
+    private void renderPathingAccess() {
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (double x = FROM.getX(); x < FROM.getX() + LENGTH; x++) {
+            for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
+                double z = actual.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(x + 0.5, y + 0.5));
+                if (z > max) {
+                    max = z;
+                }
+                if (z < min) {
+                    min = z;
+                }
+            }
+        }
+
+        for (double x = FROM.getX(); x < FROM.getX() + LENGTH; x++) {
+            for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
+                DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
+                double z = actual.getSurfaceAccess().getInterpolatedZ(samplePosition);
+                boolean free = actual.getPathingAccess().isTerrainFree(samplePosition);
+                double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
+                getGc().setFill(new Color(v, v, v, 1));
+                getGc().fillRect(x, y, 1, 1);
+                if (free) {
+                    getGc().setFill(Color.GREEN);
+                } else {
+                    getGc().setFill(Color.RED);
+                }
+                getGc().fillRect(x, y, 0.6, 0.6);
+            }
+        }
+    }
+
+
 }

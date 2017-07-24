@@ -37,7 +37,7 @@ public class Triangle2d {
         double c = point.cross(pointA, pointB) / 2.0;
 
         if (a < 0.0 || b < 0.0 || c < 0.0) {
-            throw new IllegalArgumentException("Triangle is wrong, area becomes negative. A: " + pointA + " B: " + pointB + " C: " + pointC);
+            throw new IllegalArgumentException("Triangle is wrong, area becomes negative. Point: " + point + " A: " + pointA + " B: " + pointB + " C: " + pointC);
         }
 
         double total = a + b + c;

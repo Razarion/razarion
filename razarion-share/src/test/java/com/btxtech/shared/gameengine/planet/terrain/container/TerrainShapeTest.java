@@ -80,9 +80,9 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
 
     @Test
     public void testSlopeDriveway() {
-        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, null, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
-                createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
-                createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
+        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, null, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(80, 40, null),
+                createTerrainSlopeCorner(80, 60, 1), createTerrainSlopeCorner(80, 90, 1), // driveway
+                createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
         Assert.fail("TODO assert");
     }
@@ -98,11 +98,16 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
     public void testTerrainObject() {
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
                 new TerrainObjectPosition().setTerrainObjectId(1).setPosition(new DecimalPosition(10, 10)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(16, 40)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(21, 32)),
                 new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(135, 130)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(44, 30))
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(44, 27.5)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(72, 88)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(20, 60)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(92, 64))
         );
-        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.WATER, terrainObjectPositions, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
+        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, terrainObjectPositions, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(80, 40, null),
+                createTerrainSlopeCorner(80, 60, 1), createTerrainSlopeCorner(80, 90, 1), // driveway
+                createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
         Assert.fail("TODO assert");
     }

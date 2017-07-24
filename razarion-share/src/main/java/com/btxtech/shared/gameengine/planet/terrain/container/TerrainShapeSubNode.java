@@ -11,28 +11,41 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTer
  * on 20.06.2017.
  */
 public class TerrainShapeSubNode {
-    private Boolean land;
-    private double height;
+    private Boolean notLand;
+    private Double height;
     private int depth;
+    private TerrainShapeSubNode parent;
     private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
 
-    public TerrainShapeSubNode(int depth) {
+    public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth) {
+        this.parent = parent;
         this.depth = depth;
     }
 
-    public TerrainShapeSubNode(int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
+    public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
+        this.parent = parent;
         this.depth = depth;
-        land = nativeTerrainShapeSubNode.land;
+        notLand = nativeTerrainShapeSubNode.notLand;
         height = nativeTerrainShapeSubNode.height;
-        terrainShapeSubNodes = fromNativeTerrainShapeSubNode(depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
+        terrainShapeSubNodes = fromNativeTerrainShapeSubNode(this, depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
     }
 
     public void setHeight(double height) {
         this.height = height;
     }
 
-    public double getHeight() {
-        return height;
+    public Double getHeight() {
+        return getHeightRecursively();
+    }
+
+    private Double getHeightRecursively() {
+        if(height != null) {
+            return height;
+        }
+        if(parent != null) {
+            return parent.getHeightRecursively();
+        }
+        return null;
     }
 
     public Vertex getNorm() {
@@ -40,11 +53,22 @@ public class TerrainShapeSubNode {
     }
 
     public boolean isLand() {
-        return land != null && land;
+        Boolean notLand = isNotLandRecursively();
+        return notLand == null || !notLand;
     }
 
-    public void setLand() {
-        land = true;
+    private Boolean isNotLandRecursively() {
+        if(notLand != null && notLand) {
+            return true;
+        }
+        if(parent != null) {
+            return parent.isNotLandRecursively();
+        }
+        return null;
+    }
+
+    public void setNoLand() {
+        notLand = true;
     }
 
     public TerrainShapeSubNode[] getTerrainShapeSubNodes() {
@@ -57,7 +81,7 @@ public class TerrainShapeSubNode {
 
     public NativeTerrainShapeSubNode toNativeTerrainShapeSubNode() {
         NativeTerrainShapeSubNode nativeTerrainShapeSubNode = new NativeTerrainShapeSubNode();
-        nativeTerrainShapeSubNode.land = land;
+        nativeTerrainShapeSubNode.notLand = notLand;
         nativeTerrainShapeSubNode.height = height;
         nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes = toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         return nativeTerrainShapeSubNode;
@@ -99,7 +123,7 @@ public class TerrainShapeSubNode {
         return nativeTerrainShapeSubNodes;
     }
 
-    public static TerrainShapeSubNode[] fromNativeTerrainShapeSubNode(int depth, NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes) {
+    public static TerrainShapeSubNode[] fromNativeTerrainShapeSubNode(TerrainShapeSubNode parent, int depth, NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes) {
         if (nativeTerrainShapeSubNodes == null) {
             return null;
         }
@@ -107,7 +131,7 @@ public class TerrainShapeSubNode {
         for (int i = 0; i < nativeTerrainShapeSubNodes.length; i++) {
             NativeTerrainShapeSubNode nativeTerrainShapeSubNode = nativeTerrainShapeSubNodes[i];
             if (nativeTerrainShapeSubNode != null) {
-                terrainShapeSubNodes[i] = new TerrainShapeSubNode(depth, nativeTerrainShapeSubNode);
+                terrainShapeSubNodes[i] = new TerrainShapeSubNode(parent, depth, nativeTerrainShapeSubNode);
             }
         }
         return terrainShapeSubNodes;
@@ -211,18 +235,39 @@ public class TerrainShapeSubNode {
     }
 
     public void merge(TerrainShapeSubNode terrainShapeSubNode) {
-        if (isLand()) {
-            land = terrainShapeSubNode.land;
+        Boolean notLand = isNotLandRecursively();
+        Boolean otherNotLand = terrainShapeSubNode.isNotLandRecursively();
+        if (notLand == null && otherNotLand != null) {
+            if (otherNotLand) {
+                this.notLand = true;
+            }
+        } else if (notLand != null && otherNotLand != null) {
+            if (notLand || otherNotLand) {
+                this.notLand = true;
+            } else {
+                this.notLand = null;
+            }
+        } else if (notLand != null) {
+            if (notLand) {
+                this.notLand = true;
+            } else {
+                this.notLand = null;
+            }
         }
-        height = Math.min(height, terrainShapeSubNode.height);
+
+        if (height == null && terrainShapeSubNode.height != null) {
+            height = terrainShapeSubNode.height;
+        }
+
         if (terrainShapeSubNodes == null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
             terrainShapeSubNodes = terrainShapeSubNode.getTerrainShapeSubNodes();
-            return;
-        } else if (terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
-            return;
-        } else  if(terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() != null)
-        for (int i = 0; i < terrainShapeSubNodes.length; i++) {
-            terrainShapeSubNodes[i].merge(terrainShapeSubNode.getTerrainShapeSubNodes()[i]);
+            for (TerrainShapeSubNode shapeSubNode : terrainShapeSubNodes) {
+                shapeSubNode.parent = this;
+            }
+        } else if (terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+            for (int i = 0; i < terrainShapeSubNodes.length; i++) {
+                terrainShapeSubNodes[i].merge(terrainShapeSubNode.getTerrainShapeSubNodes()[i]);
+            }
         }
     }
 }

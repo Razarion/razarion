@@ -58,7 +58,7 @@ public class PathingAccess {
             }
 
             @Override
-            public Boolean inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+            public Boolean inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
                 return terrainShapeSubNode.isLand();
             }
         });
@@ -144,7 +144,7 @@ public class PathingAccess {
             }
 
             @Override
-            public PathingNodeWrapper inSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+            public PathingNodeWrapper inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
                 return new PathingNodeWrapper(PathingAccess.this, TerrainUtil.toSubNodeAbsolute(terrainPosition, terrainShapeSubNode.getDepth()), terrainShapeSubNode);
             }
         });

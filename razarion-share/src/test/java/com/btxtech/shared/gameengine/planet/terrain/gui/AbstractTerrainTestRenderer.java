@@ -183,5 +183,4 @@ public abstract class AbstractTerrainTestRenderer {
             }
         }
     }
-
 }

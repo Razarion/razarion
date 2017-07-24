@@ -95,7 +95,7 @@ public class TerrainShapeNode {
                 waterSegments.add(waterSegment);
             }
         }
-        terrainShapeSubNodes = TerrainShapeSubNode.fromNativeTerrainShapeSubNode(0, nativeTerrainShapeNode.nativeTerrainShapeSubNodes);
+        terrainShapeSubNodes = TerrainShapeSubNode.fromNativeTerrainShapeSubNode(null, 0, nativeTerrainShapeNode.nativeTerrainShapeSubNodes);
     }
 
     public void addObstacle(Obstacle obstacle) {
@@ -166,7 +166,7 @@ public class TerrainShapeNode {
     }
 
     public void mergeTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
-        if(this.terrainShapeSubNodes == null) {
+        if (this.terrainShapeSubNodes == null) {
             this.terrainShapeSubNodes = terrainShapeSubNodes;
             return;
         }
@@ -297,11 +297,11 @@ public class TerrainShapeNode {
             // Access from south
             double length = TerrainUtil.calculateSubNodeLength(0);
             terrainShapeSubNodes[0].outerDirectionCallback(outerDirection, nodePosition, directionConsumer);
-            terrainShapeSubNodes[1].outerDirectionCallback(outerDirection, nodePosition.add(length, 0),directionConsumer);
+            terrainShapeSubNodes[1].outerDirectionCallback(outerDirection, nodePosition.add(length, 0), directionConsumer);
         } else if (outerDirection.getY() < 0) {
             // Access from north
             double length = TerrainUtil.calculateSubNodeLength(0);
-            terrainShapeSubNodes[2].outerDirectionCallback(outerDirection, nodePosition.add(length, length),directionConsumer);
+            terrainShapeSubNodes[2].outerDirectionCallback(outerDirection, nodePosition.add(length, length), directionConsumer);
             terrainShapeSubNodes[3].outerDirectionCallback(outerDirection, nodePosition.add(0, length), directionConsumer);
         } else {
             throw new IllegalArgumentException("TerrainShapeNode.outerDirectionCallback() outerDirection: " + outerDirection);

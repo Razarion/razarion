@@ -46,6 +46,7 @@ public class TerrainShape {
 
     public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
+        this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         tileOffset = planetConfig.getTerrainTileDimension().getStart();
@@ -216,7 +217,7 @@ public class TerrainShape {
         DecimalPosition nodeRelative = tileRelative.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex));
         TerrainShapeSubNode terrainShapeSubNode = terrainShapeNode.getTerrainShapeSubNode(nodeRelative);
         if (terrainShapeSubNode != null) {
-            return terrainImpactCallback.inSubNode(terrainShapeSubNode, nodeRelative, nodeRelativeIndex, tileRelative, tileIndex);
+            return terrainImpactCallback.inSubNode(terrainShapeSubNode, terrainShapeNode, nodeRelative, nodeRelativeIndex, tileRelative, tileIndex);
         } else {
             return terrainImpactCallback.inNode(terrainShapeNode, nodeRelativeIndex, tileRelative, tileIndex);
         }

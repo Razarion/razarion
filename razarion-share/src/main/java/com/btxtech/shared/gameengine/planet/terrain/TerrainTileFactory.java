@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Triangulator;
@@ -9,12 +10,14 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
+import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -264,41 +267,56 @@ public class TerrainTileFactory {
                 terrainNode.setHeight(terrainShapeNode.getUniformGroundHeight());
                 if (terrainShapeNode.hasSubNodes()) {
                     terrainNode.initTerrainSubNodeField((int) Math.sqrt(terrainShapeNode.getTerrainShapeSubNodes().length));
-                    createTerrainSubNodes(terrainShapeNode.getTerrainShapeSubNodes(), terrainNode::insertTerrainSubNode);
+                    DecimalPosition nodePosition = TerrainUtil.toNodeAbsolute(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex));
+                    createTerrainSubNodes(nodePosition, new DecimalPosition(0, 0), terrainShapeNode, terrainShapeNode.getTerrainShapeSubNodes(), terrainNode::insertTerrainSubNode);
                 }
                 terrainTileContext.setTerrainNode(nodeRelativeIndex.getX(), nodeRelativeIndex.getY(), terrainNode);
             }
         });
     }
 
-    private void createTerrainSubNodes(TerrainShapeSubNode[] children, SubNodeFeeder subNodeFeeder) {
+    private void createTerrainSubNodes(DecimalPosition parentPosition, DecimalPosition relativePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode[] children, SubNodeFeeder subNodeFeeder) {
         TerrainShapeSubNode bottomLeftShape = children[0];
         if (bottomLeftShape != null) {
-            subNodeFeeder.insertNode(0, 0, createTerrainSubNode(bottomLeftShape));
+            subNodeFeeder.insertNode(0, 0, createTerrainSubNode(parentPosition, relativePosition, terrainShapeNode, bottomLeftShape));
         }
         TerrainShapeSubNode bottomRightShape = children[1];
         if (bottomRightShape != null) {
-            subNodeFeeder.insertNode(1, 0, createTerrainSubNode(bottomRightShape));
+            double nodeLength = TerrainUtil.calculateSubNodeLength(bottomRightShape.getDepth());
+            subNodeFeeder.insertNode(1, 0, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, 0), terrainShapeNode, bottomRightShape));
         }
         TerrainShapeSubNode topRightShape = children[2];
         if (topRightShape != null) {
-            subNodeFeeder.insertNode(1, 1, createTerrainSubNode(topRightShape));
+            double nodeLength = TerrainUtil.calculateSubNodeLength(topRightShape.getDepth());
+            subNodeFeeder.insertNode(1, 1, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, nodeLength), terrainShapeNode, topRightShape));
         }
         TerrainShapeSubNode topLeftShape = children[3];
         if (topLeftShape != null) {
-            subNodeFeeder.insertNode(0, 1, createTerrainSubNode(topLeftShape));
+            double nodeLength = TerrainUtil.calculateSubNodeLength(topLeftShape.getDepth());
+            subNodeFeeder.insertNode(0, 1, createTerrainSubNode(parentPosition, relativePosition.add(0, nodeLength), terrainShapeNode, topLeftShape));
         }
     }
 
-    private TerrainSubNode createTerrainSubNode(TerrainShapeSubNode terrainShapeSubNode) {
+    private TerrainSubNode createTerrainSubNode(DecimalPosition nodePosition, DecimalPosition subNodePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode terrainShapeSubNode) {
         TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
         if (terrainShapeSubNode.isLand()) {
             terrainSubNode.setLand(true);
         }
-        terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
-        if(terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+        if (terrainShapeSubNode.getHeight() != null) {
+            terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
+        } else {
+            if (terrainShapeNode.isHiddenUnderSlope()) {
+                terrainSubNode.setHeight(terrainShapeNode.getUniformGroundHeight());
+            } else if (terrainShapeNode.isFullDriveway()) {
+                DecimalPosition normalizedOffset = subNodePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+                terrainSubNode.setHeight(InterpolationUtils.rectangleInterpolate(normalizedOffset, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL()));
+            } else {
+                terrainSubNode.setHeight(terrainShapeNode.getUniformGroundHeight() + TerrainHelper.interpolateHeightFromGroundSkeletonConfig(nodePosition.add(subNodePosition), terrainTypeService.getGroundSkeletonConfig()));
+            }
+        }
+        if (terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
             terrainSubNode.initTerrainSubNodeField(2);
-            createTerrainSubNodes(terrainShapeSubNode.getTerrainShapeSubNodes(), terrainSubNode::insertTerrainSubNode);
+            createTerrainSubNodes(nodePosition, subNodePosition, terrainShapeNode, terrainShapeSubNode.getTerrainShapeSubNodes(), terrainSubNode::insertTerrainSubNode);
         }
         return terrainSubNode;
     }

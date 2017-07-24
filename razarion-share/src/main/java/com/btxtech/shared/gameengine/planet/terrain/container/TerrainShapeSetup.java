@@ -192,10 +192,16 @@ public class TerrainShapeSetup {
                     if (innerPolygon.isInside(corners)) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
-                    } else if (outerPolygon.isInside(corners) && !innerPolygon.isOneCornerInside(corners)) {
-                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                        terrainShapeNode.setHiddenUnderSlope();
-                        terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
+                    } else if (outerPolygon.isInside(corners)) {
+                        if (innerPolygon.isOneCornerInside(corners)) {
+                            // No inner or outer slope line, no driveway, no breaking line no all corner are inside inner polygon
+                            TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                            terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
+                        } else {
+                            TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                            terrainShapeNode.setHiddenUnderSlope();
+                            terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
+                        }
                     }
                 }
             }
@@ -642,21 +648,20 @@ public class TerrainShapeSetup {
 
     private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight, boolean isOuter, Driveway fractalDriveway) {
         Polygon2D landPolygon = new Polygon2D(Vertex.toXY(landVertexPolygon));
-        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
+        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(null, 0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
             if (fractalDriveway != null && fractalDriveway.isInside(rectangle2D.toCorners())) {
-                terrainShapeSubNode.setLand();
                 terrainShapeSubNode.setHeight(fractalDriveway.getInterpolateDrivewayHeight(rectangle2D.center()));
                 return true;
             }
             if (slope.isInsidePassableDriveway(rectangle2D)) {
                 terrainShapeSubNode.setHeight(groundHeight);
-                terrainShapeSubNode.setLand();
                 return true;
             }
             int insideCornerCount = landPolygon.insideCornerCount(rectangle2D, 0.2);
             if (insideCornerCount == 0) {
                 // Full slope
                 terrainShapeSubNode.setHeight(groundHeight + slope.getHeight());
+                terrainShapeSubNode.setNoLand();
                 return false;
             } else if (insideCornerCount == 4) {
                 // Full land
@@ -667,10 +672,12 @@ public class TerrainShapeSetup {
                     height = groundHeight + slope.getHeight();
                 }
                 terrainShapeSubNode.setHeight(height);
-                terrainShapeSubNode.setLand();
                 return false;
             } else {
                 // Partial
+                if (terrainShapeSubNode.getDepth() >= TerrainUtil.MAX_DEPTH) {
+                    terrainShapeSubNode.setNoLand();
+                }
                 terrainShapeSubNode.setHeight(groundHeight + slope.getHeight());
                 return true;
             }
@@ -680,8 +687,7 @@ public class TerrainShapeSetup {
 
     private void fillSlopeBreakingLineSubNodes(Slope slope, List<Vertex> groundVertexPolygon, Driveway driveway, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight) {
         Polygon2D landPolygon = new Polygon2D(Vertex.toXY(groundVertexPolygon));
-        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
-            terrainShapeSubNode.setLand();
+        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(null, 0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
             int insideCornerCount = landPolygon.insideCornerCount(rectangle2D, 0.2);
             if (insideCornerCount == 0) {
                 // Full slope
@@ -700,33 +706,33 @@ public class TerrainShapeSetup {
         terrainShapeNode.mergeTerrainShapeSubNodes(terrainShapeSubNodes);
     }
 
-    private TerrainShapeSubNode[] quartering(int depth, Rectangle2D terrainRect, BiFunction<Rectangle2D, TerrainShapeSubNode, Boolean> subNodeHandler) {
+    private TerrainShapeSubNode[] quartering(TerrainShapeSubNode parent, int depth, Rectangle2D terrainRect, BiFunction<Rectangle2D, TerrainShapeSubNode, Boolean> subNodeHandler) {
         if (depth > TerrainUtil.MAX_DEPTH) {
             return null;
         }
 
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
 
-        TerrainShapeSubNode bottomLeftSubNode = new TerrainShapeSubNode(depth);
-        TerrainShapeSubNode bottomRightSubNode = new TerrainShapeSubNode(depth);
-        TerrainShapeSubNode topRightSubNode = new TerrainShapeSubNode(depth);
-        TerrainShapeSubNode topLeftSubNode = new TerrainShapeSubNode(depth);
+        TerrainShapeSubNode bottomLeftSubNode = new TerrainShapeSubNode(parent, depth);
+        TerrainShapeSubNode bottomRightSubNode = new TerrainShapeSubNode(parent, depth);
+        TerrainShapeSubNode topRightSubNode = new TerrainShapeSubNode(parent, depth);
+        TerrainShapeSubNode topLeftSubNode = new TerrainShapeSubNode(parent, depth);
 
         Rectangle2D bottomLeftRect = new Rectangle2D(terrainRect.startX(), terrainRect.startY(), subLength, subLength);
         if (subNodeHandler.apply(bottomLeftRect, bottomLeftSubNode)) {
-            bottomLeftSubNode.setTerrainShapeSubNodes(quartering(depth + 1, bottomLeftRect, subNodeHandler));
+            bottomLeftSubNode.setTerrainShapeSubNodes(quartering(bottomLeftSubNode, depth + 1, bottomLeftRect, subNodeHandler));
         }
         Rectangle2D bottomRightRect = new Rectangle2D(terrainRect.startX() + subLength, terrainRect.startY(), subLength, subLength);
         if (subNodeHandler.apply(bottomRightRect, bottomRightSubNode)) {
-            bottomRightSubNode.setTerrainShapeSubNodes(quartering(depth + 1, bottomRightRect, subNodeHandler));
+            bottomRightSubNode.setTerrainShapeSubNodes(quartering(bottomRightSubNode, depth + 1, bottomRightRect, subNodeHandler));
         }
         Rectangle2D topRightRect = new Rectangle2D(terrainRect.startX() + subLength, terrainRect.startY() + subLength, subLength, subLength);
         if (subNodeHandler.apply(topRightRect, topRightSubNode)) {
-            topRightSubNode.setTerrainShapeSubNodes(quartering(depth + 1, topRightRect, subNodeHandler));
+            topRightSubNode.setTerrainShapeSubNodes(quartering(topRightSubNode, depth + 1, topRightRect, subNodeHandler));
         }
         Rectangle2D topLeftRect = new Rectangle2D(terrainRect.startX(), terrainRect.startY() + subLength, subLength, subLength);
         if (subNodeHandler.apply(topLeftRect, topLeftSubNode)) {
-            topLeftSubNode.setTerrainShapeSubNodes(quartering(depth + 1, topLeftRect, subNodeHandler));
+            topLeftSubNode.setTerrainShapeSubNodes(quartering(topLeftSubNode, depth + 1, topLeftRect, subNodeHandler));
         }
 
         return new TerrainShapeSubNode[]{bottomLeftSubNode, bottomRightSubNode, topRightSubNode, topLeftSubNode};
@@ -734,13 +740,16 @@ public class TerrainShapeSetup {
 
     private void fillTerrainObjectSubNodes(TerrainShapeNode terrainShapeNode, Index nodeIndex, Circle2D terrainObjectArea) {
         Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
+        TerrainShapeSubNode[] terrainShapeSubNodes = quartering(null, 0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
             if (terrainObjectArea.inside(rectangle2D)) {
+                terrainShapeSubNode.setNoLand();
                 return false;
             } else if (terrainObjectArea.intersects(rectangle2D)) {
+                if (terrainShapeSubNode.getDepth() >= TerrainUtil.MAX_DEPTH) {
+                    terrainShapeSubNode.setNoLand();
+                }
                 return true;
             } else {
-                terrainShapeSubNode.setLand();
                 return false;
             }
         });
