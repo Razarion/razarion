@@ -649,7 +649,7 @@ public class TerrainShapeSetup {
     private void fillLandSubNodes(Slope slope, List<Vertex> landVertexPolygon, Rectangle2D terrainRect, TerrainShapeNode terrainShapeNode, double groundHeight, boolean isOuter, Driveway fractalDriveway) {
         Polygon2D landPolygon = new Polygon2D(Vertex.toXY(landVertexPolygon));
         TerrainShapeSubNode[] terrainShapeSubNodes = quartering(null, 0, terrainRect, (rectangle2D, terrainShapeSubNode) -> {
-            if (fractalDriveway != null && fractalDriveway.isInside(rectangle2D.toCorners())) {
+            if (fractalDriveway != null && fractalDriveway.isInside(rectangle2D.shrink(0.2).toCorners())) {
                 terrainShapeSubNode.setHeight(fractalDriveway.getInterpolateDrivewayHeight(rectangle2D.center()));
                 return true;
             }
