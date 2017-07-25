@@ -34,3 +34,19 @@
     </td>
   </tr>
 </table>
+
+<h3>Pages</h3>
+<table>
+  <tr>
+    <th>Date</th>
+    <th>Page</th>
+    <th>Parameters</th>
+    <th>URI</th>
+  </tr>
+  <tr *ngFor="let pageDetail of sessionDetail.pageDetails" style="cursor: pointer">
+    <td>{{ pageDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td>{{ pageDetail.page }}</td>
+    <td>{{ pageDetail.parameters }}</td>
+    <td>{{ pageDetail.uri }}</td>
+  </tr>
+</table>

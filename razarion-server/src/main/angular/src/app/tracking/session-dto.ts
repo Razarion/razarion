@@ -12,6 +12,7 @@ export class SessionDetail {
   fbAdRazTrack: string;
   userAgent: string;
   gameSessionDetails: GameSessionDetail[];
+  pageDetails: PageDetail[];
 }
 
 export class GameSessionDetail {
@@ -22,4 +23,11 @@ export class GameSessionDetail {
 
 export class SearchConfig {
   fromDate: Date;
+}
+
+export class PageDetail {
+  time: Date;
+  page: string;
+  parameters: string;
+  uri: string;
 }

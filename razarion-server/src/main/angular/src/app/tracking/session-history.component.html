@@ -7,6 +7,7 @@
 
 <button (click)="onSearch()">Search</button>
 <table>
+  <thead>
   <tr>
     <th>Date</th>
     <th>Sessio Id</th>
@@ -14,6 +15,8 @@
     <th>Remote Host</th>
     <th>User Agent</th>
   </tr>
+  </thead>
+  <tbody>
   <tr *ngFor="let sessionTracker of sessionTrackers" (click)="onClick(sessionTracker)" style="cursor: pointer">
     <td>{{ sessionTracker.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ sessionTracker.id }}</td>
@@ -21,4 +24,5 @@
     <td>{{ sessionTracker.remoteHost }}</td>
     <td>{{ sessionTracker.userAgent }}</td>
   </tr>
+  </tbody>
 </table>

@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -180,8 +181,6 @@ public class TrackerPersistence {
         return sessionTrackers;
     }
 
-    @Transactional
-    @SecurityCheck
     private String getFbAdRazTrack(String sessionId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
@@ -204,6 +203,20 @@ public class TrackerPersistence {
         return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
     }
 
+
+    @Transactional
+    @SecurityCheck
+    public List<PageDetail> readPageDetails(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
+        Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
+        query.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
+        CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
+        query.orderBy(criteriaBuilder.asc(root.get(PageTrackerEntity_.timeStamp)));
+        return entityManager.createQuery(userSelect).getResultList().stream().map(PageTrackerEntity::toPageDetail).collect(Collectors.toList());
+    }
+
+
     @Transactional
     @SecurityCheck
     public SessionDetail readSessionDetail(String sessionId) {
@@ -221,6 +234,7 @@ public class TrackerPersistence {
             gameSessionDetails.add(new GameSessionDetail().setId(serverTrackerStart.getTrackingStart().getGameSessionUuid()).setSessionId(sessionId).setTime(serverTrackerStart.getTimeStamp()));
         }
         sessionDetail.setGameSessionDetails(gameSessionDetails);
+        sessionDetail.setPageDetails(readPageDetails(sessionId));
         return sessionDetail;
     }
 

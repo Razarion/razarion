@@ -70,10 +70,6 @@ public class PageTrackerEntity {
         this.page = page;
     }
 
-    public String getUri() {
-        return uri;
-    }
-
     public void setUri(String uri) {
         this.uri = uri;
     }
@@ -84,6 +80,10 @@ public class PageTrackerEntity {
 
     public void setParams(String params) {
         this.params = params;
+    }
+
+    public PageDetail toPageDetail() {
+        return new PageDetail().setPage(page).setParameters(params).setTime(timeStamp).setUri(uri);
     }
 
     @Override

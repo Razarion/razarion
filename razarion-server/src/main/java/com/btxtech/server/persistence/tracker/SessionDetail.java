@@ -13,6 +13,7 @@ public class SessionDetail {
     private String fbAdRazTrack;
     private String userAgent;
     private List<GameSessionDetail> gameSessionDetails;
+    private List<PageDetail> pageDetails;
 
     public Date getTime() {
         return time;
@@ -56,6 +57,15 @@ public class SessionDetail {
 
     public SessionDetail setGameSessionDetails(List<GameSessionDetail> gameSessionDetails) {
         this.gameSessionDetails = gameSessionDetails;
+        return this;
+    }
+
+    public List<PageDetail> getPageDetails() {
+        return pageDetails;
+    }
+
+    public SessionDetail setPageDetails(List<PageDetail> pageDetails) {
+        this.pageDetails = pageDetails;
         return this;
     }
 }
