@@ -387,7 +387,7 @@ public class BaseItemService {
         synchronized (bases) {
             PlayerBase playerBase = bases.get(baseId);
             if (playerBase == null) {
-                throw new IllegalArgumentException("NO base for BaseId: " + baseId);
+                throw new IllegalArgumentException("No base for BaseId: " + baseId);
             }
             return playerBase;
         }

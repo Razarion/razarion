@@ -253,10 +253,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             serverConnection = connectionInstance.get();
             serverConnection.init();
         }
-        if (gameEngineMode == GameEngineMode.SLAVE && slaveSyncItemInfo.getActualBaseId() != null) {
-            playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
-        }
-        planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo, finishCallback, failCallback);
+        planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo, () -> {
+                    if (gameEngineMode == GameEngineMode.SLAVE && slaveSyncItemInfo.getActualBaseId() != null) {
+                        playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
+                    }
+                    finishCallback.run();
+                }
+                , failCallback);
     }
 
     private void createHumanBaseWithBaseItem(int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {

@@ -102,6 +102,7 @@ public class TerrainEditorImpl implements TerrainEditor {
 
         if (modifyingTerrainObject != null) {
             modifyingTerrainObject.setNewPosition(terrainPosition, nativeMatrixFactory);
+            terrainObjectModelMatrices = setupModelMatrices();
         } else {
             dehoverAll();
             hoverTerrainObject = getTerrainObjectAtTerrain(terrainPosition);
@@ -362,22 +363,23 @@ public class TerrainEditorImpl implements TerrainEditor {
                 }
             }
         }
-        modifiedTerrainObjects.clear();
+        modifiedTerrainObjects = setupModifiedTerrainObjects();
+        terrainObjectModelMatrices = setupModelMatrices();
 
         if (!createdTerrainObjects.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Created"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Created. Reload needed."), (message, throwable) -> {
                 logger.log(Level.SEVERE, "createTerrainObjectPositions failed: " + message, throwable);
                 return false;
             }).createTerrainObjectPositions(getPlanetId(), createdTerrainObjects);
         }
         if (!updatedTerrainObjects.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Updated"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Updated. Reload needed."), (message, throwable) -> {
                 logger.log(Level.SEVERE, "updateTerrainObjectPositions failed: " + message, throwable);
                 return false;
             }).updateTerrainObjectPositions(getPlanetId(), updatedTerrainObjects);
         }
         if (!deletedTerrainObjectsIds.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Deleted"), (message, throwable) -> {
+            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Deleted. Reload needed."), (message, throwable) -> {
                 logger.log(Level.SEVERE, "deleteTerrainObjectPositionIds failed: " + message, throwable);
                 return false;
             }).deleteTerrainObjectPositionIds(getPlanetId(), deletedTerrainObjectsIds);
