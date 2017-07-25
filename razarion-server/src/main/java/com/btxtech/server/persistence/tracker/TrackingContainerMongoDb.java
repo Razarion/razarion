@@ -17,8 +17,9 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 
-import javax.ejb.Singleton;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +37,12 @@ public class TrackingContainerMongoDb {
     public static final String RAZARION_DB_COLLECTION = "in_game_tracking";
     @Inject
     private ExceptionHandler exceptionHandler;
+    private MongoClient mongoClient;
+
+    @PostConstruct
+    public void postConstruct() {
+        mongoClient = new MongoClient();
+    }
 
     public void storeTrackingStart(String sessionId, TrackingStart trackingStart) throws JsonProcessingException {
         ServerTrackerStart serverTrackerStart = new ServerTrackerStart();
@@ -111,7 +118,6 @@ public class TrackingContainerMongoDb {
     }
 
     private MongoCollection<Document> setupMongoCollection() {
-        MongoClient mongoClient = new MongoClient();
         MongoDatabase db = mongoClient.getDatabase(RAZARION_DB);
         return db.getCollection(RAZARION_DB_COLLECTION);
     }
