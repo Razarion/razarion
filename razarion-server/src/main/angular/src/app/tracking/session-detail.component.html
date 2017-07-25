@@ -74,12 +74,14 @@
             </table>
           </td>
         </tr>
-        <tr>
+        <tr *ngIf="gameSessionDetail.startupTerminatedDetail">
           <td>
             Startup Termination
           </td>
           <td>
-            {{ gameSessionDetail.startupTerminatedDetail.successful}} | {{ gameSessionDetail.startupTerminatedDetail.timeStamp| date:'dd.MM.yyyy HH:mm:ss'}} | {{ gameSessionDetail.startupTerminatedDetail.totalTime / 1000}}
+            {{ gameSessionDetail.startupTerminatedDetail.successful}} | {{
+            gameSessionDetail.startupTerminatedDetail.timeStamp| date:'dd.MM.yyyy HH:mm:ss'}} | {{
+            gameSessionDetail.startupTerminatedDetail.totalTime / 1000}}
           </td>
         </tr>
 

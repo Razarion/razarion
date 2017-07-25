@@ -8,6 +8,8 @@ import java.util.Date;
 public class SessionTracker {
     private Date time;
     private String id;
+    private int gameAttempts;
+    private int successGameAttempts;
     private String remoteHost;
     private String fbAdRazTrack;
     private String userAgent;
@@ -23,6 +25,24 @@ public class SessionTracker {
 
     public String getId() {
         return id;
+    }
+
+    public int getGameAttempts() {
+        return gameAttempts;
+    }
+
+    public SessionTracker setGameAttempts(int gameAttempts) {
+        this.gameAttempts = gameAttempts;
+        return this;
+    }
+
+    public int getSuccessGameAttempts() {
+        return successGameAttempts;
+    }
+
+    public SessionTracker setSuccessGameAttempts(int successGameAttempts) {
+        this.successGameAttempts = successGameAttempts;
+        return this;
     }
 
     public SessionTracker setId(String id) {

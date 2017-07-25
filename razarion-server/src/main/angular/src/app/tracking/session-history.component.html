@@ -11,6 +11,7 @@
   <tr>
     <th>Date</th>
     <th>Sessio Id</th>
+    <th>Game Attemps</th>
     <th>Facebook Ad</th>
     <th>Remote Host</th>
     <th>User Agent</th>
@@ -20,6 +21,11 @@
   <tr *ngFor="let sessionTracker of sessionTrackers" (click)="onClick(sessionTracker)" style="cursor: pointer">
     <td>{{ sessionTracker.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ sessionTracker.id }}</td>
+    <td *ngIf="sessionTracker.gameAttempts > 0 || sessionTracker.successGameAttempts > 0"
+        [style.background-color]="sessionTracker.gameAttempts != sessionTracker.successGameAttempts?'red':'green'">{{
+      sessionTracker.gameAttempts}} / {{sessionTracker.successGameAttempts }}
+    </td>
+    <td *ngIf="sessionTracker.gameAttempts <= 0 && sessionTracker.successGameAttempts <= 0"></td>
     <td>{{ sessionTracker.fbAdRazTrack }}</td>
     <td>{{ sessionTracker.remoteHost }}</td>
     <td>{{ sessionTracker.userAgent }}</td>

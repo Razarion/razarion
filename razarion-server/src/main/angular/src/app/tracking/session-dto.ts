@@ -5,6 +5,8 @@ export class SearchConfig {
 export class SessionTracker {
   time: Date;
   id: string;
+  gameAttempts: number;
+  successGameAttempts: number;
   fbAdRazTrack: string;
   remoteHost: string;
   userAgent: string;

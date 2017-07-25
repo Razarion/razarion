@@ -179,9 +179,30 @@ public class TrackerPersistence {
         query.orderBy(criteriaBuilder.desc(root.get(SessionTrackerEntity_.timeStamp)));
         List<SessionTracker> sessionTrackers = new ArrayList<>();
         for (SessionTrackerEntity sessionTrackerEntity : entityManager.createQuery(userSelect).getResultList()) {
-            sessionTrackers.add(sessionTrackerEntity.toSessionTracker().setFbAdRazTrack(getFbAdRazTrack(sessionTrackerEntity.getSessionId())));
+            SessionTracker sessionTracker = sessionTrackerEntity.toSessionTracker();
+            sessionTracker.setGameAttempts(readStartupTaskCount(sessionTrackerEntity.getSessionId())).setSuccessGameAttempts(readSuccessStartupTerminatedCount(sessionTrackerEntity.getSessionId()));
+            sessionTracker.setFbAdRazTrack(getFbAdRazTrack(sessionTrackerEntity.getSessionId()));
+            sessionTrackers.add(sessionTracker);
         }
         return sessionTrackers;
+    }
+
+    private int readStartupTaskCount(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
+        Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
+        cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
+        cq.select(criteriaBuilder.countDistinct(root.get(StartupTaskEntity_.gameSessionUuid)));
+        return entityManager.createQuery(cq).getSingleResult().intValue();
+    }
+
+    private int readSuccessStartupTerminatedCount(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
+        Root<StartupTerminatedEntity> root = cq.from(StartupTerminatedEntity.class);
+        cq.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.successful), true)));
+        cq.select(criteriaBuilder.count(root));
+        return entityManager.createQuery(cq).getSingleResult().intValue();
     }
 
     private String getFbAdRazTrack(String sessionId) {
