@@ -96,8 +96,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     @Inject
     private TerrainService terrainService;
     @Inject
-    private ItemTypeService itemTypeService;
-    @Inject
     private Instance<AbstractServerGameConnection> connectionInstance;
     @Inject
     private Instance<WorkerTrackerHandler> workerTrackerHandlerInstance;
@@ -277,6 +275,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void stop() {
         try {
             perfmonService.stop();
+            botService.killAllBots();
             planetService.stop();
             userContext = null;
             playerBase = null;
