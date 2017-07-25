@@ -8,12 +8,14 @@ import com.btxtech.shared.utils.MathHelper;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 16.05.2016.
  */
 public class ClearanceHole {
+    private Logger logger = Logger.getLogger(ClearanceHole.class.getName());
     private SyncPhysicalMovable syncPhysicalMovable;
     private List<AngleSegment> angleSegments = new ArrayList<>();
 
@@ -22,16 +24,7 @@ public class ClearanceHole {
     }
 
     public void addOther(SyncPhysicalArea other) {
-        DecimalPosition distanceVector = other.getPosition2d().sub(syncPhysicalMovable.getPosition2d());
-        double distance = distanceVector.magnitude();
-        double radius = syncPhysicalMovable.getRadius() + other.getRadius();
-        double halfBlockingAngle;
-        if (radius < distance) {
-            halfBlockingAngle = Math.asin(radius / distance);
-        } else {
-            halfBlockingAngle = Math.PI / 2.0;
-        }
-        angleSegments.add(new AngleSegment(distanceVector.angle(), halfBlockingAngle));
+        addCircle(other.getPosition2d(), other.getRadius());
     }
 
     public void addOther(Obstacle obstacle) {
@@ -68,7 +61,25 @@ public class ClearanceHole {
             double half = MathHelper.getAngle(startAngle, endAngle) / 2.0;
             double middle = MathHelper.normaliseAngle(startAngle + half);
             angleSegments.add(new AngleSegment(middle, half));
+        } else if (obstacle instanceof ObstacleTerrainObject) {
+            ObstacleTerrainObject obstacleTerrainObject = (ObstacleTerrainObject) obstacle;
+            addCircle(obstacleTerrainObject.getCircle().getCenter(), obstacleTerrainObject.getCircle().getRadius());
+        } else {
+            logger.warning("ClearanceHole.addOther() Unknown obstacle: " + obstacle);
         }
+    }
+
+    private void addCircle(DecimalPosition center, double radius) {
+        DecimalPosition distanceVector = center.sub(syncPhysicalMovable.getPosition2d());
+        double distance = distanceVector.magnitude();
+        double totalRadius = syncPhysicalMovable.getRadius() + radius;
+        double halfBlockingAngle;
+        if (totalRadius < distance) {
+            halfBlockingAngle = Math.asin(totalRadius / distance);
+        } else {
+            halfBlockingAngle = Math.PI / 2.0;
+        }
+        angleSegments.add(new AngleSegment(distanceVector.angle(), halfBlockingAngle));
     }
 
     public double getFreeAngle(double desiredAngle) {
