@@ -11,6 +11,7 @@ export class SessionTracker {
   fbAdRazTrack: string;
   remoteHost: string;
   userAgent: string;
+  pageHits: number;
 }
 
 export class SessionDetail {

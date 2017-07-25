@@ -23,7 +23,7 @@ public interface BotFilterConstants {
     static List<String> remoteHostBotStrings() {
         List<String> botStrings = new ArrayList<>();
         botStrings.add("%scan%");
-        botStrings.add("%craw%");
+        botStrings.add("%crawl%");
         return botStrings;
     }
 }

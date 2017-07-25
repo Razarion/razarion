@@ -206,6 +206,7 @@ public class TrackerPersistence {
             SessionTracker sessionTracker = sessionTrackerEntity.toSessionTracker();
             sessionTracker.setGameAttempts(readStartupTaskCount(sessionTrackerEntity.getSessionId())).setSuccessGameAttempts(readSuccessStartupTerminatedCount(sessionTrackerEntity.getSessionId()));
             sessionTracker.setFbAdRazTrack(getFbAdRazTrack(sessionTrackerEntity.getSessionId()));
+            sessionTracker.setPageHits(getPageHits(sessionTrackerEntity.getSessionId()));
             sessionTrackers.add(sessionTracker);
         }
         return sessionTrackers;
@@ -249,6 +250,15 @@ public class TrackerPersistence {
             toIndex = pageTrackerEntity.getParams().length();
         }
         return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
+    }
+
+    private int getPageHits(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = criteriaBuilder.createQuery(Long.class);
+        Root<PageTrackerEntity> root = cq.from(PageTrackerEntity.class);
+        cq.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
+        cq.select(criteriaBuilder.count(root));
+        return entityManager.createQuery(cq).getSingleResult().intValue();
     }
 
     @Transactional

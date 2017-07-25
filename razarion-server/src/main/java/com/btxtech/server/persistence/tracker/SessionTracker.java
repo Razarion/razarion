@@ -13,6 +13,7 @@ public class SessionTracker {
     private String remoteHost;
     private String fbAdRazTrack;
     private String userAgent;
+    private int pageHits;
 
     public Date getTime() {
         return time;
@@ -74,6 +75,15 @@ public class SessionTracker {
 
     public SessionTracker setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+        return this;
+    }
+
+    public int getPageHits() {
+        return pageHits;
+    }
+
+    public SessionTracker setPageHits(int pageHits) {
+        this.pageHits = pageHits;
         return this;
     }
 }
