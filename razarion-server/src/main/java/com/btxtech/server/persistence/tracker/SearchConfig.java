@@ -8,6 +8,7 @@ import java.util.Date;
  */
 public class SearchConfig {
     private Date fromDate;
+    private boolean botFilter;
 
     public Date getFromDate() {
         return fromDate;
@@ -15,6 +16,15 @@ public class SearchConfig {
 
     public SearchConfig setFromDate(Date fromDate) {
         this.fromDate = fromDate;
+        return this;
+    }
+
+    public boolean isBotFilter() {
+        return botFilter;
+    }
+
+    public SearchConfig setBotFilter(boolean botFilter) {
+        this.botFilter = botFilter;
         return this;
     }
 }

@@ -12,6 +12,8 @@ public class SessionDetail {
     private String id;
     private String fbAdRazTrack;
     private String userAgent;
+    private String remoteHost;
+    private String remoteAddr;
     private List<GameSessionDetail> gameSessionDetails;
     private List<PageDetail> pageDetails;
 
@@ -48,6 +50,24 @@ public class SessionDetail {
 
     public SessionDetail setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+        return this;
+    }
+
+    public String getRemoteHost() {
+        return remoteHost;
+    }
+
+    public SessionDetail setRemoteHost(String remoteHost) {
+        this.remoteHost = remoteHost;
+        return this;
+    }
+
+    public String getRemoteAddr() {
+        return remoteAddr;
+    }
+
+    public SessionDetail setRemoteAddr(String remoteAddr) {
+        this.remoteAddr = remoteAddr;
         return this;
     }
 

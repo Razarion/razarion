@@ -1,11 +1,7 @@
-<!--<input type="date" [(ngModel)]="fromDate | date:'dd.MM.yyyy HH:mm:ss'">-->
 <input type="datetime-local" [(ngModel)]="fromDateString">
-
-
-<!--<input type="datetime-local" [ngModel]="defaultFromDate | date:'yyyy-MM-ddTHH:mm'" (ngModelChange)="fromDate = $event" />-->
-
-
+<input type="checkbox" [(ngModel)]="botFilter">Bot Filter
 <button (click)="onSearch()">Search</button>
+
 <table>
   <thead>
   <tr>

@@ -66,6 +66,6 @@ public class TrackerPersistenceTest extends ArquillianBaseTest {
     }
 
     private SearchConfig createFromDate(String fromDateString) {
-        return new SearchConfig().setFromDate(DateUtil.fromDbTimeString(fromDateString));
+        return new SearchConfig().setFromDate(DateUtil.fromDbTimeString(fromDateString)).setBotFilter(true);
     }
 }

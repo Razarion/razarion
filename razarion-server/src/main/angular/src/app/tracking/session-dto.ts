@@ -1,5 +1,6 @@
 export class SearchConfig {
   fromDate: Date;
+  botFilter: boolean;
 }
 
 export class SessionTracker {
@@ -17,6 +18,8 @@ export class SessionDetail {
   id: string;
   fbAdRazTrack: string;
   userAgent: string;
+  remoteHost: string;
+  remoteAddr: string;
   gameSessionDetails: GameSessionDetail[];
   pageDetails: PageDetail[];
 }

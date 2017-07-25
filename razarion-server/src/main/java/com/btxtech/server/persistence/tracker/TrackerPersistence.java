@@ -173,9 +173,33 @@ public class TrackerPersistence {
         CriteriaQuery<SessionTrackerEntity> query = criteriaBuilder.createQuery(SessionTrackerEntity.class);
         Root<SessionTrackerEntity> root = query.from(SessionTrackerEntity.class);
         CriteriaQuery<SessionTrackerEntity> userSelect = query.select(root);
+
+        Predicate predicate = null;
         if (searchConfig.getFromDate() != null) {
-            query.where(criteriaBuilder.greaterThanOrEqualTo(root.get(SessionTrackerEntity_.timeStamp), searchConfig.getFromDate()));
+            predicate = criteriaBuilder.greaterThanOrEqualTo(root.get(SessionTrackerEntity_.timeStamp), searchConfig.getFromDate());
         }
+        if (searchConfig.isBotFilter()) {
+            for (String userAgent : BotFilterConstants.userAgentBotStrings()) {
+                Predicate userAgentBot = criteriaBuilder.notLike(root.get(SessionTrackerEntity_.userAgent), userAgent);
+                if (predicate == null) {
+                    predicate = userAgentBot;
+                } else {
+                    predicate = criteriaBuilder.and(predicate, userAgentBot);
+                }
+            }
+            for (String remoteHost : BotFilterConstants.remoteHostBotStrings()) {
+                Predicate userAgentBot = criteriaBuilder.notLike(root.get(SessionTrackerEntity_.remoteHost), remoteHost);
+                if (predicate == null) {
+                    predicate = userAgentBot;
+                } else {
+                    predicate = criteriaBuilder.and(predicate, userAgentBot);
+                }
+            }
+        }
+        if (predicate != null) {
+            query.where(predicate);
+        }
+
         query.orderBy(criteriaBuilder.desc(root.get(SessionTrackerEntity_.timeStamp)));
         List<SessionTracker> sessionTrackers = new ArrayList<>();
         for (SessionTrackerEntity sessionTrackerEntity : entityManager.createQuery(userSelect).getResultList()) {
@@ -239,6 +263,7 @@ public class TrackerPersistence {
 
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
+        sessionDetail.setRemoteAddr(sessionTrackerEntity.getRemoteAddr()).setRemoteHost(sessionTrackerEntity.getRemoteHost());
         sessionDetail.setGameSessionDetails(readGameSessionDetails(sessionId));
         sessionDetail.setPageDetails(readPageDetails(sessionId));
         return sessionDetail;

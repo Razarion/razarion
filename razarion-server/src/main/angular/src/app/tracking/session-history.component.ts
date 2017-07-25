@@ -12,16 +12,19 @@ import {Router} from "@angular/router";
 export class SessionHistory implements OnInit {
   sessionTrackers: SessionTracker[];
   fromDateString: string;
+  botFilter: boolean;
 
   constructor(private sessionService: SessionService, private route: Router) {
     let now: Date = new Date();
     now.setDate(new Date().getDate() - 1);
     this.fromDateString = now.toISOString().slice(0, 19);
+    this.botFilter = true;
   }
 
   private updateSessions(): void {
     let searchConfig: SearchConfig = new SearchConfig();
     searchConfig.fromDate = new Date(this.fromDateString);
+    searchConfig.botFilter = this.botFilter;
 
     this.sessionService.getSessions(searchConfig).then(sessions => {
       this.sessionTrackers = sessions;
