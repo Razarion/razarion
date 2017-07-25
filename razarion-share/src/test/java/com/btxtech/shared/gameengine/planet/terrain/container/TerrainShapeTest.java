@@ -28,12 +28,12 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(type);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(10).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {createSlopeNode(0, 0, 0.3),},
                 {createSlopeNode(2, 5, 1),},
                 {createSlopeNode(4, 10, 0.7),},
-                {createSlopeNode(7, 20, 0.7),},
+                {createSlopeNode(10, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
@@ -80,9 +80,9 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
 
     @Test
     public void testSlopeDriveway() {
-        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, null, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(80, 40, null),
-                createTerrainSlopeCorner(80, 60, 1), createTerrainSlopeCorner(80, 90, 1), // driveway
-                createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
+        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, null, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(78, 40, null),
+                createTerrainSlopeCorner(78, 60, 1), createTerrainSlopeCorner(78, 90, 1), // driveway
+                createTerrainSlopeCorner(78, 110, null), createTerrainSlopeCorner(30, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
         Assert.fail("TODO assert");
     }

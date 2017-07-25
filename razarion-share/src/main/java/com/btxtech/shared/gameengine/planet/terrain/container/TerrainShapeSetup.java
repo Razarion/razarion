@@ -189,18 +189,23 @@ public class TerrainShapeSetup {
                         }
                     }
                 } else {
-                    if (innerPolygon.isInside(corners)) {
+                    List<DecimalPosition> shrunkCorners = terrainRect.shrink(0.2).toCorners();
+                    if (innerPolygon.isInside(shrunkCorners)) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
-                    } else if (outerPolygon.isInside(corners)) {
+                    } else if (outerPolygon.isInside(shrunkCorners)) {
+                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         if (innerPolygon.isOneCornerInside(corners)) {
                             // No inner or outer slope line, no driveway, no breaking line no all corner are inside inner polygon
-                            TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                            terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
-                        } else {
-                            TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                             terrainShapeNode.setHiddenUnderSlope();
                             terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
+                        } else {
+                            if (slope.isInsidePassableDriveway(terrainRect)) {
+                                terrainShapeNode.setUniformGroundHeight(slope.getGroundHeight());
+                            } else {
+                                terrainShapeNode.setHiddenUnderSlope();
+                                terrainShapeNode.setUniformGroundHeight(slope.getHeight() + slope.getGroundHeight());
+                            }
                         }
                     }
                 }
