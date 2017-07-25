@@ -29,7 +29,7 @@
 
 <h3>Game sessions</h3>
 <table>
-  <tr *ngFor="let gameSessionDetail of sessionDetail.gameSessionDetails" style="cursor: pointer">
+  <tr *ngFor="let gameSessionDetail of sessionDetail.gameSessionDetails">
     <td>
       <hr>
       <table>
@@ -72,7 +72,7 @@
                 <th>Error</th>
               </tr>
               <tbody>
-              <tr *ngFor="let startupTaskDetail of gameSessionDetail.startupTaskDetails" style="cursor: pointer">
+              <tr *ngFor="let startupTaskDetail of gameSessionDetail.startupTaskDetails">
                 <td>{{ startupTaskDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
                 <td>{{ startupTaskDetail.taskEnum }}</td>
                 <td>{{ startupTaskDetail.duration / 1000}}</td>
@@ -106,7 +106,7 @@
     <th>Parameters</th>
     <th>URI</th>
   </tr>
-  <tr *ngFor="let pageDetail of sessionDetail.pageDetails" style="cursor: pointer">
+  <tr *ngFor="let pageDetail of sessionDetail.pageDetails">
     <td>{{ pageDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ pageDetail.page }}</td>
     <td>{{ pageDetail.parameters }}</td>
