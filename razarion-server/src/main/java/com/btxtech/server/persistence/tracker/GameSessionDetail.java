@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.tracker;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -10,6 +11,9 @@ public class GameSessionDetail {
     private Date time;
     private String id;
     private String sessionId;
+    private List<StartupTaskDetail> startupTaskDetails;
+    private StartupTerminatedDetail startupTerminatedDetail;
+    private boolean inGameTracking;
 
     public Date getTime() {
         return time;
@@ -35,6 +39,33 @@ public class GameSessionDetail {
 
     public GameSessionDetail setSessionId(String sessionId) {
         this.sessionId = sessionId;
+        return this;
+    }
+
+    public List<StartupTaskDetail> getStartupTaskDetails() {
+        return startupTaskDetails;
+    }
+
+    public GameSessionDetail setStartupTaskDetails(List<StartupTaskDetail> startupTaskDetails) {
+        this.startupTaskDetails = startupTaskDetails;
+        return this;
+    }
+
+    public StartupTerminatedDetail getStartupTerminatedDetail() {
+        return startupTerminatedDetail;
+    }
+
+    public GameSessionDetail setStartupTerminatedDetail(StartupTerminatedDetail startupTerminatedDetail) {
+        this.startupTerminatedDetail = startupTerminatedDetail;
+        return this;
+    }
+
+    public boolean isInGameTracking() {
+        return inGameTracking;
+    }
+
+    public GameSessionDetail setInGameTracking(boolean inGameTracking) {
+        this.inGameTracking = inGameTracking;
         return this;
     }
 }

@@ -103,6 +103,10 @@ public class StartupTaskEntity {
         this.error = error;
     }
 
+    public StartupTaskDetail toStartupTaskDetail() {
+        return new StartupTaskDetail().setClientStartTime(clientStartTime).setDuration(duration).setTaskEnum(taskEnum).setError(error);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

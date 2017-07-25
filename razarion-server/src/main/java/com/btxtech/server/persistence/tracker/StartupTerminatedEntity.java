@@ -81,6 +81,10 @@ public class StartupTerminatedEntity {
         this.timeStamp = timeStamp;
     }
 
+    public StartupTerminatedDetail toStartupTerminatedDetail() {
+        return new StartupTerminatedDetail().setSuccessful(successful).setTimeStamp(timeStamp).setTotalTime(totalTime);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

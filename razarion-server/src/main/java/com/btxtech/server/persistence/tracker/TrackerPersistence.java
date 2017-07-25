@@ -23,6 +23,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -36,6 +37,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +46,7 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class TrackerPersistence {
+    private Logger logger = Logger.getLogger(TrackerPersistence.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -203,20 +206,6 @@ public class TrackerPersistence {
         return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
     }
 
-
-    @Transactional
-    @SecurityCheck
-    public List<PageDetail> readPageDetails(String sessionId) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
-        Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
-        query.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
-        CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
-        query.orderBy(criteriaBuilder.asc(root.get(PageTrackerEntity_.timeStamp)));
-        return entityManager.createQuery(userSelect).getResultList().stream().map(PageTrackerEntity::toPageDetail).collect(Collectors.toList());
-    }
-
-
     @Transactional
     @SecurityCheck
     public SessionDetail readSessionDetail(String sessionId) {
@@ -229,13 +218,65 @@ public class TrackerPersistence {
 
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
-        List<GameSessionDetail> gameSessionDetails = new ArrayList<>();
-        for (ServerTrackerStart serverTrackerStart : trackingContainerMongoDb.findServerTrackerStarts(sessionId)) {
-            gameSessionDetails.add(new GameSessionDetail().setId(serverTrackerStart.getTrackingStart().getGameSessionUuid()).setSessionId(sessionId).setTime(serverTrackerStart.getTimeStamp()));
-        }
-        sessionDetail.setGameSessionDetails(gameSessionDetails);
+        sessionDetail.setGameSessionDetails(readGameSessionDetails(sessionId));
         sessionDetail.setPageDetails(readPageDetails(sessionId));
         return sessionDetail;
+    }
+
+    private List<PageDetail> readPageDetails(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PageTrackerEntity> query = criteriaBuilder.createQuery(PageTrackerEntity.class);
+        Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
+        query.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
+        CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
+        query.orderBy(criteriaBuilder.asc(root.get(PageTrackerEntity_.timeStamp)));
+        return entityManager.createQuery(userSelect).getResultList().stream().map(PageTrackerEntity::toPageDetail).collect(Collectors.toList());
+    }
+
+    private List<GameSessionDetail> readGameSessionDetails(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
+        cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
+        cq.multiselect(root.get(StartupTaskEntity_.gameSessionUuid));
+        cq.groupBy(root.get(StartupTaskEntity_.gameSessionUuid));
+        cq.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
+        return entityManager.createQuery(cq).getResultList().stream().map(tuple -> readGameSessionDetail(sessionId, (String) tuple.get(0))).collect(Collectors.toList());
+    }
+
+    private GameSessionDetail readGameSessionDetail(String sessionId, String gameSessionUuid) {
+        GameSessionDetail gameSessionDetail = new GameSessionDetail();
+        gameSessionDetail.setSessionId(sessionId).setId(gameSessionUuid);
+        gameSessionDetail.setStartupTaskDetails(readStartupTaskDetail(sessionId, gameSessionUuid));
+        gameSessionDetail.setStartupTerminatedDetail(readStartupTerminatedDetail(sessionId, gameSessionUuid));
+        gameSessionDetail.setInGameTracking(trackingContainerMongoDb.hasServerTrackerStarts(sessionId, gameSessionUuid));
+        return gameSessionDetail;
+    }
+
+    private List<StartupTaskDetail> readStartupTaskDetail(String sessionId, String gameSessionUuid) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<StartupTaskEntity> query = criteriaBuilder.createQuery(StartupTaskEntity.class);
+        Root<StartupTaskEntity> root = query.from(StartupTaskEntity.class);
+        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTaskEntity_.gameSessionUuid), gameSessionUuid));
+        query.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
+
+        return entityManager.createQuery(query).getResultList().stream().map(StartupTaskEntity::toStartupTaskDetail).collect(Collectors.toList());
+    }
+
+    private StartupTerminatedDetail readStartupTerminatedDetail(String sessionId, String gameSessionUuid) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<StartupTerminatedEntity> query = criteriaBuilder.createQuery(StartupTerminatedEntity.class);
+        Root<StartupTerminatedEntity> root = query.from(StartupTerminatedEntity.class);
+        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(StartupTerminatedEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(StartupTerminatedEntity_.gameSessionUuid), gameSessionUuid));
+
+        List<StartupTerminatedEntity> startupTerminatedEntities = entityManager.createQuery(query).getResultList();
+        if (startupTerminatedEntities.isEmpty()) {
+            return null;
+        }
+        if (startupTerminatedEntities.size() > 1) {
+            logger.warning("More then one entry found for StartupTerminatedEntity. sessionId: " + sessionId + " gameSessionUuid: " + gameSessionUuid);
+        }
+        return startupTerminatedEntities.get(0).toStartupTerminatedDetail();
     }
 
     @Transactional

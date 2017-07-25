@@ -1,3 +1,7 @@
+export class SearchConfig {
+  fromDate: Date;
+}
+
 export class SessionTracker {
   time: Date;
   id: string;
@@ -15,19 +19,31 @@ export class SessionDetail {
   pageDetails: PageDetail[];
 }
 
-export class GameSessionDetail {
-  time: Date;
-  id: string;
-  sessionId: string;
-}
-
-export class SearchConfig {
-  fromDate: Date;
-}
-
 export class PageDetail {
   time: Date;
   page: string;
   parameters: string;
   uri: string;
+}
+
+export class GameSessionDetail {
+  time: Date;
+  id: string;
+  sessionId: string;
+  startupTaskDetails: StartupTaskDetail[];
+  startupTerminatedDetail: StartupTerminatedDetail;
+  inGameTracking: boolean;
+}
+
+export class StartupTaskDetail {
+  taskEnum: string;
+  clientStartTime: Date;
+  duration: number;
+  error: string;
+}
+
+export class StartupTerminatedDetail {
+  successful: boolean;
+  totalTime: number;
+  timeStamp: Date;
 }

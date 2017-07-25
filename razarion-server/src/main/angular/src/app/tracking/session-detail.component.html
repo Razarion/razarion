@@ -21,16 +21,69 @@
 
 <h3>Game sessions</h3>
 <table>
-  <tr>
-    <th>Date</th>
-    <th>Game UUID</th>
-    <th>Playback</th>
-  </tr>
   <tr *ngFor="let gameSessionDetail of sessionDetail.gameSessionDetails" style="cursor: pointer">
-    <td>{{ gameSessionDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-    <td>{{ gameSessionDetail.id }}</td>
-    <td><a target="_blank"
-           [href]="'/faces/game.xhtml?gameSessionUuid=' + gameSessionDetail.id + '&sessionId=' + gameSessionDetail.sessionId">Open</a>
+    <td>
+      <hr>
+      <table>
+        <tr>
+          <td>
+            Date
+          </td>
+          <td>
+            {{ gameSessionDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Game UUID
+          </td>
+          <td>
+            {{ gameSessionDetail.id }}
+          </td>
+        </tr>
+        <tr>
+          <td>
+            In Game Tracking
+          </td>
+          <td>
+            <a *ngIf="gameSessionDetail.inGameTracking" target="_blank"
+               [href]="'/faces/game.xhtml?gameSessionUuid=' + gameSessionDetail.id + '&sessionId=' + gameSessionDetail.sessionId">Open</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Startup
+          </td>
+          <td>
+            <table>
+              <thead>
+              <tr>
+                <th>Client Timestamp</th>
+                <th>Task</th>
+                <th>Duration [s]</th>
+                <th>Error</th>
+              </tr>
+              <tbody>
+              <tr *ngFor="let startupTaskDetail of gameSessionDetail.startupTaskDetails" style="cursor: pointer">
+                <td>{{ startupTaskDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td>{{ startupTaskDetail.taskEnum }}</td>
+                <td>{{ startupTaskDetail.duration / 1000}}</td>
+                <td>{{ startupTaskDetail.error}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Startup Termination
+          </td>
+          <td>
+            {{ gameSessionDetail.startupTerminatedDetail.successful}} | {{ gameSessionDetail.startupTerminatedDetail.timeStamp| date:'dd.MM.yyyy HH:mm:ss'}} | {{ gameSessionDetail.startupTerminatedDetail.totalTime / 1000}}
+          </td>
+        </tr>
+
+      </table>
     </td>
   </tr>
 </table>

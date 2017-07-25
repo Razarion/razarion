@@ -61,18 +61,8 @@ public class TrackingContainerMongoDb {
         storeObject(serverTrackerStart);
     }
 
-    public List<ServerTrackerStart> findServerTrackerStarts(String sessionId) {
-        MongoCollection<Document> dbCollection = setupMongoCollection();
-        ObjectMapper objectMapper = setupObjectMapper();
-        List<ServerTrackerStart> serverTrackerStarts = new ArrayList<>();
-        dbCollection.find(Filters.and(Filters.eq("sessionId", sessionId), Filters.exists("trackingStart.gameSessionUuid"))).forEach((Block<Document>) document -> {
-            try {
-                serverTrackerStarts.add(objectMapper.readValue(document.toJson(), ServerTrackerStart.class));
-            } catch (IOException e) {
-                exceptionHandler.handleException(e);
-            }
-        });
-        return serverTrackerStarts;
+    public boolean hasServerTrackerStarts(String sessionId, String gameSessionUuid) {
+        return setupMongoCollection().count(Filters.and(Filters.eq("sessionId", sessionId), Filters.eq("trackingStart.gameSessionUuid", gameSessionUuid))) > 0;
     }
 
     public ServerTrackerStart findServerTrackerStart(GameUiControlInput gameUiControlInput) {
