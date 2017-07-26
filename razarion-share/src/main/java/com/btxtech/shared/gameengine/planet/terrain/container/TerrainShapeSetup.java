@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -70,7 +71,11 @@ public class TerrainShapeSetup {
         }
         long time = System.currentTimeMillis();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-            processSlope(setupSlope(terrainSlopePosition, 0));
+            try {
+                processSlope(setupSlope(terrainSlopePosition, 0));
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Can not handle slope with id: " + terrainSlopePosition.getId(), e);
+            }
         }
         logger.severe("Generate Slopes: " + (System.currentTimeMillis() - time));
     }
