@@ -22,7 +22,7 @@ public class TrackingContainerAccess {
     }
 
     public DetailedTracking removeNextDetailedTracking() {
-        BestFit bestFit = new BestFit();
+        BestFit bestFit = new BestFit(true);
 
         bestFit.analyse(trackingContainer.getCameraTrackings());
         bestFit.analyse(trackingContainer.getSelectionTrackings());
@@ -38,24 +38,56 @@ public class TrackingContainerAccess {
         return bestFit.removeBest();
     }
 
+    public DetailedTracking readLast() {
+        BestFit bestFit = new BestFit(false);
+
+        bestFit.analyse(trackingContainer.getCameraTrackings());
+        bestFit.analyse(trackingContainer.getSelectionTrackings());
+        bestFit.analyse(trackingContainer.getBrowserWindowTrackings());
+        bestFit.analyse(trackingContainer.getMouseMoveTrackings());
+        bestFit.analyse(trackingContainer.getMouseButtonTrackings());
+        bestFit.analyse(trackingContainer.getPlayerBaseTrackings());
+        bestFit.analyse(trackingContainer.getSyncItemDeletedTrackings());
+        bestFit.analyse(trackingContainer.getSyncBaseItemTrackings());
+        bestFit.analyse(trackingContainer.getSyncResourceItemTrackings());
+        bestFit.analyse(trackingContainer.getSyncBoxItemTrackings());
+
+        return bestFit.readBest();
+    }
+
     private class BestFit {
         private Date timeStamp = null;
         private List<? extends DetailedTracking> list;
+        private boolean earliest;
+
+        public BestFit(boolean earliest) {
+            this.earliest = earliest;
+        }
 
         public void analyse(List<? extends DetailedTracking> detailedTrackings) {
             if (detailedTrackings != null && !detailedTrackings.isEmpty()) {
                 if (timeStamp == null) {
                     fill(detailedTrackings);
                 } else {
-                    if (detailedTrackings.get(0).getTimeStamp().getTime() < timeStamp.getTime()) {
-                        fill(detailedTrackings);
+                    if (earliest) {
+                        if (detailedTrackings.get(0).getTimeStamp().getTime() < timeStamp.getTime()) {
+                            fill(detailedTrackings);
+                        }
+                    } else {
+                        if (detailedTrackings.get(detailedTrackings.size() - 1).getTimeStamp().getTime() > timeStamp.getTime()) {
+                            fill(detailedTrackings);
+                        }
                     }
                 }
             }
         }
 
         private void fill(List<? extends DetailedTracking> detailedTrackings) {
-            timeStamp = detailedTrackings.get(0).getTimeStamp();
+            if (earliest) {
+                timeStamp = detailedTrackings.get(0).getTimeStamp();
+            } else {
+                timeStamp = detailedTrackings.get(detailedTrackings.size() - 1).getTimeStamp();
+            }
             list = detailedTrackings;
         }
 
@@ -63,7 +95,22 @@ public class TrackingContainerAccess {
             if (timeStamp == null || list == null) {
                 throw new IllegalStateException("TrackingContainerAccess.removeBest(): timeStamp == null || list == null");
             }
-            return list.remove(0);
+            if (earliest) {
+                return list.remove(0);
+            } else {
+                return list.remove(list.size() - 1);
+            }
+        }
+
+        public DetailedTracking readBest() {
+            if (timeStamp == null || list == null) {
+                throw new IllegalStateException("TrackingContainerAccess.removeBest(): timeStamp == null || list == null");
+            }
+            if (earliest) {
+                return list.get(0);
+            } else {
+                return list.get(list.size() - 1);
+            }
         }
     }
 }

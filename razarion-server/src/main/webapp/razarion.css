@@ -434,6 +434,21 @@ a:active {
     background-color: black;
 }
 
+/** ----- Main ----- */
+.playback-cockpit {
+    color: #d8d0d0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: url('images/DialogBackground.png');
+    border: 8px solid transparent;
+    border-image-source: url('images/Border.png');
+    border-image-slice: 8;
+    border-image-repeat: repeat;
+    box-shadow: 3px 3px 15px 1px #000;
+    font-size: 80%;
+}
+
 /** -------------------------- COCKPIT ENDS -------------------------- */
 
 /** -------------------------- DIALOG FRAMEWORK -------------------------- */

@@ -1,7 +1,10 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.uiservice.control.PlaybackControl;
+
+import java.util.Date;
 
 /**
  * Created by Beat
@@ -9,7 +12,7 @@ import com.btxtech.uiservice.control.PlaybackControl;
  */
 public class DevToolPlaybackControl extends PlaybackControl {
     @Override
-    protected void activatePlaybackMode() {
+    protected void activatePlaybackMode(Date startTimeStamp, DetailedTracking endDetailedTracking) {
         throw new UnsupportedOperationException();
     }
 
@@ -25,6 +28,21 @@ public class DevToolPlaybackControl extends PlaybackControl {
 
     @Override
     protected void displayMouseButton(int button, boolean down) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void onNextAction(DetailedTracking nextDetailedTracking) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void onFinished() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void onSleeping(long timeToSleep) {
         throw new UnsupportedOperationException();
     }
 }

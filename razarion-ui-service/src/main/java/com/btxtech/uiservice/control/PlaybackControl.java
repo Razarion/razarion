@@ -14,6 +14,7 @@ import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
 import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 
@@ -38,8 +39,9 @@ public abstract class PlaybackControl {
     private Date lastAction;
     private TrackingContainerAccess trackingContainerAccess;
     private DetailedTracking nextDetailedTracking;
+    private SimpleScheduledFuture simpleScheduledFuture;
 
-    protected abstract void activatePlaybackMode();
+    protected abstract void activatePlaybackMode(Date startTimeStamp, DetailedTracking endDetailedTracking);
 
     protected abstract void setCanvasPlaybackDimension(Index browserWindowDimension);
 
@@ -47,17 +49,23 @@ public abstract class PlaybackControl {
 
     protected abstract void displayMouseButton(int button, boolean down);
 
+    protected abstract void onNextAction(DetailedTracking nextDetailedTracking);
+
+    protected abstract void onFinished();
+
+    protected abstract void onSleeping(long timeToSleep);
+
     public void start(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
         lastAction = playbackGameUiControlConfig.getTrackingStart().getTimeStamp();
         trackingContainerAccess = new TrackingContainerAccess(playbackGameUiControlConfig.getTrackingContainer());
-        activatePlaybackMode();
+        activatePlaybackMode(lastAction, trackingContainerAccess.readLast());
         setCanvasPlaybackDimension(playbackGameUiControlConfig.getTrackingStart().getBrowserWindowDimension());
         scheduleNextAction();
     }
 
     private void scheduleNextAction() {
         if (trackingContainerAccess.isEmpty()) {
-            finished();
+            onFinished();
             return;
         }
         nextDetailedTracking = trackingContainerAccess.removeNextDetailedTracking();
@@ -65,10 +73,20 @@ public abstract class PlaybackControl {
         if (timeToSleep < 0) {
             timeToSleep = 0;
         }
-        simpleExecutorService.schedule(timeToSleep, this::executeAction, SimpleExecutorService.Type.UNSPECIFIED);
+        onSleeping(timeToSleep);
+        simpleScheduledFuture = simpleExecutorService.schedule(timeToSleep, this::executeAction, SimpleExecutorService.Type.UNSPECIFIED);
+    }
+
+    public void skip() {
+        if(simpleScheduledFuture != null) {
+            simpleScheduledFuture.cancel();
+            simpleScheduledFuture = null;
+            executeAction();
+        }
     }
 
     private void executeAction() {
+        onNextAction(nextDetailedTracking);
         if (nextDetailedTracking instanceof CameraTracking) {
             CameraTracking cameraTracking = (CameraTracking) nextDetailedTracking;
             camera.setTranslateXY(cameraTracking.getPosition().getX(), cameraTracking.getPosition().getY());
@@ -97,9 +115,5 @@ public abstract class PlaybackControl {
         }
         lastAction = nextDetailedTracking.getTimeStamp();
         scheduleNextAction();
-    }
-
-    private void finished() {
-        logger.warning("******** Playback finished");
     }
 }

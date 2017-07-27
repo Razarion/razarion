@@ -20,10 +20,6 @@ import java.util.function.Function;
 @ApplicationScoped
 public class CockpitService {
     @Inject
-    private PlanetService planetService;
-    @Inject
-    private GameUiControl gameUiControl;
-    @Inject
     private LevelService levelService;
     @Inject
     private Instance<SideCockpit> sideCockpitInstance;
@@ -38,6 +34,10 @@ public class CockpitService {
     public void show(UserContext userContext) {
         sideCockpit.show();
         updateLevelAndXp(userContext);
+    }
+
+    public void hide() {
+        sideCockpit.hide();
     }
 
     public void updateLevelAndXp(UserContext userContext) {

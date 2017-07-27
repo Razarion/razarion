@@ -1,9 +1,11 @@
-package com.btxtech.client;
+package com.btxtech.client.playback;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.control.PlaybackControl;
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -11,7 +13,9 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.Date;
 
 /**
  * Created by Beat
@@ -23,14 +27,26 @@ public class ClientPlaybackControl extends PlaybackControl {
     private GameCanvas gameCanvas;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private CockpitService cockpitService;
     private Context2d mousePlaybackContext;
     private Index lastMousePosition;
     private Canvas mousePlaybackCanvas;
+    @Inject
+    private Instance<PlaybackSidebar> playbackSidebarInstance;
+    private PlaybackSidebar playbackSidebar;
+    private Date endTimeStamp;
 
     @Override
-    protected void activatePlaybackMode() {
+    protected void activatePlaybackMode(Date startTimeStamp, DetailedTracking endDetailedTracking) {
         gameCanvas.enterPlaybackMode();
         showMousePlaybackPanel();
+        cockpitService.hide();
+        endTimeStamp = endDetailedTracking.getTimeStamp();
+        playbackSidebar = playbackSidebarInstance.get();
+        RootPanel.get().add(playbackSidebar);
+        playbackSidebar.setPlaybackControl(this);
+        playbackSidebar.displayRemainingTime(endTimeStamp.getTime() - startTimeStamp.getTime());
     }
 
     private void showMousePlaybackPanel() {
@@ -96,5 +112,20 @@ public class ClientPlaybackControl extends PlaybackControl {
             mousePlaybackContext.setStrokeStyle("white");
         }
         mousePlaybackContext.stroke();
+    }
+
+    @Override
+    protected void onNextAction(DetailedTracking nextDetailedTracking) {
+        playbackSidebar.displayRemainingTime(endTimeStamp.getTime() - nextDetailedTracking.getTimeStamp().getTime());
+    }
+
+    @Override
+    protected void onSleeping(long timeToSleep) {
+        playbackSidebar.onOnSleeping(timeToSleep);
+    }
+
+    @Override
+    protected void onFinished() {
+        playbackSidebar.onFinished();
     }
 }

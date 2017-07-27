@@ -15,10 +15,13 @@ import java.util.Date;
  * 17.06.2016.
  */
 public class DisplayUtils {
+    public static final long MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
+    public static final long MILLISECONDS_IN_MINUTE = 1000 * 60 * 60;
     public static final NumberFormat NUMBER_FORMATTER_X_XX = NumberFormat.getFormat("#.##");
     public static final NumberFormat NUMBER_FORMATTER_X_XXX = NumberFormat.getFormat("#.###");
     public static final NumberFormat NUMBER_FORMATTER_X_XXXX = NumberFormat.getFormat("#.####");
     public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
+    public static final DateTimeFormat TIME_FORMATTER = DateTimeFormat.getFormat("mm:ss");
 
     public static String formatVertex(Vertex vertex) {
         return (NUMBER_FORMATTER_X_XX.format(vertex.getX()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getY()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getZ()));
@@ -26,6 +29,16 @@ public class DisplayUtils {
 
     public static String formatDate(Date date) {
         return DATE_TIME_FORMATTER.format(date);
+    }
+
+    public static String formatHourTimeStamp(long timeStamp) {
+        int hours = (int) (timeStamp / MILLISECONDS_IN_HOUR);
+        return hours + ":" + TIME_FORMATTER.format(new Date(timeStamp));
+    }
+
+    public static String formatMinuteTimeStamp(long timeStamp) {
+        int minutes = (int) (timeStamp / MILLISECONDS_IN_MINUTE);
+        return minutes + ":" + (timeStamp / 1000);
     }
 
     public static String humanReadableSize(long bytes, boolean si) {
@@ -88,7 +101,7 @@ public class DisplayUtils {
 
     public static String handleIndex(Index index) {
         if (index != null) {
-            return "x:"  + index.getX() + " y: " + index.getY();
+            return "x:" + index.getX() + " y: " + index.getY();
         } else {
             return "-";
         }
@@ -104,7 +117,7 @@ public class DisplayUtils {
 
     public static String handleDecimalPosition(DecimalPosition decimalPosition) {
         if (decimalPosition != null) {
-            return "x:"  + NUMBER_FORMATTER_X_XX.format(decimalPosition.getX()) + " y: " + NUMBER_FORMATTER_X_XX.format(decimalPosition.getY());
+            return "x:" + NUMBER_FORMATTER_X_XX.format(decimalPosition.getX()) + " y: " + NUMBER_FORMATTER_X_XX.format(decimalPosition.getY());
         } else {
             return "-";
         }

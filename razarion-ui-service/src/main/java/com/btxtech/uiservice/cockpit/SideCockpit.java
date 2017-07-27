@@ -9,6 +9,8 @@ import com.btxtech.shared.datatypes.Rectangle;
 public interface SideCockpit {
     void show();
 
+    void hide();
+
     void displayResources(int resources);
 
     void displayXps(int xp, int xp2LevelUp);
