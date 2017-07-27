@@ -16,12 +16,13 @@ import java.util.Date;
  */
 public class DisplayUtils {
     public static final long MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
-    public static final long MILLISECONDS_IN_MINUTE = 1000 * 60 * 60;
+    public static final long MILLISECONDS_IN_MINUTE = 1000 * 60;
     public static final NumberFormat NUMBER_FORMATTER_X_XX = NumberFormat.getFormat("#.##");
     public static final NumberFormat NUMBER_FORMATTER_X_XXX = NumberFormat.getFormat("#.###");
     public static final NumberFormat NUMBER_FORMATTER_X_XXXX = NumberFormat.getFormat("#.####");
     public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
-    public static final DateTimeFormat TIME_FORMATTER = DateTimeFormat.getFormat("mm:ss");
+    public static final DateTimeFormat MINUTE_TIME_FORMATTER = DateTimeFormat.getFormat("mm:ss");
+    public static final DateTimeFormat SECOND_TIME_FORMATTER = DateTimeFormat.getFormat("ss");
 
     public static String formatVertex(Vertex vertex) {
         return (NUMBER_FORMATTER_X_XX.format(vertex.getX()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getY()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getZ()));
@@ -33,12 +34,12 @@ public class DisplayUtils {
 
     public static String formatHourTimeStamp(long timeStamp) {
         int hours = (int) (timeStamp / MILLISECONDS_IN_HOUR);
-        return hours + ":" + TIME_FORMATTER.format(new Date(timeStamp));
+        return hours + ":" + MINUTE_TIME_FORMATTER.format(new Date(timeStamp));
     }
 
     public static String formatMinuteTimeStamp(long timeStamp) {
         int minutes = (int) (timeStamp / MILLISECONDS_IN_MINUTE);
-        return minutes + ":" + (timeStamp / 1000);
+        return minutes + ":" + SECOND_TIME_FORMATTER.format(new Date(timeStamp));
     }
 
     public static String humanReadableSize(long bytes, boolean si) {

@@ -3,9 +3,6 @@ package com.btxtech.uiservice.control;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
-import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.LevelService;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
@@ -47,13 +44,7 @@ public class Scene implements ViewService.ViewFieldListener {
     @Inject
     private ModalDialogManager modalDialogManager;
     @Inject
-    private LevelService levelService;
-    @Inject
     private SimpleExecutorService simpleExecutorService;
-    @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private ItemTypeService itemTypeService;
     @Inject
     private GameTipService gameTipService;
     @Inject
