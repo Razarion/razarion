@@ -87,7 +87,7 @@ public class FbFacade {
         try {
             Campaign campaign = account.createCampaign()
                     .setName(name)
-                    .setObjective(Campaign.EnumObjective.VALUE_CANVAS_APP_INSTALLS)
+                    .setObjective(Campaign.EnumObjective.VALUE_APP_INSTALLS)
                     .setSpendCap(10000L) // Min value in Rappen
                     .setStatus(Campaign.EnumStatus.VALUE_PAUSED)
                     .execute();
@@ -177,7 +177,6 @@ public class FbFacade {
                                         .setFieldType(AdCreativeLinkDataCallToAction.EnumType.VALUE_PLAY_GAME)
                                         .setFieldValue(new AdCreativeLinkDataCallToActionValue().setFieldApplication(filePropertiesService.getFacebookAppId())
                                                 .setFieldLink("https://apps.facebook.com/razarion/")
-                                                .setFieldLinkTitle("Razarion")
                                         )
                                 )
                         )
