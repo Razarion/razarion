@@ -39,6 +39,7 @@ export class GameSessionDetail {
   startupTaskDetails: StartupTaskDetail[];
   startupTerminatedDetail: StartupTerminatedDetail;
   inGameTracking: boolean;
+  sceneTrackerDetails: SceneTrackerDetail[];
 }
 
 export class StartupTaskDetail {
@@ -52,4 +53,10 @@ export class StartupTerminatedDetail {
   successful: boolean;
   totalTime: number;
   timeStamp: Date;
+}
+
+export class SceneTrackerDetail {
+  clientStartTime: Date;
+  internalName: string;
+  duration: number;
 }

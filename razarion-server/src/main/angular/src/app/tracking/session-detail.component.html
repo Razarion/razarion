@@ -92,7 +92,26 @@
             gameSessionDetail.startupTerminatedDetail.totalTime / 1000}}
           </td>
         </tr>
-
+      </table>
+  <tr>
+    <td>
+      Scene Tracking
+    </td>
+    <td>
+      <table>
+        <thead>
+        <tr>
+          <th>Client Timestamp</th>
+          <th>Internal Name</th>
+          <th>Duration [s]</th>
+        </tr>
+        <tbody>
+        <tr *ngFor="let sceneTrackerDetail of gameSessionDetail.sceneTrackerDetails">
+          <td>{{ sceneTrackerDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+          <td>{{ sceneTrackerDetail.internalName }}</td>
+          <td>{{ sceneTrackerDetail.duration / 1000}}</td>
+        </tr>
+        </tbody>
       </table>
     </td>
   </tr>

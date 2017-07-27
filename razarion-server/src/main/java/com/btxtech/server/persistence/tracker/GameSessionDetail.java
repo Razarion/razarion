@@ -14,6 +14,7 @@ public class GameSessionDetail {
     private List<StartupTaskDetail> startupTaskDetails;
     private StartupTerminatedDetail startupTerminatedDetail;
     private boolean inGameTracking;
+    private List<SceneTrackerDetail> sceneTrackerDetails;
 
     public Date getTime() {
         return time;
@@ -67,5 +68,13 @@ public class GameSessionDetail {
     public GameSessionDetail setInGameTracking(boolean inGameTracking) {
         this.inGameTracking = inGameTracking;
         return this;
+    }
+
+    public List<SceneTrackerDetail> getSceneTrackerDetails() {
+        return sceneTrackerDetails;
+    }
+
+    public void setSceneTrackerDetails(List<SceneTrackerDetail> sceneTrackerDetails) {
+        this.sceneTrackerDetails = sceneTrackerDetails;
     }
 }
