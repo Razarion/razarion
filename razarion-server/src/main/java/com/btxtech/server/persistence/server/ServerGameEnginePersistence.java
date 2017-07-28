@@ -2,6 +2,8 @@ package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.MasterPlanetConfig;
@@ -33,10 +35,14 @@ public class ServerGameEnginePersistence {
     private PlanetPersistence planetPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
+    @Inject
+    private LevelPersistence levelPersistence;
 
     @Transactional
-    public SlavePlanetConfig readSlavePlanetConfig() {
-        return read().getSlavePlanetConfig();
+    public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
+        SlavePlanetConfig slavePlanetConfig = new SlavePlanetConfig();
+        slavePlanetConfig.setStartRegion(read().findStartRegion(levelPersistence.getLevelNumber4Id(levelId)));
+        return slavePlanetConfig;
     }
 
     @Transactional
@@ -58,7 +64,7 @@ public class ServerGameEnginePersistence {
     @SecurityCheck
     public void updatePlanetConfig(Integer planetConfigId) {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
-        if(planetConfigId != null) {
+        if (planetConfigId != null) {
             serverGameEngineConfigEntity.setPlanetEntity(planetPersistence.loadPlanet(planetConfigId));
         } else {
             serverGameEngineConfigEntity.setPlanetEntity(null);
@@ -68,9 +74,17 @@ public class ServerGameEnginePersistence {
 
     @Transactional
     @SecurityCheck
-    public void updateStartRegion(List<DecimalPosition> startRegion) {
+    public void updateStartRegion(int levelId, List<DecimalPosition> startRegion) {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
-        serverGameEngineConfigEntity.setStartRegion(startRegion);
+        serverGameEngineConfigEntity.setStartRegion(levelPersistence.getLevel4Id(levelId), startRegion);
+        entityManager.merge(serverGameEngineConfigEntity);
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void clearStartRegion(int levelId) {
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        serverGameEngineConfigEntity.clearStartRegion(levelPersistence.getLevel4Id(levelId));
         entityManager.merge(serverGameEngineConfigEntity);
     }
 

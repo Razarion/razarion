@@ -70,6 +70,7 @@ public class ArquillianBaseTest {
     public static int LEVEL_2_ID;
     public static int LEVEL_3_ID;
     public static int LEVEL_4_ID;
+    public static int LEVEL_5_ID;
     // Planet
     public static int PLANET_1_ID;
     public static int PLANET_2_ID;
@@ -280,6 +281,16 @@ public class ArquillianBaseTest {
         levelEntity4.fromLevelConfig(new LevelConfig().setNumber(4).setXp2LevelUp(40), itemTypeLimitation4);
         em.persist(levelEntity4);
         LEVEL_4_ID = levelEntity4.getId();
+        // Level 5
+        LevelEntity levelEntity5 = new LevelEntity();
+        Map<BaseItemTypeEntity, Integer> itemTypeLimitation5 = new HashMap<>();
+        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 4);
+        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
+        levelEntity5.fromLevelConfig(new LevelConfig().setNumber(5).setXp2LevelUp(50), itemTypeLimitation5);
+        em.persist(levelEntity5);
+        LEVEL_5_ID = levelEntity5.getId();
 
         utx.commit();
     }

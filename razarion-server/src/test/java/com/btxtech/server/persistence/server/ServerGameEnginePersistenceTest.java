@@ -11,10 +11,11 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
-import org.unitils.reflectionassert.ReflectionComparatorMode;
 import org.unitils.reflectionassert.comparator.impl.ObjectComparatorIgnore;
 
 import javax.inject.Inject;
@@ -36,9 +37,18 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Before
+    public void before() throws Exception {
+        setupPlanets();
+    }
+
+    @After
+    public void after() throws Exception {
+        cleanPlanets();
+    }
+
     @Test
     public void crudBot() throws Exception {
-        setupPlanets();
         Assert.assertTrue(serverGameEnginePersistence.readBotConfigs().isEmpty());
 
         List<BotConfig> expectedBots = setupServerBots1();
@@ -56,14 +66,10 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotItemConfigEntity b").getSingleResult());
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(p) FROM PlaceConfigEntity p").getSingleResult());
         assertEmptyCountNative("SERVER_GAME_ENGINE_BOT_CONFIG");
-
-        cleanPlanets();
     }
 
     @Test
     public void crudPlanetConfig() throws Exception {
-        setupPlanets();
-
         Assert.assertEquals(PLANET_2_ID, serverGameEnginePersistence.readPlanetConfig().getPlanetId());
 
         int planetId = planetPersistence.createPlanetConfig();
@@ -82,32 +88,83 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
 
         planetPersistence.deletePlanetConfig(planetId);
         assertCount(2, PlanetEntity.class);
-        cleanPlanets();
     }
 
     @Test
     public void crudSlavePlanetConfig() throws Exception {
-        setupPlanets();
+        try {
+            Polygon2D notExpected = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+            Assert.fail("IllegalArgumentException expected: " + notExpected);
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
 
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig().getStartRegion());
+        // Add first
+        Polygon2D expectedStartRegion1 = new Polygon2D(Arrays.asList(new DecimalPosition(100, 100), new DecimalPosition(300, 100), new DecimalPosition(300, 300), new DecimalPosition(100, 300)));
+        serverGameEnginePersistence.updateStartRegion(LEVEL_4_ID, expectedStartRegion1.getCorners());
 
-        Polygon2D expectedStartRegion = new Polygon2D(Arrays.asList(new DecimalPosition(100, 100), new DecimalPosition(300, 100), new DecimalPosition(300, 300), new DecimalPosition(100, 300)));
-        serverGameEnginePersistence.updateStartRegion(expectedStartRegion.getCorners());
-        Polygon2D actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig().getStartRegion();
-        ReflectionAssert.assertReflectionEquals(expectedStartRegion, actualStartRegion);
+        // Verify
+        Polygon2D actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
-        serverGameEnginePersistence.updateStartRegion(new ArrayList<>());
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig().getStartRegion());
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
-        Assert.assertEquals(0, ((Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM SERVER_GAME_ENGINE_START_REGION").getSingleResult()).intValue());
+        // Add second
+        Polygon2D expectedStartRegion2 = new Polygon2D(Arrays.asList(new DecimalPosition(200, 200), new DecimalPosition(400, 200), new DecimalPosition(400, 400), new DecimalPosition(200, 400)));
+        serverGameEnginePersistence.updateStartRegion(LEVEL_5_ID, expectedStartRegion2.getCorners());
 
-        cleanPlanets();
+        // Verify
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
+
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion2, actualStartRegion);
+
+        // Update second
+        Polygon2D expectedStartRegion3 = new Polygon2D(Arrays.asList(new DecimalPosition(500, 600), new DecimalPosition(700, 600), new DecimalPosition(400, 1000)));
+        serverGameEnginePersistence.updateStartRegion(LEVEL_5_ID, expectedStartRegion3.getCorners());
+
+        // Verify
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
+
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
+
+        // Remove second
+        serverGameEnginePersistence.clearStartRegion(LEVEL_5_ID);
+
+        // Verify
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
+
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
+
+        // Remove first
+        serverGameEnginePersistence.clearStartRegion(LEVEL_4_ID);
+
+        // Verify
+        try {
+            Polygon2D notExpected = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+            Assert.fail("IllegalArgumentException expected: " + notExpected);
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        try {
+            Polygon2D notExpected = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+            Assert.fail("IllegalArgumentException expected: " + notExpected);
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        assertEmptyCount(StartRegionLevelConfigEntity.class);
+        assertEmptyCountNative("SERVER_START_REGION_LEVEL_CONFIG_POLYGON");
     }
 
     @Test
     public void crudMasterPlanetConfig() throws Exception {
-        setupPlanets();
-
         Assert.assertTrue(serverGameEnginePersistence.readMasterPlanetConfig().getResourceRegionConfigs().isEmpty());
         List<ResourceRegionConfig> expectedResourceRegionConfigs = setupResourceRegionConfigs1();
         serverGameEnginePersistence.updateResourceRegionConfigs(expectedResourceRegionConfigs);
@@ -120,8 +177,6 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
 
         assertEmptyCount(PlaceConfigEntity.class);
         assertEmptyCount(ServerResourceRegionConfigEntity.class);
-
-        cleanPlanets();
     }
 
     private List<BotConfig> setupServerBots1() {
