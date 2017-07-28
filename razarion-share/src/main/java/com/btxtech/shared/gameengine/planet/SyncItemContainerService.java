@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
@@ -20,6 +19,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -39,7 +38,6 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class SyncItemContainerService {
-    private static final int MAX_TRIES = 10000;
     private Logger logger = Logger.getLogger(SyncItemContainerService.class.getName());
     private int lastItemId = 1;
     private final HashMap<Integer, SyncItem> items = new HashMap<>();
@@ -327,19 +325,7 @@ public class SyncItemContainerService {
             throw new IllegalArgumentException("To find a random place, a polygon must be set");
         }
 
-        Rectangle2D aabb = polygon.toAabb();
-        Random random = new Random();
-        for (int i = 0; i < MAX_TRIES; i++) {
-            double width = random.nextDouble() * aabb.width();
-            double height = random.nextDouble() * aabb.height();
-            DecimalPosition possiblePosition = aabb.getStart().add(width, height);
-
-            if (!isFree(possiblePosition, radius)) {
-                continue;
-            }
-            return possiblePosition;
-        }
-        throw new PlaceCanNotBeFoundException(radius, placeConfig);
+        return GeometricUtil.findFreeRandomPosition(polygon, decimalPosition -> isFree(decimalPosition, radius));
     }
 
     private boolean isFree(DecimalPosition position, double radius) {

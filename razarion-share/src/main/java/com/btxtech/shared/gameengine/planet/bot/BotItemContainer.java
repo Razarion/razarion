@@ -30,7 +30,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
-import com.btxtech.shared.gameengine.datatypes.exception.PlaceCanNotBeFoundException;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionCanNotBeFoundException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -183,7 +183,7 @@ public class BotItemContainer {
             for (int i = 0; i < effectiveNeed; i++) {
                 try {
                     createItem(entry.getKey(), playerBase);
-                } catch (PlaceCanNotBeFoundException t) {
+                } catch (PositionCanNotBeFoundException t) {
                     log.warning(botName + ": " + t.getMessage());
                 } catch (Exception e) {
                     log.log(Level.SEVERE, botName, e);

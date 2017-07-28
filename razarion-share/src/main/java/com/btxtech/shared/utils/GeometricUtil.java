@@ -12,12 +12,14 @@ import com.btxtech.shared.datatypes.TerrainTriangleCorner;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Triangle3D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.exception.PositionCanNotBeFoundException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
@@ -27,6 +29,8 @@ import java.util.function.IntToDoubleFunction;
  * 03.06.2016.
  */
 public class GeometricUtil {
+    private static final int MAX_TRIES = 10000;
+
     public static DecimalPosition calculateMinimalPosition(DecimalPosition... positions) {
         if (positions.length == 0) {
             throw new IllegalArgumentException("No positions");
@@ -238,4 +242,25 @@ public class GeometricUtil {
         }
         return null;
     }
+
+    public static DecimalPosition findFreeRandomPosition(Polygon2D polygon, Function<DecimalPosition, Boolean> freeCallback) {
+        Rectangle2D aabb = polygon.toAabb();
+        Random random = new Random();
+        for (int i = 0; i < MAX_TRIES; i++) {
+            double width = random.nextDouble() * aabb.width();
+            double height = random.nextDouble() * aabb.height();
+            DecimalPosition possiblePosition = aabb.getStart().add(width, height);
+
+            if(!polygon.isInside(possiblePosition)) {
+                continue;
+            }
+
+            if (freeCallback != null && !freeCallback.apply(possiblePosition)) {
+                continue;
+            }
+            return possiblePosition;
+        }
+        throw new PositionCanNotBeFoundException();
+    }
+
 }

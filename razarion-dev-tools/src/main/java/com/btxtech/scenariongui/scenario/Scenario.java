@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Free Random Position", new FreeRandomPositionScenario());
         register("Clearance Hole", new ClearanceHoleScenario());
         register("PathingAccess InSight", new PathingAccessInSightScenario());
         register("Display Polygon", new DisplayPolygonScenario());

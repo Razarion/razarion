@@ -41,13 +41,13 @@ public class InstanceStringGenerator {
         return builder.toString();
     }
 
-    public static String generateDecimalPositionList(List<DecimalPosition> indexList) {
+    public static String generateDecimalPositionList(List<DecimalPosition> positions) {
         StringBuilder builder = new StringBuilder();
-        builder.append("List<Index> positions = Arrays.asList(");
-        for (int i = 0; i < indexList.size(); i++) {
-            DecimalPosition decimalPosition = indexList.get(i);
+        builder.append("List<DecimalPosition> positions = Arrays.asList(");
+        for (int i = 0; i < positions.size(); i++) {
+            DecimalPosition decimalPosition = positions.get(i);
             builder.append(generate(decimalPosition));
-            if (i < indexList.size() - 1) {
+            if (i < positions.size() - 1) {
                 builder.append(", ");
             }
         }

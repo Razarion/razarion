@@ -317,6 +317,12 @@ public class ExtendedGraphicsContext {
         strokePolygon(polygon.getCorners(), strokeWidth, color, showPoint);
     }
 
+    public void strokeCircle(Circle2D circle2D, double lineWidth, Color color) {
+        gc.setStroke(color);
+        gc.setLineWidth(lineWidth);
+        gc.strokeOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2.0 * circle2D.getRadius(), 2.0 * circle2D.getRadius());
+    }
+
     public void drawTerrainTile(TerrainTile terrainTile, double lineWidth, Paint ground, Paint zColor, Paint splattingColor) {
         gc.setLineWidth(lineWidth);
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
