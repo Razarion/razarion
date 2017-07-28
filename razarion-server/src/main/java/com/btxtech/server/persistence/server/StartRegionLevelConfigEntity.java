@@ -49,7 +49,9 @@ public class StartRegionLevelConfigEntity {
         } else {
             this.startRegion.clear();
         }
-        this.startRegion.addAll(startRegion);
+        if (startRegion != null) {
+            this.startRegion.addAll(startRegion);
+        }
     }
 
     public LevelEntity getMinimalLevel() {

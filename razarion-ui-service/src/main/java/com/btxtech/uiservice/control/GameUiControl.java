@@ -266,9 +266,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     private List<SceneConfig> setupSlaveSpawnScenes() {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        DecimalPosition position = GeometricUtil.findFreeRandomPosition(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion(), null);
+        DecimalPosition position = null;
+        if (coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion() != null) {
+            position = GeometricUtil.findFreeRandomPosition(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion(), null);
+            sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
+        }
         // Set camera Position
-        sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
         // Fade out
         sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true));
         // User Spawn

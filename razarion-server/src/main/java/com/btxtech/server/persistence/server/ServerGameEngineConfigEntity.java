@@ -157,7 +157,7 @@ public class ServerGameEngineConfigEntity {
             }
         }
         if (result == null) {
-            throw new IllegalArgumentException("No StartRegionLevelConfigEntity for level number: " + levelNumber + " on ServerGameEngineConfigEntity with id: " + id);
+            return null;
         }
         return result.getStartRegion();
     }

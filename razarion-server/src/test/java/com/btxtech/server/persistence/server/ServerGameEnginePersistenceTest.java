@@ -91,13 +91,8 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
     }
 
     @Test
-    public void crudSlavePlanetConfig() throws Exception {
-        try {
-            Polygon2D notExpected = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
-            Assert.fail("IllegalArgumentException expected: " + notExpected);
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
+    public void crudStartRegion() throws Exception {
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
 
         // Add first
         Polygon2D expectedStartRegion1 = new Polygon2D(Arrays.asList(new DecimalPosition(100, 100), new DecimalPosition(300, 100), new DecimalPosition(300, 300), new DecimalPosition(100, 300)));
@@ -132,7 +127,17 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
 
+        // Update first
+        serverGameEnginePersistence.updateStartRegion(LEVEL_4_ID, null);
+
+        // Verify
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
+
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
+
         // Remove second
+        serverGameEnginePersistence.updateStartRegion(LEVEL_4_ID, expectedStartRegion1.getCorners());
         serverGameEnginePersistence.clearStartRegion(LEVEL_5_ID);
 
         // Verify
@@ -145,19 +150,8 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         // Remove first
         serverGameEnginePersistence.clearStartRegion(LEVEL_4_ID);
 
-        // Verify
-        try {
-            Polygon2D notExpected = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
-            Assert.fail("IllegalArgumentException expected: " + notExpected);
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
-        try {
-            Polygon2D notExpected = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
-            Assert.fail("IllegalArgumentException expected: " + notExpected);
-        } catch (IllegalArgumentException e) {
-            // Expected
-        }
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion());
 
         assertEmptyCount(StartRegionLevelConfigEntity.class);
         assertEmptyCountNative("SERVER_START_REGION_LEVEL_CONFIG_POLYGON");
