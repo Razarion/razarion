@@ -47,4 +47,8 @@ public class LevelService {
         int newIndex = orderedLevels.indexOf(level) + 1;
         return orderedLevels.get(newIndex);
     }
+
+    public List<LevelConfig> getOrderedLevels() {
+        return orderedLevels;
+    }
 }

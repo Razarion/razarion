@@ -574,8 +574,14 @@ a:active {
 /** -------------------------- EDITOR -------------------------- */
 /** --- Gallery table --- */
 .generic-gallery-table {
-    overflow: hidden;
+    /*overflow: hidden;*/
     border-collapse: collapse;
+}
+
+.generic-gallery-table-head {
+    border: 1px solid #3289bd;
+    background-color: #3289bd;
+    color: #d8d0d0;
 }
 
 .generic-gallery-table-row {
