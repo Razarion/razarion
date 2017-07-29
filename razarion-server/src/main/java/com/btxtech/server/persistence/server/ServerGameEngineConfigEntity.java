@@ -4,10 +4,13 @@ import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
+import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
@@ -26,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -106,39 +110,49 @@ public class ServerGameEngineConfigEntity {
         }
     }
 
-    public void setStartRegion(LevelEntity levelEntity, List<DecimalPosition> startRegion) {
-        StartRegionLevelConfigEntity startRegionLevelConfigEntity = null;
+    public List<ObjectNameId> readStartRegionObjectNameIds() {
         if (startRegionLevelConfigs == null) {
-            startRegionLevelConfigs = new ArrayList<>();
-            startRegionLevelConfigEntity = new StartRegionLevelConfigEntity();
-            startRegionLevelConfigEntity.setMinimalLevel(levelEntity);
-            startRegionLevelConfigs.add(startRegionLevelConfigEntity);
+            return new ArrayList<>();
         } else {
-            for (StartRegionLevelConfigEntity current : startRegionLevelConfigs) {
-                if (current.getMinimalLevel().equals(levelEntity)) {
-                    startRegionLevelConfigEntity = current;
-                    break;
-                }
-            }
-            if (startRegionLevelConfigEntity == null) {
-                startRegionLevelConfigEntity = new StartRegionLevelConfigEntity();
-                startRegionLevelConfigEntity.setMinimalLevel(levelEntity);
-                startRegionLevelConfigs.add(startRegionLevelConfigEntity);
-            }
+            return startRegionLevelConfigs.stream().map(StartRegionLevelConfigEntity::createObjectNameId).collect(Collectors.toList());
         }
-        startRegionLevelConfigEntity.setStartRegion(startRegion);
     }
 
-    public void clearStartRegion(LevelEntity levelEntity) {
-        if (startRegionLevelConfigs == null) {
-            return;
+    public StartRegionConfig readStartRegionConfig(int id) {
+        if (startRegionLevelConfigs != null) {
+            return startRegionLevelConfigs.stream().filter(startRegionLevelConfigEntity -> id == startRegionLevelConfigEntity.getId()).findFirst().map(StartRegionLevelConfigEntity::toStartRegionConfig).orElseThrow(() -> new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id));
+        } else {
+            throw new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id);
         }
-        for (Iterator<StartRegionLevelConfigEntity> iterator = startRegionLevelConfigs.iterator(); iterator.hasNext(); ) {
-            StartRegionLevelConfigEntity current = iterator.next();
-            if (current.getMinimalLevel().equals(levelEntity)) {
-                iterator.remove();
-                return;
+    }
+
+    public StartRegionLevelConfigEntity createStartRegionConfig() {
+        if (startRegionLevelConfigs == null) {
+            startRegionLevelConfigs = new ArrayList<>();
+        }
+        StartRegionLevelConfigEntity startRegionLevelConfigEntity = new StartRegionLevelConfigEntity();
+        startRegionLevelConfigs.add(startRegionLevelConfigEntity);
+        return startRegionLevelConfigEntity;
+    }
+
+    public void updateStartRegionConfig(StartRegionConfig startRegionConfig, LevelPersistence levelPersistence) {
+        if (startRegionLevelConfigs != null) {
+            StartRegionLevelConfigEntity startRegionLevelConfigEntityDb = startRegionLevelConfigs.stream().filter(startRegionLevelConfigEntity -> startRegionConfig.getId() == startRegionLevelConfigEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + id + " on ServerGameEngineConfigEntity: " + this.id));
+            startRegionLevelConfigEntityDb.setMinimalLevel(levelPersistence.getLevel4Id(startRegionConfig.getMinimalLevelId()));
+            startRegionLevelConfigEntityDb.setInternalName(startRegionConfig.getInternalName());
+            if (startRegionConfig.getRegion() != null) {
+                startRegionLevelConfigEntityDb.setStartRegion(startRegionConfig.getRegion().getCorners());
+            } else {
+                startRegionLevelConfigEntityDb.setStartRegion(null);
             }
+        } else {
+            throw new IllegalArgumentException("No StartRegionLevelConfigEntity for id: " + startRegionConfig.getId() + " on ServerGameEngineConfigEntity: " + this.id);
+        }
+    }
+
+    public void deleteStartRegion(int id) {
+        if (startRegionLevelConfigs != null) {
+            startRegionLevelConfigs.removeIf(startRegionLevelConfigEntity -> id == startRegionLevelConfigEntity.getId());
         }
     }
 
@@ -149,7 +163,7 @@ public class ServerGameEngineConfigEntity {
         Integer bestLevelNumber = null;
         StartRegionLevelConfigEntity result = null;
         for (StartRegionLevelConfigEntity startRegionLevelConfigEntity : startRegionLevelConfigs) {
-            if (startRegionLevelConfigEntity.getStartRegion() != null && levelNumber >= startRegionLevelConfigEntity.getMinimalLevel().getNumber()) {
+            if (startRegionLevelConfigEntity.getMinimalLevel() != null && startRegionLevelConfigEntity.getStartRegion() != null && levelNumber >= startRegionLevelConfigEntity.getMinimalLevel().getNumber()) {
                 if (bestLevelNumber == null || bestLevelNumber < startRegionLevelConfigEntity.getMinimalLevel().getNumber()) {
                     bestLevelNumber = startRegionLevelConfigEntity.getMinimalLevel().getNumber();
                     result = startRegionLevelConfigEntity;

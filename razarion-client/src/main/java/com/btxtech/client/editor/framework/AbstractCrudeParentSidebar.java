@@ -51,6 +51,7 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
         getCrudEditor().monitor(this);
         getCrudEditor().monitorSelection(this);
         selector.addValueChangeHandler(event -> displayPropertyBook(selector.getValue()));
+        getCrudEditor().init();
     }
 
     @Override

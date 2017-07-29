@@ -13,6 +13,7 @@ import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
 import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
+import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
@@ -51,13 +52,16 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button gameEngineButton;
     @Inject
     @DataField
+    private Button helperButton;
+    @Inject
+    @DataField
     private Button planetVisualConfigButton;
     @Inject
     @DataField
     private Button terrainButton;
     @Inject
     @DataField
-    private Button helperButton;
+    private Button startRegionsButton;
     @Inject
     @DataField
     private Button slopeButton;
@@ -109,6 +113,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
         openEditor(GameEngineEditorPanel.class);
     }
 
+    @EventHandler("helperButton")
+    private void helperButtonClicked(ClickEvent event) {
+        openEditor(HelperSideBar.class);
+    }
+
     @EventHandler("planetVisualConfigButton")
     private void onPanetVisualConfigButtonClicked(ClickEvent event) {
         openEditor(PlanetVisualConfigPanel.class);
@@ -119,9 +128,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
         openEditor(TerrainEditorSidebar.class);
     }
 
-    @EventHandler("helperButton")
-    private void helperButtonClicked(ClickEvent event) {
-        openEditor(HelperSideBar.class);
+    @EventHandler("startRegionsButton")
+    private void startRegionsButtonClicked(ClickEvent event) {
+        openEditor(StartRegionSidebar.class);
     }
 
     @EventHandler("slopeButton")

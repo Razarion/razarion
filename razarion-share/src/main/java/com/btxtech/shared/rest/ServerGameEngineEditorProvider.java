@@ -1,0 +1,49 @@
+package com.btxtech.shared.rest;
+
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.StartRegionConfig;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+
+/**
+ * Created by Beat
+ * on 28.07.2017.
+ */
+@Path(RestUrl.SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH)
+public interface ServerGameEngineEditorProvider {
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readStartRegionObjectNameIds")
+    List<ObjectNameId> readStartRegionObjectNameIds();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readStartRegionConfig/{id}")
+    StartRegionConfig readStartRegionConfig(@PathParam("id") int id);
+
+    @POST
+    @Path("createStartRegionConfig")
+    @Produces(MediaType.APPLICATION_JSON)
+    StartRegionConfig createStartRegionConfig();
+
+    @PUT
+    @Path("updateStartRegionConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateStartRegionConfig(StartRegionConfig startRegionConfig);
+
+    @DELETE
+    @Path("deleteStartRegionConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteStartRegionConfig(int id);
+
+}

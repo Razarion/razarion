@@ -3,6 +3,8 @@ package com.btxtech.server.persistence.server;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.StartRegionConfig;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -28,12 +30,17 @@ public class StartRegionLevelConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     @ElementCollection
     @CollectionTable(name = "SERVER_START_REGION_LEVEL_CONFIG_POLYGON", joinColumns = @JoinColumn(name = "serverEngineLevelConfigId"))
     @OrderColumn(name = "orderColumn")
     private List<DecimalPosition> startRegion;
     @OneToOne(fetch = FetchType.LAZY)
     private LevelEntity minimalLevel;
+
+    public Integer getId() {
+        return id;
+    }
 
     public Polygon2D getStartRegion() {
         if (startRegion != null && !startRegion.isEmpty()) {
@@ -58,8 +65,27 @@ public class StartRegionLevelConfigEntity {
         return minimalLevel;
     }
 
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
     public void setMinimalLevel(LevelEntity minimalLevel) {
         this.minimalLevel = minimalLevel;
+    }
+
+    public StartRegionConfig toStartRegionConfig() {
+        StartRegionConfig startRegionConfig = new StartRegionConfig().setId(id).setInternalName(internalName);
+        if (minimalLevel != null) {
+            startRegionConfig.setMinimalLevelId(minimalLevel.getId());
+        }
+        if (startRegion != null && !startRegion.isEmpty()) {
+            startRegionConfig.setRegion(new Polygon2D(startRegion));
+        }
+        return startRegionConfig;
+    }
+
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override
@@ -79,5 +105,4 @@ public class StartRegionLevelConfigEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

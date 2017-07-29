@@ -49,7 +49,7 @@ public abstract class AbstractCrudeEditor<T> implements CrudEditor<T>, CrudEdito
     }
 
     /**
-     * Fire for reate, delete and name change "structure-change". Everything which influences the parent combo-box.
+     * Fire for create, delete and name change "structure-change". Everything which influences the parent combo-box.
      */
     protected void fire() {
         List<ObjectNameId> objectNameIds = setupObjectNameIds();

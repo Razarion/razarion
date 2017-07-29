@@ -2,13 +2,13 @@ package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
+import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
@@ -74,17 +74,30 @@ public class ServerGameEnginePersistence {
 
     @Transactional
     @SecurityCheck
-    public void updateStartRegion(int levelId, List<DecimalPosition> startRegion) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
-        serverGameEngineConfigEntity.setStartRegion(levelPersistence.getLevel4Id(levelId), startRegion);
-        entityManager.merge(serverGameEngineConfigEntity);
+    public List<ObjectNameId> readStartRegionObjectNameIds() {
+        return read().readStartRegionObjectNameIds();
     }
 
     @Transactional
     @SecurityCheck
-    public void clearStartRegion(int levelId) {
+    public StartRegionConfig readStartRegionConfig(int id) {
+        return read().readStartRegionConfig(id);
+    }
+
+    @Transactional
+    @SecurityCheck
+    public StartRegionConfig createStartRegionConfig() {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
-        serverGameEngineConfigEntity.clearStartRegion(levelPersistence.getLevel4Id(levelId));
+        StartRegionLevelConfigEntity startRegionLevelConfigEntity = serverGameEngineConfigEntity.createStartRegionConfig();
+        entityManager.persist(serverGameEngineConfigEntity); // Ignores changes on parent but child id is set
+        return startRegionLevelConfigEntity.toStartRegionConfig();
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void updateStartRegionConfig(StartRegionConfig startRegionConfig) {
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        serverGameEngineConfigEntity.updateStartRegionConfig(startRegionConfig, levelPersistence);
         entityManager.merge(serverGameEngineConfigEntity);
     }
 
@@ -93,6 +106,14 @@ public class ServerGameEnginePersistence {
     public void updateResourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
         serverGameEngineConfigEntity.setResourceRegionConfigs(itemTypePersistence, resourceRegionConfigs);
+        entityManager.merge(serverGameEngineConfigEntity);
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void deleteStartRegion(int id) {
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        serverGameEngineConfigEntity.deleteStartRegion(id);
         entityManager.merge(serverGameEngineConfigEntity);
     }
 

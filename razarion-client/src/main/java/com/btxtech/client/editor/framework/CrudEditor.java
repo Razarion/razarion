@@ -22,6 +22,10 @@ public interface CrudEditor<T> {
         void onChange(T t);
     }
 
+    default void init() {
+
+    };
+
     void create();
 
     void delete(T t);
