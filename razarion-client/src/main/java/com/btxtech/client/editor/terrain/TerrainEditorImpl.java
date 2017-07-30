@@ -15,7 +15,9 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.uiservice.TerrainEditor;
+import com.btxtech.uiservice.EditorGameEngineListener;
+import com.btxtech.uiservice.EditorKeyboardListener;
+import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
  * 05.05.2016.
  */
 @ApplicationScoped
-public class TerrainEditorImpl implements TerrainEditor {
+public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardListener, EditorGameEngineListener {
     public enum CursorType {
         CREATE,
         MODIFY,
@@ -225,8 +227,8 @@ public class TerrainEditorImpl implements TerrainEditor {
         modifiedTerrainObjects = setupModifiedTerrainObjects();
         terrainObjectModelMatrices = setupModelMatrices();
         renderService.addRenderTask(terrainEditorRenderTask, "Terrain Editor");
-        terrainMouseHandler.setTerrainEditor(this);
-        keyboardEventHandler.setTerrainEditor(this);
+        terrainMouseHandler.setEditorMouseListener(this);
+        keyboardEventHandler.setEditorKeyboardListener(this);
         modifiedSlopes = new ArrayList<>();
         loadFromServer();
     }
@@ -255,8 +257,8 @@ public class TerrainEditorImpl implements TerrainEditor {
         cursor = null;
         modifiedSlopes = null;
         renderService.removeRenderTask(terrainEditorRenderTask);
-        terrainMouseHandler.setTerrainEditor(null);
-        keyboardEventHandler.setTerrainEditor(null);
+        terrainMouseHandler.setEditorMouseListener(null);
+        keyboardEventHandler.setEditorKeyboardListener(null);
         terrainEditorRenderTask.deactivate();
     }
 

@@ -2,6 +2,7 @@ package com.btxtech.client.editor.server.startregion;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.level.LevelField;
+import com.btxtech.client.editor.widgets.polygon.PolygonField;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.google.gwt.user.client.ui.Label;
@@ -34,12 +35,15 @@ public class StartRegionPropertyPanel extends AbstractPropertyPanel<StartRegionC
     @Inject
     @DataField
     private LevelField minimalLevelId;
-
+    @Inject
+    @DataField
+    private PolygonField polygonField;
 
     @Override
     public void init(StartRegionConfig startRegionConfig) {
         dataBinder.setModel(startRegionConfig);
         minimalLevelId.init(startRegionConfig.getMinimalLevelId(), startRegionConfig::setMinimalLevelId);
+        polygonField.init(startRegionConfig.getRegion(), startRegionConfig::setRegion);
     }
 
     @Override

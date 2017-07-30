@@ -10,7 +10,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.TerrainEditor;
+import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -74,7 +74,7 @@ public class TerrainMouseHandler {
     @Inject
     private ItemMarkerService itemMarkerService;
     private GroupSelectionFrame groupSelectionFrame;
-    private TerrainEditor terrainEditor;
+    private EditorMouseListener editorMouseListener;
 
     public void clear() {
         groupSelectionFrame = null;
@@ -87,8 +87,8 @@ public class TerrainMouseHandler {
             if (terrainPosition == null) {
                 return;
             }
-            if (terrainEditor != null) {
-                terrainEditor.onMouseMove(terrainPosition);
+            if (editorMouseListener != null) {
+                editorMouseListener.onMouseMove(terrainPosition);
                 return;
             }
 
@@ -150,8 +150,8 @@ public class TerrainMouseHandler {
             if (shiftKey) {
                 logger.severe("Terrain Position: " + terrainPosition);
             }
-            if (terrainEditor != null) {
-                terrainEditor.onMouseDown(terrainPosition);
+            if (editorMouseListener != null) {
+                editorMouseListener.onMouseDown(terrainPosition);
                 return;
             }
 
@@ -222,8 +222,8 @@ public class TerrainMouseHandler {
                 return;
             }
 
-            if (terrainEditor != null) {
-                terrainEditor.onMouseUp();
+            if (editorMouseListener != null) {
+                editorMouseListener.onMouseUp();
                 return;
             }
 
@@ -254,8 +254,8 @@ public class TerrainMouseHandler {
         }
     }
 
-    public void setTerrainEditor(TerrainEditor terrainEditor) {
-        this.terrainEditor = terrainEditor;
+    public void setEditorMouseListener(EditorMouseListener editorMouseListener) {
+        this.editorMouseListener = editorMouseListener;
     }
 
     private Vertex setupTerrainPosition(int x, int y, int width, int height) {

@@ -1,8 +1,8 @@
 package com.btxtech.client;
 
 
+import com.btxtech.uiservice.EditorKeyboardListener;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.TerrainEditor;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import elemental.client.Browser;
@@ -28,7 +28,7 @@ public class KeyboardEventHandler {
     @Inject
     private SelectionHandler selectionHandler;
     private Set<Integer> keysDown = new HashSet<>();
-    private TerrainEditor terrainEditor;
+    private EditorKeyboardListener editorKeyboardListener;
 
     public void init() {
         Browser.getWindow().addEventListener(Event.KEYDOWN, evt -> {
@@ -62,12 +62,12 @@ public class KeyboardEventHandler {
                 }
                 if (!keysDown.contains(keyboardEvent.getKeyCode())) {
                     keysDown.add(keyboardEvent.getKeyCode());
-                    if (terrainEditor != null) {
+                    if (editorKeyboardListener != null) {
                         if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
-                            terrainEditor.onDeleteKeyDown(true);
+                            editorKeyboardListener.onDeleteKeyDown(true);
                         }
                         if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
-                            terrainEditor.onSpaceKeyDown(true);
+                            editorKeyboardListener.onSpaceKeyDown(true);
                         }
                     }
                 }
@@ -101,12 +101,12 @@ public class KeyboardEventHandler {
                     }
                 }
                 keysDown.remove(keyboardEvent.getKeyCode());
-                if (terrainEditor != null) {
+                if (editorKeyboardListener != null) {
                     if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
-                        terrainEditor.onDeleteKeyDown(false);
+                        editorKeyboardListener.onDeleteKeyDown(false);
                     }
                     if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
-                        terrainEditor.onSpaceKeyDown(false);
+                        editorKeyboardListener.onSpaceKeyDown(false);
                     }
                 }
 
@@ -116,7 +116,7 @@ public class KeyboardEventHandler {
         }, true);
     }
 
-    public void setTerrainEditor(TerrainEditor terrainEditor) {
-        this.terrainEditor = terrainEditor;
+    public void setEditorKeyboardListener(EditorKeyboardListener editorKeyboardListener) {
+        this.editorKeyboardListener = editorKeyboardListener;
     }
 }

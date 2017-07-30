@@ -29,8 +29,8 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
+import com.btxtech.uiservice.EditorGameEngineListener;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.TerrainEditor;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -84,7 +84,7 @@ public abstract class GameEngineControl {
     @Inject
     private ClientRunner clientRunner;
     @Inject
-    private Instance<TerrainEditor> terrainEditorInstance;
+    private Instance<EditorGameEngineListener> editorListener;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
 
@@ -344,7 +344,7 @@ public abstract class GameEngineControl {
                 onStopped();
                 break;
             case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
-                terrainEditorInstance.get().onTerrainShapeReloaded((String) controlPackage.getData(0));
+                editorListener.get().onTerrainShapeReloaded((String) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

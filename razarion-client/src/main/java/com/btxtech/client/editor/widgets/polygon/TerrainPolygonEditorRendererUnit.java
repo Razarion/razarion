@@ -1,5 +1,6 @@
-package com.btxtech.client.editor.renderer;
+package com.btxtech.client.editor.widgets.polygon;
 
+import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -27,15 +28,9 @@ import java.util.List;
  */
 @ColorBufferRenderer
 @Dependent
-public class TerrainMarkerRendererUnit extends AbstractRenderUnit<List<Vertex>> {
+public class TerrainPolygonEditorRendererUnit extends AbstractRenderUnit<List<Vertex>> {
     @Inject
     private WebGlFacade webGlFacade;
-    @Inject
-    private Camera camera;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
-    @Inject
-    private MonitorRenderTask monitorRenderTask;
     private VertexShaderAttribute positions;
     private WebGLUniformLocation colorUniformLocation;
 
