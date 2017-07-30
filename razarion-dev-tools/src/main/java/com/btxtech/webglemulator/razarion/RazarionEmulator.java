@@ -3,13 +3,16 @@ package com.btxtech.webglemulator.razarion;
 import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.i18n.I18nConstants;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.btxtech.webglemulator.WebGlEmulatorController;
 import com.btxtech.webglemulator.ClientViewController;
+import com.btxtech.webglemulator.WebGlEmulatorController;
 import javafx.application.Platform;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.lang.reflect.Proxy;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +57,7 @@ public class RazarionEmulator {
             gameUiControl.start();
             renderService.setup();
             controller.onEngineInitialized();
+            I18nHelper.setConstants((I18nConstants) Proxy.newProxyInstance(I18nConstants.class.getClassLoader(), new Class[]{I18nConstants.class}, (proxy, method, args) -> method.getName()));
             startRenderLoop();
         } catch (Exception e) {
             e.printStackTrace();
