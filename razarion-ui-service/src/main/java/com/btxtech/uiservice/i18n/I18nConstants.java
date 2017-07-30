@@ -166,6 +166,10 @@ public interface I18nConstants {
 
     String startTutorialFinished();
 
+    String useRightMouseButtonTitle();
+
+    String useRightMouseButtonMoveMessage();
+
     // Connection
     String connectionFailed();
 

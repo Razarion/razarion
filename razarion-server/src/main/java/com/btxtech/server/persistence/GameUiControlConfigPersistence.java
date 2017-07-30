@@ -5,7 +5,6 @@ import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
-import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
@@ -44,8 +43,6 @@ public class GameUiControlConfigPersistence {
     private GameEngineService gameEngineService;
     @Inject
     private LevelPersistence levelPersistence;
-    @Inject
-    private UserService userService;
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
     @Inject
@@ -111,6 +108,7 @@ public class GameUiControlConfigPersistence {
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SOUTH_LEFT_MOUSE_IMAGE));
         gameTipVisualConfig.setDirectionShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_DIRECTION_SHAPE3D));
         gameTipVisualConfig.setSplashScrollImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SPLASH_SCROLL_IMAGE));
+        gameTipVisualConfig.setUseRightMouseButtonImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_USE_RIGHT_MOUSE_BUTTON_IMAGE));
         return gameTipVisualConfig;
     }
 

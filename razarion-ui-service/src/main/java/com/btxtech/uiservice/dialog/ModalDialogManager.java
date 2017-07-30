@@ -33,6 +33,8 @@ public abstract class ModalDialogManager {
 
     public abstract void showLeaveStartTutorial(Runnable closeListener);
 
+    public abstract void showMessageImageDialog(String title, String message, Integer imageId);
+
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, () -> {
             if (questPassedCallback != null) {

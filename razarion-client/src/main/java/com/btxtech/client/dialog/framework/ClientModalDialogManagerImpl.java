@@ -3,6 +3,8 @@ package com.btxtech.client.dialog.framework;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
 import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.dialog.common.MessageDialog;
+import com.btxtech.client.dialog.common.MessageImage;
+import com.btxtech.client.dialog.common.MessageImageDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -77,6 +79,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     @Override
     public void showLeaveStartTutorial(Runnable closeListener) {
         show(I18nHelper.getConstants().nextPlanet(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, MessageDialog.class, I18nHelper.getConstants().startTutorialFinished(), (button, value) -> closeListener.run(), null, DialogButton.Button.OK);
+    }
+
+    @Override
+    public void showMessageImageDialog(String title, String message, Integer imageId) {
+        show(title, Type.STACK_ABLE, MessageImageDialog.class, new MessageImage(message, imageId), null, null, DialogButton.Button.CLOSE);
     }
 
     public void showMessageDialog(String title, String message) {

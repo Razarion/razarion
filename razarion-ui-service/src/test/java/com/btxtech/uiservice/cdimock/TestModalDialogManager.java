@@ -48,4 +48,9 @@ public class TestModalDialogManager extends ModalDialogManager {
     public void showLeaveStartTutorial(Runnable closeListener) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void showMessageImageDialog(String title, String message, Integer imageId) {
+        throw new UnsupportedOperationException();
+    }
 }

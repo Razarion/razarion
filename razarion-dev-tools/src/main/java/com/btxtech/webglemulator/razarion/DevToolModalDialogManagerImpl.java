@@ -96,4 +96,15 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
             closeListener.run();
         });
     }
+
+    @Override
+    public void showMessageImageDialog(String title, String message, Integer imageId) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Right Mouse Button");
+            alert.setHeaderText(null);
+            alert.setContentText("To execute the move command, use the rigt mouse button");
+            alert.showAndWait();
+        });
+    }
 }

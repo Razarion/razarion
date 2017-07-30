@@ -1,14 +1,12 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.uiservice.Group;
 import com.btxtech.shared.dto.GameTipVisualConfig;
-import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
@@ -31,13 +29,9 @@ import java.util.Map;
  */
 public abstract class AbstractTipTask {
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
     private SelectionHandler selectionHandler;
     @Inject
     private QuestVisualizer questVisualizer;
-    @Inject
-    private ItemTypeService itemTypeService;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -75,6 +69,10 @@ public abstract class AbstractTipTask {
 
     // Override ins subclasses
     protected void onOwnSelectionChanged(Group selectedGroup) {
+    }
+
+    // Override ins subclasses
+    protected void onSelectionCleared() {
     }
 
     // Override ins subclasses
@@ -122,6 +120,7 @@ public abstract class AbstractTipTask {
     final void onSelectionChanged(SelectionEvent selectionEvent) {
         switch (selectionEvent.getType()) {
             case CLEAR: {
+                onSelectionCleared();
                 if (failOnSelectionCleared) {
                     onFailed();
                 }

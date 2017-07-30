@@ -1,6 +1,8 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.btxtech.uiservice.tip.visualization.InGamePositionTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
@@ -17,11 +19,18 @@ import javax.inject.Inject;
 public class SendMoveCommandTipTask extends AbstractTipTask {
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private ModalDialogManager modalDialogManager;
     private DecimalPosition position;
 
     public void init(DecimalPosition position) {
         this.position = position;
         activateFailOnSelectionCleared();
+    }
+
+    @Override
+    protected void onSelectionCleared() {
+        modalDialogManager.showMessageImageDialog(I18nHelper.getConstants().useRightMouseButtonTitle(), I18nHelper.getConstants().useRightMouseButtonMoveMessage(), getGameTipVisualConfig().getUseRightMouseButtonImageId());
     }
 
     @Override
