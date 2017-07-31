@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.tip.GameTipService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -20,8 +19,6 @@ import javax.inject.Inject;
 public class TipTaskFactory {
     @Inject
     private Instance<AbstractTipTask> tipTaskInstance;
-    @Inject
-    private GameUiControl gameUiControl;
     @Inject
     private InventoryService inventoryService;
 
