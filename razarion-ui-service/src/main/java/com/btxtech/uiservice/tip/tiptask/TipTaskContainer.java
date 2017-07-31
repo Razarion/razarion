@@ -2,7 +2,6 @@ package com.btxtech.uiservice.tip.tiptask;
 
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.tip.GameTipService;
@@ -17,8 +16,7 @@ import java.util.List;
  * Time: 12:23
  */
 public class TipTaskContainer {
-    private List<AbstractTipTask> abstractTipTasks = new ArrayList<AbstractTipTask>();
-    private List<AbstractTipTask> fallbackAbstractTipTasks = new ArrayList<AbstractTipTask>();
+    private List<AbstractTipTask> abstractTipTasks = new ArrayList<>();
     private List<AbstractTipTask> current;
     private GameTipService gameTipService;
     private int currentTaskIndex = 0;
@@ -30,11 +28,6 @@ public class TipTaskContainer {
 
     public void add(AbstractTipTask abstractTipTask) {
         abstractTipTasks.add(abstractTipTask);
-        abstractTipTask.setGameTipService(gameTipService);
-    }
-
-    public void addFallback(AbstractTipTask abstractTipTask) {
-        fallbackAbstractTipTasks.add(abstractTipTask);
         abstractTipTask.setGameTipService(gameTipService);
     }
 
@@ -76,13 +69,8 @@ public class TipTaskContainer {
         }
     }
 
-    public void activateFallback() {
-        if (fallbackAbstractTipTasks.isEmpty()) {
-            current = null;
-        } else {
-            current = fallbackAbstractTipTasks;
-            currentTaskIndex = 0;
-        }
+    public void resetIndex() {
+        currentTaskIndex = 0;
     }
 
     public void onSelectionChanged(SelectionEvent selectionEvent) {
@@ -125,5 +113,9 @@ public class TipTaskContainer {
         if (hasTip()) {
             getCurrentTask().onInventoryItemPlacerActivated(inventoryItem);
         }
+    }
+
+    public boolean isLastTipIdle() {
+        return abstractTipTasks.get(abstractTipTasks.size() - 1) instanceof IdleItemTipTask;
     }
 }

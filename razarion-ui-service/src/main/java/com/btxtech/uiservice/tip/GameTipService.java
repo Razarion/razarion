@@ -140,8 +140,9 @@ public class GameTipService {
             cleanupVisualization();
             tipTaskContainer.next();
             if (!tipTaskContainer.hasTip()) {
-                tipTaskContainer.activateFallback();
-                if (!tipTaskContainer.hasTip()) {
+                if (tipTaskContainer.isLastTipIdle()) {
+                    tipTaskContainer.resetIndex();
+                } else {
                     tipTaskContainer = null;
                     return;
                 }
