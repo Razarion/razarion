@@ -209,6 +209,12 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
     }
 
+    public void onOwnBaseCreated() {
+        if (currentScene != null) {
+            currentScene.onOwnBaseCreated();
+        }
+    }
+
     public void setGameInfo(GameInfo gameInfo) {
         baseItemUiService.updateGameInfo(gameInfo);
         if (gameInfo.getXpFromKills() > 0) {
@@ -259,8 +265,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             position = factoryPosition;
         }
 
-        sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet fade out").setRemoveLoadingCover(true));
         return sceneConfigs;
     }
 
@@ -269,19 +275,15 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         DecimalPosition position = null;
         if (coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion() != null) {
             position = GeometricUtil.findFreeRandomPosition(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion(), null);
-            sceneConfigs.add(new SceneConfig().setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
+            sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
         }
         // Set camera Position
         // Fade out
-        sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet fade out").setRemoveLoadingCover(true));
         // User Spawn
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10).setSuggestedPosition(position);
         baseItemPlacerConfig.setAllowedArea(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion());
-        Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
-        buildupItemTypeCount.put(getPlanetConfig().getStartBaseItemTypeId(), 1);
-        ConditionConfig startConditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
-        sceneConfigs.add(new SceneConfig().setInternalName("Planet 1 Spawn").setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(startConditionConfig).setXp(0).setHidePassedDialog(true)));
-
+        sceneConfigs.add(new SceneConfig().setInternalName("Multiplayer wait for base created").setWaitForBaseCreated(true).setStartPointPlacerConfig(baseItemPlacerConfig));
         return sceneConfigs;
     }
 

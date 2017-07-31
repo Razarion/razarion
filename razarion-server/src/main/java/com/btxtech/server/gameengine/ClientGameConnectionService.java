@@ -50,6 +50,11 @@ public class ClientGameConnectionService {
         sendToClients(GameConnectionPacket.BASE_DELETED, playerBase.getBaseId());
     }
 
+    public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
+        SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
+        sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
+    }
+
     public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
         SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
         sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);

@@ -213,6 +213,7 @@ public class BaseItemUiService {
             }
             if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userUiService.getUserContext().getHumanPlayerId())) {
                 myBase = playerBase;
+                gameUiControl.onOwnBaseCreated();
             }
         }
     }

@@ -80,6 +80,7 @@ public class GameEngineService implements GameLogicListener {
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
+        clientGameConnectionService.onSpawnSyncItemStart(syncBaseItem);
         clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 

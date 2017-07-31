@@ -323,6 +323,10 @@ public interface I18nConstants {
 
     String reallyAbortMission();
 
+    String placeStartItemTitle();
+
+    String placeStartItemDescription();
+
     // Dead-end and new base
     String reachedDeadEnd();
 

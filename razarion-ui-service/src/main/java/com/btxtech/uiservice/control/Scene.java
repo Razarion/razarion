@@ -3,12 +3,14 @@ package com.btxtech.uiservice.control;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
@@ -138,6 +140,11 @@ public class Scene implements ViewService.ViewFieldListener {
             hasCompletionCallback = true;
             completionCallbackCount++;
         }
+        if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            questVisualizer.showSideBar(new QuestDescriptionConfig().setTitle(I18nHelper.getConstants().placeStartItemTitle()).setDescription(I18nHelper.getConstants().placeStartItemDescription()).setHidePassedDialog(true));
+        }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
             completionCallbackCount++;
@@ -155,13 +162,6 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.start(sceneConfig.getGameTipConfig());
         }
-//        if (sceneConfig.getForwardUrl() != null) {
-//            screenCover.fadeOutAndForward(sceneConfig.getForwardUrl());
-//            completionCallbackCount++;
-//            hasCompletionCallback = true;
-//            gameUiControl.finished();
-//        }
-
         if (!hasCompletionCallback) {
             gameUiControl.onSceneCompleted();
         }
@@ -197,6 +197,12 @@ public class Scene implements ViewService.ViewFieldListener {
         }
     }
 
+    public void onOwnBaseCreated() {
+        if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
+            onComplete();
+        }
+    }
+
     public void cleanup() {
         if (sceneConfig.getIntroText() != null) {
             screenCover.hideStoryCover();
@@ -215,6 +221,9 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             viewService.removeViewFieldListeners(this);
+            questVisualizer.showSideBar(null);
+        }
+        if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
             questVisualizer.showSideBar(null);
         }
     }

@@ -26,6 +26,7 @@ public class SceneConfig {
     private Boolean wait4LevelUpDialog;
     private Boolean wait4QuestPassedDialog;
     private Boolean waitForBaseLostDialog;
+    private Boolean waitForBaseCreated;
     private List<ResourceItemPosition> resourceItemTypePositions;
     private Integer duration;
     private ScrollUiQuest scrollUiQuest;
@@ -174,6 +175,15 @@ public class SceneConfig {
 
     public SceneConfig setWaitForBaseLostDialog(Boolean waitForBaseLostDialog) {
         this.waitForBaseLostDialog = waitForBaseLostDialog;
+        return this;
+    }
+
+    public Boolean isWaitForBaseCreated() {
+        return waitForBaseCreated;
+    }
+
+    public SceneConfig setWaitForBaseCreated(Boolean waitForBaseCreated) {
+        this.waitForBaseCreated = waitForBaseCreated;
         return this;
     }
 
