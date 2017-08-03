@@ -13,6 +13,7 @@ public class PlayerSession {
     private String httpSessionId;
     private UserContext userContext;
     private Locale locale;
+    private UnregisteredUser unregisteredUser;
 
     public PlayerSession(String httpSessionId, Locale locale) {
         this.httpSessionId = httpSessionId;
@@ -33,6 +34,14 @@ public class PlayerSession {
 
     public Locale getLocale() {
         return locale;
+    }
+
+    public UnregisteredUser getUnregisteredUser() {
+        return unregisteredUser;
+    }
+
+    public void setUnregisteredUser(UnregisteredUser unregisteredUser) {
+        this.unregisteredUser = unregisteredUser;
     }
 
     @Override

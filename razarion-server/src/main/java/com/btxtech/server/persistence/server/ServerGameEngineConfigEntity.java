@@ -3,9 +3,7 @@ package com.btxtech.server.persistence.server;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
-import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -27,7 +25,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +51,9 @@ public class ServerGameEngineConfigEntity {
             joinColumns = @JoinColumn(name = "serverGameEngineId"),
             inverseJoinColumns = @JoinColumn(name = "botConfigId"))
     private List<BotConfigEntity> botConfigs;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "serverGameEngineConfig")
+    private List<ServerLevelQuestEntity> serverQuestEntities;
 
     public Integer getId() {
         return id;
@@ -174,6 +174,14 @@ public class ServerGameEngineConfigEntity {
             return null;
         }
         return result.getStartRegion();
+    }
+
+    public List<ServerLevelQuestEntity> getServerQuestEntities() {
+        return serverQuestEntities;
+    }
+
+    public void setServerQuestEntities(List<ServerLevelQuestEntity> serverQuestEntities) {
+        this.serverQuestEntities = serverQuestEntities;
     }
 
     @Override

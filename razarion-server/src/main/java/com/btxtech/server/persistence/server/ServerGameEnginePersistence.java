@@ -2,26 +2,37 @@ package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
+import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
+import java.util.function.Function;
 
 /**
  * Created by Beat
@@ -37,6 +48,10 @@ public class ServerGameEnginePersistence {
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private LevelPersistence levelPersistence;
+    @Inject
+    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
+    @Inject
+    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
 
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
@@ -139,4 +154,82 @@ public class ServerGameEnginePersistence {
         }
         return serverGameEngineConfigEntities.get(0);
     }
+
+    public QuestConfigEntity getQuestConfigEntity2(LevelEntity newLevel, Collection<QuestConfigEntity> completedQuests) {
+        return getQuestConfigEntityIntern(newLevel, path -> {
+            if (completedQuests == null || completedQuests.isEmpty()) {
+                return null;
+            } else {
+                return path.get(QuestConfigEntity_.id).in(completedQuests);
+            }
+        });
+    }
+
+    public QuestConfigEntity getQuestConfigEntity(LevelEntity newLevel, Collection<Integer> completedQuestIds) {
+        return getQuestConfigEntityIntern(newLevel, path -> {
+            if (completedQuestIds == null || completedQuestIds.isEmpty()) {
+                return null;
+            } else {
+                return path.in(completedQuestIds);
+            }
+        });
+    }
+
+    private QuestConfigEntity getQuestConfigEntityIntern(LevelEntity newLevel, Function<Path<QuestConfigEntity>, Predicate> inCallback) {
+        // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
+        // ServerGameEngineConfigEntity is not considered in this query
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<QuestConfigEntity> criteriaQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
+        Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
+        CriteriaQuery<QuestConfigEntity> userSelect = criteriaQuery.select(root.join(ServerLevelQuestEntity_.questConfigs));
+        Predicate minimalLevelPredicate = criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), newLevel.getNumber());
+        Predicate inPredicate = inCallback.apply(root.join(ServerLevelQuestEntity_.questConfigs));
+        if (inPredicate != null) {
+            userSelect.where(criteriaBuilder.and(minimalLevelPredicate, criteriaBuilder.not(inPredicate)));
+        } else {
+            userSelect.where(minimalLevelPredicate);
+        }
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number)));
+        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
+    }
+
+    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {
+        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverLevelQuestCrudInstance.get();
+        crud.setRootProvider(this::read).setEntitiesGetter((entityManager) -> read().getServerQuestEntities()).setEntitiesSetter((entityManager, serverLevelQuestEntities) -> read().setServerQuestEntities(serverLevelQuestEntities));
+        crud.setEntityIdProvider(ServerLevelQuestEntity::getId).setConfigIdProvider(ServerLevelQuestConfig::getId);
+        crud.setConfigGenerator(ServerLevelQuestEntity::toServerLevelQuestConfig);
+        crud.setEntityFactory(ServerLevelQuestEntity::new);
+        crud.setEntityFiller((serverLevelQuestEntity, serverLevelQuestConfig) -> {
+            serverLevelQuestEntity.setInternalName(serverLevelQuestConfig.getInternalName());
+            serverLevelQuestEntity.setMinimalLevel(levelPersistence.getLevel4Id(serverLevelQuestConfig.getMinimalLevelId()));
+        });
+        return crud;
+    }
+
+
+    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> getServerQuestCrud(int serverLevelQuestEntityId, Locale locale) {
+        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> crud = serverQuestCrudInstance.get();
+        crud.setRootProvider(this::read);
+        crud.setEntitiesGetter(entityManager -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId).getQuestConfigs());
+        crud.setEntitiesSetter((entityManager, questConfigEntities) -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId).setQuestConfigs(questConfigEntities));
+        crud.setEntityIdProvider(QuestConfigEntity::getId).setConfigIdProvider(QuestConfig::getId);
+        crud.setConfigGenerator(questConfigEntity -> questConfigEntity.toQuestConfig(locale));
+        crud.setEntityFactory(QuestConfigEntity::new);
+        crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, questConfig, locale));
+        return crud;
+    }
+
+//    public QuestConfigEntity getQuestConfigEntity(LevelEntity newLevel, Collection<Integer> completedQuestIds) {
+//        // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
+//        // ServerGameEngineConfigEntity is not considered in this query
+//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<QuestConfigEntity> criteriaQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
+//        Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
+//        CriteriaQuery<QuestConfigEntity> userSelect = criteriaQuery.select(root.get(ServerQuestEntity_.questConfig));
+//        Predicate minimalLevelPredicate = criteriaBuilder.lessThanOrEqualTo(root.join(ServerQuestEntity_.minimalLevel).get(LevelEntity_.number), newLevel.getNumber());
+//        Predicate notInCompetedQuestPredicate = criteriaBuilder.not(root.get(ServerQuestEntity_.questConfig).get(QuestConfigEntity_.id).in(completedQuestIds));
+//        userSelect.where(criteriaBuilder.and(minimalLevelPredicate, notInCompetedQuestPredicate));
+//        criteriaQuery.orderBy(criteriaBuilder.desc(root.join(ServerQuestEntity_.minimalLevel).get(LevelEntity_.number)));
+//        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
+//    }
 }

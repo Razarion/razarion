@@ -2,6 +2,8 @@ package com.btxtech.server.persistence.quest;
 
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 import javax.persistence.CascadeType;
@@ -20,10 +22,11 @@ import java.util.Locale;
  */
 @Entity
 @Table(name = "QUEST")
-public class QuestConfigEntity {
+public class QuestConfigEntity implements ObjectNameIdProvider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity title;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -37,6 +40,10 @@ public class QuestConfigEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private ConditionConfigEntity conditionConfigEntity;
 
+    public Integer getId() {
+        return id;
+    }
+
     public QuestConfig toQuestConfig(Locale locale) {
         QuestConfig questConfig = new QuestConfig().setId(id).setXp(xp).setMoney(money).setCristal(cristal);
         if (title != null) {
@@ -48,7 +55,10 @@ public class QuestConfigEntity {
         if (passedMessage != null) {
             questConfig.setPassedMessage(passedMessage.getString(locale));
         }
-        return questConfig.setConditionConfig(conditionConfigEntity.toQuestConfig()).setHidePassedDialog(hidePassedDialog);
+        if (conditionConfigEntity != null) {
+            questConfig.setConditionConfig(conditionConfigEntity.toQuestConfig()).setHidePassedDialog(hidePassedDialog);
+        }
+        return questConfig;
     }
 
     public void fromQuestConfig(ItemTypePersistence itemTypePersistence, QuestConfig questConfig, Locale locale) {
@@ -91,6 +101,11 @@ public class QuestConfigEntity {
     }
 
     @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -107,5 +122,4 @@ public class QuestConfigEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

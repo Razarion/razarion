@@ -4,13 +4,15 @@ import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
+import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -43,8 +45,6 @@ public class UserService {
     @Inject
     private FilePropertiesService filePropertiesService;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
     private LevelPersistence levelPersistence;
     @Inject
     private Instance<GameUiControlConfigPersistence> gameUiControlConfigPersistence;
@@ -52,6 +52,10 @@ public class UserService {
     private Instance<HistoryPersistence> historyPersistence;
     @Inject
     private SessionService sessionService;
+    @Inject
+    private QuestService questService;
+    @Inject
+    private ServerGameEnginePersistence serverGameEnginePersistence;
     private Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
@@ -59,7 +63,7 @@ public class UserService {
         UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
         if (userContext == null) {
             userContext = createUnregisteredUserContext();
-            loginUserContext(userContext);
+            loginUserContext(userContext, new UnregisteredUser());
         }
         return userContext;
     }
@@ -80,20 +84,20 @@ public class UserService {
         if (alreadyLoggerIn != null && alreadyLoggerIn.getUserId() != null && alreadyLoggerIn.getUserId().equals(userContext.getHumanPlayerId().getUserId())) {
             return sessionHolder.getPlayerSession().getUserContext();
         }
-        return loginUserContext(userContext);
+        return loginUserContext(userContext, null);
     }
 
     @Transactional
     public void handleUnregisteredLogin() {
         logger.warning("handleUnregisteredLogin: " + sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = createUnregisteredUserContext();
-        loginUserContext(userContext);
+        loginUserContext(userContext, new UnregisteredUser());
     }
 
     private UserContext createUnregisteredUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        if(filePropertiesService.isDeveloperMode()) {
+        if (filePropertiesService.isDeveloperMode()) {
             userContext.setLevelId(DEBUG_LEVEL_ID);
         } else {
             userContext.setLevelId(levelPersistence.getStarterLevel().getId());
@@ -102,13 +106,14 @@ public class UserService {
         return userContext;
     }
 
-    private UserContext loginUserContext(UserContext userContext) {
-        sessionHolder.getPlayerSession().setUserContext(userContext);
-        loggedInUserContext.put(sessionHolder.getPlayerSession().getHttpSessionId(), userContext);
+    private UserContext loginUserContext(UserContext userContext, UnregisteredUser unregisteredUser) {
+        PlayerSession playerSession = sessionHolder.getPlayerSession();
+        playerSession.setUserContext(userContext);
+        playerSession.setUnregisteredUser(unregisteredUser);
+        loggedInUserContext.put(playerSession.getHttpSessionId(), userContext);
         return userContext;
     }
 
-    @Transactional
     private UserEntity createUser(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId());
@@ -169,15 +174,27 @@ public class UserService {
     @Transactional
     public void onLevelUpdate(String sessionId, int newLevelId) {
         LevelEntity newLevel = levelPersistence.getLevel4Id(newLevelId);
-        UserContext userContext = sessionService.getSession(sessionId).getUserContext();
+        PlayerSession playerSession = sessionService.getSession(sessionId);
+        UserContext userContext = playerSession.getUserContext();
         historyPersistence.get().onLevelUp(userContext.getHumanPlayerId(), newLevel);
+
         // Temporary: Only save the level if on multiplayer planet. Main reason, tutorial state und units are not saved.
         if (gameUiControlConfigPersistence.get().load4Level(newLevelId).getGameEngineMode() == GameEngineMode.SLAVE) {
             userContext.setLevelId(newLevelId);
+            QuestConfigEntity newQuest = null;
             if (userContext.getHumanPlayerId().getUserId() != null) {
                 UserEntity userEntity = getUserEntity(userContext.getHumanPlayerId().getUserId());
                 userEntity.setLevel(newLevel);
+                if (userEntity.getActiveQuest() == null) {
+                    newQuest = serverGameEnginePersistence.getQuestConfigEntity2(userEntity.getLevel(), userEntity.getCompletedQuest());
+                    userEntity.setActiveQuest(newQuest);
+                }
                 entityManager.merge(userEntity);
+            } else {
+                newQuest = serverGameEnginePersistence.getQuestConfigEntity(newLevel, sessionService.getSession(sessionId).getUnregisteredUser().getCompletedQuestIds());
+            }
+            if (newQuest != null) {
+                questService.activateCondition(userContext.getHumanPlayerId(), newQuest.toQuestConfig(playerSession.getLocale()));
             }
         }
     }
