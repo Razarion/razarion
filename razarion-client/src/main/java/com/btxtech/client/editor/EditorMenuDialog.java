@@ -12,6 +12,7 @@ import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
 import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
+import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
@@ -58,6 +59,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button startRegionsButton;
+    @Inject
+    @DataField
+    private Button levelQuestButton;
     @Inject
     @DataField
     private Button slopeButton;
@@ -122,6 +126,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("startRegionsButton")
     private void startRegionsButtonClicked(ClickEvent event) {
         openEditor(StartRegionSidebar.class);
+    }
+
+    @EventHandler("levelQuestButton")
+    private void levelQuestButtonClicked(ClickEvent event) {
+        openEditor(LevelQuestSidebar.class);
     }
 
     @EventHandler("slopeButton")

@@ -61,9 +61,9 @@ public class StartRegionCrudEditor extends AbstractCrudeEditor<StartRegionConfig
 
     @Override
     public void delete(StartRegionConfig startRegionConfig) {
-        provider.call(new RemoteCallback<StartRegionConfig>() {
+        provider.call(new RemoteCallback<Void>() {
             @Override
-            public void callback(StartRegionConfig startRegionConfig) {
+            public void callback(Void aVoid) {
                 objectNameIds.removeIf(objectNameId -> objectNameId.getId() == startRegionConfig.getId());
                 fire();
             }

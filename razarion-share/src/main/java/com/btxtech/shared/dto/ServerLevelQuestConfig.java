@@ -4,17 +4,17 @@ package com.btxtech.shared.dto;
  * Created by Beat
  * on 03.08.2017.
  */
-public class ServerLevelQuestConfig {
-    private int Id;
+public class ServerLevelQuestConfig implements ObjectNameIdProvider{
+    private int id;
     private String internalName;
     private Integer minimalLevelId;
 
     public int getId() {
-        return Id;
+        return id;
     }
 
     public ServerLevelQuestConfig setId(int id) {
-        Id = id;
+        this.id = id;
         return this;
     }
 
@@ -34,5 +34,10 @@ public class ServerLevelQuestConfig {
     public ServerLevelQuestConfig setMinimalLevelId(Integer minimalLevelId) {
         this.minimalLevelId = minimalLevelId;
         return this;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 }

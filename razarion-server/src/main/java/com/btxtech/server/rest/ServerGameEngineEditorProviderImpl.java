@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -63,6 +64,56 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     public void deleteStartRegionConfig(int id) {
         try {
             serverGameEnginePersistence.deleteStartRegion(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<ObjectNameId> readLevelQuestConfigObjectNameIds() {
+        try {
+            return serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public ServerLevelQuestConfig readLevelQuestConfig(int id) {
+        try {
+            return serverGameEnginePersistence.getServerLevelQuestCrud().read(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public ServerLevelQuestConfig createLevelQuestConfig() {
+        try {
+            return serverGameEnginePersistence.getServerLevelQuestCrud().create();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateLevelQuestConfig(ServerLevelQuestConfig serverLevelQuestConfig) {
+        try {
+            serverGameEnginePersistence.getServerLevelQuestCrud().update(serverLevelQuestConfig);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void deleteLevelQuestConfig(int id) {
+        try {
+            serverGameEnginePersistence.getServerLevelQuestCrud().delete(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
