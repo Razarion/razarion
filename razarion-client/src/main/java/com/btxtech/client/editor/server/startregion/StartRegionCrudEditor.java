@@ -45,6 +45,7 @@ public class StartRegionCrudEditor extends AbstractCrudeEditor<StartRegionConfig
         provider.call(new RemoteCallback<StartRegionConfig>() {
             @Override
             public void callback(StartRegionConfig startRegionConfig) {
+                objectNameIds.add(startRegionConfig.createObjectNameId());
                 fire();
                 fireSelection(startRegionConfig.createObjectNameId());
             }
