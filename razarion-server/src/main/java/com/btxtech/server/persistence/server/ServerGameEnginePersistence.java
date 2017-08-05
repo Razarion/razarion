@@ -195,7 +195,9 @@ public class ServerGameEnginePersistence {
 
     public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {
         ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverLevelQuestCrudInstance.get();
-        crud.setRootProvider(this::read).setEntitiesGetter((entityManager) -> read().getServerQuestEntities()).setEntitiesSetter((entityManager, serverLevelQuestEntities) -> read().setServerQuestEntities(serverLevelQuestEntities));
+        crud.setRootProvider(this::read).setParentProvider(entityManager1 -> read());
+        crud.setEntitiesGetter((entityManager) -> read().getServerQuestEntities());
+        crud.setEntitiesSetter((entityManager, serverLevelQuestEntities) -> read().setServerQuestEntities(serverLevelQuestEntities));
         crud.setEntityIdProvider(ServerLevelQuestEntity::getId).setConfigIdProvider(ServerLevelQuestConfig::getId);
         crud.setConfigGenerator(ServerLevelQuestEntity::toServerLevelQuestConfig);
         crud.setEntityFactory(ServerLevelQuestEntity::new);
@@ -210,8 +212,8 @@ public class ServerGameEnginePersistence {
     public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> getServerQuestCrud(int serverLevelQuestEntityId, Locale locale) {
         ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> crud = serverQuestCrudInstance.get();
         crud.setRootProvider(this::read);
-        crud.setEntitiesGetter(entityManager -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId).getQuestConfigs());
-        crud.setEntitiesSetter((entityManager, questConfigEntities) -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId).setQuestConfigs(questConfigEntities));
+        crud.setParentProvider(entityManager -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId));
+        crud.setEntitiesGetter(ServerLevelQuestEntity::getQuestConfigs).setEntitiesSetter(ServerLevelQuestEntity::setQuestConfigs);
         crud.setEntityIdProvider(QuestConfigEntity::getId).setConfigIdProvider(QuestConfig::getId);
         crud.setConfigGenerator(questConfigEntity -> questConfigEntity.toQuestConfig(locale));
         crud.setEntityFactory(QuestConfigEntity::new);

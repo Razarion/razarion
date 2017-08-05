@@ -24,28 +24,19 @@ public class SideBarPanel extends Composite {
     private Instance<LeftSideBarContent> leftSideBarContentInstance;
     @Inject
     private LeftSideBarManager leftSideBarManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private SimplePanel content;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button deleteButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button saveButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button closeButton;
     private LeftSideBarContent leftSideBarContent;
-
-//    @SuppressWarnings("CdiInjectionPointsInspection")
-//    @Inject
-//    @DataField
-//    private Button closeButton;
 
     @PostConstruct
     public void init() {

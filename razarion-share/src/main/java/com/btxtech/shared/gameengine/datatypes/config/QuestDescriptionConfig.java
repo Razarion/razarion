@@ -6,6 +6,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
  */
 public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
     private int id;
+    private String internalName;
     private String title;
     private String description;
     private int xp;
@@ -20,6 +21,15 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
 
     public T setId(int id) {
         this.id = id;
+        return (T) this;
+    }
+
+    public String getInternalName() {
+        return internalName;
+    }
+
+    public T setInternalName(String internalName) {
+        this.internalName = internalName;
         return (T) this;
     }
 

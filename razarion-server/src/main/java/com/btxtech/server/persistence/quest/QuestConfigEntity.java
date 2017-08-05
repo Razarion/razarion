@@ -45,7 +45,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     }
 
     public QuestConfig toQuestConfig(Locale locale) {
-        QuestConfig questConfig = new QuestConfig().setId(id).setXp(xp).setMoney(money).setCristal(cristal);
+        QuestConfig questConfig = new QuestConfig().setId(id).setInternalName(internalName).setXp(xp).setMoney(money).setCristal(cristal);
         if (title != null) {
             questConfig.setTitle(title.getString(locale));
         }
@@ -62,6 +62,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     }
 
     public void fromQuestConfig(ItemTypePersistence itemTypePersistence, QuestConfig questConfig, Locale locale) {
+        internalName = questConfig.getInternalName();
         if (questConfig.getTitle() != null) {
             if (title == null) {
                 title = new I18nBundleEntity();

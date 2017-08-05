@@ -3,6 +3,7 @@ package com.btxtech.shared.rest;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -71,5 +72,15 @@ public interface ServerGameEngineEditorProvider {
     @Path("deleteLevelQuestConfig")
     @Consumes(MediaType.APPLICATION_JSON)
     void deleteLevelQuestConfig(int id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readQuestConfigObjectNameIds/{levelQuestId}")
+    List<ObjectNameId> readQuestConfigObjectNameIds(@PathParam("levelQuestId") int levelQuestId);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("createQuestConfig/{levelQuestId}")
+    QuestConfig createQuestConfig(@PathParam("levelQuestId") int levelQuestId);
 
 }

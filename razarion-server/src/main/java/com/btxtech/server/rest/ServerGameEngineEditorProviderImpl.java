@@ -4,11 +4,13 @@ import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -114,6 +116,26 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     public void deleteLevelQuestConfig(int id) {
         try {
             serverGameEnginePersistence.getServerLevelQuestCrud().delete(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<ObjectNameId> readQuestConfigObjectNameIds(int levelQuestId) {
+        try {
+            return serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).readObjectNameIds();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public QuestConfig createQuestConfig(int levelQuestId) {
+        try {
+            return serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).create();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

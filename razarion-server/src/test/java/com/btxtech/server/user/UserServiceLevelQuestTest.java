@@ -141,8 +141,8 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         expectedLevelQuestConfig1.setMinimalLevelId(LEVEL_4_ID).setInternalName("landnfas 1");
         serverGameEnginePersistence.getServerLevelQuestCrud().update(expectedLevelQuestConfig1);
         // Verify
-        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1");
-        int serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1");
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1");
+        int serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1");
         ServerLevelQuestConfig actualLevelQuestConfig1 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId1);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig1, actualLevelQuestConfig1);
 
@@ -151,11 +151,11 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         expectedLevelQuestConfig2.setMinimalLevelId(LEVEL_4_ID).setInternalName("landnfas 2");
         serverGameEnginePersistence.getServerLevelQuestCrud().update(expectedLevelQuestConfig2);
         // Verify
-        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1", "landnfas 2");
-        serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1");
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1", "landnfas 2");
+        serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1");
         actualLevelQuestConfig1 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId1);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig1, actualLevelQuestConfig1);
-        int serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 2");
+        int serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 2");
         ServerLevelQuestConfig actualLevelQuestConfig2 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId2);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig2, actualLevelQuestConfig2);
 
@@ -164,14 +164,14 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         expectedLevelQuestConfig3.setMinimalLevelId(LEVEL_4_ID).setInternalName("landnfas 33");
         serverGameEnginePersistence.getServerLevelQuestCrud().update(expectedLevelQuestConfig3);
         // Verify
-        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1", "landnfas 2", "landnfas 33");
-        serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1");
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1", "landnfas 2", "landnfas 33");
+        serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1");
         actualLevelQuestConfig1 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId1);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig1, actualLevelQuestConfig1);
-        serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 2");
+        serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 2");
         actualLevelQuestConfig2 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId2);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig2, actualLevelQuestConfig2);
-        int serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 33");
+        int serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 33");
         ServerLevelQuestConfig actualLevelQuestConfig3 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId3);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig3, actualLevelQuestConfig3);
 
@@ -180,29 +180,45 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         expectedLevelQuestConfig4.setMinimalLevelId(LEVEL_5_ID).setInternalName("landnfas 444");
         serverGameEnginePersistence.getServerLevelQuestCrud().update(expectedLevelQuestConfig4);
         // Verify
-        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1", "landnfas 2", "landnfas 33", "landnfas 444");
-        serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 1");
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1", "landnfas 2", "landnfas 33", "landnfas 444");
+        serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1");
         actualLevelQuestConfig1 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId1);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig1, actualLevelQuestConfig1);
-        serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 2");
+        serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 2");
         actualLevelQuestConfig2 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId2);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig2, actualLevelQuestConfig2);
-        serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 33");
+        serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 33");
         actualLevelQuestConfig3 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId3);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig3, actualLevelQuestConfig3);
-        int serverLevelQuestConfigId4 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 444");
+        int serverLevelQuestConfigId4 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 444");
         ServerLevelQuestConfig actualLevelQuestConfig4 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId4);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig4, actualLevelQuestConfig4);
+
+        // Add quests
+        QuestConfig expectedQuestConfig1 = serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).create();
+        expectedQuestConfig1.setInternalName("dsfdsf 1");
+        serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig1);
+        // Verify quest
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 1");
+        int questConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 1");
+        QuestConfig actualQuestConfig1 = serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).read(questConfigId1);
+        ReflectionAssert.assertReflectionEquals(expectedQuestConfig1, actualQuestConfig1);
 
         // Remove last and first
         serverGameEnginePersistence.getServerLevelQuestCrud().delete(serverLevelQuestConfigId4);
         serverGameEnginePersistence.getServerLevelQuestCrud().delete(serverLevelQuestConfigId1);
         // Verify
-        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 2", "landnfas 33");
-        serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 2");
+        try {
+            TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds());
+            Assert.fail("IllegalStateException expected");
+        } catch(IllegalStateException e) {
+            // Expected
+        }
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 2", "landnfas 33");
+        serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 2");
         actualLevelQuestConfig2 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId2);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig2, actualLevelQuestConfig2);
-        serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(),"landnfas 33");
+        serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 33");
         actualLevelQuestConfig3 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId3);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig3, actualLevelQuestConfig3);
 
