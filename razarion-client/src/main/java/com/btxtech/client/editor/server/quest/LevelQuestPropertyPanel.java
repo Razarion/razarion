@@ -3,6 +3,7 @@ package com.btxtech.client.editor.server.quest;
 import com.btxtech.client.editor.framework.AbstractObjectNameIdEditor;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.framework.ObjectNameIdTable;
+import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
 import com.btxtech.client.editor.widgets.level.LevelField;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -79,6 +80,11 @@ public class LevelQuestPropertyPanel extends AbstractPropertyPanel<ServerLevelQu
             @Override
             protected void delete(ObjectNameId objectNameId) {
                 //TODO
+            }
+
+            @Override
+            protected Class<QuestPropertyPanel> getObjectNamePropertyPanelClass() {
+                return QuestPropertyPanel.class;
             }
         });
     }

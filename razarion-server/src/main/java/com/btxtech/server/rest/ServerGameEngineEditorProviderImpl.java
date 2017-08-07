@@ -141,4 +141,24 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
             throw e;
         }
     }
+
+    @Override
+    public QuestConfig readQuestConfig(int levelQuestId, int questId) {
+        try {
+            return serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).read(questId);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateQuestConfig(int levelQuestId, QuestConfig questConfig) {
+        try {
+            serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).update(questConfig);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
 }

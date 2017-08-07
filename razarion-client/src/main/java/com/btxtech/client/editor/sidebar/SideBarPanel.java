@@ -36,6 +36,9 @@ public class SideBarPanel extends Composite {
     @Inject
     @DataField
     private Button closeButton;
+    @Inject
+    @DataField
+    private Button backButton;
     private LeftSideBarContent leftSideBarContent;
 
     @PostConstruct
@@ -65,10 +68,23 @@ public class SideBarPanel extends Composite {
         return deleteButton;
     }
 
+    public Button getCloseButton() {
+        return closeButton;
+    }
+
+    public Button getBackButton() {
+        return backButton;
+    }
+
     @EventHandler("closeButton")
     private void closeButtonClick(ClickEvent event) {
         leftSideBarContent.onClose();
         leftSideBarManager.close();
     }
 
+    @EventHandler("backButton")
+    private void backButtonClick(ClickEvent event) {
+        leftSideBarContent.onClose();
+        leftSideBarManager.pop();
+    }
 }

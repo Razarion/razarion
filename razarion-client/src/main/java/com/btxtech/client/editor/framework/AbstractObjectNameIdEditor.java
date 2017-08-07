@@ -21,6 +21,8 @@ public abstract class AbstractObjectNameIdEditor {
 
     protected abstract void delete(ObjectNameId objectNameId);
 
+    protected abstract <T extends ObjectNamePropertyPanel> Class<T> getObjectNamePropertyPanelClass();
+
     public void setUpdateListener(Runnable updateListener) {
         this.updateListener = updateListener;
     }

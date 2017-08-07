@@ -4,7 +4,6 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import org.jboss.errai.common.client.dom.DOMUtil;
-import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;

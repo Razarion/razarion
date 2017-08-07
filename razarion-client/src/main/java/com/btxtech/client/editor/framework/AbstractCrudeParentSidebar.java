@@ -24,20 +24,14 @@ import java.util.List;
 public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends LeftSideBarContent implements CrudEditor.LoadedListener, CrudEditor.SelectionListener {
     // private Logger logger = Logger.getLogger(AbstractCrudeParentSidebar.class.getName());
     @Inject
-    private LeftSideBarManager leftSideBarManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
-    @Inject
     @DataField
     private ValueListBox<ObjectNameId> selector;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button createButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button reloadButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private SimplePanel content;
@@ -106,7 +100,7 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
         selector.setAcceptableValues(objectNameIds);
     }
 
-    private T getConfigObject() {
+    public T getConfigObject() {
         if (content.getWidget() == null) {
             return null;
         }

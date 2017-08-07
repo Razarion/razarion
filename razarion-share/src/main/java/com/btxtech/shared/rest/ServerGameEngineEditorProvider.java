@@ -78,9 +78,19 @@ public interface ServerGameEngineEditorProvider {
     @Path("readQuestConfigObjectNameIds/{levelQuestId}")
     List<ObjectNameId> readQuestConfigObjectNameIds(@PathParam("levelQuestId") int levelQuestId);
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("createQuestConfig/{levelQuestId}")
     QuestConfig createQuestConfig(@PathParam("levelQuestId") int levelQuestId);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readQuestConfig/{levelQuestId}/{questId}")
+    QuestConfig readQuestConfig(@PathParam("levelQuestId") int levelQuestId, @PathParam("questId") int questId);
+
+    @PUT
+    @Path("updateLevelQuestConfig/{levelQuestId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateQuestConfig(@PathParam("levelQuestId") int levelQuestId, QuestConfig questConfig);
 
 }
