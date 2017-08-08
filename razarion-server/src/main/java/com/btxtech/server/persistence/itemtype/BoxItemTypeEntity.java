@@ -31,6 +31,7 @@ public class BoxItemTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity shape3DId;
@@ -55,7 +56,7 @@ public class BoxItemTypeEntity {
 
     public BoxItemType toBoxItemType() {
         BoxItemType boxItemType = new BoxItemType();
-        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setId(id).setName(name);
+        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setId(id).setName(name).setInternalName(internalName);
         if (shape3DId != null) {
             boxItemType.setShape3DId(shape3DId.getId());
         }
@@ -79,6 +80,7 @@ public class BoxItemTypeEntity {
     }
 
     public void fromBoxItemType(BoxItemType boxItemType, InventoryPersistence inventoryPersistence) {
+        internalName = boxItemType.getInternalName();
         name = boxItemType.getName();
         radius = boxItemType.getRadius();
         fixVerticalNorm = boxItemType.isFixVerticalNorm();

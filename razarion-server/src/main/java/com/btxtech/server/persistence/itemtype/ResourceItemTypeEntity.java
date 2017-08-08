@@ -26,6 +26,7 @@ public class ResourceItemTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity shape3DId;
@@ -47,7 +48,7 @@ public class ResourceItemTypeEntity {
 
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
-        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setId(id).setName(name);
+        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setId(id).setName(name).setInternalName(internalName);
         if (shape3DId != null) {
             resourceItemType.setShape3DId(shape3DId.getId());
         }
@@ -64,6 +65,7 @@ public class ResourceItemTypeEntity {
     }
 
     public void fromResourceItemType(ResourceItemType resourceItemType) {
+        internalName = resourceItemType.getInternalName();
         name = resourceItemType.getName();
         radius = resourceItemType.getRadius();
         amount = resourceItemType.getAmount();

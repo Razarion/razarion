@@ -34,6 +34,7 @@ public class BaseItemTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     private String name;
     private double radius;
     private boolean fixVerticalNorm;
@@ -102,7 +103,7 @@ public class BaseItemTypeEntity {
     public BaseItemType toBaseItemType() {
         BaseItemType baseItemType = new BaseItemType().setPrice(price).setXpOnKilling(xpOnKilling).setDropBoxPossibility(dropBoxPossibility);
         baseItemType.setBoxPickupRange(boxPickupRange).setUnlockCrystals(unlockCrystals).setHealth(health).setBuildup(buildup);
-        baseItemType.setName(name).setId(id);
+        baseItemType.setName(name).setId(id).setInternalName(internalName);
         if (i18nName != null) {
             baseItemType.setI18nName(i18nName.toI18nString());
         }
@@ -170,6 +171,7 @@ public class BaseItemTypeEntity {
     }
 
     public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, Shape3DPersistence shape3DPersistence) {
+        internalName = baseItemType.getInternalName();
         name = baseItemType.getName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();

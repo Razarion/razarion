@@ -1,0 +1,123 @@
+Index: errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(date 1478620485000)
++++ errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(revision )
+@@ -32,14 +32,14 @@
+  */
+ public class ManagementConsole {
+   private final ClientMessageBusImpl clientMessageBus;
+-  private BusErrorDialog errorDialog;
++  //private BusErrorDialog errorDialog;
+   private final Logger logger = LoggerFactory.getLogger(ManagementConsole.class);
+ 
+   private static final String SEP = "-------------------------------------------------------------------";
+ 
+   public ManagementConsole(final ClientMessageBusImpl clientMessageBus) {
+     this.clientMessageBus = clientMessageBus;
+-    this.errorDialog = new BusErrorDialog(clientMessageBus);
++    // this.errorDialog = new BusErrorDialog(clientMessageBus);
+ 
+     java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManagementConsole.class.getName());
+     ErraiSimpleFormatter esf = new ErraiSimpleFormatter("%5$s");
+@@ -51,7 +51,7 @@
+   }
+ 
+   public void displayError(final String message, final String additionalDetails, final Throwable e) {
+-    errorDialog.addError(message, additionalDetails, e);
++    // errorDialog.addError(message, additionalDetails, e);
+ 
+     logger.error(message, e);
+     logger.debug(additionalDetails, e);
+@@ -100,8 +100,8 @@
+   }
+ 
+   private void showErrorConsole() {
+-    this.errorDialog.center();
+-    this.errorDialog.show();
++    // this.errorDialog.center();
++    // this.errorDialog.show();
+   }
+ 
+   /**
+Index: errai-marshalling/src/main/java/org/jboss/errai/marshalling/rebind/MarshallerGeneratorFactory.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- errai-marshalling/src/main/java/org/jboss/errai/marshalling/rebind/MarshallerGeneratorFactory.java	(date 1478620485000)
++++ errai-marshalling/src/main/java/org/jboss/errai/marshalling/rebind/MarshallerGeneratorFactory.java	(revision )
+@@ -124,7 +124,7 @@
+   public static final String SHORT_MARSHALLER_PREFIX = "Marshaller_";
+   private static final String MARSHALLERS_VAR = "marshallers";
+   private static final boolean SHORT_MARSHALLER_NAMES = Boolean.parseBoolean(System.getProperty(MarshallingGenUtil.USE_SHORT_IMPL_NAMES, "true"));
+-  private static final int MARSHALLER_HELPER_METHOD_SIZE = 100;
++  private static final int MARSHALLER_HELPER_METHOD_SIZE = 200;
+ 
+   private final MarshallerOutputTarget target;
+ 
+Index: errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(date 1478620485000)
++++ errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(revision )
+@@ -124,6 +124,9 @@
+             if (arr.get(i).isObject() != null && arr.get(i).isObject().get(NUMERIC_VALUE) != null) {
+               arr.set(i, arr.get(i).isObject().get(NUMERIC_VALUE));
+             }
++            else if(arr.get(i).isArray() != null) {
++              arr.set(i, toJackson(arr.get(i).isArray(), null, null, objectCache));
++            }
+             else if (arr.get(i).isObject() != null) {
+               arr.set(i, toJackson(arr.get(i), null, null, objectCache));
+             }
+@@ -157,7 +160,7 @@
+         }
+         else if (k.startsWith(SerializationParts.EMBEDDED_JSON)) {
+           final JSONValue newKey = JSONParser.parseStrict((k.substring(SerializationParts.EMBEDDED_JSON.length())));
+-          JSONValue value = obj.get(k);
++          JSONValue value = toJackson(obj.get(k), k, null, objectCache);
+           JSONObject tmpObject = new JSONObject();
+           toJackson(newKey, QUALIFIED_VALUE, tmpObject, objectCache);
+ 
+@@ -174,6 +177,11 @@
+ 
+         toJackson(obj.get(k), k, obj, objectCache);
+       }
++    } else if(val.isArray() != null) {
++      JSONArray arr = val.isArray();
++      for (int i = 0; i < arr.size(); i++) {
++        arr.set(i, toJackson(arr.get(i), key, parent, objectCache));
++      }
+     }
+ 
+     return (obj != null) ? cleanUpEmbeddedJson(obj) : val;
+@@ -259,10 +267,23 @@
+       }
+ 
+       for (int i = 0; i < arr.size(); i++) {
+-        arr.set(i, fromJackson(arr.get(i), QUALIFIED_VALUE, null, objectId));
++        fromJacksonIfInnerArray(objectId, arr, i);
+       }
+     }
+ 
+     return val;
+   }
++
++  private static void fromJacksonIfInnerArray(int[] objectId, JSONArray arr, int i) {
++    JSONValue jsonValue = arr.get(i);
++    JSONArray innerArr = jsonValue.isArray();
++    if(innerArr != null) {
++      for (int j = 0; j < innerArr.size(); j++) {
++        fromJacksonIfInnerArray(objectId, innerArr, j);
++      }
++    } else {
++      arr.set(i, fromJackson(jsonValue, QUALIFIED_VALUE, null, objectId));
++    }
++  }
++
+ }

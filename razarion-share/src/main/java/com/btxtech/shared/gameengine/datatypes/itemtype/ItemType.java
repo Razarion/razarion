@@ -27,6 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.TerrainType;
 public abstract class ItemType implements ObjectNameIdProvider {
     private int id;
     private String name;
+    private String internalName;
     private I18nString i18nName;
     private I18nString i18nDescription;
     private TerrainType terrainType;
@@ -36,6 +37,10 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     public int getId() {
         return id;
+    }
+
+    public String getInternalName() {
+        return internalName;
     }
 
     public String getName() {
@@ -50,6 +55,12 @@ public abstract class ItemType implements ObjectNameIdProvider {
         this.id = id;
         return this;
     }
+
+    public ItemType setInternalName(String internalName) {
+        this.internalName = internalName;
+        return this;
+    }
+
 
     public ItemType setI18nDescription(I18nString i18nDescription) {
         this.i18nDescription = i18nDescription;
@@ -108,7 +119,7 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     @Override
     public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, name);
+        return new ObjectNameId(id, internalName);
     }
 
     @Override

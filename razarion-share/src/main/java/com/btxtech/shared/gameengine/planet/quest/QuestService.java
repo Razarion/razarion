@@ -175,11 +175,7 @@ public class QuestService {
         ComparisonConfig comparisonConfig = conditionConfig.getComparisonConfig();
         switch (conditionConfig.getConditionTrigger().getType()) {
             case BASE_ITEM: {
-                if (comparisonConfig.getCount() != null) {
-                    BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
-                    baseItemCountComparison.init(comparisonConfig.getCount());
-                    return baseItemCountComparison;
-                } else if (comparisonConfig.getPlaceConfig() != null) {
+                if (comparisonConfig.getPlaceConfig() != null) {
                     BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
                     baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), humanPlayerId);
                     return baseItemPositionComparison;
@@ -187,6 +183,10 @@ public class QuestService {
                     BaseItemTypeComparison syncItemTypeComparison = instance.select(BaseItemTypeComparison.class).get();
                     syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()));
                     return syncItemTypeComparison;
+                } else if (comparisonConfig.getCount() != null) {
+                    BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
+                    baseItemCountComparison.init(comparisonConfig.getCount());
+                    return baseItemCountComparison;
                 } else {
                     throw new UnsupportedOperationException();
                 }

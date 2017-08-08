@@ -3,6 +3,7 @@ package com.btxtech.client.editor.server.quest;
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
 import com.google.gwt.user.client.ui.Label;
@@ -17,6 +18,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,6 +70,9 @@ public class QuestPropertyPanel extends ObjectNamePropertyPanel {
     @Bound
     @DataField
     private CheckboxInput hidePassedDialog;
+    @Inject
+    @DataField
+    private ConditionConfigPropertyPanel conditionConfig;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
@@ -81,7 +86,9 @@ public class QuestPropertyPanel extends ObjectNamePropertyPanel {
     }
 
     private void onQuestConfig(Object o) {
-        dataBinder.setModel((QuestConfig) o);
+        QuestConfig questConfig = (QuestConfig) o;
+        dataBinder.setModel(questConfig);
+        conditionConfig.init(questConfig.getConditionConfig(), questConfig::setConditionConfig);
     }
 
     @Override

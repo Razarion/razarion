@@ -599,8 +599,8 @@ a:active {
 }
 
 .generic-gallery-table-row-selected {
-    background-color: #3289bd;
-    color: white;
+    background-color: #ee0001;
+    color: black;
 }
 
 .generic-gallery-table-row-not-selected {
