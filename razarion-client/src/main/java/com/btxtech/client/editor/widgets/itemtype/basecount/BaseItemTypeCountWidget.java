@@ -49,6 +49,9 @@ public class BaseItemTypeCountWidget {
     @EventHandler("baseItemTypeCountCreateButton")
     private void baseItemTypeCountCreateButtonClicked(ClickEvent event) {
         List<ItemTypeCountModel> values = baseItemTypeCounts.getValue();
+        if(values == null) {
+            values = new ArrayList<>();
+        }
         values.add(new ItemTypeCountModel(this::update, this::removed));
         baseItemTypeCounts.setValue(new ArrayList<>(values));
         update();

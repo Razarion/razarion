@@ -25,21 +25,21 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
     @Inject
     @AutoBound
     private DataBinder<BaseItemType> baseItemTypeDataBinder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private Label id;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    @Bound
+    @DataField
+    private TextBox internalName;
     @Inject
     @Bound
     @DataField
     private TextBox name;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Shape3DReferenceFiled shape3DReferenceFiled;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Shape3DReferenceFiled spawnShape3DIdReferenceFiled;

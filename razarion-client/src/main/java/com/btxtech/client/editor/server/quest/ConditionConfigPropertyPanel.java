@@ -127,12 +127,15 @@ public class ConditionConfigPropertyPanel extends Composite {
                     break;
                 case SYNC_ITEM_CREATED:
                     baseItemTypeCountTr.getStyle().setProperty("display", "table-row");
+                    baseItemTypeCount.init(conditionConfig.getComparisonConfig().getTypeCount(), itemTypeCount -> conditionConfig.getComparisonConfig().setTypeCount(itemTypeCount));
                     countTr.getStyle().setProperty("display", "table-row");
                     break;
                 case BASE_KILLED:
                     countTr.getStyle().setProperty("display", "table-row");
                     break;
                 case SYNC_ITEM_POSITION:
+                    baseItemTypeCountTr.getStyle().setProperty("display", "table-row");
+                    baseItemTypeCount.init(conditionConfig.getComparisonConfig().getTypeCount(), itemTypeCount -> conditionConfig.getComparisonConfig().setTypeCount(itemTypeCount));
                     placeConfigTr.getStyle().setProperty("display", "table-row");
                     addExistingTr.getStyle().setProperty("display", "table-row");
                     addExisting.setChecked(conditionConfig.getComparisonConfig().getAddExisting() != null && conditionConfig.getComparisonConfig().getAddExisting());
