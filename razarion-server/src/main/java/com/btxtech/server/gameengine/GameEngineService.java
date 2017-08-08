@@ -2,6 +2,8 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.user.UserService;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -9,17 +11,20 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -45,7 +50,10 @@ public class GameEngineService implements GameLogicListener {
     private ServerGameEnginePersistence serverGameEnginePersistence;
     @Inject
     private TerrainShapeService terrainShapeService;
-
+    @Inject
+    private QuestService questService;
+    @Inject
+    private UserService userService;
 
     public void start() {
         try {
@@ -55,8 +63,15 @@ public class GameEngineService implements GameLogicListener {
                 gameLogicService.setGameLogicListener(this);
                 planetService.start(serverGameEnginePersistence.readBotConfigs());
             }, failText -> logger.severe("TerrainSetup failed: " + failText));
+            activateQuests();
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
+        }
+    }
+
+    private void activateQuests() {
+        for (Map.Entry<HumanPlayerId, QuestConfig> entry : userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet()) {
+            questService.activateCondition(entry.getKey(), entry.getValue());
         }
     }
 

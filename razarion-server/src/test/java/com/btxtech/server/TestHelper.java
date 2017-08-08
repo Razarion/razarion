@@ -3,6 +3,8 @@ package com.btxtech.server;
 import com.btxtech.shared.dto.ObjectNameId;
 import org.junit.Assert;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,16 +20,23 @@ public interface TestHelper {
         Collection<String> actualName = actual.stream().map(ObjectNameId::getInternalName).collect(Collectors.toList());
 
         for (String name : expectedNames) {
-            if(!actualName.remove(name)) {
+            if (!actualName.remove(name)) {
                 Assert.fail("Name not found: " + name);
             }
         }
-        if(!actualName.isEmpty()) {
+        if (!actualName.isEmpty()) {
             Assert.fail("Not all names where used: " + actualName);
         }
     }
 
     static int findIdForName(List<ObjectNameId> objectNameIds, String name) {
         return objectNameIds.stream().filter(objectNameId -> objectNameId.getInternalName().equalsIgnoreCase(name)).findFirst().map(ObjectNameId::getId).orElseThrow(() -> new IllegalArgumentException("No ObjectNameId for name: " + name));
+    }
+
+    static void assertIds(Collection<Integer> actualIds, Integer... expectedIds) {
+        Assert.assertEquals(expectedIds.length, actualIds.size());
+        Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedIds));
+        expectedCollection.removeAll(actualIds);
+        Assert.assertTrue(expectedCollection.isEmpty());
     }
 }

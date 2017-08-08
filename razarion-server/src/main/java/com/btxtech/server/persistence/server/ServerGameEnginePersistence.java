@@ -175,6 +175,16 @@ public class ServerGameEnginePersistence {
         });
     }
 
+    @Transactional
+    public Collection<Integer> readAllQuestIds() {
+        // ServerGameEngineConfigEntity is not considered in this query
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Integer> userQuery = criteriaBuilder.createQuery(Integer.class);
+        Root<ServerLevelQuestEntity> root = userQuery.from(ServerLevelQuestEntity.class);
+        CriteriaQuery<Integer> userSelect = userQuery.select(root.join(ServerLevelQuestEntity_.questConfigs).get(QuestConfigEntity_.id));
+        return entityManager.createQuery(userSelect).getResultList();
+    }
+
     private QuestConfigEntity getQuestConfigEntityIntern(LevelEntity newLevel, Function<Path<QuestConfigEntity>, Predicate> inCallback) {
         // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
         // ServerGameEngineConfigEntity is not considered in this query

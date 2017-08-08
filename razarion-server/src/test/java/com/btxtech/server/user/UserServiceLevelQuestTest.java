@@ -11,12 +11,14 @@ import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.utils.CollectionUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +26,9 @@ import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -52,7 +56,6 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
 
     @Test
     public void onLevelUpUnregistered() throws Exception {
-        setupQuests();
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
         UnregisteredUser unregisteredUser = sessionHolder.getPlayerSession().getUnregisteredUser();
         userService.getUserContext(); // Simulate anonymous login
@@ -68,74 +71,54 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
 
         assertCount(3, LevelHistoryEntity.class);
         assertCount(0, UserEntity.class);
-        cleanQuests();
     }
 
     @Test
     public void onLevelUpRegister() throws Exception {
-        QuestConfig questConfig11 = setupQuests();
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
         userService.handleFacebookUserLogin("0000001");
 
         assertUser("0000001", LEVEL_1_ID, null);
+        Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
 
         userService.onLevelUpdate(sessionId, LEVEL_2_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
+        Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
 
         userService.onLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
+        Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
 
         userService.onLevelUpdate(sessionId, LEVEL_4_ID);
         Assert.assertEquals(LEVEL_4_ID, userService.getUserContext().getLevelId());
-        assertUser("0000001", LEVEL_4_ID, questConfig11.getId());
+        assertUser("0000001", LEVEL_4_ID, SERVER_QUEST_ID_1);
+
+        Map<HumanPlayerId, QuestConfig> map = userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds());
+        Assert.assertEquals(1, map.size());
+        Map.Entry<HumanPlayerId, QuestConfig> entry = CollectionUtils.getFirst(map.entrySet());
+        UserEntity userEntity = userService.getUserForFacebookId("0000001");
+        Assert.assertEquals(userEntity.getId(), entry.getKey().getUserId());
+        Assert.assertEquals(SERVER_QUEST_ID_1, entry.getValue().getId());
 
         assertCount(3, LevelHistoryEntity.class);
         assertCount(1, UserEntity.class);
-        cleanQuests();
-    }
-
-    private QuestConfig setupQuests() {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverGameEnginePersistence.getServerLevelQuestCrud();
-        ServerLevelQuestConfig serverLevelQuestConfig1 = crud.create();
-        serverLevelQuestConfig1.setMinimalLevelId(LEVEL_4_ID);
-        serverLevelQuestConfig1.setInternalName("xxxx 1");
-        crud.update(serverLevelQuestConfig1);
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> questCrud = serverGameEnginePersistence.getServerQuestCrud(serverLevelQuestConfig1.getId(), Locale.ENGLISH);
-        QuestConfig questConfig11 = questCrud.create();
-        questConfig11.setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)));
-        questCrud.update(questConfig11);
-        questCrud.create();
-        questCrud.create();
-
-        ServerLevelQuestConfig serverLevelQuestConfig2 = crud.create();
-        serverLevelQuestConfig2.setMinimalLevelId(LEVEL_5_ID);
-        serverLevelQuestConfig2.setInternalName("xxxx 2");
-        crud.update(serverLevelQuestConfig2);
-        questCrud = serverGameEnginePersistence.getServerQuestCrud(serverLevelQuestConfig2.getId(), Locale.ENGLISH);
-        questCrud.create();
-        questCrud.create();
-        return questConfig11;
-    }
-
-    private void cleanQuests() {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverGameEnginePersistence.getServerLevelQuestCrud();
-        for (ObjectNameId objectNameId : crud.readObjectNameIds()) {
-            crud.delete(objectNameId.getId());
-        }
-        assertEmptyCount(ServerLevelQuestEntity.class);
-        assertEmptyCountNative("SERVER_QUEST");
-        assertEmptyCount(QuestConfigEntity.class);
-        assertEmptyCount(ConditionConfigEntity.class);
-        assertEmptyCount(ComparisonConfigEntity.class);
-        assertEmptyCountNative("QUEST_COMPARISON_BASE_ITEM");
     }
 
     @Test
     public void crud() throws Exception {
+        cleanTable(ServerLevelQuestEntity.class);
+        cleanTableNative("SERVER_QUEST");
+        cleanTable(QuestConfigEntity.class);
+        cleanTable(ConditionConfigEntity.class);
+        cleanTable(ComparisonConfigEntity.class);
+        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
+
         // Verify
         Assert.assertTrue(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds().isEmpty());
+        TestHelper.assertIds(serverGameEnginePersistence.readAllQuestIds());
+
         // Create first
         ServerLevelQuestConfig expectedLevelQuestConfig1 = serverGameEnginePersistence.getServerLevelQuestCrud().create();
         expectedLevelQuestConfig1.setMinimalLevelId(LEVEL_4_ID).setInternalName("landnfas 1");
@@ -145,6 +128,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         int serverLevelQuestConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 1");
         ServerLevelQuestConfig actualLevelQuestConfig1 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId1);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig1, actualLevelQuestConfig1);
+        TestHelper.assertIds(serverGameEnginePersistence.readAllQuestIds());
 
         // Create second
         ServerLevelQuestConfig expectedLevelQuestConfig2 = serverGameEnginePersistence.getServerLevelQuestCrud().create();
@@ -158,6 +142,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         int serverLevelQuestConfigId2 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 2");
         ServerLevelQuestConfig actualLevelQuestConfig2 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId2);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig2, actualLevelQuestConfig2);
+        TestHelper.assertIds(serverGameEnginePersistence.readAllQuestIds());
 
         // Create third
         ServerLevelQuestConfig expectedLevelQuestConfig3 = serverGameEnginePersistence.getServerLevelQuestCrud().create();
@@ -174,6 +159,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         int serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 33");
         ServerLevelQuestConfig actualLevelQuestConfig3 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId3);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig3, actualLevelQuestConfig3);
+        TestHelper.assertIds(serverGameEnginePersistence.readAllQuestIds());
 
         // Create third
         ServerLevelQuestConfig expectedLevelQuestConfig4 = serverGameEnginePersistence.getServerLevelQuestCrud().create();
@@ -203,6 +189,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         int questConfigId1 = TestHelper.findIdForName(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 1");
         QuestConfig actualQuestConfig1 = serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).read(questConfigId1);
         ReflectionAssert.assertReflectionEquals(expectedQuestConfig1, actualQuestConfig1);
+        TestHelper.assertIds(serverGameEnginePersistence.readAllQuestIds(), expectedQuestConfig1.getId());
 
         // Remove last and first
         serverGameEnginePersistence.getServerLevelQuestCrud().delete(serverLevelQuestConfigId4);
@@ -221,6 +208,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         serverLevelQuestConfigId3 = TestHelper.findIdForName(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 33");
         actualLevelQuestConfig3 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId3);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig3, actualLevelQuestConfig3);
+        TestHelper.assertIds(serverGameEnginePersistence.readAllQuestIds());
 
         // Remove second and third
         serverGameEnginePersistence.getServerLevelQuestCrud().delete(serverLevelQuestConfigId2);

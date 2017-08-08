@@ -10,7 +10,11 @@ import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
+import com.btxtech.server.persistence.quest.ConditionConfigEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
+import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.shared.datatypes.Color;
@@ -21,7 +25,11 @@ import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -30,6 +38,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.utils.CollectionUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -46,7 +55,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.UserTransaction;
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -81,6 +93,9 @@ public class ArquillianBaseTest {
     public static int INVENTORY_ITEM_1_ID;
     // ServerGameEngineConfigEntity
     public static int SERVER_GAME_ENGINE_CONFIG_ID_1;
+    // Quests
+    public static int SERVER_QUEST_ID_1;
+    public static int SERVER_QUEST_ID_2;
     @PersistenceContext
     private EntityManager em;
     @Inject
@@ -340,8 +355,18 @@ public class ArquillianBaseTest {
 
         ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
         serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
+        ServerLevelQuestEntity serverLevelQuestEntity1 = new ServerLevelQuestEntity();
+        serverLevelQuestEntity1.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
+        QuestConfigEntity questConfigEntity1 = new QuestConfigEntity();
+        questConfigEntity1.fromQuestConfig(null, new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
+        QuestConfigEntity questConfigEntity2 = new QuestConfigEntity();
+        questConfigEntity2.fromQuestConfig(null, new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
+        serverLevelQuestEntity1.setQuestConfigs(Arrays.asList(questConfigEntity1, questConfigEntity2));
+        serverGameEngineConfigEntity1.setServerQuestEntities(Collections.singletonList(serverLevelQuestEntity1));
         em.persist(serverGameEngineConfigEntity1);
         SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
+        SERVER_QUEST_ID_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
+        SERVER_QUEST_ID_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
 
         utx.commit();
     }
@@ -355,14 +380,18 @@ public class ArquillianBaseTest {
     }
 
     protected void cleanPlanets() throws Exception {
-        utx.begin();
-        em.joinTransaction();
-        em.createQuery("DELETE FROM WaterConfigEntity ").executeUpdate();
-        em.createQuery("DELETE FROM GroundConfigEntity").executeUpdate();
-        em.createQuery("DELETE FROM GameUiControlConfigEntity").executeUpdate();
-        em.createQuery("DELETE FROM ServerGameEngineConfigEntity").executeUpdate();
-        em.createQuery("DELETE FROM PlanetEntity").executeUpdate();
-        utx.commit();
+        cleanTable(ServerLevelQuestEntity.class);
+        cleanTableNative("SERVER_QUEST");
+        cleanTable(QuestConfigEntity.class);
+        cleanTable(ConditionConfigEntity.class);
+        cleanTable(ComparisonConfigEntity.class);
+        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
+
+        cleanTable(WaterConfigEntity.class);
+        cleanTable(GroundConfigEntity.class);
+        cleanTable(GameUiControlConfigEntity.class);
+        cleanTable(ServerGameEngineConfigEntity.class);
+        cleanTable(PlanetEntity.class);
         cleanLevels();
     }
 
@@ -386,7 +415,7 @@ public class ArquillianBaseTest {
         runInTransaction(em -> em.createQuery("DELETE FROM " + entityClass.getName()).executeUpdate());
     }
 
-    protected void clearTableNative(String tableName) throws Exception {
+    protected void cleanTableNative(String tableName) throws Exception {
         runInTransaction(em -> em.createNativeQuery("DELETE FROM " + tableName).executeUpdate());
     }
 

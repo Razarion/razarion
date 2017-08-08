@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
@@ -12,6 +13,7 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
 import javax.enterprise.inject.Instance;
@@ -23,11 +25,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -116,7 +120,7 @@ public class UserService {
 
     private UserEntity createUser(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
-        userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId());
+        userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId(), sessionHolder.getPlayerSession().getLocale());
         userEntity.setLevel(levelPersistence.getStarterLevel());
         entityManager.persist(userEntity);
         return userEntity;
@@ -213,5 +217,16 @@ public class UserService {
             throw new IllegalArgumentException("No UserEntity for userId: " + userId);
         }
         return userEntity;
+    }
+
+    @Transactional
+    public Map<HumanPlayerId, QuestConfig> findUserQuestForPlanet(Collection<Integer> questIds) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> from = userQuery.from(UserEntity.class);
+        userQuery.select(from);
+        userQuery.where(from.join(UserEntity_.activeQuest).get(QuestConfigEntity_.id).in(questIds));
+
+        return entityManager.createQuery(userQuery).getResultList().stream().collect(Collectors.toMap(UserEntity::createHumanPlayerId, user -> user.getActiveQuest().toQuestConfig(user.getLocale()), (a, b) -> b));
     }
 }

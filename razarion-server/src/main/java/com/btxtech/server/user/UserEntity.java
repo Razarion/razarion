@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -32,8 +33,7 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(length = 190)
-// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @Column(length = 190) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String facebookUserId;
     private Date registerDate;
     private boolean admin;
@@ -48,21 +48,25 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = @JoinColumn(name = "quest"))
     private List<QuestConfigEntity> completedQuest;
-
+    private Locale locale;
 
     public Integer getId() {
         return id;
     }
 
-    public void fromFacebookUserLoginInfo(String facebookUserId, HumanPlayerIdEntity humanPlayerId) {
+    public void fromFacebookUserLoginInfo(String facebookUserId, HumanPlayerIdEntity humanPlayerId, Locale locale) {
         registerDate = new Date();
         this.facebookUserId = facebookUserId;
         this.humanPlayerIdEntity = humanPlayerId;
+        this.locale = locale;
     }
 
     public UserContext createUser() {
-        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
-        return new UserContext().setName("Registered User").setHumanPlayerId(humanPlayerId).setLevelId(level.getId()).setAdmin(admin);
+        return new UserContext().setName("Registered User").setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setAdmin(admin);
+    }
+
+    public HumanPlayerId createHumanPlayerId() {
+        return new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
     }
 
     public LevelEntity getLevel() {
@@ -71,14 +75,6 @@ public class UserEntity {
 
     public void setLevel(LevelEntity level) {
         this.level = level;
-    }
-
-    public HumanPlayerIdEntity getHumanPlayerIdEntity() {
-        return humanPlayerIdEntity;
-    }
-
-    public void setHumanPlayerIdEntity(HumanPlayerIdEntity humanPlayerIdEntity) {
-        this.humanPlayerIdEntity = humanPlayerIdEntity;
     }
 
     public QuestConfigEntity getActiveQuest() {
@@ -98,6 +94,10 @@ public class UserEntity {
 
     public List<QuestConfigEntity> getCompletedQuest() {
         return completedQuest;
+    }
+
+    public Locale getLocale() {
+        return locale;
     }
 
     @Override
