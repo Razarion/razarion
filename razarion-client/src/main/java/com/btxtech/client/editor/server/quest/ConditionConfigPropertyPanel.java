@@ -1,9 +1,11 @@
 package com.btxtech.client.editor.server.quest;
 
 import com.btxtech.client.editor.widgets.itemtype.basecount.BaseItemTypeCountWidget;
+import com.btxtech.client.editor.widgets.placeconfig.PlaceConfigWidget;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.ValueListBox;
@@ -14,6 +16,7 @@ import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
@@ -56,10 +59,17 @@ public class ConditionConfigPropertyPanel extends Composite {
     private TableRow addExistingTr;
     @Inject
     @DataField
-    private TableRow baseItemTypeCountTr;
+    private BaseItemTypeCountWidget baseItemTypeCount;
     @Inject
     @DataField
-    private BaseItemTypeCountWidget baseItemTypeCount;
+    private TableRow baseItemTypeCountTr;
+    @Inject
+    @Bound
+    @DataField
+    private PlaceConfigWidget placeConfig;
+    @Inject
+    @DataField
+    private TableRow placeConfigTr;
     private ConditionConfig conditionConfig;
     private Consumer<ConditionConfig> creationDeletionCallback;
 
@@ -79,6 +89,13 @@ public class ConditionConfigPropertyPanel extends Composite {
         }
         conditionTrigger.setAcceptableValues(Arrays.asList(ConditionTrigger.values()));
         conditionTrigger.addValueChangeHandler(this::onConditionTriggerChanged);
+    }
+
+    @EventHandler("addExisting")
+    private void addExistingClick(ClickEvent event) {
+        if (conditionConfig != null && conditionConfig.getComparisonConfig() != null) {
+            conditionConfig.getComparisonConfig().setAddExisting(addExisting.getChecked());
+        }
     }
 
     private void onConditionTriggerChanged(ValueChangeEvent<ConditionTrigger> conditionTriggerValueChangeEvent) {
@@ -116,6 +133,9 @@ public class ConditionConfigPropertyPanel extends Composite {
                     countTr.getStyle().setProperty("display", "table-row");
                     break;
                 case SYNC_ITEM_POSITION:
+                    placeConfigTr.getStyle().setProperty("display", "table-row");
+                    addExistingTr.getStyle().setProperty("display", "table-row");
+                    addExisting.setChecked(conditionConfig.getComparisonConfig().getAddExisting() != null && conditionConfig.getComparisonConfig().getAddExisting());
                     break;
                 case BOX_PICKED:
                     countTr.getStyle().setProperty("display", "table-row");
@@ -134,5 +154,6 @@ public class ConditionConfigPropertyPanel extends Composite {
         timeTr.getStyle().setProperty("display", "none");
         addExistingTr.getStyle().setProperty("display", "none");
         baseItemTypeCountTr.getStyle().setProperty("display", "none");
+        placeConfigTr.getStyle().setProperty("display", "none");
     }
 }

@@ -131,4 +131,12 @@ public class DisplayUtils {
             return "-";
         }
     }
+
+    public static Double parseDouble(String doubleString) {
+        if(doubleString != null && !doubleString.trim().isEmpty()) {
+            return Double.parseDouble(doubleString);
+        } else {
+            return null;
+        }
+    }
 }

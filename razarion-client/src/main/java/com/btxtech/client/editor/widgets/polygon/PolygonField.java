@@ -55,10 +55,12 @@ public class PolygonField extends Composite {
         if (showHideButton.getText().equalsIgnoreCase(SHOW)) {
             showHideButton.setText(HIDE);
             polygonEditor.activate(polygon2D, decimalPositions -> {
-                if (decimalPositions != null) {
-                    polygonListener.accept(new Polygon2D(decimalPositions));
-                } else {
-                    polygonListener.accept(null);
+                if (polygonListener != null) {
+                    if (decimalPositions != null) {
+                        polygonListener.accept(new Polygon2D(decimalPositions));
+                    } else {
+                        polygonListener.accept(null);
+                    }
                 }
             });
             clearButton.setEnabled(true);
@@ -88,5 +90,13 @@ public class PolygonField extends Composite {
     protected void onUnload() {
         polygonEditor.deactivate();
         super.onUnload();
+    }
+
+    public void clear() {
+        polygonEditor.deactivate();
+        polygonListener = null;
+        showHideButton.setText(SHOW);
+        clearButton.setEnabled(false);
+        topViewButton.setEnabled(false);
     }
 }
