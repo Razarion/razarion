@@ -1,7 +1,9 @@
 package com.btxtech.server.connection;
 
 import com.btxtech.server.gameengine.WebSocketEndpointConfigAware;
+import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
+import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -32,6 +34,8 @@ public class ClientSystemConnection {
     private ClientSystemConnectionService clientSystemConnectionService;
     @Inject
     private UserService userService;
+    @Inject
+    private SessionService sessionService;
     private ObjectMapper mapper = new ObjectMapper();
     private EndpointConfig config;
     private RemoteEndpoint.Async async;
@@ -79,5 +83,10 @@ public class ClientSystemConnection {
 
     public void sendToClient(String text) {
         async.sendText(text);
+    }
+
+    public PlayerSession getSession() {
+        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
+        return sessionService.getSession(httpSession.getId());
     }
 }

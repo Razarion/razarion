@@ -1,5 +1,6 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.UserService;
@@ -12,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -46,6 +48,8 @@ public class GameEngineService implements GameLogicListener {
     private GameLogicService gameLogicService;
     @Inject
     private ClientGameConnectionService clientGameConnectionService;
+    @Inject
+    private ClientSystemConnectionService systemConnectionService;
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
     @Inject
@@ -153,5 +157,8 @@ public class GameEngineService implements GameLogicListener {
         clientGameConnectionService.sendSyncBaseItem(createdBy);
     }
 
-
+    @Override
+    public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
+        systemConnectionService.onQuestProgressInfo(humanPlayerId, questProgressInfo);
+    }
 }

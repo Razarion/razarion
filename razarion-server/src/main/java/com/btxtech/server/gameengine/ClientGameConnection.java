@@ -61,7 +61,7 @@ public class ClientGameConnection {
     public void open(Session session, EndpointConfig config) {
         this.config = config;
         async = session.getAsyncRemote();
-        clientGameConnectionService.onOpen(this);
+        clientGameConnectionService.onOpen(this, getSession());
     }
 
     @OnError
@@ -101,7 +101,7 @@ public class ClientGameConnection {
         async.sendText(text);
     }
 
-    private PlayerSession getSession() {
+    public PlayerSession getSession() {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         return sessionService.getSession(httpSession.getId());
     }

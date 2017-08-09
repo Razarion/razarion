@@ -1,14 +1,20 @@
 package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
+
+import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 25.04.2017.
  */
 public abstract class AbstractServerSystemConnection {
+    @Inject
+    private GameUiControl gameUiControl;
+
     protected abstract void sendToServer(String text);
 
     protected abstract String toJson(Object param);
@@ -28,6 +34,9 @@ public abstract class AbstractServerSystemConnection {
         String jsonString = ConnectionMarshaller.deMarshallPayload(text);
         Object param = fromJson(jsonString, packet);
         switch (packet) {
+            case QUEST_PROGRESS_CHANGED:
+                gameUiControl.onQuestProgress((QuestProgressInfo) param);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
         }

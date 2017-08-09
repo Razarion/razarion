@@ -1,6 +1,7 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.user.PlayerSession;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 
 import javax.inject.Singleton;
 import java.util.HashMap;
@@ -38,5 +39,16 @@ public class SessionService {
             throw new IllegalArgumentException("No playerSession for id: " + sessionId);
         }
         return playerSession;
+    }
+
+    public PlayerSession findPlayerSession(HumanPlayerId humanPlayerId) {
+        synchronized (sessions) {
+            for (PlayerSession playerSession : sessions.values()) {
+                if (playerSession.getUserContext().getHumanPlayerId().equals(humanPlayerId)) {
+                    return playerSession;
+                }
+            }
+        }
+        return null;
     }
 }

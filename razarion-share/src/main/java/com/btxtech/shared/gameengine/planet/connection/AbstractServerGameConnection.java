@@ -62,7 +62,7 @@ public abstract class AbstractServerGameConnection {
                 resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) param);
                 break;
             case SYNC_ITEM_DELETED:
-                 gameEngineWorker.onServerSyncItemDeleted((SyncItemDeletedInfo) param);
+                gameEngineWorker.onServerSyncItemDeleted((SyncItemDeletedInfo) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);

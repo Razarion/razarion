@@ -1,8 +1,11 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.user.PlayerSession;
+import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
@@ -16,8 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -27,18 +30,18 @@ import java.util.Collection;
 public class ClientGameConnectionService {
     @Inject
     private ExceptionHandler exceptionHandler;
-    private final Collection<ClientGameConnection> clientGameConnections = new ArrayList<>();
+    private final Map<PlayerSession, ClientGameConnection> clientGameConnections = new HashMap<>();
     private ObjectMapper mapper = new ObjectMapper();
 
-    public void onOpen(ClientGameConnection clientGameConnection) {
+    public void onOpen(ClientGameConnection clientGameConnection, PlayerSession session) {
         synchronized (clientGameConnections) {
-            clientGameConnections.add(clientGameConnection);
+            clientGameConnections.put(session, clientGameConnection);
         }
     }
 
     public void onClose(ClientGameConnection clientGameConnection) {
         synchronized (clientGameConnections) {
-            clientGameConnections.remove(clientGameConnection);
+            clientGameConnections.remove(clientGameConnection.getSession());
         }
     }
 
@@ -84,12 +87,30 @@ public class ClientGameConnectionService {
         }
 
         synchronized (clientGameConnections) {
-            for (ClientGameConnection clientGameConnection : clientGameConnections) {
+            for (ClientGameConnection clientGameConnection : clientGameConnections.values()) {
                 try {
                     clientGameConnection.sendToClient(text);
                 } catch (Throwable throwable) {
                     exceptionHandler.handleException(throwable);
                 }
+            }
+        }
+    }
+
+    private void sendToClient(PlayerSession playerSession, GameConnectionPacket packet, Object object) {
+        String text;
+        try {
+            text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+            return;
+        }
+
+        synchronized (clientGameConnections) {
+            try {
+                clientGameConnections.get(playerSession).sendToClient(text);
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
             }
         }
     }
