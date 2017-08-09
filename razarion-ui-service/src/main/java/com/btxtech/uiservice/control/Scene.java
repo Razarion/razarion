@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
@@ -266,5 +267,9 @@ public class Scene implements ViewService.ViewFieldListener {
 
     private void setupQuestVisualizer4Server() {
         questVisualizer.showSideBar(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlavePlanetConfig().getActiveQuest());
+    }
+
+    public void onQuestProgress(QuestProgressInfo questProgressInfo) {
+        questVisualizer.onQuestProgress(questProgressInfo);
     }
 }

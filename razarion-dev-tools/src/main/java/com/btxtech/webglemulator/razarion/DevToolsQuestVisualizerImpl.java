@@ -1,6 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 
 /**
@@ -17,5 +18,10 @@ public class DevToolsQuestVisualizerImpl implements QuestVisualizer {
     @Override
     public void setShowInGameVisualisation(boolean showInGameVisualisation) {
         // TODO
+    }
+
+    @Override
+    public void onQuestProgress(QuestProgressInfo questProgressInfo) {
+        System.out.println("++++ DevToolsQuestVisualizerImpl.onQuestProgress(): " + questProgressInfo);
     }
 }

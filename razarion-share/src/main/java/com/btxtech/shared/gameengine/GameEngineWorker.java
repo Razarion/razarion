@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
@@ -573,5 +574,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         } else {
             throw new IllegalArgumentException("GameEngineWorker.onPlayerBaseTracking() invalid input");
         }
+    }
+
+    @Override
+    public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
+        sendToClient(GameEngineControlPackage.Command.QUEST_PROGRESS, questProgressInfo);
     }
 }

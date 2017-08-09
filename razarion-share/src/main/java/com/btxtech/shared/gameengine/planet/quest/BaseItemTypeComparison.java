@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
@@ -53,14 +54,6 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
         return remaining.isEmpty();
     }
 
-    public Map<BaseItemType, Integer> getRemaining() {
-        return remaining;
-    }
-
-    public void setRemaining(Map<BaseItemType, Integer> remaining) {
-        this.remaining = remaining;
-    }
-
 //    @Override
 //    public void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer) {
 //        GenericComparisonValueContainer itemCounts = genericComparisonValueContainer.createChildContainer(GenericComparisonValueContainer.Key.REMAINING_ITEM_TYPES);
@@ -77,18 +70,18 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
 //            remaining.put((BaseItemType) entry.getKey(), ((Number) entry.getValue()).intValue());
 //        }
 //    }
-//
-//    @Override
-//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService conditionService) {
-//        Map<Integer, QuestProgressInfo.Amount> itemIdAmounts = new HashMap<Integer, QuestProgressInfo.Amount>();
-//        for (Map.Entry<BaseItemType, Integer> entry : total.entrySet()) {
-//            Integer remaining = this.remaining.get(entry.getKey());
-//            if (remaining == null) {
-//                remaining = 0;
-//            }
-//            int amount = entry.getValue() - remaining;
-//            itemIdAmounts.put(entry.getKey().getId(), new QuestProgressInfo.Amount(amount, entry.getValue()));
-//        }
-//        questProgressInfo.setItemIdAmounts(itemIdAmounts);
-//    }
+
+    @Override
+    public QuestProgressInfo generateQuestProgressInfo() {
+        Map<Integer, Integer> typeCount = new HashMap<>();
+        for (Map.Entry<BaseItemType, Integer> entry : total.entrySet()) {
+            Integer remaining = this.remaining.get(entry.getKey());
+            if (remaining == null) {
+                remaining = 0;
+            }
+            int count = entry.getValue() - remaining;
+            typeCount.put(entry.getKey().getId(), count);
+        }
+        return new QuestProgressInfo().setTypeCount(typeCount);
+    }
 }

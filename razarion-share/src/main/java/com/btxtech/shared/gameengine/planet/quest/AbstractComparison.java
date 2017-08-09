@@ -14,6 +14,8 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+
 /**
  * User: beat
  * Date: 27.12.2010
@@ -30,7 +32,7 @@ public interface AbstractComparison {
 
     // TODO dave & reload void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer);
 
-    // TODO visualization void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService aconditionService);
+    QuestProgressInfo generateQuestProgressInfo();
 
     void handleDeferredUpdate();
 }

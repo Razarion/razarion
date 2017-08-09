@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
@@ -85,6 +86,7 @@ public class WorkerMarshaller {
             case PLAYBACK_SYNC_RESOURCE_ITEM:
             case PLAYBACK_SYNC_BOX_ITEM:
             case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
+            case QUEST_PROGRESS:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -309,6 +311,9 @@ public class WorkerMarshaller {
                 break;
             case PLAYBACK_SYNC_BOX_ITEM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBoxItemInfo.class));
+                break;
+            case QUEST_PROGRESS:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), QuestProgressInfo.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

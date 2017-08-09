@@ -17,8 +17,10 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.utils.TimeDateUtil;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -190,43 +192,44 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
 //        }
 //    }
 
+    @Override
+    public QuestProgressInfo generateQuestProgressInfo() {
+        QuestProgressInfo questProgressInfo = new QuestProgressInfo();
 
-//    @Override
-//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService conditionService) {
-//        // Add time
-//        if (time != null) {
-//            int amount = 0;
-//            if (fulfilledTimeStamp != null) {
-//                long longAmount = System.currentTimeMillis() - fulfilledTimeStamp;
-//                if(longAmount > ClientDateUtil.MILLIS_IN_MINUTE) {
-//                    amount = (int) (longAmount / ClientDateUtil.MILLIS_IN_MINUTE);
-//                } else {
-//                    amount = 1;
-//                }
-//            }
-//            questProgressInfo.setAmount(new QuestProgressInfo.Amount(amount, (int) (time / ClientDateUtil.MILLIS_IN_MINUTE)));
-//        }
-//        // Items
-//        synchronized (fulfilledItems) {
-//            verifyFulfilledItems();
-//        }
-//        Map<Integer, QuestProgressInfo.Amount> itemIdAmounts = new HashMap<Integer, QuestProgressInfo.Amount>();
-//        for (Map.Entry<ItemType, Integer> entry : itemTypes.entrySet()) {
-//            QuestProgressInfo.Amount amount = new QuestProgressInfo.Amount(getAmount(entry.getKey()), entry.getValue());
-//            itemIdAmounts.put(entry.getKey().getId(), amount);
-//        }
-//        questProgressInfo.setItemIdAmounts(itemIdAmounts);
-//    }
+        // Add time
+        if (time != null) {
+            int timeCount = 0;
+            if (fulfilledTimeStamp != null) {
+                long longAmount = System.currentTimeMillis() - fulfilledTimeStamp;
+                if (longAmount > TimeDateUtil.MILLIS_IN_MINUTE) {
+                    timeCount = (int) (longAmount / TimeDateUtil.MILLIS_IN_MINUTE);
+                } else {
+                    timeCount = 1;
+                }
+            }
+            questProgressInfo.setTime(timeCount);
+        }
+        // Items
+        synchronized (fulfilledItems) {
+            verifyFulfilledItems();
+        }
+        Map<Integer, Integer> typeCount = new HashMap<>();
+        for (BaseItemType baseItemType : itemTypes.keySet()) {
+            typeCount.put(baseItemType.getId(), getCount(baseItemType));
+        }
+        questProgressInfo.setTypeCount(typeCount);
+        return questProgressInfo;
+    }
 
-//    private int getAmount(ItemType itemType) {
-//        int amount = 0;
-//        synchronized (fulfilledItems) {
-//            for (SyncItem fulfilledItem : fulfilledItems) {
-//                if (fulfilledItem.getItemType().equals(itemType)) {
-//                    amount++;
-//                }
-//            }
-//        }
-//        return amount;
-//    }
+    private int getCount(BaseItemType baseItemType) {
+        int count = 0;
+        synchronized (fulfilledItems) {
+            for (SyncBaseItem fulfilledItem : fulfilledItems) {
+                if (fulfilledItem.getItemType().equals(baseItemType)) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
 }

@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
@@ -25,11 +26,9 @@ import javax.enterprise.context.Dependent;
 @Dependent
 public class CountComparison extends AbstractBaseItemComparison {
     private double count;
-    private double countTotal;
 
     public void init(int count) {
         this.count = count;
-        countTotal = count;
     }
 
     @Override
@@ -65,9 +64,9 @@ public class CountComparison extends AbstractBaseItemComparison {
 //    public void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer) {
 //        count = (Double) genericComparisonValueContainer.getValue(GenericComparisonValueContainer.Key.REMAINING_COUNT);
 //    }
-//
-//    @Override
-//    public void fillQuestProgressInfo(QuestProgressInfo questProgressInfo, QuestService conditionService) {
-//        questProgressInfo.setAmount(new QuestProgressInfo.Amount((int) (countTotal - count), (int) countTotal));
-//    }
+
+    @Override
+    public QuestProgressInfo generateQuestProgressInfo() {
+        return new QuestProgressInfo().setCount((int) count);
+    }
 }

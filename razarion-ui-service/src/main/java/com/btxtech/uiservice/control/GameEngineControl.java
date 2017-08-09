@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
@@ -345,6 +346,9 @@ public abstract class GameEngineControl {
                 break;
             case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
                 editorListener.get().onTerrainShapeReloaded((String) controlPackage.getData(0));
+                break;
+            case QUEST_PROGRESS:
+                gameUiControl.onQuestProgress((QuestProgressInfo)controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

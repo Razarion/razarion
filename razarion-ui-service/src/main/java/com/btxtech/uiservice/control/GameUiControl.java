@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -339,5 +340,11 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void onLevelUpdate(LevelConfig newLevelConfig) {
         abstractServerSystemConnection.onLevelChanged(newLevelConfig);
+    }
+
+    public void onQuestProgress(QuestProgressInfo questProgressInfo) {
+        if (currentScene != null) {
+            currentScene.onQuestProgress(questProgressInfo);
+        }
     }
 }

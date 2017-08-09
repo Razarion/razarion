@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.user.client.ui.Composite;
@@ -42,71 +43,87 @@ public class QuestSidebar extends Composite {
     @Inject
     @DataField
     private ListComponent<ProgressTableRowModel, ProgressTableRowWidget> progressTable;
+    private QuestConfig activeQuest;
 
     @PostConstruct
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.QUEST_SIDE_BAR);
         GwtUtils.preventContextMenu(this);
+        //noinspection GWTStyleCheck
         setStyleName("quest-sidebar");
         DOMUtil.removeAllElementChildren(progressTable.getElement()); // Remove placeholder table row from template.
     }
 
     public void setQuest(QuestDescriptionConfig descriptionConfig) {
+        activeQuest = null;
         titleLabel.setText(descriptionConfig.getTitle());
         descriptionLabel.setText(descriptionConfig.getDescription());
-        progressTable.setValue(setupProgressTableModels(descriptionConfig));
+        if (descriptionConfig instanceof QuestConfig) {
+            activeQuest = (QuestConfig) descriptionConfig;
+            setupProgressTableModels(null);
+        } else {
+            progressTable.setValue(new ArrayList<>());
+        }
     }
 
-    private List<ProgressTableRowModel> setupProgressTableModels(QuestDescriptionConfig descriptionConfig) {
+    public void onQuestProgress(QuestProgressInfo questProgressInfo) {
+        setupProgressTableModels(questProgressInfo);
+    }
+
+    private void setupProgressTableModels(QuestProgressInfo questProgressInfo) {
         List<ProgressTableRowModel> progressTableModels = new ArrayList<>();
-        if (!(descriptionConfig instanceof QuestConfig)) {
-            return progressTableModels;
-        }
-        QuestConfig questConfig = (QuestConfig) descriptionConfig;
-        switch (questConfig.getConditionConfig().getConditionTrigger()) {
+        switch (activeQuest.getConditionConfig().getConditionTrigger()) {
             case SYNC_ITEM_KILLED:
-                fillBaseItemCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questDestroyed());
-                fillCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questUnitStructuresDestroyed());
+                fillBaseItemCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questDestroyed());
+                fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questUnitStructuresDestroyed());
                 break;
             case HARVEST:
-                fillCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questResourcesCollected());
+                fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questResourcesCollected());
                 break;
             case SYNC_ITEM_CREATED:
-                fillBaseItemCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questBuilt());
-                fillCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questUnitStructuresBuilt());
+                fillBaseItemCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questBuilt());
+                fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questUnitStructuresBuilt());
                 break;
             case BASE_KILLED:
-                fillCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questBasesKilled());
+                fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questBasesKilled());
                 break;
             case SYNC_ITEM_POSITION:
-                fillBaseItemCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), null);
-                fillCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questMinutesPast());
+                fillBaseItemCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, null);
+                fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questMinutesPast());
                 break;
             case BOX_PICKED:
-                fillBaseItemCount(progressTableModels, questConfig.getConditionConfig().getComparisonConfig(), I18nHelper.getConstants().questBoxesPicked());
+                fillBaseItemCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questBoxesPicked());
                 break;
             case INVENTORY_ITEM_PLACED:
                 logger.severe("QuestSidebar.setupProgressTableModels() TODO INVENTORY_ITEM_PLACED");
                 break;
             default:
-                throw new IllegalArgumentException("QuestSidebar.setupProgressTableModels() Unknown ConditionTrigger: " + questConfig.getConditionConfig().getConditionTrigger());
+                throw new IllegalArgumentException("QuestSidebar.setupProgressTableModels() Unknown ConditionTrigger: " + activeQuest.getConditionConfig().getConditionTrigger());
         }
 
-        return progressTableModels;
+        progressTable.setValue(progressTableModels);
     }
 
-    private void fillBaseItemCount(List<ProgressTableRowModel> progressTableModels, ComparisonConfig comparisonConfig, String actionWord) {
+    private void fillBaseItemCount(List<ProgressTableRowModel> progressTableModels, ComparisonConfig comparisonConfig, QuestProgressInfo questProgressInfo, String actionWord) {
         if (comparisonConfig.getTypeCount() == null) {
             return;
         }
         List<Integer> itemIds = new ArrayList<>(comparisonConfig.getTypeCount().keySet());
         itemIds.sort(Comparator.naturalOrder());
         for (Integer itemId : itemIds) {
-            int amount = comparisonConfig.getTypeCount().get(itemId);
+            int expected = comparisonConfig.getTypeCount().get(itemId);
+            int actual = 0;
+            if (questProgressInfo != null) {
+                Integer count = questProgressInfo.getTypeCount().get(itemId);
+                actual = count != null ? count : 0;
+            }
             ProgressTableRowModel progressTableRowModel = new ProgressTableRowModel();
-            progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_EXCLAMATION);// TODO Actual
-            // progressTableRowModel.setImage(StaticResourcePath.IMG_NAME_TICK);
-            progressTableRowModel.setText(amount + "/" + "0"); // TODO Actual
+            if (actual < expected) {
+                progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_EXCLAMATION);
+            } else {
+                progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_TICK);
+            }
+            progressTableRowModel.setText(actual + "/" + expected);
             BaseItemType baseItemType = itemTypeService.getBaseItemType(itemId);
             progressTableRowModel.setBaseItemImage(RestUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
             progressTableRowModel.setActionWord(I18nHelper.getLocalizedString(baseItemType.getI18nName()) + (actionWord != null ? (" " + actionWord) : ""));
@@ -114,19 +131,26 @@ public class QuestSidebar extends Composite {
         }
     }
 
-
-    private void fillCount(List<ProgressTableRowModel> progressTableModels, ComparisonConfig comparisonConfig, String actionWord) {
+    private void fillCount(List<ProgressTableRowModel> progressTableModels, ComparisonConfig comparisonConfig, QuestProgressInfo questProgressInfo, String actionWord) {
         if (comparisonConfig.getCount() == null) {
             return;
         }
+        int expected = comparisonConfig.getCount();
+        int actual = 0;
+        if (questProgressInfo != null) {
+            Integer count = questProgressInfo.getCount();
+            actual = count != null ? count : 0;
+        }
         ProgressTableRowModel progressTableRowModel = new ProgressTableRowModel();
-        progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_EXCLAMATION);// TODO Actual
-        // progressTableRowModel.setImage(StaticResourcePath.IMG_NAME_TICK);
-        progressTableRowModel.setText(comparisonConfig.getCount() + "/" + "0"); // TODO Actual
+        if (actual < expected) {
+            progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_EXCLAMATION);
+        } else {
+            progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_TICK);
+        }
+        progressTableRowModel.setText(actual + "/" + expected);
         if (actionWord != null) {
             progressTableRowModel.setActionWord(actionWord);
         }
         progressTableModels.add(progressTableRowModel);
     }
-
 }

@@ -52,6 +52,7 @@ public class GameEngineControlPackage {
         // Quest
         ACTIVATE_QUEST,
         QUEST_PASSED,
+        QUEST_PROGRESS,
         // Projectile
         PROJECTILE_FIRED,
         PROJECTILE_DETONATION,
