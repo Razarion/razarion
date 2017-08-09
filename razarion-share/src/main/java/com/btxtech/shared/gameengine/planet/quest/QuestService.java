@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -260,5 +261,13 @@ public class QuestService {
             baseItemType.put(itemTypeService.getBaseItemType(entry.getKey()), entry.getValue());
         }
         return baseItemType;
+    }
+
+    public QuestProgressInfo getQuestProgressInfo(HumanPlayerId humanPlayerId) {
+        AbstractConditionProgress abstractConditionProgress = progressMap.get(humanPlayerId);
+        if (abstractConditionProgress == null) {
+            return null;
+        }
+        return abstractConditionProgress.getAbstractComparison().generateQuestProgressInfo();
     }
 }

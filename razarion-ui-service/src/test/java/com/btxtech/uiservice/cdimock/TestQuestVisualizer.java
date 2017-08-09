@@ -13,7 +13,7 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class TestQuestVisualizer implements QuestVisualizer {
     @Override
-    public void showSideBar(QuestDescriptionConfig descriptionConfig) {
+    public void showSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo) {
         throw new UnsupportedOperationException();
     }
 

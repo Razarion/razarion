@@ -11,7 +11,7 @@ import com.btxtech.uiservice.cockpit.QuestVisualizer;
 public class DevToolsQuestVisualizerImpl implements QuestVisualizer {
 
     @Override
-    public void showSideBar(QuestDescriptionConfig descriptionConfig) {
+    public void showSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo) {
         System.out.println("++++ DevToolsQuestVisualizerImpl.showSideBar(): " + descriptionConfig);
     }
 

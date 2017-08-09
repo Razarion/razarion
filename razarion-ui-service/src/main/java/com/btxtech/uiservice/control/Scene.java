@@ -120,7 +120,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getQuestConfig() != null) {
             gameEngineControl.activateQuest(sceneConfig.getQuestConfig());
             audioService.onQuestActivated();
-            questVisualizer.showSideBar(sceneConfig.getQuestConfig());
+            questVisualizer.showSideBar(sceneConfig.getQuestConfig(), null);
         }
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
             hasCompletionCallback = true;
@@ -144,7 +144,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            questVisualizer.showSideBar(new QuestDescriptionConfig().setTitle(I18nHelper.getConstants().placeStartItemTitle()).setDescription(I18nHelper.getConstants().placeStartItemDescription()).setHidePassedDialog(true));
+            questVisualizer.showSideBar(new QuestDescriptionConfig().setTitle(I18nHelper.getConstants().placeStartItemTitle()).setDescription(I18nHelper.getConstants().placeStartItemDescription()).setHidePassedDialog(true), null);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -153,7 +153,7 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             scrollBouncePrevention = false;
-            questVisualizer.showSideBar(sceneConfig.getScrollUiQuest());
+            questVisualizer.showSideBar(sceneConfig.getScrollUiQuest(), null);
             audioService.onQuestActivated();
             viewService.addViewFieldListeners(this);
         }
@@ -163,7 +163,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.start(sceneConfig.getGameTipConfig());
         }
-        if(sceneConfig.isProcessServerQuests() != null &&sceneConfig.isProcessServerQuests() ) {
+        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
             setupQuestVisualizer4Server();
@@ -217,26 +217,29 @@ public class Scene implements ViewService.ViewFieldListener {
             baseItemPlacerService.deactivate();
         }
         if (sceneConfig.getQuestConfig() != null) {
-            questVisualizer.showSideBar(null);
+            questVisualizer.showSideBar(null, null);
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questVisualizer.showSideBar(null);
+            questVisualizer.showSideBar(null, null);
         }
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.stop();
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             viewService.removeViewFieldListeners(this);
-            questVisualizer.showSideBar(null);
+            questVisualizer.showSideBar(null, null);
         }
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
-            questVisualizer.showSideBar(null);
+            questVisualizer.showSideBar(null, null);
+        }
+        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
+            questVisualizer.showSideBar(null, null);
         }
     }
 
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
-            questVisualizer.showSideBar(null);
+            questVisualizer.showSideBar(null, null);
             if (sceneConfig.getQuestConfig().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -248,7 +251,7 @@ public class Scene implements ViewService.ViewFieldListener {
             userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questVisualizer.showSideBar(null);
+            questVisualizer.showSideBar(null, null);
             if (sceneConfig.getScrollUiQuest().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -266,7 +269,8 @@ public class Scene implements ViewService.ViewFieldListener {
     }
 
     private void setupQuestVisualizer4Server() {
-        questVisualizer.showSideBar(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlavePlanetConfig().getActiveQuest());
+        questVisualizer.showSideBar(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlavePlanetConfig().getActiveQuest(),
+                gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlavePlanetConfig().getQuestProgressInfo());
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {

@@ -8,7 +8,6 @@ import com.google.gwt.user.client.ui.RootPanel;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -23,13 +22,13 @@ public class ClientQuestVisualizerImpl implements QuestVisualizer {
     private QuestSidebar questSidebar;
 
     @Override
-    public void showSideBar(QuestDescriptionConfig descriptionConfig) {
+    public void showSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo) {
         if (descriptionConfig != null) {
             if (questSidebar == null) {
                 questSidebar = questCockpitInstance.get();
                 RootPanel.get().add(questSidebar);
             }
-            questSidebar.setQuest(descriptionConfig);
+            questSidebar.setQuest(descriptionConfig, questProgressInfo);
         } else {
             if (questSidebar != null) {
                 RootPanel.get().remove(questSidebar);

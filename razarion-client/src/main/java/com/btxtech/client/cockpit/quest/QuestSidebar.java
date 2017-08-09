@@ -54,13 +54,13 @@ public class QuestSidebar extends Composite {
         DOMUtil.removeAllElementChildren(progressTable.getElement()); // Remove placeholder table row from template.
     }
 
-    public void setQuest(QuestDescriptionConfig descriptionConfig) {
+    public void setQuest(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo) {
         activeQuest = null;
         titleLabel.setText(descriptionConfig.getTitle());
         descriptionLabel.setText(descriptionConfig.getDescription());
         if (descriptionConfig instanceof QuestConfig) {
             activeQuest = (QuestConfig) descriptionConfig;
-            setupProgressTableModels(null);
+            setupProgressTableModels(questProgressInfo);
         } else {
             progressTable.setValue(new ArrayList<>());
         }
