@@ -27,7 +27,7 @@ public class DevToolBuildupItemPanel extends BuildupItemPanel {
     protected void setBuildupItem(List<BuildupItem> buildupItems) {
         Platform.runLater(() -> {
             for (BuildupItem buildupItem : buildupItems) {
-                Button button = new Button(buildupItem.getItemType().getName());
+                Button button = new Button(buildupItem.getItemType().getInternalName());
                 button.setOnMouseClicked(event -> buildupItem.onBuild());
                 hBox.getChildren().add(button);
             }

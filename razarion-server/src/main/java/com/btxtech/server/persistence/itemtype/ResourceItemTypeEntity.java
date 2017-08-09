@@ -30,7 +30,6 @@ public class ResourceItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ColladaEntity shape3DId;
-    private String name;
     private double radius;
     private int amount;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -48,7 +47,7 @@ public class ResourceItemTypeEntity {
 
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
-        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setId(id).setName(name).setInternalName(internalName);
+        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setId(id).setInternalName(internalName);
         if (shape3DId != null) {
             resourceItemType.setShape3DId(shape3DId.getId());
         }
@@ -66,7 +65,6 @@ public class ResourceItemTypeEntity {
 
     public void fromResourceItemType(ResourceItemType resourceItemType) {
         internalName = resourceItemType.getInternalName();
-        name = resourceItemType.getName();
         radius = resourceItemType.getRadius();
         amount = resourceItemType.getAmount();
         i18nName = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nName(), i18nName);

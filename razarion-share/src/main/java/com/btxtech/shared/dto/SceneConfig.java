@@ -27,6 +27,7 @@ public class SceneConfig {
     private Boolean wait4QuestPassedDialog;
     private Boolean waitForBaseLostDialog;
     private Boolean waitForBaseCreated;
+    private Boolean processServerQuests;
     private List<ResourceItemPosition> resourceItemTypePositions;
     private Integer duration;
     private ScrollUiQuest scrollUiQuest;
@@ -184,6 +185,15 @@ public class SceneConfig {
 
     public SceneConfig setWaitForBaseCreated(Boolean waitForBaseCreated) {
         this.waitForBaseCreated = waitForBaseCreated;
+        return this;
+    }
+
+    public Boolean isProcessServerQuests() {
+        return processServerQuests;
+    }
+
+    public SceneConfig setProcessServerQuests(Boolean processServerQuests) {
+        this.processServerQuests = processServerQuests;
         return this;
     }
 

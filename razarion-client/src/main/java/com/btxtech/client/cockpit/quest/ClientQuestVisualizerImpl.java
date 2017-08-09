@@ -23,9 +23,9 @@ public class ClientQuestVisualizerImpl implements QuestVisualizer {
         if (descriptionConfig != null) {
             if (questSidebar == null) {
                 questSidebar = questCockpitInstance.get();
-                questSidebar.setQuest(descriptionConfig);
                 RootPanel.get().add(questSidebar);
             }
+            questSidebar.setQuest(descriptionConfig);
         } else {
             if (questSidebar != null) {
                 RootPanel.get().remove(questSidebar);

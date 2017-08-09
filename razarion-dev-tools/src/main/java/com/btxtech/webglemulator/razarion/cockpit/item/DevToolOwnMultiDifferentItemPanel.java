@@ -17,7 +17,7 @@ public class DevToolOwnMultiDifferentItemPanel extends VBox implements OwnMultiD
     @Override
     public void init(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes) {
         for (Map.Entry<BaseItemType, Collection<SyncBaseItemSimpleDto>> entry : itemTypes.entrySet()) {
-            getChildren().add(new Label(entry.getKey().getName() + ": " + entry.getValue().size()));
+            getChildren().add(new Label(entry.getKey().getInternalName() + ": " + entry.getValue().size()));
         }
     }
 }

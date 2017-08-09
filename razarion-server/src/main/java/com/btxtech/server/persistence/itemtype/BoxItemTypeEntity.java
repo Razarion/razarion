@@ -38,7 +38,6 @@ public class BoxItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity thumbnail;
-    private String name;
     private double radius;
     private boolean fixVerticalNorm;
     private Integer ttl;
@@ -56,7 +55,7 @@ public class BoxItemTypeEntity {
 
     public BoxItemType toBoxItemType() {
         BoxItemType boxItemType = new BoxItemType();
-        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setId(id).setName(name).setInternalName(internalName);
+        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setId(id).setInternalName(internalName);
         if (shape3DId != null) {
             boxItemType.setShape3DId(shape3DId.getId());
         }
@@ -81,7 +80,6 @@ public class BoxItemTypeEntity {
 
     public void fromBoxItemType(BoxItemType boxItemType, InventoryPersistence inventoryPersistence) {
         internalName = boxItemType.getInternalName();
-        name = boxItemType.getName();
         radius = boxItemType.getRadius();
         fixVerticalNorm = boxItemType.isFixVerticalNorm();
         ttl = boxItemType.getTtl();

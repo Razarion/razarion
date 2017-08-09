@@ -26,6 +26,7 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Beat
@@ -94,8 +95,8 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
 
     @Test
     public void crudStartRegion() throws Exception {
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion());
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion());
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion());
         Assert.assertTrue(serverGameEnginePersistence.readStartRegionObjectNameIds().isEmpty());
 
         // Add first
@@ -105,10 +106,10 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         serverGameEnginePersistence.updateStartRegionConfig(expectedStartRegionConfig1);
 
         // Verify
-        Polygon2D actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        Polygon2D actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.readStartRegionObjectNameIds(), "int name 1");
@@ -123,10 +124,10 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         serverGameEnginePersistence.updateStartRegionConfig(expectedStartRegionConfig2);
 
         // Verify
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion2, actualStartRegion);
 
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.readStartRegionObjectNameIds(), "int name 1","int name 2");
@@ -143,10 +144,10 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         serverGameEnginePersistence.updateStartRegionConfig(expectedStartRegionConfig2);
 
         // Verify
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
 
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.readStartRegionObjectNameIds(), "int name 1","int name 3");
@@ -162,9 +163,9 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         serverGameEnginePersistence.updateStartRegionConfig(expectedStartRegionConfig1);
 
         // Verify
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion());
 
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
 
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.readStartRegionObjectNameIds(), "int name 4","int name 3");
@@ -180,9 +181,9 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         serverGameEnginePersistence.updateStartRegionConfig(expectedStartRegionConfig1);
 
         // Verify
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion());
 
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion3, actualStartRegion);
 
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.readStartRegionObjectNameIds(), "int name 5","int name 3");
@@ -199,10 +200,10 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         serverGameEnginePersistence.deleteStartRegion(actualStartRegionConfig2.getId());
 
         // Verify
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
-        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion();
+        actualStartRegion = serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion();
         ReflectionAssert.assertReflectionEquals(expectedStartRegion1, actualStartRegion);
 
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.readStartRegionObjectNameIds(), "int name 5");
@@ -213,8 +214,8 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         // Remove first
         serverGameEnginePersistence.deleteStartRegion(actualStartRegionConfig1.getId());
 
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID).getStartRegion());
-        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID).getStartRegion());
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_4_ID, Locale.US).getStartRegion());
+        Assert.assertNull(serverGameEnginePersistence.readSlavePlanetConfig(LEVEL_5_ID, Locale.US).getStartRegion());
 
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.readStartRegionObjectNameIds());
 

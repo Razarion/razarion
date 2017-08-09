@@ -13,7 +13,7 @@ public class DevToolOwnInfoPanel extends VBox implements OwnInfoPanel {
     @Override
     public void init(BaseItemType baseItemType, int count) {
         getChildren().add(new Label("OwnInfoPanel"));
-        getChildren().add(new Label("Type: " + baseItemType.getName()));
+        getChildren().add(new Label("Type: " + baseItemType.getInternalName()));
         getChildren().add(new Label("Description: " + baseItemType.getI18nDescription()));
     }
 }

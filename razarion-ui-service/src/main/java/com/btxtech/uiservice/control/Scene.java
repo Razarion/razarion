@@ -162,6 +162,11 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.start(sceneConfig.getGameTipConfig());
         }
+        if(sceneConfig.isProcessServerQuests() != null &&sceneConfig.isProcessServerQuests() ) {
+            hasCompletionCallback = true;
+            completionCallbackCount++;
+            setupQuestVisualizer4Server();
+        }
         if (!hasCompletionCallback) {
             gameUiControl.onSceneCompleted();
         }
@@ -257,5 +262,9 @@ public class Scene implements ViewService.ViewFieldListener {
 
     public SceneConfig getSceneConfig() {
         return sceneConfig;
+    }
+
+    private void setupQuestVisualizer4Server() {
+        questVisualizer.showSideBar(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlavePlanetConfig().getActiveQuest());
     }
 }

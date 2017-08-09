@@ -5,7 +5,9 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -19,10 +21,18 @@ public class GameUiControlConfigPersistenceTest extends ArquillianBaseTest {
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
 
+    @Before
+    public void before() throws Exception {
+        setupPlanets();
+    }
+
+    @After
+    public void after() throws Exception {
+        cleanPlanets();
+    }
+
     @Test
     public void testLoad() throws Exception {
-        setupPlanets();
-
         Locale locale = Locale.ENGLISH;
 
         UserContext userContext = new UserContext().setLevelId(LEVEL_1_ID);
@@ -40,14 +50,10 @@ public class GameUiControlConfigPersistenceTest extends ArquillianBaseTest {
         userContext = new UserContext().setLevelId(LEVEL_4_ID);
         gameUiControlConfig = gameUiControlConfigPersistence.load(new GameUiControlInput(), locale, userContext);
         Assert.assertEquals(PLANET_2_ID, gameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlanetId());
-
-        cleanPlanets();
     }
 
     @Test
     public void testLoadWarm() throws Exception {
-        setupPlanets();
-
         Locale locale = Locale.ENGLISH;
 
         UserContext userContext = new UserContext().setLevelId(LEVEL_1_ID);
@@ -65,7 +71,5 @@ public class GameUiControlConfigPersistenceTest extends ArquillianBaseTest {
         userContext = new UserContext().setLevelId(LEVEL_4_ID);
         warmGameUiControlConfig = gameUiControlConfigPersistence.loadWarm(locale, userContext);
         Assert.assertEquals(PLANET_2_ID, warmGameUiControlConfig.getPlanetConfig().getPlanetId());
-
-        cleanPlanets();
     }
 }

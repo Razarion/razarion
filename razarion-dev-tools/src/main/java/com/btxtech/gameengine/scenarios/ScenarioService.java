@@ -108,58 +108,58 @@ public class ScenarioService implements QuestListener {
         int itemId = 0;
 
         BaseItemType simpleMovable = new BaseItemType();
-        simpleMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Movable");
+        simpleMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Simple Movable");
         simpleMovable.setId(++itemId);
         simpleMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(5.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60)).setRadius(3));
         SIMPLE_MOVABLE_ITEM_TYPE = simpleMovable;
 
         BaseItemType simpleFastAccelerationMovable = new BaseItemType();
-        simpleFastAccelerationMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Fast Acceleration Movable");
+        simpleFastAccelerationMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Simple Fast Acceleration Movable");
         simpleFastAccelerationMovable.setId(++itemId);
         simpleFastAccelerationMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(60)).setRadius(2));
         SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE = simpleFastAccelerationMovable;
 
         BaseItemType simpleFastMovable = new BaseItemType();
-        simpleFastMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Fast Movable");
+        simpleFastMovable.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Simple Fast Movable");
         simpleFastMovable.setId(++itemId);
         simpleFastMovable.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         SIMPLE_FAST_MOVABLE_ITEM_TYPE = simpleFastMovable;
 
         BaseItemType simpleFix = new BaseItemType();
-        simpleFix.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Simple Fix");
+        simpleFix.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Simple Fix");
         simpleFix.setId(++itemId);
         simpleFix.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(2));
         SIMPLE_FIX_ITEM_TYPE = simpleFix;
 
         BaseItemType harvester = new BaseItemType();
-        harvester.setHealth(10).setSpawnDurationMillis(1000).setBuildup(10).setName("Harvester");
+        harvester.setHealth(10).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Harvester");
         harvester.setId(++itemId);
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
         HARVESTER_ITEM_TYPE = harvester;
 
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setName("Attacker");
+        attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Attacker");
         attacker.setId(++itemId);
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         attacker.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
         ATTACKER_ITEM_TYPE = attacker;
 
         BaseItemType factory = new BaseItemType();
-        factory.setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setName("Factory");
+        factory.setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setInternalName("Factory");
         factory.setId(++itemId);
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5));
         FACTORY_ITEM_TYPE = factory;
 
         BaseItemType builder = new BaseItemType();
-        builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setName("Builder");
+        builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Builder");
         builder.setId(++itemId);
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuildIds(Collections.singletonList(FACTORY_ITEM_TYPE.getId())));
         BUILDER_ITEM_TYPE = builder;
 
         BaseItemType tower = new BaseItemType();
-        tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Tower");
+        tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Tower");
         tower.setId(++itemId);
         tower.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(3));
         tower.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));

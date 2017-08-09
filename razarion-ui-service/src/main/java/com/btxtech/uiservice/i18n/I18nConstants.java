@@ -277,11 +277,13 @@ public interface I18nConstants {
 
     String questBasesKilled();
 
+    String questBoxesPicked();
+
     String questCrystalsIncreased();
 
     String questArtifactItemAdded();
 
-    String questOilCollected();
+    String questResourcesCollected();
 
     String questBuilt();
 

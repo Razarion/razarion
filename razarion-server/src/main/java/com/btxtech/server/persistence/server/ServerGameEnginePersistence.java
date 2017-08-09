@@ -8,6 +8,7 @@ import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -49,14 +50,17 @@ public class ServerGameEnginePersistence {
     @Inject
     private LevelPersistence levelPersistence;
     @Inject
+    private Instance<UserService> userServiceInstance;
+    @Inject
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
     @Inject
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
 
     @Transactional
-    public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
+    public SlavePlanetConfig readSlavePlanetConfig(int levelId, Locale locale) {
         SlavePlanetConfig slavePlanetConfig = new SlavePlanetConfig();
         slavePlanetConfig.setStartRegion(read().findStartRegion(levelPersistence.getLevelNumber4Id(levelId)));
+        slavePlanetConfig.setActiveQuest(userServiceInstance.get().getActiveQuestConfig4CurrentUser(locale));
         return slavePlanetConfig;
     }
 
@@ -155,7 +159,7 @@ public class ServerGameEnginePersistence {
         return serverGameEngineConfigEntities.get(0);
     }
 
-    public QuestConfigEntity getQuestConfigEntity2(LevelEntity newLevel, Collection<QuestConfigEntity> completedQuests) {
+    public QuestConfigEntity getQuestConfigEntityUser(LevelEntity newLevel, Collection<QuestConfigEntity> completedQuests) {
         return getQuestConfigEntityIntern(newLevel, path -> {
             if (completedQuests == null || completedQuests.isEmpty()) {
                 return null;
@@ -165,7 +169,7 @@ public class ServerGameEnginePersistence {
         });
     }
 
-    public QuestConfigEntity getQuestConfigEntity(LevelEntity newLevel, Collection<Integer> completedQuestIds) {
+    public QuestConfigEntity getQuestConfigEntityUnregisteredUser(LevelEntity newLevel, Collection<Integer> completedQuestIds) {
         return getQuestConfigEntityIntern(newLevel, path -> {
             if (completedQuestIds == null || completedQuestIds.isEmpty()) {
                 return null;
@@ -229,18 +233,4 @@ public class ServerGameEnginePersistence {
         crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, questConfig, locale));
         return crud;
     }
-
-//    public QuestConfigEntity getQuestConfigEntity(LevelEntity newLevel, Collection<Integer> completedQuestIds) {
-//        // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
-//        // ServerGameEngineConfigEntity is not considered in this query
-//        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<QuestConfigEntity> criteriaQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
-//        Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
-//        CriteriaQuery<QuestConfigEntity> userSelect = criteriaQuery.select(root.get(ServerQuestEntity_.questConfig));
-//        Predicate minimalLevelPredicate = criteriaBuilder.lessThanOrEqualTo(root.join(ServerQuestEntity_.minimalLevel).get(LevelEntity_.number), newLevel.getNumber());
-//        Predicate notInCompetedQuestPredicate = criteriaBuilder.not(root.get(ServerQuestEntity_.questConfig).get(QuestConfigEntity_.id).in(completedQuestIds));
-//        userSelect.where(criteriaBuilder.and(minimalLevelPredicate, notInCompetedQuestPredicate));
-//        criteriaQuery.orderBy(criteriaBuilder.desc(root.join(ServerQuestEntity_.minimalLevel).get(LevelEntity_.number)));
-//        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
-//    }
 }

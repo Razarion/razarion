@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -190,12 +191,14 @@ public class UserService {
                 UserEntity userEntity = getUserEntity(userContext.getHumanPlayerId().getUserId());
                 userEntity.setLevel(newLevel);
                 if (userEntity.getActiveQuest() == null) {
-                    newQuest = serverGameEnginePersistence.getQuestConfigEntity2(userEntity.getLevel(), userEntity.getCompletedQuest());
+                    newQuest = serverGameEnginePersistence.getQuestConfigEntityUser(userEntity.getLevel(), userEntity.getCompletedQuest());
                     userEntity.setActiveQuest(newQuest);
                 }
                 entityManager.merge(userEntity);
             } else {
-                newQuest = serverGameEnginePersistence.getQuestConfigEntity(newLevel, sessionService.getSession(sessionId).getUnregisteredUser().getCompletedQuestIds());
+                UnregisteredUser unregisteredUser = sessionService.getSession(sessionId).getUnregisteredUser();
+                newQuest = serverGameEnginePersistence.getQuestConfigEntityUnregisteredUser(newLevel, unregisteredUser.getCompletedQuestIds());
+                unregisteredUser.setActiveQuest(newQuest.toQuestConfig(playerSession.getLocale()));
             }
             if (newQuest != null) {
                 questService.activateCondition(userContext.getHumanPlayerId(), newQuest.toQuestConfig(playerSession.getLocale()));
@@ -228,5 +231,29 @@ public class UserService {
         userQuery.where(from.join(UserEntity_.activeQuest).get(QuestConfigEntity_.id).in(questIds));
 
         return entityManager.createQuery(userQuery).getResultList().stream().collect(Collectors.toMap(UserEntity::createHumanPlayerId, user -> user.getActiveQuest().toQuestConfig(user.getLocale()), (a, b) -> b));
+    }
+
+    @Transactional
+    public QuestConfig getActiveQuestConfig4CurrentUser(Locale locale) {
+        Integer userId = sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId();
+        if (userId != null) {
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<QuestConfigEntity> userQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
+            Root<UserEntity> from = userQuery.from(UserEntity.class);
+            userQuery.select(from.get(UserEntity_.activeQuest));
+            userQuery.where(criteriaBuilder.equal(from.get(UserEntity_.id), userId));
+
+            List<QuestConfigEntity> questConfigEntities = entityManager.createQuery(userQuery).getResultList();
+            if (questConfigEntities.isEmpty()) {
+                return null;
+            }
+            if (questConfigEntities.size() > 1) {
+                logger.warning("User has more then one active quest. User id: " + userId);
+            }
+            return questConfigEntities.get(0).toQuestConfig(locale);
+        } else {
+            return sessionHolder.getPlayerSession().getUnregisteredUser().getActiveQuest();
+        }
+
     }
 }

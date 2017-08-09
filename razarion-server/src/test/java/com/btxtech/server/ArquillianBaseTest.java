@@ -139,30 +139,30 @@ public class ArquillianBaseTest {
 
     protected void setupItemTypes() throws Exception {
         BaseItemType builder = new BaseItemType();
-        builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setName("Builder");
+        builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Builder");
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         builder.setBuilderType(new BuilderType().setProgress(1).setRange(3)/*.setAbleToBuildIds(Collections.singletonList(FACTORY_ITEM_TYPE.getId()))*/);
         BASE_ITEM_TYPE_BULLDOZER_ID = createBaseItemTypeEntity(builder);
 
         BaseItemType harvester = new BaseItemType();
-        harvester.setHealth(10).setSpawnDurationMillis(1000).setBuildup(10).setName("Harvester");
+        harvester.setHealth(10).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Harvester");
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(80.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         harvester.setHarvesterType(new HarvesterType().setProgress(10).setRange(4));
         BASE_ITEM_TYPE_HARVESTER_ID = createBaseItemTypeEntity(harvester);
 
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setName("Attacker");
+        attacker.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Attacker");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         attacker.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
         BASE_ITEM_TYPE_ATTACKER_ID = createBaseItemTypeEntity(attacker);
 
         BaseItemType factory = new BaseItemType();
-        factory.setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setName("Factory");
+        factory.setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setInternalName("Factory");
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5));
         BASE_ITEM_TYPE_FACTORY_ID = createBaseItemTypeEntity(factory);
 
         BaseItemType tower = new BaseItemType();
-        tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setName("Tower");
+        tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Tower");
         tower.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(3));
         tower.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(2, 0, 0)).setMuzzlePosition(new Vertex(2, 0, 1)).setAngleVelocity(Math.toRadians(60))));
         BASE_ITEM_TYPE_TOWER_ID = createBaseItemTypeEntity(tower);

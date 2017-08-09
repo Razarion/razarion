@@ -36,7 +36,7 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
     @Inject
     @Bound
     @DataField
-    private TextBox name;
+    private TextBox internalName;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField

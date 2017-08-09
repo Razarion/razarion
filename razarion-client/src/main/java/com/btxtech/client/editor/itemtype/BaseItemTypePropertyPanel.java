@@ -34,10 +34,6 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
     @DataField
     private TextBox internalName;
     @Inject
-    @Bound
-    @DataField
-    private TextBox name;
-    @Inject
     @DataField
     private Shape3DReferenceFiled shape3DReferenceFiled;
     @Inject

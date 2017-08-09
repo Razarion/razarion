@@ -2,21 +2,17 @@ package com.btxtech.server.user;
 
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.TestHelper;
+import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.persistence.history.LevelHistoryEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
-import com.btxtech.server.persistence.server.ServerChildListCrudePersistence;
-import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.HumanPlayerId;
-import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.utils.CollectionUtils;
 import org.junit.After;
@@ -26,7 +22,6 @@ import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
 
 import javax.inject.Inject;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
@@ -41,6 +36,8 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
     private SessionHolder sessionHolder;
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
+    @Inject
+    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
 
     @Before
     public void before() throws Exception {
@@ -58,16 +55,19 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
     public void onLevelUpUnregistered() throws Exception {
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
         UnregisteredUser unregisteredUser = sessionHolder.getPlayerSession().getUnregisteredUser();
-        userService.getUserContext(); // Simulate anonymous login
+        UserContext userContext = userService.getUserContext(); // Simulate anonymous login
 
         userService.onLevelUpdate(sessionId, LEVEL_2_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
+        Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
         userService.onLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
+        Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
         userService.onLevelUpdate(sessionId, LEVEL_4_ID);
         Assert.assertEquals(LEVEL_4_ID, userService.getUserContext().getLevelId());
+        Assert.assertEquals(SERVER_QUEST_ID_1, gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig().getActiveQuest().getId());
 
         assertCount(3, LevelHistoryEntity.class);
         assertCount(0, UserEntity.class);
@@ -76,7 +76,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
     @Test
     public void onLevelUpRegister() throws Exception {
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
-        userService.handleFacebookUserLogin("0000001");
+        UserContext userContext = userService.handleFacebookUserLogin("0000001");
 
         assertUser("0000001", LEVEL_1_ID, null);
         Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
@@ -85,15 +85,18 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
         Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
         userService.onLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
         Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
         userService.onLevelUpdate(sessionId, LEVEL_4_ID);
         Assert.assertEquals(LEVEL_4_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_4_ID, SERVER_QUEST_ID_1);
+        Assert.assertEquals(SERVER_QUEST_ID_1, gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig().getActiveQuest().getId());
 
         Map<HumanPlayerId, QuestConfig> map = userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds());
         Assert.assertEquals(1, map.size());
@@ -198,7 +201,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         try {
             TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds());
             Assert.fail("IllegalStateException expected");
-        } catch(IllegalStateException e) {
+        } catch (IllegalStateException e) {
             // Expected
         }
         TestHelper.assertObjectNameIds(serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds(), "landnfas 2", "landnfas 33");

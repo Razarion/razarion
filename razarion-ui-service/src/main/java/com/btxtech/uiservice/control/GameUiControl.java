@@ -13,12 +13,8 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
@@ -39,10 +35,8 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -267,6 +261,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
         sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
         sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet fade out").setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: Process Server Quests").setProcessServerQuests(true));
         return sceneConfigs;
     }
 
@@ -284,6 +279,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10).setSuggestedPosition(position);
         baseItemPlacerConfig.setAllowedArea(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion());
         sceneConfigs.add(new SceneConfig().setInternalName("Multiplayer wait for base created").setWaitForBaseCreated(true).setStartPointPlacerConfig(baseItemPlacerConfig));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: Process Server Quests").setProcessServerQuests(true));
         return sceneConfigs;
     }
 

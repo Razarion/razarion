@@ -70,7 +70,7 @@ public class GameUiControlConfigPersistence {
     public WarmGameUiControlConfig loadWarm(Locale locale, UserContext userContext) {
         WarmGameUiControlConfig warmGameUiControlConfig = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
         if (warmGameUiControlConfig.getGameEngineMode() == GameEngineMode.SLAVE) {
-            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig(userContext.getLevelId()));
+            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig(userContext.getLevelId(), locale));
             warmGameUiControlConfig.setSlaveSyncItemInfo(gameEngineService.generateSlaveSyncItemInfo(userContext));
         }
         return warmGameUiControlConfig;
