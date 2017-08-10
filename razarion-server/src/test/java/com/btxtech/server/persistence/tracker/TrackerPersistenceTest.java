@@ -19,6 +19,9 @@ public class TrackerPersistenceTest extends ArquillianBaseTest {
     @Test
     public void testReadSessionTracking() throws Exception {
         runInTransaction(em -> {
+            // Cleanup
+            em.createQuery("DELETE FROM SessionTrackerEntity ").executeUpdate();
+            em.createQuery("DELETE FROM PageTrackerEntity ").executeUpdate();
             // TRACKER_SESSION
             em.createNativeQuery("INSERT INTO TRACKER_SESSION (language, referer, remoteAddr, remoteHost, sessionId, timeStamp, userAgent) VALUES(NULL, NULL, '184.105.247.195', 'scan-14.shadowserver.org', 'w71YXuT_6IlI0_JmgHq2WH1tUsppIMFz1gvNtBLY', '2017-05-04 09:48:39', NULL)").executeUpdate();
             em.createNativeQuery("INSERT INTO TRACKER_SESSION (language, referer, remoteAddr, remoteHost, sessionId, timeStamp, userAgent) VALUES('de-DE', NULL, '84.21.34.168', '84.21.34.168', 'cCCVV3m66Y7Xz9UwNDzMWrwdP6m3b5-giRmYnXa1', '2017-03-07 08:45:47', 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko')").executeUpdate();
@@ -28,10 +31,13 @@ public class TrackerPersistenceTest extends ArquillianBaseTest {
             em.createNativeQuery("INSERT INTO `TRACKER_PAGE` (page, params, sessionId, timeStamp, uri) VALUES ('/facebookappstart.xhtml', 'ad_id=6069484325621||page_type=7||fbAdRazTrack=25c3a850c0f544d71cA', 'tFVrprm3lrUr6sUfnqzZtbyZiHNY63jp2DIByMtj', '2017-05-24 20:28:00', '/faces/facebookappstart.xhtml')").executeUpdate();
         });
 
-        List<SessionTracker> sessionTrackers = trackerPersistence.readSessionTracking(createFromDate("2017-05-04 09:48:40"));
+        List<SessionTracker> sessionTrackers = trackerPersistence.readSessionTracking(createSearchConfig("2017-05-04 09:48:40", false));
         Assert.assertEquals(0, sessionTrackers.size());
 
-        sessionTrackers = trackerPersistence.readSessionTracking(createFromDate("2017-03-07 08:45:47"));
+        sessionTrackers = trackerPersistence.readSessionTracking(createSearchConfig("2017-03-07 08:45:47", true));
+        Assert.assertEquals(1, sessionTrackers.size());
+
+        sessionTrackers = trackerPersistence.readSessionTracking(createSearchConfig("2017-03-07 08:45:47", false));
         Assert.assertEquals(3, sessionTrackers.size());
 
         SessionTracker sessionTracker1 = sessionTrackers.get(0);
@@ -49,7 +55,7 @@ public class TrackerPersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals("84.21.34.168",sessionTracker3.getRemoteHost());
         Assert.assertNull(sessionTracker3.getFbAdRazTrack());
 
-        sessionTrackers = trackerPersistence.readSessionTracking(createFromDate("2017-05-04 09:48:39"));
+        sessionTrackers = trackerPersistence.readSessionTracking(createSearchConfig("2017-05-04 09:48:39", false));
         Assert.assertEquals(1, sessionTrackers.size());
 
         sessionTracker1 = sessionTrackers.get(0);
@@ -65,7 +71,7 @@ public class TrackerPersistenceTest extends ArquillianBaseTest {
 
     }
 
-    private SearchConfig createFromDate(String fromDateString) {
-        return new SearchConfig().setFromDate(DateUtil.fromDbTimeString(fromDateString)).setBotFilter(true);
+    private SearchConfig createSearchConfig(String fromDateString, boolean botFilter) {
+        return new SearchConfig().setFromDate(DateUtil.fromDbTimeString(fromDateString)).setBotFilter(botFilter);
     }
 }

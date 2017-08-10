@@ -9,6 +9,7 @@ import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
+import com.btxtech.server.persistence.server.ServerLevelQuestService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
@@ -32,6 +33,8 @@ import java.util.Map;
 public class UserServiceLevelQuestTest extends ArquillianBaseTest {
     @Inject
     private UserService userService;
+    @Inject
+    private ServerLevelQuestService serverLevelQuestService;
     @Inject
     private SessionHolder sessionHolder;
     @Inject
@@ -57,17 +60,17 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         UnregisteredUser unregisteredUser = sessionHolder.getPlayerSession().getUnregisteredUser();
         UserContext userContext = userService.getUserContext(); // Simulate anonymous login
 
-        userService.onLevelUpdate(sessionId, LEVEL_2_ID);
+        serverLevelQuestService.onLevelUpdate(sessionId, LEVEL_2_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
-        userService.onLevelUpdate(sessionId, LEVEL_3_ID);
+        serverLevelQuestService.onLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
-        userService.onLevelUpdate(sessionId, LEVEL_4_ID);
+        serverLevelQuestService.onLevelUpdate(sessionId, LEVEL_4_ID);
         Assert.assertEquals(LEVEL_4_ID, userService.getUserContext().getLevelId());
-        Assert.assertEquals(SERVER_QUEST_ID_1, gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig().getActiveQuest().getId());
+        Assert.assertEquals(SERVER_QUEST_ID_1, gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest().getId());
 
         assertCount(3, LevelHistoryEntity.class);
         assertCount(0, UserEntity.class);
@@ -79,26 +82,26 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         UserContext userContext = userService.handleFacebookUserLogin("0000001");
 
         assertUser("0000001", LEVEL_1_ID, null);
-        Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertTrue(userService.findActiveQuets4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
 
-        userService.onLevelUpdate(sessionId, LEVEL_2_ID);
+        serverLevelQuestService.onLevelUpdate(sessionId, LEVEL_2_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
-        Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertTrue(userService.findActiveQuets4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
         Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
-        userService.onLevelUpdate(sessionId, LEVEL_3_ID);
+        serverLevelQuestService.onLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
-        Assert.assertTrue(userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertTrue(userService.findActiveQuets4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
         Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
-        userService.onLevelUpdate(sessionId, LEVEL_4_ID);
+        serverLevelQuestService.onLevelUpdate(sessionId, LEVEL_4_ID);
         Assert.assertEquals(LEVEL_4_ID, userService.getUserContext().getLevelId());
         assertUser("0000001", LEVEL_4_ID, SERVER_QUEST_ID_1);
-        Assert.assertEquals(SERVER_QUEST_ID_1, gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig().getActiveQuest().getId());
+        Assert.assertEquals(SERVER_QUEST_ID_1, gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest().getId());
 
-        Map<HumanPlayerId, QuestConfig> map = userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds());
+        Map<HumanPlayerId, QuestConfig> map = userService.findActiveQuets4Users(serverGameEnginePersistence.readAllQuestIds());
         Assert.assertEquals(1, map.size());
         Map.Entry<HumanPlayerId, QuestConfig> entry = CollectionUtils.getFirst(map.entrySet());
         UserEntity userEntity = userService.getUserForFacebookId("0000001");

@@ -74,7 +74,7 @@ public class GameEngineService implements GameLogicListener {
     }
 
     private void activateQuests() {
-        for (Map.Entry<HumanPlayerId, QuestConfig> entry : userService.findUserQuestForPlanet(serverGameEnginePersistence.readAllQuestIds()).entrySet()) {
+        for (Map.Entry<HumanPlayerId, QuestConfig> entry : userService.findActiveQuets4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet()) {
             questService.activateCondition(entry.getKey(), entry.getValue());
         }
     }

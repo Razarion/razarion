@@ -8,8 +8,6 @@ import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.server.user.UserService;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -19,7 +17,6 @@ import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.planet.quest.QuestService;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -52,20 +49,14 @@ public class ServerGameEnginePersistence {
     @Inject
     private LevelPersistence levelPersistence;
     @Inject
-    private QuestService questService;
-    @Inject
-    private Instance<UserService> userServiceInstance;
-    @Inject
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
     @Inject
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
 
     @Transactional
-    public SlavePlanetConfig readSlavePlanetConfig(int levelId, Locale locale, HumanPlayerId humanPlayerId) {
+    public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
         SlavePlanetConfig slavePlanetConfig = new SlavePlanetConfig();
         slavePlanetConfig.setStartRegion(read().findStartRegion(levelPersistence.getLevelNumber4Id(levelId)));
-        slavePlanetConfig.setActiveQuest(userServiceInstance.get().getActiveQuestConfig4CurrentUser(locale));
-        slavePlanetConfig.setQuestProgressInfo(questService.getQuestProgressInfo(humanPlayerId));
         return slavePlanetConfig;
     }
 

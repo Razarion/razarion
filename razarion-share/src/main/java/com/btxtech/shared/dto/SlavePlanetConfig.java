@@ -10,8 +10,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
  */
 public class SlavePlanetConfig {
     private Polygon2D startRegion;
-    private QuestConfig activeQuest;
-    private QuestProgressInfo questProgressInfo;
 
     public Polygon2D getStartRegion() {
         return startRegion;
@@ -20,21 +18,5 @@ public class SlavePlanetConfig {
     public SlavePlanetConfig setStartRegion(Polygon2D startRegion) {
         this.startRegion = startRegion;
         return this;
-    }
-
-    public QuestConfig getActiveQuest() {
-        return activeQuest;
-    }
-
-    public void setActiveQuest(QuestConfig activeQuest) {
-        this.activeQuest = activeQuest;
-    }
-
-    public QuestProgressInfo getQuestProgressInfo() {
-        return questProgressInfo;
-    }
-
-    public void setQuestProgressInfo(QuestProgressInfo questProgressInfo) {
-        this.questProgressInfo = questProgressInfo;
     }
 }

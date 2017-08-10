@@ -4,6 +4,7 @@ import com.btxtech.server.gameengine.GameEngineService;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerLevelQuestService;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
@@ -49,6 +50,8 @@ public class GameUiControlConfigPersistence {
     private DbPropertiesService dbPropertiesService;
     @Inject
     private TrackerPersistence trackerPersistence;
+    @Inject
+    private ServerLevelQuestService serverLevelQuestService;
 
     @Transactional
     public ColdGameUiControlConfig load(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
@@ -70,8 +73,9 @@ public class GameUiControlConfigPersistence {
     public WarmGameUiControlConfig loadWarm(Locale locale, UserContext userContext) {
         WarmGameUiControlConfig warmGameUiControlConfig = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
         if (warmGameUiControlConfig.getGameEngineMode() == GameEngineMode.SLAVE) {
-            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig(userContext.getLevelId(), locale, userContext.getHumanPlayerId()));
+            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiControlConfig.setSlaveSyncItemInfo(gameEngineService.generateSlaveSyncItemInfo(userContext));
+            warmGameUiControlConfig.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
         }
         return warmGameUiControlConfig;
     }

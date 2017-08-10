@@ -12,6 +12,7 @@ import java.util.List;
 public class WarmGameUiControlConfig {
     private GameEngineMode gameEngineMode;
     private SlavePlanetConfig slavePlanetConfig;
+    private SlaveQuestInfo slaveQuestInfo;
     private SlaveSyncItemInfo slaveSyncItemInfo;
     private PlanetConfig planetConfig;
     private List<SceneConfig> sceneConfigs;
@@ -34,6 +35,15 @@ public class WarmGameUiControlConfig {
 
     public WarmGameUiControlConfig setSlavePlanetConfig(SlavePlanetConfig slavePlanetConfig) {
         this.slavePlanetConfig = slavePlanetConfig;
+        return this;
+    }
+
+    public SlaveQuestInfo getSlaveQuestInfo() {
+        return slaveQuestInfo;
+    }
+
+    public WarmGameUiControlConfig setSlaveQuestInfo(SlaveQuestInfo slaveQuestInfo) {
+        this.slaveQuestInfo = slaveQuestInfo;
         return this;
     }
 

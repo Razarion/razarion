@@ -1,8 +1,8 @@
 package com.btxtech.server.connection;
 
 import com.btxtech.server.gameengine.WebSocketEndpointConfigAware;
+import com.btxtech.server.persistence.server.ServerLevelQuestService;
 import com.btxtech.server.user.PlayerSession;
-import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -33,7 +33,7 @@ public class ClientSystemConnection {
     @Inject
     private ClientSystemConnectionService clientSystemConnectionService;
     @Inject
-    private UserService userService;
+    private ServerLevelQuestService serverLevelQuestService;
     @Inject
     private SessionService sessionService;
     private ObjectMapper mapper = new ObjectMapper();
@@ -74,7 +74,7 @@ public class ClientSystemConnection {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         switch (packet) {
             case LEVEL_UPDATE:
-                userService.onLevelUpdate(httpSession.getId(), (int) param);
+                serverLevelQuestService.onLevelUpdate(httpSession.getId(), (int) param);
                 break;
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);

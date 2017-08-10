@@ -1,6 +1,10 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
+import com.btxtech.server.persistence.quest.ConditionConfigEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
+import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -59,6 +63,13 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
 
     @Test
     public void saveAllScenes() throws Exception {
+        cleanTable(ServerLevelQuestEntity.class);
+        cleanTableNative("SERVER_QUEST");
+        cleanTable(QuestConfigEntity.class);
+        cleanTable(ConditionConfigEntity.class);
+        cleanTable(ComparisonConfigEntity.class);
+        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
+        //
         List<SceneConfig> expectedSceneConfigs = setupTutorial();
 
         while (!expectedSceneConfigs.isEmpty()) {
