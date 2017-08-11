@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
@@ -32,7 +33,7 @@ public class ServerLevelQuestEntity implements ObjectNameIdProvider {
     private Integer id;
     private String internalName;
     @OrderColumn(name = "orderColumn")
-    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "SERVER_QUEST",
             joinColumns = @JoinColumn(name = "serverLevelQuest"),
             inverseJoinColumns = @JoinColumn(name = "quest"))

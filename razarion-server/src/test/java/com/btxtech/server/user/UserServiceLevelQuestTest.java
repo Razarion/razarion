@@ -2,7 +2,6 @@ package com.btxtech.server.user;
 
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.TestHelper;
-import com.btxtech.server.persistence.history.LevelHistoryEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -111,7 +110,7 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         ServerLevelQuestConfig actualLevelQuestConfig4 = serverGameEnginePersistence.getServerLevelQuestCrud().read(serverLevelQuestConfigId4);
         ReflectionAssert.assertReflectionEquals(expectedLevelQuestConfig4, actualLevelQuestConfig4);
 
-        // Add quests
+        // Add first quests
         QuestConfig expectedQuestConfig1 = serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).create();
         expectedQuestConfig1.setInternalName("dsfdsf 1");
         serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig1);
@@ -121,6 +120,19 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         QuestConfig actualQuestConfig1 = serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).read(questConfigId1);
         ReflectionAssert.assertReflectionEquals(expectedQuestConfig1, actualQuestConfig1);
         TestHelper.assertIds(serverGameEnginePersistence.readAllQuestIds(), expectedQuestConfig1.getId());
+        // Add second quests
+        QuestConfig expectedQuestConfig2 = serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).create();
+        expectedQuestConfig2.setInternalName("dsfdsf 2");
+        serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig2);
+        // Verify quest
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 1", "dsfdsf 2");
+        // Swap
+        serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).swap(0, 1);
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 2", "dsfdsf 1");
+        // Delete
+        serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).delete(expectedQuestConfig2.getId());
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(actualLevelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 1");
 
         // Remove last and first
         serverGameEnginePersistence.getServerLevelQuestCrud().delete(serverLevelQuestConfigId4);
@@ -152,5 +164,98 @@ public class UserServiceLevelQuestTest extends ArquillianBaseTest {
         assertEmptyCount(ConditionConfigEntity.class);
         assertEmptyCount(ComparisonConfigEntity.class);
         assertEmptyCountNative("QUEST_COMPARISON_BASE_ITEM");
+    }
+
+    @Test
+    public void crudQuests() throws Exception {
+        cleanTableNative("SERVER_QUEST");
+        cleanTable(ServerLevelQuestEntity.class);
+        cleanTable(QuestConfigEntity.class);
+        cleanTable(ConditionConfigEntity.class);
+        cleanTable(ComparisonConfigEntity.class);
+        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
+
+        // Create first ServerLevel
+        ServerLevelQuestConfig levelQuestConfig1 = serverGameEnginePersistence.getServerLevelQuestCrud().create();
+        levelQuestConfig1.setMinimalLevelId(LEVEL_4_ID).setInternalName("landnfas 1");
+        serverGameEnginePersistence.getServerLevelQuestCrud().update(levelQuestConfig1);
+
+        // Add quests
+        QuestConfig expectedQuestConfig1 = serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).create();
+        expectedQuestConfig1.setInternalName("dsfdsf 1");
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig1);
+        QuestConfig expectedQuestConfig2 = serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).create();
+        expectedQuestConfig2.setInternalName("dsfdsf 2");
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig2);
+        QuestConfig expectedQuestConfig3 = serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).create();
+        expectedQuestConfig3.setInternalName("dsfdsf 3");
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig3);
+        QuestConfig expectedQuestConfig4 = serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).create();
+        expectedQuestConfig4.setInternalName("dsfdsf 4");
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig4);
+        QuestConfig expectedQuestConfig5 = serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).create();
+        expectedQuestConfig5.setInternalName("dsfdsf 5");
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).update(expectedQuestConfig5);
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 1", "dsfdsf 2", "dsfdsf 3", "dsfdsf 4", "dsfdsf 5");
+
+        // Swap
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).swap(0, 4);
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 5", "dsfdsf 2", "dsfdsf 3", "dsfdsf 4", "dsfdsf 1");
+
+        // Delete
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).delete(expectedQuestConfig1.getId());
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 5", "dsfdsf 2", "dsfdsf 3", "dsfdsf 4");
+
+        // Swap
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).swap(1, 3);
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 5", "dsfdsf 4", "dsfdsf 3", "dsfdsf 2");
+
+        // Delete
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).delete(expectedQuestConfig3.getId());
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 5", "dsfdsf 4", "dsfdsf 2");
+
+        // Delete
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).delete(expectedQuestConfig5.getId());
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 4", "dsfdsf 2");
+
+        // Swap
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).swap(0, 1);
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 2", "dsfdsf 4");
+
+        // Delete
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).delete(expectedQuestConfig2.getId());
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds(), "dsfdsf 4");
+
+        // Delete
+        serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).delete(expectedQuestConfig4.getId());
+
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(serverGameEnginePersistence.getServerQuestCrud(levelQuestConfig1.getId(), Locale.ENGLISH).readObjectNameIds());
+
+        serverGameEnginePersistence.getServerLevelQuestCrud().delete(levelQuestConfig1.getId());
+
+        assertEmptyCount(ServerLevelQuestEntity.class);
+        assertEmptyCountNative("SERVER_QUEST");
+        assertEmptyCount(QuestConfigEntity.class);
+        assertEmptyCount(ConditionConfigEntity.class);
+        assertEmptyCount(ComparisonConfigEntity.class);
+        assertEmptyCountNative("QUEST_COMPARISON_BASE_ITEM");
+
     }
 }

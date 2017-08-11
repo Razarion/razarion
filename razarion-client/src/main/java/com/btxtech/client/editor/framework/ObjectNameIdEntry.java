@@ -1,7 +1,5 @@
 package com.btxtech.client.editor.framework;
 
-import com.btxtech.client.editor.ground.GroundSidebar;
-import com.btxtech.client.editor.server.quest.QuestPropertyPanel;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -9,7 +7,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.TableRow;
@@ -68,25 +65,25 @@ public class ObjectNameIdEntry implements TakesValue<ObjectNameId>, IsElement {
         return objectNameIdRow;
     }
 
-    @EventHandler("editButton")
-    private void editButtonClicked(ClickEvent event) {
-        ObjectNamePropertyPanel objectNamePropertyPanel = leftSideBarManager.stack(abstractObjectNameIdEditor.getObjectNamePropertyPanelClass());
-        objectNamePropertyPanel.setObjectNameId(objectNameId);
-    }
-
     @EventHandler("upButton")
-    private void upButtonClicked(ClickEvent event) {
-        abstractObjectNameIdEditor.up(objectNameId);
+    public void upButtonClicked(ClickEvent event) {
+        abstractObjectNameIdEditor.up(objectNameId, response -> abstractObjectNameIdEditor.read(abstractObjectNameIdEditor::setObjectNameIds));
     }
 
     @EventHandler("downButton")
-    private void downButtonClicked(ClickEvent event) {
-        abstractObjectNameIdEditor.down(objectNameId);
+    public void downButtonClicked(ClickEvent event) {
+        abstractObjectNameIdEditor.down(objectNameId, response -> abstractObjectNameIdEditor.read(abstractObjectNameIdEditor::setObjectNameIds));
     }
 
     @EventHandler("deleteButton")
-    private void deleteButtonClicked(ClickEvent event) {
-        abstractObjectNameIdEditor.delete(objectNameId);
+    public void deleteButtonClicked(ClickEvent event) {
+        abstractObjectNameIdEditor.delete(objectNameId, response -> abstractObjectNameIdEditor.read(abstractObjectNameIdEditor::setObjectNameIds));
+    }
+
+    @EventHandler("editButton")
+    public void editButtonClicked(ClickEvent event) {
+        ObjectNamePropertyPanel objectNamePropertyPanel = leftSideBarManager.stack(abstractObjectNameIdEditor.getObjectNamePropertyPanelClass());
+        objectNamePropertyPanel.setObjectNameId(objectNameId);
     }
 
     public void setAbstractObjectNameIdEditor(AbstractObjectNameIdEditor abstractObjectNameIdEditor) {

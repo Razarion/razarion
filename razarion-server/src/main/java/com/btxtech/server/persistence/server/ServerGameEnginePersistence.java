@@ -212,6 +212,7 @@ public class ServerGameEnginePersistence {
         crud.setConfigGenerator(questConfigEntity -> questConfigEntity.toQuestConfig(locale));
         crud.setEntityFactory(QuestConfigEntity::new);
         crud.setEntityFiller((questConfigEntity, questConfig) -> questConfigEntity.fromQuestConfig(itemTypePersistence, questConfig, locale));
+        crud.setAdditionalDelete((entityManager, integer) -> entityManager.remove(entityManager.find(QuestConfigEntity.class, integer)));
         return crud;
     }
 }

@@ -93,4 +93,14 @@ public interface ServerGameEngineEditorProvider {
     @Consumes(MediaType.APPLICATION_JSON)
     void updateQuestConfig(@PathParam("levelQuestId") int levelQuestId, QuestConfig questConfig);
 
+    @DELETE
+    @Path("deleteQuestConfig/{levelQuestId}/{questId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteQuestConfig(@PathParam("levelQuestId") int levelQuestId, @PathParam("questId") int questId);
+
+    @PUT
+    @Path("swapQuestConfig/{levelQuestId}/{index1}/{index2}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void swapQuestConfig(@PathParam("levelQuestId") int levelQuestId, @PathParam("index1") int index1, @PathParam("index2") int index2);
+
 }

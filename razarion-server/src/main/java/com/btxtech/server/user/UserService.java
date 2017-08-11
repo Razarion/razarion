@@ -173,7 +173,9 @@ public class UserService {
         CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
         Root<UserEntity> from = userQuery.from(UserEntity.class);
         userQuery.select(from);
-        userQuery.where(from.join(UserEntity_.activeQuest).get(QuestConfigEntity_.id).in(questIds));
+        if(questIds != null && !questIds.isEmpty()) {
+            userQuery.where(from.join(UserEntity_.activeQuest).get(QuestConfigEntity_.id).in(questIds));
+        }
 
         return entityManager.createQuery(userQuery).getResultList().stream().collect(Collectors.toMap(UserEntity::createHumanPlayerId, user -> user.getActiveQuest().toQuestConfig(user.getLocale()), (a, b) -> b));
     }

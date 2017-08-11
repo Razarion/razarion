@@ -17,9 +17,9 @@ public abstract class AbstractObjectNameIdEditor {
 
     protected abstract void create(RemoteCallback<?> callback);
 
-    protected abstract void swap(int index1, int index2);
+    protected abstract void swap(int index1, int index2, RemoteCallback<?> callback);
 
-    protected abstract void delete(ObjectNameId objectNameId);
+    protected abstract void delete(ObjectNameId objectNameId, RemoteCallback<?> callback);
 
     protected abstract <T extends ObjectNamePropertyPanel> Class<T> getObjectNamePropertyPanelClass();
 
@@ -36,20 +36,20 @@ public abstract class AbstractObjectNameIdEditor {
         return objectNameIds;
     }
 
-    void up(ObjectNameId objectNameId) {
+    void up(ObjectNameId objectNameId, RemoteCallback<?> callback) {
         int lowerIndex = objectNameIds.indexOf(objectNameId);
         if (lowerIndex + 1 >= objectNameIds.size()) {
             return;
         }
-        swap(lowerIndex, lowerIndex + 1);
+        swap(lowerIndex, lowerIndex + 1, callback);
     }
 
-    void down(ObjectNameId objectNameId) {
+    void down(ObjectNameId objectNameId, RemoteCallback<?> callback) {
         int higherIndex = objectNameIds.indexOf(objectNameId);
         if (higherIndex - 1 <= 0) {
             return;
         }
-        swap(higherIndex, higherIndex - 1);
+        swap(higherIndex, higherIndex - 1, callback);
     }
 
     boolean hasSuccessor(ObjectNameId objectNameId) {

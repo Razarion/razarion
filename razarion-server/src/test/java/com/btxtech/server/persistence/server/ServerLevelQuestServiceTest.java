@@ -43,10 +43,11 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
 
     @After
     public void after() throws Exception {
+        cleanTableNative("USER_COMPLETED_QUEST");
+        cleanTable(UserEntity.class);
         cleanPlanets();
         cleanTable(LevelHistoryEntity.class);
         cleanTable(QuestHistoryEntity.class);
-        cleanTable(UserEntity.class);
     }
 
     @Test

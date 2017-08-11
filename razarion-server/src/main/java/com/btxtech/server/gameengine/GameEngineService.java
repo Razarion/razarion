@@ -26,6 +26,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -74,7 +75,11 @@ public class GameEngineService implements GameLogicListener {
     }
 
     private void activateQuests() {
-        for (Map.Entry<HumanPlayerId, QuestConfig> entry : userService.findActiveQuests4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet()) {
+        Collection<Integer> planetQuestId = serverGameEnginePersistence.readAllQuestIds();
+        if (planetQuestId == null || planetQuestId.isEmpty()) {
+            return;
+        }
+        for (Map.Entry<HumanPlayerId, QuestConfig> entry : userService.findActiveQuests4Users(planetQuestId).entrySet()) {
             questService.activateCondition(entry.getKey(), entry.getValue());
         }
     }

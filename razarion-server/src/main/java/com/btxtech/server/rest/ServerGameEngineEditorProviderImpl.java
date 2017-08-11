@@ -161,4 +161,25 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
             throw e;
         }
     }
+
+    @Override
+    public void deleteQuestConfig(int levelQuestId, int questId) {
+        System.out.println("deleteQuestConfig levelQuestId: " + levelQuestId + " questId: " + questId);
+        try {
+            serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).delete(questId);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void swapQuestConfig(int levelQuestId, int index1, int index2) {
+        try {
+            serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).swap(index1, index2);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
 }

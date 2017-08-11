@@ -9,7 +9,8 @@
         <!--<jta-data-source>java:jboss/datasources/RIM</jta-data-source>-->
         <properties>
             <!-- Properties for Hibernate -->
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <!-- Hibernate bug update does not generate constraints -->
             <property name="hibernate.show_sql" value="true"/>
         </properties>
     </persistence-unit>

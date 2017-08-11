@@ -3,7 +3,6 @@ package com.btxtech.client.editor.server.quest;
 import com.btxtech.client.editor.framework.AbstractObjectNameIdEditor;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.framework.ObjectNameIdTable;
-import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
 import com.btxtech.client.editor.widgets.level.LevelField;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -73,13 +72,19 @@ public class LevelQuestPropertyPanel extends AbstractPropertyPanel<ServerLevelQu
             }
 
             @Override
-            protected void swap(int index1, int index2) {
-                //TODO
+            protected void swap(int index1, int index2, RemoteCallback<?> callback) {
+                provider.call(callback, (message, throwable) -> {
+                    logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.swapQuestConfig failed: " + message, throwable);
+                    return false;
+                }).swapQuestConfig(serverLevelQuestConfig.getId(), index1, index2);
             }
 
             @Override
-            protected void delete(ObjectNameId objectNameId) {
-                //TODO
+            protected void delete(ObjectNameId objectNameId, RemoteCallback<?> callback) {
+                provider.call(callback, (message, throwable) -> {
+                    logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.deleteQuestConfig failed: " + message, throwable);
+                    return false;
+                }).deleteQuestConfig(serverLevelQuestConfig.getId(), objectNameId.getId());
             }
 
             @Override

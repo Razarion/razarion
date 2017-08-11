@@ -8,9 +8,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -36,7 +36,7 @@ public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvide
     private Supplier<E> entityFactory;
     private BiConsumer<E, C> entityFiller;
     private Function<E, C> configGenerator;
-
+    private BiConsumer<EntityManager, Integer> additionalDelete;
 
     public ServerChildListCrudePersistence<R, P, E, C> setRootProvider(Supplier<R> rootProvider) {
         this.rootProvider = rootProvider;
@@ -83,11 +83,16 @@ public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvide
         return this;
     }
 
+    public ServerChildListCrudePersistence setAdditionalDelete(BiConsumer<EntityManager, Integer> additionalDelete) {
+        this.additionalDelete = additionalDelete;
+        return this;
+    }
+
     @Transactional
     @SecurityCheck
     public List<ObjectNameId> readObjectNameIds() {
         P p = parentProvider.apply(entityManager);
-        if(p == null) {
+        if (p == null) {
             throw new IllegalStateException("No parent");
         }
         List<E> entities = entitiesGetter.apply(p);
@@ -102,7 +107,7 @@ public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvide
     @SecurityCheck
     public C read(int id) {
         P p = parentProvider.apply(entityManager);
-        if(p == null) {
+        if (p == null) {
             throw new IllegalStateException("No parent");
         }
         List<E> entities = entitiesGetter.apply(p);
@@ -113,7 +118,7 @@ public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvide
     @SecurityCheck
     public C create() {
         P p = parentProvider.apply(entityManager);
-        if(p == null) {
+        if (p == null) {
             throw new IllegalStateException("No parent");
         }
         List<E> entities = entitiesGetter.apply(p);
@@ -131,7 +136,7 @@ public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvide
     @SecurityCheck
     public void update(C config) {
         P p = parentProvider.apply(entityManager);
-        if(p == null) {
+        if (p == null) {
             throw new IllegalStateException("No parent");
         }
         List<E> entities = entitiesGetter.apply(p);
@@ -148,14 +153,28 @@ public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvide
     @SecurityCheck
     public void delete(int id) {
         P p = parentProvider.apply(entityManager);
-        if(p == null) {
+        if (p == null) {
             throw new IllegalStateException("No parent");
         }
         List<E> entities = entitiesGetter.apply(p);
         if (entities != null) {
             entities.removeIf(e -> id == entityIdProvider.apply(e));
             entityManager.merge(rootProvider.get());
+            if (additionalDelete != null) {
+                additionalDelete.accept(entityManager, id);
+            }
         }
     }
 
+    @Transactional
+    @SecurityCheck
+    public void swap(int index1, int index2) {
+        P p = parentProvider.apply(entityManager);
+        if (p == null) {
+            throw new IllegalStateException("No parent");
+        }
+        List<E> entities = entitiesGetter.apply(p);
+        Collections.swap(entities, index1, index2);
+        entityManager.merge(rootProvider.get());
+    }
 }

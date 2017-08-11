@@ -29,6 +29,14 @@ public interface TestHelper {
         }
     }
 
+    static void assertOrderedObjectNameIds(List<ObjectNameId> actual, String... expectedNames) {
+        Assert.assertEquals("Size is not the same", expectedNames.length, actual.size());
+
+        for (int i = 0; i < expectedNames.length; i++) {
+            Assert.assertEquals(expectedNames[i], actual.get(i).getInternalName());
+        }
+    }
+
     static int findIdForName(List<ObjectNameId> objectNameIds, String name) {
         return objectNameIds.stream().filter(objectNameId -> objectNameId.getInternalName().equalsIgnoreCase(name)).findFirst().map(ObjectNameId::getId).orElseThrow(() -> new IllegalArgumentException("No ObjectNameId for name: " + name));
     }
