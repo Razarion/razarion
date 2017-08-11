@@ -51,8 +51,6 @@ public class QuestService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private Instance<AbstractComparison> instance;
-    @Inject
-    private LevelService levelService;
     private Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<HumanPlayerId, AbstractConditionProgress> progressMap = new HashMap<>();
 

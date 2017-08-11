@@ -47,7 +47,7 @@ public class UserService {
     private LevelPersistence levelPersistence;
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
-    private Map<String, UserContext> loggedInUserContext = new HashMap<>();
+    private final Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
     public UserContext getUserContext() {
@@ -147,21 +147,28 @@ public class UserService {
     }
 
     @Transactional
-    public QuestConfig getAndSaveNewQuest(Integer userId, Locale locale) {
+    public QuestConfig getAndSaveNewQuest(Integer userId) {
         UserEntity userEntity = getUserEntity(userId);
         if (userEntity.getActiveQuest() == null) {
-            QuestConfigEntity newQuest = serverGameEnginePersistence.getQuestConfigEntityUser(userEntity.getLevel(), userEntity.getCompletedQuest());
+            QuestConfigEntity newQuest = serverGameEnginePersistence.getQuest4LevelAndCompleted(userEntity.getLevel(), userEntity.getCompletedQuestIds());
             userEntity.setActiveQuest(newQuest);
             entityManager.merge(userEntity);
-            return newQuest.toQuestConfig(locale);
+            return newQuest.toQuestConfig(userEntity.getLocale());
         } else {
             return null;
         }
-
     }
 
     @Transactional
-    public Map<HumanPlayerId, QuestConfig> findActiveQuets4Users(Collection<Integer> questIds) {
+    public void addCompletedServerQuest(Integer userId, QuestConfig questConfig) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, questConfig.getId()));
+        userEntity.setActiveQuest(null);
+        entityManager.merge(userEntity);
+    }
+
+    @Transactional
+    public Map<HumanPlayerId, QuestConfig> findActiveQuests4Users(Collection<Integer> questIds) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
         Root<UserEntity> from = userQuery.from(UserEntity.class);

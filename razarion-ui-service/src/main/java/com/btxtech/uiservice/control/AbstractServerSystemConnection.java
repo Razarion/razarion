@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
@@ -36,6 +37,12 @@ public abstract class AbstractServerSystemConnection {
         switch (packet) {
             case QUEST_PROGRESS_CHANGED:
                 gameUiControl.onQuestProgress((QuestProgressInfo) param);
+                break;
+            case QUEST_ACTIVATED:
+                gameUiControl.onQuestActivated((QuestConfig) param);
+                break;
+            case QUEST_PASSED:
+                gameUiControl.onQuestPassedServer((QuestConfig) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);

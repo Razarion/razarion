@@ -38,7 +38,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
-import com.btxtech.shared.utils.CollectionUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -53,11 +52,13 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.UserTransaction;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -358,9 +359,9 @@ public class ArquillianBaseTest {
         ServerLevelQuestEntity serverLevelQuestEntity1 = new ServerLevelQuestEntity();
         serverLevelQuestEntity1.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
         QuestConfigEntity questConfigEntity1 = new QuestConfigEntity();
-        questConfigEntity1.fromQuestConfig(null, new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
+        questConfigEntity1.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest 1").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
         QuestConfigEntity questConfigEntity2 = new QuestConfigEntity();
-        questConfigEntity2.fromQuestConfig(null, new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
+        questConfigEntity2.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest 2").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
         serverLevelQuestEntity1.setQuestConfigs(Arrays.asList(questConfigEntity1, questConfigEntity2));
         serverGameEngineConfigEntity1.setServerQuestEntities(Collections.singletonList(serverLevelQuestEntity1));
         em.persist(serverGameEngineConfigEntity1);
@@ -419,4 +420,19 @@ public class ArquillianBaseTest {
         runInTransaction(em -> em.createNativeQuery("DELETE FROM " + tableName).executeUpdate());
     }
 
+    protected void printSqlStatement(String sql) {
+        Query q = em.createNativeQuery(sql);
+        List<Object[]> resultList = q.getResultList();
+
+        System.out.println("SQL-----------------------------------------------------");
+        System.out.println(sql);
+        for (Object[] row : resultList) {
+            for (Object cell : row) {
+                System.out.print(cell);
+                System.out.print(" ");
+            }
+            System.out.println();
+        }
+        System.out.println("SQL-ENDS-----------------------------------------------------");
+    }
 }

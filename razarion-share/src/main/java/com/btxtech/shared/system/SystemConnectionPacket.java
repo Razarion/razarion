@@ -1,5 +1,6 @@
 package com.btxtech.shared.system;
 
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 
 /**
@@ -10,6 +11,8 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     // Levels
     LEVEL_UPDATE(Integer.class),
     // Quest
+    QUEST_ACTIVATED(QuestConfig.class),
+    QUEST_PASSED(QuestConfig.class),
     QUEST_PROGRESS_CHANGED(QuestProgressInfo.class);
 
     private Class theClass;

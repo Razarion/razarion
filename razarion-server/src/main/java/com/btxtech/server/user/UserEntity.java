@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -33,11 +34,12 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(length = 190) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @Column(length = 190)
+    // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String facebookUserId;
     private Date registerDate;
     private boolean admin;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private HumanPlayerIdEntity humanPlayerIdEntity;
     @ManyToOne(fetch = FetchType.LAZY)
     private LevelEntity level;
@@ -94,6 +96,14 @@ public class UserEntity {
 
     public List<QuestConfigEntity> getCompletedQuest() {
         return completedQuest;
+    }
+
+    public List<Integer> getCompletedQuestIds() {
+        if (completedQuest != null) {
+            return completedQuest.stream().map(QuestConfigEntity::getId).collect(Collectors.toList());
+        } else {
+            return null;
+        }
     }
 
     public Locale getLocale() {

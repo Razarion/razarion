@@ -3,6 +3,7 @@ package com.btxtech.uiservice.control;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -275,5 +276,22 @@ public class Scene implements ViewService.ViewFieldListener {
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
         questVisualizer.onQuestProgress(questProgressInfo);
+    }
+
+    public void onQuestActivated(QuestConfig quest) {
+        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
+            questVisualizer.showSideBar(quest, null);
+        } else {
+            logger.severe("Scene.onQuestActivated() but not sceneConfig.isProcessServerQuests()");
+        }
+    }
+
+    public void onQuestPassedServer(QuestConfig quest) {
+        if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
+            questVisualizer.showSideBar(null, null);
+            modalDialogManager.showQuestPassed(quest);
+        } else {
+            logger.severe("Scene.onQuestPassedServer() but not sceneConfig.isProcessServerQuests()");
+        }
     }
 }

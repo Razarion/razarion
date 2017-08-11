@@ -25,14 +25,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Function;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -40,6 +39,7 @@ import java.util.function.Function;
  */
 @Singleton
 public class ServerGameEnginePersistence {
+    private Logger logger = Logger.getLogger(ServerGameEnginePersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -155,26 +155,6 @@ public class ServerGameEnginePersistence {
         return serverGameEngineConfigEntities.get(0);
     }
 
-    public QuestConfigEntity getQuestConfigEntityUser(LevelEntity newLevel, Collection<QuestConfigEntity> completedQuests) {
-        return getQuestConfigEntityIntern(newLevel, path -> {
-            if (completedQuests == null || completedQuests.isEmpty()) {
-                return null;
-            } else {
-                return path.get(QuestConfigEntity_.id).in(completedQuests);
-            }
-        });
-    }
-
-    public QuestConfigEntity getQuestConfigEntityUnregisteredUser(LevelEntity newLevel, Collection<Integer> completedQuestIds) {
-        return getQuestConfigEntityIntern(newLevel, path -> {
-            if (completedQuestIds == null || completedQuestIds.isEmpty()) {
-                return null;
-            } else {
-                return path.in(completedQuestIds);
-            }
-        });
-    }
-
     @Transactional
     public Collection<Integer> readAllQuestIds() {
         // ServerGameEngineConfigEntity is not considered in this query
@@ -185,22 +165,27 @@ public class ServerGameEnginePersistence {
         return entityManager.createQuery(userSelect).getResultList();
     }
 
-    private QuestConfigEntity getQuestConfigEntityIntern(LevelEntity newLevel, Function<Path<QuestConfigEntity>, Predicate> inCallback) {
+    public QuestConfigEntity getQuest4LevelAndCompleted(LevelEntity level, Collection<Integer> completedQuests) {
         // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
         // ServerGameEngineConfigEntity is not considered in this query
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<QuestConfigEntity> criteriaQuery = criteriaBuilder.createQuery(QuestConfigEntity.class);
+        CriteriaQuery<Integer> criteriaQuery = criteriaBuilder.createQuery(Integer.class);
         Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
-        CriteriaQuery<QuestConfigEntity> userSelect = criteriaQuery.select(root.join(ServerLevelQuestEntity_.questConfigs));
-        Predicate minimalLevelPredicate = criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), newLevel.getNumber());
-        Predicate inPredicate = inCallback.apply(root.join(ServerLevelQuestEntity_.questConfigs));
-        if (inPredicate != null) {
-            userSelect.where(criteriaBuilder.and(minimalLevelPredicate, criteriaBuilder.not(inPredicate)));
-        } else {
-            userSelect.where(minimalLevelPredicate);
+        ListJoin<ServerLevelQuestEntity, QuestConfigEntity> listJoin = root.join(ServerLevelQuestEntity_.questConfigs);
+        CriteriaQuery<Integer> userSelect = criteriaQuery.select(listJoin.get(QuestConfigEntity_.id));
+        userSelect.where(criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), level.getNumber()));
+        criteriaQuery.orderBy(criteriaBuilder.asc(listJoin.index()));
+        List<Integer> questIds = entityManager.createQuery(userSelect).getResultList();
+        if (questIds.isEmpty()) {
+            return null;
         }
-        criteriaQuery.orderBy(criteriaBuilder.desc(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number)));
-        return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
+        if (completedQuests != null) {
+            questIds.removeAll(completedQuests);
+        }
+        if (questIds.isEmpty()) {
+            return null;
+        }
+        return entityManager.find(QuestConfigEntity.class, questIds.get(0));
     }
 
     public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {

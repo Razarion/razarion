@@ -2,6 +2,7 @@ package com.btxtech.server.user;
 
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -14,6 +15,13 @@ public class UnregisteredUser {
 
     public Collection<Integer> getCompletedQuestIds() {
         return completedQuestIds;
+    }
+
+    public void addCompletedQuestId(int questId) {
+        if(completedQuestIds == null) {
+            completedQuestIds = new ArrayList<>();
+        }
+        completedQuestIds.add(questId);
     }
 
     public QuestConfig getActiveQuest() {

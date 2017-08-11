@@ -3,6 +3,7 @@ package com.btxtech.server.connection;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -46,21 +47,34 @@ public class ClientSystemConnectionService {
         }
     }
 
+    public void onQuestActivated(HumanPlayerId humanPlayerId, QuestConfig quest) {
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession != null) {
+            sendToClient(playerSession, SystemConnectionPacket.QUEST_ACTIVATED, quest);
+        }
+    }
+
+    public void onQuestPassed(HumanPlayerId humanPlayerId, QuestConfig quest) {
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession != null) {
+            sendToClient(playerSession, SystemConnectionPacket.QUEST_PASSED, quest);
+        }
+    }
+
     private void sendToClient(PlayerSession playerSession, SystemConnectionPacket packet, Object object) {
-        String text;
-        try {
-            text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
-            return;
+        ClientSystemConnection clientSystemConnection;
+        synchronized (systemGameConnections) {
+            clientSystemConnection = systemGameConnections.get(playerSession);
+            if (clientSystemConnection == null) {
+                return;
+            }
         }
 
-        synchronized (systemGameConnections) {
-            try {
-                systemGameConnections.get(playerSession).sendToClient(text);
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException(throwable);
-            }
+        try {
+            String text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+            clientSystemConnection.sendToClient(text);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
         }
     }
 }

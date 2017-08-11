@@ -2,8 +2,8 @@ package com.btxtech.server.persistence.history;
 
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.user.UserService;
-import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -35,6 +35,21 @@ public class HistoryPersistence {
             levelHistoryEntity.setLevelId(newLevel.getId());
             levelHistoryEntity.setLevelNumber(newLevel.getNumber());
             entityManager.persist(levelHistoryEntity);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    @Transactional
+    public void onQuest(HumanPlayerId humanPlayerId, QuestConfig questConfig, QuestHistoryEntity.Type type) {
+        try {
+            QuestHistoryEntity questHistoryEntity = new QuestHistoryEntity();
+            questHistoryEntity.setTimeStamp(new Date());
+            questHistoryEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(humanPlayerId.getPlayerId()).getId());
+            questHistoryEntity.setQuestId(questConfig.getId());
+            questHistoryEntity.setQuestInternalName(questConfig.getInternalName());
+            questHistoryEntity.setType(type);
+            entityManager.persist(questHistoryEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
