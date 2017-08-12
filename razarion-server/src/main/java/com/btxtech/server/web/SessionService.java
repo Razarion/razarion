@@ -44,7 +44,7 @@ public class SessionService {
     public PlayerSession findPlayerSession(HumanPlayerId humanPlayerId) {
         synchronized (sessions) {
             for (PlayerSession playerSession : sessions.values()) {
-                if (playerSession.getUserContext().getHumanPlayerId().equals(humanPlayerId)) {
+                if (playerSession.getUserContext() != null && playerSession.getUserContext().getHumanPlayerId() != null && playerSession.getUserContext().getHumanPlayerId().equals(humanPlayerId)) {
                     return playerSession;
                 }
             }

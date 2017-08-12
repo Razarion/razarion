@@ -153,10 +153,11 @@ public class UserService {
             QuestConfigEntity newQuest = serverGameEnginePersistence.getQuest4LevelAndCompleted(userEntity.getLevel(), userEntity.getCompletedQuestIds());
             userEntity.setActiveQuest(newQuest);
             entityManager.merge(userEntity);
-            return newQuest.toQuestConfig(userEntity.getLocale());
-        } else {
-            return null;
+            if (newQuest != null) {
+                return newQuest.toQuestConfig(userEntity.getLocale());
+            }
         }
+        return null;
     }
 
     @Transactional
@@ -173,7 +174,7 @@ public class UserService {
         CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
         Root<UserEntity> from = userQuery.from(UserEntity.class);
         userQuery.select(from);
-        if(questIds != null && !questIds.isEmpty()) {
+        if (questIds != null && !questIds.isEmpty()) {
             userQuery.where(from.join(UserEntity_.activeQuest).get(QuestConfigEntity_.id).in(questIds));
         }
 
