@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -177,6 +178,56 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     public void swapQuestConfig(int levelQuestId, int index1, int index2) {
         try {
             serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).swap(index1, index2);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<ObjectNameId> readResourceRegionObjectNameIds() {
+        try {
+            return serverGameEnginePersistence.getResourceRegionConfigCrud().readObjectNameIds();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public ResourceRegionConfig createResourceRegionConfig() {
+        try {
+            return serverGameEnginePersistence.getResourceRegionConfigCrud().create();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void deleteResourceRegionConfig(int resourceRegionConfigId) {
+        try {
+            serverGameEnginePersistence.getResourceRegionConfigCrud().delete(resourceRegionConfigId);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateResourceRegionConfig(ResourceRegionConfig resourceRegionConfig) {
+        try {
+            serverGameEnginePersistence.getResourceRegionConfigCrud().update(resourceRegionConfig);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public ResourceRegionConfig readResourceRegionConfig(int resourceRegionConfigId) {
+        try {
+            return serverGameEnginePersistence.getResourceRegionConfigCrud().read(resourceRegionConfigId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

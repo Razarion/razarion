@@ -184,6 +184,14 @@ public class ServerGameEngineConfigEntity {
         this.serverQuestEntities = serverQuestEntities;
     }
 
+    public List<ServerResourceRegionConfigEntity> getResourceRegionConfigs() {
+        return resourceRegionConfigs;
+    }
+
+    public void setResourceRegionConfigs(List<ServerResourceRegionConfigEntity> resourceRegionConfigs) {
+        this.resourceRegionConfigs = resourceRegionConfigs;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

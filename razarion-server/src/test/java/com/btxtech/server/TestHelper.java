@@ -1,6 +1,8 @@
 package com.btxtech.server;
 
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import org.junit.Assert;
 
 import java.util.ArrayList;
@@ -46,5 +48,11 @@ public interface TestHelper {
         Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedIds));
         expectedCollection.removeAll(actualIds);
         Assert.assertTrue(expectedCollection.isEmpty());
+    }
+
+    static PlaceConfig placeConfigPolygonFromRect(double x, double y, double width, double height) {
+        PlaceConfig placeConfig = new PlaceConfig();
+        placeConfig.setPolygon2D(Polygon2D.fromRectangle(x, y, width, height));
+        return placeConfig;
     }
 }

@@ -52,6 +52,8 @@ public class ServerGameEnginePersistence {
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
     @Inject
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
+    @Inject
+    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig>> resourceRegionCrud;
 
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
@@ -215,4 +217,19 @@ public class ServerGameEnginePersistence {
         crud.setAdditionalDelete((entityManager, integer) -> entityManager.remove(entityManager.find(QuestConfigEntity.class, integer)));
         return crud;
     }
+
+    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> getResourceRegionConfigCrud() {
+        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> crud = resourceRegionCrud.get();
+        crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
+        crud.setEntitiesGetter((entityManager) -> read().getResourceRegionConfigs());
+        crud.setEntitiesSetter((entityManager, resourceRegionConfigs) -> read().setResourceRegionConfigs(resourceRegionConfigs));
+        crud.setEntityIdProvider(ServerResourceRegionConfigEntity::getId).setConfigIdProvider(ResourceRegionConfig::getId);
+        crud.setConfigGenerator(ServerResourceRegionConfigEntity::toResourceRegionConfig);
+        crud.setEntityFactory(ServerResourceRegionConfigEntity::new);
+        crud.setEntityFiller((serverResourceRegionConfigEntity, resourceRegionConfig) -> {
+            serverResourceRegionConfigEntity.fromResourceRegionConfig(itemTypePersistence, resourceRegionConfig);
+        });
+        return crud;
+    }
+
 }

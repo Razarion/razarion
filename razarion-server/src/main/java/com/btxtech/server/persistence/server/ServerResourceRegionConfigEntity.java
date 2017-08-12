@@ -3,6 +3,8 @@ package com.btxtech.server.persistence.server;
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 
 import javax.persistence.CascadeType;
@@ -20,10 +22,11 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "SERVER_RESOURCE_REGION_CONFIG")
-public class ServerResourceRegionConfigEntity {
+public class ServerResourceRegionConfigEntity implements ObjectNameIdProvider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     private int count;
     private double minDistanceToItems;
     @OneToOne
@@ -31,16 +34,39 @@ public class ServerResourceRegionConfigEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity region;
 
+    public Integer getId() {
+        return id;
+    }
+
     public ResourceRegionConfig toResourceRegionConfig() {
-        return new ResourceRegionConfig().setCount(count).setMinDistanceToItems(minDistanceToItems).setRegion(region.toPlaceConfig()).setResourceItemTypeId(resourceItemType.getId());
+        ResourceRegionConfig resourceRegionConfig = new ResourceRegionConfig().setId(id).setInternalName(internalName).setCount(count).setMinDistanceToItems(minDistanceToItems);
+        if (region != null) {
+            resourceRegionConfig.setRegion(region.toPlaceConfig());
+        }
+        if (resourceItemType != null) {
+            resourceRegionConfig.setResourceItemTypeId(resourceItemType.getId());
+        }
+        return resourceRegionConfig;
     }
 
     public void fromResourceRegionConfig(ItemTypePersistence itemTypePersistence, ResourceRegionConfig resourceRegionConfig) {
+        internalName = resourceRegionConfig.getInternalName();
         count = resourceRegionConfig.getCount();
         minDistanceToItems = resourceRegionConfig.getMinDistanceToItems();
         resourceItemType = itemTypePersistence.readResourceItemTypeEntity(resourceRegionConfig.getResourceItemTypeId());
-        region = new PlaceConfigEntity();
-        region.fromPlaceConfig(resourceRegionConfig.getRegion());
+        if(region != null && resourceRegionConfig.getRegion() != null) {
+            region.fromPlaceConfig(resourceRegionConfig.getRegion());
+        } else if(region != null && resourceRegionConfig.getRegion() == null) {
+            region = null;
+        } else if(region == null && resourceRegionConfig.getRegion() != null) {
+            region = new PlaceConfigEntity();
+            region.fromPlaceConfig(resourceRegionConfig.getRegion());
+        }
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override

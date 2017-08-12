@@ -13,6 +13,7 @@ import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
 import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
+import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
@@ -56,6 +57,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button terrainButton;
+    @Inject
+    @DataField
+    private Button resourceRegionButton;
     @Inject
     @DataField
     private Button startRegionsButton;
@@ -121,6 +125,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("terrainButton")
     private void onTerrainButtonClicked(ClickEvent event) {
         openEditor(TerrainEditorSidebar.class);
+    }
+
+    @EventHandler("resourceRegionButton")
+    private void onResourceRegionsButtonClicked(ClickEvent event) {
+        openEditor(ResourceRegionSidebar.class);
     }
 
     @EventHandler("startRegionsButton")
