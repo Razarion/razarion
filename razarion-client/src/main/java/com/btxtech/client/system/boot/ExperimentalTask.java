@@ -65,7 +65,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         coldGameUiControlConfig.setAudioConfig(new AudioConfig());
         coldGameUiControlConfig.setStaticGameConfig(staticGameConfig);
         coldGameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());
-        coldGameUiControlConfig.setWarmGameUiControlConfig(new WarmGameUiControlConfig().setGameEngineMode(GameEngineMode.MASTER).setSceneConfigs(defaultSceneConfigs()).setPlanetConfig(defaultPlanetConfig()).setPlanetVisualConfig(defaultPlanetVisualConfig()));
+        coldGameUiControlConfig.setWarmGameUiControlConfig(new WarmGameUiControlConfig().setGameUiControlConfigId(-1).setGameEngineMode(GameEngineMode.MASTER).setSceneConfigs(defaultSceneConfigs()).setPlanetConfig(defaultPlanetConfig()).setPlanetVisualConfig(defaultPlanetVisualConfig()));
         return coldGameUiControlConfig;
     }
 

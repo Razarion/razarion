@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
+import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
@@ -66,6 +67,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button levelQuestButton;
+    @Inject
+    @DataField
+    private Button sceneConfigButton;
     @Inject
     @DataField
     private Button slopeButton;
@@ -140,6 +144,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("levelQuestButton")
     private void levelQuestButtonClicked(ClickEvent event) {
         openEditor(LevelQuestSidebar.class);
+    }
+
+    @EventHandler("sceneConfigButton")
+    private void sceneConfigButtonClicked(ClickEvent event) {
+        openEditor(SceneConfigSidebar.class);
     }
 
     @EventHandler("slopeButton")

@@ -50,6 +50,7 @@ public class GameUiControlConfigEntity {
 
     public WarmGameUiControlConfig toGameWarmGameUiControlConfig(Locale locale) {
         WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig();
+        warmGameUiControlConfig.setGameUiControlConfigId(id);
         warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
         warmGameUiControlConfig.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
         warmGameUiControlConfig.setSceneConfigs(setupScenes(locale));

@@ -10,6 +10,7 @@ import java.util.List;
  * 08.05.2017.
  */
 public class WarmGameUiControlConfig {
+    private int gameUiControlConfigId;
     private GameEngineMode gameEngineMode;
     private SlavePlanetConfig slavePlanetConfig;
     private SlaveQuestInfo slaveQuestInfo;
@@ -19,6 +20,15 @@ public class WarmGameUiControlConfig {
     private PlanetVisualConfig planetVisualConfig;
     private boolean detailedTracking;
     private PlaybackGameUiControlConfig playbackGameUiControlConfig;
+
+    public int getGameUiControlConfigId() {
+        return gameUiControlConfigId;
+    }
+
+    public WarmGameUiControlConfig setGameUiControlConfigId(int gameUiControlConfigId) {
+        this.gameUiControlConfigId = gameUiControlConfigId;
+        return this;
+    }
 
     public GameEngineMode getGameEngineMode() {
         return gameEngineMode;

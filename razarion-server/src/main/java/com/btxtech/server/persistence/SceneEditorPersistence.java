@@ -14,6 +14,7 @@ import com.btxtech.server.persistence.scene.BoxItemPositionEntity;
 import com.btxtech.server.persistence.scene.GameTipConfigEntity;
 import com.btxtech.server.persistence.scene.ResourceItemPositionEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
+import com.btxtech.server.persistence.server.ServerChildListCrudePersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
@@ -27,6 +28,7 @@ import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
@@ -48,9 +50,12 @@ public class SceneEditorPersistence {
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private InventoryPersistence inventoryPersistence;
+    @Inject
+    private Instance<ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig>> sceneConfigCrudInstance;
 
     @Transactional
     @SecurityCheck
+    @Deprecated
     public void saveAllScenes(int gameUiControlConfigId, List<SceneConfig> sceneConfigs, Locale locale) {
         GameUiControlConfigEntity gameUiControlConfigEntity = entityManager.find(GameUiControlConfigEntity.class, gameUiControlConfigId);
         if (gameUiControlConfigEntity == null) {
@@ -200,4 +205,23 @@ public class SceneEditorPersistence {
             sceneEntities.add(sceneEntity);
         }
     }
+
+    public ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> getSceneConfigCrud(int gameUiControlConfigId) {
+        ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> crud = sceneConfigCrudInstance.get();
+        crud.setRootProvider(() -> readGameUiControlConfigEntity(gameUiControlConfigId)).setParentProvider(entityManager -> readGameUiControlConfigEntity(gameUiControlConfigId));
+        crud.setEntitiesGetter((entityManager) -> readGameUiControlConfigEntity(gameUiControlConfigId).getScenes());
+        crud.setEntitiesSetter((entityManager, sceneConfigEntities) -> readGameUiControlConfigEntity(gameUiControlConfigId).setScenes(sceneConfigEntities));
+        crud.setEntityIdProvider(SceneEntity::getId).setConfigIdProvider(SceneConfig::getId);
+        crud.setConfigGenerator(sceneEntity -> sceneEntity.toSceneConfig(Locale.US));
+        crud.setEntityFactory(SceneEntity::new);
+        crud.setEntityFiller((sceneEntity, sceneConfig) -> {
+            sceneEntity.fromSceneConfig(itemTypePersistence, sceneConfig, Locale.US);
+        });
+        return crud;
+    }
+
+    private GameUiControlConfigEntity readGameUiControlConfigEntity(int gameUiControlConfigId) {
+        return entityManager.find(GameUiControlConfigEntity.class, gameUiControlConfigId);
+    }
+
 }

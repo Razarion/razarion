@@ -352,7 +352,7 @@ public class TrackerPersistence {
         ServerTrackerStart serverTrackerStart = trackingContainerMongoDb.findServerTrackerStart(gameUiControlInput);
 
         PlanetEntity planetEntity = planetPersistence.loadPlanet(serverTrackerStart.getTrackingStart().getPlanetId());
-        WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameEngineMode(GameEngineMode.PLAYBACK);
+        WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameUiControlConfigId(-2).setGameEngineMode(GameEngineMode.PLAYBACK);
         warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
 
         PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();

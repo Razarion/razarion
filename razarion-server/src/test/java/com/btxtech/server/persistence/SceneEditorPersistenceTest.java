@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -19,6 +20,7 @@ import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.KillBotCommandConfig;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ScrollUiQuest;
@@ -55,11 +57,60 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
     private static final int NPC_BOT_OUTPOST_2_AUX = 22;
     private static final int ENEMY_BOT_AUX = 33;
     private static final int NPC_BOT_INSTRUCTOR_AUX = 44;
-
     @Inject
     private SceneEditorPersistence sceneEditorPersistence;
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
+
+    @Before
+    public void before() throws Exception {
+        setupPlanets();
+    }
+
+    @After
+    public void after() throws Exception {
+        cleanPlanets();
+    }
+
+    @Test
+    public void testSceneConfigCrud() throws Exception {
+        // Cleanup
+        List<ObjectNameId> objectNameIds = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds();
+        for (ObjectNameId objectNameId : objectNameIds) {
+            sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(objectNameId.getId());
+        }
+
+        // Create first scene
+        SceneConfig expectedScene1 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        expectedScene1.setInternalName("scene xxx 1");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene1);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
+        int id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
+        ReflectionAssert.assertReflectionEquals(expectedScene1, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        // Create second scene
+        SceneConfig expectedScene2 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        expectedScene2.setInternalName("scene xxx 2");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene2);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1", "scene xxx 2");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
+        ReflectionAssert.assertReflectionEquals(expectedScene1, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
+        ReflectionAssert.assertReflectionEquals(expectedScene2, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        // Delete first
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
+        ReflectionAssert.assertReflectionEquals(expectedScene2, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        // Delete second
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds());
+    }
 
     @Test
     public void saveAllScenes() throws Exception {
@@ -119,16 +170,6 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         ObjectComparatorIgnore.add(QuestDescriptionConfig.class, "id");
         ReflectionAssert.assertReflectionEquals(expectedSceneConfigs, actualSceneConfigs);
         ObjectComparatorIgnore.clear();
-    }
-
-    @Before
-    public void before() throws Exception {
-        setupPlanets();
-    }
-
-    @After
-    public void after() throws Exception {
-        cleanPlanets();
     }
 
     private List<SceneConfig> setupTutorial() {

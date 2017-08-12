@@ -4,7 +4,6 @@ import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
@@ -14,6 +13,8 @@ import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.KillBotCommandConfig;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ScrollUiQuest;
@@ -44,7 +45,7 @@ import java.util.Locale;
  */
 @Entity
 @Table(name = "SCENE")
-public class SceneEntity {
+public class SceneEntity implements ObjectNameIdProvider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -123,8 +124,12 @@ public class SceneEntity {
     private GameTipConfigEntity gameTipConfigEntity;
     private Boolean removeLoadingCover;
 
+    public Integer getId() {
+        return id;
+    }
+
     public SceneConfig toSceneConfig(Locale locale) {
-        SceneConfig sceneConfig = new SceneConfig().setInternalName(internalName);
+        SceneConfig sceneConfig = new SceneConfig().setId(id).setInternalName(internalName);
         if (i18nIntroText != null) {
             sceneConfig.setIntroText(i18nIntroText.getString(locale));
         }
@@ -329,6 +334,11 @@ public class SceneEntity {
 
     public void setGameTipConfigEntity(GameTipConfigEntity gameTipConfigEntity) {
         this.gameTipConfigEntity = gameTipConfigEntity;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override
