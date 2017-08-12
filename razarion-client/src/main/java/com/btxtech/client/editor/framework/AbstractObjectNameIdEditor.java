@@ -37,19 +37,19 @@ public abstract class AbstractObjectNameIdEditor {
     }
 
     void up(ObjectNameId objectNameId, RemoteCallback<?> callback) {
-        int lowerIndex = objectNameIds.indexOf(objectNameId);
-        if (lowerIndex + 1 >= objectNameIds.size()) {
+        int index = objectNameIds.indexOf(objectNameId);
+        if (index - 1 < 0) {
             return;
         }
-        swap(lowerIndex, lowerIndex + 1, callback);
+        swap(index, index - 1, callback);
     }
 
     void down(ObjectNameId objectNameId, RemoteCallback<?> callback) {
-        int higherIndex = objectNameIds.indexOf(objectNameId);
-        if (higherIndex - 1 <= 0) {
+        int index = objectNameIds.indexOf(objectNameId);
+        if (index + 1 >= objectNameIds.size()) {
             return;
         }
-        swap(higherIndex, higherIndex - 1, callback);
+        swap(index, index + 1, callback);
     }
 
     boolean hasSuccessor(ObjectNameId objectNameId) {
