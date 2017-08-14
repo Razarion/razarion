@@ -1,6 +1,8 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ResourceRegionConfig;
+import com.btxtech.shared.dto.SceneConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -38,4 +40,14 @@ public interface SceneEditorProvider {
     @Path("deleteSceneConfig/{gameUiControlConfigId}/{sceneConfigId}")
     @Consumes(MediaType.TEXT_PLAIN)
     void deleteSceneConfig(@PathParam("gameUiControlConfigId") int gameUiControlConfigId, @PathParam("sceneConfigId") int sceneConfigId);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readSceneConfig/{gameUiControlConfigId}/{sceneConfigId}")
+    SceneConfig readSceneConfig(@PathParam("gameUiControlConfigId") int gameUiControlConfigId, @PathParam("sceneConfigId") int sceneConfigId);
+
+    @PUT
+    @Path("updateSceneConfig/{gameUiControlConfigId}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateSceneConfig(@PathParam("gameUiControlConfigId") int gameUiControlConfigId,SceneConfig sceneConfig);
 }

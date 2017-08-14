@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.SceneEditorPersistence;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.rest.SceneEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -52,6 +53,26 @@ public class SceneEditorProviderImpl implements SceneEditorProvider {
     public void deleteSceneConfig(int gameUiControlConfigId, int sceneConfigId) {
         try {
             sceneEditorPersistence.getSceneConfigCrud(gameUiControlConfigId).delete(sceneConfigId);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public SceneConfig readSceneConfig(int gameUiControlConfigId, int sceneConfigId) {
+        try {
+            return sceneEditorPersistence.getSceneConfigCrud(gameUiControlConfigId).read(sceneConfigId);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateSceneConfig(int gameUiControlConfigId, SceneConfig sceneConfig) {
+        try {
+            sceneEditorPersistence.getSceneConfigCrud(gameUiControlConfigId).update(sceneConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.widgets.polygon;
+package com.btxtech.client.editor.widgets.marker;
 
 import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 @ColorBufferRenderer
 @Dependent
-public class TerrainPolygonEditorRendererUnit extends AbstractRenderUnit<List<Vertex>> {
+public class TerrainMarkerEditorRendererUnit extends AbstractRenderUnit<List<Vertex>> {
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;
@@ -47,17 +47,9 @@ public class TerrainPolygonEditorRendererUnit extends AbstractRenderUnit<List<Ve
     }
 
     @Override
-    public void fillBuffers(List<Vertex> polygon) {
-        List<Vertex> vertices = new ArrayList<>();
-
-        Triangulator.calculate(polygon, (vertex1, vertex2, vertex3) -> {
-            vertices.add(vertex1);
-            vertices.add(vertex2);
-            vertices.add(vertex3);
-        });
-
-        positions.fillBuffer(vertices);
-        setElementCount(vertices);
+    public void fillBuffers(List<Vertex> triangles) {
+        positions.fillBuffer(triangles);
+        setElementCount(triangles);
     }
 
     @Override

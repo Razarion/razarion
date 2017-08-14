@@ -75,6 +75,12 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
     @Test
     public void testSceneConfigCrud() throws Exception {
         // Cleanup
+        cleanTable(ServerLevelQuestEntity.class);
+        cleanTableNative("SERVER_QUEST");
+        cleanTable(QuestConfigEntity.class);
+        cleanTable(ConditionConfigEntity.class);
+        cleanTable(ComparisonConfigEntity.class);
+        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
         List<ObjectNameId> objectNameIds = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds();
         for (ObjectNameId objectNameId : objectNameIds) {
             sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(objectNameId.getId());
@@ -82,24 +88,24 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
 
         // Create first scene
         SceneConfig expectedScene1 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
-        expectedScene1.setInternalName("scene xxx 1");
+        setResources(expectedScene1);
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene1);
         // Verify
-        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
-        int id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources");
+        int id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources");
         ReflectionAssert.assertReflectionEquals(expectedScene1, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
         // Create second scene
         SceneConfig expectedScene2 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
         expectedScene2.setInternalName("scene xxx 2");
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene2);
         // Verify
-        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1", "scene xxx 2");
-        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources", "scene xxx 2");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources");
         ReflectionAssert.assertReflectionEquals(expectedScene1, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
         id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
         ReflectionAssert.assertReflectionEquals(expectedScene2, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
         // Delete first
-        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 1");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources");
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
         // Verify
         TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
@@ -110,24 +116,6 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
         // Verify
         TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds());
-    }
-
-    @Test
-    public void saveAllScenes() throws Exception {
-        cleanTable(ServerLevelQuestEntity.class);
-        cleanTableNative("SERVER_QUEST");
-        cleanTable(QuestConfigEntity.class);
-        cleanTable(ConditionConfigEntity.class);
-        cleanTable(ComparisonConfigEntity.class);
-        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
-        //
-        List<SceneConfig> expectedSceneConfigs = setupTutorial();
-
-        while (!expectedSceneConfigs.isEmpty()) {
-            saveAllScenesInternal(expectedSceneConfigs);
-            expectedSceneConfigs.remove(expectedSceneConfigs.size() - 1);
-        }
-        saveAllScenesInternal(new ArrayList<>());
 
         Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM SCENE_BOT").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ResourceItemPositionEntity r").getSingleResult()).intValue());
@@ -162,56 +150,14 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
     }
 
     private void saveAllScenesInternal(List<SceneConfig> expectedSceneConfigs) throws Exception {
-        sceneEditorPersistence.saveAllScenes(GAME_UI_CONTROL_CONFIG_1_ID, expectedSceneConfigs, Locale.ENGLISH);
-
-        List<SceneConfig> actualSceneConfigs = gameUiControlConfigPersistence.load(new GameUiControlInput(), Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getWarmGameUiControlConfig().getSceneConfigs();
-
         ObjectComparatorIgnore.add(BotConfig.class, "id");
         ObjectComparatorIgnore.add(QuestDescriptionConfig.class, "id");
-        ReflectionAssert.assertReflectionEquals(expectedSceneConfigs, actualSceneConfigs);
+        // TODO ReflectionAssert.assertReflectionEquals(expectedSceneConfigs, actualSceneConfigs);
         ObjectComparatorIgnore.clear();
     }
 
-    private List<SceneConfig> setupTutorial() {
-        List<SceneConfig> sceneConfigs = new ArrayList<>();
-        // Level 1
-        addResources(sceneConfigs);
-        addNpcBot(sceneConfigs);
-        addEnemyBot(sceneConfigs);
-        addFadeOutLoadingCover(sceneConfigs);
-        addScrollOverTerrain(sceneConfigs);
-        addBotSpawnScene(sceneConfigs);
-        addUserSpawnScene(sceneConfigs);
-        addBotMoveScene(sceneConfigs);
-        addScrollToOwnScene(sceneConfigs);
-        addUserMoveScene(sceneConfigs);
-        // Level 2
-        addNpcHarvestAttack(sceneConfigs);
-        addFindEnemyBase(sceneConfigs);
-        addPickBoxTask(sceneConfigs);
-        addBoxSpawnTask(sceneConfigs);
-        addAttackTask(sceneConfigs);
-        // Level 3
-        addEnemyKillTask(sceneConfigs);
-        addWaitForDeadTask(sceneConfigs);
-        addNpcEscapeTask(sceneConfigs);
-        addUserSpawnScene2(sceneConfigs);
-        addBuildFactoryTask(sceneConfigs);
-        addFactorizeHarvesterTask(sceneConfigs);
-        addHarvestTask(sceneConfigs);
-        addHarvestExplanationTask(sceneConfigs);
-        // Level 4
-        addBuildViperTask(sceneConfigs);
-        addNpcAttackTowerCommand(sceneConfigs);
-        addNpcTooWeakCommand(sceneConfigs);
-        addBuildViperTask2(sceneConfigs);
-        addKillTower(sceneConfigs);
-        addKillBotEndForward(sceneConfigs);
-        return sceneConfigs;
-    }
-
-    private void addResources(List<SceneConfig> sceneConfigs) {
-        SceneConfig sceneConfig = new SceneConfig().setInternalName("setup: add resources");
+    private void setResources(SceneConfig sceneConfig) {
+        sceneConfig.setInternalName("setup: add resources");
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
         // Outpost
         resourceItemTypePositions.add(new ResourceItemPosition().setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setPosition(new DecimalPosition(212, 144)).setRotationZ(Math.toRadians(0)));
@@ -222,7 +168,6 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         resourceItemTypePositions.add(new ResourceItemPosition().setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setPosition(new DecimalPosition(120, 252)).setRotationZ(Math.toRadians(160)));
 
         sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
-        sceneConfigs.add(sceneConfig);
     }
 
     private void addNpcBot(List<SceneConfig> sceneConfigs) {

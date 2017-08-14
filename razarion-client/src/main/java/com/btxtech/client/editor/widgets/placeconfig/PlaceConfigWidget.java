@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.widgets.placeconfig;
 
-import com.btxtech.client.editor.widgets.polygon.PolygonField;
+import com.btxtech.client.editor.widgets.marker.PolygonField;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -122,7 +122,7 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
             placeConfig = new PlaceConfig();
         }
         placeConfig.setPolygon2D(null);
-        polygonField.clear();
+        polygonField.dispose();
         fireEvent(null);
     }
 

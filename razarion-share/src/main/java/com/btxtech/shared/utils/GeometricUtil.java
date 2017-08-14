@@ -251,7 +251,7 @@ public class GeometricUtil {
             double height = random.nextDouble() * aabb.height();
             DecimalPosition possiblePosition = aabb.getStart().add(width, height);
 
-            if(!polygon.isInside(possiblePosition)) {
+            if (!polygon.isInside(possiblePosition)) {
                 continue;
             }
 
@@ -261,6 +261,19 @@ public class GeometricUtil {
             return possiblePosition;
         }
         throw new PositionCanNotBeFoundException();
+    }
+
+    public static List<Vertex> generatePlane(Vertex bl, Vertex br, Vertex tr, Vertex tl) {
+        List<Vertex> plane = new ArrayList<>();
+        plane.add(bl);
+        plane.add(br);
+        plane.add(tl);
+
+        plane.add(br);
+        plane.add(tr);
+        plane.add(tl);
+
+        return plane;
     }
 
 }

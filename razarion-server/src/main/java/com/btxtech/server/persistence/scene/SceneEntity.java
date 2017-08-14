@@ -248,7 +248,7 @@ public class SceneEntity implements ObjectNameIdProvider {
 
     public void fromSceneConfig(ItemTypePersistence itemTypePersistence, SceneConfig sceneConfig, Locale locale) {
         internalName = sceneConfig.getInternalName();
-        if (sceneConfig.getIntroText() != null) {
+        if (sceneConfig.getIntroText() != null && !sceneConfig.getIntroText().trim().isEmpty()) {
             i18nIntroText = new I18nBundleEntity();
             i18nIntroText.putString(locale, sceneConfig.getIntroText());
         }
@@ -324,8 +324,17 @@ public class SceneEntity implements ObjectNameIdProvider {
         this.killBotCommandEntities = killBotCommandEntities;
     }
 
-    public void setResourceItemPositionEntities(List<ResourceItemPositionEntity> resourceItemPositionEntities) {
-        this.resourceItemPositionEntities = resourceItemPositionEntities;
+    public void addResourceItemPositionEntity(ResourceItemPositionEntity resourceItemPositionEntity) {
+        if (this.resourceItemPositionEntities == null) {
+            this.resourceItemPositionEntities = new ArrayList<>();
+        }
+        this.resourceItemPositionEntities.add(resourceItemPositionEntity);
+    }
+
+    public void clearResourceItemPositionEntities() {
+        if (resourceItemPositionEntities != null) {
+            resourceItemPositionEntities.clear();
+        }
     }
 
     public void setBoxItemPositionEntities(List<BoxItemPositionEntity> boxItemPositionEntities) {

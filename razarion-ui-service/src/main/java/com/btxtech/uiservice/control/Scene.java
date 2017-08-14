@@ -78,7 +78,7 @@ public class Scene implements ViewService.ViewFieldListener {
                 onComplete();
             }, SimpleExecutorService.Type.UNSPECIFIED);
         }
-        if (sceneConfig.getIntroText() != null) {
+        if (sceneConfig.getIntroText() != null && !sceneConfig.getIntroText().trim().isEmpty()) {
             screenCover.showStoryCover(sceneConfig.getIntroText());
         }
         if (sceneConfig.getBotConfigs() != null) {

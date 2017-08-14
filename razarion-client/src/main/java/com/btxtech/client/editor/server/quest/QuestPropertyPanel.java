@@ -3,7 +3,6 @@ package com.btxtech.client.editor.server.quest;
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
 import com.google.gwt.user.client.ui.Label;
@@ -18,7 +17,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<div id="propertyPanel">
+    <table>
+        <tr>
+            <td>Id</td>
+            <td>
+                <div id="id"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>Internal Name</td>
+            <td><input id="internalName"></td>
+        </tr>
+        <tr>
+            <td>IntroText (EN)</td>
+            <td>
+                <input id="introText">
+            </td>
+        </tr>
+        <tr>
+            <td>Remove Loading Cover</td>
+            <td>
+                <input type="checkbox" id="removeLoadingCover">
+            </td>
+        </tr>
+        <tr>
+            <td>Wait for level up dialog</td>
+            <td>
+                <input type="checkbox" id="wait4LevelUpDialog">
+            </td>
+        </tr>
+        <tr>
+            <td>Wait for quest passed dialog</td>
+            <td>
+                <input type="checkbox" id="wait4QuestPassedDialog">
+            </td>
+        </tr>
+        <tr>
+            <td>Wait for base lost dialog</td>
+            <td>
+                <input type="checkbox" id="waitForBaseLostDialog">
+            </td>
+        </tr>
+        <tr>
+            <td>Duration</td>
+            <td>
+                <input id="duration" type="number" min="0" step="1">[ms]
+            </td>
+        </tr>
+        <tr>
+            <td>View field config</td>
+            <td>
+                <table>
+                    <tr>
+                        <td>From position</td>
+                        <td>
+                            <div id="vfcFromPosition"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>To position</td>
+                        <td>
+                            <div id="vfcToPosition"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Speed</td>
+                        <td>
+                            <input type="number" id="vfcSpeed" min="0">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Camera locked</td>
+                        <td>
+                            <input type="checkbox" id="vfcCameraLocked">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Bottom width</td>
+                        <td>
+                            <input type="number" id="vfcBottomWidth" min="0">
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>Resources</td>
+            <td>
+                <table>
+                    <tbody id="resourceItemTypePositions">
+                    <tr id="resourceItemTypePositionRow">
+                        <td>
+                            <div id="resourceItemTypeWidget"></div>
+                        </td>
+                        <td>
+                            <div id="position"></div>
+                        </td>
+                        <td><input id="rotationZ" type="number" min="0" max="360" style="width: 3em"></td>
+                        <td>
+                            <button id="resourcePositionDeleteButton">-</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button id="resourcePositionCreateButton">+</button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

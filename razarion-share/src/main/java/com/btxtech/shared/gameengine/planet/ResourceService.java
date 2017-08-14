@@ -116,6 +116,12 @@ public class ResourceService {
 
     public void createResources(Collection<ResourceItemPosition> resourceItemPositions) {
         for (ResourceItemPosition resourceItemPosition : resourceItemPositions) {
+            if (resourceItemPosition.getResourceItemTypeId() == null) {
+                continue;
+            }
+            if (resourceItemPosition.getPosition() == null) {
+                continue;
+            }
             createResource(resourceItemPosition.getResourceItemTypeId(), resourceItemPosition.getPosition(), resourceItemPosition.getRotationZ());
         }
     }

@@ -1,12 +1,10 @@
-package com.btxtech.client.editor.widgets.polygon;
+package com.btxtech.client.editor.widgets.marker;
 
 import com.btxtech.shared.datatypes.Polygon2D;
-import com.btxtech.uiservice.renderer.Camera;
-import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -23,13 +21,7 @@ public class PolygonField extends Composite {
     private static final String SHOW = "Show";
     private static final String HIDE = "Hide";
     @Inject
-    private PolygonEditor polygonEditor;
-    @Inject
-    private Camera camera;
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
-    @Inject
-    private ProjectionTransformation projectionTransformation;
+    private MarkerEditor markerEditor;
     @Inject
     @DataField
     private Button showHideButton;
@@ -39,6 +31,9 @@ public class PolygonField extends Composite {
     @Inject
     @DataField
     private Button topViewButton;
+    @Inject
+    @DataField
+    private Div field;
     private Polygon2D polygon2D;
     private Consumer<Polygon2D> polygonListener;
 
@@ -48,13 +43,18 @@ public class PolygonField extends Composite {
         showHideButton.setText(SHOW);
         clearButton.setEnabled(false);
         topViewButton.setEnabled(false);
+        field.addEventListener("DOMNodeRemovedFromDocument", event -> {
+            if (showHideButton.getText().equalsIgnoreCase(HIDE)) {
+                markerEditor.deactivate();
+            }
+        }, false);
     }
 
     @EventHandler("showHideButton")
     private void selectorButtonClicked(ClickEvent event) {
         if (showHideButton.getText().equalsIgnoreCase(SHOW)) {
             showHideButton.setText(HIDE);
-            polygonEditor.activate(polygon2D, decimalPositions -> {
+            markerEditor.activate(polygon2D, decimalPositions -> {
                 if (polygonListener != null) {
                     if (decimalPositions != null) {
                         polygonListener.accept(new Polygon2D(decimalPositions));
@@ -62,11 +62,16 @@ public class PolygonField extends Composite {
                         polygonListener.accept(null);
                     }
                 }
+            }, () -> {
+                polygonListener = null;
+                showHideButton.setText(SHOW);
+                clearButton.setEnabled(false);
+                topViewButton.setEnabled(false);
             });
             clearButton.setEnabled(true);
             topViewButton.setEnabled(true);
         } else {
-            polygonEditor.deactivate();
+            markerEditor.deactivate();
             showHideButton.setText(SHOW);
             clearButton.setEnabled(false);
             topViewButton.setEnabled(false);
@@ -75,25 +80,22 @@ public class PolygonField extends Composite {
 
     @EventHandler("topViewButton")
     private void topViewButtonClick(ClickEvent event) {
-        projectionTransformation.disableFovYConstrain();
-        terrainScrollHandler.setPlayGround(null);
-        terrainScrollHandler.setScrollDisabled(false, null);
-        camera.setTop();
+        markerEditor.topView();
     }
 
     @EventHandler("clearButton")
     private void clearButtonClick(ClickEvent event) {
-        polygonEditor.clear();
+        markerEditor.clear();
     }
 
     @Override
     protected void onUnload() {
-        polygonEditor.deactivate();
+        markerEditor.deactivate();
         super.onUnload();
     }
 
-    public void clear() {
-        polygonEditor.deactivate();
+    public void dispose() {
+        markerEditor.deactivate();
         polygonListener = null;
         showHideButton.setText(SHOW);
         clearButton.setEnabled(false);

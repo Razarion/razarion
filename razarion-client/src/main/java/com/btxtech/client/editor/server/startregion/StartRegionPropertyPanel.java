@@ -2,9 +2,8 @@ package com.btxtech.client.editor.server.startregion;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.level.LevelField;
-import com.btxtech.client.editor.widgets.polygon.PolygonField;
+import com.btxtech.client.editor.widgets.marker.PolygonField;
 import com.btxtech.shared.dto.StartRegionConfig;
-import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.databinding.client.api.DataBinder;
