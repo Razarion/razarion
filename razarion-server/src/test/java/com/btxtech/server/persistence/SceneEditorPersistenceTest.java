@@ -74,6 +74,9 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
 
     @Test
     public void testSceneConfigCrud() throws Exception {
+        ObjectComparatorIgnore.add(BotConfig.class, "id");
+        ObjectComparatorIgnore.add(QuestDescriptionConfig.class, "id");
+
         // Cleanup
         cleanTable(ServerLevelQuestEntity.class);
         cleanTableNative("SERVER_QUEST");
@@ -96,26 +99,28 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         ReflectionAssert.assertReflectionEquals(expectedScene1, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
         // Create second scene
         SceneConfig expectedScene2 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
-        expectedScene2.setInternalName("scene xxx 2");
+        setUserSpawnScene(expectedScene2);
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene2);
         // Verify
-        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources", "scene xxx 2");
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources", "user: spawn 1");
         id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources");
         ReflectionAssert.assertReflectionEquals(expectedScene1, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
-        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: spawn 1");
         ReflectionAssert.assertReflectionEquals(expectedScene2, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
         // Delete first
         id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add resources");
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
         // Verify
-        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
-        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: spawn 1");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: spawn 1");
         ReflectionAssert.assertReflectionEquals(expectedScene2, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
         // Delete second
-        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "scene xxx 2");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: spawn 1");
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
         // Verify
         TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds());
+
+        ObjectComparatorIgnore.clear();
 
         Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM SCENE_BOT").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM ResourceItemPositionEntity r").getSingleResult()).intValue());
@@ -229,8 +234,8 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.add(new SceneConfig().setInternalName("script: npc bot spawn").setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").setDuration(3000));
     }
 
-    private void addUserSpawnScene(List<SceneConfig> sceneConfigs) {
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10).setSuggestedPosition(new DecimalPosition(135, 85));
+    private void setUserSpawnScene(SceneConfig sceneConfigs) {
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setSuggestedPosition(new DecimalPosition(135, 85));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
@@ -240,7 +245,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(135, 85));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: spawn 1").setGameTipConfig(gameTipConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte.")));
+        sceneConfigs.setInternalName("user: spawn 1").setGameTipConfig(gameTipConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte."));
     }
 
     private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
@@ -368,7 +373,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setAuxiliaryId(NPC_BOT_OUTPOST_2_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Roger").setNpc(true));
         // User Spawn
-        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10).setAllowedArea(Polygon2D.fromRectangle(80, 260, 50, 50));
+        BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0).setAllowedArea(Polygon2D.fromRectangle(80, 260, 50, 50));
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));

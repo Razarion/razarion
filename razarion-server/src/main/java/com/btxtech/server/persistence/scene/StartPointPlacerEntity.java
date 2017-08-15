@@ -41,6 +41,9 @@ public class StartPointPlacerEntity {
     private List<DecimalPosition> allowedArea;
 
     public BaseItemPlacerConfig toStartPointPlacerConfig() {
+        if ((allowedArea == null || allowedArea.isEmpty()) && suggestedPosition == null && enemyFreeRadius == null) {
+                return null;
+        }
         BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setSuggestedPosition(suggestedPosition).setEnemyFreeRadius(enemyFreeRadius);
         if (allowedArea != null && !allowedArea.isEmpty()) {
             baseItemPlacerConfig.setAllowedArea(new Polygon2D(allowedArea));
@@ -55,9 +58,7 @@ public class StartPointPlacerEntity {
                 allowedArea = new ArrayList<>();
             }
             allowedArea.clear();
-            for (DecimalPosition position : startPointPlacerConfig.getAllowedArea().getCorners()) {
-                allowedArea.add(position);
-            }
+            allowedArea.addAll(startPointPlacerConfig.getAllowedArea().getCorners());
         } else {
             allowedArea = null;
         }

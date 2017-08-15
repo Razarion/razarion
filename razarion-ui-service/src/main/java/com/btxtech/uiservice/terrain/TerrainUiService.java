@@ -180,7 +180,11 @@ public class TerrainUiService {
     public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
         for (DecimalPosition terrainPosition : terrainPositions) {
             Index terrainTile = TerrainUtil.toTile(terrainPosition);
-            if (!displayTerrainTiles.get(terrainTile).isTerrainFree(terrainPosition/*, baseItemType*/)) { // TODO baseItemType
+            UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
+            if (uiTerrainTile == null) {
+                throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay() UiTerrainTile not loaded: " + terrainTile);
+            }
+            if (!uiTerrainTile.isTerrainFree(terrainPosition/*, baseItemType*/)) { // TODO baseItemType
                 return false;
             }
         }

@@ -20,7 +20,6 @@ button {
     font-weight: 900;
 }
 
-
 button:hover {
     color: #fff;
     background: -moz-linear-gradient(top, #4C5A64 3%, #404F5A 4%, #2E3940 100%); /* firefox */
@@ -579,6 +578,12 @@ a:active {
 /** -------------------------- THANK YOU PAGE END-------------------------- */
 
 /** -------------------------- EDITOR -------------------------- */
+/** --- Common --- */
+.editor-hint {
+    font-size: 75%;
+    color: #00ffd2;
+}
+
 /** --- Gallery table --- */
 .generic-gallery-table {
     /*overflow: hidden;*/

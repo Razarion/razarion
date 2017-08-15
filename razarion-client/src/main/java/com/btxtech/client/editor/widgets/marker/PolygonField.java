@@ -57,8 +57,10 @@ public class PolygonField extends Composite {
             markerEditor.activate(polygon2D, decimalPositions -> {
                 if (polygonListener != null) {
                     if (decimalPositions != null) {
-                        polygonListener.accept(new Polygon2D(decimalPositions));
+                        polygon2D = new Polygon2D(decimalPositions);
+                        polygonListener.accept(polygon2D);
                     } else {
+                        polygon2D = null;
                         polygonListener.accept(null);
                     }
                 }
@@ -100,5 +102,9 @@ public class PolygonField extends Composite {
         showHideButton.setText(SHOW);
         clearButton.setEnabled(false);
         topViewButton.setEnabled(false);
+    }
+
+    public Polygon2D getPolygon2D() {
+        return polygon2D;
     }
 }

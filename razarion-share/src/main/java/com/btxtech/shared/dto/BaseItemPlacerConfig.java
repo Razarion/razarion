@@ -14,7 +14,7 @@ public class BaseItemPlacerConfig {
     private DecimalPosition suggestedPosition;
     private int baseItemTypeId;
     private int baseItemCount;
-    private double enemyFreeRadius;
+    private Double enemyFreeRadius;
     private Polygon2D allowedArea;
 
     public int getBaseItemTypeId() {
@@ -35,11 +35,11 @@ public class BaseItemPlacerConfig {
         return this;
     }
 
-    public double getEnemyFreeRadius() {
+    public Double getEnemyFreeRadius() {
         return enemyFreeRadius;
     }
 
-    public BaseItemPlacerConfig setEnemyFreeRadius(double enemyFreeRadius) {
+    public BaseItemPlacerConfig setEnemyFreeRadius(Double enemyFreeRadius) {
         this.enemyFreeRadius = enemyFreeRadius;
         return this;
     }

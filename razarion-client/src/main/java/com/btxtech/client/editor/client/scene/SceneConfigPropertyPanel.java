@@ -1,6 +1,8 @@
 package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
+import com.btxtech.client.editor.widgets.marker.DecimalPositionWidget;
+import com.btxtech.client.editor.widgets.marker.PolygonField;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -106,6 +108,9 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @DataField
     private Button resourcePositionCreateButton;
+    @Inject
+    @DataField
+    private StartPointPlacerWidget startPointPlacerConfig;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
@@ -116,6 +121,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
             @Override
             public void callback(SceneConfig sceneConfig) {
                 dataBinder.setModel(sceneConfig);
+                startPointPlacerConfig.init(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "SceneEditorProvider.readSceneConfig failed: " + message, throwable);

@@ -103,7 +103,7 @@ public class BaseItemPlacerChecker {
                 }
             }
         }
-
-        enemyFreeRadius = baseItemPlacerConfig.getEnemyFreeRadius() + MathHelper.getPythagorasC((double) columns * itemRadius, (double) rows * itemRadius);
+        double bipcEnemyFreeRadius = baseItemPlacerConfig.getEnemyFreeRadius() != null ? baseItemPlacerConfig.getEnemyFreeRadius() : 0;
+        enemyFreeRadius = bipcEnemyFreeRadius + MathHelper.getPythagorasC((double) columns * itemRadius, (double) rows * itemRadius);
     }
 }

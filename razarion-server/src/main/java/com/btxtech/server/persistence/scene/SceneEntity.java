@@ -262,8 +262,9 @@ public class SceneEntity implements ObjectNameIdProvider {
                 startPointPlacerEntity = new StartPointPlacerEntity();
             }
             startPointPlacerEntity.fromStartPointPlacerConfig(sceneConfig.getStartPointPlacerConfig());
-        } else {
-            startPointPlacerEntity = null;
+        // Set to NULL does not work, hibernate bug. Leftovers in DB. } else {
+        // Orphan removal fails see: https://hibernate.atlassian.net/browse/HHH-9663
+        //    startPointPlacerEntity = null;
         }
         wait4LevelUpDialog = sceneConfig.isWait4LevelUpDialog();
         wait4QuestPassedDialog = sceneConfig.isWait4QuestPassedDialog();

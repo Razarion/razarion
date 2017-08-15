@@ -9,7 +9,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HasValue;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -20,14 +19,14 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.logging.Logger;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
  * on 13.08.2017.
  */
 @Templated("DecimalPositionWidget.html#decimalPositionWidget")
-public class DecimalPositionWidget extends Composite implements HasValue<DecimalPosition> {
+public class DecimalPositionWidget implements HasValue<DecimalPosition> {
     private static final String SHOW = "Show";
     private static final String HIDE = "Hide";
     // private Logger logger = Logger.getLogger(DecimalPositionWidget.class.getName());
@@ -49,6 +48,7 @@ public class DecimalPositionWidget extends Composite implements HasValue<Decimal
     @DataField
     private Div decimalPositionWidget;
     private Collection<ValueChangeHandler<DecimalPosition>> handlers = new ArrayList<>();
+    private Consumer<DecimalPosition> decimalPositionListener;
 
     @PostConstruct
     public void postConstruct() {
@@ -59,6 +59,11 @@ public class DecimalPositionWidget extends Composite implements HasValue<Decimal
                 markerEditor.deactivate();
             }
         }, false);
+    }
+
+    public void init(DecimalPosition decimalPosition, Consumer<DecimalPosition> decimalPositionListener) {
+        setValue(decimalPosition);
+        this.decimalPositionListener = decimalPositionListener;
     }
 
     @Override
@@ -136,6 +141,10 @@ public class DecimalPositionWidget extends Composite implements HasValue<Decimal
 
         for (ValueChangeHandler<DecimalPosition> handler : handlers) {
             handler.onValueChange(valueChangeEvent);
+        }
+
+        if (decimalPositionListener != null) {
+            decimalPositionListener.accept(getValue());
         }
     }
 

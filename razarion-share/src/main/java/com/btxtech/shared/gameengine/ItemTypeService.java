@@ -32,7 +32,7 @@ public class ItemTypeService {
         setBoxItemTypes(staticGameConfig.getBoxItemTypes());
     }
 
-    public ResourceItemType getResourceItemType(int resourceItemTypeId) {
+    public ResourceItemType getResourceItemType(Integer resourceItemTypeId) {
         ResourceItemType resourceItemType = resourceItemTypes.get(resourceItemTypeId);
         if (resourceItemType == null) {
             throw new NoSuchItemTypeException(ResourceItemType.class, resourceItemTypeId);
@@ -40,7 +40,7 @@ public class ItemTypeService {
         return resourceItemType;
     }
 
-    public BaseItemType getBaseItemType(int baseItemTypeId) {
+    public BaseItemType getBaseItemType(Integer baseItemTypeId) {
         BaseItemType baseItemType = baseItemTypes.get(baseItemTypeId);
         if (baseItemType == null) {
             throw new NoSuchItemTypeException(BaseItemType.class, baseItemTypeId);
@@ -48,7 +48,7 @@ public class ItemTypeService {
         return baseItemType;
     }
 
-    public BoxItemType getBoxItemType(int boxItemTypeId) {
+    public BoxItemType getBoxItemType(Integer boxItemTypeId) {
         BoxItemType boxItemType = boxItemTypes.get(boxItemTypeId);
         if (boxItemType == null) {
             throw new NoSuchItemTypeException(BaseItemType.class, boxItemTypeId);
