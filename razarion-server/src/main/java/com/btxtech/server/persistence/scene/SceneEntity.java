@@ -121,7 +121,7 @@ public class SceneEntity implements ObjectNameIdProvider {
     @JoinColumn(name = "sceneId")
     private List<BoxItemPositionEntity> boxItemPositionEntities;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private GameTipConfigEntity gameTipConfigEntity;
+    private GameTipConfigEntity gameTipConfigEntity; // Orphan removal not working due to hibernate bug
     private Boolean removeLoadingCover;
 
     public Integer getId() {
@@ -262,9 +262,9 @@ public class SceneEntity implements ObjectNameIdProvider {
                 startPointPlacerEntity = new StartPointPlacerEntity();
             }
             startPointPlacerEntity.fromStartPointPlacerConfig(sceneConfig.getStartPointPlacerConfig());
-        // Set to NULL does not work, hibernate bug. Leftovers in DB. } else {
-        // Orphan removal fails see: https://hibernate.atlassian.net/browse/HHH-9663
-        //    startPointPlacerEntity = null;
+            // Set to NULL does not work, hibernate bug. Leftovers in DB. } else {
+            // Orphan removal fails see: https://hibernate.atlassian.net/browse/HHH-9663
+            //    startPointPlacerEntity = null;
         }
         wait4LevelUpDialog = sceneConfig.isWait4LevelUpDialog();
         wait4QuestPassedDialog = sceneConfig.isWait4QuestPassedDialog();
@@ -293,36 +293,108 @@ public class SceneEntity implements ObjectNameIdProvider {
         removeLoadingCover = sceneConfig.isRemoveLoadingCover();
     }
 
-    public void setBotConfigEntities(List<BotConfigEntity> botConfigEntities) {
-        this.botConfigEntities = botConfigEntities;
+    public void clearBotConfigEntities() {
+        if (this.botConfigEntities != null) {
+            this.botConfigEntities.clear();
+        }
     }
 
-    public void setBotMoveCommandEntities(List<BotMoveCommandEntity> botMoveCommandEntities) {
-        this.botMoveCommandEntities = botMoveCommandEntities;
+    public void addBotConfigEntity(BotConfigEntity boxItemPositionEntity) {
+        if (this.botConfigEntities == null) {
+            this.botConfigEntities = new ArrayList<>();
+        }
+        this.botConfigEntities.add(boxItemPositionEntity);
     }
 
-    public void setBotHarvestCommandEntities(List<BotHarvestCommandEntity> botHarvestCommandEntities) {
-        this.botHarvestCommandEntities = botHarvestCommandEntities;
+    public void addBotMoveCommandEntity(BotMoveCommandEntity boxItemPositionEntity) {
+        if (this.botMoveCommandEntities == null) {
+            this.botMoveCommandEntities = new ArrayList<>();
+        }
+        this.botMoveCommandEntities.add(boxItemPositionEntity);
     }
 
-    public void setBotAttackCommandEntities(List<BotAttackCommandEntity> botAttackCommandEntities) {
-        this.botAttackCommandEntities = botAttackCommandEntities;
+    public void clearBotMoveCommandEntities() {
+        if (this.botMoveCommandEntities != null) {
+            this.botMoveCommandEntities.clear();
+        }
     }
 
-    public void setBotKillOtherBotCommandEntities(List<BotKillOtherBotCommandEntity> botKillOtherBotCommandEntities) {
-        this.botKillOtherBotCommandEntities = botKillOtherBotCommandEntities;
+    public void addBotHarvestCommandEntity(BotHarvestCommandEntity boxItemPositionEntity) {
+        if (this.botHarvestCommandEntities == null) {
+            this.botHarvestCommandEntities = new ArrayList<>();
+        }
+        this.botHarvestCommandEntities.add(boxItemPositionEntity);
     }
 
-    public void setBotKillHumanCommandEntities(List<BotKillHumanCommandEntity> botKillHumanCommandEntities) {
-        this.botKillHumanCommandEntities = botKillHumanCommandEntities;
+    public void clearBotHarvestCommandEntities() {
+        if (this.botHarvestCommandEntities != null) {
+            this.botHarvestCommandEntities.clear();
+        }
     }
 
-    public void setBotRemoveOwnItemCommandEntities(List<BotRemoveOwnItemCommandEntity> botRemoveOwnItemCommandEntities) {
-        this.botRemoveOwnItemCommandEntities = botRemoveOwnItemCommandEntities;
+    public void addBotAttackCommandEntity(BotAttackCommandEntity boxItemPositionEntity) {
+        if (this.botAttackCommandEntities == null) {
+            this.botAttackCommandEntities = new ArrayList<>();
+        }
+        this.botAttackCommandEntities.add(boxItemPositionEntity);
     }
 
-    public void setKillBotCommandEntities(List<BotKillBotCommandEntity> killBotCommandEntities) {
-        this.killBotCommandEntities = killBotCommandEntities;
+    public void clearBotAttackCommandEntities() {
+        if (this.botAttackCommandEntities != null) {
+            this.botAttackCommandEntities.clear();
+        }
+    }
+
+    public void addBotKillOtherBotCommandEntity(BotKillOtherBotCommandEntity botKillOtherBotCommandEntity) {
+        if (this.botKillOtherBotCommandEntities == null) {
+            this.botKillOtherBotCommandEntities = new ArrayList<>();
+        }
+        this.botKillOtherBotCommandEntities.add(botKillOtherBotCommandEntity);
+    }
+
+    public void clearBotKillOtherBotCommandEntities() {
+        if (this.botKillOtherBotCommandEntities != null) {
+            this.botKillOtherBotCommandEntities.clear();
+        }
+    }
+
+    public void addBotKillHumanCommandEntity(BotKillHumanCommandEntity botKillHumanCommandEntity) {
+        if (this.botKillHumanCommandEntities == null) {
+            this.botKillHumanCommandEntities = new ArrayList<>();
+        }
+        this.botKillHumanCommandEntities.add(botKillHumanCommandEntity);
+    }
+
+    public void clearBotKillHumanCommandEntities() {
+        if (this.botKillHumanCommandEntities != null) {
+            this.botKillHumanCommandEntities.clear();
+        }
+    }
+
+    public void addBotRemoveOwnItemCommandEntity(BotRemoveOwnItemCommandEntity botRemoveOwnItemCommandEntity) {
+        if (this.botRemoveOwnItemCommandEntities == null) {
+            this.botRemoveOwnItemCommandEntities = new ArrayList<>();
+        }
+        this.botRemoveOwnItemCommandEntities.add(botRemoveOwnItemCommandEntity);
+    }
+
+    public void clearBotRemoveOwnItemCommandEntities() {
+        if (this.botRemoveOwnItemCommandEntities != null) {
+            this.botRemoveOwnItemCommandEntities.clear();
+        }
+    }
+
+    public void addKillBotCommandEntity(BotKillBotCommandEntity botKillBotCommandEntity) {
+        if (this.killBotCommandEntities == null) {
+            this.killBotCommandEntities = new ArrayList<>();
+        }
+        this.killBotCommandEntities.add(botKillBotCommandEntity);
+    }
+
+    public void clearKillBotCommandEntities() {
+        if (this.killBotCommandEntities != null) {
+            this.killBotCommandEntities.clear();
+        }
     }
 
     public void addResourceItemPositionEntity(ResourceItemPositionEntity resourceItemPositionEntity) {

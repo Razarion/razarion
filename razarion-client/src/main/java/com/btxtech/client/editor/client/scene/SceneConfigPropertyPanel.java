@@ -153,6 +153,9 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @DataField
     private Button boxPositionCreateButton;
+    @Inject
+    @DataField
+    private GameTipConfigPanel gameTipConfigPanel;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
@@ -166,6 +169,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
             public void callback(SceneConfig sceneConfig) {
                 dataBinder.setModel(sceneConfig);
                 startPointPlacerConfig.init(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
+                gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "SceneEditorProvider.readSceneConfig failed: " + message, throwable);

@@ -152,9 +152,91 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         // Delete
         id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: pick box");
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        // Create
+        SceneConfig expectedScene5 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setUserMoveScene(expectedScene5);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene5);
+        SceneConfig expectedScene6 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setFindEnemyBase(expectedScene6);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene6);
+        SceneConfig expectedScene7 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setBoxSpawnTask(expectedScene7);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene7);
+        SceneConfig expectedScene8 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setAttackTask(expectedScene8);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene8);
+        SceneConfig expectedScene9 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setUserSpawnScene2(expectedScene9);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene9);
+        SceneConfig expectedScene10 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setBuildFactoryTask(expectedScene10);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene10);
+        SceneConfig expectedScene11 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setFactorizeHarvesterTask(expectedScene11);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene11);
+        SceneConfig expectedScene12 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setHarvestTask(expectedScene12);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene12);
+        SceneConfig expectedScene13 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setBuildViperTask(expectedScene13);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene13);
+        SceneConfig expectedScene14 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setBuildViperTask2(expectedScene14);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene14);
+        SceneConfig expectedScene15 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setKillTower(expectedScene15);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene15);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(),
+                "user: move", "user: find enemy base", "user: box spawn", "user: kill bot harvester", "user: spawn 2", "user: build factory", "user: fabricate harvester",
+                "user: harvest", "user: build viper 1", "user: build viper 2", "user: kill tower");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: move");
+        ReflectionAssert.assertReflectionEquals(expectedScene5, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: find enemy base");
+        ReflectionAssert.assertReflectionEquals(expectedScene6, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: box spawn");
+        ReflectionAssert.assertReflectionEquals(expectedScene7, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: kill bot harvester");
+        ReflectionAssert.assertReflectionEquals(expectedScene8, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: spawn 2");
+        ReflectionAssert.assertReflectionEquals(expectedScene9, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: build factory");
+        ReflectionAssert.assertReflectionEquals(expectedScene10, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: fabricate harvester");
+        ReflectionAssert.assertReflectionEquals(expectedScene11, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: harvest");
+        ReflectionAssert.assertReflectionEquals(expectedScene12, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: build viper 1");
+        ReflectionAssert.assertReflectionEquals(expectedScene13, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: build viper 2");
+        ReflectionAssert.assertReflectionEquals(expectedScene14, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: kill tower");
+        ReflectionAssert.assertReflectionEquals(expectedScene15, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        // Delete
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: move");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: find enemy base");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: box spawn");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: kill bot harvester");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: spawn 2");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: build factory");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: fabricate harvester");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: harvest");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: build viper 1");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: build viper 2");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: kill tower");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
 
         TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds());
-
 
         ObjectComparatorIgnore.clear();
 
@@ -296,7 +378,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.add(sceneConfig);
     }
 
-    private void addUserMoveScene(List<SceneConfig> sceneConfigs) {
+    private void setUserMoveScene(SceneConfig sceneConfig) {
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
         ComparisonConfig comparisonConfig = new ComparisonConfig().setTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(175, 103, 10, 10))).setAddExisting(true);
@@ -307,7 +389,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setActor(BASE_ITEM_TYPE_BULLDOZER_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(180, 108));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: move").setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true));
+        sceneConfig.setInternalName("user: move").setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true);
     }
 
     private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
@@ -320,7 +402,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.add(sceneConfig);
     }
 
-    private void addFindEnemyBase(List<SceneConfig> sceneConfigs) {
+    private void setFindEnemyBase(SceneConfig sceneConfig) {
         // Scroll Quest
         ScrollUiQuest scrollUiQuest = new ScrollUiQuest().setXp(1).setTitle("Finde Gegenerbasis").setDescription("Scrolle und such die gegenrische Basis").setScrollTargetRectangle(new Rectangle2D(250, 290, 10, 10)).setXp(1).setPassedMessage("Gratuliere, du hast die gegnerische Basis gefunden");
         // div
@@ -332,7 +414,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setTip(GameTipConfig.Tip.SCROLL);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(270, 310));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: find enemy base").setGameTipConfig(gameTipConfig).setViewFieldConfig(viewFieldConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
+        sceneConfig.setInternalName("user: find enemy base").setGameTipConfig(gameTipConfig).setViewFieldConfig(viewFieldConfig).setScrollUiQuest(scrollUiQuest).setWait4QuestPassedDialog(true).setBotHarvestCommandConfigs(botHarvestCommandConfigs);
     }
 
     private void setPickBoxTask(SceneConfig sceneConfig) {
@@ -350,7 +432,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfig.setInternalName("user: pick box").setGameTipConfig(gameTipConfig).setBoxItemPositions(boxItemPositions).setQuestConfig(questConfig).setWait4QuestPassedDialog(true);
     }
 
-    private void addBoxSpawnTask(List<SceneConfig> sceneConfigs) {
+    private void setBoxSpawnTask(SceneConfig sceneConfig) {
         // Use inventory item quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1));
         // Move attackers away
@@ -362,10 +444,10 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setTip(GameTipConfig.Tip.SPAN_INVENTORY_ITEM);
         gameTipConfig.setInventoryItemId(INVENTORY_ITEM_1_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(216, 125));
-        sceneConfigs.add(new SceneConfig().setInternalName("user: box spawn").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotMoveCommandConfigs(botMoveCommandConfigs));
+        sceneConfig.setInternalName("user: box spawn").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setXp(1).setTitle("Benutze Inventar").setDescription("Platziere die Militäreinheiten vom Inventar").setConditionConfig(conditionConfig)).setWait4QuestPassedDialog(true).setBotMoveCommandConfigs(botMoveCommandConfigs);
     }
 
-    private void addAttackTask(List<SceneConfig> sceneConfigs) {
+    private void setAttackTask(SceneConfig sceneConfig) {
         // Attack quest
         Map<Integer, Integer> attackItemTypeCount = new HashMap<>();
         attackItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER_ID, 1);
@@ -376,7 +458,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER_ID);
         gameTipConfig.setPlaceConfig(new PlaceConfig().setPolygon2D(new Rectangle2D(194, 133, 50, 50).toPolygon()));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: kill bot harvester").setQuestConfig(questConfig).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true));
+        sceneConfig.setInternalName("user: kill bot harvester").setQuestConfig(questConfig).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true);
     }
 
     private void addEnemyKillTask(List<SceneConfig> sceneConfigs) {
@@ -399,7 +481,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.add(new SceneConfig().setInternalName("script: escape npc bot").setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries.").setDuration(3000));
     }
 
-    private void addUserSpawnScene2(List<SceneConfig> sceneConfigs) {
+    private void setUserSpawnScene2(SceneConfig sceneConfig) {
         // Bot NPC_BOT_OUTPOST_2_AUX
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -422,10 +504,10 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         List<KillBotCommandConfig> killBotCommandConfigs = new ArrayList<>();
         killBotCommandConfigs.add(new KillBotCommandConfig().setBotAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX));
         // Build factory Quest
-        sceneConfigs.add(new SceneConfig().setInternalName("user: spawn 2").setGameTipConfig(gameTipConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Basis").setDescription("Platziere deinen Bulldozer und baue eine Basis auf um Razarion Industries zu besiegen.").setHidePassedDialog(true).setConditionConfig(conditionConfig).setXp(0)).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs));
+        sceneConfig.setInternalName("user: spawn 2").setGameTipConfig(gameTipConfig).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Basis").setDescription("Platziere deinen Bulldozer und baue eine Basis auf um Razarion Industries zu besiegen.").setHidePassedDialog(true).setConditionConfig(conditionConfig).setXp(0)).setKillBotCommandConfigs(killBotCommandConfigs).setBotConfigs(botConfigs);
     }
 
-    private void addBuildFactoryTask(List<SceneConfig> sceneConfigs) {
+    private void setBuildFactoryTask(SceneConfig sceneConfig) {
         // Build factory Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_FACTORY_ID, 1);
@@ -437,10 +519,10 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setTerrainPositionHint(new DecimalPosition(112, 285));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: build factory").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Baue eine Fabrik mit deinem Bulldozer").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        sceneConfig.setInternalName("user: build factory").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue eine Fabrik").setDescription("Baue eine Fabrik mit deinem Bulldozer").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
     }
 
-    private void addFactorizeHarvesterTask(List<SceneConfig> sceneConfigs) {
+    private void setFactorizeHarvesterTask(SceneConfig sceneConfig) {
         // Build Harvester Quest
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_HARVESTER_ID, 1);
@@ -454,10 +536,10 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID);
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: fabricate harvester").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs));
+        sceneConfig.setInternalName("user: fabricate harvester").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Baue ein Harvester").setDescription("Baue ein Harvester in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true).setKillBotCommandConfigs(killBotCommandConfigs);
     }
 
-    private void addHarvestTask(List<SceneConfig> sceneConfigs) {
+    private void setHarvestTask(SceneConfig sceneConfig) {
         // Harvest quest
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(30));
         // Tip
@@ -466,7 +548,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setActor(BASE_ITEM_TYPE_HARVESTER_ID);
         gameTipConfig.setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID);
         gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(108, 254)));
-        sceneConfigs.add(new SceneConfig().setInternalName("user: harvest").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4LevelUpDialog(true));
+        sceneConfig.setInternalName("user: harvest").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Sammle Razarion").setDescription("Sammle Razarion um eine Armee zu bauen").setConditionConfig(conditionConfig).setXp(10)).setWait4LevelUpDialog(true);
     }
 
     private void addHarvestExplanationTask(List<SceneConfig> sceneConfigs) {
@@ -474,7 +556,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.add(new SceneConfig().setInternalName("script: explain harvest").setIntroText("Du brauchst viel Razarion um eine Armee zu bauen").setDuration(3000));
     }
 
-    private void addBuildViperTask(List<SceneConfig> sceneConfigs) {
+    private void setBuildViperTask(SceneConfig sceneConfig) {
         // Build viper
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER_ID, 1);
@@ -484,7 +566,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID);
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: build viper 1").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        sceneConfig.setInternalName("user: build viper 1").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
     }
 
     private void addNpcAttackTowerCommand(List<SceneConfig> sceneConfigs) {
@@ -499,7 +581,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.add(new SceneConfig().setInternalName("script: npc too weak").setIntroText("Der Turm ist zu stark, wir brauchen eine grössere Armee").setDuration(2000));
     }
 
-    private void addBuildViperTask2(List<SceneConfig> sceneConfigs) {
+    private void setBuildViperTask2(SceneConfig sceneConfig) {
         // Build viper
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_ATTACKER_ID, 2);
@@ -510,10 +592,10 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setActor(BASE_ITEM_TYPE_FACTORY_ID);
         gameTipConfig.setToCreatedItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID);
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: build viper 2").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        sceneConfig.setInternalName("user: build viper 2").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue zwei Vipers in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
     }
 
-    private void addKillTower(List<SceneConfig> sceneConfigs) {
+    private void setKillTower(SceneConfig sceneConfig) {
         Map<Integer, Integer> buildupItemTypeCount = new HashMap<>();
         buildupItemTypeCount.put(BASE_ITEM_TYPE_TOWER_ID, 1);
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(buildupItemTypeCount));
@@ -523,7 +605,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         gameTipConfig.setActor(BASE_ITEM_TYPE_ATTACKER_ID);
         gameTipConfig.setPlaceConfig(new PlaceConfig().setPosition(new DecimalPosition(190, 242)));
 
-        sceneConfigs.add(new SceneConfig().setInternalName("user: kill tower").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true));
+        sceneConfig.setInternalName("user: kill tower").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Zerstöre Turm").setDescription("Nimm deine 3 Vipers und zerstöre den Turm").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
     }
 
     private void addKillBotEndForward(List<SceneConfig> sceneConfigs) {

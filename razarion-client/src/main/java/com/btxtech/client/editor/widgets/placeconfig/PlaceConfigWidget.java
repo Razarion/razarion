@@ -1,8 +1,9 @@
 package com.btxtech.client.editor.widgets.placeconfig;
 
+import com.btxtech.client.editor.widgets.marker.DecimalPositionWidget;
 import com.btxtech.client.editor.widgets.marker.PolygonField;
 import com.btxtech.client.guielements.CommaDoubleBox;
-import com.btxtech.client.guielements.DecimalPositionBox;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,6 +20,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -38,12 +40,28 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
     private PolygonField polygonField;
     @Inject
     @DataField
-    private DecimalPositionBox positionFiled;
+    private DecimalPositionWidget positionFiled;
     @Inject
     @DataField
     private CommaDoubleBox radiusField;
     private PlaceConfig placeConfig;
+    private Consumer<PlaceConfig> placeConfigCallback;
     private Collection<ValueChangeHandler<PlaceConfig>> handlers = new ArrayList<>();
+
+    public void init(PlaceConfig placeConfig, Consumer<PlaceConfig> placeConfigCallback) {
+        this.placeConfigCallback = placeConfigCallback;
+        setValue(placeConfig);
+        DecimalPosition position = null;
+        if (placeConfig.getPosition() != null) {
+            position = placeConfig.getPosition();
+        }
+        positionFiled.init(position, decimalPosition -> {
+            if (positionRadiusRadio.getChecked()) {
+                placeConfig.setPosition(positionFiled.getValue());
+                fireEvent(null);
+            }
+        });
+    }
 
     @Override
     public PlaceConfig getValue() {
@@ -98,6 +116,10 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
         for (ValueChangeHandler<PlaceConfig> handler : handlers) {
             handler.onValueChange(valueChangeEvent);
         }
+
+        if (placeConfigCallback != null) {
+            placeConfigCallback.accept(getValue());
+        }
     }
 
     @EventHandler("polygonRadio")
@@ -124,14 +146,6 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
         placeConfig.setPolygon2D(null);
         polygonField.dispose();
         fireEvent(null);
-    }
-
-    @EventHandler("positionFiled")
-    public void positionFiledChanged(ChangeEvent e) {
-        if (positionRadiusRadio.getChecked()) {
-            placeConfig.setPosition(positionFiled.getValue());
-            fireEvent(null);
-        }
     }
 
     @EventHandler("radiusField")

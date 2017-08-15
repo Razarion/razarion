@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,6 +40,10 @@ public class InventoryService {
             throw new IllegalArgumentException("No InventoryItem for id: " + id);
         }
         return inventoryItem;
+    }
+
+    public Collection<InventoryItem> getInventoryItems() {
+        return inventoryItems.values();
     }
 
 }

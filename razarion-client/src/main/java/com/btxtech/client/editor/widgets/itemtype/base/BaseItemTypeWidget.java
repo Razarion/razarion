@@ -39,7 +39,7 @@ public class BaseItemTypeWidget {
     }
 
     @EventHandler("galleryButton")
-    private void onFullScreenButtonClick(ClickEvent event) {
+    private void onGalleryButtonButtonClick(ClickEvent event) {
         modalDialogManager.show("Base items", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BaseItemTypeSelectionDialog.class, baseItemTypeId, (button, selectedId) -> {
             if (button == DialogButton.Button.APPLY) {
                 baseItemTypeId = selectedId;

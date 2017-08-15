@@ -26,7 +26,7 @@ public class InventoryItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
+    private String internalName;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity i18nName;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,7 +44,7 @@ public class InventoryItemEntity {
     }
 
     public InventoryItem toInventoryItem() {
-        InventoryItem inventoryItem = new InventoryItem().setId(id).setName(name);
+        InventoryItem inventoryItem = new InventoryItem().setId(id).setInternalName(internalName);
         if (baseItemType != null) {
             inventoryItem.setBaseItemTypeId(baseItemType.getId()).setBaseItemTypeCount(baseItemTypeCount).setBaseItemTypeFreeRange(itemFreeRange);
         }
@@ -59,7 +59,7 @@ public class InventoryItemEntity {
     }
 
     public void fromInventoryItem(InventoryItem inventoryItem) {
-        name = inventoryItem.getName();
+        internalName = inventoryItem.getInternalName();
         i18nName = I18nBundleEntity.fromI18nStringSafe(inventoryItem.getI18nName(), i18nName);
         baseItemTypeCount = inventoryItem.getBaseItemTypeCount();
         itemFreeRange = inventoryItem.getBaseItemTypeFreeRange();

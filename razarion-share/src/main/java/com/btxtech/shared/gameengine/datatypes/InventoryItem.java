@@ -1,15 +1,17 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 
 /**
  * Created by Beat
  * 25.10.2016.
  */
-public class InventoryItem {
+public class InventoryItem implements ObjectNameIdProvider {
     private int id;
     private I18nString i18nName;
-    private String name;
+    private String internalName;
     private Integer gold;
     private Integer baseItemTypeId;
     private int baseItemTypeCount;
@@ -34,12 +36,12 @@ public class InventoryItem {
         return this;
     }
 
-    public String getName() {
-        return name;
+    public String getInternalName() {
+        return internalName;
     }
 
-    public InventoryItem setName(String name) {
-        this.name = name;
+    public InventoryItem setInternalName(String internalName) {
+        this.internalName = internalName;
         return this;
     }
 
@@ -93,10 +95,34 @@ public class InventoryItem {
     }
 
     @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass().equals(o.getClass())) { // equals needed because Errai binder proxy
+            return false;
+        }
+
+        InventoryItem that = (InventoryItem) o;
+
+        return getId() == that.getId(); // itemType.getId() needed because Errai binder proxy
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
     public String toString() {
         return "InventoryItem{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + internalName + '\'' +
                 ", gold=" + gold +
                 ", baseItemTypeId=" + baseItemTypeId +
                 ", baseItemTypeCount=" + baseItemTypeCount +

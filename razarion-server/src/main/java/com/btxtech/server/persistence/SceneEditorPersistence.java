@@ -32,8 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -71,17 +69,16 @@ public class SceneEditorPersistence {
 
     private void saveScene(SceneEntity sceneEntity, SceneConfig sceneConfig, Locale locale) {
         sceneEntity.fromSceneConfig(itemTypePersistence, sceneConfig, locale);
+        sceneEntity.clearBotConfigEntities();
         if (sceneConfig.getBotConfigs() != null) {
-            List<BotConfigEntity> botConfigEntities = new ArrayList<>();
             for (BotConfig botConfig : sceneConfig.getBotConfigs()) {
                 BotConfigEntity botConfigEntity = new BotConfigEntity();
                 botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
-                botConfigEntities.add(botConfigEntity);
+                sceneEntity.addBotConfigEntity(botConfigEntity);
             }
-            sceneEntity.setBotConfigEntities(botConfigEntities);
         }
+        sceneEntity.clearBotAttackCommandEntities();
         if (sceneConfig.getBotAttackCommandConfigs() != null) {
-            List<BotAttackCommandEntity> botAttackCommandEntities = new ArrayList<>();
             for (BotAttackCommandConfig botAttackCommandConfig : sceneConfig.getBotAttackCommandConfigs()) {
                 BotAttackCommandEntity botAttackCommandEntity = new BotAttackCommandEntity();
                 botAttackCommandEntity.setBotAuxiliaryIdId(botAttackCommandConfig.getBotAuxiliaryId());
@@ -92,23 +89,21 @@ public class SceneEditorPersistence {
                     BotConfigEntity.fromPlaceConfig(botAttackCommandConfig.getTargetSelection());
                     botAttackCommandEntity.setTargetSelection(BotConfigEntity);
                 }
-                botAttackCommandEntities.add(botAttackCommandEntity);
+                sceneEntity.addBotAttackCommandEntity(botAttackCommandEntity);
             }
-            sceneEntity.setBotAttackCommandEntities(botAttackCommandEntities);
         }
+        sceneEntity.clearBotMoveCommandEntities();
         if (sceneConfig.getBotMoveCommandConfigs() != null) {
-            List<BotMoveCommandEntity> botMoveCommandEntities = new ArrayList<>();
             for (BotMoveCommandConfig botMoveCommandConfig : sceneConfig.getBotMoveCommandConfigs()) {
                 BotMoveCommandEntity botMoveCommandEntity = new BotMoveCommandEntity();
                 botMoveCommandEntity.setBotAuxiliaryIdId(botMoveCommandConfig.getBotAuxiliaryId());
                 botMoveCommandEntity.setBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botMoveCommandConfig.getBaseItemTypeId()));
                 botMoveCommandEntity.setTargetPosition(botMoveCommandConfig.getTargetPosition());
-                botMoveCommandEntities.add(botMoveCommandEntity);
+                sceneEntity.addBotMoveCommandEntity(botMoveCommandEntity);
             }
-            sceneEntity.setBotMoveCommandEntities(botMoveCommandEntities);
         }
+        sceneEntity.clearBotHarvestCommandEntities();
         if (sceneConfig.getBotHarvestCommandConfigs() != null) {
-            List<BotHarvestCommandEntity> botHarvestCommandEntities = new ArrayList<>();
             for (BotHarvestCommandConfig botHarvestCommandConfig : sceneConfig.getBotHarvestCommandConfigs()) {
                 BotHarvestCommandEntity botHarvestCommandEntity = new BotHarvestCommandEntity();
                 botHarvestCommandEntity.setBotAuxiliaryIdId(botHarvestCommandConfig.getBotAuxiliaryId());
@@ -119,52 +114,47 @@ public class SceneEditorPersistence {
                     placeConfigEntity.fromPlaceConfig(botHarvestCommandConfig.getResourceSelection());
                     botHarvestCommandEntity.setResourceSelection(placeConfigEntity);
                 }
-                botHarvestCommandEntities.add(botHarvestCommandEntity);
+                sceneEntity.addBotHarvestCommandEntity(botHarvestCommandEntity);
             }
-            sceneEntity.setBotHarvestCommandEntities(botHarvestCommandEntities);
         }
+        sceneEntity.clearBotKillOtherBotCommandEntities();
         if (sceneConfig.getBotKillOtherBotCommandConfigs() != null) {
-            List<BotKillOtherBotCommandEntity> botKillOtherBotCommandEntities = new ArrayList<>();
             for (BotKillOtherBotCommandConfig botKillOtherBotCommandConfig : sceneConfig.getBotKillOtherBotCommandConfigs()) {
                 BotKillOtherBotCommandEntity botKillOtherBotCommandEntity = new BotKillOtherBotCommandEntity();
                 botKillOtherBotCommandEntity.fromBotKillOtherBotCommandConfig(botKillOtherBotCommandConfig);
                 if (botKillOtherBotCommandConfig.getAttackerBaseItemTypeId() != null) {
                     botKillOtherBotCommandEntity.setAttackerBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botKillOtherBotCommandConfig.getAttackerBaseItemTypeId()));
                 }
-                botKillOtherBotCommandEntities.add(botKillOtherBotCommandEntity);
+                sceneEntity.addBotKillOtherBotCommandEntity(botKillOtherBotCommandEntity);
             }
-            sceneEntity.setBotKillOtherBotCommandEntities(botKillOtherBotCommandEntities);
         }
+        sceneEntity.clearBotKillHumanCommandEntities();
         if (sceneConfig.getBotKillHumanCommandConfigs() != null) {
-            List<BotKillHumanCommandEntity> botKillHumanCommandEntities = new ArrayList<>();
             for (BotKillHumanCommandConfig botKillHumanCommandConfig : sceneConfig.getBotKillHumanCommandConfigs()) {
                 BotKillHumanCommandEntity botKillHumanCommandEntity = new BotKillHumanCommandEntity();
                 botKillHumanCommandEntity.fromBotKillHumanCommandConfig(botKillHumanCommandConfig);
                 if (botKillHumanCommandConfig.getAttackerBaseItemTypeId() != null) {
                     botKillHumanCommandEntity.setAttackerBaseItemType(itemTypePersistence.readBaseItemTypeEntity(botKillHumanCommandConfig.getAttackerBaseItemTypeId()));
                 }
-                botKillHumanCommandEntities.add(botKillHumanCommandEntity);
+                sceneEntity.addBotKillHumanCommandEntity(botKillHumanCommandEntity);
             }
-            sceneEntity.setBotKillHumanCommandEntities(botKillHumanCommandEntities);
         }
+        sceneEntity.clearBotRemoveOwnItemCommandEntities();
         if (sceneConfig.getBotRemoveOwnItemCommandConfigs() != null) {
-            List<BotRemoveOwnItemCommandEntity> botRemoveOwnItemCommandEntities = new ArrayList<>();
             for (BotRemoveOwnItemCommandConfig botRemoveOwnItemCommandConfig : sceneConfig.getBotRemoveOwnItemCommandConfigs()) {
                 BotRemoveOwnItemCommandEntity botRemoveOwnItemCommandEntity = new BotRemoveOwnItemCommandEntity();
                 botRemoveOwnItemCommandEntity.setBotAuxiliaryIdId(botRemoveOwnItemCommandConfig.getBotAuxiliaryId());
                 botRemoveOwnItemCommandEntity.setBaseItemType2Remove(itemTypePersistence.readBaseItemTypeEntity(botRemoveOwnItemCommandConfig.getBaseItemType2RemoveId()));
-                botRemoveOwnItemCommandEntities.add(botRemoveOwnItemCommandEntity);
+                sceneEntity.addBotRemoveOwnItemCommandEntity(botRemoveOwnItemCommandEntity);
             }
-            sceneEntity.setBotRemoveOwnItemCommandEntities(botRemoveOwnItemCommandEntities);
         }
+        sceneEntity.clearKillBotCommandEntities();
         if (sceneConfig.getKillBotCommandConfigs() != null) {
-            List<BotKillBotCommandEntity> killBotCommandEntities = new ArrayList<>();
             for (KillBotCommandConfig killBotCommandConfig : sceneConfig.getKillBotCommandConfigs()) {
                 BotKillBotCommandEntity botKillBotCommandEntity = new BotKillBotCommandEntity();
                 botKillBotCommandEntity.fromKillBotCommandConfig(killBotCommandConfig);
-                killBotCommandEntities.add(botKillBotCommandEntity);
+                sceneEntity.addKillBotCommandEntity(botKillBotCommandEntity);
             }
-            sceneEntity.setKillBotCommandEntities(killBotCommandEntities);
         }
         sceneEntity.clearResourceItemPositionEntities();
         if (sceneConfig.getResourceItemTypePositions() != null) {

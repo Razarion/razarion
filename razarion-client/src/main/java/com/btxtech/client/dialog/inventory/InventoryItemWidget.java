@@ -28,24 +28,19 @@ import javax.inject.Named;
 public class InventoryItemWidget implements TakesValue<InventoryItemModel>, IsElement {
     @Inject
     private InventoryUiService inventoryUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @Named("div")
     private Div inventoryItem;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label inventoryItemName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Image inventoryItemImage;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label inventoryItemCount;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button inventoryItemUseButton;
@@ -55,7 +50,7 @@ public class InventoryItemWidget implements TakesValue<InventoryItemModel>, IsEl
     @Override
     public void setValue(InventoryItemModel inventoryItemModel) {
         this.inventoryItemModel = inventoryItemModel;
-        inventoryItemName.setText(inventoryItemModel.getInventoryItem().getName());
+        inventoryItemName.setText(I18nHelper.getLocalizedString(inventoryItemModel.getInventoryItem().getI18nName()));
         inventoryItemImage.setUrl(RestUrl.getImageServiceUrlSafe(inventoryItemModel.getInventoryItem().getImageId()));
         inventoryItemCount.setText(I18nHelper.getConstants().youOwn(inventoryItemModel.getItemCount()));
     }

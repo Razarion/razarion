@@ -46,7 +46,7 @@ public class GameTipConfig {
         return actor;
     }
 
-    public GameTipConfig setActor(int actor) {
+    public GameTipConfig setActor(Integer actor) {
         this.actor = actor;
         return this;
     }
@@ -55,7 +55,7 @@ public class GameTipConfig {
         return toCreatedItemTypeId;
     }
 
-    public GameTipConfig setToCreatedItemTypeId(int toCreatedItemTypeId) {
+    public GameTipConfig setToCreatedItemTypeId(Integer toCreatedItemTypeId) {
         this.toCreatedItemTypeId = toCreatedItemTypeId;
         return this;
     }
@@ -91,7 +91,7 @@ public class GameTipConfig {
         return inventoryItemId;
     }
 
-    public GameTipConfig setInventoryItemId(int inventoryItemId) {
+    public GameTipConfig setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
         return this;
     }

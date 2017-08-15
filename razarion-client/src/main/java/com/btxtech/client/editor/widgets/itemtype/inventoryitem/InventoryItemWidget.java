@@ -1,7 +1,7 @@
-package com.btxtech.client.editor.widgets.itemtype.box;
+package com.btxtech.client.editor.widgets.itemtype.inventoryitem;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.InventoryService;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -17,11 +17,11 @@ import java.util.function.Consumer;
  * Created by Beat
  * on 07.08.2017.
  */
-@Templated("BoxItemTypeWidget.html#boxitemtype")
-public class BoxItemTypeWidget {
-    // private Logger logger = Logger.getLogger(BoxItemTypeWidget.class.getName());
+@Templated("InventoryItemWidget.html#inventoryitemtype")
+public class InventoryItemWidget {
+    // private Logger logger = Logger.getLogger(InventoryItemWidget.class.getName());
     @Inject
-    private ItemTypeService itemTypeService;
+    private InventoryService inventoryService;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
@@ -30,33 +30,32 @@ public class BoxItemTypeWidget {
     @Inject
     @DataField
     private Button galleryButton;
-    private Integer boxItemTypeId;
+    private Integer inventoryItemId;
     private Consumer<Integer> changeCallback;
 
-    public void init(Integer boxItemTypeId, Consumer<Integer> changeCallback) {
-        this.boxItemTypeId = boxItemTypeId;
+    public void init(Integer inventoryItemId, Consumer<Integer> changeCallback) {
+        this.inventoryItemId = inventoryItemId;
         this.changeCallback = changeCallback;
         setupNameLabel();
     }
 
     @EventHandler("galleryButton")
-    private void onGalleryButtonButtonClick(ClickEvent event) {
-        modalDialogManager.show("Box items", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxItemTypeSelectionDialog.class, boxItemTypeId, (button, selectedId) -> {
+    private void onGalleryButtonClick(ClickEvent event) {
+        modalDialogManager.show("Inventory items", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryItemSelectionDialog.class, inventoryItemId, (button, selectedId) -> {
             if (button == DialogButton.Button.APPLY) {
-                boxItemTypeId = selectedId;
-                changeCallback.accept(boxItemTypeId);
+                inventoryItemId = selectedId;
+                changeCallback.accept(inventoryItemId);
                 setupNameLabel();
             }
         }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     private void setupNameLabel() {
-        if (boxItemTypeId != null) {
-            nameLabel.setInnerHTML(itemTypeService.getBoxItemType(boxItemTypeId).createObjectNameId().toString());
+        if (inventoryItemId != null) {
+            nameLabel.setInnerHTML(inventoryService.getInventoryItem(inventoryItemId).createObjectNameId().toString());
         } else {
             nameLabel.setInnerHTML("-");
         }
-
     }
 
 }

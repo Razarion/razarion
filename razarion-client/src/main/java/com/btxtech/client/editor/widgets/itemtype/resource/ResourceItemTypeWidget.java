@@ -39,7 +39,7 @@ public class ResourceItemTypeWidget {
     }
 
     @EventHandler("galleryButton")
-    private void onFullScreenButtonClick(ClickEvent event) {
+    private void onGalleryButtonButtonClick(ClickEvent event) {
         modalDialogManager.show("Resource items", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, ResourceItemTypeSelectionDialog.class, resourceItemTypeId, (button, selectedId) -> {
             if (button == DialogButton.Button.APPLY) {
                 resourceItemTypeId = selectedId;
