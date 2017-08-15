@@ -14,7 +14,6 @@ import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +39,7 @@ public class ResourceItemTypeSelectionDialog extends Composite implements ModalD
     @Override
     public void init(Integer selectedId) {
         DOMUtil.removeAllElementChildren(resourceItemTypes.getElement()); // Remove placeholder table row from template.
+        resourceItemTypes.addComponentCreationHandler(resourceItemTypeSelectionEntry -> resourceItemTypeSelectionEntry.setResourceItemTypeSelectionDialog(ResourceItemTypeSelectionDialog.this));
         binder.setModel(new ArrayList<>(itemTypeService.getResourceItemTypes()));
         resourceItemTypes.setSelector(resourceItemTypeSelectionEntry -> resourceItemTypeSelectionEntry.setSelected(true));
         resourceItemTypes.setDeselector(resourceItemTypeSelectionEntry -> resourceItemTypeSelectionEntry.setSelected(false));
@@ -53,12 +53,10 @@ public class ResourceItemTypeSelectionDialog extends Composite implements ModalD
         this.modalDialogPanel = modalDialogPanel;
     }
 
-    public void selectComponent(@Observes ResourceItemTypeSelectionEntry widget) {
-        if (isAttached()) {
-            resourceItemTypes.deselectAll();
-            resourceItemTypes.selectComponent(widget);
-            modalDialogPanel.setApplyValue(widget.getValue().getId());
-        }
+    public void selectComponent(ResourceItemTypeSelectionEntry widget) {
+        resourceItemTypes.deselectAll();
+        resourceItemTypes.selectComponent(widget);
+        modalDialogPanel.setApplyValue(widget.getValue().getId());
     }
 
     @Override

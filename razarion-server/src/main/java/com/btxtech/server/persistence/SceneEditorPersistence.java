@@ -176,16 +176,15 @@ public class SceneEditorPersistence {
                 sceneEntity.addResourceItemPositionEntity(resourceItemPositionEntity);
             }
         }
+        sceneEntity.clearBoxItemPositionEntities();
         if (sceneConfig.getBoxItemPositions() != null) {
-            List<BoxItemPositionEntity> boxItemPositionEntities = new ArrayList<>();
             for (BoxItemPosition boxItemPosition : sceneConfig.getBoxItemPositions()) {
                 BoxItemPositionEntity resourceItemPositionEntity = new BoxItemPositionEntity();
                 resourceItemPositionEntity.setBoxItemType(itemTypePersistence.readBoxItemTypeEntity(boxItemPosition.getBoxItemTypeId()));
                 resourceItemPositionEntity.setPosition(boxItemPosition.getPosition());
                 resourceItemPositionEntity.setRotationZ(boxItemPosition.getRotationZ());
-                boxItemPositionEntities.add(resourceItemPositionEntity);
+                sceneEntity.addBoxItemPositionEntity(resourceItemPositionEntity);
             }
-            sceneEntity.setBoxItemPositionEntities(boxItemPositionEntities);
         }
         if (sceneConfig.getGameTipConfig() != null) {
             GameTipConfigEntity gameTipConfigEntity = new GameTipConfigEntity();

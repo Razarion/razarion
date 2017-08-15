@@ -1,11 +1,10 @@
 package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
-import com.btxtech.client.editor.widgets.marker.DecimalPositionWidget;
-import com.btxtech.client.editor.widgets.marker.PolygonField;
 import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
+import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
@@ -146,11 +145,21 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Bound(property = "scrollUiQuest.hidePassedDialog")
     @DataField
     private CheckboxInput scrollUiQuestI18nHidePassedDialog;
+    @Inject
+    @Bound
+    @DataField
+    @ListContainer("tbody")
+    private ListComponent<BoxItemPosition, BoxItemPositionRow> boxItemPositions;
+    @Inject
+    @DataField
+    private Button boxPositionCreateButton;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
         DOMUtil.removeAllElementChildren(resourceItemTypePositions.getElement()); // Remove placeholder table row from template.
+        DOMUtil.removeAllElementChildren(boxItemPositions.getElement()); // Remove placeholder table row from template.
         resourceItemTypePositions.addComponentCreationHandler(resourceItemPositionRow -> resourceItemPositionRow.setSceneConfigPropertyPanel(SceneConfigPropertyPanel.this));
+        boxItemPositions.addComponentCreationHandler(boxItemPositionRow -> boxItemPositionRow.setSceneConfigPropertyPanel(SceneConfigPropertyPanel.this));
         int gameUiControlConfigId = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getGameUiControlConfigId();
         provider.call(new RemoteCallback<SceneConfig>() {
             @Override
@@ -198,5 +207,25 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
         resourceItemPositions = new ArrayList<>(resourceItemPositions);
         resourceItemTypePositions.setValue(resourceItemPositions);
         dataBinder.getModel().setResourceItemTypePositions(resourceItemPositions);
+    }
+
+    @EventHandler("boxPositionCreateButton")
+    private void boxPositionCreateButtonClicked(ClickEvent event) {
+        List<BoxItemPosition> boxItemPositions = this.boxItemPositions.getValue();
+        if (boxItemPositions == null) {
+            boxItemPositions = new ArrayList<>();
+        }
+        boxItemPositions.add(new BoxItemPosition());
+        boxItemPositions = new ArrayList<>(boxItemPositions);
+        this.boxItemPositions.setValue(boxItemPositions);
+        dataBinder.getModel().setBoxItemPositions(boxItemPositions);
+    }
+
+    public void removeBoxItemPosition(BoxItemPosition boxItemPosition) {
+        List<BoxItemPosition> boxItemPositions = this.boxItemPositions.getValue();
+        boxItemPositions.remove(boxItemPosition);
+        boxItemPositions = new ArrayList<>(boxItemPositions);
+        this.boxItemPositions.setValue(boxItemPositions);
+        dataBinder.getModel().setBoxItemPositions(boxItemPositions);
     }
 }

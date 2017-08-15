@@ -52,7 +52,7 @@ public class BoxService {
         }
     }
 
-    public SyncBoxItem dropBox(int boxItemTypeId, DecimalPosition position2d, double zRotation) {
+    public SyncBoxItem dropBox(Integer boxItemTypeId, DecimalPosition position2d, double zRotation) {
         BoxItemType boxItemType = itemTypeService.getBoxItemType(boxItemTypeId);
         SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItem(boxItemType, position2d, zRotation);
         synchronized (boxes) {

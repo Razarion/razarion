@@ -19,6 +19,8 @@ import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.TerrainType;
 
+import java.util.logging.Logger;
+
 /**
  * User: beat
  * Date: 17.11.2009
@@ -117,12 +119,12 @@ public abstract class ItemType implements ObjectNameIdProvider {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || getClass().equals(o.getClass())) { // equals needed because Errai binder proxy
             return false;
         }
 
         ItemType itemType = (ItemType) o;
-        return id == itemType.id;
+        return getId() == itemType.getId(); // itemType.getId() needed because Errai binder proxy
     }
 
     @Override

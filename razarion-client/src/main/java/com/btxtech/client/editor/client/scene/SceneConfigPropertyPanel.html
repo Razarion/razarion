@@ -5,52 +5,52 @@
 </head>
 <body>
 
-<div id="propertyPanel">
+<div data-field="propertyPanel">
     <table>
         <tr>
             <td>Id</td>
             <td>
-                <div id="id"></div>
+                <div data-field="id"></div>
             </td>
         </tr>
         <tr>
             <td>Internal Name</td>
-            <td><input id="internalName"></td>
+            <td><input data-field="internalName"></td>
         </tr>
         <tr>
             <td>IntroText (EN)</td>
             <td>
-                <input id="introText">
+                <input data-field="introText">
             </td>
         </tr>
         <tr>
             <td>Remove Loading Cover</td>
             <td>
-                <input type="checkbox" id="removeLoadingCover">
+                <input type="checkbox" data-field="removeLoadingCover">
             </td>
         </tr>
         <tr>
             <td>Wait for level up dialog</td>
             <td>
-                <input type="checkbox" id="wait4LevelUpDialog">
+                <input type="checkbox" data-field="wait4LevelUpDialog">
             </td>
         </tr>
         <tr>
             <td>Wait for quest passed dialog</td>
             <td>
-                <input type="checkbox" id="wait4QuestPassedDialog">
+                <input type="checkbox" data-field="wait4QuestPassedDialog">
             </td>
         </tr>
         <tr>
             <td>Wait for base lost dialog</td>
             <td>
-                <input type="checkbox" id="waitForBaseLostDialog">
+                <input type="checkbox" data-field="waitForBaseLostDialog">
             </td>
         </tr>
         <tr>
             <td>Duration</td>
             <td>
-                <input id="duration" type="number" min="0" step="1">[ms]
+                <input data-field="duration" type="number" min="0" step="1">[ms]
             </td>
         </tr>
         <tr>
@@ -60,31 +60,31 @@
                     <tr>
                         <td>From position</td>
                         <td>
-                            <div id="vfcFromPosition"></div>
+                            <div data-field="vfcFromPosition"></div>
                         </td>
                     </tr>
                     <tr>
                         <td>To position</td>
                         <td>
-                            <div id="vfcToPosition"></div>
+                            <div data-field="vfcToPosition"></div>
                         </td>
                     </tr>
                     <tr>
                         <td>Speed</td>
                         <td>
-                            <input type="number" id="vfcSpeed" min="0">
+                            <input type="number" data-field="vfcSpeed" min="0">
                         </td>
                     </tr>
                     <tr>
                         <td>Camera locked</td>
                         <td>
-                            <input type="checkbox" id="vfcCameraLocked">
+                            <input type="checkbox" data-field="vfcCameraLocked">
                         </td>
                     </tr>
                     <tr>
                         <td>Bottom width</td>
                         <td>
-                            <input type="number" id="vfcBottomWidth" min="0">
+                            <input type="number" data-field="vfcBottomWidth" min="0">
                         </td>
                     </tr>
                 </table>
@@ -94,28 +94,28 @@
             <td>Resources</td>
             <td>
                 <table>
-                    <tbody id="resourceItemTypePositions">
-                    <tr id="resourceItemTypePositionRow">
+                    <tbody data-field="resourceItemTypePositions">
+                    <tr data-field="resourceItemTypePositionRow">
                         <td>
-                            <div id="resourceItemTypeWidget"></div>
+                            <div data-field="resourceItemTypeWidget"></div>
                         </td>
                         <td>
-                            <div id="position"></div>
+                            <div data-field="position"></div>
                         </td>
-                        <td><input id="rotationZ" type="number" min="0" max="360" style="width: 3em"></td>
+                        <td><input data-field="rotationZ" type="number" min="0" max="360" style="width: 3em"></td>
                         <td>
-                            <button id="resourcePositionDeleteButton">-</button>
+                            <button data-field="resourcePositionDeleteButton">-</button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <button id="resourcePositionCreateButton">+</button>
+                <button data-field="resourcePositionCreateButton">+</button>
             </td>
         </tr>
         <tr>
             <td>Start point placer</td>
             <td>
-                <div id="startPointPlacerConfig"></div>
+                <div data-field="startPointPlacerConfig"></div>
             </td>
         </tr>
         <tr>
@@ -125,46 +125,68 @@
                     <tr>
                         <td>Target Rectangle</td>
                         <td>
-                            <div id="scrollUiQuestTargetRectangle"></div>
+                            <div data-field="scrollUiQuestTargetRectangle"></div>
                         </td>
                     </tr>
                     <tr>
                         <td>Title (EN)</td>
                         <td>
-                            <input id="scrollUiQuestI18nTitle">
+                            <input data-field="scrollUiQuestI18nTitle">
                         </td>
                     </tr>
                     <tr>
                         <td>Description (EN)</td>
                         <td>
-                            <input id="scrollUiQuestI18nDescription">
+                            <input data-field="scrollUiQuestI18nDescription">
                         </td>
                     </tr>
                     <tr>
                         <td>XP</td>
-                        <td><input id="scrollUiQuestXp" type="number" step="1"></td>
+                        <td><input data-field="scrollUiQuestXp" type="number" step="1"></td>
                     </tr>
                     <tr>
                         <td>Money</td>
-                        <td><input id="scrollUiQuestMoney" type="number" step="1"></td>
+                        <td><input data-field="scrollUiQuestMoney" type="number" step="1"></td>
                     </tr>
                     <tr>
                         <td>Crystals</td>
-                        <td><input id="scrollUiQuestCristal" type="number" step="1"></td>
+                        <td><input data-field="scrollUiQuestCristal" type="number" step="1"></td>
                     </tr>
                     <tr>
                         <td>Passed message (EN)</td>
-                        <td><input id="scrollUiQuestI18nPassedMessage"></td>
+                        <td><input data-field="scrollUiQuestI18nPassedMessage"></td>
                     </tr>
                     <tr>
                         <td>
                             Hide passed dialog
                         </td>
                         <td>
-                            <input type="checkbox" id="scrollUiQuestI18nHidePassedDialog">
+                            <input type="checkbox" data-field="scrollUiQuestI18nHidePassedDialog">
                         </td>
                     </tr>
                 </table>
+            </td>
+        </tr>
+        <tr>
+            <td>Boxes</td>
+            <td>
+                <table>
+                    <tbody data-field="boxItemPositions">
+                    <tr data-field="boxItemTypePositionRow">
+                        <td>
+                            <div data-field="boxItemTypeWidget"></div>
+                        </td>
+                        <td>
+                            <div data-field="position"></div>
+                        </td>
+                        <td><input data-field="rotationZ" type="number" min="0" max="360" style="width: 3em"></td>
+                        <td>
+                            <button data-field="boxPositionDeleteButton">-</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button data-field="boxPositionCreateButton">+</button>
             </td>
         </tr>
     </table>

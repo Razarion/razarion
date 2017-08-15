@@ -13,7 +13,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 /**
@@ -24,8 +23,6 @@ import javax.inject.Inject;
 @Templated("BaseItemTypeSelectionDialog.html#tableRow")
 public class BaseItemTypeSelectionEntry implements TakesValue<BaseItemType>, IsElement {
     @Inject
-    private Event<BaseItemTypeSelectionEntry> eventTrigger;
-    @Inject
     @DataField
     private TableRow tableRow;
     @Inject
@@ -35,6 +32,7 @@ public class BaseItemTypeSelectionEntry implements TakesValue<BaseItemType>, IsE
     @DataField
     private Label baseItemTypeName;
     private BaseItemType baseItemType;
+    private BaseItemTypeSelectionDialog baseItemTypeSelectionDialog;
 
     @Override
     public HTMLElement getElement() {
@@ -55,7 +53,7 @@ public class BaseItemTypeSelectionEntry implements TakesValue<BaseItemType>, IsE
 
     @EventHandler("tableRow")
     public void onClick(final ClickEvent event) {
-        eventTrigger.fire(this);
+        baseItemTypeSelectionDialog.selectComponent(this);
     }
 
     public void setSelected(boolean selected) {
@@ -66,5 +64,9 @@ public class BaseItemTypeSelectionEntry implements TakesValue<BaseItemType>, IsE
             DOMUtil.addCSSClass(tableRow, "generic-gallery-table-row-not-selected");
             DOMUtil.removeCSSClass(tableRow, "generic-gallery-table-row-selected");
         }
+    }
+
+    public void setBaseItemTypeSelectionDialog(BaseItemTypeSelectionDialog baseItemTypeSelectionDialog) {
+        this.baseItemTypeSelectionDialog = baseItemTypeSelectionDialog;
     }
 }

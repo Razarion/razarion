@@ -338,8 +338,17 @@ public class SceneEntity implements ObjectNameIdProvider {
         }
     }
 
-    public void setBoxItemPositionEntities(List<BoxItemPositionEntity> boxItemPositionEntities) {
-        this.boxItemPositionEntities = boxItemPositionEntities;
+    public void addBoxItemPositionEntity(BoxItemPositionEntity boxItemPositionEntity) {
+        if (this.boxItemPositionEntities == null) {
+            this.boxItemPositionEntities = new ArrayList<>();
+        }
+        this.boxItemPositionEntities.add(boxItemPositionEntity);
+    }
+
+    public void clearBoxItemPositionEntities() {
+        if (boxItemPositionEntities != null) {
+            boxItemPositionEntities.clear();
+        }
     }
 
     public void setGameTipConfigEntity(GameTipConfigEntity gameTipConfigEntity) {
