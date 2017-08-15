@@ -584,6 +584,14 @@ a:active {
     color: #00ffd2;
 }
 
+.editor-table-even-odd:nth-child(even) {
+    background: rgba(243, 44, 44, 0.24)
+}
+
+.editor-table-even-odd:nth-child(odd) {
+    background: rgba(84, 63, 245, 0.24)
+}
+
 /** --- Gallery table --- */
 .generic-gallery-table {
     /*overflow: hidden;*/
