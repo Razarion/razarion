@@ -9,7 +9,6 @@ import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
@@ -18,7 +17,6 @@ import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.GameTipConfig;
-import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -45,7 +43,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -119,6 +116,20 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
         // Verify
         TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds());
+        // Create new
+        SceneConfig expectedScene3 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setScrollOverTerrain(expectedScene3);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene3);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: scroll over terrain");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: scroll over terrain");
+        ReflectionAssert.assertReflectionEquals(expectedScene3, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        // Delete second
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: scroll over terrain");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds());
+
 
         ObjectComparatorIgnore.clear();
 
@@ -218,10 +229,9 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.add(new SceneConfig().setInternalName("script: fade out").setRemoveLoadingCover(true));
     }
 
-    private void addScrollOverTerrain(List<SceneConfig> sceneConfigs) {
-        SceneConfig sceneConfig = new SceneConfig().setInternalName("script: scroll over terrain").setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
+    private void setScrollOverTerrain(SceneConfig sceneConfig) {
+        sceneConfig.setInternalName("script: scroll over terrain").setIntroText("Willkommen Kommandant, Razarion Industries betreibt Raubbau auf diesem Planeten. Ihre Aufgabe ist es, Razarion Industries von diesem Planeten zu vertreiben.");
         sceneConfig.setViewFieldConfig(new ViewFieldConfig().setFromPosition(new DecimalPosition(270, 275)).setToPosition(new DecimalPosition(116, 84)).setSpeed(50.0).setCameraLocked(true).setBottomWidth(120.0));
-        sceneConfigs.add(sceneConfig);
     }
 
     private void addBotSpawnScene(List<SceneConfig> sceneConfigs) {

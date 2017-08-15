@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.widgets.marker;
 
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -55,6 +56,17 @@ public class TerrainMarkerEditorRenderTask extends AbstractRenderTask<List<Verte
         marker.addAll(GeometricUtil.generatePlane(bbr, btr, ttr, tbr));
         marker.addAll(GeometricUtil.generatePlane(btr, btl, ttl, ttr));
         marker.addAll(GeometricUtil.generatePlane(btl, bbl, tbl, ttl));
+        showTriangles(marker);
+    }
+
+    public void showRectangleMarker(Rectangle2D rectangle2D) {
+        Vertex bl = new Vertex(rectangle2D.getStart().getX(), rectangle2D.getStart().getY(), 0);
+        Vertex br = new Vertex(rectangle2D.getStart().getX() + rectangle2D.width(), rectangle2D.getStart().getY(), 0);
+        Vertex tr = new Vertex(rectangle2D.getStart().getX() + rectangle2D.width(), rectangle2D.getStart().getY() + rectangle2D.height(), 0);
+        Vertex tl = new Vertex(rectangle2D.getStart().getX(), rectangle2D.getStart().getY() + rectangle2D.height(), 0);
+
+        List<Vertex> marker = new ArrayList<>();
+        marker.addAll(GeometricUtil.generatePlane(bl, br, tr, tl));
         showTriangles(marker);
     }
 

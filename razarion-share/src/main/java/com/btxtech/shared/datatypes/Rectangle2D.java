@@ -378,6 +378,12 @@ public class Rectangle2D {
         return new Rectangle2D(start.getX(), start.getY(), width, height);
     }
 
+    public static Rectangle2D generateRectangleFromAnyPoints(DecimalPosition point1, DecimalPosition point2) {
+        DecimalPosition start = DecimalPosition.getSmallestAabb(point1, point2);
+        DecimalPosition end = DecimalPosition.getBiggestAabb(point1, point2);
+        return new Rectangle2D(start, end);
+    }
+
     public String testString() {
         return "new Rectangle2D(" + startX() + ", " + startY() + ", " + width() + ", " + height() + ")";
     }

@@ -3,6 +3,7 @@ package com.btxtech.client.editor.client.scene;
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
 import com.btxtech.client.editor.widgets.marker.DecimalPositionWidget;
 import com.btxtech.client.editor.widgets.marker.PolygonField;
+import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -15,10 +16,12 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Input;
 import org.jboss.errai.common.client.dom.Label;
 import org.jboss.errai.common.client.dom.NumberInput;
+import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -111,6 +114,38 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @DataField
     private StartPointPlacerWidget startPointPlacerConfig;
+    @Inject
+    @Bound(property = "scrollUiQuest.scrollTargetRectangle")
+    @DataField
+    private Rectangle2DWidget scrollUiQuestTargetRectangle;
+    @Inject
+    @Bound(property = "scrollUiQuest.title")
+    @DataField
+    private TextInput scrollUiQuestI18nTitle;
+    @Inject
+    @Bound(property = "scrollUiQuest.description")
+    @DataField
+    private TextInput scrollUiQuestI18nDescription;
+    @Inject
+    @Bound(property = "scrollUiQuest.xp")
+    @DataField
+    private NumberInput scrollUiQuestXp;
+    @Inject
+    @Bound(property = "scrollUiQuest.money")
+    @DataField
+    private NumberInput scrollUiQuestMoney;
+    @Inject
+    @Bound(property = "scrollUiQuest.cristal")
+    @DataField
+    private NumberInput scrollUiQuestCristal;
+    @Inject
+    @Bound(property = "scrollUiQuest.passedMessage")
+    @DataField
+    private TextInput scrollUiQuestI18nPassedMessage;
+    @Inject
+    @Bound(property = "scrollUiQuest.hidePassedDialog")
+    @DataField
+    private CheckboxInput scrollUiQuestI18nHidePassedDialog;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {

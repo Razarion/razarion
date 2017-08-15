@@ -2,6 +2,7 @@ package com.btxtech.client.editor.widgets.marker;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.PolygonUtil;
 import com.btxtech.uiservice.EditorMouseListener;
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +29,8 @@ public class MarkerEditor implements EditorMouseListener {
     // private Logger logger = Logger.getLogger(MarkerEditor.class.getName());
     private enum Type {
         POLYGON,
-        POSITION
+        POSITION,
+        RECTANGLE
     }
 
     @Inject
@@ -46,8 +47,10 @@ public class MarkerEditor implements EditorMouseListener {
     private TerrainMouseHandler terrainMouseHandler;
     private Type activeType;
     private List<DecimalPosition> polygon;
+    private DecimalPosition rectStart;
     private Consumer<List<DecimalPosition>> polygonListener;
     private Consumer<DecimalPosition> decimalPositionListener;
+    private Consumer<Rectangle2D> rectangle2DListener;
     private Runnable deactivationCallback;
 
     public void activate(Polygon2D polygon2D, Consumer<List<DecimalPosition>> polygonListener, Runnable deactivationCallback) {
@@ -80,12 +83,28 @@ public class MarkerEditor implements EditorMouseListener {
         activeType = Type.POSITION;
     }
 
+    public void activate(Rectangle2D rectangle2D, Consumer<Rectangle2D> rectangle2DListener, Runnable deactivationCallback) {
+        if (activeType != null) {
+            deactivate();
+        }
+        this.rectangle2DListener = rectangle2DListener;
+        this.deactivationCallback = deactivationCallback;
+        terrainMouseHandler.setEditorMouseListener(this);
+        if (rectangle2D != null) {
+            terrainMarkerEditorRenderTask.showRectangleMarker(rectangle2D);
+        }
+        activeType = Type.RECTANGLE;
+    }
+
     public void deactivate() {
         if (activeType == null) {
             return;
         }
         polygonListener = null;
+        polygon = null;
         decimalPositionListener = null;
+        rectangle2DListener = null;
+        rectStart = null;
         deactivationCallback.run();
         deactivationCallback = null;
         terrainMouseHandler.setEditorMouseListener(null);
@@ -108,6 +127,18 @@ public class MarkerEditor implements EditorMouseListener {
             case POSITION:
                 decimalPositionListener.accept(new DecimalPosition(terrainPosition.getX(), terrainPosition.getY()));
                 terrainMarkerEditorRenderTask.showPositionMarker(terrainPosition);
+                break;
+            case RECTANGLE:
+                if (rectStart == null) {
+                    rectStart = terrainPosition.toXY();
+                    terrainMarkerEditorRenderTask.hide();
+                    rectangle2DListener.accept(null);
+                } else {
+                    Rectangle2D rectangle2D = Rectangle2D.generateRectangleFromAnyPoints(rectStart, terrainPosition.toXY());
+                    rectangle2DListener.accept(rectangle2D);
+                    terrainMarkerEditorRenderTask.showRectangleMarker(rectangle2D);
+                    rectStart = null;
+                }
                 break;
             default:
                 throw new IllegalArgumentException("MarkerEditor.onMouseDown() unknown type: " + activeType);
