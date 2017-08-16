@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 16.08.2017.
  */
-@Templated("QuestPropertyWrapperPanel.html#wrapperPanel")
+@Templated("QuestPropertyWrapperPanel.html#questPropertyPanel")
 public class QuestPropertyWrapperPanel extends ObjectNamePropertyPanel {
     private Logger logger = Logger.getLogger(QuestPropertyWrapperPanel.class.getName());
     @Inject
