@@ -2,14 +2,17 @@ package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
 import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
+import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.SceneEditorProvider;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -156,6 +159,12 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @DataField
     private GameTipConfigPanel gameTipConfigPanel;
+    @Inject
+    @DataField
+    private QuestPropertyPanel questConfigPanel;
+    @Inject
+    @DataField
+    private Button questConfigButton;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
@@ -170,6 +179,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
                 dataBinder.setModel(sceneConfig);
                 startPointPlacerConfig.init(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
                 gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
+                handleQuestConfigVisibility();
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "SceneEditorProvider.readSceneConfig failed: " + message, throwable);
@@ -231,5 +241,26 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
         boxItemPositions = new ArrayList<>(boxItemPositions);
         this.boxItemPositions.setValue(boxItemPositions);
         dataBinder.getModel().setBoxItemPositions(boxItemPositions);
+    }
+
+    @EventHandler("questConfigButton")
+    private void questConfigButtonClicked(ClickEvent event) {
+        if (dataBinder.getModel().getQuestConfig() != null) {
+            dataBinder.getModel().setQuestConfig(null);
+        } else {
+            dataBinder.getModel().setQuestConfig(new QuestConfig());
+        }
+        handleQuestConfigVisibility();
+    }
+
+    private void handleQuestConfigVisibility() {
+        if (dataBinder.getModel().getQuestConfig() != null) {
+            questConfigPanel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+            questConfigButton.setText("-");
+            questConfigPanel.init(dataBinder.getModel().getQuestConfig());
+        } else {
+            questConfigButton.setText("+");
+            questConfigPanel.getElement().getStyle().setDisplay(Style.Display.NONE);
+        }
     }
 }

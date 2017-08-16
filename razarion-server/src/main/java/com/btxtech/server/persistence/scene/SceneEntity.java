@@ -253,8 +253,12 @@ public class SceneEntity implements ObjectNameIdProvider {
             i18nIntroText.putString(locale, sceneConfig.getIntroText());
         }
         if (sceneConfig.getQuestConfig() != null) {
-            questConfig = new QuestConfigEntity();
+            if (questConfig == null) {
+                questConfig = new QuestConfigEntity();
+            }
             questConfig.fromQuestConfig(itemTypePersistence, sceneConfig.getQuestConfig(), locale);
+        } else {
+            questConfig = null;
         }
         viewFieldConfig = sceneConfig.getViewFieldConfig();
         if (sceneConfig.getStartPointPlacerConfig() != null) {

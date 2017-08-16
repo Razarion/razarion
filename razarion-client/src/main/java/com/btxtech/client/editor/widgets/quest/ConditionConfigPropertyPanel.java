@@ -1,4 +1,4 @@
-package com.btxtech.client.editor.server.quest;
+package com.btxtech.client.editor.widgets.quest;
 
 import com.btxtech.client.editor.widgets.itemtype.basecount.BaseItemTypeCountWidget;
 import com.btxtech.client.editor.widgets.placeconfig.PlaceConfigWidget;

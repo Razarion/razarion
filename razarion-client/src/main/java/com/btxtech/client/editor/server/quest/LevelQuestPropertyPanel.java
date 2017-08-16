@@ -4,6 +4,7 @@ import com.btxtech.client.editor.framework.AbstractObjectNameIdEditor;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.framework.ObjectNameIdTable;
 import com.btxtech.client.editor.widgets.level.LevelField;
+import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
@@ -88,8 +89,8 @@ public class LevelQuestPropertyPanel extends AbstractPropertyPanel<ServerLevelQu
             }
 
             @Override
-            protected Class<QuestPropertyPanel> getObjectNamePropertyPanelClass() {
-                return QuestPropertyPanel.class;
+            protected Class<QuestPropertyWrapperPanel> getObjectNamePropertyPanelClass() {
+                return QuestPropertyWrapperPanel.class;
             }
         });
     }

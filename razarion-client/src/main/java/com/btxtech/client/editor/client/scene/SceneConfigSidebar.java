@@ -2,7 +2,6 @@ package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.AbstractObjectNameIdEditor;
 import com.btxtech.client.editor.framework.ObjectNameIdTable;
-import com.btxtech.client.editor.server.quest.QuestPropertyPanel;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
