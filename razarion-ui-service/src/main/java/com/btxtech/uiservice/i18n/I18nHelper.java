@@ -13,6 +13,9 @@ public class I18nHelper {
     private static String language = "default";
 
     public static String getLocalizedString(I18nString i18nString) {
+        if(i18nString == null) {
+            return "???";
+        }
         return i18nString.getString(language);
     }
 
