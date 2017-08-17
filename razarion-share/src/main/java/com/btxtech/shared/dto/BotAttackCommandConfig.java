@@ -7,15 +7,15 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * 15.10.2016.
  */
 public class BotAttackCommandConfig extends AbstractBotCommandConfig<BotAttackCommandConfig> {
-    private int targetItemTypeId;
+    private Integer targetItemTypeId;
     private PlaceConfig targetSelection;
-    private int actorItemTypeId;
+    private Integer actorItemTypeId;
 
-    public int getTargetItemTypeId() {
+    public Integer getTargetItemTypeId() {
         return targetItemTypeId;
     }
 
-    public BotAttackCommandConfig setTargetItemTypeId(int targetItemTypeId) {
+    public BotAttackCommandConfig setTargetItemTypeId(Integer targetItemTypeId) {
         this.targetItemTypeId = targetItemTypeId;
         return this;
     }
@@ -29,11 +29,11 @@ public class BotAttackCommandConfig extends AbstractBotCommandConfig<BotAttackCo
         return this;
     }
 
-    public int getActorItemTypeId() {
+    public Integer getActorItemTypeId() {
         return actorItemTypeId;
     }
 
-    public BotAttackCommandConfig setActorItemTypeId(int actorItemTypeId) {
+    public BotAttackCommandConfig setActorItemTypeId(Integer actorItemTypeId) {
         this.actorItemTypeId = actorItemTypeId;
         return this;
     }

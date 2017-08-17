@@ -5,13 +5,13 @@ package com.btxtech.shared.dto;
  * 01.11.2016.
  */
 public class BotKillOtherBotCommandConfig extends BotKillBaseCommandConfig<BotKillOtherBotCommandConfig> {
-    private int targetBotAuxiliaryId;
+    private Integer targetBotAuxiliaryId;
 
-    public int getTargetBotAuxiliaryId() {
+    public Integer getTargetBotAuxiliaryId() {
         return targetBotAuxiliaryId;
     }
 
-    public BotKillOtherBotCommandConfig setTargetBotAuxiliaryId(int targetBotAuxiliaryId) {
+    public BotKillOtherBotCommandConfig setTargetBotAuxiliaryId(Integer targetBotAuxiliaryId) {
         this.targetBotAuxiliaryId = targetBotAuxiliaryId;
         return this;
     }

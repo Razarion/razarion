@@ -7,24 +7,24 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * 07.10.2016.
  */
 public class BotHarvestCommandConfig extends AbstractBotCommandConfig<BotHarvestCommandConfig> {
-    private int harvesterItemTypeId;
-    private int resourceItemTypeId;
+    private Integer harvesterItemTypeId;
+    private Integer resourceItemTypeId;
     private PlaceConfig resourceSelection;
 
-    public int getHarvesterItemTypeId() {
+    public Integer getHarvesterItemTypeId() {
         return harvesterItemTypeId;
     }
 
-    public BotHarvestCommandConfig setHarvesterItemTypeId(int harvesterItemTypeId) {
+    public BotHarvestCommandConfig setHarvesterItemTypeId(Integer harvesterItemTypeId) {
         this.harvesterItemTypeId = harvesterItemTypeId;
         return this;
     }
 
-    public int getResourceItemTypeId() {
+    public Integer getResourceItemTypeId() {
         return resourceItemTypeId;
     }
 
-    public BotHarvestCommandConfig setResourceItemTypeId(int resourceItemTypeId) {
+    public BotHarvestCommandConfig setResourceItemTypeId(Integer resourceItemTypeId) {
         this.resourceItemTypeId = resourceItemTypeId;
         return this;
     }

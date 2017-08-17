@@ -7,8 +7,14 @@ import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
 import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
+import com.btxtech.shared.dto.BotAttackCommandConfig;
+import com.btxtech.shared.dto.BotHarvestCommandConfig;
+import com.btxtech.shared.dto.BotKillHumanCommandConfig;
+import com.btxtech.shared.dto.BotKillOtherBotCommandConfig;
 import com.btxtech.shared.dto.BotMoveCommandConfig;
+import com.btxtech.shared.dto.BotRemoveOwnItemCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
+import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
@@ -175,6 +181,24 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @DataField
     private ChildTable<BotMoveCommandConfig> botMoveCommandConfigs;
+    @Inject
+    @DataField
+    private ChildTable<BotHarvestCommandConfig> botHarvestCommandConfigs;
+    @Inject
+    @DataField
+    private ChildTable<BotAttackCommandConfig> botAttackCommandConfigs;
+    @Inject
+    @DataField
+    private ChildTable<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs;
+    @Inject
+    @DataField
+    private ChildTable<BotKillHumanCommandConfig> botKillHumanCommandConfigs;
+    @Inject
+    @DataField
+    private ChildTable<BotRemoveOwnItemCommandConfig> botRemoveOwnItemCommandConfigs;
+    @Inject
+    @DataField
+    private ChildTable<KillBotCommandConfig> killBotCommandConfigs;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
@@ -191,7 +215,14 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
                 gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
                 handleQuestConfigVisibility();
                 botConfigPanel.init(sceneConfig.getBotConfigs(), sceneConfig::setBotConfigs, BotConfig::new, BotConfigPropertyPanel.class);
-                botMoveCommandConfigs.init(sceneConfig.getBotMoveCommandConfigs(), sceneConfig::setBotMoveCommandConfigs,BotMoveCommandConfig::new, BotMoveCommandConfigPropertyPanel.class);
+                botMoveCommandConfigs.init(sceneConfig.getBotMoveCommandConfigs(), sceneConfig::setBotMoveCommandConfigs, BotMoveCommandConfig::new, BotMoveCommandConfigPropertyPanel.class);
+                botHarvestCommandConfigs.init(sceneConfig.getBotHarvestCommandConfigs(), sceneConfig::setBotHarvestCommandConfigs, BotHarvestCommandConfig::new, BotHarvestCommandConfigPropertyPanel.class);
+                botAttackCommandConfigs.init(sceneConfig.getBotAttackCommandConfigs(), sceneConfig::setBotAttackCommandConfigs, BotAttackCommandConfig::new, BotAttackCommandConfigPropertyPanel.class);
+                botKillOtherBotCommandConfigs.init(sceneConfig.getBotKillOtherBotCommandConfigs(), sceneConfig::setBotKillOtherBotCommandConfigs, BotKillOtherBotCommandConfig::new, BotKillOtherBotCommandConfigPropertyPanel.class);
+                botKillHumanCommandConfigs.init(sceneConfig.getBotKillHumanCommandConfigs(), sceneConfig::setBotKillHumanCommandConfigs, BotKillHumanCommandConfig::new, BotKillHumanCommandConfigPropertyPanel.class);
+                botRemoveOwnItemCommandConfigs.init(sceneConfig.getBotRemoveOwnItemCommandConfigs(), sceneConfig::setBotRemoveOwnItemCommandConfigs, BotRemoveOwnItemCommandConfig::new, BotRemoveOwnItemCommandConfigPropertyPanel.class);
+                killBotCommandConfigs.init(sceneConfig.getKillBotCommandConfigs(), sceneConfig::setKillBotCommandConfigs, KillBotCommandConfig::new, KillBotCommandConfigPropertyPanel.class);
+
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "SceneEditorProvider.readSceneConfig failed: " + message, throwable);
