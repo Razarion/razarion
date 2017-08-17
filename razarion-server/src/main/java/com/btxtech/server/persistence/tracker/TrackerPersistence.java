@@ -17,6 +17,7 @@ import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
+import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -156,6 +157,17 @@ public class TrackerPersistence {
         PerfmonStatisticEntity fromPerfmonStatistic = new PerfmonStatisticEntity();
         fromPerfmonStatistic.fromPerfmonStatistic(sessionHolder.getPlayerSession().getHttpSessionId(), new Date(), perfmonStatistic);
         entityManager.persist(fromPerfmonStatistic);
+    }
+
+    @Transactional
+    public void onTerrainTileStatisticsTracker(List<TerrainTileStatistic> terrainTileStatistics) {
+        for (TerrainTileStatistic terrainTileStatistic : terrainTileStatistics) {
+            TerrainTileStatisticEntity terrainTileStatisticEntity = new TerrainTileStatisticEntity();
+            terrainTileStatisticEntity.setTimeStamp(new Date());
+            terrainTileStatisticEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
+            terrainTileStatisticEntity.fromTerrainTileStatistic(terrainTileStatistic);
+            entityManager.persist(terrainTileStatisticEntity);
+        }
     }
 
     public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) throws JsonProcessingException {

@@ -32,7 +32,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
         webSocket.setOnerror(evt -> logger.severe("ClientServerSystemConnection WebSocket OnError: " + evt));
         webSocket.setOnclose(evt -> logger.severe("ClientServerSystemConnection WebSocket Close: " + evt));
         webSocket.setOnmessage(this::handleMessage);
-        webSocket.setOnopen(evt -> logger.severe("ClientServerSystemConnection WebSocket Open"));
+        // webSocket.setOnopen(evt -> logger.severe("ClientServerSystemConnection WebSocket Open"));
     }
 
     private void handleMessage(Event event) {

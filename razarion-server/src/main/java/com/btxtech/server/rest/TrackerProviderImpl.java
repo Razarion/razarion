@@ -11,8 +11,10 @@ import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.rest.TrackerProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
+import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -70,6 +72,16 @@ public class TrackerProviderImpl implements TrackerProvider {
     public void performanceTracker(PerfmonStatistic perfmonStatistic) {
         try {
             trackerPersistence.onPerformanceTracker(perfmonStatistic);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void terrainTileStatisticsTracker(List<TerrainTileStatistic> terrainTileStatistics) {
+        try {
+            trackerPersistence.onTerrainTileStatisticsTracker(terrainTileStatistics);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

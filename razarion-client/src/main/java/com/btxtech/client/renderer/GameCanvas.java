@@ -52,9 +52,9 @@ public class GameCanvas {
     private boolean running;
     private boolean playbackMode;
 
-    public GameCanvas() {
-        logger.severe("GameCanvas <init> called twice????");
-    }
+//    public GameCanvas() {
+//        logger.severe("GameCanvas <init> called twice????");
+//    }
 
     public void init() {
         canvas = Canvas.createIfSupported();
@@ -105,7 +105,7 @@ public class GameCanvas {
         ctx3d.clearColor(0.0f, 0.0f, 0.0f, 1.0f);
         ctx3d.clearDepth(1.0f);
         ctx3d.enable(WebGLRenderingContext.DEPTH_TEST);
-        logger.severe("GameCanvas initialized");
+        // logger.severe("GameCanvas initialized");
     }
 
     private void initMouseHandler() {

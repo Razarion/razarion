@@ -65,7 +65,7 @@ public class TerrainShape {
         pathingAccess = new PathingAccess(this);
         nativeTerrainShapeAccess.load(planetConfig.getPlanetId(), nativeTerrainShape -> {
             try {
-                long time = System.currentTimeMillis();
+                // long time = System.currentTimeMillis();
                 tileXCount = nativeTerrainShape.tileXCount;
                 tileYCount = nativeTerrainShape.tileYCount;
                 tileOffset = new Index(nativeTerrainShape.tileXOffset, nativeTerrainShape.tileYOffset);
@@ -98,7 +98,7 @@ public class TerrainShape {
                         }
                     }
                 }
-                logger.severe("Setup TerrainShape Net: " + (System.currentTimeMillis() - time));
+                // logger.severe("Setup TerrainShape Net: " + (System.currentTimeMillis() - time));
                 finishCallback.run();
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "NativeTerrainShapeAccess load callback failed", t);

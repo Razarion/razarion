@@ -15,15 +15,14 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
+import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -31,7 +30,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class TerrainTileFactory {
-    private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
+    // private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
     @Inject
     private Instance<TerrainTileContext> terrainTileContextInstance;
     @Inject
@@ -39,9 +38,10 @@ public class TerrainTileFactory {
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
+    @Inject
+    private PerfmonService perfmonService;
+
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
         long time = System.currentTimeMillis();
@@ -54,7 +54,7 @@ public class TerrainTileFactory {
         insertWaterPart(terrainTileContext, terrainShapeTile);
         insertHeightAndType(terrainTileContext, terrainShapeTile);
         TerrainTile terrainTile = terrainTileContext.complete();
-        logger.severe("generateTerrainTile: " + (System.currentTimeMillis() - time));
+        perfmonService.onTerrainTile(terrainTileIndex, System.currentTimeMillis() - time);
         return terrainTile;
     }
 

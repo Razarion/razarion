@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
+import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -45,6 +46,11 @@ public interface TrackerProvider {
     @Path("performanceTracker")
     @Consumes(MediaType.APPLICATION_JSON)
     void performanceTracker(PerfmonStatistic perfmonStatistic);
+
+    @POST
+    @Path("terrainTileStatisticsTracker")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void terrainTileStatisticsTracker(List<TerrainTileStatistic> terrainTileStatistics);
 
     @POST
     @Path("trackingstart")

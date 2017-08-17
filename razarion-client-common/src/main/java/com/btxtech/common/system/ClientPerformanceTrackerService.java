@@ -6,7 +6,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
-import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 import org.jboss.errai.common.client.api.Caller;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -65,6 +65,13 @@ public class ClientPerformanceTrackerService {
                 return false;
             }).performanceTracker(perfmonStatistic);
         }
-
+        List<TerrainTileStatistic> terrainTileStatistics = perfmonService.flushTerrainTileStatistics();
+        if (!terrainTileStatistics.isEmpty()) {
+            providerCaller.call(response -> {
+            }, (message, throwable) -> {
+                logger.log(Level.SEVERE, "TrackerProvider.terrainTileStatisticsTracker() failed: " + message, throwable);
+                return false;
+            }).terrainTileStatisticsTracker(terrainTileStatistics);
+        }
     }
 }

@@ -1,13 +1,12 @@
 package com.btxtech.shared.system.perfmon;
 
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
-import com.btxtech.shared.utils.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -37,6 +36,7 @@ public class PerfmonService {
     private Collection<SampleEntry> sampleEntries = new ArrayList<>();
     private MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
     private SimpleScheduledFuture simpleScheduledFuture;
+    private List<TerrainTileStatistic> terrainTileStatistics = new ArrayList<>();
 
     public void start() {
         if (simpleScheduledFuture != null) {
@@ -69,6 +69,10 @@ public class PerfmonService {
         } else {
             logger.warning("PerfmonService.stop(): simpleScheduledFuture == null");
         }
+    }
+
+    public void onTile() {
+
     }
 
     public void onEntered(PerfmonEnum perfmonEnum) {
@@ -128,7 +132,7 @@ public class PerfmonService {
         }
         Collection<StatisticEntry> statisticEntries = new ArrayList<>();
         for (Map.Entry<PerfmonEnum, Collection<SampleEntry>> entry : groupedMap.getMap().entrySet()) {
-            if(entry.getValue().size() < 2) {
+            if (entry.getValue().size() < 2) {
                 continue;
             }
             StatisticEntry statisticEntry = new StatisticEntry(entry.getKey());
@@ -139,5 +143,21 @@ public class PerfmonService {
             statisticEntries.add(statisticEntry);
         }
         return statisticEntries;
+    }
+
+    public void onTerrainTile(Index terrainTileIndex, long time) {
+        if (simpleScheduledFuture != null) {
+            TerrainTileStatistic terrainTileStatistic = new TerrainTileStatistic();
+            terrainTileStatistic.setGenerationTime((int) time);
+            terrainTileStatistic.setTerrainTileIndex(terrainTileIndex);
+            terrainTileStatistic.setTimeStamp(new Date());
+            terrainTileStatistics.add(terrainTileStatistic);
+        }
+    }
+
+    public List<TerrainTileStatistic> flushTerrainTileStatistics() {
+        List<TerrainTileStatistic> tmp = terrainTileStatistics;
+        terrainTileStatistics = new ArrayList<>();
+        return tmp;
     }
 }
