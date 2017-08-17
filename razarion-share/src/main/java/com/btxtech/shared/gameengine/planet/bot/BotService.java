@@ -111,10 +111,13 @@ public class BotService {
         throw new IllegalArgumentException("No bot runner for id: " + botId);
     }
 
-    public BotRunner getBotRunner4AuxiliaryId(int auxiliaryId) {
+    public BotRunner getBotRunner4AuxiliaryId(Integer auxiliaryId) {
+        if (auxiliaryId == null) {
+            throw new IllegalArgumentException("AuxiliaryId is null");
+        }
         synchronized (botRunners) {
             for (BotRunner botRunner : botRunners) {
-                if (botRunner.getBotConfig().getAuxiliaryId() != null && botRunner.getBotConfig().getAuxiliaryId() == auxiliaryId) {
+                if (botRunner.getBotConfig().getAuxiliaryId() != null && botRunner.getBotConfig().getAuxiliaryId() == auxiliaryId.intValue()) {
                     return botRunner;
                 }
             }

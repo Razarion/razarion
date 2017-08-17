@@ -7,6 +7,7 @@ import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
 import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
+import com.btxtech.shared.dto.BotMoveCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceItemPosition;
@@ -171,6 +172,9 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @DataField
     private ChildTable<BotConfig> botConfigPanel;
+    @Inject
+    @DataField
+    private ChildTable<BotMoveCommandConfig> botMoveCommandConfigs;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
@@ -187,6 +191,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
                 gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
                 handleQuestConfigVisibility();
                 botConfigPanel.init(sceneConfig.getBotConfigs(), sceneConfig::setBotConfigs, BotConfig::new, BotConfigPropertyPanel.class);
+                botMoveCommandConfigs.init(sceneConfig.getBotMoveCommandConfigs(), sceneConfig::setBotMoveCommandConfigs,BotMoveCommandConfig::new, BotMoveCommandConfigPropertyPanel.class);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "SceneEditorProvider.readSceneConfig failed: " + message, throwable);

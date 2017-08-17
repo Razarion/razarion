@@ -5,13 +5,13 @@ package com.btxtech.shared.dto;
  * 07.10.2016.
  */
 public class AbstractBotCommandConfig<T extends AbstractBotCommandConfig> {
-    private int botAuxiliaryId;
+    private Integer botAuxiliaryId;
 
-    public int getBotAuxiliaryId() {
+    public Integer getBotAuxiliaryId() {
         return botAuxiliaryId;
     }
 
-    public T setBotAuxiliaryId(int botAuxiliaryId) {
+    public T setBotAuxiliaryId(Integer botAuxiliaryId) {
         this.botAuxiliaryId = botAuxiliaryId;
         return (T) this;
     }

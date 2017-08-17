@@ -7,14 +7,14 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  * 13.09.2016.
  */
 public class BotMoveCommandConfig extends AbstractBotCommandConfig<BotMoveCommandConfig> {
-    private int baseItemTypeId;
+    private Integer baseItemTypeId;
     private DecimalPosition targetPosition;
 
-    public int getBaseItemTypeId() {
+    public Integer getBaseItemTypeId() {
         return baseItemTypeId;
     }
 
-    public BotMoveCommandConfig setBaseItemTypeId(int baseItemTypeId) {
+    public BotMoveCommandConfig setBaseItemTypeId(Integer baseItemTypeId) {
         this.baseItemTypeId = baseItemTypeId;
         return this;
     }

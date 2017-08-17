@@ -391,7 +391,10 @@ public class BotItemContainer {
         }
     }
 
-    private Collection<BotSyncBaseItem> getBotSyncBaseItem(int baseItemTypeId) {
+    private Collection<BotSyncBaseItem> getBotSyncBaseItem(Integer baseItemTypeId) {
+        if (baseItemTypeId == null) {
+            return null;
+        }
         Collection<BotSyncBaseItem> result = new ArrayList<>();
         synchronized (botItems) {
             for (Map.Entry<SyncBaseItem, BotSyncBaseItem> entry : botItems.entrySet()) {

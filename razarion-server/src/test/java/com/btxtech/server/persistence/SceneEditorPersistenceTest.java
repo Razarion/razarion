@@ -235,8 +235,69 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
         id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "user: kill tower");
         sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
-
+        // Verify
         TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds());
+        // Create
+        SceneConfig expectedScene16 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setNpcBot(expectedScene16);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene16);
+        SceneConfig expectedScene17 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setEnemyBot(expectedScene17);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene17);
+        SceneConfig expectedScene18 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setBotSpawnScene(expectedScene18);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene18);
+        SceneConfig expectedScene19 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setBotMoveScene(expectedScene19);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene19);
+        SceneConfig expectedScene20 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setNpcHarvestAttack(expectedScene20);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene20);
+        SceneConfig expectedScene21 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setEnemyKillTask(expectedScene21);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene21);
+        SceneConfig expectedScene22 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setNpcEscapeTask(expectedScene22);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene22);
+        SceneConfig expectedScene23 = sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).create();
+        setNpcAttackTowerCommand(expectedScene23);
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).update(expectedScene23);
+        // Verify
+        TestHelper.assertOrderedObjectNameIds(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add NPC bot", "setup: add enemy bot"
+                , "script: npc bot spawn", "script: npc bot move", "script: bot harvest attack", "script: enemy bot destroy user", "script: escape npc bot", "script: npc bot attacks tower");
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add NPC bot");
+        ReflectionAssert.assertReflectionEquals(expectedScene16, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add enemy bot");
+        ReflectionAssert.assertReflectionEquals(expectedScene17, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: npc bot spawn");
+        ReflectionAssert.assertReflectionEquals(expectedScene18, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: npc bot move");
+        ReflectionAssert.assertReflectionEquals(expectedScene19, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: bot harvest attack");
+        ReflectionAssert.assertReflectionEquals(expectedScene20, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: enemy bot destroy user");
+        ReflectionAssert.assertReflectionEquals(expectedScene21, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: escape npc bot");
+        ReflectionAssert.assertReflectionEquals(expectedScene22, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: npc bot attacks tower");
+        ReflectionAssert.assertReflectionEquals(expectedScene23, sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).read(id));
+        // Delete
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add NPC bot");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "setup: add enemy bot");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: npc bot spawn");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: npc bot move");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: bot harvest attack");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: enemy bot destroy user");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: escape npc bot");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
+        id = TestHelper.findIdForName(sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).readObjectNameIds(), "script: npc bot attacks tower");
+        sceneEditorPersistence.getSceneConfigCrud(GAME_UI_CONTROL_CONFIG_1_ID).delete(id);
 
         ObjectComparatorIgnore.clear();
 
@@ -272,13 +333,6 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(p) FROM PlaceConfigEntity p").getSingleResult()).intValue());
     }
 
-    private void saveAllScenesInternal(List<SceneConfig> expectedSceneConfigs) throws Exception {
-        ObjectComparatorIgnore.add(BotConfig.class, "id");
-        ObjectComparatorIgnore.add(QuestDescriptionConfig.class, "id");
-        // TODO ReflectionAssert.assertReflectionEquals(expectedSceneConfigs, actualSceneConfigs);
-        ObjectComparatorIgnore.clear();
-    }
-
     private void setResources(SceneConfig sceneConfig) {
         sceneConfig.setInternalName("setup: add resources");
         List<ResourceItemPosition> resourceItemTypePositions = new ArrayList<>();
@@ -293,7 +347,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfig.setResourceItemTypePositions(resourceItemTypePositions);
     }
 
-    private void addNpcBot(List<SceneConfig> sceneConfigs) {
+    private void setNpcBot(SceneConfig sceneConfig) {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
@@ -307,10 +361,10 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         botConfigs.add(new BotConfig().setAuxiliaryId(NPC_BOT_OUTPOST_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Roger").setNpc(true));
         List<BotHarvestCommandConfig> botHarvestCommandConfigs = new ArrayList<>();
         botHarvestCommandConfigs.add(new BotHarvestCommandConfig().setBotAuxiliaryId(NPC_BOT_OUTPOST_AUX).setResourceItemTypeId(RESOURCE_ITEM_TYPE_ID).setResourceSelection(new PlaceConfig().setPosition(new DecimalPosition(212, 144))).setHarvesterItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID));
-        sceneConfigs.add(new SceneConfig().setInternalName("setup: add NPC bot").setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs));
+        sceneConfig.setInternalName("setup: add NPC bot").setBotConfigs(botConfigs).setBotHarvestCommandConfigs(botHarvestCommandConfigs);
     }
 
-    private void addEnemyBot(List<SceneConfig> sceneConfigs) {
+    private void setEnemyBot(SceneConfig sceneConfig) {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
@@ -329,7 +383,7 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
 
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setAuxiliaryId(ENEMY_BOT_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Razar Industries").setNpc(false));
-        sceneConfigs.add(new SceneConfig().setInternalName("setup: add enemy bot").setBotConfigs(botConfigs).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(270, 275)).setCameraLocked(true).setBottomWidth(120.0)));
+        sceneConfig.setInternalName("setup: add enemy bot").setBotConfigs(botConfigs).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(270, 275)).setCameraLocked(true).setBottomWidth(120.0));
     }
 
     private void addFadeOutLoadingCover(List<SceneConfig> sceneConfigs) {
@@ -341,14 +395,14 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfig.setViewFieldConfig(new ViewFieldConfig().setFromPosition(new DecimalPosition(270, 275)).setToPosition(new DecimalPosition(116, 84)).setSpeed(50.0).setCameraLocked(true).setBottomWidth(120.0));
     }
 
-    private void addBotSpawnScene(List<SceneConfig> sceneConfigs) {
+    private void setBotSpawnScene(SceneConfig sceneConfigs) {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(116, 100))).setNoRebuild(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: npc bot spawn").setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").setDuration(3000));
+        sceneConfigs.setInternalName("script: npc bot spawn").setBotConfigs(botConfigs).setIntroText("Kenny unterstützt Dich dabei. Er wird sich gleich auf die Planetenoberfläche beamen.").setDuration(3000);
     }
 
     private void setUserSpawnScene(SceneConfig sceneConfigs) {
@@ -365,11 +419,11 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfigs.setInternalName("user: spawn 1").setGameTipConfig(gameTipConfig).setWait4QuestPassedDialog(true).setStartPointPlacerConfig(baseItemPlacerConfig).setQuestConfig(new QuestConfig().setTitle("Platzieren").setDescription("Wähle deinen Startpunkt um deine Starteinheit zu platzieren").setConditionConfig(conditionConfig).setXp(1).setPassedMessage("Gratuliere, du hast soeben deinen ersten Quest bestanden. Quests geben Erfahrungspunkte (Ep). Hast du genügend Erfahrungspunkte, erreichst du den nächsten Level. Im oberen linken Bereich siehst du deine Erfahrungspunkte."));
     }
 
-    private void addBotMoveScene(List<SceneConfig> sceneConfigs) {
+    private void setBotMoveScene(SceneConfig sceneConfig) {
         ViewFieldConfig viewFieldConfig = new ViewFieldConfig().setToPosition(new DecimalPosition(205, 102)).setSpeed(50.0).setCameraLocked(true);
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setTargetPosition(new DecimalPosition(188, 90)));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: npc bot move").setViewFieldConfig(viewFieldConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten"));
+        sceneConfig.setInternalName("script: npc bot move").setViewFieldConfig(viewFieldConfig).setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Folge mir zum Vorposten");
     }
 
     private void addScrollToOwnScene(List<SceneConfig> sceneConfigs) {
@@ -392,14 +446,13 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfig.setInternalName("user: move").setQuestConfig(new QuestConfig().setTitle("Fahre zu Vorposten").setDescription("Folge Kenny und Fahre zum Vorposten. Bewege deine Einheit zum markierten Bereich").setXp(1).setConditionConfig(conditionConfig)).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true);
     }
 
-    private void addNpcHarvestAttack(List<SceneConfig> sceneConfigs) {
-        SceneConfig sceneConfig = new SceneConfig().setInternalName("script: bot harvest attack");
+    private void setNpcHarvestAttack(SceneConfig sceneConfig) {
+        sceneConfig.setInternalName("script: bot harvest attack");
         sceneConfig.setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(212, 144)).setSpeed(50.0).setCameraLocked(true));
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setTargetSelection(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_HARVESTER_ID).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setTargetSelection(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(190, 124, 40, 40))));
         sceneConfig.setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(7000).setIntroText("Hilfe wir werden angegriffen");
-        sceneConfigs.add(sceneConfig);
     }
 
     private void setFindEnemyBase(SceneConfig sceneConfig) {
@@ -461,24 +514,24 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfig.setInternalName("user: kill bot harvester").setQuestConfig(questConfig).setGameTipConfig(gameTipConfig).setWait4LevelUpDialog(true);
     }
 
-    private void addEnemyKillTask(List<SceneConfig> sceneConfigs) {
+    private void setEnemyKillTask(SceneConfig sceneConfig) {
         // Kill bot command
         List<BotKillOtherBotCommandConfig> botKillOtherBotCommandConfigs = new ArrayList<>();
         botKillOtherBotCommandConfigs.add(new BotKillOtherBotCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setTargetBotAuxiliaryId(NPC_BOT_OUTPOST_AUX).setDominanceFactor(1).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(212, 162, 51, 87))));
         // Kill human command
         List<BotKillHumanCommandConfig> botKillHumanCommandConfigs = new ArrayList<>();
         botKillHumanCommandConfigs.add(new BotKillHumanCommandConfig().setBotAuxiliaryId(ENEMY_BOT_AUX).setDominanceFactor(2).setAttackerBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setSpawnPoint(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(213, 209, 80, 70))));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: enemy bot destroy user").setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000));
+        sceneConfig.setInternalName("script: enemy bot destroy user").setBotKillHumanCommandConfigs(botKillHumanCommandConfigs).setBotKillOtherBotCommandConfigs(botKillOtherBotCommandConfigs).setIntroText("Hilfe, Razar Industries greift uns an").setDuration(4000);
     }
 
     private void addWaitForDeadTask(List<SceneConfig> sceneConfigs) {
         sceneConfigs.add(new SceneConfig().setInternalName("script wait for dead dialog").setWaitForBaseLostDialog(true));
     }
 
-    private void addNpcEscapeTask(List<SceneConfig> sceneConfigs) {
+    private void setNpcEscapeTask(SceneConfig sceneConfig) {
         List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
         botMoveCommandConfigs.add(new BotMoveCommandConfig().setBotAuxiliaryId(NPC_BOT_INSTRUCTOR_AUX).setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setTargetPosition(new DecimalPosition(48, 110)));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: escape npc bot").setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries.").setDuration(3000));
+        sceneConfig.setInternalName("script: escape npc bot").setBotMoveCommandConfigs(botMoveCommandConfigs).setIntroText("Baue dich neu auf und zerstöre Razar Industries.").setDuration(3000);
     }
 
     private void setUserSpawnScene2(SceneConfig sceneConfig) {
@@ -569,11 +622,11 @@ public class SceneEditorPersistenceTest extends ArquillianBaseTest {
         sceneConfig.setInternalName("user: build viper 1").setGameTipConfig(gameTipConfig).setQuestConfig(new QuestConfig().setTitle("Bauen").setDescription("Baue ein Viper in deiner Fabrik").setConditionConfig(conditionConfig).setXp(10)).setWait4QuestPassedDialog(true);
     }
 
-    private void addNpcAttackTowerCommand(List<SceneConfig> sceneConfigs) {
+    private void setNpcAttackTowerCommand(SceneConfig sceneConfig) {
         // Attack command
         List<BotAttackCommandConfig> botAttackCommandConfigs = new ArrayList<>();
         botAttackCommandConfigs.add(new BotAttackCommandConfig().setBotAuxiliaryId(NPC_BOT_OUTPOST_2_AUX).setTargetItemTypeId(BASE_ITEM_TYPE_TOWER_ID).setTargetSelection(new PlaceConfig().setPosition(new DecimalPosition(190, 242))).setActorItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID));
-        sceneConfigs.add(new SceneConfig().setInternalName("script: npc bot attacks tower").setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(190, 242)).setSpeed(50.0)));
+        sceneConfig.setInternalName("script: npc bot attacks tower").setIntroText("Komm, greiffen wir an!").setBotAttackCommandConfigs(botAttackCommandConfigs).setDuration(5000).setViewFieldConfig(new ViewFieldConfig().setToPosition(new DecimalPosition(190, 242)).setSpeed(50.0));
     }
 
     private void addNpcTooWeakCommand(List<SceneConfig> sceneConfigs) {
