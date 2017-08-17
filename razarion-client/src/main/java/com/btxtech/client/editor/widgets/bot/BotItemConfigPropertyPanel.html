@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="botitemconfigpanel">
+    <table>
+        <tr>
+            <td>Base Item Type</td>
+            <td>
+                <div data-field="baseItemTypeId"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>count</td>
+            <td><input data-field="count" type="number" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td>Create directly</td>
+            <td><input type="checkbox" data-field="createDirectly"></td>
+        </tr>
+        <tr>
+            <td>No Spawn</td>
+            <td><input type="checkbox" data-field="noSpawn"></td>
+        </tr>
+        <tr>
+            <td>Place</td>
+            <td>
+                <div id="place"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>Angle</td>
+            <td><input data-field="angle" type="number" min="0" max="360"></td>
+        </tr>
+        <tr>
+            <td>Move realm if idle</td>
+            <td><input type="checkbox" data-field="moveRealmIfIdle"></td>
+        </tr>
+        <tr>
+            <td>Idle TTL</td>
+            <td><input data-field="idleTtl" type="number" min="0" step="1">[ms]</td>
+        </tr>
+        <tr>
+            <td>No rebuild</td>
+            <td><input type="checkbox" data-field="noRebuild"></td>
+        </tr>
+        <tr>
+            <td>Repop time</td>
+            <td><input type="number" min="0" step="1" data-field="rePopTime">[ms]</td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

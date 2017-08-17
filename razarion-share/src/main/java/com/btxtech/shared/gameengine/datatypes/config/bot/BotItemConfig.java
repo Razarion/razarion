@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * Time: 13:37:24
  */
 public class BotItemConfig {
-    private int baseItemTypeId;
+    private Integer baseItemTypeId;
     private int count;
     private boolean createDirectly;
     private boolean noSpawn;
@@ -19,7 +19,7 @@ public class BotItemConfig {
     private boolean noRebuild;
     private Integer rePopTime;
 
-    public BotItemConfig setBaseItemTypeId(int baseItemTypeId) {
+    public BotItemConfig setBaseItemTypeId(Integer baseItemTypeId) {
         this.baseItemTypeId = baseItemTypeId;
         return this;
     }
@@ -73,7 +73,7 @@ public class BotItemConfig {
         return this;
     }
 
-    public int getBaseItemTypeId() {
+    public Integer getBaseItemTypeId() {
         return baseItemTypeId;
     }
 

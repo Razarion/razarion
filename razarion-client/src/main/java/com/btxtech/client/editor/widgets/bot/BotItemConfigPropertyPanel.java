@@ -2,9 +2,12 @@ package com.btxtech.client.editor.widgets.bot;
 
 
 import com.btxtech.client.editor.widgets.childtable.ChildTable;
+import com.btxtech.client.editor.widgets.itemtype.base.BaseItemTypeWidget;
 import com.btxtech.client.editor.widgets.placeconfig.PlaceConfigWidget;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.client.guielements.CommaDoubleBox;
+import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -23,67 +26,59 @@ import javax.inject.Inject;
  * Created by Beat
  * on 16.08.2017.
  */
-@Templated("BotConfigPropertyPanel.html#botconfigpanel")
-public class BotConfigPropertyPanel extends Composite implements TakesValue<BotConfig> {
+@Templated("BotItemConfigPropertyPanel.html#botitemconfigpanel")
+public class BotItemConfigPropertyPanel extends Composite implements TakesValue<BotItemConfig> {
     @Inject
     @AutoBound
-    private DataBinder<BotConfig> dataBinder;
+    private DataBinder<BotItemConfig> dataBinder;
+    @Inject
+    @DataField
+    private BaseItemTypeWidget baseItemTypeId;
     @Inject
     @Bound
     @DataField
-    private Label id;
+    private NumberInput count;
     @Inject
     @Bound
     @DataField
-    private TextInput internalName;
+    private CheckboxInput createDirectly;
     @Inject
     @Bound
     @DataField
-    private TextInput name;
+    private CheckboxInput noSpawn;
     @Inject
     @Bound
     @DataField
-    private NumberInput auxiliaryId;
+    private PlaceConfigWidget place;
+    @Inject
+    @Bound(converter = GradToRadConverter.class)
+    @DataField
+    private CommaDoubleBox angle;
     @Inject
     @Bound
     @DataField
-    private CheckboxInput npc;
+    private CheckboxInput moveRealmIfIdle;
     @Inject
     @Bound
     @DataField
-    private NumberInput actionDelay;
+    private NumberInput idleTtl;
     @Inject
     @Bound
     @DataField
-    private PlaceConfigWidget realm;
+    private CheckboxInput noRebuild;
     @Inject
     @Bound
     @DataField
-    private NumberInput minInactiveMs;
-    @Inject
-    @Bound
-    @DataField
-    private NumberInput maxInactiveMs;
-    @Inject
-    @Bound
-    @DataField
-    private NumberInput minActiveMs;
-    @Inject
-    @Bound
-    @DataField
-    private NumberInput maxActiveMs;
-    @Inject
-    @DataField
-    private ChildTable<BotEnragementStateConfig> botEnragementStateConfig;
+    private NumberInput rePopTime;
 
     @Override
-    public void setValue(BotConfig botConfig) {
-        dataBinder.setModel(botConfig);
-        botEnragementStateConfig.init(botConfig.getBotEnragementStateConfigs(), botConfig::setBotEnragementStateConfigs, BotEnragementStateConfig::new, BotEnragementStateConfigPropertyPanel.class);
+    public void setValue(BotItemConfig botItemConfig) {
+        dataBinder.setModel(botItemConfig);
+        baseItemTypeId.init(botItemConfig.getBaseItemTypeId(), botItemConfig::setBaseItemTypeId);
     }
 
     @Override
-    public BotConfig getValue() {
+    public BotItemConfig getValue() {
         return dataBinder.getModel();
     }
 }
