@@ -4,12 +4,17 @@ import com.google.gwt.user.client.ui.Widget;
 import elemental.dom.Element;
 import elemental.events.Event;
 import elemental.events.MouseEvent;
+import org.jboss.errai.common.client.dom.Node;
 
 /**
  * Created by Beat
  * 20.06.2016.
  */
 public class GwtUtils {
+    public native static Node castElementToJBossNode(com.google.gwt.dom.client.Element e) /*-{
+        return e;
+    }-*/;
+
     public native static com.google.gwt.dom.client.Element castElementToElement(elemental.dom.Element e) /*-{
         return e;
     }-*/;

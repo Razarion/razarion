@@ -29,6 +29,7 @@ public class BotConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     private Integer auxiliaryId;
     private boolean npc;
     private int actionDelay;
@@ -56,10 +57,11 @@ public class BotConfigEntity {
         for (BotEnragementStateConfigEntity botEnragementStateConfigEnity : this.botEnragementStateConfigs) {
             botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
         }
-        return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
+        return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setInternalName(internalName).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
     }
 
     public void fromBotConfig(ItemTypePersistence itemTypePersistence, BotConfig botConfig) {
+        internalName = botConfig.getInternalName();
         auxiliaryId = botConfig.getAuxiliaryId();
         npc = botConfig.isNpc();
         actionDelay = botConfig.getActionDelay();
@@ -78,10 +80,12 @@ public class BotConfigEntity {
             this.botEnragementStateConfigs = new ArrayList<>();
         }
         this.botEnragementStateConfigs.clear();
-        for (BotEnragementStateConfig botEnragementStateConfig : botConfig.getBotEnragementStateConfigs()) {
-            BotEnragementStateConfigEntity botEnragementStateConfigEntity = new BotEnragementStateConfigEntity();
-            botEnragementStateConfigEntity.fromBotEnragementStateConfig(itemTypePersistence, botEnragementStateConfig);
-            this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
+        if (botConfig.getBotEnragementStateConfigs() != null) {
+            for (BotEnragementStateConfig botEnragementStateConfig : botConfig.getBotEnragementStateConfigs()) {
+                BotEnragementStateConfigEntity botEnragementStateConfigEntity = new BotEnragementStateConfigEntity();
+                botEnragementStateConfigEntity.fromBotEnragementStateConfig(itemTypePersistence, botEnragementStateConfig);
+                this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
+            }
         }
     }
 

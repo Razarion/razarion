@@ -10,17 +10,9 @@
     <table>
         <tr>
             <td>
-                <input type="radio" name="placeConfigType" id="polygonRadio">Polygon
+                <select data-field="selector"></select>
             </td>
-            <td>
-                <div id="polygonField"></div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input type="radio" name="placeConfigType" id="positionRadiusRadio">Position/Radius
-            </td>
-            <td>
+            <td data-field="positionTr" style="display: none">
                 <table>
                     <tr>
                         <td>
@@ -40,9 +32,10 @@
                     </tr>
                 </table>
             </td>
-            <td>
-
+            <td data-field="polygonTr" style="display: none">
+                <div id="polygonField"></div>
             </td>
+
         </tr>
     </table>
 </div>

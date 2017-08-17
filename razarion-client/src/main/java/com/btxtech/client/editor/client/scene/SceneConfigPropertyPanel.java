@@ -1,6 +1,8 @@
 package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
+import com.btxtech.client.editor.widgets.bot.BotConfigPropertyPanel;
+import com.btxtech.client.editor.widgets.childtable.ChildTable;
 import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
 import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
 import com.btxtech.client.guielements.CommaDoubleBox;
@@ -10,6 +12,7 @@ import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.rest.SceneEditorProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.google.gwt.dom.client.Style;
@@ -165,6 +168,9 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @DataField
     private Button questConfigButton;
+    @Inject
+    @DataField
+    private ChildTable<BotConfig> botConfigPanel;
 
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
@@ -180,6 +186,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
                 startPointPlacerConfig.init(sceneConfig.getStartPointPlacerConfig(), sceneConfig::setStartPointPlacerConfig);
                 gameTipConfigPanel.init(sceneConfig.getGameTipConfig(), sceneConfig::setGameTipConfig);
                 handleQuestConfigVisibility();
+                botConfigPanel.init(sceneConfig.getBotConfigs(), sceneConfig::setBotConfigs, BotConfig::new, BotConfigPropertyPanel.class);
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "SceneEditorProvider.readSceneConfig failed: " + message, throwable);

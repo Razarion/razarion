@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
-import com.btxtech.shared.gameengine.datatypes.Region;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import java.util.List;
@@ -13,6 +12,7 @@ import java.util.List;
  */
 public class BotConfig {
     private int id;
+    private String internalName;
     private Integer auxiliaryId;
     private boolean npc;
     private int actionDelay;
@@ -27,6 +27,10 @@ public class BotConfig {
     public BotConfig setId(int id) {
         this.id = id;
         return this;
+    }
+
+    public String getInternalName() {
+        return internalName;
     }
 
     public Integer getAuxiliaryId() {
@@ -85,6 +89,11 @@ public class BotConfig {
 
     public int getId() {
         return id;
+    }
+
+    public BotConfig setInternalName(String internalName) {
+        this.internalName = internalName;
+        return this;
     }
 
     public boolean isNpc() {

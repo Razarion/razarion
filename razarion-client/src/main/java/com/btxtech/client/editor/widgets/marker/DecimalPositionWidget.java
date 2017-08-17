@@ -148,5 +148,12 @@ public class DecimalPositionWidget implements HasValue<DecimalPosition> {
         }
     }
 
+    public void dispose() {
+        markerEditor.deactivate();
+        showHideButton.setText(SHOW);
+        xField.setValue(null);
+        yField.setValue(null);
+        decimalPositionListener = null;
+    }
 
 }
