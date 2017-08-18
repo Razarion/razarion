@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -42,6 +43,7 @@ public class QuestSidebar extends Composite {
     private Label descriptionLabel;
     @Inject
     @DataField
+    @ListContainer("tbody")
     private ListComponent<ProgressTableRowModel, ProgressTableRowWidget> progressTable;
     private QuestConfig activeQuest;
 

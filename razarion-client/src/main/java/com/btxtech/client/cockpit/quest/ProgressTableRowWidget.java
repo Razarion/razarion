@@ -3,9 +3,9 @@ package com.btxtech.client.cockpit.quest;
 import com.btxtech.client.StaticResourcePath;
 import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
+import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Image;
-import org.jboss.errai.common.client.dom.Label;
 import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -26,13 +26,13 @@ public class ProgressTableRowWidget implements TakesValue<ProgressTableRowModel>
     private Image progressStatusImage;
     @Inject
     @DataField
-    private Label progressTextLabel;
+    private Div progressTextLabel;
     @Inject
     @DataField
     private Image progressBaseItemTypeImage;
     @Inject
     @DataField
-    private Label progressActionWordLabel;
+    private Div progressActionWordLabel;
 
 
     private ProgressTableRowModel progressTableRowModel;
