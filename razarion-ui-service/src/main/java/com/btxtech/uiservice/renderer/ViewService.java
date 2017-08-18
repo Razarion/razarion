@@ -111,7 +111,8 @@ public class ViewService {
         shadowTransformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewShadowMatrix, perspectiveShadowMatrix));
         shadowLookupTransformationListeners.forEach(listeners -> listeners.onShadowLookupTransformationChanged(shadowLookupMatrix));
         terrainUiService.onViewChanged(currentViewField, currentAabb);
-        viewFieldListeners.forEach(viewFieldListener -> viewFieldListener.onViewChanged(currentViewField, currentAabb));
+        // Prevent concurrent exception with scene, tip etc
+        new ArrayList<>(viewFieldListeners).forEach(viewFieldListener -> viewFieldListener.onViewChanged(currentViewField, currentAabb));
     }
 
     private void updateTransformationMatrices() {
