@@ -280,8 +280,7 @@ a:active {
     position: absolute;
     top: 0;
     right: 0;
-    min-width: 200px;
-    max-width: 300px;
+    width: 300px;
     display: table;
     animation: quest-sidebar-background-animation 4s ease-out 1;
     background-image: url('images/DialogBackground.png');
