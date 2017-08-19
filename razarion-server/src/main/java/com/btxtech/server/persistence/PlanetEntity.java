@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -21,6 +22,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
@@ -74,6 +76,9 @@ public class PlanetEntity {
     private double shadowAlpha;
     private double shape3DLightRotateX;
     private double shape3DLightRotateY;
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] miniMapImage;
 
     public Integer getId() {
         return id;
@@ -124,6 +129,14 @@ public class PlanetEntity {
 
     public List<TerrainObjectPositionEntity> getTerrainObjectPositionEntities() {
         return terrainObjectPositionEntities;
+    }
+
+    public byte[] getMiniMapImage() {
+        return miniMapImage;
+    }
+
+    public void setMiniMapImage(byte[] miniMapImage) {
+        this.miniMapImage = miniMapImage;
     }
 
     @Override

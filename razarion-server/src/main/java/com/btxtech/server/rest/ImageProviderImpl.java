@@ -1,8 +1,8 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.DataUrlDecoder;
-import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -20,9 +20,10 @@ import java.util.List;
 public class ImageProviderImpl implements ImageProvider {
     @Inject
     private ImagePersistence imagePersistence;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private PlanetPersistence planetPersistence;
 
     @Override
     public Response getImage(int id) {
@@ -71,6 +72,16 @@ public class ImageProviderImpl implements ImageProvider {
     public void save(int id, String dataUrl) {
         try {
             imagePersistence.save(id, new DataUrlDecoder(dataUrl));
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public Response getMiniMapImage(int planetId) {
+        try {
+            return Response.ok(planetPersistence.getMiniMapImage(planetId)).lastModified(new Date()).build();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

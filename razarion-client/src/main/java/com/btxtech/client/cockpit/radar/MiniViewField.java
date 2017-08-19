@@ -5,13 +5,19 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.google.gwt.dom.client.Element;
 
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 /**
  * Created by Beat
  * on 16.06.2017.
  */
+@Dependent
 public class MiniViewField extends AbstractMiniMap {
-    public MiniViewField(Element canvasElement, int width, int height) {
-        super(canvasElement, width, height);
+
+    @Override
+    public void init(Element canvasElement, int width, int height) {
+        super.init(canvasElement, width, height);
         scaleToNormal();
     }
 

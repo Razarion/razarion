@@ -53,4 +53,9 @@ public interface PlanetEditorProvider {
     @Path("updatePlanetVisualConfig/{planetId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void updatePlanetVisualConfig(@PathParam("planetId") int planetId, PlanetVisualConfig planetVisualConfig);
+
+    @PUT
+    @Path("updateMiniMapImage/{planetId}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    void updateMiniMapImage(@PathParam("planetId") int planetId, String dataUrl);
 }

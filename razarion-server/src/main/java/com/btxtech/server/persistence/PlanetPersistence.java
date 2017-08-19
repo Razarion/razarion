@@ -201,4 +201,23 @@ public class PlanetPersistence {
         }
         return terrainSlopePositions;
     }
+
+    @Transactional
+    @SecurityCheck
+    public void updateMiniMapImage(int planetId, byte[] data) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetId);
+        }
+        planetEntity.setMiniMapImage(data);
+    }
+
+    @Transactional
+    public byte[] getMiniMapImage(int planetId) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetId);
+        }
+        return planetEntity.getMiniMapImage();
+    }
 }

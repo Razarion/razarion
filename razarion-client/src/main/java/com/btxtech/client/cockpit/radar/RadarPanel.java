@@ -2,6 +2,7 @@ package com.btxtech.client.cockpit.radar;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.Camera;
@@ -26,8 +27,8 @@ import java.util.List;
  */
 @Templated("RadarPanel.html#radar")
 public class RadarPanel extends Composite implements ViewService.ViewFieldListener {
-    private static final int WIDTH = 300;
-    private static final int HEIGHT = 300;
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 1000;
     // private Logger logger = Logger.getLogger(RadarPanel.class.getName());
     @Inject
     private GameUiControl gameUiControl;
@@ -44,13 +45,15 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     @Inject
     @DataField
     private Div miniMap;
+    @Inject
     private MiniTerrain miniTerrain;
+    @Inject
     private MiniViewField miniViewField;
 
     @PostConstruct
     public void postConstruct() {
-        miniTerrain = new MiniTerrain(miniTerrainElement, WIDTH, HEIGHT);
-        miniViewField = new MiniViewField(miniViewFiledElement, WIDTH, HEIGHT);
+        miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT);
+        miniViewField.init(miniViewFiledElement, WIDTH, HEIGHT);
         viewService.addViewFieldListeners(this);
         setSize(WIDTH + "px", HEIGHT + "px");
         miniMap.getStyle().setProperty("width", WIDTH + "px");
@@ -64,12 +67,16 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
         camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
     }
 
-    public void generateMiniTerrain(List<TerrainSlopePosition> terrainSlopePositions) {
-        miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), terrainSlopePositions);
+    public void generateMiniTerrain(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+        miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), terrainSlopePositions, terrainObjectPositions);
     }
 
     @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         miniViewField.onViewChanged(viewField, gameUiControl.getPlanetConfig().getPlayGround());
+    }
+
+    public String toDataURL(String type) {
+        return miniTerrain.toDataURL(type);
     }
 }

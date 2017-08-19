@@ -501,6 +501,10 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         return modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
     }
 
+    public List<TerrainObjectPosition> generateTerrainObjectPositions() {
+        return modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList());
+    }
+
     public void setDrivewayModeChanged(boolean drivewayMode) {
         this.drivewayMode = drivewayMode;
     }
@@ -511,5 +515,13 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
 
     public void setDriveway4New(ObjectNameId driveway4New) {
         this.driveway4New = driveway4New;
+    }
+
+    public void saveMiniMapImage(String dataUrl) {
+        planetEditorServiceCaller.call(ignore -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "updateMiniMapImage failed: " + message, throwable);
+            return false;
+        }).updateMiniMapImage(getPlanetId(), dataUrl);
     }
 }

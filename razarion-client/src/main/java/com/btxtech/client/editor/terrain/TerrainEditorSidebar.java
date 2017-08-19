@@ -118,6 +118,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private Button generateMiniTerrain;
     @Inject
     @DataField
+    private Button saveMiniTerrainButton;
+    @Inject
+    @DataField
     private Button sculptButton;
 
     @PostConstruct
@@ -247,6 +250,12 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
 
     @EventHandler("generateMiniTerrain")
     private void generateMiniTerrain(ClickEvent event) {
-        radarPanel.generateMiniTerrain(terrainEditor.generateTerrainSlopePositions());
+        radarPanel.generateMiniTerrain(terrainEditor.generateTerrainSlopePositions(), terrainEditor.generateTerrainObjectPositions());
+    }
+
+    @EventHandler("saveMiniTerrainButton")
+    private void saveMiniTerrainButton(ClickEvent event) {
+        String dataUrl = radarPanel.toDataURL("image/jpg");
+        terrainEditor.saveMiniMapImage(dataUrl);
     }
 }

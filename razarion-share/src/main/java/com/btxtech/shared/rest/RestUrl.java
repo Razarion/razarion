@@ -13,6 +13,7 @@ public class RestUrl {
     public static final String LOGGING_SIMPLE = "simple";
     public static final String LOGGING_JSON = "json";
     public static final String IMAGE_SERVICE_PATH = "image";
+    public static final String PLANET_MINI_MAP_PATH = "minimap";
     public static final String AUDIO_SERVICE_PATH = "audio";
     public static final String SCENE_EDITOR_PATH = "sceneeditor";
     public static final String SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH = "servergameengineditorprovider";
@@ -32,6 +33,10 @@ public class RestUrl {
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache
+    }
+
+    public static String getMiniMapPlanetUrl(int planetId) {
+        return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + PLANET_MINI_MAP_PATH + "/" + Integer.toString(planetId)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache
     }
 
     public static String getSimpleLoggingUrl() {

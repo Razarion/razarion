@@ -13,6 +13,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+import static com.btxtech.shared.rest.RestUrl.PLANET_MINI_MAP_PATH;
+
 /**
  * Created by Beat
  * 17.06.2016.
@@ -44,4 +46,9 @@ public interface ImageProvider {
     @Path("save/{id}")
     @Consumes(MediaType.TEXT_PLAIN)
     void save(@PathParam("id") int id, String dataUrl);
+
+    @GET
+    @Produces({"image/jpeg", "image/png", "image/gif"})
+    @Path(PLANET_MINI_MAP_PATH + "/{planetId}")
+    Response getMiniMapImage(@PathParam("planetId") int planetId);
 }

@@ -15,7 +15,7 @@ public class AbstractMiniMap {
     private int height;
     private CanvasRenderingContext2D ctx;
 
-    public AbstractMiniMap(Element canvasElement, int width, int height) {
+    protected void init(Element canvasElement, int width, int height) {
         this.canvasElement = (CanvasElement) canvasElement;
         this.canvasElement.setWidth(width);
         this.canvasElement.setHeight(height);
@@ -41,6 +41,10 @@ public class AbstractMiniMap {
 
     protected CanvasRenderingContext2D getCtx() {
         return ctx;
+    }
+
+    protected CanvasElement getCanvasElement() {
+        return canvasElement;
     }
 
     protected void clearCanvas() {
