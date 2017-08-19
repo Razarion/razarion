@@ -45,14 +45,14 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     @Inject
     @DataField
     private Div miniMap;
-    @Inject
-    private MiniTerrain miniTerrain;
+    // TODO @Inject
+    // TODO private MiniTerrain miniTerrain;
     @Inject
     private MiniViewField miniViewField;
 
     @PostConstruct
     public void postConstruct() {
-        miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT);
+        // TODO miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT);
         miniViewField.init(miniViewFiledElement, WIDTH, HEIGHT);
         viewService.addViewFieldListeners(this);
         setSize(WIDTH + "px", HEIGHT + "px");
@@ -62,21 +62,17 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     }
 
     private void onMouseDown(MouseEvent mouseEvent) {
-        DecimalPosition viewCenter = new DecimalPosition(mouseEvent.getOffsetX(), HEIGHT - mouseEvent.getOffsetY()).divide(miniTerrain.calculateMinScale(gameUiControl.getPlanetConfig().getPlayGround()));
-        DecimalPosition cameraPosition = projectionTransformation.viewFieldCenterToCamera(viewCenter, 0);
-        camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
+        // TODO DecimalPosition viewCenter = new DecimalPosition(mouseEvent.getOffsetX(), HEIGHT - mouseEvent.getOffsetY()).divide(miniTerrain.calculateMinScale(gameUiControl.getPlanetConfig().getPlayGround()));
+        // TODO DecimalPosition cameraPosition = projectionTransformation.viewFieldCenterToCamera(viewCenter, 0);
+        // TODO camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
     }
 
     public void generateMiniTerrain(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-        miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), terrainSlopePositions, terrainObjectPositions);
+        // TODO miniTerrain.generateMiniTerrain(gameUiControl.getPlanetConfig().getPlayGround(), terrainSlopePositions, terrainObjectPositions);
     }
 
     @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         miniViewField.onViewChanged(viewField, gameUiControl.getPlanetConfig().getPlayGround());
-    }
-
-    public String toDataURL(String type) {
-        return miniTerrain.toDataURL(type);
     }
 }
