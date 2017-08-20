@@ -32,7 +32,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
         webSocket.setOnerror(evt -> logger.severe("ClientServerGameConnection WebSocket OnError: " + evt));
         webSocket.setOnclose(evt -> logger.severe("ClientServerGameConnection WebSocket Close: " + evt));
         webSocket.setOnmessage(this::handleMessage);
-        webSocket.setOnopen(evt -> logger.severe("ClientServerGameConnection WebSocket Open"));
+        // webSocket.setOnopen(evt -> logger.severe("ClientServerGameConnection WebSocket Open"));
     }
 
     private void handleMessage(Event event) {
