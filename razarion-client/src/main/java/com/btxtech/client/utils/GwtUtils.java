@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.Widget;
 import elemental.dom.Element;
 import elemental.events.Event;
 import elemental.events.MouseEvent;
+import elemental.html.ImageElement;
 import org.jboss.errai.common.client.dom.Node;
 
 /**
@@ -21,6 +22,10 @@ public class GwtUtils {
 
     public native static elemental.dom.Element castElementToElement(com.google.gwt.dom.client.Element e) /*-{
         return e;
+    }-*/;
+
+    public native static ImageElement castImageElement(com.google.gwt.dom.client.ImageElement imageElement) /*-{
+        return imageElement;
     }-*/;
 
     public native static int getButtons(MouseEvent event) /*-{

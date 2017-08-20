@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit;
 
+import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.inventory.InventoryDialog;
 import com.btxtech.client.editor.EditorMenuDialog;
@@ -58,6 +59,9 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Inject
     @DataField
     private Span levelLabel;
+    @Inject
+    @DataField
+    private RadarPanel radarPanel;
 
     @PostConstruct
     public void init() {

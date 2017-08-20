@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.terrain;
 
+import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.datatypes.DecimalPosition;
@@ -32,8 +33,6 @@ import java.util.logging.Logger;
  */
 @Templated("MiniMapDialog.html#miniMapDialog")
 public class MiniMapDialog extends Composite implements ModalDialogContent<Void> {
-    private static final int WIDTH = 1000;
-    private static final int HEIGHT = 1000;
     private static final String WATER_COLOR = "#0000ff";
     private static final String GROUND_COLOR = "#86b300";
     private static final String SLOPE_COLOR = "#8c8c8c";
@@ -54,8 +53,8 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
     @Override
     public void init(Void aVoid) {
         canvasElement = (CanvasElement) miniMapElement;
-        this.canvasElement.setWidth(WIDTH);
-        this.canvasElement.setHeight(HEIGHT);
+        this.canvasElement.setWidth(RadarPanel.MINI_MAP_IMAGE_WIDTH);
+        this.canvasElement.setHeight(RadarPanel.MINI_MAP_IMAGE_HEIGHT);
         ctx = (CanvasRenderingContext2D) this.canvasElement.getContext("2d");
         generateMiniTerrain();
     }
@@ -80,8 +79,8 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
         ctx.save();
 
         Rectangle2D playground = terrainEditor.getPlanetConfig().getPlayGround();
-        float scale = (float) Math.min((double) WIDTH / playground.width(), (double) HEIGHT / playground.height());
-        ctx.translate(0, HEIGHT);
+        float scale = (float) Math.min((double) RadarPanel.MINI_MAP_IMAGE_WIDTH / playground.width(), (double) RadarPanel.MINI_MAP_IMAGE_HEIGHT / playground.height());
+        ctx.translate(0, RadarPanel.MINI_MAP_IMAGE_HEIGHT);
         ctx.scale(scale, -scale);
 
         // Ground

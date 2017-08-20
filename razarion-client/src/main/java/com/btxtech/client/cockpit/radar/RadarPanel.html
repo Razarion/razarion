@@ -6,11 +6,17 @@
 </head>
 <body>
 
-<div id="radar">
-    <div id="miniMap" style="position: relative; border: 1px solid #FFF">
-        <canvas id="miniTerrainElement" style="position: absolute; top: 0; left: 0"></canvas>
-        <canvas id="miniViewFiledElement" style="position: absolute; top: 0; left: 0"></canvas>
+<div data-field="radar">
+    <div data-field="miniMap" style="position: relative; border: 1px solid #FFF">
+        <canvas data-field="miniTerrainElement" style="position: absolute; top: 0; left: 0"></canvas>
+        <canvas data-field="miniViewFiledElement" style="position: absolute; top: 0; left: 0"></canvas>
     </div>
+    <button data-field="leftButton">Left</button>
+    <button data-field="rightButton">Right</button>
+    <button data-field="downButton">Down</button>
+    <button data-field="upButton">Up</button>
+    <button data-field="zoomInButton">+</button>
+    <button data-field="zoomOuButton">-</button>
 </div>
 
 </body>
