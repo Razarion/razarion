@@ -43,14 +43,10 @@ public class MiniTerrain extends AbstractMiniMap {
     }
 
     @Override
-    protected void setupTransformation(ScaleStep scaleStep, CanvasRenderingContext2D ctx, int width, int height) {
-        if (scaleStep == ScaleStep.WHOLE_MAP) {
-            double scale = (float) Math.min((double) width / RadarPanel.MINI_MAP_IMAGE_WIDTH, (double) height / RadarPanel.MINI_MAP_IMAGE_HEIGHT);
-            ctx.scale((float) scale, (float) scale);
-            // ctx.translate(0, 0);
-        } else {
-            throw new IllegalArgumentException("AbstractMiniMap.setScaleStep(): " + scaleStep);
-        }
+    protected void setupTransformation(double zoom, CanvasRenderingContext2D ctx, int width, int height) {
+        double scale = (float) Math.min((double) width / RadarPanel.MINI_MAP_IMAGE_WIDTH, (double) height / RadarPanel.MINI_MAP_IMAGE_HEIGHT);
+        scale *= zoom;
+        ctx.scale((float) scale, (float) scale);
     }
 
     @Override

@@ -8,16 +8,19 @@ import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import elemental.client.Browser;
 import elemental.events.MouseEvent;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -29,7 +32,7 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     private static final int HEIGHT = 200;
     public static final int MINI_MAP_IMAGE_WIDTH = 1000;
     public static final int MINI_MAP_IMAGE_HEIGHT = 1000;
-    // private Logger logger = Logger.getLogger(RadarPanel.class.getName());
+    private Logger logger = Logger.getLogger(RadarPanel.class.getName());
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -67,11 +70,12 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     @Inject
     @DataField
     private Button zoomOuButton;
+    private int zoom = 1;
 
     @PostConstruct
     public void postConstruct() {
-        miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT);
-        miniViewField.init(miniViewFiledElement, WIDTH, HEIGHT);
+        miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT, zoom);
+        miniViewField.init(miniViewFiledElement, WIDTH, HEIGHT, zoom);
         viewService.addViewFieldListeners(this);
         setSize(WIDTH + "px", HEIGHT + "px");
         miniMap.getStyle().setProperty("width", WIDTH + "px");
@@ -90,6 +94,28 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
         miniViewField.setViewField(viewField);
         miniTerrain.setViewField(viewField);
 
+        miniTerrain.update();
+        miniViewField.update();
+    }
+
+    @EventHandler("zoomInButton")
+    private void zoomInButtonClick(ClickEvent event) {
+        zoom++;
+        changeZoom();
+    }
+
+    @EventHandler("zoomOuButton")
+    private void zoomOuButtonClick(ClickEvent event) {
+        zoom--;
+        if(zoom < 1) {
+            zoom = 1;
+        }
+        changeZoom();
+    }
+
+    private void changeZoom() {
+        miniTerrain.setZoom(zoom);
+        miniViewField.setZoom(zoom);
         miniTerrain.update();
         miniViewField.update();
     }

@@ -17,28 +17,28 @@ public abstract class AbstractMiniMap {
     private int width;
     private int height;
     private CanvasRenderingContext2D ctx;
-    private ScaleStep scaleStep;
     private ViewField viewField;
+    private double zoom;
 
-    protected abstract void setupTransformation(ScaleStep scaleStep, CanvasRenderingContext2D ctx, int width, int height);
+    protected abstract void setupTransformation(double zoom, CanvasRenderingContext2D ctx, int width, int height);
 
     protected abstract void draw(CanvasRenderingContext2D ctx);
 
-    public void init(Element canvasElement, int width, int height) {
+    public void init(Element canvasElement, int width, int height, double zoom) {
         this.canvasElement = (CanvasElement) canvasElement;
         this.canvasElement.setWidth(width);
         this.canvasElement.setHeight(height);
         this.width = width;
         this.height = height;
         ctx = (CanvasRenderingContext2D) this.canvasElement.getContext("2d");
-        scaleStep = ScaleStep.WHOLE_MAP;
+        this.zoom = zoom;
     }
 
     public void update() {
         clearCanvas();
 
         ctx.save();
-        setupTransformation(scaleStep, ctx, width, height);
+        setupTransformation(zoom, ctx, width, height);
         draw(ctx);
         ctx.restore();
     }
@@ -68,5 +68,13 @@ public abstract class AbstractMiniMap {
 
     protected int getHeight() {
         return height;
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
+    }
+
+    protected double getZoom() {
+        return zoom;
     }
 }
