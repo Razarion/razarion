@@ -54,18 +54,6 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     private MiniViewField miniViewField;
     @Inject
     @DataField
-    private Button leftButton;
-    @Inject
-    @DataField
-    private Button rightButton;
-    @Inject
-    @DataField
-    private Button downButton;
-    @Inject
-    @DataField
-    private Button upButton;
-    @Inject
-    @DataField
     private Button zoomInButton;
     @Inject
     @DataField
@@ -77,7 +65,6 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
         miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT, zoom);
         miniViewField.init(miniViewFiledElement, WIDTH, HEIGHT, zoom);
         viewService.addViewFieldListeners(this);
-        setSize(WIDTH + "px", HEIGHT + "px");
         miniMap.getStyle().setProperty("width", WIDTH + "px");
         miniMap.getStyle().setProperty("height", HEIGHT + "px");
         miniMap.addEventListener("mousedown", event -> onMouseDown((MouseEvent) event), false);
@@ -94,8 +81,7 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
         miniViewField.setViewField(viewField);
         miniTerrain.setViewField(viewField);
 
-        miniTerrain.update();
-        miniViewField.update();
+        updateMiniMap();
     }
 
     @EventHandler("zoomInButton")
@@ -107,7 +93,7 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     @EventHandler("zoomOuButton")
     private void zoomOuButtonClick(ClickEvent event) {
         zoom--;
-        if(zoom < 1) {
+        if (zoom < 1) {
             zoom = 1;
         }
         changeZoom();
@@ -116,6 +102,10 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     private void changeZoom() {
         miniTerrain.setZoom(zoom);
         miniViewField.setZoom(zoom);
+        updateMiniMap();
+    }
+
+    private void updateMiniMap() {
         miniTerrain.update();
         miniViewField.update();
     }

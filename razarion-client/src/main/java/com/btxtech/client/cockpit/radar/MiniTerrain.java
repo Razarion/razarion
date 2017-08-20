@@ -2,6 +2,7 @@ package com.btxtech.client.cockpit.radar;
 
 import com.btxtech.client.imageservice.ImageLoader;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.google.gwt.dom.client.ImageElement;
@@ -44,9 +45,35 @@ public class MiniTerrain extends AbstractMiniMap {
 
     @Override
     protected void setupTransformation(double zoom, CanvasRenderingContext2D ctx, int width, int height) {
-        double scale = (float) Math.min((double) width / RadarPanel.MINI_MAP_IMAGE_WIDTH, (double) height / RadarPanel.MINI_MAP_IMAGE_HEIGHT);
-        scale *= zoom;
-        ctx.scale((float) scale, (float) scale);
+        double imageScale = (float) Math.min((double) width / RadarPanel.MINI_MAP_IMAGE_WIDTH, (double) height / RadarPanel.MINI_MAP_IMAGE_HEIGHT);
+        imageScale *= zoom;
+        ctx.scale((float) imageScale, (float) imageScale);
+        double gameScale = setupGameScale();
+        DecimalPosition centerOffset = getViewField().calculateCenter().sub(gameUiControl.getPlanetConfig().getPlayGround().getStart()).divide(imageScale / gameScale);
+
+        float xDownerLimit = (float) (width / imageScale / 2.0);
+        float xUpperLimit = RadarPanel.MINI_MAP_IMAGE_WIDTH - xDownerLimit;
+        float xShift;
+        if (centerOffset.getX() < xDownerLimit) {
+            xShift = xDownerLimit;
+        } else if (centerOffset.getX() > xUpperLimit) {
+            xShift = xUpperLimit;
+        } else {
+            xShift = (float) centerOffset.getX();
+        }
+
+        float yDownerLimit = (float) (height / imageScale / 2.0);
+        float yUpperLimit = RadarPanel.MINI_MAP_IMAGE_HEIGHT - yDownerLimit;
+        float yShift;
+        if (centerOffset.getY() < yDownerLimit) {
+            yShift = yDownerLimit;
+        } else if (centerOffset.getY() > yUpperLimit) {
+            yShift = yUpperLimit;
+        } else {
+            yShift = (float) centerOffset.getY();
+        }
+
+        ctx.translate(xDownerLimit - xShift, yShift - yUpperLimit);
     }
 
     @Override

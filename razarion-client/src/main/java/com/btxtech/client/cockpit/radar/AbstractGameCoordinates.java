@@ -20,20 +20,14 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
     protected void setupTransformation(double zoom, CanvasRenderingContext2D ctx, int width, int height) {
         Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
 
-        double scale = setupScale(width, height, playGround, zoom);
+        double scale = setupGameScale();
         ctx.scale((float) scale, (float) -scale);
         ctx.translate((float) -playGround.startX(), (float) (-playGround.startY() - playGround.height()));
     }
 
-    private double setupScale(int width, double height, Rectangle2D playGround, double zoom) {
-        double scale = (float) Math.min(width / playGround.width(), height / playGround.height());
-        scale *= zoom;
-        return scale;
-    }
-
     public DecimalPosition canvasToReal(DecimalPosition canvasPosition) {
         Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
-        double scale = setupScale(getWidth(), getHeight(), playGround, getZoom());
+        double scale = setupGameScale();
         DecimalPosition real = canvasPosition.divide(scale, -scale);
         real = real.add(playGround.startX(), playGround.startY() + playGround.height());
         return real;
