@@ -8,14 +8,13 @@ import elemental.html.CanvasElement;
 import elemental.html.CanvasRenderingContext2D;
 
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 16.06.2017.
  */
 public abstract class AbstractMiniMap {
-    private Logger logger = Logger.getLogger(Logger.class.getName());
+    // private Logger logger = Logger.getLogger(Logger.class.getName());
     @Inject
     private GameUiControl gameUiControl;
     private CanvasElement canvasElement;

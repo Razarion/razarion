@@ -6,14 +6,13 @@ import com.btxtech.uiservice.control.GameUiControl;
 import elemental.html.CanvasRenderingContext2D;
 
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 20.08.2017.
  */
 public abstract class AbstractGameCoordinates extends AbstractMiniMap {
-    private Logger logger = Logger.getLogger(AbstractGameCoordinates.class.getName());
+    // private Logger logger = Logger.getLogger(AbstractGameCoordinates.class.getName());
     @Inject
     private GameUiControl gameUiControl;
 
@@ -24,6 +23,23 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
         double scale = setupGameScale();
         DecimalPosition centerOffset = getViewField().calculateCenter().sub(playGround.getStart());
 
+        float xShift = setupXShift(width, playGround, scale, centerOffset);
+        float yShift = setupYShift(height, playGround, scale, centerOffset);
+
+        ctx.scale((float) scale, (float) -scale);
+        ctx.translate(-xShift, -yShift);
+    }
+
+    public DecimalPosition canvasToReal(DecimalPosition canvasPosition) {
+        double scale = setupGameScale();
+        DecimalPosition real = canvasPosition.divide(scale, -scale);
+        Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
+        DecimalPosition centerOffset = getViewField().calculateCenter().sub(playGround.getStart());
+        real = real.add(setupXShift(getWidth(), playGround, scale, centerOffset), setupYShift(getHeight(), playGround, scale, centerOffset));
+        return real;
+    }
+
+    private float setupXShift(int width, Rectangle2D playGround, double scale, DecimalPosition centerOffset) {
         float xDownerLimit = (float) (width / scale / 2.0);
         float xUpperLimit = (float) (playGround.width() - xDownerLimit);
         float xShift;
@@ -33,9 +49,11 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
             xShift = (float) (playGround.startX() + xUpperLimit - xDownerLimit);
         } else {
             xShift = (float) (centerOffset.getX() + playGround.startX() - xDownerLimit);
-            logger.severe("xShift: " + xShift);
         }
+        return xShift;
+    }
 
+    private float setupYShift(int height, Rectangle2D playGround, double scale, DecimalPosition centerOffset) {
         float yDownerLimit = (float) (height / scale / 2.0);
         float yUpperLimit = (float) (playGround.height() - yDownerLimit);
         float yShift;
@@ -46,18 +64,6 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
         } else {
             yShift = (float) (centerOffset.getY() + playGround.startY() + yDownerLimit);
         }
-
-        ctx.scale((float) scale, (float) -scale);
-        ctx.translate(-xShift, -yShift);
+        return yShift;
     }
-
-    public DecimalPosition canvasToReal(DecimalPosition canvasPosition) {
-        Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
-        double scale = setupGameScale();
-        DecimalPosition real = canvasPosition.divide(scale, -scale);
-        real = real.add(playGround.startX(), playGround.startY() + playGround.height());
-        return real;
-    }
-
-
 }

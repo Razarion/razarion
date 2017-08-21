@@ -20,7 +20,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -32,7 +31,7 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     private static final int HEIGHT = 200;
     public static final int MINI_MAP_IMAGE_WIDTH = 1000;
     public static final int MINI_MAP_IMAGE_HEIGHT = 1000;
-    private Logger logger = Logger.getLogger(RadarPanel.class.getName());
+    // private Logger logger = Logger.getLogger(RadarPanel.class.getName());
     @Inject
     private GameUiControl gameUiControl;
     @Inject
