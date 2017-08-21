@@ -6,13 +6,14 @@ import com.btxtech.uiservice.control.GameUiControl;
 import elemental.html.CanvasRenderingContext2D;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 20.08.2017.
  */
 public abstract class AbstractGameCoordinates extends AbstractMiniMap {
-    // private Logger logger = Logger.getLogger(AbstractGameCoordinates.class.getName());
+    private Logger logger = Logger.getLogger(AbstractGameCoordinates.class.getName());
     @Inject
     private GameUiControl gameUiControl;
 
@@ -21,8 +22,33 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
         Rectangle2D playGround = gameUiControl.getPlanetConfig().getPlayGround();
 
         double scale = setupGameScale();
+        DecimalPosition centerOffset = getViewField().calculateCenter().sub(playGround.getStart());
+
+        float xDownerLimit = (float) (width / scale / 2.0);
+        float xUpperLimit = (float) (playGround.width() - xDownerLimit);
+        float xShift;
+        if (centerOffset.getX() < xDownerLimit) {
+            xShift = (float) playGround.startX();
+        } else if (centerOffset.getX() > xUpperLimit) {
+            xShift = (float) (playGround.startX() + xUpperLimit - xDownerLimit);
+        } else {
+            xShift = (float) (centerOffset.getX() + playGround.startX() - xDownerLimit);
+            logger.severe("xShift: " + xShift);
+        }
+
+        float yDownerLimit = (float) (height / scale / 2.0);
+        float yUpperLimit = (float) (playGround.height() - yDownerLimit);
+        float yShift;
+        if (centerOffset.getY() < yDownerLimit) {
+            yShift = (float) (playGround.startY() + playGround.height() - yUpperLimit + yDownerLimit);
+        } else if (centerOffset.getY() > yUpperLimit) {
+            yShift = (float) (playGround.startY() + playGround.height());
+        } else {
+            yShift = (float) (centerOffset.getY() + playGround.startY() + yDownerLimit);
+        }
+
         ctx.scale((float) scale, (float) -scale);
-        ctx.translate((float) -playGround.startX(), (float) (-playGround.startY() - playGround.height()));
+        ctx.translate(-xShift, -yShift);
     }
 
     public DecimalPosition canvasToReal(DecimalPosition canvasPosition) {
