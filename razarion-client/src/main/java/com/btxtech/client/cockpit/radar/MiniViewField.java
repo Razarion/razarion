@@ -11,12 +11,13 @@ import javax.enterprise.context.Dependent;
  */
 @Dependent
 public class MiniViewField extends AbstractGameCoordinates {
+    private static final double LINE_WIDTH = 2;
 
     @Override
     protected void draw(CanvasRenderingContext2D ctx) {
         ViewField viewField = getViewField();
 
-        getCtx().setLineWidth(20);
+        getCtx().setLineWidth(toCanvasPixel(LINE_WIDTH));
 
         getCtx().setStrokeStyle("#fff");
         getCtx().beginPath();

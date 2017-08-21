@@ -39,6 +39,10 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
         return real;
     }
 
+    protected float toCanvasPixel(double pixels) {
+        return (float) (pixels / setupGameScale());
+    }
+
     private float setupXShift(int width, Rectangle2D playGround, double scale, DecimalPosition centerOffset) {
         float xDownerLimit = (float) (width / scale / 2.0);
         float xUpperLimit = (float) (playGround.width() - xDownerLimit);
