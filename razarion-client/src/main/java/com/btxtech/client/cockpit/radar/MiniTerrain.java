@@ -5,6 +5,7 @@ import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import elemental.html.CanvasRenderingContext2D;
 
@@ -23,6 +24,12 @@ public class MiniTerrain extends AbstractMiniMap {
     @Inject
     private GameUiControl gameUiControl;
     private ImageElement imageElement;
+    private Runnable imageLoaderCallback;
+
+    public void init(Element canvasElement, int width, int height, double zoom, Runnable imageLoaderCallback) {
+        this.imageLoaderCallback = imageLoaderCallback;
+        super.init(canvasElement, width, height, zoom);
+    }
 
     @PostConstruct
     public void postConstruct() {
@@ -39,7 +46,7 @@ public class MiniTerrain extends AbstractMiniMap {
                 return;
             }
             MiniTerrain.this.imageElement = imageElement;
-            // TODO drawImage();
+            imageLoaderCallback.run();
         });
     }
 

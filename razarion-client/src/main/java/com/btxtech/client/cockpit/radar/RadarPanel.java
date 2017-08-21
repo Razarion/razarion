@@ -61,7 +61,7 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
 
     @PostConstruct
     public void postConstruct() {
-        miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT, zoom);
+        miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT, zoom, this::updateMiniMap);
         miniViewField.init(miniViewFiledElement, WIDTH, HEIGHT, zoom);
         viewService.addViewFieldListeners(this);
         miniMap.getStyle().setProperty("width", WIDTH + "px");
