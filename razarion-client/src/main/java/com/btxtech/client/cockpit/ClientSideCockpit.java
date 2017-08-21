@@ -61,6 +61,9 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     private Span levelLabel;
     @Inject
     @DataField
+    private EnergyBarWidget energyBar;
+    @Inject
+    @DataField
     private RadarPanel radarPanel;
 
     @PostConstruct
