@@ -10,6 +10,7 @@ import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
+import com.btxtech.client.editor.level.LevelConfigSidebar;
 import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
@@ -106,6 +107,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button particleButton;
+    @Inject
+    @DataField
+    private Button levelConfigButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
     @EventHandler("perfmonButton")
@@ -214,6 +218,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("particleButton")
     private void particleButtonClicked(ClickEvent event) {
         openEditor(ParticleCrudeSidebar.class);
+    }
+
+    @EventHandler("levelConfigButton")
+    private void levelConfigButtonClicked(ClickEvent event) {
+        openEditor(LevelConfigSidebar.class);
     }
 
     @Override

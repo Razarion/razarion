@@ -27,6 +27,7 @@ public class RestUrl {
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
+    public static final String LEVEL_EDITOR_PROVIDER_PATH = "leveleditorprovider";
     public static final String TRACKER_BACKEND_PATH = "trackerbackend";
     public static final String MARKETING = "marketing";
     public static final String FB_CLICK_TRACKING_TAGS_RECEIVER = "clicktrackerreceiver";

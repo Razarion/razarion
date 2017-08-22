@@ -3,12 +3,14 @@ package com.btxtech.server.persistence.level;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -36,6 +38,11 @@ public class LevelPersistence {
             throw new IllegalArgumentException("No Level for id: " + id);
         }
         return levelEntity;
+    }
+
+    @Transactional
+    public LevelConfig readLevelConfig(int id) {
+        return read(id).toLevelConfig();
     }
 
     @Transactional
@@ -100,5 +107,15 @@ public class LevelPersistence {
     @Transactional
     public int getLevelNumber4Id(int levelId) {
         return getLevel4Id(levelId).getNumber();
+    }
+
+    @Transactional
+    public List<ObjectNameId> readObjectNameIds() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<LevelEntity> root = cq.from(LevelEntity.class);
+        cq.multiselect(root.get(LevelEntity_.id), root.get(LevelEntity_.number));
+        List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
+        return tupleResult.stream().map(t -> new ObjectNameId((int) t.get(0), Integer.toString((int) t.get(1)))).collect(Collectors.toList());
     }
 }

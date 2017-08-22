@@ -13,6 +13,9 @@
 
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -21,7 +24,7 @@ import java.util.Map;
  * Date: 17.05.2010
  * Time: 18:48:18
  */
-public class LevelConfig implements Serializable {
+public class LevelConfig implements Serializable, ObjectNameIdProvider {
     private int levelId;
     private int number;
     private Map<Integer, Integer> itemTypeLimitation;
@@ -70,6 +73,11 @@ public class LevelConfig implements Serializable {
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(levelId, Integer.toString(number));
     }
 
     @Override
