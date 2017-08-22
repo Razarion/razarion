@@ -305,6 +305,9 @@ public abstract class GameEngineControl {
             case RESOURCE_DELETED:
                 resourceUiService.removeResource((Integer) controlPackage.getSingleData());
                 break;
+            case ENERGY_CHANGED:
+                gameUiControl.onEnergyChanged((Integer) controlPackage.getData(0), (Integer) controlPackage.getData(1));
+                break;
             case BOX_CREATED:
                 boxUiService.addBox((SyncBoxItemSimpleDto) controlPackage.getSingleData());
                 break;
@@ -348,7 +351,7 @@ public abstract class GameEngineControl {
                 editorListener.get().onTerrainShapeReloaded((String) controlPackage.getData(0));
                 break;
             case QUEST_PROGRESS:
-                gameUiControl.onQuestProgress((QuestProgressInfo)controlPackage.getData(0));
+                gameUiControl.onQuestProgress((QuestProgressInfo) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

@@ -21,25 +21,12 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class GeneratorType {
     private int wattage;
 
-    /**
-     * Used by GWT
-     */
-    public GeneratorType() {
-    }
-
-    public GeneratorType(int wattage) {
-        this.wattage = wattage;
-    }
-
     public int getWattage() {
         return wattage;
     }
 
-    public void setWattage(int wattage) {
+    public GeneratorType setWattage(int wattage) {
         this.wattage = wattage;
-    }
-
-    public void changeTo(GeneratorType generatorType) {
-        wattage = generatorType.wattage;
+        return this;
     }
 }

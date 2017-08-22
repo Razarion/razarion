@@ -16,7 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.planet.EnergyService;
+import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

@@ -21,9 +21,9 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
@@ -51,13 +51,13 @@ public class BaseItemService {
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
-    private TerrainService terrainService;
-    @Inject
     private LevelService levelService;
     @Inject
     private Instance<CommandService> commandService;
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private EnergyService energyService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
@@ -162,13 +162,15 @@ public class BaseItemService {
     }
 
     public void deleteBaseSlave(int baseId) {
+        PlayerBase playerBase;
         synchronized (bases) {
             if (!bases.containsKey(baseId)) {
                 throw new IllegalStateException("deleteBaseSlave: Base with Id does not exits: " + baseId);
             }
-            PlayerBase playerBase = bases.remove(baseId);
+            playerBase = bases.remove(baseId);
             gameLogicService.onBaseRemoved(playerBase);
         }
+        energyService.onBaseKilled(playerBase);
     }
 
 
@@ -234,6 +236,7 @@ public class BaseItemService {
     public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
         syncBaseItem.clearHealth();
         syncItemContainerService.destroySyncItem(syncBaseItem);
+        energyService.onBaseItemKilled(syncBaseItem);
         if (syncItemDeletedInfo.isExplode()) {
             gameLogicService.onSyncBaseItemKilledSlave(syncBaseItem);
         } else {
@@ -271,11 +274,13 @@ public class BaseItemService {
         PlayerBaseFull base = (PlayerBaseFull) target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
+        energyService.onBaseItemKilled(target);
         if (base.getItemCount() == 0) {
             gameLogicService.onBaseKilled(base, actor);
             synchronized (bases) {
                 bases.remove(base.getBaseId());
             }
+            energyService.onBaseKilled(base);
         }
     }
 
@@ -285,11 +290,13 @@ public class BaseItemService {
         PlayerBaseFull base = (PlayerBaseFull) target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
+        energyService.onBaseItemKilled(target);
         if (base.getItemCount() == 0) {
             gameLogicService.onBaseRemoved(base);
             synchronized (bases) {
                 bases.remove(base.getBaseId());
             }
+            energyService.onBaseKilled(base);
         }
     }
 

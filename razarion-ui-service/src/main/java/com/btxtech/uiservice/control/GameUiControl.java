@@ -360,4 +360,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             currentScene.onQuestPassedServer(quest);
         }
     }
+
+    public void onEnergyChanged(int consuming, int generating) {
+        cockpitService.onEnergyChanged(consuming, generating);
+    }
 }

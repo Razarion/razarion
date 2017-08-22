@@ -21,25 +21,12 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class ConsumerType {
     private int wattage;
 
-    /**
-     * Used by GWT
-     */
-    public ConsumerType() {
-    }
-
-    public ConsumerType(int wattage) {
-        this.wattage = wattage;
-    }
-
     public int getWattage() {
         return wattage;
     }
 
-    public void setWattage(int wattage) {
+    public ConsumerType setWattage(int wattage) {
         this.wattage = wattage;
-    }
-
-    public void changeTo(ConsumerType consumerType) {
-        wattage = consumerType.wattage;
+        return this;
     }
 }

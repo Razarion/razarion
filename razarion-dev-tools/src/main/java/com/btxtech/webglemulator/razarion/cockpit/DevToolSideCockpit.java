@@ -57,4 +57,9 @@ public class DevToolSideCockpit implements SideCockpit {
     public void displayItemCount(int itemCount, int houseSpace) {
         System.out.println("++++ item count: " + itemCount + " / " + houseSpace);
     }
+
+    @Override
+    public void displayEnergy(int consuming, int generating) {
+        System.out.println("++++ display energy: " + generating + " / " + consuming);
+    }
 }

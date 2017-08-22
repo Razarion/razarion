@@ -35,6 +35,8 @@ public class GameEngineControlPackage {
         CREATE_RESOURCES,
         RESOURCE_CREATED,
         RESOURCE_DELETED,
+        // Energy
+        ENERGY_CHANGED,
         // Base
         CREATE_HUMAN_BASE_WITH_BASE_ITEM,
         BASE_CREATED,

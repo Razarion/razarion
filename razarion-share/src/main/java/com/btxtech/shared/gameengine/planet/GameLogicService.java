@@ -8,7 +8,6 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -199,5 +198,9 @@ public class GameLogicService {
 
     public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
         gameLogicListener.ifPresent(listener -> listener.onQuestProgressUpdate(humanPlayerId, questProgressInfo));
+    }
+
+    public void onEnergyStateChanged(PlayerBase playerBase, int consuming, int generating) {
+        gameLogicListener.ifPresent(listener -> listener.onEnergyStateChanged(playerBase, consuming, generating));
     }
 }

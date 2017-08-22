@@ -101,6 +101,7 @@ public class WorkerMarshaller {
             case SPAWN_BASE_ITEMS:
             case PROJECTILE_DETONATION:
             case SINGLE_Z_TERRAIN_ANSWER:
+            case ENERGY_CHANGED:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
@@ -231,6 +232,10 @@ public class WorkerMarshaller {
                 break;
             case RESOURCE_DELETED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                break;
+            case ENERGY_CHANGED:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
                 break;
             case BASE_CREATED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseDto.class));

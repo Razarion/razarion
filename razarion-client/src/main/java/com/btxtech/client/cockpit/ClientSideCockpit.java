@@ -109,6 +109,11 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     }
 
     @Override
+    public void displayEnergy(int consuming, int generating) {
+        energyBar.setEnergy(consuming, generating);
+    }
+
+    @Override
     public void displayXps(int xp, int xp2LevelUp) {
         xpLabel.setTextContent(xp + " / " + xp2LevelUp);
     }

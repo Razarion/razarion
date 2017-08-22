@@ -16,7 +16,7 @@ public class EnergyBarWidget extends Composite {
     private static final double WIDTH = 100;
     // private Logger logger = Logger.getLogger(EnergyBarWidget.class.getName());
 
-    public void setEnergy(double generating, double consuming) {
+    public void setEnergy(double consuming, double generating) {
         SVGRectElement svgRectElement = (SVGRectElement) DOM.getElementById("energyBarWidgetBar");
         double factor = MathHelper.clamp(consuming / generating, 0.0, 1.0);
 

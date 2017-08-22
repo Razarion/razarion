@@ -76,4 +76,8 @@ public interface GameLogicListener {
 
     default void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
     }
+
+    default void onEnergyStateChanged(PlayerBase base, int consuming, int generating) {
+
+    }
 }

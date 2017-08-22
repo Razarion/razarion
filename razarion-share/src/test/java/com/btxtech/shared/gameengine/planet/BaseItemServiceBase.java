@@ -14,7 +14,9 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
@@ -30,7 +32,6 @@ import org.easymock.EasyMock;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,8 @@ public class BaseItemServiceBase {
     public static final int BUILDER_ITEM_TYPE_ID = 1;
     public static final int FACTORY_ITEM_TYPE_ID = 2;
     public static final int ATTACKER_ITEM_TYPE_ID = 3;
+    public static final int GENERATOR_ITEM_TYPE_ID = 4;
+    public static final int CONSUMER_ITEM_TYPE_ID = 5;
     protected static final int LEVEL_ID_1 = 1;
     private BaseItemService baseItemService;
     private SyncItemContainerService syncItemContainerService;
@@ -109,13 +112,19 @@ public class BaseItemServiceBase {
         baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, slaveSyncItemInfo, PlanetActivationEvent.Type.INITIALIZE));
     }
 
-    public static void setupItemTypeService(ItemTypeService itemTypeService) {
+    public static List<BaseItemType> setupBaseItemType() {
         List<BaseItemType> baseItemTypes = new ArrayList<>();
         setupBuilder(baseItemTypes);
         setupFactory(baseItemTypes);
         setupAttacker(baseItemTypes);
+        setupGenerator(baseItemTypes);
+        setupConsumer(baseItemTypes);
+        return baseItemTypes;
+    }
+
+    public static void setupItemTypeService(ItemTypeService itemTypeService) {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setBaseItemTypes(baseItemTypes);
+        staticGameConfig.setBaseItemTypes(setupBaseItemType());
         itemTypeService.onGameEngineInit(new StaticGameInitEvent(staticGameConfig));
     }
 
@@ -123,7 +132,7 @@ public class BaseItemServiceBase {
         BaseItemType bulldozer = new BaseItemType();
         bulldozer.setHealth(40).setId(BUILDER_ITEM_TYPE_ID);
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(2).setSpeed(20.0));
-        bulldozer.setBuilderType(new BuilderType().setAbleToBuildIds(Collections.singletonList(FACTORY_ITEM_TYPE_ID)).setAnimationOrigin(new Vertex(3, 5, 17)).setProgress(5.1).setRange(2.7));
+        bulldozer.setBuilderType(new BuilderType().setAbleToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID)).setAnimationOrigin(new Vertex(3, 5, 17)).setProgress(5).setRange(2.7));
         baseItemTypes.add(bulldozer);
     }
 
@@ -143,6 +152,22 @@ public class BaseItemServiceBase {
         baseItemTypes.add(attacker);
     }
 
+    public static void setupGenerator(List<BaseItemType> baseItemTypes) {
+        BaseItemType consumer = new BaseItemType();
+        consumer.setHealth(15).setBuildup(10).setId(GENERATOR_ITEM_TYPE_ID);
+        consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(2));
+        consumer.setGeneratorType(new GeneratorType().setWattage(80));
+        baseItemTypes.add(consumer);
+    }
+
+    public static void setupConsumer(List<BaseItemType> baseItemTypes) {
+        BaseItemType consumer = new BaseItemType();
+        consumer.setHealth(15).setBuildup(20).setId(CONSUMER_ITEM_TYPE_ID);
+        consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(1.5));
+        consumer.setConsumerType(new ConsumerType().setWattage(60));
+        baseItemTypes.add(consumer);
+    }
+
     public BaseItemService getBaseItemService() {
         return baseItemService;
     }
@@ -155,21 +180,25 @@ public class BaseItemServiceBase {
         return itemTypeService.getBaseItemType(baseItemTypeId);
     }
 
-    private List<LevelConfig> setupLevelConfigs() {
+    public static List<LevelConfig> setupLevelConfigs() {
         List<LevelConfig> levelConfigs = new ArrayList<>();
         Map<Integer, Integer> level1Limitation = new HashMap<>();
         level1Limitation.put(BUILDER_ITEM_TYPE_ID, 1);
         level1Limitation.put(FACTORY_ITEM_TYPE_ID, 2);
         level1Limitation.put(ATTACKER_ITEM_TYPE_ID, 5);
+        level1Limitation.put(GENERATOR_ITEM_TYPE_ID, 6);
+        level1Limitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         levelConfigs.add(new LevelConfig().setLevelId(LEVEL_ID_1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
         return levelConfigs;
     }
 
-    private Map<Integer, Integer> setupItemTypeLimitations() {
+    public static Map<Integer, Integer> setupItemTypeLimitations() {
         Map<Integer, Integer> levelLimitation = new HashMap<>();
         levelLimitation.put(BUILDER_ITEM_TYPE_ID, 1);
         levelLimitation.put(FACTORY_ITEM_TYPE_ID, 2);
         levelLimitation.put(ATTACKER_ITEM_TYPE_ID, 5);
+        levelLimitation.put(GENERATOR_ITEM_TYPE_ID, 6);
+        levelLimitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         return levelLimitation;
     }
 
@@ -177,7 +206,7 @@ public class BaseItemServiceBase {
         SyncBaseItem syncBaseItem = new SyncBaseItem();
         SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
         SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
-        syncBaseItem.init(-99,null, syncPhysicalMovable);
+        syncBaseItem.init(-99, null, syncPhysicalMovable);
         return syncBaseItem;
     }
 }

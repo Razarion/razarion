@@ -4,8 +4,6 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
-import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -71,5 +69,9 @@ public class CockpitService {
 
     public void onItemCountChanged(int itemCount, int houseSpace) {
         sideCockpit.displayItemCount(itemCount, houseSpace);
+    }
+
+    public void onEnergyChanged(int consuming, int generating) {
+        sideCockpit.displayEnergy(consuming, generating);
     }
 }

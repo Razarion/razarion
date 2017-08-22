@@ -580,4 +580,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
         sendToClient(GameEngineControlPackage.Command.QUEST_PROGRESS, questProgressInfo);
     }
+
+    @Override
+    public void onEnergyStateChanged(PlayerBase base, int consuming, int generating) {
+        if (playerBase != null && playerBase.equals(base)) {
+            sendToClient(GameEngineControlPackage.Command.ENERGY_CHANGED, consuming, generating);
+        }
+    }
 }

@@ -7,6 +7,7 @@ import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -73,6 +74,18 @@ public class SimpleTestEnvironment {
             Object object = field.get(bean);
             field.setAccessible(false);
             return object;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object callPrivateMethod(String methodName, Object bean, Class[] paramClasses, Object[] params) {
+        try {
+            Method method = bean.getClass().getDeclaredMethod(methodName, paramClasses);
+            method.setAccessible(true);
+            Object r = method.invoke(bean, params);
+            method.setAccessible(false);
+            return r;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
