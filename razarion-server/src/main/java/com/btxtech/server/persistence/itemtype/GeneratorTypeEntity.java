@@ -18,13 +18,14 @@ public class GeneratorTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private int wattage;
 
     public GeneratorType toGeneratorType() {
-        return null;
+        return new GeneratorType().setWattage(wattage);
     }
 
     public void fromGeneratorType(GeneratorType generatorType) {
-
+        wattage = generatorType.getWattage();
     }
 
     @Override

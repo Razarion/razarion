@@ -24,13 +24,13 @@ import java.util.Collection;
 public class VertexBox implements HasValue<Vertex> {
     @Inject
     @DataField
-    private DoubleBox xField;
+    private CommaDoubleBox xField;
     @Inject
     @DataField
-    private DoubleBox yField;
+    private CommaDoubleBox yField;
     @Inject
     @DataField
-    private DoubleBox zField;
+    private CommaDoubleBox zField;
     private Collection<ValueChangeHandler<Vertex>> handlers = new ArrayList<>();
 
     @Override

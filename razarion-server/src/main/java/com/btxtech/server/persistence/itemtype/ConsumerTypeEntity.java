@@ -18,13 +18,14 @@ public class ConsumerTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private int wattage;
 
     public ConsumerType toConsumerType() {
-        return null;
+        return new ConsumerType().setWattage(wattage);
     }
 
     public void fromConsumerType(ConsumerType consumerType) {
-
+        wattage = consumerType.getWattage();
     }
 
     @Override

@@ -1,8 +1,15 @@
 package com.btxtech.client.editor.itemtype;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
+import com.btxtech.client.editor.widgets.childpanel.ChildContainer;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -39,6 +46,24 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
     @Inject
     @DataField
     private Shape3DReferenceFiled spawnShape3DIdReferenceFiled;
+    @Inject
+    @DataField
+    private ChildContainer<ConsumerType> consumerTypePanelChildTable;
+    @Inject
+    @DataField
+    private ChildContainer<BuilderType> builderTypeChildContainer;
+    @Inject
+    @DataField
+    private ChildContainer<FactoryType> factoryTypeChildContainer;
+    @Inject
+    @DataField
+    private ChildContainer<GeneratorType> generatorTypeChildContainer;
+    @Inject
+    @DataField
+    private ChildContainer<HarvesterType> harvesterTypeChildContainer;
+    @Inject
+    @DataField
+    private ChildContainer<WeaponType> weaponTypeChildContainer;
 
     @Override
     public void init(BaseItemType baseItemType) {
@@ -51,6 +76,12 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
             baseItemType.setSpawnShape3DId(shape3DId);
             baseItemRenderTask.onBaseItemTypeChanged(baseItemType);
         });
+        builderTypeChildContainer.init(baseItemType.getBuilderType(), baseItemType::setBuilderType, BuilderType::new, BuilderTypePanel.class);
+        factoryTypeChildContainer.init(baseItemType.getFactoryType(), baseItemType::setFactoryType, FactoryType::new, FactoryTypePanel.class);
+        harvesterTypeChildContainer.init(baseItemType.getHarvesterType(), baseItemType::setHarvesterType, HarvesterType::new, HarvesterTypePanel.class);
+        weaponTypeChildContainer.init(baseItemType.getWeaponType(), baseItemType::setWeaponType, WeaponType::new, WeaponTypePanel.class);
+        generatorTypeChildContainer.init(baseItemType.getGeneratorType(), baseItemType::setGeneratorType, GeneratorType::new, GeneratorTypePanel.class);
+        consumerTypePanelChildTable.init(baseItemType.getConsumerType(), baseItemType::setConsumerType, ConsumerType::new, ConsumerTypePanel.class);
     }
 
     @Override
