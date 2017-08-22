@@ -48,7 +48,17 @@ public class BaseItemTypeListWidget {
     }
 
     private void createAndSetModels() {
-        baseItemTypeList.setValue(baseItemTypes.stream().map(baseItemTypeId -> new BaseItemTypeListEntryModel(baseItemTypeId, this::removed)).collect(Collectors.toList()));
+        baseItemTypeList.setValue(baseItemTypes.stream().map(baseItemTypeId -> new BaseItemTypeListEntryModel(baseItemTypeId, this::update, this::removed)).collect(Collectors.toList()));
+    }
+
+    private void update() {
+        if (baseItemTypes == null) {
+            return;
+        }
+        baseItemTypes.clear();
+        for (BaseItemTypeListEntryModel baseItemTypeListEntryModel : baseItemTypeList.getValue()) {
+            baseItemTypes.add(baseItemTypeListEntryModel.getBaseItemTypeId());
+        }
     }
 
     @EventHandler("baseItemTypeListCreateButton")

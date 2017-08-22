@@ -8,10 +8,12 @@ import java.util.function.Consumer;
  */
 public class BaseItemTypeListEntryModel {
     private Integer baseItemTypeId;
-    private final Consumer<BaseItemTypeListEntryModel> removeCallback;
+    private Runnable changeCallback;
+    private Consumer<BaseItemTypeListEntryModel> removeCallback;
 
-    public BaseItemTypeListEntryModel(Integer baseItemTypeId, Consumer<BaseItemTypeListEntryModel> removeCallback) {
+    public BaseItemTypeListEntryModel(Integer baseItemTypeId, Runnable changeCallback, Consumer<BaseItemTypeListEntryModel> removeCallback) {
         this.baseItemTypeId = baseItemTypeId;
+        this.changeCallback = changeCallback;
         this.removeCallback = removeCallback;
     }
 
@@ -21,6 +23,7 @@ public class BaseItemTypeListEntryModel {
 
     public void setBaseItemTypeId(Integer baseItemTypeId) {
         this.baseItemTypeId = baseItemTypeId;
+        changeCallback.run();
     }
 
     public void remove() {
