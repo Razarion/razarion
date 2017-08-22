@@ -75,7 +75,7 @@ public class BuilderTypeEntity {
                 ableToBuilds = new ArrayList<>();
             }
             ableToBuilds.clear();
-            for (int ableToBuildId : builderType.getAbleToBuildIds()) {
+            for (Integer ableToBuildId : builderType.getAbleToBuildIds()) {
                 ableToBuilds.add(itemTypePersistence.readBaseItemTypeEntity(ableToBuildId));
             }
         } else {

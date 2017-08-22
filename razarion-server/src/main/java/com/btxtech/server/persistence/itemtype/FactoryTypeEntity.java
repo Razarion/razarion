@@ -51,7 +51,7 @@ public class FactoryTypeEntity {
                 ableToBuilds = new ArrayList<>();
             }
             ableToBuilds.clear();
-            for (int ableToBuildId : factoryType.getAbleToBuildIds()) {
+            for (Integer ableToBuildId : factoryType.getAbleToBuildIds()) {
                 ableToBuilds.add(itemTypePersistence.readBaseItemTypeEntity(ableToBuildId));
             }
         } else {
