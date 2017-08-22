@@ -1,5 +1,7 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
@@ -19,7 +21,9 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +34,8 @@ import java.util.stream.Collectors;
 public class PlanetPersistence {
     @Inject
     private TerrainElementPersistence terrainElementPersistence;
+    @Inject
+    private ItemTypePersistence itemTypePersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -45,6 +51,27 @@ public class PlanetPersistence {
     @SecurityCheck
     public void deletePlanetConfig(int planetId) {
         entityManager.remove(loadPlanet(planetId));
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void updatePlanetConfig(PlanetConfig planetConfig) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetConfig.getPlanetId());
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetConfig.getPlanetId());
+        }
+        planetEntity.setHouseSpace(planetConfig.getHouseSpace());
+        planetEntity.setStartRazarion(planetConfig.getStartRazarion());
+        planetEntity.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId()));
+        Map<BaseItemTypeEntity, Integer> limitation = planetEntity.getItemTypeLimitation();
+        if (limitation == null) {
+            limitation = new HashMap<>();
+        }
+        limitation.clear();
+        for (Map.Entry<Integer, Integer> entry : planetConfig.getItemTypeLimitation().entrySet()) {
+            limitation.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
+        }
+        planetEntity.setItemTypeLimitation(limitation);
     }
 
     @Transactional

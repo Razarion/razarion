@@ -139,6 +139,26 @@ public class PlanetEntity {
         this.miniMapImage = miniMapImage;
     }
 
+    public void setHouseSpace(int houseSpace) {
+        this.houseSpace = houseSpace;
+    }
+
+    public void setStartRazarion(int startRazarion) {
+        this.startRazarion = startRazarion;
+    }
+
+    public void setStartBaseItemType(BaseItemTypeEntity startBaseItemType) {
+        this.startBaseItemType = startBaseItemType;
+    }
+
+    public Map<BaseItemTypeEntity, Integer> getItemTypeLimitation() {
+        return itemTypeLimitation;
+    }
+
+    public void setItemTypeLimitation(Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
+        this.itemTypeLimitation = itemTypeLimitation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

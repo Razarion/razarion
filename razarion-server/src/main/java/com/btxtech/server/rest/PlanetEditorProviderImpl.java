@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -89,6 +90,16 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
         try {
             persistenceService.updatePlanetVisualConfig(planetId, planetVisualConfig);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updatePlanetConfig(PlanetConfig planetConfig) {
+        try {
+            persistenceService.updatePlanetConfig(planetConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

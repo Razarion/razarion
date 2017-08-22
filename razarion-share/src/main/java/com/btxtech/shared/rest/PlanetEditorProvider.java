@@ -4,7 +4,7 @@ import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -53,6 +53,11 @@ public interface PlanetEditorProvider {
     @Path("updatePlanetVisualConfig/{planetId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void updatePlanetVisualConfig(@PathParam("planetId") int planetId, PlanetVisualConfig planetVisualConfig);
+
+    @PUT
+    @Path("updatePlanetConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updatePlanetConfig(PlanetConfig planetConfig);
 
     @PUT
     @Path("updateMiniMapImage/{planetId}")
