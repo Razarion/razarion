@@ -13,20 +13,25 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
  */
 @Templated("EnergyBarWidget.html#energyBarWidget")
 public class EnergyBarWidget extends Composite {
+    private static final String SVG_BAR_RED = "energyBarWidgetBarRed";
+    private static final String SVG_BAR_GREEN = "energyBarWidgetBarGreen";
+    private static final String SVG_TEXT = "energyBarWidgetText";
     private static final double WIDTH = 100;
     // private Logger logger = Logger.getLogger(EnergyBarWidget.class.getName());
 
-    public void setEnergy(double consuming, double generating) {
-        SVGRectElement svgRectElement = (SVGRectElement) DOM.getElementById("energyBarWidgetBar");
-        double factor = MathHelper.clamp(consuming / generating, 0.0, 1.0);
-
-        svgRectElement.setAttribute("width", Integer.toString((int) (WIDTH * factor)));
-        if(factor < 1.0) {
-            svgRectElement.setAttribute("style", "fill: green");
+    public void setEnergy(int consuming, int generating) {
+        SVGTextElement svgTextElement = (SVGTextElement) DOM.getElementById(SVG_TEXT);
+        SVGRectElement svgRectElementGreen = (SVGRectElement) DOM.getElementById(SVG_BAR_GREEN);
+        SVGRectElement svgRectElementRed = (SVGRectElement) DOM.getElementById(SVG_BAR_RED);
+        if (consuming == 0 && generating == 0) {
+            svgTextElement.setTextContent("");
+            svgRectElementGreen.setAttribute("width", "0");
+            svgRectElementRed.setAttribute("width", "0");
         } else {
-            svgRectElement.setAttribute("style", "fill: red");
+            svgTextElement.setTextContent(consuming + "/" + generating);
+            double usage = MathHelper.clamp((double) consuming / (double) generating, 0.0, 1.0);
+            svgRectElementGreen.setAttribute("width", Integer.toString((int) WIDTH));
+            svgRectElementRed.setAttribute("width", Integer.toString((int) (WIDTH * usage)));
         }
-        SVGTextElement svgTextElement = (SVGTextElement) DOM.getElementById("energyBarWidgetText");
-        svgTextElement.setTextContent(consuming + "/" + generating);
     }
 }
