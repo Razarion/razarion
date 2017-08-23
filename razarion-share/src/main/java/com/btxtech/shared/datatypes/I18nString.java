@@ -1,6 +1,7 @@
 package com.btxtech.shared.datatypes;
 
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -47,6 +48,13 @@ public class I18nString {
         } else {
             return defaultWithFallback();
         }
+    }
+
+    public void setString(String language, String s) {
+        if (localizedStrings == null) {
+            localizedStrings = new HashMap<>();
+        }
+        localizedStrings.put(language, s);
     }
 
     // Only used for JAX-RS JSON

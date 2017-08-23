@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.components.ListComponent;
+import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -23,6 +24,7 @@ import java.util.function.Consumer;
 public class ChildTable<T> extends Composite {
     @Inject
     @DataField
+    @ListContainer("tbody")
     private ListComponent<ChildModel, ChildPanel> childTable;
     @Inject
     @DataField

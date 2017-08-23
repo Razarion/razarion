@@ -19,11 +19,19 @@ public class GradToRadConverter implements Converter<Double, Double> {
 
     @Override
     public Double toModelValue(Double widgetValue) {
-        return Math.toRadians(widgetValue);
+        if (widgetValue != null) {
+            return Math.toRadians(widgetValue);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public Double toWidgetValue(Double modelValue) {
-        return Math.toDegrees(modelValue);
+        if (modelValue != null) {
+            return Math.toDegrees(modelValue);
+        } else {
+            return null;
+        }
     }
 }

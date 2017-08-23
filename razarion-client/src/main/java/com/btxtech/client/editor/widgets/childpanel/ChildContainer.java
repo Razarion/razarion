@@ -80,7 +80,7 @@ public class ChildContainer<T> extends Composite {
             } else if (o instanceof Widget) {
                 childPanel.appendChild(GwtUtils.castElementToJBossNode(((Widget) o).getElement()));
             } else {
-                logger.severe("ChildPanel.setValue() can not handle: " + o.getClass());
+                logger.severe("ChildContainer.setValue() can not handle: " + o.getClass());
             }
         } else {
             childWrapperPanel.getStyle().setProperty("display", "none");

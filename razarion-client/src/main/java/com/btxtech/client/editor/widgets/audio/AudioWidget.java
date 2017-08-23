@@ -72,9 +72,9 @@ public class AudioWidget extends Composite {
     @DataField
     private Button chooseButton;
     private Integer audioId;
-    private BiConsumer<Integer, Integer> audioItemWidgetListener;
+    private Consumer<Integer> audioItemWidgetListener;
 
-    public void init(Integer audioId, BiConsumer<Integer, Integer> audioItemWidgetListener) {
+    public void init(Integer audioId, Consumer<Integer> audioItemWidgetListener) {
         this.audioId = audioId;
         this.audioItemWidgetListener = audioItemWidgetListener;
         if (audioId != null) {
@@ -105,7 +105,7 @@ public class AudioWidget extends Composite {
             if (button == DialogButton.Button.APPLY) {
                 Integer old = audioId;
                 audioId = id1;
-                audioItemWidgetListener.accept(old, audioId);
+                audioItemWidgetListener.accept(audioId);
             }
         }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
