@@ -182,6 +182,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             syncConsumer.synchronize(syncBaseItemInfo);
         }
 
+        if (syncGenerator != null) {
+            syncGenerator.synchronize(syncBaseItemInfo);
+        }
+
         if (syncItemContainer != null) {
             syncItemContainer.synchronize(syncBaseItemInfo);
         }
@@ -218,6 +222,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             syncConsumer.fillSyncItemInfo(syncBaseItemInfo);
         }
 
+        if (syncGenerator != null) {
+            syncGenerator.fillSyncItemInfo(syncBaseItemInfo);
+        }
+
         if (syncItemContainer != null) {
             syncItemContainer.fillSyncItemInfo(syncBaseItemInfo);
         }
@@ -251,10 +259,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
         if (syncBoxItemToPick != null) {
             return pickSyncBoxItem();
-        }
-
-        if (syncConsumer != null && !getSyncConsumer().isOperating()) {
-            return false;
         }
 
         if (syncWeapon != null && syncWeapon.isActive()) {
@@ -497,10 +501,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return;
         }
         if (syncConsumer != null) {
-            syncConsumer.setConsuming(true);
+            syncConsumer.onReady();
         }
         if (syncGenerator != null) {
-            syncGenerator.setGenerating(true);
+            syncGenerator.onReady();
         }
         gameLogicService.onBuildup(this);
     }

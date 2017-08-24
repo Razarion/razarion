@@ -8,8 +8,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -18,13 +18,11 @@ import java.util.HashSet;
 @Dependent
 public class BaseEnergy {
     @Inject
-    private BaseItemService baseItemService;
-    @Inject
     private GameLogicService gameLogicService;
-    private int generating;
     private int consuming;
-    private HashSet<SyncGenerator> syncGenerators = new HashSet<SyncGenerator>();
-    private HashSet<SyncConsumer> syncConsumers = new HashSet<SyncConsumer>();
+    private int generating;
+    private Set<SyncGenerator> syncGenerators = new HashSet<>();
+    private Set<SyncConsumer> syncConsumers = new HashSet<>();
     private final Object syncObject = new Object();
     private PlayerBase base;
 
@@ -34,79 +32,41 @@ public class BaseEnergy {
 
     public void generatorActivated(SyncGenerator syncGenerator) {
         syncGenerators.add(syncGenerator);
-        recalculateGeneration();
     }
 
     public void generatorDeactivated(SyncGenerator syncGenerator) {
         syncGenerators.remove(syncGenerator);
-        recalculateGeneration();
     }
 
     public void consumerActivated(SyncConsumer syncConsumer) {
         syncConsumers.add(syncConsumer);
-        recalculateConsumption();
-        syncConsumer.setOperationState(hasEnoughPower(generating, consuming));
     }
 
     public void consumerDeactivated(SyncConsumer syncConsumer) {
         syncConsumers.remove(syncConsumer);
-        recalculateConsumption();
     }
 
-    protected void recalculateGeneration() {
+    public void recalculate() {
+        int newConsuming;
         synchronized (syncObject) {
-            int tmpGenerating = syncGenerators.stream().mapToInt(SyncGenerator::getWattage).sum();
-            if (tmpGenerating == generating) {
-                return;
-            }
-            int oldGenerating = generating;
-            generating = tmpGenerating;
-
-            if (hasEnoughPower(oldGenerating, consuming) != hasEnoughPower(generating, consuming)) {
-                setConsumerState(hasEnoughPower(generating, consuming));
-            }
-            gameLogicService.onEnergyStateChanged(base, consuming, generating);
+            newConsuming = syncConsumers.stream().mapToInt(SyncConsumer::getWattage).sum();
         }
-    }
-
-    protected void recalculateConsumption() {
+        int newGenerating;
         synchronized (syncObject) {
-            int tmpConsuming = syncConsumers.stream().mapToInt(SyncConsumer::getWattage).sum();
-            if (tmpConsuming == consuming) {
-                return;
-            }
-            int oldConsuming = consuming;
-            consuming = tmpConsuming;
-
-            if (hasEnoughPower(generating, oldConsuming) != hasEnoughPower(generating, consuming)) {
-                setConsumerState(hasEnoughPower(generating, consuming));
-            }
-            gameLogicService.onEnergyStateChanged(base, consuming, generating);
+            newGenerating = syncGenerators.stream().mapToInt(SyncGenerator::getWattage).sum();
         }
-    }
 
-    private void setConsumerState(boolean operationState) {
-        synchronized (syncObject) {
-            for (SyncConsumer syncConsumer : syncConsumers) {
-                syncConsumer.setOperationState(operationState);
-                if (operationState) {
-                    baseItemService.addToActiveItemQueue(syncConsumer.getSyncBaseItem());
-                }
-            }
+        if(newConsuming == consuming && newGenerating == generating) {
+            return;
         }
+        consuming = newConsuming;
+        generating = newGenerating;
+        gameLogicService.onEnergyStateChanged(base, consuming, generating);
     }
 
-    private boolean hasEnoughPower(int generating, int consuming) {
-        return generating >= consuming;
-    }
-
-    protected Collection<SyncGenerator> getSyncGenerators() {
-        return syncGenerators;
-    }
-
-    protected Collection<SyncConsumer> getSyncConsumers() {
-        return syncConsumers;
-    }
+//    private boolean hasEnoughPower(int generating, int consuming) {
+//        return generating >= consuming;
+//    }
 
     public int getGenerating() {
         return generating;
@@ -114,13 +74,5 @@ public class BaseEnergy {
 
     public int getConsuming() {
         return consuming;
-    }
-
-    protected void setGenerating(int generating) {
-        this.generating = generating;
-    }
-
-    protected void setConsuming(int consuming) {
-        this.consuming = consuming;
     }
 }

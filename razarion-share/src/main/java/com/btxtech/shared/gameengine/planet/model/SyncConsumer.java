@@ -14,8 +14,10 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 
 import javax.enterprise.context.Dependent;
@@ -30,9 +32,9 @@ import javax.inject.Inject;
 public class SyncConsumer extends SyncBaseAbility {
     @Inject
     private EnergyService energyService;
+    @Inject
+    private BaseItemService baseItemService;
     private ConsumerType consumerType;
-    private boolean consuming = false;
-    private boolean operationState;
 
     public void init(ConsumerType consumerType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -41,31 +43,19 @@ public class SyncConsumer extends SyncBaseAbility {
 
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
-        operationState = syncBaseItemInfo.isOperationState();
+        if (getSyncBaseItem().isBuildup() && !getSyncBaseItem().isSpawning()) {
+            energyService.consumerActivated(this);
+        }
     }
 
     @Override
     public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
-        syncBaseItemInfo.setOperationState(operationState);
+        // Ignore
     }
 
-    public boolean isOperating() {
-        return operationState;
-    }
-
-    public void setOperationState(boolean operationState) {
-        this.operationState = operationState;
-    }
-
-    public void setConsuming(boolean consuming) {
-        boolean oldState = this.consuming;
-        this.consuming = consuming;
-        if (oldState != consuming) {
-            if (consuming) {
-                energyService.consumerActivated(this);
-            } else {
-                energyService.consumerDeactivated(this);
-            }
+    public void onReady() {
+        if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+            energyService.consumerActivated(this);
         }
     }
 

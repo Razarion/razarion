@@ -32,7 +32,6 @@ public interface GameLogicListener {
     }
 
     default void onSyncBaseItemKilledSlave(SyncBaseItem target) {
-
     }
 
     default void onSyncBaseItemRemoved(SyncBaseItem target) {

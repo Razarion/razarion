@@ -5,10 +5,12 @@ import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -59,6 +61,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private TerrainService terrainService;
     @Inject
     private ResourceService resourceService;
+    @Inject
+    private EnergyService energyService;
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
@@ -101,8 +105,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
             questService.checkPositionCondition();
             pathingService.tick();
             baseItemService.tick();
-            boxService.tick();
             projectileService.tick();
+            energyService.tick();
+            boxService.tick();
             notifyTickListeners();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -139,9 +144,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
         SlaveSyncItemInfo slaveSyncItemInfo = new SlaveSyncItemInfo();
         slaveSyncItemInfo.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
         slaveSyncItemInfo.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
-        PlayerBaseFull playerBaseFull = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
-        if (playerBaseFull != null) {
-            slaveSyncItemInfo.setActualBaseId(playerBaseFull.getBaseId());
+        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+        if (playerBase != null) {
+            slaveSyncItemInfo.setActualBaseId(playerBase.getBaseId());
         }
         slaveSyncItemInfo.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
         return slaveSyncItemInfo;

@@ -4,15 +4,10 @@ import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.cdimock.TestNativeTerrainShapeAccess;
 import com.btxtech.shared.cdimock.TestSimpleExecutorService;
 import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.HumanPlayerId;
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.MasterPlanetConfig;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -30,102 +25,69 @@ import java.util.List;
 
 /**
  * Created by Beat
- * on 21.08.2017.
+ * on 23.08.2017.
  */
 public class WeldBaseTest {
-    public static final int GROUND_SKELETON_ID = 1;
     private WeldContainer weldContainer;
     private TestSimpleExecutorService testSimpleExecutorService;
     private BaseItemService baseItemService;
-    private int nextHumanPlayerId;
     private TestGameLogicListener testGameLogicListener;
+    private PlanetConfig planetConfig;
+    private StaticGameConfig staticGameConfig;
+    private PlanetService planetService;
 
-    protected void setupEnvironment() {
-        nextHumanPlayerId = 1;
-        PlanetConfig planetConfig = setupPlanetConfig();
+    protected void setupEnvironment(StaticGameConfig staticGameConfig, PlanetConfig planetConfig) {
+        this.staticGameConfig = staticGameConfig;
+        this.planetConfig = planetConfig;
         // Init weld
         Weld weld = new Weld();
         weldContainer = weld.initialize();
         testSimpleExecutorService = getWeldBean(TestSimpleExecutorService.class);
+        // Init static game
         baseItemService = getWeldBean(BaseItemService.class);
-        // Setup game environment
-        weldContainer.event().select(StaticGameInitEvent.class).fire(new StaticGameInitEvent(setupStaticGameConfig()));
-        getWeldBean(TestNativeTerrainShapeAccess.class).setPlanetConfig(planetConfig);
-        getWeldBean(PlanetService.class).initialise(planetConfig, GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> {
-            getWeldBean(PlanetService.class).start(null);
-        }, null);
+        planetService = getWeldBean(PlanetService.class);
         testGameLogicListener = new TestGameLogicListener();
         getWeldBean(GameLogicService.class).setGameLogicListener(testGameLogicListener);
-        ////
-//        BaseItemServiceBase.setupItemTypeService(getWeldBean(ItemTypeService.class));
-//        StaticGameConfig staticGameConfig = );
-//        getWeldBean(TerrainTypeService.class).init(staticGameConfig);
-//        getWeldBean(LevelService.class).init(staticGameConfig);
-//        getWeldBean(TerrainService.class).setup(planetConfig, () -> baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, GameEngineMode.MASTER, null, null, PlanetActivationEvent.Type.INITIALIZE)), null);
+        fireStaticGameConfig(staticGameConfig);
+        getWeldBean(TestNativeTerrainShapeAccess.class).setPlanetConfig(planetConfig);
     }
 
-    protected <T> T getWeldBean(Class<T> clazz) {
+    public <T> T getWeldBean(Class<T> clazz) {
         return weldContainer.instance().select(clazz).get();
     }
 
-    protected TestSimpleExecutorService getTestSimpleExecutorService() {
+    public TestSimpleExecutorService getTestSimpleExecutorService() {
         return testSimpleExecutorService;
     }
 
-    protected CommandService getCommandService() {
-        return getWeldBean(CommandService.class);
+    public BaseItemService getBaseItemService() {
+        return baseItemService;
     }
 
-    protected void tickBaseItemService() {
-        baseItemService.tick();
-    }
-
-    protected List<SyncBaseItemInfo> getSyncBaseItemInfos() {
+    public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
         return baseItemService.getSyncBaseItemInfos();
     }
 
-    protected PlayerBaseFull createHumanBaseWithBaseItem(DecimalPosition position) {
-        return baseItemService.createHumanBaseWithBaseItem(BaseItemServiceBase.LEVEL_ID_1, new HumanPlayerId().setPlayerId(nextHumanPlayerId++), "test base", position);
-    }
-
-    protected void removeSyncItem(SyncBaseItem syncBaseItem) {
+    public void removeSyncItem(SyncBaseItem syncBaseItem) {
         baseItemService.removeSyncItem(syncBaseItem);
     }
 
-    protected BaseItemType getBaseItemType(int baseItemTypeId) {
-        return getWeldBean(ItemTypeService.class).getBaseItemType(baseItemTypeId);
+    public void fireStaticGameConfig(StaticGameConfig staticGameConfig) {
+        weldContainer.event().select(StaticGameInitEvent.class).fire(new StaticGameInitEvent(staticGameConfig));
     }
 
-    private StaticGameConfig setupStaticGameConfig() {
-        StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setId(GROUND_SKELETON_ID).setHeights(new double[][]{{0.0}}).setHeightXCount(1).setHeightYCount(1));
-        staticGameConfig.setLevelConfigs(BaseItemServiceBase.setupLevelConfigs());
-        staticGameConfig.setBaseItemTypes(BaseItemServiceBase.setupBaseItemType());
-        return staticGameConfig;
-    }
-
-    private PlanetConfig setupPlanetConfig() {
-        PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setItemTypeLimitation(BaseItemServiceBase.setupItemTypeLimitations());
-        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 1000, 1000));
-        planetConfig.setPlayGround(new Rectangle2D(0, 0, 6, 6));
-        planetConfig.setStartBaseItemTypeId(BaseItemServiceBase.BUILDER_ITEM_TYPE_ID);
-        return planetConfig;
-    }
-
-    private MasterPlanetConfig setupMasterPlanetConfig() {
-        MasterPlanetConfig masterPlanetConfig = new MasterPlanetConfig();
-        masterPlanetConfig.setResourceRegionConfigs(new ArrayList<>());
-        return masterPlanetConfig;
-    }
-
-    protected boolean isBaseServiceActive() {
+    public boolean isBaseServiceActive() {
         Collection<SyncBaseItem> activeItems = (Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItems", baseItemService);
         Collection<SyncBaseItem> activeItemQueue = (Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService);
         return !activeItems.isEmpty() || !activeItemQueue.isEmpty();
     }
 
-    protected void tickBaseService() {
+    public void tickPlanetService() {
+        TestSimpleScheduledFuture gameEngine = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.GAME_ENGINE);
+        gameEngine.invokeRun();
+    }
+
+    public void tickPlanetServiceBaseServiceActive() {
         long tickCount = 0;
         TestSimpleScheduledFuture gameEngine = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.GAME_ENGINE);
         while (isBaseServiceActive()) {
@@ -135,14 +97,14 @@ public class WeldBaseTest {
         System.out.println("Tick count: " + tickCount);
     }
 
-    protected void tickBaseService(long count) {
+    public void tickPlanetService(long count) {
         TestSimpleScheduledFuture gameEngine = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.GAME_ENGINE);
         for (long i = 0; i < count; i++) {
             gameEngine.invokeRun();
         }
     }
 
-    protected SyncBaseItem findSyncBaseItem(PlayerBaseFull playerBaseFull, int baseItemTypeId, SyncBaseItem... exclusion) {
+    public SyncBaseItem findSyncBaseItem(PlayerBaseFull playerBaseFull, int baseItemTypeId, SyncBaseItem... exclusion) {
         List<SyncBaseItem> exclusionList = Arrays.asList(exclusion);
         List<SyncBaseItem> found = new ArrayList<>();
 
@@ -165,7 +127,27 @@ public class WeldBaseTest {
         return found.get(0);
     }
 
-    protected TestGameLogicListener getTestGameLogicListener() {
+    public TestGameLogicListener getTestGameLogicListener() {
         return testGameLogicListener;
+    }
+
+    public BaseItemType getBaseItemType(int baseItemTypeId) {
+        return getWeldBean(ItemTypeService.class).getBaseItemType(baseItemTypeId);
+    }
+
+    public PlanetConfig getPlanetConfig() {
+        return planetConfig;
+    }
+
+    public StaticGameConfig getStaticGameConfig() {
+        return staticGameConfig;
+    }
+
+    protected PlanetService getPlanetService() {
+        return planetService;
+    }
+
+    public PlayerBase getPlayerBase(UserContext userContext) {
+        return baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
     }
 }

@@ -85,7 +85,7 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
     }
 
     private void addInitial() {
-        PlayerBaseFull playerBase = baseItemService.getPlayerBase4HumanPlayerId(humanPlayerId);
+        PlayerBaseFull playerBase = baseItemService.getPlayerBaseFull4HumanPlayerId(humanPlayerId);
         if (playerBase == null) {
             return;
         }

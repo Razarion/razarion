@@ -95,7 +95,10 @@ public class PlayerBase {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof PlayerBase)) {
             return false;
         }
 

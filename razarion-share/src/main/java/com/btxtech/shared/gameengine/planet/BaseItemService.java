@@ -109,7 +109,7 @@ public class BaseItemService {
     }
 
     private void surrenderHumanBase(HumanPlayerId humanPlayerId) {
-        PlayerBaseFull playerBase = getPlayerBase4HumanPlayerId(humanPlayerId);
+        PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
         if (playerBase != null) {
             gameLogicService.onSurrenderBase(playerBase);
             while (!playerBase.getItems().isEmpty()) {
@@ -126,7 +126,7 @@ public class BaseItemService {
     }
 
     public void updateLevel(HumanPlayerId humanPlayerId, int levelId) {
-        PlayerBaseFull playerBase = getPlayerBase4HumanPlayerId(humanPlayerId);
+        PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
         if (playerBase == null) {
             throw new IllegalArgumentException("No base for humanPlayerId: " + humanPlayerId);
         }
@@ -236,7 +236,7 @@ public class BaseItemService {
     public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
         syncBaseItem.clearHealth();
         syncItemContainerService.destroySyncItem(syncBaseItem);
-        energyService.onBaseItemKilled(syncBaseItem);
+        energyService.onBaseItemRemoved(syncBaseItem);
         if (syncItemDeletedInfo.isExplode()) {
             gameLogicService.onSyncBaseItemKilledSlave(syncBaseItem);
         } else {
@@ -274,7 +274,7 @@ public class BaseItemService {
         PlayerBaseFull base = (PlayerBaseFull) target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
-        energyService.onBaseItemKilled(target);
+        energyService.onBaseItemRemoved(target);
         if (base.getItemCount() == 0) {
             gameLogicService.onBaseKilled(base, actor);
             synchronized (bases) {
@@ -290,7 +290,7 @@ public class BaseItemService {
         PlayerBaseFull base = (PlayerBaseFull) target.getBase();
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
-        energyService.onBaseItemKilled(target);
+        energyService.onBaseItemRemoved(target);
         if (base.getItemCount() == 0) {
             gameLogicService.onBaseRemoved(base);
             synchronized (bases) {
@@ -379,11 +379,22 @@ public class BaseItemService {
         return playerBase.getUsedHouseSpace() + itemCount2Add * toBeBuiltType.getConsumingHouseSpace() > playerBase.getHouseSpace() + planetConfig.getHouseSpace();
     }
 
-    public PlayerBaseFull getPlayerBase4HumanPlayerId(HumanPlayerId humanPlayerId) {
+    public PlayerBaseFull getPlayerBaseFull4HumanPlayerId(HumanPlayerId humanPlayerId) {
         synchronized (bases) {
             for (PlayerBase playerBase : bases.values()) {
                 if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(humanPlayerId)) {
                     return (PlayerBaseFull) playerBase;
+                }
+            }
+        }
+        return null;
+    }
+
+    public PlayerBase getPlayerBase4HumanPlayerId(HumanPlayerId humanPlayerId) {
+        synchronized (bases) {
+            for (PlayerBase playerBase : bases.values()) {
+                if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(humanPlayerId)) {
+                    return playerBase;
                 }
             }
         }
@@ -464,10 +475,6 @@ public class BaseItemService {
             }
 
             if (!syncBaseItem.isAlive()) {
-                return false;
-            }
-
-            if (syncBaseItem.getSyncConsumer() != null && !syncBaseItem.getSyncConsumer().isOperating()) {
                 return false;
             }
 

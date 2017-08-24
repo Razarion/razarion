@@ -20,7 +20,7 @@ public class BotServiceTest extends BaseBotServiceTest {
 
     @Test
     public void testSimpleBuildupDirectly() {
-        setupEnvironment();
+        setupMasterEnvironment();
         // Setup bot config
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -43,7 +43,7 @@ public class BotServiceTest extends BaseBotServiceTest {
 
     @Test
     public void testSimpleBuildupIndirectly() {
-        setupEnvironment();
+        setupMasterEnvironment();
         // Setup bot config
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
@@ -59,7 +59,7 @@ public class BotServiceTest extends BaseBotServiceTest {
         Assert.assertEquals(3, getSyncBaseItemInfos().size());
         for (int i = 0; i < 1000; i++) {
             tickBotRunner();
-            tickBaseItemService();
+            tickPlanetService();
         }
         Assert.assertEquals(9, getSyncBaseItemInfos().size());
 

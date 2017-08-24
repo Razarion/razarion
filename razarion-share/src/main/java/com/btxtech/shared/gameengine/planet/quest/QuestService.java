@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;

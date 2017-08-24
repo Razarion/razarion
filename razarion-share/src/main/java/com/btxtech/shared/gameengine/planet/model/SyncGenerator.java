@@ -13,8 +13,10 @@
 
 package com.btxtech.shared.gameengine.planet.model;
 
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 
 import javax.enterprise.context.Dependent;
@@ -29,8 +31,9 @@ import javax.inject.Inject;
 public class SyncGenerator extends SyncBaseAbility {
     @Inject
     private EnergyService energyService;
+    @Inject
+    private BaseItemService baseItemService;
     private GeneratorType generatorType;
-    private boolean generating = false;
 
     public void init(GeneratorType generatorType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -39,7 +42,9 @@ public class SyncGenerator extends SyncBaseAbility {
 
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) {
-        // Ignore
+        if(getSyncBaseItem().isBuildup() && !getSyncBaseItem().isSpawning()) {
+            energyService.generatorActivated(this);
+        }
     }
 
     @Override
@@ -47,15 +52,9 @@ public class SyncGenerator extends SyncBaseAbility {
         // Ignore
     }
 
-    public void setGenerating(boolean generating) {
-        boolean oldState = this.generating;
-        this.generating = generating;
-        if (oldState != generating) {
-            if (generating) {
-                energyService.generatorActivated(this);
-            } else {
-                energyService.generatorDeactivated(this);
-            }
+    public void onReady() {
+        if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+            energyService.generatorActivated(this);
         }
     }
 

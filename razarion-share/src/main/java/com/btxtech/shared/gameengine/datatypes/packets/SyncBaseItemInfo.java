@@ -38,7 +38,6 @@ public class SyncBaseItemInfo {
     private double health;
     private double buildup;
     private Boolean followTarget;
-    private Boolean operationState;
     private double reloadProgress;
     private DecimalPosition rallyPoint;
     private List<Integer> containedItems;
@@ -144,15 +143,6 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo setFollowTarget(boolean followTarget) {
         this.followTarget = followTarget;
-        return this;
-    }
-
-    public Boolean isOperationState() {
-        return operationState;
-    }
-
-    public SyncBaseItemInfo setOperationState(Boolean operationState) {
-        this.operationState = operationState;
         return this;
     }
 
@@ -269,7 +259,6 @@ public class SyncBaseItemInfo {
                 " health:" + health +
                 " buildup:" + buildup +
                 " followTarget:" + followTarget +
-                " operationState:" + operationState +
                 " reloadProgress:" + reloadProgress +
                 " rallyPoint:" + rallyPoint +
                 " containedItems:" + intCollectionAsString() +

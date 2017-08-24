@@ -47,7 +47,7 @@ public class BaseItemServiceBase {
     public static final int ATTACKER_ITEM_TYPE_ID = 3;
     public static final int GENERATOR_ITEM_TYPE_ID = 4;
     public static final int CONSUMER_ITEM_TYPE_ID = 5;
-    protected static final int LEVEL_ID_1 = 1;
+    public static final int LEVEL_ID_1 = 1;
     private BaseItemService baseItemService;
     private SyncItemContainerService syncItemContainerService;
     private ItemTypeService itemTypeService;
