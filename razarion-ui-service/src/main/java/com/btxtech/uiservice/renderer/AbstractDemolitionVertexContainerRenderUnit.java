@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.renderer;
 
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 import java.util.logging.Logger;
 
@@ -25,6 +25,9 @@ public abstract class AbstractDemolitionVertexContainerRenderUnit extends Abstra
         }
         if (!vertexContainer.hasTextureId()) {
             logger.warning("No texture id: " + vertexContainer.getKey());
+            return;
+        }
+        if (baseItemDemolitionImageId == null) {
             return;
         }
 

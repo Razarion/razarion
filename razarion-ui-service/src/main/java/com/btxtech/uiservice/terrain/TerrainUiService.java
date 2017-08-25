@@ -174,7 +174,12 @@ public class TerrainUiService {
 
     public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition) {
         Index terrainTile = TerrainUtil.toTile(terrainPosition);
-        return displayTerrainTiles.get(terrainTile).isTerrainFree(terrainPosition);
+        UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
+        if (uiTerrainTile == null) {
+            throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(DecimalPosition) UiTerrainTile not loaded: " + terrainTile);
+        }
+
+        return uiTerrainTile.isTerrainFree(terrainPosition);
     }
 
     public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
@@ -182,7 +187,7 @@ public class TerrainUiService {
             Index terrainTile = TerrainUtil.toTile(terrainPosition);
             UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
             if (uiTerrainTile == null) {
-                throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay() UiTerrainTile not loaded: " + terrainTile);
+                throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(Collection<DecimalPosition>, BaseItemType) UiTerrainTile not loaded: " + terrainTile);
             }
             if (!uiTerrainTile.isTerrainFree(terrainPosition/*, baseItemType*/)) { // TODO baseItemType
                 return false;
