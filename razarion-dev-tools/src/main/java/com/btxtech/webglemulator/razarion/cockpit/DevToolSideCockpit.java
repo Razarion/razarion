@@ -2,6 +2,7 @@ package com.btxtech.webglemulator.razarion.cockpit;
 
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.SideCockpit;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import javafx.application.Platform;
 
@@ -61,5 +62,10 @@ public class DevToolSideCockpit implements SideCockpit {
     @Override
     public void displayEnergy(int consuming, int generating) {
         System.out.println("++++ display energy: " + generating + " / " + consuming);
+    }
+
+    @Override
+    public void showRadar(GameUiControl.RadarState radarState) {
+        System.out.println("++++ showRadar: " + radarState);
     }
 }

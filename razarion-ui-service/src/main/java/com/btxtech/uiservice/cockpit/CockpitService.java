@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.uiservice.control.GameUiControl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -73,5 +74,9 @@ public class CockpitService {
 
     public void onEnergyChanged(int consuming, int generating) {
         sideCockpit.displayEnergy(consuming, generating);
+    }
+
+    public void showRadar(GameUiControl.RadarState radarState) {
+        sideCockpit.showRadar(radarState);
     }
 }

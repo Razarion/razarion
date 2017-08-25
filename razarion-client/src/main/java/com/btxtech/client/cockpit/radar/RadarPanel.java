@@ -27,8 +27,8 @@ import javax.inject.Inject;
  */
 @Templated("RadarPanel.html#radar")
 public class RadarPanel extends Composite implements ViewService.ViewFieldListener {
-    private static final int WIDTH = 200;
-    private static final int HEIGHT = 200;
+    public static final int WIDTH = 200;
+    public static final int HEIGHT = 200;
     public static final int MINI_MAP_IMAGE_WIDTH = 1000;
     public static final int MINI_MAP_IMAGE_HEIGHT = 1000;
     private static final int MAX_ZOOM = 10;

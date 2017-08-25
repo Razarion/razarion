@@ -90,6 +90,8 @@ public class BaseItemTypeEntity {
     private ItemContainerTypeEntity itemContainerType;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private HouseTypeEntity houseType;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private SpecialTypeEntity specialType;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "baseItemType", nullable = false)
     @OrderColumn(name = "orderColumn")
@@ -155,6 +157,9 @@ public class BaseItemTypeEntity {
         }
         if (houseType != null) {
             baseItemType.setHouseType(houseType.toHouseType());
+        }
+        if (specialType != null) {
+            baseItemType.setSpecialType(specialType.toSpecialType());
         }
         if (explosionParticleConfigId_TMP != null) {
             baseItemType.setExplosionParticleConfigId(explosionParticleConfigId_TMP);
@@ -258,6 +263,14 @@ public class BaseItemTypeEntity {
             houseType.fromHouseType(baseItemType.getHouseType());
         } else {
             houseType = null;
+        }
+        if (baseItemType.getSpecialType() != null) {
+            if (specialType == null) {
+                specialType = new SpecialTypeEntity();
+            }
+            specialType.fromSpecialType(baseItemType.getSpecialType());
+        } else {
+            specialType = null;
         }
         if (demolitionStepEffectEntities == null) {
             demolitionStepEffectEntities = new ArrayList<>();

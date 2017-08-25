@@ -66,6 +66,7 @@ public class BaseItemUiService {
     private int houseSpace;
     private int usedHouseSpace;
     private int itemCount;
+    private boolean hasRadar;
     private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
@@ -140,11 +141,15 @@ public class BaseItemUiService {
         weaponTurretModelMatrices.clear();
         int tmpItemCount = 0;
         int usedHouseSpace = 0;
+        boolean radar = false;
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (isMyOwnProperty(syncBaseItem)) {
                 tmpItemCount++;
                 usedHouseSpace += baseItemType.getConsumingHouseSpace();
+                if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && syncBaseItem.checkBuildup() && !syncBaseItem.checkSpawning()) {
+                    radar = true;
+                }
             }
             updateSyncItemMonitor(syncBaseItem);
             if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
@@ -199,6 +204,10 @@ public class BaseItemUiService {
         if (this.usedHouseSpace != usedHouseSpace) {
             this.usedHouseSpace = usedHouseSpace;
             itemCockpitService.onStateChanged();
+        }
+        if (hasRadar != radar) {
+            hasRadar = radar;
+            gameUiControl.onRadarStateChanged(hasRadar);
         }
     }
 
@@ -409,4 +418,7 @@ public class BaseItemUiService {
         return result;
     }
 
+    public boolean hasRadar() {
+        return hasRadar;
+    }
 }

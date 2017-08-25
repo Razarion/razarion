@@ -35,6 +35,7 @@ public class BaseItemType extends ItemType {
     private ConsumerType consumerType;
     private ItemContainerType itemContainerType;
     private HouseType houseType;
+    private SpecialType specialType;
     private double dropBoxPossibility;
     private double boxPickupRange;
     private Integer unlockCrystals;
@@ -161,6 +162,15 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setHouseType(HouseType houseType) {
         this.houseType = houseType;
+        return this;
+    }
+
+    public SpecialType getSpecialType() {
+        return specialType;
+    }
+
+    public BaseItemType setSpecialType(SpecialType specialType) {
+        this.specialType = specialType;
         return this;
     }
 

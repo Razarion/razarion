@@ -89,6 +89,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private List<SceneConfig> scenes;
     private AbstractServerSystemConnection abstractServerSystemConnection;
     private GameEngineMode gameEngineMode;
+    private int consuming;
+    private int generating;
 
     public void setColdGameUiControlConfig(ColdGameUiControlConfig coldGameUiControlConfig) {
         this.coldGameUiControlConfig = coldGameUiControlConfig;
@@ -363,5 +365,32 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void onEnergyChanged(int consuming, int generating) {
         cockpitService.onEnergyChanged(consuming, generating);
+        this.consuming = consuming;
+        this.generating = generating;
+        handleRadarState(baseItemUiService.hasRadar());
+    }
+
+    public void onRadarStateChanged(boolean hasRadar) {
+        handleRadarState(hasRadar);
+    }
+
+    private void handleRadarState(boolean hasRadar) {
+        RadarState radarState;
+        if (!hasRadar) {
+            radarState = RadarState.NONE;
+        } else {
+            if (consuming <= generating) {
+                radarState = RadarState.WORKING;
+            } else {
+                radarState = RadarState.NO_POWER;
+            }
+        }
+        cockpitService.showRadar(radarState);
+    }
+
+    public enum RadarState {
+        NONE,
+        NO_POWER,
+        WORKING
     }
 }

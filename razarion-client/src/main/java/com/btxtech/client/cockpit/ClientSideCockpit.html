@@ -11,23 +11,34 @@
     <table>
         <tr>
             <td>Razarion</td>
-            <td><span id="resourceLabel" title="resourceTooltip"></span></td>
+            <td><span data-field="resourceLabel" title="resourceTooltip"></span></td>
         </tr>
         <tr>
             <td>Items</td>
-            <td><span id="itemCountLabel" title="itemCountLabelTooltip"></span></td>
+            <td><span data-field="itemCountLabel" title="itemCountLabelTooltip"></span></td>
         </tr>
         <tr>
             <td>XP</td>
-            <td><span id="xpLabel" title="xpTooltip"></span></td>
+            <td><span data-field="xpLabel" title="xpTooltip"></span></td>
         </tr>
         <tr>
             <td>Level</td>
-            <td><span id="levelLabel" title="levelTooltip"></span></td>
+            <td><span data-field="levelLabel" title="levelTooltip"></span></td>
         </tr>
         <tr>
             <td colspan="2">
-                <div id="energyBar"></div>
+                <div data-field="energyBar"></div>
+            </td>
+        </tr>
+        <tr data-field="radarPanelTableRow" style="display: none">
+            <td colspan="2">
+                <div data-field="radarPanel"></div>
+                <div style="display: none" data-field="radarNoEnergyDiv">
+                    <div data-field="radarNoEnergyInnerDiv"
+                         style="text-shadow: 0 0 3px #FF0000; width: 200px; height: 200px; background-color: black; background-image: url(images/RadarNoEnergy.gif); border: 1px solid #FFF; display: table-cell;    text-align: center;    vertical-align: middle">
+                        No Power
+                    </div>
+                </div>
             </td>
         </tr>
         <tr>
@@ -37,19 +48,14 @@
                 </button>
             </td>
             <td>
-                <button id="inventoryButton" class="image-button" title="inventorytooltip">
+                <button data-field="inventoryButton" class="image-button" title="inventorytooltip">
                     <img src="images/Inventory16.png">
                 </button>
             </td>
         </tr>
-        <tr>
+        <tr data-field="editorTableRow" style="display: none">
             <td colspan="2">
-                <div id="radarPanel"></div>
-            </td>
-        </tr>
-        <tr id="editorTableRow" style="display: none">
-            <td colspan="2">
-                <button id="editorButton">Editor</button>
+                <button data-field="editorButton">Editor</button>
             </td>
         </tr>
     </table>

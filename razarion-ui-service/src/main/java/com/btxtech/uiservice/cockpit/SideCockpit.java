@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.uiservice.control.GameUiControl;
 
 /**
  * Created by Beat
@@ -22,4 +23,6 @@ public interface SideCockpit {
     void displayItemCount(int itemCount, int houseSpace);
 
     void displayEnergy(int consuming, int generating);
+
+    void showRadar(GameUiControl.RadarState radarState);
 }

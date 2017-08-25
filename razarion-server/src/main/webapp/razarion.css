@@ -264,6 +264,16 @@ a:active {
     font-size: 80%;
 }
 
+.radarNoPowser {
+    text-shadow: 0 0 3px #000000;
+    background-color: black;
+    background-image: url(images/RadarNoEnergy.gif);
+    border: 1px solid #FFF;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
 /** ----- Quest ----- */
 @keyframes quest-sidebar-background-animation {
     0% {

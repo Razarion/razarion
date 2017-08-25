@@ -7,13 +7,17 @@ import com.btxtech.client.editor.EditorMenuDialog;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.uiservice.cockpit.SideCockpit;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.DialogButton;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.user.UserUiService;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -64,7 +68,16 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     private EnergyBarWidget energyBar;
     @Inject
     @DataField
+    private TableRow radarPanelTableRow;
+    @Inject
+    @DataField
     private RadarPanel radarPanel;
+    @Inject
+    @DataField
+    private Div radarNoEnergyDiv;
+    @Inject
+    @DataField
+    private Div radarNoEnergyInnerDiv;
 
     @PostConstruct
     public void init() {
@@ -126,5 +139,31 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Override
     public Rectangle getInventoryDialogButtonLocation() {
         return new Rectangle(inventoryButton.getAbsoluteLeft(), inventoryButton.getAbsoluteTop(), inventoryButton.getOffsetWidth(), inventoryButton.getOffsetHeight());
+    }
+
+    @Override
+    public void showRadar(GameUiControl.RadarState radarState) {
+        switch (radarState) {
+            case NONE:
+                radarPanelTableRow.getStyle().setProperty("display", "none");
+                radarNoEnergyDiv.getStyle().setProperty("display", "none");
+                radarPanel.getElement().getStyle().setDisplay(Style.Display.NONE);
+                break;
+            case NO_POWER:
+                radarPanelTableRow.getStyle().setProperty("display", "table-row");
+                radarNoEnergyDiv.getStyle().setProperty("display", "table");
+                radarNoEnergyInnerDiv.getStyle().setProperty("width", RadarPanel.WIDTH + "px");
+                radarNoEnergyInnerDiv.getStyle().setProperty("height", RadarPanel.HEIGHT + "px");
+                radarNoEnergyInnerDiv.setInnerHTML(I18nHelper.getConstants().radarNoPower());
+                radarPanel.getElement().getStyle().setDisplay(Style.Display.NONE);
+                break;
+            case WORKING:
+                radarPanelTableRow.getStyle().setProperty("display", "table-row");
+                radarNoEnergyDiv.getStyle().setProperty("display", "none");
+                radarPanel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+                break;
+            default:
+                throw new IllegalArgumentException("ClientSideCockpit.showRadar() Unknown radarState: " + radarState);
+        }
     }
 }

@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.google.gwt.user.client.ui.Label;
@@ -157,6 +158,9 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
     @Inject
     @DataField
     private ChildContainer<WeaponType> weaponTypeChildContainer;
+    @Inject
+    @DataField
+    private ChildContainer<SpecialType> specialTypeChildContainer;
 
     @Override
     public void init(BaseItemType baseItemType) {
@@ -183,6 +187,7 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
         weaponTypeChildContainer.init(baseItemType.getWeaponType(), baseItemType::setWeaponType, WeaponType::new, WeaponTypePanel.class);
         generatorTypeChildContainer.init(baseItemType.getGeneratorType(), baseItemType::setGeneratorType, GeneratorType::new, GeneratorTypePanel.class);
         consumerTypePanelChildTable.init(baseItemType.getConsumerType(), baseItemType::setConsumerType, ConsumerType::new, ConsumerTypePanel.class);
+        specialTypeChildContainer.init(baseItemType.getSpecialType(), baseItemType::setSpecialType, SpecialType::new, SpecialTypePanel.class);
     }
 
     @Override
