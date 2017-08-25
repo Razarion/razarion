@@ -52,16 +52,71 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
     @Test
     public void crudBot() throws Exception {
         Assert.assertTrue(serverGameEnginePersistence.readBotConfigs().isEmpty());
-
-        List<BotConfig> expectedBots = setupServerBots1();
-        serverGameEnginePersistence.updateBotConfigs(expectedBots);
-        List<BotConfig> actualBots = new ArrayList<>(serverGameEnginePersistence.readBotConfigs());
         ObjectComparatorIgnore.add(BotConfig.class, "id");
-        ReflectionAssert.assertReflectionEquals(expectedBots, actualBots);
-        ObjectComparatorIgnore.clear();
-
-        serverGameEnginePersistence.updateBotConfigs(new ArrayList<>());
         Assert.assertTrue(serverGameEnginePersistence.readBotConfigs().isEmpty());
+
+        // Create first
+        BotConfig expectedBotConfig1 = serverGameEnginePersistence.getBotConfigCrud().create();
+        setupServerBots1(expectedBotConfig1);
+        serverGameEnginePersistence.getBotConfigCrud().update(expectedBotConfig1);
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 1");
+        int id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 1");
+        BotConfig actualBotConfig1 = serverGameEnginePersistence.getBotConfigCrud().read(id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        actualBotConfig1 = TestHelper.findObjectForId(serverGameEnginePersistence.readBotConfigs(), id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        Assert.assertEquals(1, serverGameEnginePersistence.readBotConfigs().size());
+        // Create second
+        BotConfig expectedBotConfig2 = serverGameEnginePersistence.getBotConfigCrud().create();
+        setupServerBots2(expectedBotConfig2);
+        serverGameEnginePersistence.getBotConfigCrud().update(expectedBotConfig2);
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 1", "Int bot 22");
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 1");
+        actualBotConfig1 = serverGameEnginePersistence.getBotConfigCrud().read(id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        actualBotConfig1 = TestHelper.findObjectForId(serverGameEnginePersistence.readBotConfigs(), id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        Assert.assertEquals(2, serverGameEnginePersistence.readBotConfigs().size());
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 22");
+        BotConfig actualBotConfig2 = serverGameEnginePersistence.getBotConfigCrud().read(id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig2, actualBotConfig2);
+        actualBotConfig2 = TestHelper.findObjectForId(serverGameEnginePersistence.readBotConfigs(), id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig2, actualBotConfig2);
+        // Change first
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 1");
+        expectedBotConfig1 = serverGameEnginePersistence.getBotConfigCrud().read(id);
+        setupServerBots2(expectedBotConfig1);
+        expectedBotConfig1.setInternalName("bhfkdf");
+        serverGameEnginePersistence.getBotConfigCrud().update(expectedBotConfig1);
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "bhfkdf", "Int bot 22");
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "bhfkdf");
+        actualBotConfig1 = serverGameEnginePersistence.getBotConfigCrud().read(id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        actualBotConfig1 = TestHelper.findObjectForId(serverGameEnginePersistence.readBotConfigs(), id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        Assert.assertEquals(2, serverGameEnginePersistence.readBotConfigs().size());
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 22");
+        actualBotConfig2 = serverGameEnginePersistence.getBotConfigCrud().read(id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig2, actualBotConfig2);
+        actualBotConfig2 = TestHelper.findObjectForId(serverGameEnginePersistence.readBotConfigs(), id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig2, actualBotConfig2);
+        // Delete second
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "Int bot 22");
+        serverGameEnginePersistence.getBotConfigCrud().delete(id);
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "bhfkdf");
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "bhfkdf");
+        actualBotConfig1 = serverGameEnginePersistence.getBotConfigCrud().read(id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        actualBotConfig1 = TestHelper.findObjectForId(serverGameEnginePersistence.readBotConfigs(), id);
+        ReflectionAssert.assertReflectionEquals(expectedBotConfig1, actualBotConfig1);
+        Assert.assertEquals(1, serverGameEnginePersistence.readBotConfigs().size());
+        // Delete first
+        id = TestHelper.findIdForName(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds(), "bhfkdf");
+        serverGameEnginePersistence.getBotConfigCrud().delete(id);
+        TestHelper.assertObjectNameIds(serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds());
+        Assert.assertTrue(serverGameEnginePersistence.readBotConfigs().isEmpty());
+
+        ObjectComparatorIgnore.clear();
 
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotConfigEntity b").getSingleResult());
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotEnragementStateConfigEntity b").getSingleResult());
@@ -300,15 +355,25 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         assertEmptyCountNative("PLACE_CONFIG_POSITION_POLYGON");
     }
 
-    private List<BotConfig> setupServerBots1() {
-        List<BotConfig> botConfigs = new ArrayList<>();
+    private void setupServerBots1(BotConfig botConfig) {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
         botItems.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_ATTACKER_ID).setCount(6).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
-        return botConfigs;
+        botConfig.setInternalName("Int bot 1").setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false);
+    }
+
+    private void setupServerBots2(BotConfig botConfig) {
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems1 = new ArrayList<>();
+        botItems1.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_FACTORY_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(150, 80, 150, 150))));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems1));
+        List<BotItemConfig> botItems2 = new ArrayList<>();
+        botItems2.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_TOWER_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(157, 88, 150, 151))));
+        botItems2.add(new BotItemConfig().setBaseItemTypeId(BASE_ITEM_TYPE_BULLDOZER_ID).setCount(2).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(152, 82, 154, 155))));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Norma2").setBotItems(botItems2));
+        botConfig.setInternalName("Int bot 22").setActionDelay(300).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kennffffffy").setNpc(true);
     }
 
     private List<ResourceRegionConfig> setupResourceRegionConfigs1() {

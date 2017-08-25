@@ -2,6 +2,7 @@ package com.btxtech.server;
 
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import org.junit.Assert;
 
@@ -21,13 +22,16 @@ public interface TestHelper {
         Assert.assertEquals("Size is not the same", expectedNames.length, actual.size());
         Collection<String> actualName = actual.stream().map(ObjectNameId::getInternalName).collect(Collectors.toList());
 
+        StringBuilder actualNamesString = new StringBuilder();
+        actualName.forEach(s -> actualNamesString.append(s).append(" "));
+
         for (String name : expectedNames) {
             if (!actualName.remove(name)) {
-                Assert.fail("Name not found: " + name);
+                Assert.fail("Name not found: " + name + " Available: '" + actualNamesString + "'");
             }
         }
         if (!actualName.isEmpty()) {
-            Assert.fail("Not all names where used: " + actualName);
+            Assert.fail("Not all names where used: " + actualName + " Available: '" + actualNamesString + "'");
         }
     }
 
@@ -41,6 +45,15 @@ public interface TestHelper {
 
     static int findIdForName(List<ObjectNameId> objectNameIds, String name) {
         return objectNameIds.stream().filter(objectNameId -> objectNameId.getInternalName().equalsIgnoreCase(name)).findFirst().map(ObjectNameId::getId).orElseThrow(() -> new IllegalArgumentException("No ObjectNameId for name: " + name));
+    }
+
+    static <T extends ObjectNameIdProvider> T findObjectForId(Collection<T> objects, int id) {
+        for (T object : objects) {
+            if (object.createObjectNameId().getId() == id) {
+                return object;
+            }
+        }
+        throw new IllegalArgumentException("No Object for id found: " + id);
     }
 
     static void assertIds(Collection<Integer> actualIds, Integer... expectedIds) {

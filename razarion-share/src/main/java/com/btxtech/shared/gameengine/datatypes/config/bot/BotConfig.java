@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.List;
  * Date: 10.10.2011
  * Time: 13:36:14
  */
-public class BotConfig {
+public class BotConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
     private Integer auxiliaryId;
@@ -141,6 +143,11 @@ public class BotConfig {
 
     public List<BotEnragementStateConfig> getBotEnragementStateConfigs() {
         return botEnragementStateConfigs;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override

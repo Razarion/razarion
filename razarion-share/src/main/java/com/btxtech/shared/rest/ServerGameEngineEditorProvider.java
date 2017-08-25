@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -128,4 +129,29 @@ public interface ServerGameEngineEditorProvider {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readResourceRegionConfig/{resourceRegionConfigId}")
     ResourceRegionConfig readResourceRegionConfig(@PathParam("resourceRegionConfigId") int resourceRegionConfigId);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readBotConfigObjectNameIds")
+    List<ObjectNameId> readBotConfigObjectNameIds();
+
+    @POST
+    @Path("createBotConfig")
+    @Produces(MediaType.APPLICATION_JSON)
+    BotConfig createBotConfig();
+
+    @DELETE
+    @Path("deleteBotConfigConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteBotConfigConfig(int id);
+
+    @PUT
+    @Path("updateBotConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateBotConfig(BotConfig botConfig);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readBotConfig/{id}")
+    BotConfig readBotConfig(@PathParam("id") int id);
 }

@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelEntity_;
@@ -54,6 +55,8 @@ public class ServerGameEnginePersistence {
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
     @Inject
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig>> resourceRegionCrud;
+    @Inject
+    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig>> botConfigCrud;
 
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
@@ -131,14 +134,6 @@ public class ServerGameEnginePersistence {
     public void deleteStartRegion(int id) {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
         serverGameEngineConfigEntity.deleteStartRegion(id);
-        entityManager.merge(serverGameEngineConfigEntity);
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updateBotConfigs(List<BotConfig> botConfigs) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
-        serverGameEngineConfigEntity.setBotConfigs(itemTypePersistence, botConfigs);
         entityManager.merge(serverGameEngineConfigEntity);
     }
 
@@ -228,6 +223,20 @@ public class ServerGameEnginePersistence {
         crud.setEntityFactory(ServerResourceRegionConfigEntity::new);
         crud.setEntityFiller((serverResourceRegionConfigEntity, resourceRegionConfig) -> {
             serverResourceRegionConfigEntity.fromResourceRegionConfig(itemTypePersistence, resourceRegionConfig);
+        });
+        return crud;
+    }
+
+    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> getBotConfigCrud() {
+        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> crud = botConfigCrud.get();
+        crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
+        crud.setEntitiesGetter((entityManager) -> read().getBotConfigEntities());
+        crud.setEntitiesSetter((entityManager, botConfigs) -> read().setBotConfigEntities(botConfigs));
+        crud.setEntityIdProvider(BotConfigEntity::getId).setConfigIdProvider(BotConfig::getId);
+        crud.setConfigGenerator(BotConfigEntity::toBotConfig);
+        crud.setEntityFactory(BotConfigEntity::new);
+        crud.setEntityFiller((botConfigEntity, botConfig) -> {
+            botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
         });
         return crud;
     }

@@ -2,6 +2,8 @@ package com.btxtech.server.persistence.bot;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -25,7 +27,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "BOT_CONFIG")
-public class BotConfigEntity {
+public class BotConfigEntity implements ObjectNameIdProvider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -54,8 +56,10 @@ public class BotConfigEntity {
             realm = this.realm.toPlaceConfig();
         }
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
-        for (BotEnragementStateConfigEntity botEnragementStateConfigEnity : this.botEnragementStateConfigs) {
-            botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
+        if (this.botEnragementStateConfigs != null) {
+            for (BotEnragementStateConfigEntity botEnragementStateConfigEnity : this.botEnragementStateConfigs) {
+                botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
+            }
         }
         return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setInternalName(internalName).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
     }
@@ -87,6 +91,11 @@ public class BotConfigEntity {
                 this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
             }
         }
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override

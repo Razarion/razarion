@@ -33,8 +33,10 @@ public class BotEnragementStateConfigEntity {
 
     public BotEnragementStateConfig toBotEnragementStateConfig() {
         List<BotItemConfig> botItems = new ArrayList<>();
-        for (BotItemConfigEntity botItemEntity : this.botItems) {
-            botItems.add(botItemEntity.toBotItemConfig());
+        if (this.botItems != null) {
+            for (BotItemConfigEntity botItemEntity : this.botItems) {
+                botItems.add(botItemEntity.toBotItemConfig());
+            }
         }
         return new BotEnragementStateConfig().setName(name).setEnrageUpKills(enrageUpKills).setBotItems(botItems);
     }
@@ -42,7 +44,7 @@ public class BotEnragementStateConfigEntity {
     public void fromBotEnragementStateConfig(ItemTypePersistence itemTypePersistence, BotEnragementStateConfig botEnragementStateConfig) {
         name = botEnragementStateConfig.getName();
         enrageUpKills = botEnragementStateConfig.getEnrageUpKills();
-        if(botItems == null) {
+        if (botItems == null) {
             botItems = new ArrayList<>();
         }
         botItems.clear();

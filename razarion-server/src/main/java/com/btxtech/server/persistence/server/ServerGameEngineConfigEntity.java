@@ -101,15 +101,6 @@ public class ServerGameEngineConfigEntity {
         }
     }
 
-    public void setBotConfigs(ItemTypePersistence itemTypePersistence, List<BotConfig> botConfigs) {
-        this.botConfigs.clear();
-        for (BotConfig botConfig : botConfigs) {
-            BotConfigEntity botConfigEntity = new BotConfigEntity();
-            botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
-            this.botConfigs.add(botConfigEntity);
-        }
-    }
-
     public List<ObjectNameId> readStartRegionObjectNameIds() {
         if (startRegionLevelConfigs == null) {
             return new ArrayList<>();
@@ -190,6 +181,14 @@ public class ServerGameEngineConfigEntity {
 
     public void setResourceRegionConfigs(List<ServerResourceRegionConfigEntity> resourceRegionConfigs) {
         this.resourceRegionConfigs = resourceRegionConfigs;
+    }
+
+    public List<BotConfigEntity> getBotConfigEntities() {
+        return botConfigs;
+    }
+
+    public void setBotConfigEntities(List<BotConfigEntity> botConfigs) {
+        this.botConfigs = botConfigs;
     }
 
     @Override
