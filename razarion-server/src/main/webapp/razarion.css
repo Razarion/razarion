@@ -264,7 +264,7 @@ a:active {
     font-size: 80%;
 }
 
-.radarNoPowser {
+.radarNoPower {
     text-shadow: 0 0 3px #000000;
     background-color: black;
     background-image: url(images/RadarNoEnergy.gif);
