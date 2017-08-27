@@ -1,10 +1,12 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
+import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
 
@@ -15,6 +17,8 @@ import javax.inject.Inject;
 public abstract class AbstractServerSystemConnection {
     @Inject
     private GameUiControl gameUiControl;
+    @Inject
+    private UserUiService userUiService;
 
     protected abstract void sendToServer(String text);
 
@@ -27,7 +31,7 @@ public abstract class AbstractServerSystemConnection {
     public abstract void close();
 
     public void onLevelChanged(LevelConfig levelConfig) {
-        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.LEVEL_UPDATE, toJson(levelConfig.getLevelId())));
+        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.LEVEL_UPDATE_CLIENT, toJson(levelConfig.getLevelId())));
     }
 
     public void handleMessage(String text) {
@@ -43,6 +47,12 @@ public abstract class AbstractServerSystemConnection {
                 break;
             case QUEST_PASSED:
                 gameUiControl.onQuestPassedServer((QuestConfig) param);
+                break;
+            case LEVEL_UPDATE_SERVER:
+                userUiService.onServerLevelChange((UserContext) param);
+                break;
+            case XP_CHANGED:
+                userUiService.onServerXpChange((Integer) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);

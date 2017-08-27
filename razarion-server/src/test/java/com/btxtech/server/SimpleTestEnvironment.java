@@ -1,5 +1,7 @@
 package com.btxtech.server;
 
+import org.jboss.weld.interceptor.util.proxy.TargetInstanceProxy;
+
 import javax.enterprise.inject.Instance;
 import javax.enterprise.util.TypeLiteral;
 import java.lang.annotation.Annotation;
@@ -20,7 +22,16 @@ public class SimpleTestEnvironment {
 
     public static void injectService(String fieldName, Object service, Class theClazz, Object serviceToInject) {
         try {
-            Field field = theClazz.getDeclaredField(fieldName);
+            Class clazz = theClazz;
+            if (service instanceof TargetInstanceProxy) {
+                // Weld deproxy unproxy
+                // In weld-core maven dependency
+                // Do not put weld-core in prodcode or integration test code. Do not add to Arquillan
+                TargetInstanceProxy targetInstanceProxy = (TargetInstanceProxy) service;
+                // ? object = targetInstanceProxy.getTargetInstance();
+                clazz = targetInstanceProxy.getTargetClass();
+            }
+            Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(service, serviceToInject);
             field.setAccessible(false);
@@ -42,6 +53,15 @@ public class SimpleTestEnvironment {
     }
 
     public static void injectInstance(String fieldName, Object object, Supplier getSupplier) {
+        Class clazz = object.getClass();
+        if (object instanceof TargetInstanceProxy) {
+            // Weld deproxy unproxy
+            // In weld-core maven dependency
+            // Do not put weld-core in prodcode or integration test code. Do not add to Arquillan
+            TargetInstanceProxy targetInstanceProxy = (TargetInstanceProxy) object;
+            // ? object = targetInstanceProxy.getTargetInstance();
+            clazz = targetInstanceProxy.getTargetClass();
+        }
         Instance instance = new Instance() {
             @Override
             public Instance select(Annotation... qualifiers) {
@@ -85,7 +105,7 @@ public class SimpleTestEnvironment {
         };
 
         try {
-            Field field = object.getClass().getDeclaredField(fieldName);
+            Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(object, instance);
             field.setAccessible(false);

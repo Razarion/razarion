@@ -3,6 +3,7 @@ package com.btxtech.server.connection;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -58,6 +59,21 @@ public class ClientSystemConnectionService {
         PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.QUEST_PASSED, quest);
+        }
+    }
+
+    public void onXpChanged(HumanPlayerId humanPlayerId, int xp) {
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession != null) {
+            sendToClient(playerSession, SystemConnectionPacket.XP_CHANGED, xp);
+        }
+
+    }
+
+    public void onLevelUp(HumanPlayerId humanPlayerId, UserContext newLevelId) {
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession != null) {
+            sendToClient(playerSession, SystemConnectionPacket.LEVEL_UPDATE_SERVER, newLevelId);
         }
     }
 

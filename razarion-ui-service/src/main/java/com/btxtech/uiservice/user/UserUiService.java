@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.user;
 
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.FacebookUserLoginInfo;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -74,5 +73,18 @@ public class UserUiService {
             userContext.addInventoryItem(inventoryItem.getId());
         }
         dialogManager.showBoxPicked(boxContent);
+    }
+
+    public void onServerLevelChange(UserContext userContext) {
+        this.userContext = userContext;
+        gameEngineControl.updateLevel(userContext.getLevelId());
+        cockpitService.updateLevelAndXp(userContext);
+        itemCockpitService.onStateChanged();
+        dialogManager.onLevelPassed(levelService.getLevel(userContext.getLevelId()));
+    }
+
+    public void onServerXpChange(Integer xp) {
+        userContext.setXp(xp);
+        cockpitService.updateLevelAndXp(userContext);
     }
 }

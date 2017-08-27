@@ -1,20 +1,19 @@
 package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.connection.ClientSystemConnectionService;
-import com.btxtech.server.persistence.GameUiControlConfigEntity;
+import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.history.QuestHistoryEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
-import com.btxtech.server.persistence.scene.SceneEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UnregisteredUser;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -27,6 +26,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -34,7 +34,7 @@ import java.util.Locale;
  */
 @Singleton
 public class ServerLevelQuestService implements QuestListener {
-    // private Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
+    private Logger logger = Logger.getLogger(ServerLevelQuestService.class.getName());
     @Inject
     private Instance<GameUiControlConfigPersistence> gameUiControlConfigPersistence;
     @Inject
@@ -51,6 +51,8 @@ public class ServerLevelQuestService implements QuestListener {
     private UserService userService;
     @Inject
     private ClientSystemConnectionService clientSystemConnectionService;
+    @Inject
+    private Instance<ServerGameEngineControl> serverGameEngineControlInstance;
 
     @PostConstruct
     public void init() {
@@ -58,13 +60,14 @@ public class ServerLevelQuestService implements QuestListener {
     }
 
     @Transactional
-    public void onLevelUpdate(String sessionId, int newLevelId) {
+    public void onClientLevelUpdate(String sessionId, int newLevelId) {
         LevelEntity newLevel = levelPersistence.getLevel4Id(newLevelId);
         PlayerSession playerSession = sessionService.getSession(sessionId);
         UserContext userContext = playerSession.getUserContext();
         historyPersistence.get().onLevelUp(userContext.getHumanPlayerId(), newLevel);
 
         // Temporary: Only save the level if on multiplayer planet. Main reason, tutorial state und units are not saved.
+        // This is only called from the client.
         if (gameUiControlConfigPersistence.get().load4Level(newLevelId).getGameEngineMode() == GameEngineMode.SLAVE) {
             userContext.setLevelId(newLevelId);
             QuestConfig newQuest;
@@ -96,8 +99,51 @@ public class ServerLevelQuestService implements QuestListener {
     public void onQuestPassed(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
         clientSystemConnectionService.onQuestPassed(humanPlayerId, questConfig);
         historyPersistence.get().onQuest(humanPlayerId, questConfig, QuestHistoryEntity.Type.QUEST_PASSED);
+        boolean registered = humanPlayerId.getUserId() != null;
+        UserContext userContext;
+        if (registered) {
+            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+            if (playerSession != null) {
+                userContext = playerSession.getUserContext();
+            } else {
+                userContext = userService.getUserEntity(humanPlayerId.getUserId()).toUserContext();
+            }
+        } else {
+            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+            if (playerSession == null) {
+                // Unregistered user is no longer online
+                return;
+            }
+            userContext = playerSession.getUserContext();
+        }
+        // Check for level up
+        int newXp = userContext.getXp() + questConfig.getXp();
+        LevelEntity currentLevel = levelPersistence.getLevel4Id(userContext.getLevelId());
+        if (newXp >= currentLevel.getXp2LevelUp()) {
+            LevelEntity newLevel = levelPersistence.getNextLevel(currentLevel);
+            if (newLevel != null) {
+                userContext.setLevelId(newLevel.getId());
+                userContext.setXp(0);
+                historyPersistence.get().onLevelUp(humanPlayerId, newLevel);
+                clientSystemConnectionService.onLevelUp(humanPlayerId, userContext);
+                serverGameEngineControlInstance.get().onLevelChanged(humanPlayerId, newLevel.getId());
+                if (registered) {
+                    userService.persistLevel(humanPlayerId.getUserId(), newLevel);
+                    userService.persistXp(humanPlayerId.getUserId(), 0);
+                }
+            } else {
+                logger.warning("No next level found for: " + currentLevel);
+            }
+        } else {
+            userContext.setXp(newXp);
+            if (registered) {
+                userService.persistXp(humanPlayerId.getUserId(), newXp);
+            }
+            clientSystemConnectionService.onXpChanged(humanPlayerId, newXp);
+        }
+
         QuestConfig newQuest = null;
-        if (humanPlayerId.getUserId() != null) {
+        if (registered) {
             userService.addCompletedServerQuest(humanPlayerId.getUserId(), questConfig);
             newQuest = userService.getAndSaveNewQuest(humanPlayerId.getUserId());
         } else {
@@ -105,7 +151,10 @@ public class ServerLevelQuestService implements QuestListener {
             if (playerSession != null) {
                 UnregisteredUser unregisteredUser = playerSession.getUnregisteredUser();
                 unregisteredUser.addCompletedQuestId(questConfig.getId());
-                newQuest = serverGameEnginePersistence.getQuest4LevelAndCompleted(levelPersistence.getLevel4Id(playerSession.getUserContext().getLevelId()), unregisteredUser.getCompletedQuestIds()).toQuestConfig(playerSession.getLocale());
+                QuestConfigEntity newQuestEntity = serverGameEnginePersistence.getQuest4LevelAndCompleted(levelPersistence.getLevel4Id(playerSession.getUserContext().getLevelId()), unregisteredUser.getCompletedQuestIds());
+                if (newQuestEntity != null) {
+                    newQuest = newQuestEntity.toQuestConfig(playerSession.getLocale());
+                }
                 unregisteredUser.setActiveQuest(newQuest);
             }
         }

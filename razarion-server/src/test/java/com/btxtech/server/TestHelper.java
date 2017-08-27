@@ -68,4 +68,18 @@ public interface TestHelper {
         placeConfig.setPolygon2D(Polygon2D.fromRectangle(x, y, width, height));
         return placeConfig;
     }
+
+    static void assertCollection(Collection<Integer> actual, Integer... expected) {
+        if (actual == null) {
+            if(expected.length == 0) {
+                return;
+            } else {
+                Assert.fail("actual == null && expected.length == 0)");
+            }
+        }
+        Assert.assertEquals(expected.length, actual.size());
+        Collection<Integer> actualClone = new ArrayList<>(actual);
+        actualClone.removeAll(Arrays.asList(expected));
+        Assert.assertTrue(actualClone.isEmpty());
+    }
 }

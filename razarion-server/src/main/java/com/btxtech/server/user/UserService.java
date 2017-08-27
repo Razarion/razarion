@@ -50,7 +50,7 @@ public class UserService {
     private final Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
-    public UserContext getUserContext() {
+    public UserContext getUserContextFromSession() {
         UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
         if (userContext == null) {
             userContext = createUnregisteredUserContext();
@@ -67,7 +67,7 @@ public class UserService {
         if (userEntity == null) {
             userEntity = createUser(facebookUserId);
         }
-        UserContext userContext = userEntity.createUser();
+        UserContext userContext = userEntity.toUserContext();
         HumanPlayerId alreadyLoggerIn = null;
         if (sessionHolder.getPlayerSession().getUserContext() != null) {
             alreadyLoggerIn = sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId();
@@ -143,6 +143,13 @@ public class UserService {
     public void persistLevel(Integer userId, LevelEntity newLevel) {
         UserEntity userEntity = getUserEntity(userId);
         userEntity.setLevel(newLevel);
+        entityManager.merge(userEntity);
+    }
+
+    @Transactional
+    public void persistXp(Integer userId, int xp) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.setXp(xp);
         entityManager.merge(userEntity);
     }
 
@@ -236,7 +243,7 @@ public class UserService {
         return userContext;
     }
 
-    private UserEntity getUserEntity(int userId) {
+    public UserEntity getUserEntity(int userId) {
         UserEntity userEntity = entityManager.find(UserEntity.class, userId);
         if (userEntity == null) {
             throw new IllegalArgumentException("No UserEntity for userId: " + userId);

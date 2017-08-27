@@ -59,6 +59,10 @@ public class LevelEntity {
         return number;
     }
 
+    public int getXp2LevelUp() {
+        return xp2LevelUp;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

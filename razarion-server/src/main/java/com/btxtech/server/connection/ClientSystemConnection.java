@@ -70,11 +70,11 @@ public class ClientSystemConnection {
         async = null;
     }
 
-    protected void onPackageReceived(SystemConnectionPacket packet, Object param) {
+    private void onPackageReceived(SystemConnectionPacket packet, Object param) {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         switch (packet) {
-            case LEVEL_UPDATE:
-                serverLevelQuestService.onLevelUpdate(httpSession.getId(), (int) param);
+            case LEVEL_UPDATE_CLIENT:
+                serverLevelQuestService.onClientLevelUpdate(httpSession.getId(), (int) param);
                 break;
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);

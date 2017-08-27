@@ -51,6 +51,7 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "quest"))
     private List<QuestConfigEntity> completedQuest;
     private Locale locale;
+    private int xp;
 
     public Integer getId() {
         return id;
@@ -63,8 +64,8 @@ public class UserEntity {
         this.locale = locale;
     }
 
-    public UserContext createUser() {
-        return new UserContext().setName("Registered User").setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setAdmin(admin);
+    public UserContext toUserContext() {
+        return new UserContext().setName("Registered User").setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setAdmin(admin).setXp(xp);
     }
 
     public HumanPlayerId createHumanPlayerId() {
@@ -77,6 +78,14 @@ public class UserEntity {
 
     public void setLevel(LevelEntity level) {
         this.level = level;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
+    }
+
+    public int getXp() {
+        return xp;
     }
 
     public QuestConfigEntity getActiveQuest() {

@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.gameengine.GameEngineService;
+import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
@@ -41,7 +41,7 @@ public class GameUiControlConfigPersistence {
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
-    private GameEngineService gameEngineService;
+    private ServerGameEngineControl gameEngineService;
     @Inject
     private LevelPersistence levelPersistence;
     @Inject

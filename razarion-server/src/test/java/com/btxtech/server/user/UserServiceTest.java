@@ -3,7 +3,6 @@ package com.btxtech.server.user;
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class UserServiceTest extends ArquillianBaseTest {
     public void unregisteredUser() throws Exception {
         setupLevels();
 
-        UserContext userContext = userService.getUserContext();
+        UserContext userContext = userService.getUserContextFromSession();
         Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId());
         Assert.assertEquals(0, userContext.getCrystals());
         Assert.assertEquals(0, userContext.getXp());

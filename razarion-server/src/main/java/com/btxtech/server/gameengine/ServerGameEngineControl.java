@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -35,8 +36,8 @@ import java.util.logging.Logger;
  * 18.04.2017.
  */
 @ApplicationScoped
-public class GameEngineService implements GameLogicListener {
-    private Logger logger = Logger.getLogger(GameEngineService.class.getName());
+public class ServerGameEngineControl implements GameLogicListener {
+    private Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
     @Inject
@@ -59,6 +60,8 @@ public class GameEngineService implements GameLogicListener {
     private QuestService questService;
     @Inject
     private UserService userService;
+    @Inject
+    private BaseItemService baseItemService;
 
     public void start() {
         try {
@@ -86,6 +89,10 @@ public class GameEngineService implements GameLogicListener {
 
     public void stop() {
         planetService.stop();
+    }
+
+    public void onLevelChanged(HumanPlayerId humanPlayerId, int levelId) {
+        baseItemService.updateLevel(humanPlayerId, levelId);
     }
 
     public SlaveSyncItemInfo generateSlaveSyncItemInfo(UserContext userContext) {

@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -117,5 +118,19 @@ public class LevelPersistence {
         cq.multiselect(root.get(LevelEntity_.id), root.get(LevelEntity_.number));
         List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
         return tupleResult.stream().map(t -> new ObjectNameId((int) t.get(0), Integer.toString((int) t.get(1)))).collect(Collectors.toList());
+    }
+
+    public LevelEntity getNextLevel(LevelEntity level) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
+        Root<LevelEntity> from = userQuery.from(LevelEntity.class);
+        CriteriaQuery<LevelEntity> userSelect = userQuery.select(from);
+        userSelect.where(criteriaBuilder.greaterThan(from.get(LevelEntity_.number), level.getNumber()));
+        userSelect.orderBy(criteriaBuilder.asc(from.get(LevelEntity_.number)));
+        try {
+            return entityManager.createQuery(userSelect).setMaxResults(1).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

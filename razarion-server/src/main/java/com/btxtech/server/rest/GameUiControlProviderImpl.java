@@ -34,7 +34,7 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
     @Transactional
     public ColdGameUiControlConfig loadGameUiControlConfig(GameUiControlInput gameUiControlInput) {
         try {
-            UserContext userContext = userService.getUserContext();
+            UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.load(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (ParserConfigurationException | SAXException | IOException e) {
             exceptionHandler.handleException(e);
@@ -48,7 +48,7 @@ public class GameUiControlProviderImpl implements GameUiControlProvider {
     @Override
     public WarmGameUiControlConfig loadWarmGameUiControlConfig() {
         try {
-            UserContext userContext = userService.getUserContext();
+            UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);

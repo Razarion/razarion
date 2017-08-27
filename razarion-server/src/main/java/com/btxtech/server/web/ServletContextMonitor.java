@@ -1,7 +1,6 @@
 package com.btxtech.server.web;
 
-import com.btxtech.server.gameengine.GameEngineService;
-import com.btxtech.server.gameengine.TerrainShapeService;
+import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -16,7 +15,7 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class ServletContextMonitor implements ServletContextListener {
     @Inject
-    private GameEngineService gameEngineService;
+    private ServerGameEngineControl gameEngineService;
     @Inject
     private ExceptionHandler exceptionHandler;
 

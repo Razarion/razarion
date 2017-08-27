@@ -95,8 +95,11 @@ public class ArquillianBaseTest {
     // ServerGameEngineConfigEntity
     public static int SERVER_GAME_ENGINE_CONFIG_ID_1;
     // Quests
-    public static int SERVER_QUEST_ID_1;
-    public static int SERVER_QUEST_ID_2;
+    public static int SERVER_QUEST_ID_L4_1;
+    public static int SERVER_QUEST_ID_L4_2;
+    public static int SERVER_QUEST_ID_L5_1;
+    public static int SERVER_QUEST_ID_L5_2;
+    public static int SERVER_QUEST_ID_L5_3;
     @PersistenceContext
     private EntityManager em;
     @Inject
@@ -111,7 +114,8 @@ public class ArquillianBaseTest {
     @Deployment
     public static Archive<?> createDeployment() {
         try {
-            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve("org.unitils:unitils-core:4.0-SNAPSHOT").withTransitivity().asFile();
+            // Do not ad weld-core dependency for deproxy
+            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve("org.unitils:unitils-core:4.0-SNAPSHOT", "org.easymock:easymock:3.4").withTransitivity().asFile();
 
             WebArchive webArchive = ShrinkWrap.create(WebArchive.class, "test.war")
                     .addPackages(true, "com.btxtech.server")
@@ -294,7 +298,7 @@ public class ArquillianBaseTest {
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
-        levelEntity4.fromLevelConfig(new LevelConfig().setNumber(4).setXp2LevelUp(40), itemTypeLimitation4);
+        levelEntity4.fromLevelConfig(new LevelConfig().setNumber(4).setXp2LevelUp(300), itemTypeLimitation4);
         em.persist(levelEntity4);
         LEVEL_4_ID = levelEntity4.getId();
         // Level 5
@@ -304,7 +308,7 @@ public class ArquillianBaseTest {
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 4);
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
-        levelEntity5.fromLevelConfig(new LevelConfig().setNumber(5).setXp2LevelUp(50), itemTypeLimitation5);
+        levelEntity5.fromLevelConfig(new LevelConfig().setNumber(5).setXp2LevelUp(400), itemTypeLimitation5);
         em.persist(levelEntity5);
         LEVEL_5_ID = levelEntity5.getId();
 
@@ -356,19 +360,33 @@ public class ArquillianBaseTest {
 
         ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
         serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
-        ServerLevelQuestEntity serverLevelQuestEntity1 = new ServerLevelQuestEntity();
-        serverLevelQuestEntity1.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
-        QuestConfigEntity questConfigEntity1 = new QuestConfigEntity();
-        questConfigEntity1.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest 1").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
-        QuestConfigEntity questConfigEntity2 = new QuestConfigEntity();
-        questConfigEntity2.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest 2").setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
-        serverLevelQuestEntity1.setQuestConfigs(Arrays.asList(questConfigEntity1, questConfigEntity2));
-        serverGameEngineConfigEntity1.setServerQuestEntities(Collections.singletonList(serverLevelQuestEntity1));
+
+        ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
+        serverLevelQuestEntityL4.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
+        QuestConfigEntity questConfigEntityL41 = new QuestConfigEntity();
+        questConfigEntityL41.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
+        QuestConfigEntity questConfigEntityL42 = new QuestConfigEntity();
+        questConfigEntityL42.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 2").setXp(200).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
+        serverLevelQuestEntityL4.setQuestConfigs(Arrays.asList(questConfigEntityL41, questConfigEntityL42));
+
+        ServerLevelQuestEntity serverLevelQuestEntityL5 = new ServerLevelQuestEntity();
+        serverLevelQuestEntityL5.setMinimalLevel(em.find(LevelEntity.class, LEVEL_5_ID));
+        QuestConfigEntity questConfigEntityL51 = new QuestConfigEntity();
+        questConfigEntityL51.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
+        QuestConfigEntity questConfigEntityL52 = new QuestConfigEntity();
+        questConfigEntityL52.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 2").setXp(200).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BASE_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
+        QuestConfigEntity questConfigEntityL53 = new QuestConfigEntity();
+        questConfigEntityL53.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 3").setXp(50).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100))), Locale.US);
+        serverLevelQuestEntityL5.setQuestConfigs(Arrays.asList(questConfigEntityL51, questConfigEntityL52, questConfigEntityL53));
+
+        serverGameEngineConfigEntity1.setServerQuestEntities(Arrays.asList(serverLevelQuestEntityL4, serverLevelQuestEntityL5));
         em.persist(serverGameEngineConfigEntity1);
         SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
-        SERVER_QUEST_ID_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
-        SERVER_QUEST_ID_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
-
+        SERVER_QUEST_ID_L4_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
+        SERVER_QUEST_ID_L4_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
+        SERVER_QUEST_ID_L5_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(0).getId();
+        SERVER_QUEST_ID_L5_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(1).getId();
+        SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(2).getId();
         utx.commit();
     }
 
