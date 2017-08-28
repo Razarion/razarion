@@ -234,7 +234,7 @@ public class ServerGameEnginePersistence {
         crud.setEntitiesSetter((entityManager, botConfigs) -> read().setBotConfigEntities(botConfigs));
         crud.setEntityIdProvider(BotConfigEntity::getId).setConfigIdProvider(BotConfig::getId);
         crud.setConfigGenerator(BotConfigEntity::toBotConfig);
-        crud.setEntityFactory(BotConfigEntity::new);
+        crud.setEntityFactory(() -> new BotConfigEntity().setAutoAttack(true));
         crud.setEntityFiller((botConfigEntity, botConfig) -> {
             botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
         });

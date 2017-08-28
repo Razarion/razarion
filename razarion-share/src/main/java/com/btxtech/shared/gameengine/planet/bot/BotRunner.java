@@ -49,7 +49,6 @@ public class BotRunner {
     private Instance<BotEnragementState> enragementStateInstance;
     @Inject
     private Instance<IntruderHandler> intruderHandlerInstance;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private SimpleExecutorService simpleExecutorService;
     private BotConfig botConfig;
@@ -67,12 +66,14 @@ public class BotRunner {
             // System.out.println("--------BotTicker.run()--------");
             try {
                 synchronized (syncObject) {
-                    if (botEnragementState == null || intruderHandler == null) {
+                    if (botEnragementState == null) {
                         return;
                     }
                     createBaseIfNeeded();
                     botEnragementState.work(base);
-                    intruderHandler.handleIntruders(base);
+                    if (intruderHandler != null) {
+                        intruderHandler.handleIntruders(base);
+                    }
                 }
             } catch (Throwable t) {
                 log.log(Level.SEVERE, "Exception in BotRunner (BotTicker): " + botConfig.getName(), t);
@@ -156,7 +157,7 @@ public class BotRunner {
 
     public boolean onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         if (botEnragementState != null) {
-            if(base != null && base.equals(syncBaseItem.getBase())) {
+            if (base != null && base.equals(syncBaseItem.getBase())) {
                 botEnragementState.onSyncBaseItemCreated(syncBaseItem, createdBy);
                 return true;
             }
@@ -184,8 +185,10 @@ public class BotRunner {
         synchronized (syncObject) {
             botEnragementState = enragementStateInstance.get();
             botEnragementState.init(botConfig.getBotEnragementStateConfigs(), botConfig.getRealm(), botConfig.getName(), getEnragementStateListener());
-            intruderHandler = intruderHandlerInstance.get();
-            intruderHandler.init(botEnragementState, botConfig.getRealm());
+            if (botConfig.isAutoAttack()) {
+                intruderHandler = intruderHandlerInstance.get();
+                intruderHandler.init(botEnragementState, botConfig.getRealm());
+            }
         }
         killBotThread();
         BotTicker botTicker = new BotTicker();

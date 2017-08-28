@@ -15,8 +15,8 @@ package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.Dependent;
@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -78,12 +77,7 @@ public class IntruderHandler {
     }
 
     private void removeDeadAttackers() {
-        for (Iterator<BotSyncBaseItem> attackerIterator = intruders.values().iterator(); attackerIterator.hasNext(); ) {
-            BotSyncBaseItem attacker = attackerIterator.next();
-            if (!attacker.isAlive() || attacker.isIdle()) {
-                attackerIterator.remove();
-            }
-        }
+        intruders.values().removeIf(attacker -> !attacker.isAlive() || attacker.isIdle());
     }
 
     private void putAttackerToIntruders(Collection<SyncBaseItem> newIntruders) {
@@ -91,26 +85,10 @@ public class IntruderHandler {
         Map<BotSyncBaseItem, SyncBaseItem> assignedAttackers = ShortestWaySorter.setupAttackerTarget(idleAttackers, newIntruders, BotSyncBaseItem::isAbleToAttack);
 
         for (Map.Entry<BotSyncBaseItem, SyncBaseItem> entry : assignedAttackers.entrySet()) {
-            putAttackerToIntruder(entry.getKey(), entry.getValue());
-        }
-    }
-
-    private void putAttackerToIntruder(BotSyncBaseItem attacker, SyncBaseItem intruder) {
-        if (attacker != null) {
-            try {
-                throw new UnsupportedOperationException(); // TODO fix tutorials were attack is not expected -> make auto attack configurable
-//                AttackFormationItem attackFormationItem = planetServices.getCollisionService().getDestinationHint(attacker.getSyncBaseItem(),
-//                        attacker.getSyncBaseItem().getBaseItemType().getWeaponType().getRange(),
-//                        intruder.getSyncItemArea());
-//                if (attackFormationItem.isInRange()) {
-//                    attacker.attack(intruder, attackFormationItem.getDestinationHint(), attackFormationItem.getDestinationAngel());
-//                    intruders.put(intruder, attacker);
-//                } else {
-//                    log.warning("Bot is unable to find position to attack item. Bot attacker: " + attacker.getSyncBaseItem() + " Target: " + intruder);
-//                }
-            } catch (Exception e) {
-//                exceptionHandler.handleException(e);
-            }
+            BotSyncBaseItem attacker = entry.getKey();
+            SyncBaseItem intruder = entry.getValue();
+            attacker.attack(intruder);
+            intruders.put(intruder, attacker);
         }
     }
 }

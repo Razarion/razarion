@@ -20,6 +20,7 @@ public class BotConfig implements ObjectNameIdProvider {
     private int actionDelay;
     private PlaceConfig realm;
     private String name;
+    private boolean autoAttack;
     private Integer minInactiveMs;
     private Integer maxInactiveMs;
     private Integer minActiveMs;
@@ -61,6 +62,11 @@ public class BotConfig implements ObjectNameIdProvider {
 
     public BotConfig setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public BotConfig setAutoAttack(boolean autoAttack) {
+        this.autoAttack = autoAttack;
         return this;
     }
 
@@ -112,6 +118,10 @@ public class BotConfig implements ObjectNameIdProvider {
 
     public String getName() {
         return name;
+    }
+
+    public boolean isAutoAttack() {
+        return autoAttack;
     }
 
     public Integer getMinInactiveMs() {

@@ -132,16 +132,6 @@ public class BotItemContainer {
         return idleAttackers;
     }
 
-    /**
-     * Only used for test purpose
-     *
-     * @return true if fulfilled
-     */
-    boolean isFulfilledUseInTestOnly() {
-        updateState();
-        return need.getEffectiveItemNeed().isEmpty();
-    }
-
     boolean itemBelongsToMe(SyncBaseItem syncBaseItem) {
         synchronized (botItems) {
             return botItems.containsKey(syncBaseItem);

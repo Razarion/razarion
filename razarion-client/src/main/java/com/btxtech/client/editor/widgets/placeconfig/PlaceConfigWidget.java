@@ -13,6 +13,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ValueListBox;
+import org.jboss.errai.common.client.dom.TableCell;
 import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -20,6 +21,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,10 +41,12 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
     private ValueListBox<String> selector;
     @Inject
     @DataField
-    private TableRow positionTr;
+    @Named("td")
+    private TableCell positionTd;
     @Inject
     @DataField
-    private TableRow polygonTr;
+    @Named("td")
+    private TableCell polygonTd;
     @Inject
     @DataField
     private PolygonField polygonField;
@@ -148,8 +152,8 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
     }
 
     private void toPosition() {
-        positionTr.getStyle().setProperty("display", "table-row");
-        polygonTr.getStyle().setProperty("display", "none");
+        positionTd.getStyle().setProperty("display", "table-row");
+        polygonTd.getStyle().setProperty("display", "none");
         DecimalPosition position = null;
         Double radius = null;
         if (placeConfig != null) {
@@ -168,8 +172,8 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
     }
 
     private void toPolygon() {
-        positionTr.getStyle().setProperty("display", "none");
-        polygonTr.getStyle().setProperty("display", "table-row");
+        positionTd.getStyle().setProperty("display", "none");
+        polygonTd.getStyle().setProperty("display", "table-row");
         Polygon2D polygon2D = null;
         if (placeConfig != null) {
             polygon2D = placeConfig.getPolygon2D();
@@ -186,8 +190,8 @@ public class PlaceConfigWidget implements HasValue<PlaceConfig> {
     }
 
     private void toNone() {
-        positionTr.getStyle().setProperty("display", "none");
-        polygonTr.getStyle().setProperty("display", "none");
+        positionTd.getStyle().setProperty("display", "none");
+        polygonTd.getStyle().setProperty("display", "none");
         polygonField.dispose();
         positionFiled.dispose();
         radiusField.setValue(null);

@@ -94,7 +94,6 @@ public class WeldBaseTest {
             gameEngine.invokeRun();
             tickCount++;
         }
-        System.out.println("Tick count: " + tickCount);
     }
 
     public void tickPlanetService(long count) {

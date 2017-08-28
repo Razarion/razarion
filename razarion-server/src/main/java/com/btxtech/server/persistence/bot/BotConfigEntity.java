@@ -38,6 +38,7 @@ public class BotConfigEntity implements ObjectNameIdProvider {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity realm;
     private String name;
+    private boolean autoAttack;
     private Integer minInactiveMs;
     private Integer maxInactiveMs;
     private Integer minActiveMs;
@@ -61,7 +62,7 @@ public class BotConfigEntity implements ObjectNameIdProvider {
                 botEnragementStateConfigs.add(botEnragementStateConfigEnity.toBotEnragementStateConfig());
             }
         }
-        return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setInternalName(internalName).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
+        return new BotConfig().setAuxiliaryId(auxiliaryId).setId(id).setInternalName(internalName).setAutoAttack(autoAttack).setNpc(npc).setActionDelay(actionDelay).setRealm(realm).setName(name).setMinInactiveMs(minInactiveMs).setMaxInactiveMs(maxInactiveMs).setMinActiveMs(minActiveMs).setMaxActiveMs(maxActiveMs).setBotEnragementStateConfigs(botEnragementStateConfigs);
     }
 
     public void fromBotConfig(ItemTypePersistence itemTypePersistence, BotConfig botConfig) {
@@ -76,6 +77,7 @@ public class BotConfigEntity implements ObjectNameIdProvider {
             realm = null;
         }
         name = botConfig.getName();
+        autoAttack = botConfig.isAutoAttack();
         minInactiveMs = botConfig.getMinInactiveMs();
         maxInactiveMs = botConfig.getMaxInactiveMs();
         minActiveMs = botConfig.getMinActiveMs();
@@ -91,6 +93,11 @@ public class BotConfigEntity implements ObjectNameIdProvider {
                 this.botEnragementStateConfigs.add(botEnragementStateConfigEntity);
             }
         }
+    }
+
+    public BotConfigEntity setAutoAttack(boolean autoAttack) {
+        this.autoAttack = autoAttack;
+        return this;
     }
 
     @Override

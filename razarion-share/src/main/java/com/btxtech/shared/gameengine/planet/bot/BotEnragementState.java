@@ -57,10 +57,6 @@ public class BotEnragementState {
         botItemContainer.work(base);
     }
 
-    public boolean isFulfilledUseInTestOnly() {
-        return botItemContainer.isFulfilledUseInTestOnly();
-    }
-
     public void killAllItems(PlayerBase base) {
         botItemContainer.killAllItems(base);
     }

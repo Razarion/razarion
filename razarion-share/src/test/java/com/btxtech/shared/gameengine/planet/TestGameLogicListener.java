@@ -16,14 +16,20 @@ import java.util.List;
  */
 public class TestGameLogicListener implements GameLogicListener {
     private List<EnergyStateChangedEntry> energyStateChangedEntries = new ArrayList<>();
+    private List<SyncBaseItem> syncBaseItemKilled = new ArrayList<>();
     private TestWebSocket testWebSocket = new TestWebSocket();
 
     public void clearAll() {
         energyStateChangedEntries.clear();
+        syncBaseItemKilled.clear();
     }
 
     public List<EnergyStateChangedEntry> getEnergyStateChangedEntries() {
         return energyStateChangedEntries;
+    }
+
+    public List<SyncBaseItem> getSyncBaseItemKilled() {
+        return syncBaseItemKilled;
     }
 
     public TestWebSocket getTestWebSocket() {
@@ -54,6 +60,7 @@ public class TestGameLogicListener implements GameLogicListener {
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
         testWebSocket.onSyncItemRemoved(syncBaseItem, true);
+        syncBaseItemKilled.add(syncBaseItem);
     }
 
     @Override

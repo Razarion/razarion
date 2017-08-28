@@ -27,7 +27,6 @@ public class BotService {
     private Logger logger = Logger.getLogger(BotService.class.getName());
     @Inject
     private Instance<BotRunner> botRunnerInstance;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     private final Collection<BotRunner> botRunners = new ArrayList<>();

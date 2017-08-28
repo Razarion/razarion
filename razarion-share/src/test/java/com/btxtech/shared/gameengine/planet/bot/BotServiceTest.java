@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
@@ -63,5 +65,55 @@ public class BotServiceTest extends BaseBotServiceTest {
         }
         Assert.assertEquals(9, getSyncBaseItemInfos().size());
 
+    }
+
+    @Test
+    public void testAttack() {
+        setupMasterEnvironment();
+
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BaseItemServiceBase.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        startBot(botConfigs);
+
+        tickBotRunner();
+
+        UserContext userContext = createLevel1UserContext();
+        createHumanBaseWithBaseItem(new DecimalPosition(45, 45), userContext);
+
+        for (int i = 0; i < 10000; i++) {
+            tickBotRunner();
+            tickPlanetServiceBaseServiceActive();
+        }
+
+        Assert.assertEquals(1, getTestGameLogicListener().getSyncBaseItemKilled().size());
+    }
+
+    @Test
+    public void testAttackNoAutoAttack() {
+        setupMasterEnvironment();
+
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(BaseItemServiceBase.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 10, 10))));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(1).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 100, 100))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        startBot(botConfigs);
+
+        tickBotRunner();
+
+        UserContext userContext = createLevel1UserContext();
+        createHumanBaseWithBaseItem(new DecimalPosition(45, 45), userContext);
+
+        for (int i = 0; i < 1000; i++) {
+            tickBotRunner();
+            tickPlanetServiceBaseServiceActive();
+        }
+
+        Assert.assertTrue(getTestGameLogicListener().getSyncBaseItemKilled().isEmpty());
     }
 }

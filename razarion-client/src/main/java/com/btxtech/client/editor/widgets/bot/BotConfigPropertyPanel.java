@@ -43,6 +43,10 @@ public class BotConfigPropertyPanel extends Composite implements TakesValue<BotC
     @Inject
     @Bound
     @DataField
+    private CheckboxInput autoAttack;
+    @Inject
+    @Bound
+    @DataField
     private NumberInput auxiliaryId;
     @Inject
     @Bound
