@@ -9,7 +9,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import elemental.html.CanvasRenderingContext2D;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -31,8 +30,7 @@ public class MiniTerrain extends AbstractMiniMap {
         super.init(canvasElement, width, height, zoom);
     }
 
-    @PostConstruct
-    public void postConstruct() {
+    public void show() {
         ImageLoader<Integer> imageLoader = new ImageLoader<>();
         imageLoader.addImageUrl(RestUrl.getMiniMapPlanetUrl(gameUiControl.getPlanetConfig().getPlanetId()), gameUiControl.getPlanetConfig().getPlanetId());
         imageLoader.startLoading((loadedImageElements, failed) -> {

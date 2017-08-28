@@ -71,6 +71,10 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
         miniMap.addEventListener("mousedown", event -> onMouseDown((MouseEvent) event), false);
     }
 
+    public void show() {
+        miniTerrain.show();
+    }
+
     private void onMouseDown(MouseEvent mouseEvent) {
         DecimalPosition viewCenter = miniViewField.canvasToReal(new DecimalPosition(mouseEvent.getOffsetX(), mouseEvent.getOffsetY()));
         DecimalPosition cameraPosition = projectionTransformation.viewFieldCenterToCamera(viewCenter, 0);

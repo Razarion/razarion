@@ -161,6 +161,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
                 radarPanelTableRow.getStyle().setProperty("display", "table-row");
                 radarNoEnergyDiv.getStyle().setProperty("display", "none");
                 radarPanel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+                radarPanel.show();
                 break;
             default:
                 throw new IllegalArgumentException("ClientSideCockpit.showRadar() Unknown radarState: " + radarState);
