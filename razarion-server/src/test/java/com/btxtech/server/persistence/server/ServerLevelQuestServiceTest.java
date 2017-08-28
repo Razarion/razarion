@@ -9,6 +9,7 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.persistence.history.LevelHistoryEntity;
 import com.btxtech.server.persistence.history.QuestHistoryEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
@@ -233,9 +234,20 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
 
     @Test
     public void onQuestPassedRegistered() throws Exception {
+        // Simulate quest by previous users
+        runInTransaction(entityManager -> {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setActiveQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_3));
+            userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L4_1));
+            userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L4_2));
+            userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_1));
+            userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_2));
+            userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_3));
+            entityManager.persist(userEntity);
+        });
+        // Setup session
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
         UserContext userContext = userService.handleFacebookUserLogin("0000001");
-
         // Setup mocks
         ServerGameEngineControl serverGameEngineControlMock = EasyMock.createStrictMock(ServerGameEngineControl.class);
         serverGameEngineControlMock.onLevelChanged(EasyMock.anyObject(), EasyMock.eq(LEVEL_5_ID));
@@ -306,13 +318,15 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         assertDbUserLevelXp(humanPlayerId.getUserId(), LEVEL_5_ID, null, 350, SERVER_QUEST_ID_L4_1, SERVER_QUEST_ID_L4_2, SERVER_QUEST_ID_L5_1, SERVER_QUEST_ID_L5_2, SERVER_QUEST_ID_L5_3);
         Assert.assertEquals(LEVEL_5_ID, userContext.getLevelId());
 
+        int playerId = userContext.getHumanPlayerId().getPlayerId();
+        int userId = userContext.getHumanPlayerId().getUserId();
         systemConnection.assertMessageSentCount(15);
         systemConnection.assertMessageSent(0, "QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(1, "QUEST_PASSED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(2, "XP_CHANGED#100");
         systemConnection.assertMessageSent(3, "QUEST_ACTIVATED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(4, "QUEST_PASSED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(5, "LEVEL_UPDATE_SERVER#{\"humanPlayerId\":{\"playerId\":1,\"userId\":1},\"name\":\"Registered User\",\"admin\":false,\"levelId\":5,\"xp\":0,\"crystals\":0,\"inventoryItemIds\":[],\"inventoryArtifactIds\":[],\"unlockedItemTypes\":[],\"unlockedQuests\":[],\"unlockedPlanets\":[]}");
+        systemConnection.assertMessageSent(5, "LEVEL_UPDATE_SERVER#{\"humanPlayerId\":{\"playerId\":" + playerId + ",\"userId\":" + userId + "},\"name\":\"Registered User\",\"admin\":false,\"levelId\":5,\"xp\":0,\"crystals\":0,\"inventoryItemIds\":[],\"inventoryArtifactIds\":[],\"unlockedItemTypes\":[],\"unlockedQuests\":[],\"unlockedPlanets\":[]}");
         systemConnection.assertMessageSent(6, "QUEST_ACTIVATED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(7, "QUEST_PASSED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(8, "XP_CHANGED#100");
@@ -325,7 +339,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
 
         assertCount(10, QuestHistoryEntity.class);
         assertCount(2, LevelHistoryEntity.class);
-        assertCount(1, UserEntity.class);
+        assertCount(2, UserEntity.class);
 
         EasyMock.verify(serverGameEngineControlMock, questServiceMock);
     }
