@@ -18,12 +18,12 @@ import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -100,7 +100,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private ValueListBox<ObjectNameId> slopeSelection;
     @Inject
     @DataField
-    private CheckBox drivewayMode;
+    private CheckboxInput drivewayMode;
     @Inject
     @DataField
     private ValueListBox<ObjectNameId> drivewaySelection;
@@ -145,7 +145,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
             logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
             return false;
         }).getSlopeNameIds();
-        drivewayMode.setValue(terrainEditor.isDrivewayMode());
+        drivewayMode.setChecked(terrainEditor.isDrivewayMode());
         drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
         elementEditorProvider.call(new RemoteCallback<Collection<ObjectNameId>>() {
             @Override
@@ -184,7 +184,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
 
     @EventHandler("drivewayMode")
     public void drivewayModeChanged(ChangeEvent e) {
-        terrainEditor.setDrivewayModeChanged(drivewayMode.getValue());
+        terrainEditor.setDrivewayModeChanged(drivewayMode.getChecked());
     }
 
     @Override

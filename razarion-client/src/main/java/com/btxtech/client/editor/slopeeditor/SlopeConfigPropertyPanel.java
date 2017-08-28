@@ -19,10 +19,10 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import elemental.client.Browser;
+import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
@@ -92,7 +92,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Inject
     @Bound(property = "slopeSkeletonConfig.slopeOriented")
     @DataField
-    private CheckBox slopeOriented;
+    private CheckboxInput slopeOriented;
     @DataField
     private Element svgElement = (Element) Browser.getDocument().createSVGElement();
     @Inject

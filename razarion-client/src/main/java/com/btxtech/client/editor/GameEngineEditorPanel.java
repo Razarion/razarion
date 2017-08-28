@@ -3,7 +3,7 @@ package com.btxtech.client.editor;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.user.client.ui.CheckBox;
+import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -21,16 +21,16 @@ public class GameEngineEditorPanel extends LeftSideBarContent {
     private PlanetService planetService;
     @Inject
     @DataField
-    private CheckBox pauseCheckbox;
+    private CheckboxInput pauseCheckbox;
 
     @PostConstruct
     public void postConstruct() {
-        pauseCheckbox.setValue(planetService.isPause());
+        pauseCheckbox.setChecked(planetService.isPause());
     }
 
     @EventHandler("pauseCheckbox")
     public void pauseCheckboxChanged(ChangeEvent e) {
-        planetService.setPause(pauseCheckbox.getValue());
+        planetService.setPause(pauseCheckbox.getChecked());
     }
 
 }

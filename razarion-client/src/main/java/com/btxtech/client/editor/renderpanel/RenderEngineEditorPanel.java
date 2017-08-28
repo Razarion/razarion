@@ -10,9 +10,9 @@ import com.btxtech.uiservice.renderer.RenderService;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -39,16 +39,16 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     private MonitorRenderTask monitorRenderTask;
     @Inject
     @DataField
-    private CheckBox showMonitor;
+    private CheckboxInput showMonitor;
     @Inject
     @DataField
-    private CheckBox showDeepMap;
+    private CheckboxInput showDeepMap;
     @Inject
     @DataField
-    private CheckBox wireMode;
+    private CheckboxInput wireMode;
     @Inject
     @DataField
-    private CheckBox showNorm;
+    private CheckboxInput showNorm;
     @Inject
     @DataField
     private Label rendererCount;
@@ -101,10 +101,10 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
 
     @PostConstruct
     public void init() {
-        showMonitor.setValue(monitorRenderTask.isShown());
-        showDeepMap.setValue(monitorRenderTask.isShowDeep());
-        // TODO wireMode.setValue(renderService.isWire());
-        showNorm.setValue(renderService.isShowNorm());
+        showMonitor.setChecked(monitorRenderTask.isShown());
+        showDeepMap.setChecked(monitorRenderTask.isShowDeep());
+        // TODO wireMode.setChecked(renderService.isWire());
+        showNorm.setChecked(renderService.isShowNorm());
         displayLightDirectionLabel();
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
         openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
@@ -119,7 +119,7 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
 
     @EventHandler("showMonitor")
     public void showMonitorChanged(ChangeEvent e) {
-        if (showMonitor.getValue()) {
+        if (showMonitor.getChecked()) {
             monitorRenderTask.showMonitor();
         } else {
             monitorRenderTask.hideMonitor();
@@ -128,17 +128,17 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
 
     @EventHandler("showDeepMap")
     public void showDeepMapChanged(ChangeEvent e) {
-        monitorRenderTask.setShowDeep(showDeepMap.getValue());
+        monitorRenderTask.setShowDeep(showDeepMap.getChecked());
     }
 
     @EventHandler("wireMode")
     public void wireModeChanged(ChangeEvent e) {
-        // TODO renderService.showWire(wireMode.getValue());
+        // TODO renderService.showWire(wireMode.getChecked());
     }
 
     @EventHandler("showNorm")
     public void showNormChanged(ChangeEvent e) {
-        renderService.setShowNorm(showNorm.getValue());
+        renderService.setShowNorm(showNorm.getChecked());
     }
 
     private void displayLightDirectionLabel() {
