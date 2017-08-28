@@ -77,7 +77,6 @@ public class UserUiService {
 
     public void onServerLevelChange(UserContext userContext) {
         this.userContext = userContext;
-        gameEngineControl.updateLevel(userContext.getLevelId());
         cockpitService.updateLevelAndXp(userContext);
         itemCockpitService.onStateChanged();
         dialogManager.onLevelPassed(levelService.getLevel(userContext.getLevelId()));
