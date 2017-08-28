@@ -231,7 +231,7 @@ public class BaseItemUiService {
         boolean wasMyBase = false;
         synchronized (bases) {
             if (bases.remove(baseId) == null) {
-                logger.warning("Base does not exist already exists: " + baseId);
+                logger.warning("BaseItemUiService.removeBase(): Base does not exist: " + baseId);
             }
             if (myBase != null && myBase.getBaseId() == baseId) {
                 myBase = null;
