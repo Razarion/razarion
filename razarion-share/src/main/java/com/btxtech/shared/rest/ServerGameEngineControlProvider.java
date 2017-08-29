@@ -13,4 +13,7 @@ public interface ServerGameEngineControlProvider {
     @Path("restartBots")
     void restartBots();
 
+    @POST
+    @Path("reloadStatic")
+    void reloadStatic();
 }

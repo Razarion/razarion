@@ -25,4 +25,14 @@ public class ServerGameEngineControlProviderImpl implements ServerGameEngineCont
             throw e;
         }
     }
+
+    @Override
+    public void reloadStatic() {
+        try {
+            serverGameEngineControl.reloadStatic();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
 }

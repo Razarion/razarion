@@ -1,12 +1,11 @@
 package com.btxtech.shared.gameengine;
 
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,7 @@ public class LevelService {
             levels.put(levelConfig.getLevelId(), levelConfig);
             orderedLevels.add(levelConfig);
         }
-        Collections.sort(orderedLevels, Comparator.comparingInt(LevelConfig::getNumber));
+        orderedLevels.sort(Comparator.comparingInt(LevelConfig::getNumber));
     }
 
     public LevelConfig getLevel(int levelId) {

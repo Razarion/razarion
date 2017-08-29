@@ -66,6 +66,7 @@ public class ServerGameEngineControl implements GameLogicListener {
     private BaseItemService baseItemService;
     @Inject
     private BotService botService;
+    private final Object reloadLook = new Object();
 
     public void start() {
         try {
@@ -83,9 +84,20 @@ public class ServerGameEngineControl implements GameLogicListener {
     }
 
     @SecurityCheck
+    public void reloadStatic() {
+        synchronized (reloadLook) {
+            long time = System.currentTimeMillis();
+            gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
+            logger.info("reloadStatic(). Time used: " + (System.currentTimeMillis() - time));
+        }
+    }
+
+    @SecurityCheck
     public void restartBots() {
-        botService.killAllBots();
-        botService.startBots(serverGameEnginePersistence.readBotConfigs());
+        synchronized (reloadLook) {
+            botService.killAllBots();
+            botService.startBots(serverGameEnginePersistence.readBotConfigs());
+        }
     }
 
     private void activateQuests() {
