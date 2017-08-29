@@ -7,6 +7,7 @@ import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
+import com.btxtech.client.utils.BooleanNullConverter;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -90,7 +91,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @DataField
     private Button fractalFieldButton;
     @Inject
-    @Bound(property = "slopeSkeletonConfig.slopeOriented")
+    @Bound(property = "slopeSkeletonConfig.slopeOriented", converter = BooleanNullConverter.class)
     @DataField
     private CheckboxInput slopeOriented;
     @DataField

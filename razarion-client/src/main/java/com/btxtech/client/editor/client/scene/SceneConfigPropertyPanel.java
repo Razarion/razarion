@@ -7,6 +7,7 @@ import com.btxtech.client.editor.widgets.marker.Rectangle2DWidget;
 import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
+import com.btxtech.client.utils.BooleanNullConverter;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
@@ -25,13 +26,12 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Input;
-import org.jboss.errai.common.client.dom.Label;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.common.client.dom.TextInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -78,19 +78,19 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @Inject
     @Bound
     @DataField
-    private CheckBox removeLoadingCover;
+    private CheckboxInput removeLoadingCover;
     @Inject
-    @Bound
+    @Bound(converter = BooleanNullConverter.class)
     @DataField
-    private CheckBox wait4LevelUpDialog;
+    private CheckboxInput wait4LevelUpDialog;
     @Inject
-    @Bound
+    @Bound(converter = BooleanNullConverter.class)
     @DataField
-    private CheckBox wait4QuestPassedDialog;
+    private CheckboxInput wait4QuestPassedDialog;
     @Inject
-    @Bound
+    @Bound(converter = BooleanNullConverter.class)
     @DataField
-    private CheckBox waitForBaseLostDialog;
+    private CheckboxInput waitForBaseLostDialog;
     @Inject
     @Bound
     @DataField
@@ -108,9 +108,9 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @DataField
     private CommaDoubleBox vfcSpeed;
     @Inject
-    @Bound(property = "viewFieldConfig.cameraLocked")
+    @Bound(property = "viewFieldConfig.cameraLocked", converter = BooleanNullConverter.class)
     @DataField
-    private CheckBox vfcCameraLocked;
+    private CheckboxInput vfcCameraLocked;
     @Inject
     @Bound(property = "viewFieldConfig.bottomWidth")
     @DataField
@@ -155,7 +155,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @DataField
     private TextInput scrollUiQuestI18nPassedMessage;
     @Inject
-    @Bound(property = "scrollUiQuest.hidePassedDialog")
+    @Bound(property = "scrollUiQuest.hidePassedDialog", converter = BooleanNullConverter.class)
     @DataField
     private CheckboxInput scrollUiQuestI18nHidePassedDialog;
     @Inject
