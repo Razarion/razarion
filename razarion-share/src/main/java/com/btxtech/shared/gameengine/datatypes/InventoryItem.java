@@ -104,7 +104,7 @@ public class InventoryItem implements ObjectNameIdProvider {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass().equals(o.getClass())) { // equals needed because Errai binder proxy
+        if (o == null || !getClass().equals(o.getClass())) { // equals needed because Errai binder proxy
             return false;
         }
 

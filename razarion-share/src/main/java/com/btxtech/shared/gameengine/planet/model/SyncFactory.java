@@ -85,7 +85,7 @@ public class SyncFactory extends SyncBaseAbility {
         if (buildup >= 1.0) {
             if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
                 if (baseItemService.isLevelLimitation4ItemTypeExceeded(toBeBuiltType, 1, (PlayerBaseFull) getSyncBaseItem().getBase())) {
-                    gameLogicService.onFactoryLevelLimitation4ItemTypeExceeded();
+                    gameLogicService.onFactoryLimitation4ItemTypeExceeded();
                     return true;
                 }
                 if (baseItemService.isHouseSpaceExceeded((PlayerBaseFull) getSyncBaseItem().getBase(), toBeBuiltType, 1)) {

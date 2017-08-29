@@ -175,7 +175,7 @@ public class GameLogicService {
         }
     }
 
-    public void onFactoryLevelLimitation4ItemTypeExceeded() {
+    public void onFactoryLimitation4ItemTypeExceeded() {
     }
 
     public void onFactoryHouseSpaceExceeded() {

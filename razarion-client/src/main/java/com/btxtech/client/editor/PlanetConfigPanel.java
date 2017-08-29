@@ -5,7 +5,10 @@ import com.btxtech.client.editor.widgets.itemtype.base.BaseItemTypeWidget;
 import com.btxtech.client.editor.widgets.itemtype.basecount.BaseItemTypeCountWidget;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.shared.rest.ServerGameEngineControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.NumberInput;
@@ -13,6 +16,7 @@ import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +31,8 @@ import java.util.logging.Logger;
 @Templated("PlanetConfigPanel.html#planetConfigPanel")
 public class PlanetConfigPanel extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(PlanetConfigPanel.class.getName());
+    @Inject
+    private Caller<ServerGameEngineControlProvider> provider;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -52,6 +58,9 @@ public class PlanetConfigPanel extends LeftSideBarContent {
     @Inject
     @DataField
     private BaseItemTypeCountWidget itemTypeLimitation;
+    @Inject
+    @DataField
+    private Button reloadButton;
 
     @PostConstruct
     public void init() {
@@ -71,6 +80,16 @@ public class PlanetConfigPanel extends LeftSideBarContent {
                     }).updatePlanetConfig(dataBinder.getModel());
         });
         enableSaveButton(true);
+    }
+
+    @EventHandler("reloadButton")
+    private void onReloadButtonClicked(ClickEvent event) {
+        provider.call(ignore -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "Calling ServerGameEngineControlProvider.reloadPlanet() failed: " + message, throwable);
+            return false;
+        }).reloadPlanet();
+
     }
 
 }

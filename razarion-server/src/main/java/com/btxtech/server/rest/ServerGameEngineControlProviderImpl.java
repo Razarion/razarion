@@ -45,4 +45,14 @@ public class ServerGameEngineControlProviderImpl implements ServerGameEngineCont
             throw e;
         }
     }
+
+    @Override
+    public void reloadPlanet() {
+        try {
+            serverGameEngineControl.reloadPlanet();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
 }

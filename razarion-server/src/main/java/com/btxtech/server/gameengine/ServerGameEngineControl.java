@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -100,6 +101,18 @@ public class ServerGameEngineControl implements GameLogicListener {
         synchronized (reloadLook) {
             botService.killAllBots();
             botService.startBots(serverGameEnginePersistence.readBotConfigs());
+        }
+    }
+
+    @SecurityCheck
+    public void reloadPlanet() {
+        synchronized (reloadLook) {
+            PlanetConfig newPlanetConfig = serverGameEnginePersistence.readPlanetConfig();
+            PlanetConfig currentPlanetConfig = planetService.getPlanetConfig();
+            currentPlanetConfig.setItemTypeLimitation(newPlanetConfig.getItemTypeLimitation());
+            currentPlanetConfig.setHouseSpace(newPlanetConfig.getHouseSpace());
+            currentPlanetConfig.setStartRazarion(newPlanetConfig.getStartRazarion());
+            currentPlanetConfig.setStartBaseItemTypeId(newPlanetConfig.getStartRazarion());
         }
     }
 
