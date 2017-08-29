@@ -20,7 +20,7 @@ public class WeldSlaveEmulator extends WeldBaseTest {
         this.weldMasterBaseTest = weldMasterBaseTest;
         setupEnvironment(weldMasterBaseTest.getStaticGameConfig(), weldMasterBaseTest.getPlanetConfig());
         getWeldBean(PlanetService.class).initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, weldMasterBaseTest.getSlaveSyncItemInfo(userContext), () -> {
-            getWeldBean(PlanetService.class).start(null);
+            getWeldBean(PlanetService.class).start();
         }, null);
 
         testClientWebSocket = new TestClientWebSocket();

@@ -54,8 +54,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
     @Inject
     private ProjectileService projectileService;
     @Inject
-    private BotService botService;
-    @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
@@ -82,11 +80,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }, failCallback);
     }
 
-    public void start(Collection<BotConfig> botConfigs) {
+    public void start(/*Collection<BotConfig> botConfigs*/) {
         scheduledFuture.start();
-        if (botConfigs != null) {
-            botService.startBots(botConfigs);
-        }
+//        if (botConfigs != null) {
+//            botService.startBots(botConfigs);
+//        }
     }
 
     public void stop() {

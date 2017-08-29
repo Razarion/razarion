@@ -6,6 +6,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
+import org.jboss.errai.common.client.dom.TableCell;
+import org.jboss.errai.common.client.dom.TableRow;
+import org.jboss.errai.common.client.dom.Window;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -39,6 +42,9 @@ public class SideBarPanel extends Composite {
     @Inject
     @DataField
     private Button backButton;
+    @Inject
+    @DataField
+    private TableRow buttonTableRow;
     private LeftSideBarContent leftSideBarContent;
 
     @PostConstruct
@@ -74,6 +80,15 @@ public class SideBarPanel extends Composite {
 
     public Button getBackButton() {
         return backButton;
+    }
+
+    public void addButton(String text, Runnable clickCallback) {
+        TableCell tableCell = (TableCell) Window.getDocument().createElement("td");
+        buttonTableRow.appendChild(tableCell);
+        org.jboss.errai.common.client.dom.Button button = (org.jboss.errai.common.client.dom.Button) Window.getDocument().createElement("button");
+        button.setInnerHTML(text);
+        tableCell.appendChild(button);
+        button.addEventListener("click", event -> clickCallback.run(), false);
     }
 
     @EventHandler("closeButton")

@@ -289,7 +289,7 @@ public class ScenarioService implements QuestListener {
             gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
             planetService.initialise(planetConfig, GameEngineMode.MASTER, masterPlanetConfig, null, () -> {
                 currentScenario.setupBots(botService);
-                planetService.start(null);
+                planetService.start();
                 PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName());
                 currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService, syncItemContainerService);
                 List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();

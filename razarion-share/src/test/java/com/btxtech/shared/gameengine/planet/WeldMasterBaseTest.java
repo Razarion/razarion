@@ -20,7 +20,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
     protected void setupMasterEnvironment() {
         nextHumanPlayerId = 1;
         setupEnvironment(GameTestContent.setupStaticGameConfig(), GameTestContent.setupPlanetConfig());
-        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(null), null);
+        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
     }
 
     protected CommandService getCommandService() {

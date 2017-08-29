@@ -17,6 +17,7 @@ public class RestUrl {
     public static final String AUDIO_SERVICE_PATH = "audio";
     public static final String SCENE_EDITOR_PATH = "sceneeditor";
     public static final String SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH = "servergameengineditorprovider";
+    public static final String SERVER_GAME_ENGINE_CONTROL_PROVIDER_PATH = "servergameengincontrolprovider";
     public static final String GAME_UI_CONTROL_PATH = G_ZIPPED + "/" + "gameuicontrol";
     public static final String COLD = "cold";
     public static final String WARM = "warm";

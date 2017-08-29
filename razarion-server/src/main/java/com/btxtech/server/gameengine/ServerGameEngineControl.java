@@ -3,6 +3,7 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
@@ -18,6 +19,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -62,6 +64,8 @@ public class ServerGameEngineControl implements GameLogicListener {
     private UserService userService;
     @Inject
     private BaseItemService baseItemService;
+    @Inject
+    private BotService botService;
 
     public void start() {
         try {
@@ -69,12 +73,19 @@ public class ServerGameEngineControl implements GameLogicListener {
             terrainShapeService.start();
             planetService.initialise(serverGameEnginePersistence.readPlanetConfig(), GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null, () -> {
                 gameLogicService.setGameLogicListener(this);
-                planetService.start(serverGameEnginePersistence.readBotConfigs());
+                planetService.start();
+                botService.startBots(serverGameEnginePersistence.readBotConfigs());
             }, failText -> logger.severe("TerrainSetup failed: " + failText));
             activateQuests();
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
+    }
+
+    @SecurityCheck
+    public void restartBots() {
+        botService.killAllBots();
+        botService.startBots(serverGameEnginePersistence.readBotConfigs());
     }
 
     private void activateQuests() {
