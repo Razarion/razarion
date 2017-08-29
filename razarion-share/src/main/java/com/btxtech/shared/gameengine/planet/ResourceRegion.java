@@ -81,4 +81,14 @@ public class ResourceRegion {
         }
     }
 
+    public void kill() {
+        synchronized (syncResourceItems) {
+            syncResourceItems.forEach(id -> {
+                SyncResourceItem syncResourceItem = syncItemContainerService.getSyncResourceItem(id);
+                syncResourceItem.setAmount(0);
+                resourceService.removeSyncResourceItem(syncResourceItem);
+            });
+            syncResourceItems.clear();
+        }
+    }
 }

@@ -22,7 +22,6 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -45,8 +44,6 @@ public class ResourceService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private ItemTypeService itemTypeService;
-    @Inject
-    private TerrainService terrainService;
     @Inject
     private GameLogicService gameLogicService;
     @Inject
@@ -75,17 +72,29 @@ public class ResourceService {
         }
         gameEngineMode = planetActivationEvent.getGameEngineMode();
         if (gameEngineMode == GameEngineMode.MASTER && planetActivationEvent.getMasterPlanetConfig() != null && planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs() != null) {
-            synchronized (resourceRegions) {
-                for (ResourceRegionConfig resourceRegionConfig : planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs()) {
-                    ResourceRegion resourceRegion = instance.get();
-                    resourceRegion.init(resourceRegionConfig);
-                    resourceRegions.add(resourceRegion);
-                }
-            }
+            startResourceRegions(planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs());
         }
         if (planetActivationEvent.getSlaveSyncItemInfo() != null && planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos() != null) {
             for (SyncResourceItemInfo syncResourceItemInfo : planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos()) {
                 createSyncResourceItemSlave(syncResourceItemInfo);
+            }
+        }
+    }
+
+    public void reloadResourceRegions(List<ResourceRegionConfig> resourceRegionConfigs) {
+        synchronized (resourceRegions) {
+            resourceRegions.forEach(ResourceRegion::kill);
+            resourceRegions.clear();
+        }
+        startResourceRegions(resourceRegionConfigs);
+    }
+
+    private void startResourceRegions(List<ResourceRegionConfig> resourceRegionConfigs) {
+        synchronized (resourceRegions) {
+            for (ResourceRegionConfig resourceRegionConfig : resourceRegionConfigs) {
+                ResourceRegion resourceRegion = instance.get();
+                resourceRegion.init(resourceRegionConfig);
+                resourceRegions.add(resourceRegion);
             }
         }
     }

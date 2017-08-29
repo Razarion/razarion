@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -66,6 +67,8 @@ public class ServerGameEngineControl implements GameLogicListener {
     private BaseItemService baseItemService;
     @Inject
     private BotService botService;
+    @Inject
+    private ResourceService resourceService;
     private final Object reloadLook = new Object();
 
     public void start() {
@@ -97,6 +100,13 @@ public class ServerGameEngineControl implements GameLogicListener {
         synchronized (reloadLook) {
             botService.killAllBots();
             botService.startBots(serverGameEnginePersistence.readBotConfigs());
+        }
+    }
+
+    @SecurityCheck
+    public void restartResourceRegions() {
+        synchronized (reloadLook) {
+            resourceService.reloadResourceRegions(serverGameEnginePersistence.readMasterPlanetConfig().getResourceRegionConfigs());
         }
     }
 

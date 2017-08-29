@@ -278,6 +278,10 @@ public class SyncItemContainerService {
         return (SyncBaseItem) getSyncItem(id);
     }
 
+    public SyncResourceItem getSyncResourceItem(int id) {
+        return (SyncResourceItem) getSyncItem(id);
+    }
+
     private boolean hasItemsInRange(DecimalPosition position, double radius) {
         return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
     }

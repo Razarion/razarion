@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.planet.BaseItemServiceBase;
+import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.TestGameLogicListener;
 import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
@@ -31,19 +31,19 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         assertEnergy(0, 0, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
 
-        getCommandService().build(builder, new DecimalPosition(70, 70), getBaseItemType(BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 70), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetService(100);
         assertEnergy(0, 0, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetServiceBaseServiceActive();
         assertEnergy(60, 0, playerBaseFull);
-        SyncBaseItem consumer1 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID);
+        SyncBaseItem consumer1 = findSyncBaseItem(playerBaseFull, GameTestContent.CONSUMER_ITEM_TYPE_ID);
         // TODO Assert.assertFalse(consumer1.getSyncConsumer().isOperating());
         assertGameLogicListener(60, 0, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
-        getCommandService().build(builder, new DecimalPosition(70, 100), getBaseItemType(BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 100), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
         assertEnergy(60, 0, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetService(100);
@@ -52,33 +52,33 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         tickPlanetServiceBaseServiceActive();
         assertEnergy(60, 80, playerBaseFull);
         // TODO Assert.assertTrue(consumer1.getSyncConsumer().isOperating());
-        SyncBaseItem generator1 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID);
+        SyncBaseItem generator1 = findSyncBaseItem(playerBaseFull, GameTestContent.GENERATOR_ITEM_TYPE_ID);
         assertGameLogicListener(60, 80, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
-        getCommandService().build(builder, new DecimalPosition(70, 130), getBaseItemType(BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 130), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
         assertEnergy(60, 80, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetServiceBaseServiceActive();
         assertEnergy(120, 80, playerBaseFull);
-        SyncBaseItem consumer2 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID, consumer1);
+        SyncBaseItem consumer2 = findSyncBaseItem(playerBaseFull, GameTestContent.CONSUMER_ITEM_TYPE_ID, consumer1);
         // TODO Assert.assertFalse(consumer1.getSyncConsumer().isOperating());
         // TODO Assert.assertFalse(consumer2.getSyncConsumer().isOperating());
         assertGameLogicListener(120, 80, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
-        getCommandService().build(builder, new DecimalPosition(70, 160), getBaseItemType(BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 160), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
         assertEnergy(120, 80, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetServiceBaseServiceActive();
         assertEnergy(120, 160, playerBaseFull);
         // TODO Assert.assertTrue(consumer1.getSyncConsumer().isOperating());
         // TODO Assert.assertTrue(consumer2.getSyncConsumer().isOperating());
-        SyncBaseItem generator2 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID, generator1);
+        SyncBaseItem generator2 = findSyncBaseItem(playerBaseFull, GameTestContent.GENERATOR_ITEM_TYPE_ID, generator1);
         assertGameLogicListener(120, 160, playerBaseFull);
         getTestGameLogicListener().clearAll();
 
-        getCommandService().build(builder, new DecimalPosition(70, 190), getBaseItemType(BaseItemServiceBase.FACTORY_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 190), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         assertEnergy(120, 160, playerBaseFull);
 
@@ -126,18 +126,18 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         assertNewConnectedSlave(0, 0, userContext);
         // Create master consumer
         SyncBaseItem builder = CollectionUtils.getFirst(playerBaseFull.getItems());
-        getCommandService().build(builder, new DecimalPosition(70, 70), getBaseItemType(BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 70), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
         tickPlanetService(100);
         assertConnectedSlave(0, 0, permanentSalve, userContext);
         Assert.assertTrue(permanentSalve.getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         assertNewConnectedSlave(0, 0, userContext);
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem consumer1 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID);
+        SyncBaseItem consumer1 = findSyncBaseItem(playerBaseFull, GameTestContent.CONSUMER_ITEM_TYPE_ID);
         assertConnectedSlave(60, 0, permanentSalve, userContext);
         assertGameLogicListener(60, 0, permanentSalve, userContext);
         assertNewConnectedSlave(60, 0, userContext);
         // Add generator master
-        getCommandService().build(builder, new DecimalPosition(70, 100), getBaseItemType(BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 100), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
         tickPlanetService(100);
         assertConnectedSlave(60, 0, permanentSalve, userContext);
         Assert.assertTrue(permanentSalve.getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
@@ -146,23 +146,23 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         assertConnectedSlave(60, 80, permanentSalve, userContext);
         assertGameLogicListener(60, 80, permanentSalve, userContext);
         assertNewConnectedSlave(60, 80, userContext);
-        SyncBaseItem generator1 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID);
+        SyncBaseItem generator1 = findSyncBaseItem(playerBaseFull, GameTestContent.GENERATOR_ITEM_TYPE_ID);
         // Add second consumer master
-        getCommandService().build(builder, new DecimalPosition(70, 130), getBaseItemType(BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 130), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem consumer2 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.CONSUMER_ITEM_TYPE_ID, consumer1);
+        SyncBaseItem consumer2 = findSyncBaseItem(playerBaseFull, GameTestContent.CONSUMER_ITEM_TYPE_ID, consumer1);
         assertConnectedSlave(120, 80, permanentSalve, userContext);
         assertGameLogicListener(120, 80, permanentSalve, userContext);
         assertNewConnectedSlave(120, 80, userContext);
         // Add second generator master
-        getCommandService().build(builder, new DecimalPosition(70, 160), getBaseItemType(BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 160), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem generator2 = findSyncBaseItem(playerBaseFull, BaseItemServiceBase.GENERATOR_ITEM_TYPE_ID, generator1);
+        SyncBaseItem generator2 = findSyncBaseItem(playerBaseFull, GameTestContent.GENERATOR_ITEM_TYPE_ID, generator1);
         assertConnectedSlave(120, 160, permanentSalve, userContext);
         assertGameLogicListener(120, 160, permanentSalve, userContext);
         assertNewConnectedSlave(120, 160, userContext);
         // Add non consuming or generating item
-        getCommandService().build(builder, new DecimalPosition(70, 190), getBaseItemType(BaseItemServiceBase.FACTORY_ITEM_TYPE_ID));
+        getCommandService().build(builder, new DecimalPosition(70, 190), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         assertConnectedSlave(120, 160, permanentSalve, userContext);
         Assert.assertTrue(permanentSalve.getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());

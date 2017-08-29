@@ -17,11 +17,15 @@ import java.util.List;
 public class TestGameLogicListener implements GameLogicListener {
     private List<EnergyStateChangedEntry> energyStateChangedEntries = new ArrayList<>();
     private List<SyncBaseItem> syncBaseItemKilled = new ArrayList<>();
+    private List<SyncResourceItem> resourceCreated = new ArrayList<>();
+    private List<SyncResourceItem> resourceDeleted = new ArrayList<>();
     private TestWebSocket testWebSocket = new TestWebSocket();
 
     public void clearAll() {
         energyStateChangedEntries.clear();
         syncBaseItemKilled.clear();
+        resourceCreated.clear();
+        resourceDeleted.clear();
     }
 
     public List<EnergyStateChangedEntry> getEnergyStateChangedEntries() {
@@ -30,6 +34,14 @@ public class TestGameLogicListener implements GameLogicListener {
 
     public List<SyncBaseItem> getSyncBaseItemKilled() {
         return syncBaseItemKilled;
+    }
+
+    public List<SyncResourceItem> getResourceCreated() {
+        return resourceCreated;
+    }
+
+    public List<SyncResourceItem> getResourceDeleted() {
+        return resourceDeleted;
     }
 
     public TestWebSocket getTestWebSocket() {
@@ -70,11 +82,13 @@ public class TestGameLogicListener implements GameLogicListener {
 
     @Override
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
+        resourceCreated.add(syncResourceItem);
         testWebSocket.onSyncResourceItemCreated(syncResourceItem);
     }
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
+        resourceDeleted.add(syncResourceItem);
         testWebSocket.onSyncItemRemoved(syncResourceItem, false);
     }
 

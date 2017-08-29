@@ -16,4 +16,8 @@ public interface ServerGameEngineControlProvider {
     @POST
     @Path("reloadStatic")
     void reloadStatic();
+
+    @POST
+    @Path("restartResourceRegions")
+    void restartResourceRegions();
 }

@@ -27,7 +27,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
         return getWeldBean(CommandService.class);
     }
 
-    private MasterPlanetConfig setupMasterPlanetConfig() {
+    protected MasterPlanetConfig setupMasterPlanetConfig() {
         MasterPlanetConfig masterPlanetConfig = new MasterPlanetConfig();
         masterPlanetConfig.setResourceRegionConfigs(new ArrayList<>());
         return masterPlanetConfig;
@@ -43,7 +43,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
 
     protected UserContext createLevel1UserContext() {
         int humanPlayerId = nextHumanPlayerId++;
-        return new UserContext().setLevelId(BaseItemServiceBase.LEVEL_ID_1).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId)).setName("test base " + humanPlayerId);
+        return new UserContext().setLevelId(GameTestContent.LEVEL_ID_1).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId)).setName("test base " + humanPlayerId);
     }
 
 

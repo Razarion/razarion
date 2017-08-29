@@ -35,4 +35,14 @@ public class ServerGameEngineControlProviderImpl implements ServerGameEngineCont
             throw e;
         }
     }
+
+    @Override
+    public void restartResourceRegions() {
+        try {
+            serverGameEngineControl.restartResourceRegions();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
 }

@@ -80,11 +80,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }, failCallback);
     }
 
-    public void start(/*Collection<BotConfig> botConfigs*/) {
+    public void start() {
         scheduledFuture.start();
-//        if (botConfigs != null) {
-//            botService.startBots(botConfigs);
-//        }
     }
 
     public void stop() {
