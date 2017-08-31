@@ -25,6 +25,8 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -69,15 +71,20 @@ public class ServerLevelQuestService implements QuestListener {
         // Temporary: Only save the level if on multiplayer planet. Main reason, tutorial state und units are not saved.
         // This is only called from the client.
         if (gameUiControlConfigPersistence.get().load4Level(newLevelId).getGameEngineMode() == GameEngineMode.SLAVE) {
+            boolean activeQuest = questService.hasActiveQuest(userContext.getHumanPlayerId());
             userContext.setLevelId(newLevelId);
-            QuestConfig newQuest;
+            QuestConfig newQuest = null;
             if (userContext.getHumanPlayerId().getUserId() != null) {
                 userService.persistLevel(userContext.getHumanPlayerId().getUserId(), newLevel);
-                newQuest = userService.getAndSaveNewQuest(userContext.getHumanPlayerId().getUserId());
+                if (!activeQuest) {
+                    newQuest = userService.getAndSaveNewQuest(userContext.getHumanPlayerId().getUserId());
+                }
             } else {
-                UnregisteredUser unregisteredUser = sessionService.getSession(sessionId).getUnregisteredUser();
-                newQuest = serverGameEnginePersistence.getQuest4LevelAndCompleted(newLevel, unregisteredUser.getCompletedQuestIds()).toQuestConfig(playerSession.getLocale());
-                unregisteredUser.setActiveQuest(newQuest);
+                if (!activeQuest) {
+                    UnregisteredUser unregisteredUser = sessionService.getSession(sessionId).getUnregisteredUser();
+                    newQuest = serverGameEnginePersistence.getQuest4LevelAndCompleted(newLevel, unregisteredUser.getCompletedQuestIds()).toQuestConfig(playerSession.getLocale());
+                    unregisteredUser.setActiveQuest(newQuest);
+                }
             }
             if (newQuest != null) {
                 historyPersistence.get().onQuest(userContext.getHumanPlayerId(), newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
@@ -141,7 +148,7 @@ public class ServerLevelQuestService implements QuestListener {
             }
             clientSystemConnectionService.onXpChanged(humanPlayerId, newXp);
         }
-
+        // Activate next quest
         QuestConfig newQuest = null;
         if (registered) {
             userService.addCompletedServerQuest(humanPlayerId.getUserId(), questConfig);
@@ -163,5 +170,58 @@ public class ServerLevelQuestService implements QuestListener {
             questService.activateCondition(humanPlayerId, newQuest);
             clientSystemConnectionService.onQuestActivated(humanPlayerId, newQuest);
         }
+    }
+
+    public List<QuestConfig> readOpenQuestForDialog(UserContext userContext, Locale locale) {
+        return serverGameEnginePersistence.getQuests4Dialog(levelPersistence.getLevel4Id(userContext.getLevelId()), readActiveOrPassedQuestIds(userContext), locale);
+    }
+
+    @Transactional
+    public List<Integer> readActiveOrPassedQuestIds(UserContext userContext) {
+        List<Integer> ignoredQuests = new ArrayList<>();
+        if (userContext.getHumanPlayerId().getUserId() != null) {
+            ignoredQuests.addAll(userService.findActivePassedQuestId(userContext.getHumanPlayerId().getUserId()));
+        } else {
+            UnregisteredUser unregisteredUser = sessionService.findPlayerSession(userContext.getHumanPlayerId()).getUnregisteredUser();
+            if (unregisteredUser.getCompletedQuestIds() != null) {
+                ignoredQuests.addAll(unregisteredUser.getCompletedQuestIds());
+            }
+            if (unregisteredUser.getActiveQuest() != null) {
+                ignoredQuests.add(unregisteredUser.getActiveQuest().getId());
+            }
+        }
+        return ignoredQuests;
+    }
+
+    public void activateQuest(UserContext userContext, int questId, Locale locale) {
+        HumanPlayerId humanPlayerId = userContext.getHumanPlayerId();
+        boolean registered = humanPlayerId.getUserId() != null;
+        if (questService.hasActiveQuest(humanPlayerId)) {
+            questService.deactivateActorCondition(humanPlayerId);
+            clientSystemConnectionService.onQuestActivated(humanPlayerId, null);
+            QuestConfig oldQuest;
+            if (registered) {
+                oldQuest = userService.getActiveQuest(humanPlayerId.getUserId(), locale);
+                userService.clearActiveQuest(humanPlayerId.getUserId());
+            } else {
+                UnregisteredUser unregisteredUser = sessionService.findPlayerSession(humanPlayerId).getUnregisteredUser();
+                oldQuest = unregisteredUser.getActiveQuest();
+                unregisteredUser.setActiveQuest(null);
+            }
+            historyPersistence.get().onQuest(humanPlayerId, oldQuest, QuestHistoryEntity.Type.QUEST_DEACTIVATED);
+        }
+        QuestConfig newQuest = serverGameEnginePersistence.getAndVerifyQuest(userContext.getLevelId(), questId, locale);
+        if (readActiveOrPassedQuestIds(userContext).contains(newQuest.getId())) {
+            throw new IllegalArgumentException("Given quest is passed");
+        }
+
+        if (registered) {
+            userService.setActiveQuest(humanPlayerId.getUserId(), newQuest.getId());
+        } else {
+            sessionService.findPlayerSession(humanPlayerId).getUnregisteredUser().setActiveQuest(newQuest);
+        }
+        historyPersistence.get().onQuest(humanPlayerId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
+        questService.activateCondition(humanPlayerId, newQuest);
+        clientSystemConnectionService.onQuestActivated(humanPlayerId, newQuest);
     }
 }

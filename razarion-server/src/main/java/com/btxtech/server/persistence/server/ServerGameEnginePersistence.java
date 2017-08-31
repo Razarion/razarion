@@ -29,10 +29,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -185,6 +188,47 @@ public class ServerGameEnginePersistence {
         return entityManager.find(QuestConfigEntity.class, questIds.get(0));
     }
 
+    @Transactional
+    public List<QuestConfig> getQuests4Dialog(LevelEntity level, Collection<Integer> ignoreQuests, Locale locale) {
+        // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
+        // ServerGameEngineConfigEntity is not considered in this query
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Integer> criteriaQuery = criteriaBuilder.createQuery(Integer.class);
+        Root<ServerLevelQuestEntity> root = criteriaQuery.from(ServerLevelQuestEntity.class);
+        ListJoin<ServerLevelQuestEntity, QuestConfigEntity> listJoin = root.join(ServerLevelQuestEntity_.questConfigs);
+        CriteriaQuery<Integer> userSelect = criteriaQuery.select(listJoin.get(QuestConfigEntity_.id));
+        userSelect.where(criteriaBuilder.lessThanOrEqualTo(root.join(ServerLevelQuestEntity_.minimalLevel).get(LevelEntity_.number), level.getNumber()));
+        criteriaQuery.orderBy(criteriaBuilder.asc(listJoin.index()));
+        List<Integer> questIds = entityManager.createQuery(userSelect).getResultList();
+        if (questIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        if (ignoreQuests != null) {
+            questIds.removeAll(ignoreQuests);
+        }
+        if (questIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return questIds.stream().map(questId -> entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(locale)).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public QuestConfig getAndVerifyQuest(int levelId, int questId, Locale locale) {
+        // Does not work if there are multiple ServerGameEngineConfigEntity with same levels on ServerLevelQuestEntity
+        // ServerGameEngineConfigEntity is not considered in this query
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
+        Root<ServerLevelQuestEntity> root = userQuery.from(ServerLevelQuestEntity.class);
+        CriteriaQuery<LevelEntity> userSelect = userQuery.select(root.join(ServerLevelQuestEntity_.minimalLevel));
+        userSelect.where(criteriaBuilder.equal(root.join(ServerLevelQuestEntity_.questConfigs).get(QuestConfigEntity_.id), questId));
+        LevelEntity questLevelEntity = entityManager.createQuery(userSelect).getSingleResult();
+        LevelEntity userLevelEntity = levelPersistence.read(levelId);
+        if(userLevelEntity.getNumber() < questLevelEntity.getNumber()) {
+            throw new IllegalArgumentException("The user is not allowed to activate a quest due to wrong level. questLevelEntity: " + questLevelEntity + " userLevelEntity: " + userLevelEntity);
+        }
+        return entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(locale);
+    }
+
     public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {
         ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverLevelQuestCrudInstance.get();
         crud.setRootProvider(this::read).setParentProvider(entityManager1 -> read());
@@ -240,5 +284,4 @@ public class ServerGameEnginePersistence {
         });
         return crud;
     }
-
 }

@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
  * 11.07.2016.
  */
 public interface QuestVisualizer {
-    void showSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo);
+    void showSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo, boolean showQuestSelectionButton);
 
     void setShowInGameVisualisation(boolean showInGameVisualisation);
 

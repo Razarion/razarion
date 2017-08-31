@@ -90,6 +90,22 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
     }
 
+    public void showQuestionDialog(String title, String question, Runnable okCallback, Runnable cancelCallback) {
+        show(title, Type.STACK_ABLE, MessageDialog.class, question,
+                (button, ignore) -> {
+                    switch (button) {
+                        case OK:
+                            okCallback.run();
+                            break;
+                        case CANCEL:
+                            cancelCallback.run();
+                            break;
+                        default:
+                            throw new IllegalArgumentException("ClientModalDialogManagerImpl.showQuestionDialog() Unknown button: " + button);
+                    }
+                }, null, DialogButton.Button.OK, DialogButton.Button.CANCEL);
+    }
+
     public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
         show(title, type, contentClass, t, listener, shownCallback, audioService.getAudioConfig().getDialogOpened(), dialogButtons);
     }

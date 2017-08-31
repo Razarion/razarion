@@ -32,8 +32,8 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity description;
     private int xp;
-    private int money;
-    private int cristal;
+    private int razarion;
+    private int crystal;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity passedMessage;
     private boolean hidePassedDialog;
@@ -45,7 +45,7 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     }
 
     public QuestConfig toQuestConfig(Locale locale) {
-        QuestConfig questConfig = new QuestConfig().setId(id).setInternalName(internalName).setXp(xp).setMoney(money).setCristal(cristal);
+        QuestConfig questConfig = new QuestConfig().setId(id).setInternalName(internalName).setXp(xp).setRazarion(razarion).setCrystal(crystal);
         if (title != null) {
             questConfig.setTitle(title.getString(locale));
         }
@@ -80,8 +80,8 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
             description = null;
         }
         xp = questConfig.getXp();
-        money = questConfig.getMoney();
-        cristal = questConfig.getCristal();
+        razarion = questConfig.getRazarion();
+        crystal = questConfig.getCrystal();
         if (questConfig.getPassedMessage() != null) {
             if (passedMessage == null) {
                 passedMessage = new I18nBundleEntity();

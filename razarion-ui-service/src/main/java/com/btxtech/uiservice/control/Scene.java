@@ -61,6 +61,7 @@ public class Scene implements ViewService.ViewFieldListener {
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
     private boolean scrollBouncePrevention = true;
+    private QuestConfig serverQuest;
 
     public void init(SceneConfig sceneConfig) {
         this.sceneConfig = sceneConfig;
@@ -121,7 +122,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getQuestConfig() != null) {
             gameEngineControl.activateQuest(sceneConfig.getQuestConfig());
             audioService.onQuestActivated();
-            questVisualizer.showSideBar(sceneConfig.getQuestConfig(), null);
+            questVisualizer.showSideBar(sceneConfig.getQuestConfig(), null, false);
         }
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
             hasCompletionCallback = true;
@@ -145,7 +146,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            questVisualizer.showSideBar(new QuestDescriptionConfig().setTitle(I18nHelper.getConstants().placeStartItemTitle()).setDescription(I18nHelper.getConstants().placeStartItemDescription()).setHidePassedDialog(true), null);
+            questVisualizer.showSideBar(new QuestDescriptionConfig().setTitle(I18nHelper.getConstants().placeStartItemTitle()).setDescription(I18nHelper.getConstants().placeStartItemDescription()).setHidePassedDialog(true), null, false);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -154,7 +155,7 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             scrollBouncePrevention = false;
-            questVisualizer.showSideBar(sceneConfig.getScrollUiQuest(), null);
+            questVisualizer.showSideBar(sceneConfig.getScrollUiQuest(), null, false);
             audioService.onQuestActivated();
             viewService.addViewFieldListeners(this);
         }
@@ -218,29 +219,29 @@ public class Scene implements ViewService.ViewFieldListener {
             baseItemPlacerService.deactivate();
         }
         if (sceneConfig.getQuestConfig() != null) {
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, false);
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, false);
         }
         if (sceneConfig.getGameTipConfig() != null) {
             gameTipService.stop();
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             viewService.removeViewFieldListeners(this);
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, false);
         }
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, false);
         }
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, false);
         }
     }
 
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, false);
             if (sceneConfig.getQuestConfig().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -252,7 +253,7 @@ public class Scene implements ViewService.ViewFieldListener {
             userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, false);
             if (sceneConfig.getScrollUiQuest().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -270,8 +271,9 @@ public class Scene implements ViewService.ViewFieldListener {
     }
 
     private void setupQuestVisualizer4Server() {
+        serverQuest = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getActiveQuest();
         questVisualizer.showSideBar(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getActiveQuest(),
-                gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo());
+                gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo(), true);
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
@@ -280,7 +282,8 @@ public class Scene implements ViewService.ViewFieldListener {
 
     public void onQuestActivated(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questVisualizer.showSideBar(quest, null);
+            questVisualizer.showSideBar(quest, null, true);
+            serverQuest = quest;
         } else {
             logger.severe("Scene.onQuestActivated() but not sceneConfig.isProcessServerQuests()");
         }
@@ -288,10 +291,15 @@ public class Scene implements ViewService.ViewFieldListener {
 
     public void onQuestPassedServer(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questVisualizer.showSideBar(null, null);
+            questVisualizer.showSideBar(null, null, true);
             modalDialogManager.showQuestPassed(quest);
+            serverQuest = null;
         } else {
             logger.severe("Scene.onQuestPassedServer() but not sceneConfig.isProcessServerQuests()");
         }
+    }
+
+    public QuestConfig getServerQuest() {
+        return serverQuest;
     }
 }

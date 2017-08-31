@@ -14,6 +14,7 @@ import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -30,6 +31,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -209,20 +211,20 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         systemConnection.printMessagesSent();
 
         systemConnection.assertMessageSentCount(15);
-        systemConnection.assertMessageSent(0, "QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(1, "QUEST_PASSED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(0, "QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(1, "QUEST_PASSED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(2, "XP_CHANGED#100");
-        systemConnection.assertMessageSent(3, "QUEST_ACTIVATED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(4, "QUEST_PASSED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(3, "QUEST_ACTIVATED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(4, "QUEST_PASSED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(5, "LEVEL_UPDATE_SERVER#{\"humanPlayerId\":{\"playerId\":1,\"userId\":null},\"name\":\"Unregistered User\",\"admin\":false,\"levelId\":5,\"xp\":0,\"crystals\":0,\"inventoryItemIds\":[],\"inventoryArtifactIds\":[],\"unlockedItemTypes\":[],\"unlockedQuests\":[],\"unlockedPlanets\":[]}");
-        systemConnection.assertMessageSent(6, "QUEST_ACTIVATED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(7, "QUEST_PASSED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(6, "QUEST_ACTIVATED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(7, "QUEST_PASSED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(8, "XP_CHANGED#100");
-        systemConnection.assertMessageSent(9, "QUEST_ACTIVATED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(10, "QUEST_PASSED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(9, "QUEST_ACTIVATED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(10, "QUEST_PASSED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(11, "XP_CHANGED#300");
-        systemConnection.assertMessageSent(12, "QUEST_ACTIVATED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(13, "QUEST_PASSED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(12, "QUEST_ACTIVATED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(13, "QUEST_PASSED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(14, "XP_CHANGED#350");
 
         assertCount(10, QuestHistoryEntity.class);
@@ -321,20 +323,20 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         int playerId = userContext.getHumanPlayerId().getPlayerId();
         int userId = userContext.getHumanPlayerId().getUserId();
         systemConnection.assertMessageSentCount(15);
-        systemConnection.assertMessageSent(0, "QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(1, "QUEST_PASSED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(0, "QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(1, "QUEST_PASSED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(2, "XP_CHANGED#100");
-        systemConnection.assertMessageSent(3, "QUEST_ACTIVATED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(4, "QUEST_PASSED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(3, "QUEST_ACTIVATED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(4, "QUEST_PASSED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(5, "LEVEL_UPDATE_SERVER#{\"humanPlayerId\":{\"playerId\":" + playerId + ",\"userId\":" + userId + "},\"name\":\"Registered User\",\"admin\":false,\"levelId\":5,\"xp\":0,\"crystals\":0,\"inventoryItemIds\":[],\"inventoryArtifactIds\":[],\"unlockedItemTypes\":[],\"unlockedQuests\":[],\"unlockedPlanets\":[]}");
-        systemConnection.assertMessageSent(6, "QUEST_ACTIVATED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(7, "QUEST_PASSED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(6, "QUEST_ACTIVATED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(7, "QUEST_PASSED#{\"id\":3,\"internalName\":\"Test Server Quest L5 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BOX_PICKED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(8, "XP_CHANGED#100");
-        systemConnection.assertMessageSent(9, "QUEST_ACTIVATED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(10, "QUEST_PASSED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(9, "QUEST_ACTIVATED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(10, "QUEST_PASSED#{\"id\":4,\"internalName\":\"Test Server Quest L5 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"BASE_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(11, "XP_CHANGED#300");
-        systemConnection.assertMessageSent(12, "QUEST_ACTIVATED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(13, "QUEST_PASSED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"money\":0,\"cristal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(12, "QUEST_ACTIVATED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(13, "QUEST_PASSED#{\"id\":5,\"internalName\":\"Test Server Quest L5 3\",\"title\":null,\"description\":null,\"xp\":50,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"HARVEST\",\"comparisonConfig\":{\"count\":100,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
         systemConnection.assertMessageSent(14, "XP_CHANGED#350");
 
         assertCount(10, QuestHistoryEntity.class);
@@ -342,6 +344,120 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         assertCount(2, UserEntity.class);
 
         EasyMock.verify(serverGameEngineControlMock, questServiceMock);
+    }
+
+    @Test
+    public void activateQuestRegistered() throws Exception {
+        // Setup session
+        String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
+        userService.handleFacebookUserLogin("0000001");
+
+        TestClientSystemConnection systemConnection = activateQuest(sessionId);
+
+        systemConnection.assertMessageSentCount(8);
+        systemConnection.assertMessageSent(0,"QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(1,"QUEST_ACTIVATED#null");
+        systemConnection.assertMessageSent(2,"QUEST_ACTIVATED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(3,"QUEST_PASSED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(4,"XP_CHANGED#200");
+        systemConnection.assertMessageSent(5,"QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(6,"QUEST_ACTIVATED#null");
+        systemConnection.assertMessageSent(7,"QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+
+        assertCount(7, QuestHistoryEntity.class);
+        assertCount(2, LevelHistoryEntity.class);
+
+    }
+
+    @Test
+    public void activateQuestUnRegistered() throws Exception {
+        // Setup session
+        String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
+
+        TestClientSystemConnection systemConnection = activateQuest(sessionId);
+
+        systemConnection.assertMessageSentCount(8);
+        systemConnection.assertMessageSent(0,"QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(1,"QUEST_ACTIVATED#null");
+        systemConnection.assertMessageSent(2,"QUEST_ACTIVATED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(3,"QUEST_PASSED#{\"id\":2,\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(4,"XP_CHANGED#200");
+        systemConnection.assertMessageSent(5,"QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSent(6,"QUEST_ACTIVATED#null");
+        systemConnection.assertMessageSent(7,"QUEST_ACTIVATED#{\"id\":1,\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+
+        assertCount(7, QuestHistoryEntity.class);
+        assertCount(2, LevelHistoryEntity.class);
+
+    }
+
+    private  TestClientSystemConnection activateQuest(String sessionId) throws Exception {
+        // Setup mocks
+        QuestService questServiceMock = EasyMock.createStrictMock(QuestService.class);
+        // Level up LEVEL_4_ID
+        EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(false);
+        questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+        // Activate quest SERVER_QUEST_ID_L4_2
+        EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(true);
+        questServiceMock.deactivateActorCondition(EasyMock.anyObject());
+        questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+        // Pass Quest SERVER_QUEST_ID_L4_2
+        questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+        // Activate quest wrong level
+        EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(true);
+        questServiceMock.deactivateActorCondition(EasyMock.anyObject());
+        // Activate passed quest
+        EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(false);
+        // Level up LEVEL_5_ID
+        EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(false);
+        questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+
+        EasyMock.replay(questServiceMock);
+        SimpleTestEnvironment.injectService("questService", serverLevelQuestService, questServiceMock);
+        TestClientSystemConnection systemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
+        // Simulate anonymous login
+        UserContext userContext = userService.getUserContextFromSession();
+        HumanPlayerId humanPlayerId = userContext.getHumanPlayerId();
+        // Level 1: no server quests
+        List<QuestConfig> actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        TestHelper.assertObjectNameIdProviders(actualQuestConfigs);
+        // Level 4: 2 server quests one quest active
+        serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        TestHelper.assertObjectNameIdProviders(actualQuestConfigs, SERVER_QUEST_ID_L4_2);
+        // Activate quest
+        serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L4_2, Locale.US);
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        TestHelper.assertObjectNameIdProviders(actualQuestConfigs, SERVER_QUEST_ID_L4_1);
+        // Pass Quest
+        serverLevelQuestService.onQuestPassed(humanPlayerId, readQuestConfig(SERVER_QUEST_ID_L4_2));
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        TestHelper.assertObjectNameIdProviders(actualQuestConfigs);
+        // Activate quest wrong level
+        try {
+            serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L5_1, Locale.US);
+            Assert.fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        // Activate passed quest
+        try {
+            serverLevelQuestService.activateQuest(userContext, SERVER_QUEST_ID_L4_2, Locale.US);
+            Assert.fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        // Level up LEVEL_5_ID
+        serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_5_ID);
+        actualQuestConfigs = serverLevelQuestService.readOpenQuestForDialog(userContext, Locale.US);
+        TestHelper.assertObjectNameIdProviders(actualQuestConfigs, SERVER_QUEST_ID_L5_1, SERVER_QUEST_ID_L5_2, SERVER_QUEST_ID_L5_3);
+
+        EasyMock.verify(questServiceMock);
+
+        assertCount(7, QuestHistoryEntity.class);
+        assertCount(2, LevelHistoryEntity.class);
+
+        return systemConnection;
     }
 
     private void assertDbUserLevelXp(int userId, int expectedLevel4Id, Integer expectedActiveQuestId, int expectedXp, Integer... expectedCompletedQuestIds) throws Exception {
@@ -394,6 +510,14 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
             e.printStackTrace();
             Assert.fail();
         }
+    }
+
+    private QuestConfig readQuestConfig(int questId) throws Exception {
+        SingleHolder<QuestConfig> holder = new SingleHolder<>();
+        runInTransaction(entityManager -> {
+            holder.setO(entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(Locale.US));
+        });
+        return holder.getO();
     }
 
 }

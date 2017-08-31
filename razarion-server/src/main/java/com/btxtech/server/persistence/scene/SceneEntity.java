@@ -115,8 +115,8 @@ public class SceneEntity implements ObjectNameIdProvider {
     })
     private Rectangle2D scrollUiQuestTargetRectangle;
     private Integer scrollUiQuestXp;
-    private Integer scrollUiQuestMoney;
-    private Integer scrollUiQuestCristal;
+    private Integer scrollUiQuestRazarion;
+    private Integer scrollUiQuestCrystal;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "sceneId")
     private List<BoxItemPositionEntity> boxItemPositionEntities;
@@ -226,8 +226,8 @@ public class SceneEntity implements ObjectNameIdProvider {
                 scrollUiQuest.setHidePassedDialog(scrollUiQuestI18nHidePassedDialog);
             }
             scrollUiQuest.setXp(scrollUiQuestXp);
-            scrollUiQuest.setMoney(scrollUiQuestMoney);
-            scrollUiQuest.setCristal(scrollUiQuestCristal);
+            scrollUiQuest.setRazarion(scrollUiQuestRazarion);
+            scrollUiQuest.setCrystal(scrollUiQuestCrystal);
             sceneConfig.setScrollUiQuest(scrollUiQuest);
         }
         if (boxItemPositionEntities != null && !boxItemPositionEntities.isEmpty()) {
@@ -291,8 +291,8 @@ public class SceneEntity implements ObjectNameIdProvider {
             scrollUiQuestI18nHidePassedDialog = sceneConfig.getScrollUiQuest().isHidePassedDialog();
             scrollUiQuestTargetRectangle = sceneConfig.getScrollUiQuest().getScrollTargetRectangle();
             scrollUiQuestXp = sceneConfig.getScrollUiQuest().getXp();
-            scrollUiQuestMoney = sceneConfig.getScrollUiQuest().getMoney();
-            scrollUiQuestCristal = sceneConfig.getScrollUiQuest().getCristal();
+            scrollUiQuestRazarion = sceneConfig.getScrollUiQuest().getRazarion();
+            scrollUiQuestCrystal = sceneConfig.getScrollUiQuest().getCrystal();
         }
         removeLoadingCover = sceneConfig.isRemoveLoadingCover();
     }

@@ -76,7 +76,7 @@ public class SyncFactory extends SyncBaseAbility {
             }
 
             if (!getSyncBaseItem().getBase().withdrawalResource(buildFactor * (double) toBeBuiltType.getPrice())) {
-                gameLogicService.onFactoryNoMoney();
+                gameLogicService.onFactoryNoRazarion();
                 return true;
             }
             buildup += buildFactor;

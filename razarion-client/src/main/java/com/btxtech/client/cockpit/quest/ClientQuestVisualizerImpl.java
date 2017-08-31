@@ -22,13 +22,13 @@ public class ClientQuestVisualizerImpl implements QuestVisualizer {
     private QuestSidebar questSidebar;
 
     @Override
-    public void showSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo) {
-        if (descriptionConfig != null) {
+    public void showSideBar(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo, boolean showQuestSelectionButton) {
+        if (descriptionConfig != null || showQuestSelectionButton) {
             if (questSidebar == null) {
                 questSidebar = questCockpitInstance.get();
                 RootPanel.get().add(questSidebar);
             }
-            questSidebar.setQuest(descriptionConfig, questProgressInfo);
+            questSidebar.setQuest(descriptionConfig, questProgressInfo, showQuestSelectionButton);
         } else {
             if (questSidebar != null) {
                 RootPanel.get().remove(questSidebar);
@@ -44,7 +44,7 @@ public class ClientQuestVisualizerImpl implements QuestVisualizer {
 
     @Override
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
-        if(questSidebar != null) {
+        if (questSidebar != null) {
             questSidebar.onQuestProgress(questProgressInfo);
         } else {
             logger.severe("ClientQuestVisualizerImpl.onQuestProgress() questSidebar == null");

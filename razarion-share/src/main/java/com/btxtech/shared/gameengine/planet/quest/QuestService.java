@@ -78,6 +78,10 @@ public class QuestService {
         }
     }
 
+    public boolean hasActiveQuest(HumanPlayerId humanPlayerId) {
+        return progressMap.containsKey(humanPlayerId);
+    }
+
     public void deactivateActorCondition(HumanPlayerId humanPlayerId) {
         synchronized (progressMap) {
             progressMap.remove(humanPlayerId);

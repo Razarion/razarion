@@ -363,6 +363,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
     }
 
+    public boolean hasActiveServerQuest() {
+        return currentScene != null && currentScene.getServerQuest() != null;
+    }
+
     public void onEnergyChanged(int consuming, int generating) {
         cockpitService.onEnergyChanged(consuming, generating);
         this.consuming = consuming;

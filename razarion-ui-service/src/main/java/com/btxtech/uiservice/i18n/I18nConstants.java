@@ -263,7 +263,11 @@ public interface I18nConstants {
 
     String reward();
 
-    String xpRewards(int xp);
+    String xpReward(int xp);
+
+    String razarionReward(int razarion);
+
+    String crystalReward(int crystals);
 
     String activeQuest();
 
@@ -272,6 +276,8 @@ public interface I18nConstants {
     String questOverview(int questsDone, int totalQuests);
 
     String missionOverview(int missionsDone, int totalMissions);
+
+    String noMoreQuests();
 
     String noActiveQuest();
 

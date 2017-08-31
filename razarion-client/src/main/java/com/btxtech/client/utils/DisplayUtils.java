@@ -5,8 +5,10 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.user.client.ui.UIObject;
 
 import java.util.Date;
 
@@ -133,10 +135,18 @@ public class DisplayUtils {
     }
 
     public static Double parseDouble(String doubleString) {
-        if(doubleString != null && !doubleString.trim().isEmpty()) {
+        if (doubleString != null && !doubleString.trim().isEmpty()) {
             return Double.parseDouble(doubleString);
         } else {
             return null;
+        }
+    }
+
+    public static void divDisplayState(UIObject div, boolean show) {
+        if (show) {
+            div.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        } else {
+            div.getElement().getStyle().setDisplay(Style.Display.NONE);
         }
     }
 }

@@ -49,11 +49,11 @@ public class QuestPropertyPanel extends Composite {
     @Inject
     @Bound
     @DataField
-    private NumberInput money;
+    private NumberInput razarion;
     @Inject
     @Bound
     @DataField
-    private NumberInput cristal;
+    private NumberInput crystal;
     @Inject
     @Bound
     @DataField

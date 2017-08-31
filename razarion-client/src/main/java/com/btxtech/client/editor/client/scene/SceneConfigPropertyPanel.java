@@ -143,13 +143,13 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @DataField
     private NumberInput scrollUiQuestXp;
     @Inject
-    @Bound(property = "scrollUiQuest.money")
+    @Bound(property = "scrollUiQuest.razarion")
     @DataField
-    private NumberInput scrollUiQuestMoney;
+    private NumberInput scrollUiQuestRazarion;
     @Inject
-    @Bound(property = "scrollUiQuest.cristal")
+    @Bound(property = "scrollUiQuest.crystal")
     @DataField
-    private NumberInput scrollUiQuestCristal;
+    private NumberInput scrollUiQuestCrystal;
     @Inject
     @Bound(property = "scrollUiQuest.passedMessage")
     @DataField

@@ -160,7 +160,7 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeletedSlave(box));
     }
 
-    public void onBuilderNoMoney(SyncBaseItem syncBaseItem) {
+    public void onBuilderNoRazarion(SyncBaseItem syncBaseItem) {
     }
 
     public void onItemLimitExceededExceptionBuilder(SyncBaseItem syncBaseItem) {
@@ -181,7 +181,7 @@ public class GameLogicService {
     public void onFactoryHouseSpaceExceeded() {
     }
 
-    public void onFactoryNoMoney() {
+    public void onFactoryNoRazarion() {
     }
 
     public void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {

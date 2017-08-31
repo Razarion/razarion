@@ -81,7 +81,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private SyncItemContainer syncItemContainer;
     private SyncHouse syncHouse;
     private Integer containedIn;
-    private boolean isMoneyEarningOrConsuming = false;
+    private boolean isRazarionEarningOrConsuming = false;
     private double spawnProgress;
     private SyncBoxItem syncBoxItemToPick;
 
@@ -101,7 +101,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (baseItemType.getFactoryType() != null) {
             syncFactory = instance.select(SyncFactory.class).get();
             syncFactory.init(baseItemType.getFactoryType(), this);
-            isMoneyEarningOrConsuming = true;
+            isRazarionEarningOrConsuming = true;
         } else {
             syncFactory = null;
         }
@@ -109,7 +109,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (baseItemType.getBuilderType() != null) {
             syncBuilder = instance.select(SyncBuilder.class).get();
             syncBuilder.init(baseItemType.getBuilderType(), this);
-            isMoneyEarningOrConsuming = true;
+            isRazarionEarningOrConsuming = true;
         } else {
             syncBuilder = null;
         }
@@ -117,7 +117,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (baseItemType.getHarvesterType() != null) {
             syncHarvester = instance.select(SyncHarvester.class).get();
             syncHarvester.init(baseItemType.getHarvesterType(), this);
-            isMoneyEarningOrConsuming = true;
+            isRazarionEarningOrConsuming = true;
         } else {
             syncHarvester = null;
         }
@@ -554,8 +554,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return false;
     }
 
-    public boolean isMoneyEarningOrConsuming() {
-        return isMoneyEarningOrConsuming;
+    public boolean isRazarionEarningOrConsuming() {
+        return isRazarionEarningOrConsuming;
     }
 
     public double getDropBoxPossibility() {

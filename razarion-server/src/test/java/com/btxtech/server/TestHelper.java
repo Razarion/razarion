@@ -63,6 +63,13 @@ public interface TestHelper {
         Assert.assertTrue(expectedCollection.isEmpty());
     }
 
+    static void assertObjectNameIdProviders(Collection<? extends ObjectNameIdProvider> actualIds, Integer... expectedIds) {
+        Assert.assertEquals(expectedIds.length, actualIds.size());
+        Collection<Integer> expectedCollection = actualIds.stream().map(o -> o.createObjectNameId().getId()).collect(Collectors.toList());
+        expectedCollection.removeAll(Arrays.asList(expectedIds));
+        Assert.assertTrue(expectedCollection.isEmpty());
+    }
+
     static PlaceConfig placeConfigPolygonFromRect(double x, double y, double width, double height) {
         PlaceConfig placeConfig = new PlaceConfig();
         placeConfig.setPolygon2D(Polygon2D.fromRectangle(x, y, width, height));

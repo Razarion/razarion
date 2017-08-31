@@ -137,7 +137,7 @@ public class SyncBuilder extends SyncBaseAbility {
                 return true;
             } else {
                 building = false;
-                gameLogicService.onBuilderNoMoney(getSyncBaseItem());
+                gameLogicService.onBuilderNoRazarion(getSyncBaseItem());
                 return true;
             }
         }

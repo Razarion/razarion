@@ -7,29 +7,29 @@
 </head>
 <body>
 
-<div id="questSidebar">
+<div data-field="questSidebar">
     <div class="quest-sidebar-container">
-        <div id="titleLabel" class="quest-sidebar-title"></div>
+        <div data-field="titleLabel" class="quest-sidebar-title"></div>
     </div>
     <div class="quest-sidebar-container">
-        <div id="descriptionLabel" class="quest-sidebar-center"></div>
+        <div data-field="descriptionLabel" class="quest-sidebar-center"></div>
     </div>
-    <div class="quest-sidebar-container">
+    <div class="quest-sidebar-container" data-field="questDiv">
         <div class="quest-sidebar-center">
             <table>
-                <tbody id="progressTable">
-                <tr id="progressTableRow"  style="vertical-align:middle">
+                <tbody data-field="progressTable">
+                <tr data-field="progressTableRow" style="vertical-align:middle">
                     <td>
-                        <img src="" id="progressStatusImage">
+                        <img src="" data-field="progressStatusImage">
                     </td>
                     <td>
-                        <div id="progressTextLabel"></div>
+                        <div data-field="progressTextLabel"></div>
                     </td>
                     <td>
-                        <img src="" id="progressBaseItemTypeImage" style="width: 30px; height: 30px;">
+                        <img src="" data-field="progressBaseItemTypeImage" style="width: 30px; height: 30px;">
                     </td>
                     <td>
-                        <div id="progressActionWordLabel"></div>
+                        <div data-field="progressActionWordLabel"></div>
                     </td>
                 </tr>
                 </tbody>
@@ -37,8 +37,8 @@
         </div>
     </div>
     <div class="quest-sidebar-container">
-        <div id="questSidebarFooter" class="quest-sidebar-footer">
-            <!--<button>Quests</button>-->
+        <div data-field="questSidebarFooter" class="quest-sidebar-footer">
+            <button data-field="questDialogButton">Quests</button>
             <!--<input type="checkbox" name="name" value="true">-->
             <!--<label>Visualisation</label>-->
         </div>

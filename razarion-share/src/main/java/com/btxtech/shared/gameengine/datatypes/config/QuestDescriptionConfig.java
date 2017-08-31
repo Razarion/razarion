@@ -1,17 +1,20 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
+
 /**
  * Created by Beat
  * 24.10.2016.
  */
-public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
+public class QuestDescriptionConfig<T extends QuestDescriptionConfig> implements ObjectNameIdProvider {
     private int id;
     private String internalName;
     private String title;
     private String description;
     private int xp;
-    private int money;
-    private int cristal;
+    private int razarion;
+    private int crystal;
     private String passedMessage;
     private boolean hidePassedDialog;
 
@@ -60,21 +63,21 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
         return (T) this;
     }
 
-    public int getMoney() {
-        return money;
+    public int getRazarion() {
+        return razarion;
     }
 
-    public T setMoney(int money) {
-        this.money = money;
+    public T setRazarion(int razarion) {
+        this.razarion = razarion;
         return (T) this;
     }
 
-    public int getCristal() {
-        return cristal;
+    public int getCrystal() {
+        return crystal;
     }
 
-    public T setCristal(int cristal) {
-        this.cristal = cristal;
+    public T setCrystal(int crystal) {
+        this.crystal = crystal;
         return (T) this;
     }
 
@@ -94,5 +97,10 @@ public class QuestDescriptionConfig<T extends QuestDescriptionConfig> {
     public T setHidePassedDialog(boolean hidePassedDialog) {
         this.hidePassedDialog = hidePassedDialog;
         return (T) this;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 }

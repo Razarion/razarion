@@ -19,8 +19,9 @@ import java.util.Date;
 public class QuestHistoryEntity {
     public enum Type {
         QUEST_ACTIVATED,
+        QUEST_DEACTIVATED,
         QUEST_PASSED
-    }
+        }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

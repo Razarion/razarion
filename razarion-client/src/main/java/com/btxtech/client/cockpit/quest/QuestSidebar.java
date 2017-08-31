@@ -2,6 +2,8 @@ package com.btxtech.client.cockpit.quest;
 
 import com.btxtech.client.StaticResourcePath;
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
+import com.btxtech.client.dialog.quest.QuestSelectionDialog;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -10,13 +12,19 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
+import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +44,8 @@ public class QuestSidebar extends Composite {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
+    private ClientModalDialogManagerImpl modalDialogManager;
+    @Inject
     @DataField
     private Label titleLabel;
     @Inject
@@ -45,6 +55,12 @@ public class QuestSidebar extends Composite {
     @DataField
     @ListContainer("tbody")
     private ListComponent<ProgressTableRowModel, ProgressTableRowWidget> progressTable;
+    @Inject
+    @DataField
+    private Div questDiv;
+    @Inject
+    @DataField
+    private Button questDialogButton;
     private QuestConfig activeQuest;
 
     @PostConstruct
@@ -56,15 +72,27 @@ public class QuestSidebar extends Composite {
         DOMUtil.removeAllElementChildren(progressTable.getElement()); // Remove placeholder table row from template.
     }
 
-    public void setQuest(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo) {
+    public void setQuest(QuestDescriptionConfig descriptionConfig, QuestProgressInfo questProgressInfo, boolean showQuestSelectionButton) {
         activeQuest = null;
-        titleLabel.setText(descriptionConfig.getTitle());
-        descriptionLabel.setText(descriptionConfig.getDescription());
-        if (descriptionConfig instanceof QuestConfig) {
-            activeQuest = (QuestConfig) descriptionConfig;
-            setupProgressTableModels(questProgressInfo);
+        if (descriptionConfig == null) {
+            titleLabel.setText(I18nHelper.getConstants().noActiveQuest());
+            questDiv.getStyle().setProperty("display", "none");
+            questDialogButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         } else {
-            progressTable.setValue(new ArrayList<>());
+            questDiv.getStyle().setProperty("display", "block");
+            titleLabel.setText(descriptionConfig.getTitle());
+            descriptionLabel.setText(descriptionConfig.getDescription());
+            if (descriptionConfig instanceof QuestConfig) {
+                activeQuest = (QuestConfig) descriptionConfig;
+                setupProgressTableModels(questProgressInfo);
+            } else {
+                progressTable.setValue(new ArrayList<>());
+            }
+            if (showQuestSelectionButton) {
+                questDialogButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
+            } else {
+                questDialogButton.getElement().getStyle().setDisplay(Style.Display.NONE);
+            }
         }
     }
 
@@ -154,5 +182,10 @@ public class QuestSidebar extends Composite {
             progressTableRowModel.setActionWord(actionWord);
         }
         progressTableModels.add(progressTableRowModel);
+    }
+
+    @EventHandler("questDialogButton")
+    public void onQuestDialogButtonClicked(ClickEvent event) {
+        modalDialogManager.show(I18nHelper.getConstants().questDialog(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestSelectionDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 }
