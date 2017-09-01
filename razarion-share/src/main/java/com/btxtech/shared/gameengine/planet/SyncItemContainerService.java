@@ -368,7 +368,7 @@ public class SyncItemContainerService {
 
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
         List<SyncBaseItemInfo> syncBaseItemInfos = new ArrayList<>();
-        iterateOverBaseItems(false, false, null, syncBaseItem -> {
+        iterateOverBaseItems(true, false, null, syncBaseItem -> {
             syncBaseItemInfos.add(syncBaseItem.getSyncInfo());
             return null;
         });

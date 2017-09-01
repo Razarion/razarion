@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
+import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
@@ -18,12 +19,14 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
@@ -44,6 +47,7 @@ import java.util.Map;
  */
 @Singleton // Rename to BaseService
 public class BaseItemService {
+    // private Logger logger = Logger.getLogger(BaseItemService.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -228,6 +232,14 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
+    private SyncBaseItem createSyncBaseItemRestore(SyncBaseItemInfo syncBaseItemInfo, PlayerBaseFull playerBase) {
+        BaseItemType toBeBuilt = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
+        SyncBaseItem syncBaseItem = syncItemContainerService.createSyncBaseItemSlave(toBeBuilt, syncBaseItemInfo.getId(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
+        syncBaseItem.setup(playerBase);
+        playerBase.addItem(syncBaseItem);
+        return syncBaseItem;
+    }
+
     private void synchronizeActivateSlave(SyncBaseItem syncBaseItem, SyncBaseItemInfo syncBaseItemInfo) {
         syncBaseItem.synchronize(syncBaseItemInfo);
         addToActiveItemQueue(syncBaseItem);
@@ -365,10 +377,6 @@ public class BaseItemService {
         PlayerBase playerBase1 = syncBaseItem1.getBase();
         PlayerBase playerBase2 = syncBaseItem2.getBase();
         return playerBase1.isEnemy(playerBase2);
-    }
-
-    public boolean hasEnemyForSpawn(DecimalPosition position, double itemFreeRadius) {
-        return false; // TODO if enemies implemented
     }
 
     public boolean isHouseSpaceExceeded(PlayerBaseFull playerBase, BaseItemType toBeBuiltType) {
@@ -517,71 +525,80 @@ public class BaseItemService {
         return playerBaseInfos;
     }
 
+    public List<BackupPlayerBaseInfo> getBackupPlayerBaseInfos(boolean saveUnregistered) {
+        List<BackupPlayerBaseInfo> playerBaseInfos = new ArrayList<>();
+        for (PlayerBase playerBase : bases.values()) {
+            if (playerBase.getCharacter().isBot()) {
+                continue;
+            }
+            if (!saveUnregistered) {
+                if (playerBase.getHumanPlayerId().getUserId() == null) {
+                    continue;
+                }
+            }
+            playerBaseInfos.add(((PlayerBaseFull) playerBase).getBackupPlayerBaseInfo());
+        }
+        return playerBaseInfos;
+    }
+
+    public void fillBackup(BackupBaseInfo backupBaseInfo, boolean saveUnregistered) {
+        List<SyncBaseItemInfo> syncBaseItemInfos = getSyncBaseItemInfos();
+        syncBaseItemInfos.removeIf(syncBaseItemInfo -> {
+            if (!isSaveNeeded(syncBaseItemInfo.getBaseId(), saveUnregistered)) {
+                return true;
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
+            if (baseItemType.getWeaponType() != null && syncBaseItemInfo.getTarget() != null) {
+                SyncItem targetItem = syncItemContainerService.getSyncItem(syncBaseItemInfo.getTarget());
+                if (targetItem instanceof SyncBaseItem) {
+                    SyncBaseItem targetSyncBaseItem = (SyncBaseItem) targetItem;
+                    if (isEnemy(syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getId()), targetSyncBaseItem)) {
+                        if (!isSaveNeeded(targetSyncBaseItem.getBase(), saveUnregistered)) {
+                            syncBaseItemInfo.setTarget(null);
+                        }
+                    }
+                }
+            }
+            if (baseItemType.getHarvesterType() != null && syncBaseItemInfo.getTarget() != null) {
+                SyncItem targetItem = syncItemContainerService.getSyncItem(syncBaseItemInfo.getTarget());
+                if (targetItem instanceof SyncResourceItem) {
+                    syncBaseItemInfo.setTarget(null);
+                }
+            }
+            return false;
+        });
+        backupBaseInfo.setSyncBaseItemInfos(syncBaseItemInfos);
+        backupBaseInfo.setPlayerBaseInfos(getBackupPlayerBaseInfos(saveUnregistered));
+    }
+
+    private boolean isSaveNeeded(int playerBaseId, boolean saveUnregistered) {
+        PlayerBase playerBase = getPlayerBase4BaseId(playerBaseId);
+        return isSaveNeeded(playerBase, saveUnregistered);
+    }
+
+    private boolean isSaveNeeded(PlayerBase playerBase, boolean saveUnregistered) {
+        return !playerBase.getCharacter().isBot() && (saveUnregistered || playerBase.getHumanPlayerId().getUserId() != null);
+    }
+
+    public void restore(BackupBaseInfo backupBaseInfo) {
+        backupBaseInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
+            lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
+            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(lastBaseItId, playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getHumanPlayerId()));
+        });
+        Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
+        for (SyncBaseItemInfo syncBaseItemInfo : backupBaseInfo.getSyncBaseItemInfos()) {
+            SyncBaseItem syncBaseItem = createSyncBaseItemRestore(syncBaseItemInfo, (PlayerBaseFull) getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
+            tmp.put(syncBaseItem, syncBaseItemInfo);
+        }
+        for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
+            synchronizeActivateSlave(entry.getKey(), entry.getValue());
+        }
+    }
+
     // --------------------------------------------------------------------------
 
     @Deprecated // Use syncBaseItemContainerService.getSyncItem
     public SyncBaseItem getItem(int id) throws ItemDoesNotExistException {
         throw new UnsupportedOperationException();
     }
-
-    // TODO List<SyncBaseItem> getBaseItems(List<Id> baseItemsIds) throws ItemDoesNotExistException;
-
-    // TODO List<Id> getBaseItemIds(List<SyncBaseItem> baseItems);
-
-    public boolean baseObjectExists(SyncItem currentBuildup) {
-        throw new UnsupportedOperationException();
-    }
-
-    // TODO SyncItem newSyncItem(Id id, Index position, int itemTypeId, PlayerBase base) throws NoSuchItemTypeException;
-
-    // TODO Collection<SyncBaseItem> getItems4Base(PlayerBase simpleBase);
-
-    // TODO Collection<SyncBaseItem> getItems4BaseAndType(PlayerBase simpleBase, int itemTypeId);
-
-    // TODO Collection<SyncBaseItem> getItems4BaseAndType(boolean includingNoPosition, final PlayerBase simpleBase, final int itemTypeId);
-
-    // TODO Collection<? extends SyncItem> getItems(ItemType itemType, PlayerBase simpleBase);
-
-    // TODO boolean hasEnemyInRange(PlayerBase simpleBase, Index middlePoint, int range);
-
-    // TODO boolean hasStandingItemsInRect(Rectangle rectangle, SyncItem exceptThat);
-
-    public boolean isSyncItemOverlapping(SyncItem syncItem) {
-        throw new UnsupportedOperationException();
-    }
-
-    // TODO boolean isSyncItemOverlapping(SyncItem syncItem, Index positionToCheck, Double angelToCheck, Collection<SyncItem> exceptionThem);
-
-    // TODO boolean isUnmovableSyncItemOverlapping(BoundingBox boundingBox, Index positionToCheck);
-
-    public Collection<SyncBaseItem> getBaseItemsInRadius(DecimalPosition position, int radius, PlayerBase playerBase, Collection<BaseItemType> baseItemTypeFilter) {
-        throw new UnsupportedOperationException();
-    }
-
-    // TODO Collection<SyncItem> getItemsInRectangle(Rectangle rectangle);
-
-    // TODO Collection<SyncItem> getItemsInRectangleFast(Rectangle rectangle);
-
-    // TODO Collection<SyncItem> getItemsInRectangleFastIncludingDead(Rectangle rectangle);
-
-    // TODO Collection<SyncBaseItem> getBaseItemsInRectangle(Rectangle rectangle, PlayerBase simpleBase, Collection<BaseItemType> baseItemTypeFilter);
-
-    // TODO Collection<SyncBaseItem> getBaseItemsInRectangle(Region region, PlayerBase simpleBase, Collection<BaseItemType> baseItemTypeFilter);
-
-    // TODO boolean hasItemsInRectangle(Rectangle rectangle);
-
-    // TODO SyncBaseItem getNearestEnemyItem(final Index middle, final Set<Integer> filter, final PlayerBase simpleBase);
-
-    // TODO SyncResourceItem getNearestResourceItem(final Index middle);
-
-    // TODO SyncBoxItem getNearestBoxItem(final Index middle);
-
-    // TODO void killSyncItems(Collection<? extends SyncItem> syncItems);
-
-    // TODO -- > is in SyncItemContainerService SyncItem getItemAtPosition(Index absolutePosition);
-
-    // TODO void sellItem(Id id) throws ItemDoesNotExistException, NotYourBaseException;
-
-    // TODO boolean hasItemsInRectangleFast(Rectangle rectangle);
-
 }

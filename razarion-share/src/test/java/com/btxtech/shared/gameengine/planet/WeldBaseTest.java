@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.SimpleExecutorService;
 import org.jboss.weld.environment.se.Weld;
@@ -64,6 +65,14 @@ public class WeldBaseTest {
         return baseItemService;
     }
 
+    public SyncItemContainerService getSyncItemContainerService() {
+        return getWeldBean(SyncItemContainerService.class);
+    }
+
+    public EnergyService getEnergyService() {
+        return getWeldBean(EnergyService.class);
+    }
+
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
         return baseItemService.getSyncBaseItemInfos();
     }
@@ -76,9 +85,11 @@ public class WeldBaseTest {
         weldContainer.event().select(StaticGameInitEvent.class).fire(new StaticGameInitEvent(staticGameConfig));
     }
 
-    public boolean isBaseServiceActive() {
-        Collection<SyncBaseItem> activeItems = (Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItems", baseItemService);
-        Collection<SyncBaseItem> activeItemQueue = (Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService);
+    public boolean isBaseServiceActive(SyncBaseItem[] ignores) {
+        Collection<SyncBaseItem> activeItems = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItems", baseItemService));
+        activeItems.removeAll(Arrays.asList(ignores));
+        Collection<SyncBaseItem> activeItemQueue = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService));
+        activeItemQueue.removeAll(Arrays.asList(ignores));
         return !activeItems.isEmpty() || !activeItemQueue.isEmpty();
     }
 
@@ -87,12 +98,10 @@ public class WeldBaseTest {
         gameEngine.invokeRun();
     }
 
-    public void tickPlanetServiceBaseServiceActive() {
-        long tickCount = 0;
+    public void tickPlanetServiceBaseServiceActive(SyncBaseItem... ignores) {
         TestSimpleScheduledFuture gameEngine = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.GAME_ENGINE);
-        while (isBaseServiceActive()) {
+        while (isBaseServiceActive(ignores)) {
             gameEngine.invokeRun();
-            tickCount++;
         }
     }
 

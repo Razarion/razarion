@@ -98,6 +98,13 @@ public class EnergyService {
         changedBases.forEach(playerBase -> getBaseEnergy(playerBase).recalculate());
     }
 
+    public void clean() {
+        changedSyncConsumers.clear();
+        changedSyncGenerators.clear();
+        removedBases.clear();
+        baseEnergies.clear();
+    }
+
     private BaseEnergy getBaseEnergy(SyncBaseItem syncBaseItem) {
         PlayerBase playerBase = syncBaseItem.getBase();
         return getBaseEnergy(playerBase);

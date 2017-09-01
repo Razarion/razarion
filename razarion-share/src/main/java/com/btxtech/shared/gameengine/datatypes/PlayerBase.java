@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 
 /**

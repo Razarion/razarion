@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 
 import java.util.ArrayList;
 
@@ -27,6 +28,10 @@ public class WeldMasterBaseTest extends WeldBaseTest {
         return getWeldBean(CommandService.class);
     }
 
+    protected BotService getBotService() {
+        return getWeldBean(BotService.class);
+    }
+
     protected MasterPlanetConfig setupMasterPlanetConfig() {
         MasterPlanetConfig masterPlanetConfig = new MasterPlanetConfig();
         masterPlanetConfig.setResourceRegionConfigs(new ArrayList<>());
@@ -37,13 +42,22 @@ public class WeldMasterBaseTest extends WeldBaseTest {
         return getBaseItemService().createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName(), position);
     }
 
+    protected PlayerBaseFull findBotBase(int botId) {
+        BotService botService = getBotService();
+        return botService.getBotRunner(botId).getBase();
+    }
+
     public SlaveSyncItemInfo getSlaveSyncItemInfo(UserContext userContext) {
         return getPlanetService().generateSlaveSyncItemInfo(userContext);
     }
 
-    protected UserContext createLevel1UserContext() {
+    protected UserContext createLevel1UserContext(Integer userId) {
         int humanPlayerId = nextHumanPlayerId++;
-        return new UserContext().setLevelId(GameTestContent.LEVEL_ID_1).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId)).setName("test base " + humanPlayerId);
+        return new UserContext().setLevelId(GameTestContent.LEVEL_ID_1).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId).setUserId(userId)).setName("test base " + humanPlayerId);
+    }
+
+    protected UserContext createLevel1UserContext() {
+        return createLevel1UserContext(null);
     }
 
 

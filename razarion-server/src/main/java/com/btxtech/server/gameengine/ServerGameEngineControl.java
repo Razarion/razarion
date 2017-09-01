@@ -9,6 +9,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
+import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -123,6 +124,19 @@ public class ServerGameEngineControl implements GameLogicListener {
         }
     }
 
+    public void restartPlanet() {
+        long time = System.currentTimeMillis();
+        // TODO send client restart packet -> disconnection
+        // TODO save quests
+        BackupBaseInfo backupBaseInfo = planetService.backup(true);
+        stop();
+        start();
+        // TODO restore quests may done in stgart
+        // TODO restart client package -> reload browser
+        planetService.restore(backupBaseInfo);
+        logger.info("ServerGameEngineControl.restartPlanet() in: " + (System.currentTimeMillis() - time));
+    }
+
     private void activateQuests() {
         Collection<Integer> planetQuestId = serverGameEnginePersistence.readAllQuestIds();
         if (planetQuestId == null || planetQuestId.isEmpty()) {
@@ -135,6 +149,7 @@ public class ServerGameEngineControl implements GameLogicListener {
 
     public void stop() {
         planetService.stop();
+        botService.killAllBots();
     }
 
     public void onLevelChanged(HumanPlayerId humanPlayerId, int levelId) {

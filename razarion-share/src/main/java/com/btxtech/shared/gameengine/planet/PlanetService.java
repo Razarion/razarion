@@ -3,13 +3,11 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
@@ -25,7 +23,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -36,7 +36,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public static final PlanetMode MODE = PlanetMode.MASTER;
     public static final int TICK_TIME_MILLI_SECONDS = 100;
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
-    // private Logger logger = Logger.getLogger(PlanetService.class.getName());
+    private Logger logger = Logger.getLogger(PlanetService.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -89,6 +89,24 @@ public class PlanetService implements Runnable { // Only available in worker. On
         activationEvent.fire(new PlanetActivationEvent(null, null, null, null, PlanetActivationEvent.Type.STOP));
         syncItemContainerService.clear();
         terrainService.clean();
+    }
+
+    public BackupBaseInfo backup(boolean saveUnregistered) {
+        long time = System.currentTimeMillis();
+        BackupBaseInfo backupBaseInfo = new BackupBaseInfo();
+        backupBaseInfo.setDate(new Date());
+        backupBaseInfo.setPlanetId(planetConfig.getPlanetId());
+        baseItemService.fillBackup(backupBaseInfo, saveUnregistered);
+        logger.info("PlanetService.restore() in:" + (System.currentTimeMillis() - time));
+        return backupBaseInfo;
+    }
+
+    public void restore(BackupBaseInfo backupBaseInfo) {
+        long time = System.currentTimeMillis();
+        energyService.clean();
+        baseItemService.restore(backupBaseInfo);
+        energyService.tick();
+        logger.info("BackupBaseInfo.restore() in:" + (System.currentTimeMillis() - time));
     }
 
     @Override

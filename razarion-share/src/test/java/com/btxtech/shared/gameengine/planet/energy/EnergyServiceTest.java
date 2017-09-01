@@ -189,17 +189,17 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         assertNewConnectedSlave(0, 0, userContext);
     }
 
-    private void assertEnergy(int consumingExpected, int generatingExpected, EnergyService energyService, PlayerBase playerBase) {
+    public static void assertEnergy(int consumingExpected, int generatingExpected, EnergyService energyService, PlayerBase playerBase) {
         BaseEnergy baseEnergy = getBaseEnergy(energyService, playerBase);
         Assert.assertEquals("Consuming", consumingExpected, baseEnergy.getConsuming());
         Assert.assertEquals("Generating", generatingExpected, baseEnergy.getGenerating());
     }
 
     private void assertEnergy(int consumingExpected, int generatingExpected, PlayerBase playerBase) {
-        assertEnergy(consumingExpected, generatingExpected, getWeldBean(EnergyService.class), playerBase);
+        assertEnergy(consumingExpected, generatingExpected, getEnergyService(), playerBase);
     }
 
-    private BaseEnergy getBaseEnergy(EnergyService energyService, PlayerBase playerBase) {
+    public static BaseEnergy getBaseEnergy(EnergyService energyService, PlayerBase playerBase) {
         return (BaseEnergy) SimpleTestEnvironment.callPrivateMethod("getBaseEnergy", energyService, new Class[]{PlayerBase.class}, new Object[]{playerBase});
     }
 
@@ -224,13 +224,13 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         WeldSlaveEmulator slaveNew = new WeldSlaveEmulator();
         slaveNew.connectToMater(userContext, this);
         slaveNew.tickPlanetService();
-        assertEnergy(consumingExpected, generatingExpected, slaveNew.getWeldBean(EnergyService.class), slaveNew.getPlayerBase(userContext));
+        assertEnergy(consumingExpected, generatingExpected, slaveNew.getEnergyService(), slaveNew.getPlayerBase(userContext));
         slaveNew.disconnectFromMaster();
     }
 
     private void assertConnectedSlave(int consumingExpected, int generatingExpected, WeldSlaveEmulator permanentSalve, UserContext userContext) {
         permanentSalve.tickPlanetService();
-        assertEnergy(consumingExpected, generatingExpected, permanentSalve.getWeldBean(EnergyService.class), permanentSalve.getPlayerBase(userContext));
+        assertEnergy(consumingExpected, generatingExpected, permanentSalve.getEnergyService(), permanentSalve.getPlayerBase(userContext));
     }
 
 }
