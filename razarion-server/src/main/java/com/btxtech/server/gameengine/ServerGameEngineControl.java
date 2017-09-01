@@ -124,6 +124,7 @@ public class ServerGameEngineControl implements GameLogicListener {
         }
     }
 
+    @SecurityCheck
     public void restartPlanet() {
         long time = System.currentTimeMillis();
         // TODO send client restart packet -> disconnection

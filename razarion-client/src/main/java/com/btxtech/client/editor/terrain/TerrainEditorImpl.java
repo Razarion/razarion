@@ -71,8 +71,6 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private TerrainTypeService terrainTypeService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
-    @Inject
-    private GameEngineControl gameEngineControl;
     private boolean active;
     private boolean newSlopeMode = true;
     private boolean drivewayMode;
@@ -302,11 +300,13 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         return modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(modifiedTerrainObject -> modifiedTerrainObject.createModelMatrices(nativeMatrixFactory)).collect(Collectors.toList());
     }
 
-    public void sculpt() {
-        // TODO List<TerrainSlopePosition> terrainSlopePositions = modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
-        // TODO List<TerrainObjectPosition> terrainObjectPositions = modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList());
-        // TODO gameEngineControl.reloadTerrainShape4Editor(terrainSlopePositions, terrainObjectPositions);
-        // TODO terrainUiService.clearTerrainTilesForEditor();
+    public void restartPlanetButton() {
+        modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanet() failed: " + message, throwable);
+            return false;
+        }).restartPlanet(getPlanetId()), () -> {
+        });
     }
 
     public void save() {
@@ -338,10 +338,8 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
             terrainEditorUpdate.setUpdatedSlopes(updatedSlopes);
             terrainEditorUpdate.setDeletedSlopeIds(deletedSlopeIds);
             planetEditorServiceCaller.call(ignore -> {
-                gameEngineControl.reloadTerrainShape4Editor();
-                loadFromServer();
             }, (message, throwable) -> {
-                logger.log(Level.SEVERE, "updateTerrain failed: " + message, throwable);
+                modalDialogManager.showMessageDialog("Save failed", "Save terrain failed. message: " + message + " throwable: " + throwable);
                 return false;
             }).updateTerrain(getPlanetId(), terrainEditorUpdate);
         }

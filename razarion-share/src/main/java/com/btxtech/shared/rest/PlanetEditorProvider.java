@@ -50,6 +50,10 @@ public interface PlanetEditorProvider {
     void updateTerrain(@PathParam("planetId") int planetId, TerrainEditorUpdate terrainEditorUpdate);
 
     @PUT
+    @Path("restartPlanet/{planetId}")
+    void restartPlanet(@PathParam("planetId") int planetId);
+
+    @PUT
     @Path("updatePlanetVisualConfig/{planetId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void updatePlanetVisualConfig(@PathParam("planetId") int planetId, PlanetVisualConfig planetVisualConfig);

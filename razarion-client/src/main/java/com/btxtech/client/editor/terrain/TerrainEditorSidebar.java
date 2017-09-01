@@ -118,7 +118,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private Button showMiniMapButton;
     @Inject
     @DataField
-    private Button sculptButton;
+    private Button restartPlanetButton;
 
     @PostConstruct
     public void init() {
@@ -221,9 +221,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
         camera.setTop();
     }
 
-    @EventHandler("sculptButton")
-    private void sculptButtonClick(ClickEvent event) {
-        terrainEditor.sculpt();
+    @EventHandler("restartPlanetButton")
+    private void restartPlanetButtonClick(ClickEvent event) {
+        terrainEditor.restartPlanetButton();
     }
 
     @Override
