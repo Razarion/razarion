@@ -63,14 +63,8 @@ public class ServerGameEngineControlTest extends ArquillianBaseTest {
 
         planetBackupMongoDb.loadLastBackup(2);
 
-
-        List<BackupBaseOverview> backupBaseOverviews = planetBackupMongoDb.loadAllBackupBaseOverviews();
-        Assert.assertEquals(5, backupBaseOverviews.size());
-        Assert.assertEquals(PLANET_2_ID, backupBaseOverviews.get(0).getPlanetId());
-        Assert.assertEquals(1, backupBaseOverviews.get(0).getBases());
-        Assert.assertEquals(1, backupBaseOverviews.get(0).getItems());
-
         serverGameEngineControl.restartPlanet();
+        List<BackupBaseOverview> backupBaseOverviews = planetBackupMongoDb.loadAllBackupBaseOverviews();
         serverGameEngineControl.restorePlanet(backupBaseOverviews.get(0));
     }
 }

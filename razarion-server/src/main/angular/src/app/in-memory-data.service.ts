@@ -36,6 +36,52 @@ export class InMemoryDataService implements InMemoryDbService {
       },
     ]
   };
+  allbackupoverviews: any = [
+    {
+      "date": 1489795200000,
+      "planetId": 2,
+      "bases": 2,
+      "items": 44,
+    },
+    {
+      "date": 1482395200500,
+      "planetId": 5,
+      "bases": 1,
+      "items": 2354,
+    },
+    {
+      "date": 1482325200501,
+      "planetId": 4,
+      "bases": 4,
+      "items": 2354,
+    }
+  ];
+  dobackupanswer: any = [
+    {
+      "date": 1489795200000,
+      "planetId": 2,
+      "bases": 2,
+      "items": 44,
+    },
+    {
+      "date": 1482395200500,
+      "planetId": 5,
+      "bases": 1,
+      "items": 2354,
+    },
+    {
+      "date": 1482325200501,
+      "planetId": 4,
+      "bases": 4,
+      "items": 2354,
+    },
+    {
+      "date": 142325200501,
+      "planetId": 4,
+      "bases": 3,
+      "items": 2354,
+    }
+  ];
 
   createDb() {
     return this.sessions;
@@ -44,12 +90,32 @@ export class InMemoryDataService implements InMemoryDbService {
   get(httpMethodInterceptorArgs: HttpMethodInterceptorArgs): Observable<Response> {
     return new Observable<Response>(observer => {
       let body;
+      if (httpMethodInterceptorArgs.requestInfo.collectionName === "sessiondetail") {
+        body = this.sessionDetail;
+      } else if (httpMethodInterceptorArgs.requestInfo.collectionName === "allbackupoverviews") {
+        body = this.allbackupoverviews;
+      } else {
+        body = "unhandled get request in InMemoryDataService for: '" + httpMethodInterceptorArgs.requestInfo.collectionName + "'";
+      }
+      observer.next(new Response(new ResponseOptions({
+        body: JSON.stringify(body),
+        headers: httpMethodInterceptorArgs.requestInfo.headers,
+        status: STATUS.OK
+      })));
+      observer.complete();
+    });
+
+  }
+
+  post(httpMethodInterceptorArgs: HttpMethodInterceptorArgs): Observable<Response> {
+    return new Observable<Response>(observer => {
+      let body;
       if (httpMethodInterceptorArgs.requestInfo.collectionName === "sessions") {
         body = this.sessions;
-      } else if (httpMethodInterceptorArgs.requestInfo.collectionName === "sessiondetail") {
-        body = this.sessionDetail;
+      } else if (httpMethodInterceptorArgs.requestInfo.collectionName === "dobackup") {
+        body = this.dobackupanswer;
       } else {
-        body = "unhandled request in InMemoryDataService";
+        body = "unhandled post request in InMemoryDataService for: '" + httpMethodInterceptorArgs.requestInfo.collectionName + "'";
       }
       observer.next(new Response(new ResponseOptions({
         body: JSON.stringify(body),

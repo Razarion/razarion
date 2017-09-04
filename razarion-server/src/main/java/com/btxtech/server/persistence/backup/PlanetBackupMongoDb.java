@@ -49,8 +49,8 @@ public class PlanetBackupMongoDb {
                 "        \"$project\": {\n" +
                 "            \"date\": 1,\n" +
                 "            \"planetId\": 1,\n" +
-                "            \"bases\": { \"$size\": \"$syncBaseItemInfos\" },\n" +
-                "            \"items\": { \"$size\": \"$playerBaseInfos\" }\n" +
+                "            \"bases\": { \"$size\": \"$playerBaseInfos\" },\n" +
+                "            \"items\": { \"$size\": \"$syncBaseItemInfos\" }\n" +
                 "        }\n" +
                 "    }"));
         dbCollection.aggregate(pipeline).forEach((Block<Document>) document -> {

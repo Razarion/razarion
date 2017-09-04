@@ -187,6 +187,38 @@
         "unloadPos": null,
         "targetPosition": null,
         "spawnProgress": 0.0
+      },
+      {
+        "id": 2,
+        "itemTypeId": 2,
+        "syncPhysicalAreaInfo": {
+          "position": {
+            "x": 30.0,
+            "y": 40.0
+          },
+          "angle": 0.0,
+          "velocity": null,
+          "wayPositions": null,
+          "currentWayPointIndex": null,
+          "totalRange": null
+        },
+        "baseId": 2,
+        "toBeBuildPosition": null,
+        "toBeBuiltTypeId": null,
+        "currentBuildup": null,
+        "factoryBuildupProgress": null,
+        "target": null,
+        "health": 100.0,
+        "buildup": 1.0,
+        "followTarget": null,
+        "reloadProgress": 0.0,
+        "rallyPoint": null,
+        "containedItems": null,
+        "targetContainer": null,
+        "containedIn": null,
+        "unloadPos": null,
+        "targetPosition": null,
+        "spawnProgress": 1.0
       }
     ],
     "playerBaseInfos": [

@@ -10,13 +10,16 @@ import {AppRoutingModule} from "./app-routing.module";
 import {SessionHistory} from "./tracking/session-history.component";
 import {SessionService} from "./tracking/session.service";
 import {SessionDetails} from "./tracking/session-detail.component";
+import {BackupRestoreComponent} from "./backuprestore/backup-restore.component";
+import {BackupRestoreService} from "./backuprestore/backup-restore.service";
 
 @NgModule({
   declarations: [
     MainWindow,
     Dashboard,
     SessionHistory,
-    SessionDetails
+    SessionDetails,
+    BackupRestoreComponent
   ],
   imports: [
     BrowserModule,
@@ -25,7 +28,7 @@ import {SessionDetails} from "./tracking/session-detail.component";
     AppRoutingModule,
     // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/trackerbackend"})
   ],
-  providers: [SessionService],
+  providers: [SessionService, BackupRestoreService],
   bootstrap: [MainWindow]
 })
 export class Backend {

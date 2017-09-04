@@ -3,26 +3,14 @@ package com.btxtech.server.persistence.backup;
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.MongoClient;
-import com.mongodb.client.MongoCollection;
-import org.bson.Document;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -52,21 +40,33 @@ public class PlanetBackupMongoDbTest extends ArquillianBaseTest {
         Assert.assertEquals(2, backupBaseInfo.getPlanetId());
         Assert.assertEquals(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), backupBaseInfo.getDate());
         Assert.assertEquals(1, backupBaseInfo.getPlayerBaseInfos().size());
-        Assert.assertEquals(1, backupBaseInfo.getSyncBaseItemInfos().size());
+        Assert.assertEquals(2, backupBaseInfo.getSyncBaseItemInfos().size());
     }
 
     @Test
     public void testLoadAllBackupBaseOverviews() {
         List<BackupBaseOverview> allBackups = planetBackupMongoDb.loadAllBackupBaseOverviews();
         Assert.assertEquals(4, allBackups.size());
+        BackupBaseOverview backupBaseOverview = findBackupBaseOverviews(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), 2, allBackups);
+        Assert.assertEquals(1, backupBaseOverview.getBases());
+        Assert.assertEquals(2, backupBaseOverview.getItems());
     }
 
     @Test
-    public void testGetAllBackups() {
+    public void testLoadBackup() {
         BackupBaseInfo backupBaseInfo = planetBackupMongoDb.loadBackup(new BackupBaseOverview().setPlanetId(2).setDate(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648")));
         Assert.assertEquals(2, backupBaseInfo.getPlanetId());
         Assert.assertEquals(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), backupBaseInfo.getDate());
         Assert.assertEquals(1, backupBaseInfo.getPlayerBaseInfos().size());
-        Assert.assertEquals(1, backupBaseInfo.getSyncBaseItemInfos().size());
+        Assert.assertEquals(2, backupBaseInfo.getSyncBaseItemInfos().size());
+    }
+
+    private BackupBaseOverview findBackupBaseOverviews(Date date, int planetId, List<BackupBaseOverview> backupBaseOverviews) {
+        for (BackupBaseOverview backupBaseOverview : backupBaseOverviews) {
+            if (backupBaseOverview.getPlanetId() == planetId && backupBaseOverview.getDate().equals(date)) {
+                return backupBaseOverview;
+            }
+        }
+        throw new IllegalArgumentException("No  BackupBaseOverview for date: " + date + " planetId: " + planetId);
     }
 }
