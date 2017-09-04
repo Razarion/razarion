@@ -159,6 +159,14 @@ public class PlanetEntity {
         this.itemTypeLimitation = itemTypeLimitation;
     }
 
+    public void setPlayGround(Rectangle2D playGround) {
+        this.playGround = playGround;
+    }
+
+    public void setGroundMeshDimension(Rectangle groundMeshDimension) {
+        this.groundMeshDimension = groundMeshDimension;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

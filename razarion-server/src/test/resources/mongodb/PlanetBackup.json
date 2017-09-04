@@ -1,0 +1,206 @@
+[
+  {
+    "date": "2017-09-03 19:01:46.219",
+    "planetId": 2,
+    "syncBaseItemInfos": [
+      {
+        "id": 1,
+        "itemTypeId": 1,
+        "syncPhysicalAreaInfo": {
+          "position": {
+            "x": 21.0,
+            "y": 34.0
+          },
+          "angle": 0.0,
+          "velocity": null,
+          "wayPositions": null,
+          "currentWayPointIndex": null,
+          "totalRange": null
+        },
+        "baseId": 2,
+        "toBeBuildPosition": null,
+        "toBeBuiltTypeId": null,
+        "currentBuildup": null,
+        "factoryBuildupProgress": null,
+        "target": null,
+        "health": 100.0,
+        "buildup": 1.0,
+        "followTarget": null,
+        "reloadProgress": 0.0,
+        "rallyPoint": null,
+        "containedItems": null,
+        "targetContainer": null,
+        "containedIn": null,
+        "unloadPos": null,
+        "targetPosition": null,
+        "spawnProgress": 0.1
+      }
+    ],
+    "playerBaseInfos": [
+      {
+        "baseId": 2,
+        "name": "Registered User",
+        "character": "HUMAN",
+        "resources": 0.0,
+        "humanPlayerId": {
+          "playerId": 1,
+          "userId": 1
+        },
+        "level": 4
+      }
+    ]
+  },
+  {
+    "date": "2017-09-03 19:02:32.4",
+    "planetId": 2,
+    "syncBaseItemInfos": [
+      {
+        "id": 1,
+        "itemTypeId": 1,
+        "syncPhysicalAreaInfo": {
+          "position": {
+            "x": 21.0,
+            "y": 34.0
+          },
+          "angle": 0.0,
+          "velocity": null,
+          "wayPositions": null,
+          "currentWayPointIndex": null,
+          "totalRange": null
+        },
+        "baseId": 2,
+        "toBeBuildPosition": null,
+        "toBeBuiltTypeId": null,
+        "currentBuildup": null,
+        "factoryBuildupProgress": null,
+        "target": null,
+        "health": 100.0,
+        "buildup": 1.0,
+        "followTarget": null,
+        "reloadProgress": 0.0,
+        "rallyPoint": null,
+        "containedItems": null,
+        "targetContainer": null,
+        "containedIn": null,
+        "unloadPos": null,
+        "targetPosition": null,
+        "spawnProgress": 0.0
+      }
+    ],
+    "playerBaseInfos": [
+      {
+        "baseId": 2,
+        "name": "Registered User",
+        "character": "HUMAN",
+        "resources": 0.0,
+        "humanPlayerId": {
+          "playerId": 1,
+          "userId": 1
+        },
+        "level": 4
+      }
+    ]
+  },
+  {
+    "date": "2017-09-03 19:58:43.918",
+    "planetId": 2,
+    "syncBaseItemInfos": [
+      {
+        "id": 1,
+        "itemTypeId": 1,
+        "syncPhysicalAreaInfo": {
+          "position": {
+            "x": 21.0,
+            "y": 34.0
+          },
+          "angle": 0.0,
+          "velocity": null,
+          "wayPositions": null,
+          "currentWayPointIndex": null,
+          "totalRange": null
+        },
+        "baseId": 2,
+        "toBeBuildPosition": null,
+        "toBeBuiltTypeId": null,
+        "currentBuildup": null,
+        "factoryBuildupProgress": null,
+        "target": null,
+        "health": 100.0,
+        "buildup": 1.0,
+        "followTarget": null,
+        "reloadProgress": 0.0,
+        "rallyPoint": null,
+        "containedItems": null,
+        "targetContainer": null,
+        "containedIn": null,
+        "unloadPos": null,
+        "targetPosition": null,
+        "spawnProgress": 0.0
+      }
+    ],
+    "playerBaseInfos": [
+      {
+        "baseId": 2,
+        "name": "Registered User",
+        "character": "HUMAN",
+        "resources": 0.0,
+        "humanPlayerId": {
+          "playerId": 1,
+          "userId": 1
+        },
+        "level": 4
+      }
+    ]
+  },
+  {
+    "date": "2017-09-03 19:59:04.648",
+    "planetId": 2,
+    "syncBaseItemInfos": [
+      {
+        "id": 1,
+        "itemTypeId": 1,
+        "syncPhysicalAreaInfo": {
+          "position": {
+            "x": 21.0,
+            "y": 34.0
+          },
+          "angle": 0.0,
+          "velocity": null,
+          "wayPositions": null,
+          "currentWayPointIndex": null,
+          "totalRange": null
+        },
+        "baseId": 2,
+        "toBeBuildPosition": null,
+        "toBeBuiltTypeId": null,
+        "currentBuildup": null,
+        "factoryBuildupProgress": null,
+        "target": null,
+        "health": 100.0,
+        "buildup": 1.0,
+        "followTarget": null,
+        "reloadProgress": 0.0,
+        "rallyPoint": null,
+        "containedItems": null,
+        "targetContainer": null,
+        "containedIn": null,
+        "unloadPos": null,
+        "targetPosition": null,
+        "spawnProgress": 0.0
+      }
+    ],
+    "playerBaseInfos": [
+      {
+        "baseId": 2,
+        "name": "Registered User",
+        "character": "HUMAN",
+        "resources": 0.0,
+        "humanPlayerId": {
+          "playerId": 1,
+          "userId": 1
+        },
+        "level": 4
+      }
+    ]
+  }
+]

@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.tracker;
 
-import com.btxtech.server.util.DateUtil;
+import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
@@ -8,20 +8,15 @@ import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.Block;
-import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -33,16 +28,10 @@ import java.util.List;
  */
 @Singleton
 public class TrackingContainerMongoDb {
-    public static final String RAZARION_DB = "razarion";
-    public static final String RAZARION_DB_COLLECTION = "in_game_tracking";
+    @Inject
+    private MongoDbService mongoDbService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private MongoClient mongoClient;
-
-    @PostConstruct
-    public void postConstruct() {
-        mongoClient = new MongoClient();
-    }
 
     public void storeTrackingStart(String sessionId, TrackingStart trackingStart) throws JsonProcessingException {
         ServerTrackerStart serverTrackerStart = new ServerTrackerStart();
@@ -50,7 +39,7 @@ public class TrackingContainerMongoDb {
         serverTrackerStart.setTimeStamp(new Date());
         serverTrackerStart.setTrackingStart(trackingStart);
 
-        storeObject(serverTrackerStart);
+        mongoDbService.storeObject(serverTrackerStart, MongoDbService.CollectionName.IN_GAME_TRACKING);
     }
 
     public void storeDetailedTracking(String sessionId, TrackingContainer trackingContainer) throws JsonProcessingException {
@@ -58,16 +47,16 @@ public class TrackingContainerMongoDb {
         serverTrackerStart.setSessionId(sessionId);
         serverTrackerStart.setTimeStamp(new Date());
         serverTrackerStart.setTrackingContainer(trackingContainer);
-        storeObject(serverTrackerStart);
+        mongoDbService.storeObject(serverTrackerStart, MongoDbService.CollectionName.IN_GAME_TRACKING);
     }
 
     public boolean hasServerTrackerStarts(String sessionId, String gameSessionUuid) {
-        return setupMongoCollection().count(Filters.and(Filters.eq("sessionId", sessionId), Filters.eq("trackingStart.gameSessionUuid", gameSessionUuid))) > 0;
+        return mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING).count(Filters.and(Filters.eq("sessionId", sessionId), Filters.eq("trackingStart.gameSessionUuid", gameSessionUuid))) > 0;
     }
 
     public ServerTrackerStart findServerTrackerStart(GameUiControlInput gameUiControlInput) {
-        MongoCollection<Document> dbCollection = setupMongoCollection();
-        ObjectMapper objectMapper = setupObjectMapper();
+        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING);
+        ObjectMapper objectMapper =  mongoDbService.setupObjectMapper();
         SingleHolder<ServerTrackerStart> holder = new SingleHolder<>();
         dbCollection.find(Filters.and(Filters.eq("sessionId", gameUiControlInput.getPlaybackSessionUuid()), Filters.eq("trackingStart.gameSessionUuid", gameUiControlInput.getPlaybackGameSessionUuid()))).forEach((Block<Document>) document -> {
             try {
@@ -86,8 +75,8 @@ public class TrackingContainerMongoDb {
     }
 
     public TrackingContainer findServerTrackingContainer(GameUiControlInput gameUiControlInput) {
-        MongoCollection<Document> dbCollection = setupMongoCollection();
-        ObjectMapper objectMapper = setupObjectMapper();
+        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING);
+        ObjectMapper objectMapper = mongoDbService.setupObjectMapper();
         List<TrackingContainer> trackingContainers = new ArrayList<>();
         dbCollection.find(Filters.and(Filters.eq("sessionId", gameUiControlInput.getPlaybackSessionUuid()), Filters.eq("trackingContainer.gameSessionUuid", gameUiControlInput.getPlaybackGameSessionUuid()))).forEach((Block<Document>) document -> {
             try {
@@ -98,25 +87,6 @@ public class TrackingContainerMongoDb {
         });
 
         return generateTrackingContainer(trackingContainers);
-    }
-
-    private void storeObject(Object entity) throws JsonProcessingException {
-        MongoCollection<Document> dbCollection = setupMongoCollection();
-        ObjectMapper objectMapper = setupObjectMapper();
-        Document document = Document.parse(objectMapper.writeValueAsString(entity));
-        dbCollection.insertOne(document);
-    }
-
-    private MongoCollection<Document> setupMongoCollection() {
-        MongoDatabase db = mongoClient.getDatabase(RAZARION_DB);
-        return db.getCollection(RAZARION_DB_COLLECTION);
-    }
-
-    private ObjectMapper setupObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new SimpleDateFormat(DateUtil.JSON_FORMAT_STRING));
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return objectMapper;
     }
 
     private TrackingContainer generateTrackingContainer(List<TrackingContainer> trackingContainers) {

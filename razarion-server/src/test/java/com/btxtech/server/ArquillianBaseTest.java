@@ -16,13 +16,19 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
+import com.btxtech.server.persistence.surface.GroundHeightEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
+import com.btxtech.server.user.UserEntity;
+import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.I18nString;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -38,6 +44,12 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -54,14 +66,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.UserTransaction;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -123,6 +141,7 @@ public class ArquillianBaseTest {
                     //.as(ExplodedImporter.class).importDirectory((new File("../razarion-share/target/classes"))).as(WebArchive.class)
                     .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                     .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
+                    .addAsResource("mongodb/PlanetBackup.json", "mongodb/PlanetBackup.json")
                     .addAsLibraries(libraries);
             System.out.println(webArchive.toString(true));
             return webArchive;
@@ -337,10 +356,17 @@ public class ArquillianBaseTest {
         em.persist(new WaterConfigEntity());
 
         PlanetEntity planetEntity1 = new PlanetEntity();
+        planetEntity1.setGroundMeshDimension(new Rectangle(0, 0, 2, 2));
+        planetEntity1.setPlayGround(new Rectangle2D(50, 50, 200, 200));
+        planetEntity1.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
         em.persist(planetEntity1);
         PLANET_1_ID = planetEntity1.getId();
 
         PlanetEntity planetEntity2 = new PlanetEntity();
+        planetEntity2.setGroundMeshDimension(new Rectangle(0, 0, 5, 5));
+        planetEntity2.setPlayGround(new Rectangle2D(50, 50, 700, 700));
+        planetEntity2.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
+        planetEntity2.setItemTypeLimitation(setupPlanet2Limitation());
         em.persist(planetEntity2);
         PLANET_2_ID = planetEntity2.getId();
 
@@ -390,10 +416,19 @@ public class ArquillianBaseTest {
         utx.commit();
     }
 
+    private Map<BaseItemTypeEntity, Integer> setupPlanet2Limitation() {
+        Map<BaseItemTypeEntity, Integer> limitation = new HashMap<>();
+        limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        return limitation;
+    }
+
     private GroundConfig setupGroundConfig() {
         GroundConfig groundConfig = new GroundConfig();
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         groundSkeletonConfig.setLightConfig(new LightConfig().setDiffuse(Color.fromHtmlColor("#000000")).setAmbient(Color.fromHtmlColor("#000000")));
+        groundSkeletonConfig.setHeightXCount(1);
+        groundSkeletonConfig.setHeightYCount(1);
+        groundSkeletonConfig.setHeights(new double[][]{{0}});
         groundConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         return groundConfig;
     }
@@ -407,11 +442,18 @@ public class ArquillianBaseTest {
         cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
 
         cleanTable(WaterConfigEntity.class);
+        cleanTable(GroundHeightEntity.class);
         cleanTable(GroundConfigEntity.class);
         cleanTable(GameUiControlConfigEntity.class);
         cleanTable(ServerGameEngineConfigEntity.class);
+        cleanTableNative("PLANET_LIMITATION");
         cleanTable(PlanetEntity.class);
         cleanLevels();
+    }
+
+    protected void cleanUsers() throws Exception {
+        cleanTableNative("USER_COMPLETED_QUEST");
+        cleanTable(UserEntity.class);
     }
 
     protected void assertCount(int countExpected, Class entityClass) {
@@ -453,4 +495,34 @@ public class ArquillianBaseTest {
         }
         System.out.println("SQL-ENDS-----------------------------------------------------");
     }
+
+    protected void clearMongoDb() {
+        new MongoClient().getDatabase("razarion").drop();
+    }
+
+    protected <T> void fillBackupInfoMongoDb(String collectionName, String fileName) {
+        try {
+            InputStream input = getClass().getResourceAsStream(fileName);
+            if (input == null) {
+                throw new IllegalArgumentException("Can not find: " + fileName);
+            }
+            String jsonString;
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+                jsonString = br.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setDateFormat(new SimpleDateFormat(DateUtil.JSON_FORMAT_STRING));
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            List<T> entries = objectMapper.readValue(jsonString, new TypeReference<List<T>>() {
+            });
+            MongoCollection<Document> mongoCollection = new MongoClient().getDatabase("razarion").getCollection(collectionName);
+            for (T entry : entries) {
+                mongoCollection.insertOne(Document.parse(objectMapper.writeValueAsString(entry)));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

@@ -51,6 +51,7 @@ public class ResourceService {
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
     private final Collection<ResourceRegion> resourceRegions = new ArrayList<>();
     private GameEngineMode gameEngineMode;
+    private List<ResourceRegionConfig> resourceRegionConfigs;
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         switch (planetActivationEvent.getType()) {
@@ -71,8 +72,8 @@ public class ResourceService {
             resources.clear();
         }
         gameEngineMode = planetActivationEvent.getGameEngineMode();
-        if (gameEngineMode == GameEngineMode.MASTER && planetActivationEvent.getMasterPlanetConfig() != null && planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs() != null) {
-            startResourceRegions(planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs());
+        if (planetActivationEvent.getMasterPlanetConfig() != null) {
+            resourceRegionConfigs = planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs();
         }
         if (planetActivationEvent.getSlaveSyncItemInfo() != null && planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos() != null) {
             for (SyncResourceItemInfo syncResourceItemInfo : planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos()) {
@@ -82,14 +83,15 @@ public class ResourceService {
     }
 
     public void reloadResourceRegions(List<ResourceRegionConfig> resourceRegionConfigs) {
+        this.resourceRegionConfigs = resourceRegionConfigs;
         synchronized (resourceRegions) {
             resourceRegions.forEach(ResourceRegion::kill);
             resourceRegions.clear();
         }
-        startResourceRegions(resourceRegionConfigs);
+        startResourceRegions();
     }
 
-    private void startResourceRegions(List<ResourceRegionConfig> resourceRegionConfigs) {
+    public void startResourceRegions() {
         synchronized (resourceRegions) {
             for (ResourceRegionConfig resourceRegionConfig : resourceRegionConfigs) {
                 ResourceRegion resourceRegion = instance.get();

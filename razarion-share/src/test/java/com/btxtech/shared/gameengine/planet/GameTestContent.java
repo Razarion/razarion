@@ -70,7 +70,7 @@ public interface GameTestContent {
 
     static void setupBuilder(List<BaseItemType> baseItemTypes) {
         BaseItemType bulldozer = new BaseItemType();
-        bulldozer.setHealth(40).setId(BUILDER_ITEM_TYPE_ID);
+        bulldozer.setHealth(40).setId(BUILDER_ITEM_TYPE_ID).setInternalName("Builder test");
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(2).setSpeed(20.0));
         bulldozer.setBuilderType(new BuilderType().setAbleToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID)).setAnimationOrigin(new Vertex(3, 5, 17)).setProgress(5).setRange(2.7));
         baseItemTypes.add(bulldozer);
@@ -78,7 +78,7 @@ public interface GameTestContent {
 
     static void setupFactory(List<BaseItemType> baseItemTypes) {
         BaseItemType factory = new BaseItemType();
-        factory.setHealth(30).setId(FACTORY_ITEM_TYPE_ID);
+        factory.setHealth(30).setId(FACTORY_ITEM_TYPE_ID).setInternalName("Factory test");
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(5).setSpeed(20.0));
         factory.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE_ID, ATTACKER_ITEM_TYPE_ID, HARVESTER_ITEM_TYPE_ID)).setProgress(2.9));
         baseItemTypes.add(factory);
@@ -86,7 +86,7 @@ public interface GameTestContent {
 
     static void setupAttacker(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(20).setId(ATTACKER_ITEM_TYPE_ID);
+        attacker.setHealth(20).setId(ATTACKER_ITEM_TYPE_ID).setInternalName("Attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(3).setSpeed(20.0));
         attacker.setWeaponType(new WeaponType().setDamage(5).setRange(10).setProjectileSpeed(20.0).setReloadTime(2).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTorrentCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
@@ -94,7 +94,7 @@ public interface GameTestContent {
 
     static void setupGenerator(List<BaseItemType> baseItemTypes) {
         BaseItemType consumer = new BaseItemType();
-        consumer.setHealth(15).setBuildup(10).setId(GENERATOR_ITEM_TYPE_ID);
+        consumer.setHealth(15).setBuildup(10).setId(GENERATOR_ITEM_TYPE_ID).setInternalName("Power planet test");
         consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(2));
         consumer.setGeneratorType(new GeneratorType().setWattage(80));
         baseItemTypes.add(consumer);
@@ -102,7 +102,7 @@ public interface GameTestContent {
 
     static void setupConsumer(List<BaseItemType> baseItemTypes) {
         BaseItemType consumer = new BaseItemType();
-        consumer.setHealth(15).setBuildup(20).setId(CONSUMER_ITEM_TYPE_ID);
+        consumer.setHealth(15).setBuildup(20).setId(CONSUMER_ITEM_TYPE_ID).setInternalName("Consumer test");
         consumer.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(1.5));
         consumer.setConsumerType(new ConsumerType().setWattage(60));
         baseItemTypes.add(consumer);
@@ -110,7 +110,7 @@ public interface GameTestContent {
 
     static void setupHarvester(List<BaseItemType> baseItemTypes) {
         BaseItemType harvester = new BaseItemType();
-        harvester.setHealth(17).setBuildup(18).setId(HARVESTER_ITEM_TYPE_ID);
+        harvester.setHealth(17).setBuildup(18).setId(HARVESTER_ITEM_TYPE_ID).setInternalName("Harvester test");
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.5).setAngularVelocity(Math.toRadians(40)).setRadius(2).setSpeed(15.0));
         harvester.setHarvesterType(new HarvesterType().setProgress(2.0).setRange(2));
         baseItemTypes.add(harvester);

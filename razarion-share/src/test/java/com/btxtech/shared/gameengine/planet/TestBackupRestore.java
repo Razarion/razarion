@@ -37,6 +37,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
     public void test() {
         setupMasterEnvironment();
         // Resources
+        getResourceService().startResourceRegions();
         Collection<SyncResourceItem> resources = getSyncItemContainerService().findResourceItemWithPlace(GameTestContent.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resources.size());
         // Bot
@@ -76,7 +77,11 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         Assert.assertNotNull(harvester1.getSyncHarvester().getResource());
         // ---------- Backup ---------
         BackupBaseInfo backupBaseInfoUnregistered = getPlanetService().backup(true);
+        Assert.assertEquals(2, backupBaseInfoUnregistered.getPlayerBaseInfos().size());
+        Assert.assertEquals(6, backupBaseInfoUnregistered.getSyncBaseItemInfos().size());
         BackupBaseInfo backupBaseInfoRegistered = getPlanetService().backup(false);
+        Assert.assertEquals(1, backupBaseInfoRegistered.getPlayerBaseInfos().size());
+        Assert.assertEquals(4, backupBaseInfoRegistered.getSyncBaseItemInfos().size());
 
         restoreVerifyUnregistered(resources, playerBaseFull1, builder1, factory1, attacker1, harvester1, playerBaseFull2, builder2, consumer2, backupBaseInfoUnregistered);
         restoreVerifyRegistered(resources, playerBaseFull1, builder1, factory1, attacker1, harvester1, backupBaseInfoRegistered);
@@ -92,11 +97,15 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         Assert.assertEquals(2, getBaseItemService().getPlayerBaseInfos().size());
         Assert.assertEquals(6, getSyncItemContainerService().getSyncBaseItemInfos().size());
+        assertSyncItemCount(6, 0, 0);
 
         // Verify resources
+        getResourceService().startResourceRegions();
         Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(GameTestContent.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resourcesRestore.size());
         assertDifferentResources(resources, resourcesRestore);
+        assertSyncItemCount(6, 5, 0);
+
         // Verify base 1
         PlayerBaseFull playerBaseFull1Restore = (PlayerBaseFull) getBaseItemService().getPlayerBase4BaseId(playerBaseFull1.getBaseId());
         Assert.assertEquals(4, playerBaseFull1Restore.getItemCount());
@@ -124,6 +133,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Check if command will be finished
         tickPlanetServiceBaseServiceActive(attacker1Restore);
+        assertSyncItemCount(8, 5, 0);
         // Base 1
         Assert.assertEquals(5, playerBaseFull1Restore.getItemCount());
         findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1Restore);
@@ -135,6 +145,15 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         // Check energy restore 2
         assertEnergy(0, 0, playerBaseFull1Restore);
         assertEnergy(60, 80, playerBaseFull2Restore);
+
+        // Create base 3
+        UserContext userContext3 = createLevel1UserContext(1);
+        PlayerBaseFull playerBaseFull3 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext3);
+        Assert.assertEquals(5, playerBaseFull3.getBaseId());
+        tickPlanetServiceBaseServiceActive(attacker1Restore);
+        findSyncBaseItem(playerBaseFull3, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        printAllSyncItems();
+        assertSyncItemCount(9, 5, 0);
     }
 
     private void restoreVerifyRegistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem harvester1, BackupBaseInfo backupBaseInfoRegistered) {
@@ -147,11 +166,14 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         Assert.assertEquals(1, getBaseItemService().getPlayerBaseInfos().size());
         Assert.assertEquals(4, getSyncItemContainerService().getSyncBaseItemInfos().size());
+        assertSyncItemCount(4, 0, 0);
 
         // Verify resources
+        getResourceService().startResourceRegions();
         Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(GameTestContent.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resourcesRestore.size());
         assertDifferentResources(resources, resourcesRestore);
+        assertSyncItemCount(4, 5, 0);
         // Verify base 1
         PlayerBaseFull playerBaseFull1Restore = (PlayerBaseFull) getBaseItemService().getPlayerBase4BaseId(playerBaseFull1.getBaseId());
         Assert.assertEquals(4, playerBaseFull1Restore.getItemCount());
@@ -171,11 +193,21 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         // Check if command will be finished
         tickPlanetServiceBaseServiceActive(attacker1Restore);
         // Base 1
+        assertSyncItemCount(5, 5, 0);
         Assert.assertEquals(5, playerBaseFull1Restore.getItemCount());
         findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1Restore);
 
         // Check energy restore 2
         assertEnergy(0, 0, playerBaseFull1Restore);
+
+        // Create base 3
+        UserContext userContext3 = createLevel1UserContext(1);
+        printAllSyncItems();
+        PlayerBaseFull playerBaseFull3 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext3);
+        Assert.assertEquals(4, playerBaseFull3.getBaseId());
+        tickPlanetServiceBaseServiceActive(attacker1Restore);
+        findSyncBaseItem(playerBaseFull3, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        assertSyncItemCount(6, 5, 0);
     }
 
     private SyncBaseItem setupBot() {

@@ -635,4 +635,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return simpleDto;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + "|" + base;
+    }
 }

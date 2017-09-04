@@ -177,4 +177,18 @@ public class DateUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static Date fromJsonTimeString(String dateString) {
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(JSON_FORMAT_STRING);
+            return simpleDateFormat.parse(dateString);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String tpoJsonTimeString(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(JSON_FORMAT_STRING);
+        return simpleDateFormat.format(date);
+    }
 }

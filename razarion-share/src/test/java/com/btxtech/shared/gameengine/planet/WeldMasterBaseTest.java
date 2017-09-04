@@ -16,10 +16,9 @@ import java.util.ArrayList;
  * on 21.08.2017.
  */
 public class WeldMasterBaseTest extends WeldBaseTest {
-    private int nextHumanPlayerId;
+    private int nextHumanPlayerId = 1;
 
     protected void setupMasterEnvironment() {
-        nextHumanPlayerId = 1;
         setupEnvironment(GameTestContent.setupStaticGameConfig(), GameTestContent.setupPlanetConfig());
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
     }

@@ -46,6 +46,10 @@ public class BoxService {
         }
     }
 
+    public void startBoxRegions() {
+        // TODO
+    }
+
     public void dropBoxes(List<BoxItemPosition> boxItemPositions) {
         for (BoxItemPosition boxItemPosition : boxItemPositions) {
             dropBox(boxItemPosition.getBoxItemTypeId(), boxItemPosition.getPosition(), boxItemPosition.getRotationZ());

@@ -581,6 +581,7 @@ public class BaseItemService {
     }
 
     public void restore(BackupBaseInfo backupBaseInfo) {
+        lastBaseItId = 1;
         backupBaseInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
             lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
             bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(lastBaseItId, playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getHumanPlayerId()));

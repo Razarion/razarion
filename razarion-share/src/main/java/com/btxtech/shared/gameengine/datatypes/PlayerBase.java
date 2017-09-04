@@ -120,6 +120,7 @@ public class PlayerBase {
                 ", name='" + name + '\'' +
                 ", character=" + character +
                 ", abandoned=" + abandoned +
+                ", humanPlayerId=" + humanPlayerId +
                 '}';
     }
 }

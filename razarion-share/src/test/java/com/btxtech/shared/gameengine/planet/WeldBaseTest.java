@@ -4,6 +4,7 @@ import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.cdimock.TestNativeTerrainShapeAccess;
 import com.btxtech.shared.cdimock.TestSimpleExecutorService;
 import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -15,9 +16,12 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.SimpleExecutorService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,6 +75,10 @@ public class WeldBaseTest {
 
     public EnergyService getEnergyService() {
         return getWeldBean(EnergyService.class);
+    }
+
+    public ResourceService getResourceService() {
+        return getWeldBean(ResourceService.class);
     }
 
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
@@ -157,5 +165,35 @@ public class WeldBaseTest {
 
     public PlayerBase getPlayerBase(UserContext userContext) {
         return baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+    }
+
+    public void assertSyncItemCount(int baseCount, int resourceCount, int boxCount) {
+        SingleHolder<Integer> actualBaseCount = new SingleHolder<>(0);
+        SingleHolder<Integer> actualResourceCount = new SingleHolder<>(0);
+        SingleHolder<Integer> actualBoxCount = new SingleHolder<>(0);
+        getSyncItemContainerService().iterateOverItems(true, true, null, syncItem -> {
+            if (syncItem instanceof SyncBaseItem) {
+                actualBaseCount.setO(actualBaseCount.getO() + 1);
+            } else if (syncItem instanceof SyncResourceItem) {
+                actualResourceCount.setO(actualResourceCount.getO() + 1);
+            } else if (syncItem instanceof SyncBoxItem) {
+                actualBoxCount.setO(actualBoxCount.getO() + 1);
+            } else {
+                throw new IllegalStateException("Unknwon item type: " + syncItem);
+            }
+            return null;
+        });
+        Assert.assertEquals("Base items", baseCount, (int)actualBaseCount.getO());
+        Assert.assertEquals("Resource items", resourceCount, (int)actualResourceCount.getO());
+        Assert.assertEquals("Box items", boxCount, (int)actualBoxCount.getO());
+    }
+
+    public void printAllSyncItems() {
+        System.out.println("---printAllSyncItems-------------------------------------------");
+        getSyncItemContainerService().iterateOverItems(true, true, null, syncItem -> {
+            System.out.println(syncItem);
+            return null;
+        });
+        System.out.println("---------------------------------------------------------------");
     }
 }

@@ -221,7 +221,10 @@ public class SyncItemContainerService {
     private void initAndAdd(ItemType itemType, SyncItem syncItem, SyncPhysicalArea syncPhysicalArea) {
         synchronized (items) {
             syncItem.init(lastItemId, itemType, syncPhysicalArea);
-            items.put(lastItemId, syncItem);
+            SyncItem old = items.put(lastItemId, syncItem);
+            if (old != null) {
+                throw new IllegalArgumentException("SyncItemContainerService.initAndAdd(). Id is not free. New: " + syncItem + " old: " + old);
+            }
             lastItemId++;
         }
         syncItem.getSyncPhysicalArea().setupPosition3d();
@@ -230,7 +233,11 @@ public class SyncItemContainerService {
     private void initAndAddSlave(ItemType itemType, int syncItemId, SyncItem syncItem, SyncPhysicalArea syncPhysicalArea) {
         synchronized (items) {
             syncItem.init(syncItemId, itemType, syncPhysicalArea);
-            items.put(syncItemId, syncItem);
+            SyncItem old = items.put(syncItemId, syncItem);
+            if (old != null) {
+                throw new IllegalArgumentException("SyncItemContainerService.initAndAddSlave(). Id is not free. New: " + syncItem + " old: " + old);
+            }
+            lastItemId = Math.max(lastItemId + 1, syncItemId + 1);
         }
         syncItem.getSyncPhysicalArea().setupPosition3d();
     }

@@ -86,7 +86,7 @@ public abstract class SyncItem {
 
     @Override
     public String toString() {
-        return "SyncItem: id=" + id + " " + itemType + " " + syncPhysicalArea;
+        return "SyncItem: id=" + id + "|" + itemType + "|" + syncPhysicalArea.getPosition2d();
     }
 
     @Override
