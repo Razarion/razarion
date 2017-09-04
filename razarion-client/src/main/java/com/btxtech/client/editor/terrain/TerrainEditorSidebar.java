@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.terrain;
 
+import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.guielements.DecimalPositionBox;
@@ -118,6 +119,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private Button showMiniMapButton;
     @Inject
     @DataField
+    private RadarPanel radarPanel;
+    @Inject
+    @DataField
     private Button restartPlanetButton;
 
     @PostConstruct
@@ -174,6 +178,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
         }).getTerrainObjectNameIds();
         terrainEditor.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
         viewService.addViewFieldListeners(this);
+        radarPanel.show();
     }
 
     @EventHandler("creationModeButton")

@@ -3,6 +3,7 @@ package com.btxtech.client.cockpit.radar;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.google.gwt.dom.client.Element;
 import elemental.html.CanvasElement;
 import elemental.html.CanvasRenderingContext2D;
@@ -17,6 +18,8 @@ public abstract class AbstractMiniMap {
     // private Logger logger = Logger.getLogger(Logger.class.getName());
     @Inject
     private GameUiControl gameUiControl;
+    @Inject
+    private ViewService viewService;
     private CanvasElement canvasElement;
     private int width;
     private int height;
@@ -70,6 +73,9 @@ public abstract class AbstractMiniMap {
     }
 
     protected ViewField getViewField() {
+        if(viewField == null) {
+            viewField = viewService.getCurrentViewField();
+        }
         return viewField;
     }
 
