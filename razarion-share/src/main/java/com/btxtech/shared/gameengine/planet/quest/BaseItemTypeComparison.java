@@ -13,11 +13,13 @@
 
 package com.btxtech.shared.gameengine.planet.quest;
 
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,8 @@ import java.util.Map;
  */
 @Dependent
 public class BaseItemTypeComparison extends AbstractBaseItemComparison {
+    @Inject
+    private ItemTypeService itemTypeService;
     private Map<BaseItemType, Integer> remaining;
     private Map<BaseItemType, Integer> total;
 
@@ -54,22 +58,18 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
         return remaining.isEmpty();
     }
 
-//    @Override
-//    public void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        GenericComparisonValueContainer itemCounts = genericComparisonValueContainer.createChildContainer(GenericComparisonValueContainer.Key.REMAINING_ITEM_TYPES);
-//        for (Map.Entry<BaseItemType, Integer> entry : remaining.entrySet()) {
-//            itemCounts.addChild(entry.getKey(), entry.getValue());
-//        }
-//    }
-//
-//    @Override
-//    public void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        remaining.clear();
-//        GenericComparisonValueContainer itemCounts = genericComparisonValueContainer.getChildContainer(GenericComparisonValueContainer.Key.REMAINING_ITEM_TYPES);
-//        for (Map.Entry entry : itemCounts.getEntries()) {
-//            remaining.put((BaseItemType) entry.getKey(), ((Number) entry.getValue()).intValue());
-//        }
-//    }
+    @Override
+    public void fillGenericComparisonValues(BackupComparisionInfo backupComparisionInfo) {
+        for (Map.Entry<BaseItemType, Integer> entry : remaining.entrySet()) {
+            backupComparisionInfo.addRemainingItemType(entry.getKey(), entry.getValue());
+        }
+    }
+
+    @Override
+    public void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo) {
+        remaining.clear();
+        backupComparisionInfo.iterateOverRemainingItemType((itemTypeId, remainingCount) -> remaining.put(itemTypeService.getBaseItemType(itemTypeId), remainingCount));
+    }
 
     @Override
     public QuestProgressInfo generateQuestProgressInfo() {

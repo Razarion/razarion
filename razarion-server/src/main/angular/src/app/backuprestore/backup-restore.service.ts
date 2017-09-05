@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Headers, Http} from "@angular/http";
-import {BackupBaseOverview} from "./backup-restore.dto";
+import {BackupPlanetOverview} from "./backup-restore.dto";
 import {Common, URL_PLANET_MGMT} from "../Common";
 
 @Injectable()
@@ -8,7 +8,7 @@ export class BackupRestoreService {
   constructor(private http: Http) {
   }
 
-  loadAllBackupBaseOverviews(): Promise<BackupBaseOverview[]> {
+  loadAllBackupBaseOverviews(): Promise<BackupPlanetOverview[]> {
     return this.http.get(URL_PLANET_MGMT + '/loadallbackupbaseoverviews')
       .toPromise()
       .then(response => {
@@ -16,7 +16,7 @@ export class BackupRestoreService {
       }).catch(Common.handleError);
   }
 
-  backup(): Promise<BackupBaseOverview[]> {
+  backup(): Promise<BackupPlanetOverview[]> {
     return this.http.post(URL_PLANET_MGMT + '/dobackup', null)
       .toPromise()
       .then(response => {
@@ -24,7 +24,7 @@ export class BackupRestoreService {
       }).catch(Common.handleError);
   }
 
-  restore(backupBaseOverview: BackupBaseOverview) {
+  restore(backupBaseOverview: BackupPlanetOverview) {
     this.http.post(URL_PLANET_MGMT + '/dorestore', JSON.stringify(backupBaseOverview), {headers: new Headers({'Content-Type': 'application/json'})})
       .catch(Common.handleError);
   }

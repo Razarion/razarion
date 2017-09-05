@@ -4,8 +4,12 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
+import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -38,6 +42,8 @@ public interface GameTestContent {
     int HARVESTER_ITEM_TYPE_ID = 6;
     int RESOURCE_ITEM_TYPE_ID = 101;
     int LEVEL_ID_1 = 1;
+    int QUEST_CONFIG_1_ID = 1001;
+    int QUEST_CONFIG_2_ID = 1002;
 
     static StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
@@ -151,5 +157,20 @@ public interface GameTestContent {
         levelLimitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         levelLimitation.put(HARVESTER_ITEM_TYPE_ID, 3);
         return levelLimitation;
+    }
+
+    static QuestConfig createItemCountCreatedQuest() {
+        return new QuestConfig().setId(QUEST_CONFIG_1_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(10)));
+    }
+
+    static QuestConfig createItemTypeCountCreatedQuest() {
+        Map<Integer, Integer> typeCount = new HashMap<>();
+        typeCount.put(BUILDER_ITEM_TYPE_ID, 1);
+        typeCount.put(FACTORY_ITEM_TYPE_ID, 2);
+        typeCount.put(ATTACKER_ITEM_TYPE_ID, 5);
+        typeCount.put(GENERATOR_ITEM_TYPE_ID, 6);
+        typeCount.put(CONSUMER_ITEM_TYPE_ID, 6);
+        typeCount.put(HARVESTER_ITEM_TYPE_ID, 3);
+        return new QuestConfig().setId(QUEST_CONFIG_2_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
     }
 }

@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.datatypes;
 import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.planet.quest.BackupComparisionInfo;
 
 import java.util.Date;
 import java.util.List;
@@ -11,11 +12,12 @@ import java.util.List;
  * Created by Beat
  * on 31.08.2017.
  */
-public class BackupBaseInfo {
+public class BackupPlanetInfo {
     private Date date;
     private int planetId;
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<BackupPlayerBaseInfo> playerBaseInfos;
+    private List<BackupComparisionInfo> backupComparisionInfos;
 
     public Date getDate() {
         return date;
@@ -47,5 +49,13 @@ public class BackupBaseInfo {
 
     public void setPlayerBaseInfos(List<BackupPlayerBaseInfo> playerBaseInfos) {
         this.playerBaseInfos = playerBaseInfos;
+    }
+
+    public List<BackupComparisionInfo> getBackupComparisionInfos() {
+        return backupComparisionInfos;
+    }
+
+    public void setBackupComparisionInfos(List<BackupComparisionInfo> backupComparisionInfos) {
+        this.backupComparisionInfos = backupComparisionInfos;
     }
 }

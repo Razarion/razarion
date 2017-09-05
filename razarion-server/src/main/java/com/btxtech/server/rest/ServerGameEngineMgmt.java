@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
-import com.btxtech.server.persistence.backup.BackupBaseOverview;
+import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -32,7 +32,7 @@ public class ServerGameEngineMgmt {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("loadallbackupbaseoverviews")
-    public List<BackupBaseOverview> loadAllBackupBaseOverviews() {
+    public List<BackupPlanetOverview> loadAllBackupBaseOverviews() {
         try {
             return planetBackupMongoDb.loadAllBackupBaseOverviews();
         } catch (Throwable t) {
@@ -44,7 +44,7 @@ public class ServerGameEngineMgmt {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("dobackup")
-    public List<BackupBaseOverview> doBackup() {
+    public List<BackupPlanetOverview> doBackup() {
         try {
             serverGameEngineControl.backupPlanet();
             return planetBackupMongoDb.loadAllBackupBaseOverviews();
@@ -60,9 +60,9 @@ public class ServerGameEngineMgmt {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("dorestore")
-    public void doRestore(BackupBaseOverview backupBaseOverview) {
+    public void doRestore(BackupPlanetOverview backupPlanetOverview) {
         try {
-            serverGameEngineControl.restorePlanet(backupBaseOverview);
+            serverGameEngineControl.restorePlanet(backupPlanetOverview);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

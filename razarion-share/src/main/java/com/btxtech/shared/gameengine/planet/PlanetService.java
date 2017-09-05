@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
-import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -91,22 +91,23 @@ public class PlanetService implements Runnable { // Only available in worker. On
         terrainService.clean();
     }
 
-    public BackupBaseInfo backup(boolean saveUnregistered) {
+    public BackupPlanetInfo backup(boolean saveUnregistered) {
         long time = System.currentTimeMillis();
-        BackupBaseInfo backupBaseInfo = new BackupBaseInfo();
-        backupBaseInfo.setDate(new Date());
-        backupBaseInfo.setPlanetId(planetConfig.getPlanetId());
-        baseItemService.fillBackup(backupBaseInfo, saveUnregistered);
-        logger.info("PlanetService.restore() in:" + (System.currentTimeMillis() - time));
-        return backupBaseInfo;
+        BackupPlanetInfo backupPlanetInfo = new BackupPlanetInfo();
+        backupPlanetInfo.setDate(new Date());
+        backupPlanetInfo.setPlanetId(planetConfig.getPlanetId());
+        baseItemService.fillBackup(backupPlanetInfo, saveUnregistered);
+        questService.fillBackup(backupPlanetInfo);
+        logger.info("PlanetService.restoreBases() in:" + (System.currentTimeMillis() - time));
+        return backupPlanetInfo;
     }
 
-    public void restore(BackupBaseInfo backupBaseInfo) {
+    public void restoreBases(BackupPlanetInfo backupPlanetInfo) {
         long time = System.currentTimeMillis();
         energyService.clean();
-        baseItemService.restore(backupBaseInfo);
+        baseItemService.restore(backupPlanetInfo);
         energyService.tick();
-        logger.info("BackupBaseInfo.restore() in:" + (System.currentTimeMillis() - time));
+        logger.info("BackupPlanetInfo.restoreBases() in:" + (System.currentTimeMillis() - time));
     }
 
     @Override

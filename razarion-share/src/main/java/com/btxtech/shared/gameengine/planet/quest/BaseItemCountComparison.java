@@ -46,16 +46,17 @@ public class BaseItemCountComparison extends AbstractBaseItemComparison {
         return count;
     }
 
-//
-//    @Override
-//    public void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        genericComparisonValueContainer.addChild(GenericComparisonValueContainer.Key.REMAINING_COUNT, count);
-//    }
-//
-//    @Override
-//    public void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        count = (Double) genericComparisonValueContainer.getValue(GenericComparisonValueContainer.Key.REMAINING_COUNT);
-//    }
+
+    @Override
+    public void fillGenericComparisonValues(BackupComparisionInfo backupComparisionInfo) {
+        backupComparisionInfo.setRemainingCount(count);
+    }
+
+    @Override
+    public void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo) {
+        backupComparisionInfo.checkRemainingCount();
+        count = backupComparisionInfo.getRemainingCount();
+    }
 
     @Override
     public QuestProgressInfo generateQuestProgressInfo() {

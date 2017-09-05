@@ -28,9 +28,9 @@ public interface AbstractComparison {
 
     void setAbstractConditionProgress(AbstractConditionProgress abstractConditionProgress);
 
-    // TODO dave & reload void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer);
+    void fillGenericComparisonValues(BackupComparisionInfo backupComparisionInfo);
 
-    // TODO dave & reload void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer);
+    void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo);
 
     QuestProgressInfo generateQuestProgressInfo();
 

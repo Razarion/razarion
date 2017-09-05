@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
-import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
@@ -541,7 +541,7 @@ public class BaseItemService {
         return playerBaseInfos;
     }
 
-    public void fillBackup(BackupBaseInfo backupBaseInfo, boolean saveUnregistered) {
+    public void fillBackup(BackupPlanetInfo backupPlanetInfo, boolean saveUnregistered) {
         List<SyncBaseItemInfo> syncBaseItemInfos = getSyncBaseItemInfos();
         syncBaseItemInfos.removeIf(syncBaseItemInfo -> {
             if (!isSaveNeeded(syncBaseItemInfo.getBaseId(), saveUnregistered)) {
@@ -567,8 +567,8 @@ public class BaseItemService {
             }
             return false;
         });
-        backupBaseInfo.setSyncBaseItemInfos(syncBaseItemInfos);
-        backupBaseInfo.setPlayerBaseInfos(getBackupPlayerBaseInfos(saveUnregistered));
+        backupPlanetInfo.setSyncBaseItemInfos(syncBaseItemInfos);
+        backupPlanetInfo.setPlayerBaseInfos(getBackupPlayerBaseInfos(saveUnregistered));
     }
 
     private boolean isSaveNeeded(int playerBaseId, boolean saveUnregistered) {
@@ -580,14 +580,14 @@ public class BaseItemService {
         return !playerBase.getCharacter().isBot() && (saveUnregistered || playerBase.getHumanPlayerId().getUserId() != null);
     }
 
-    public void restore(BackupBaseInfo backupBaseInfo) {
+    public void restore(BackupPlanetInfo backupPlanetInfo) {
         lastBaseItId = 1;
-        backupBaseInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
+        backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
             lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
             bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(lastBaseItId, playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getHumanPlayerId()));
         });
         Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
-        for (SyncBaseItemInfo syncBaseItemInfo : backupBaseInfo.getSyncBaseItemInfos()) {
+        for (SyncBaseItemInfo syncBaseItemInfo : backupPlanetInfo.getSyncBaseItemInfos()) {
             SyncBaseItem syncBaseItem = createSyncBaseItemRestore(syncBaseItemInfo, (PlayerBaseFull) getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
             tmp.put(syncBaseItem, syncBaseItemInfo);
         }

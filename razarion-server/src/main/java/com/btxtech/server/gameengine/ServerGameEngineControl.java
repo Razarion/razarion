@@ -2,7 +2,7 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
-import com.btxtech.server.persistence.backup.BackupBaseOverview;
+import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -11,7 +11,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
-import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -81,26 +81,32 @@ public class ServerGameEngineControl implements GameLogicListener {
     private PlanetBackupMongoDb planetBackupMongoDb;
     private final Object reloadLook = new Object();
 
-    public void start(BackupBaseInfo backupBaseInfo) {
+    public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
+        PlanetConfig planetConfig = serverGameEnginePersistence.readPlanetConfig();
+        BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
         terrainShapeService.start();
-        PlanetConfig planetConfig = serverGameEnginePersistence.readPlanetConfig();
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null, () -> {
             gameLogicService.setGameLogicListener(this);
             planetService.start();
-            if (backupBaseInfo != null) {
-                planetService.restore(backupBaseInfo);
-            } else {
-                BackupBaseInfo lastBackupBaseInfo = planetBackupMongoDb.loadLastBackup(planetConfig.getPlanetId());
-                if (lastBackupBaseInfo != null) {
-                    planetService.restore(lastBackupBaseInfo);
-                }
+            if (finaBackupPlanetInfo != null) {
+                planetService.restoreBases(finaBackupPlanetInfo);
             }
             resourceService.startResourceRegions();
             boxService.startBoxRegions();
             botService.startBots(serverGameEnginePersistence.readBotConfigs());
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
-        activateQuests();
+        if (activateQuests) {
+            activateQuests(finaBackupPlanetInfo);
+        }
+    }
+
+    private BackupPlanetInfo setupBackupPlanetInfo(BackupPlanetInfo backupPlanetInfo, PlanetConfig planetConfig) {
+        if (backupPlanetInfo != null) {
+            return backupPlanetInfo;
+        } else {
+            return planetBackupMongoDb.loadLastBackup(planetConfig.getPlanetId());
+        }
     }
 
     @SecurityCheck
@@ -143,11 +149,9 @@ public class ServerGameEngineControl implements GameLogicListener {
     public void restartPlanet() {
         long time = System.currentTimeMillis();
         // TODO send client restart packet -> disconnection
-        // TODO save quests
-        BackupBaseInfo backupBaseInfo = planetService.backup(true);
+        BackupPlanetInfo backupPlanetInfo = planetService.backup(true);
         stop();
-        start(backupBaseInfo);
-        // TODO restore quests may done in stgart
+        start(backupPlanetInfo, false);
         // TODO restart client package -> reload browser
         logger.info("ServerGameEngineControl.restartPlanet() in: " + (System.currentTimeMillis() - time));
     }
@@ -155,21 +159,22 @@ public class ServerGameEngineControl implements GameLogicListener {
     @SecurityCheck
     public void backupPlanet() throws JsonProcessingException {
         long time = System.currentTimeMillis();
-        BackupBaseInfo backupBaseInfo = planetService.backup(false);
-        planetBackupMongoDb.saveBackup(backupBaseInfo);
+        BackupPlanetInfo backupPlanetInfo = planetService.backup(false);
+        planetBackupMongoDb.saveBackup(backupPlanetInfo);
         logger.info("ServerGameEngineControl.backupPlanet() in: " + (System.currentTimeMillis() - time));
     }
 
     @SecurityCheck
-    public void restorePlanet(BackupBaseOverview backupBaseOverview) {
+    public void restorePlanet(BackupPlanetOverview backupPlanetOverview) {
         long time = System.currentTimeMillis();
-        BackupBaseInfo backupBaseInfo = planetBackupMongoDb.loadBackup(backupBaseOverview);
+        BackupPlanetInfo backupPlanetInfo = planetBackupMongoDb.loadBackup(backupPlanetOverview);
         stop();
-        start(backupBaseInfo);
+        start(backupPlanetInfo, true);
         logger.info("ServerGameEngineControl.restorePlanet() in: " + (System.currentTimeMillis() - time));
     }
 
-    private void activateQuests() {
+    private void activateQuests(BackupPlanetInfo backupPlanetInfo) {
+        questService.clean();
         Collection<Integer> planetQuestId = serverGameEnginePersistence.readAllQuestIds();
         if (planetQuestId == null || planetQuestId.isEmpty()) {
             return;
@@ -177,6 +182,7 @@ public class ServerGameEngineControl implements GameLogicListener {
         for (Map.Entry<HumanPlayerId, QuestConfig> entry : userService.findActiveQuests4Users(planetQuestId).entrySet()) {
             questService.activateCondition(entry.getKey(), entry.getValue());
         }
+        questService.restore(backupPlanetInfo);
     }
 
     public void stop() {

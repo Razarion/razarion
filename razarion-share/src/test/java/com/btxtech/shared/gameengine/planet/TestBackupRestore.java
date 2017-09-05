@@ -6,17 +6,20 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
-import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyServiceTest;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.quest.BackupComparisionInfo;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 import org.junit.Assert;
@@ -46,6 +49,8 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         UserContext userContext1 = createLevel1UserContext(1);
         PlayerBaseFull playerBaseFull1 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext1);
         tickPlanetServiceBaseServiceActive();
+        QuestConfig questCreate1 = GameTestContent.createItemCountCreatedQuest();
+        getQuestService().activateCondition(playerBaseFull1.getHumanPlayerId(), questCreate1);
         SyncBaseItem builder1 = findSyncBaseItem(playerBaseFull1, GameTestContent.BUILDER_ITEM_TYPE_ID);
         getCommandService().build(builder1, new DecimalPosition(40, 20), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
@@ -61,6 +66,8 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         UserContext userContext2 = createLevel1UserContext();
         PlayerBaseFull playerBaseFull2 = createHumanBaseWithBaseItem(new DecimalPosition(20, 40), userContext2);
         tickPlanetServiceBaseServiceActive(harvester1);
+        QuestConfig questCreate2 = GameTestContent.createItemTypeCountCreatedQuest();
+        getQuestService().activateCondition(playerBaseFull2.getHumanPlayerId(), questCreate2);
         SyncBaseItem builder2 = findSyncBaseItem(playerBaseFull2, GameTestContent.BUILDER_ITEM_TYPE_ID);
         getCommandService().build(builder2, new DecimalPosition(70, 40), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive(harvester1);
@@ -76,24 +83,26 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         getCommandService().build(builder2, new DecimalPosition(40, 40), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
         Assert.assertNotNull(harvester1.getSyncHarvester().getResource());
         // ---------- Backup ---------
-        BackupBaseInfo backupBaseInfoUnregistered = getPlanetService().backup(true);
-        Assert.assertEquals(2, backupBaseInfoUnregistered.getPlayerBaseInfos().size());
-        Assert.assertEquals(6, backupBaseInfoUnregistered.getSyncBaseItemInfos().size());
-        BackupBaseInfo backupBaseInfoRegistered = getPlanetService().backup(false);
-        Assert.assertEquals(1, backupBaseInfoRegistered.getPlayerBaseInfos().size());
-        Assert.assertEquals(4, backupBaseInfoRegistered.getSyncBaseItemInfos().size());
-
-        restoreVerifyUnregistered(resources, playerBaseFull1, builder1, factory1, attacker1, harvester1, playerBaseFull2, builder2, consumer2, backupBaseInfoUnregistered);
-        restoreVerifyRegistered(resources, playerBaseFull1, builder1, factory1, attacker1, harvester1, backupBaseInfoRegistered);
+        BackupPlanetInfo backupPlanetInfoUnregistered = getPlanetService().backup(true);
+        Assert.assertEquals(2, backupPlanetInfoUnregistered.getPlayerBaseInfos().size());
+        Assert.assertEquals(6, backupPlanetInfoUnregistered.getSyncBaseItemInfos().size());
+        assertQuestUnregistered(backupPlanetInfoUnregistered.getBackupComparisionInfos(), playerBaseFull1, playerBaseFull2);
+        BackupPlanetInfo backupPlanetInfoRegistered = getPlanetService().backup(false);
+        Assert.assertEquals(1, backupPlanetInfoRegistered.getPlayerBaseInfos().size());
+        Assert.assertEquals(4, backupPlanetInfoRegistered.getSyncBaseItemInfos().size());
+        Assert.assertEquals(1, backupPlanetInfoRegistered.getBackupComparisionInfos().size());
+        assertQuestRegistered(backupPlanetInfoRegistered.getBackupComparisionInfos(), playerBaseFull1);
+        restoreVerifyUnregistered(resources, playerBaseFull1, builder1, factory1, attacker1, harvester1, playerBaseFull2, builder2, consumer2, backupPlanetInfoUnregistered);
+        restoreVerifyRegistered(resources, playerBaseFull1, builder1, factory1, attacker1, harvester1, backupPlanetInfoRegistered);
     }
 
-    private void restoreVerifyUnregistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem harvester1, PlayerBaseFull playerBaseFull2, SyncBaseItem builder2, SyncBaseItem consumer2, BackupBaseInfo backupBaseInfoUnregistered) {
+    private void restoreVerifyUnregistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem harvester1, PlayerBaseFull playerBaseFull2, SyncBaseItem builder2, SyncBaseItem consumer2, BackupPlanetInfo backupPlanetInfoUnregistered) {
         getBotService().killAllBots();
         getPlanetService().stop();
         setupMasterEnvironment();
         Assert.assertTrue(getBaseItemService().getPlayerBaseInfos().isEmpty());
         Assert.assertTrue(getSyncItemContainerService().getSyncBaseItemInfos().isEmpty());
-        getPlanetService().restore(backupBaseInfoUnregistered);
+        getPlanetService().restoreBases(backupPlanetInfoUnregistered);
 
         Assert.assertEquals(2, getBaseItemService().getPlayerBaseInfos().size());
         Assert.assertEquals(6, getSyncItemContainerService().getSyncBaseItemInfos().size());
@@ -154,15 +163,22 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         findSyncBaseItem(playerBaseFull3, GameTestContent.BUILDER_ITEM_TYPE_ID);
         printAllSyncItems();
         assertSyncItemCount(9, 5, 0);
+
+        // Restore Quests
+        getQuestService().clean();
+        getQuestService().activateCondition(playerBaseFull1Restore.getHumanPlayerId(), GameTestContent.createItemCountCreatedQuest());
+        getQuestService().restore(backupPlanetInfoUnregistered);
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getHumanPlayerId());
+        Assert.assertEquals(7, (int) questProgressInfo.getCount());
     }
 
-    private void restoreVerifyRegistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem harvester1, BackupBaseInfo backupBaseInfoRegistered) {
+    private void restoreVerifyRegistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem harvester1, BackupPlanetInfo backupPlanetInfoRegistered) {
         getBotService().killAllBots();
         getPlanetService().stop();
         setupMasterEnvironment();
         Assert.assertTrue(getBaseItemService().getPlayerBaseInfos().isEmpty());
         Assert.assertTrue(getSyncItemContainerService().getSyncBaseItemInfos().isEmpty());
-        getPlanetService().restore(backupBaseInfoRegistered);
+        getPlanetService().restoreBases(backupPlanetInfoRegistered);
 
         Assert.assertEquals(1, getBaseItemService().getPlayerBaseInfos().size());
         Assert.assertEquals(4, getSyncItemContainerService().getSyncBaseItemInfos().size());
@@ -208,6 +224,13 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         tickPlanetServiceBaseServiceActive(attacker1Restore);
         findSyncBaseItem(playerBaseFull3, GameTestContent.BUILDER_ITEM_TYPE_ID);
         assertSyncItemCount(6, 5, 0);
+
+        // Restore Quests
+        getQuestService().clean();
+        getQuestService().activateCondition(playerBaseFull1Restore.getHumanPlayerId(), GameTestContent.createItemCountCreatedQuest());
+        getQuestService().restore(backupPlanetInfoRegistered);
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(playerBaseFull1Restore.getHumanPlayerId());
+        Assert.assertEquals(7, (int) questProgressInfo.getCount());
     }
 
     private SyncBaseItem setupBot() {
@@ -263,6 +286,44 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
     private void assertEnergy(int consumingExpected, int generatingExpected, PlayerBase playerBase) {
         EnergyServiceTest.assertEnergy(consumingExpected, generatingExpected, getEnergyService(), playerBase);
+    }
+
+    private void assertQuestUnregistered(List<BackupComparisionInfo> backupComparisionInfos, PlayerBase playerBase1, PlayerBase playerBase2) {
+        Assert.assertEquals(1, backupComparisionInfos.size());
+        // Player 1
+        BackupComparisionInfo backupComparisionInfo1 = findBackupComparisionInfo(backupComparisionInfos, playerBase1);
+        Assert.assertEquals(GameTestContent.QUEST_CONFIG_1_ID, backupComparisionInfo1.getQuestId());
+        Assert.assertFalse(backupComparisionInfo1.hasRemainingMilliSeconds());
+        backupComparisionInfo1.checkRemainingCount();
+        Assert.assertEquals(7, (int) backupComparisionInfo1.getRemainingCount());
+        Assert.assertNull(backupComparisionInfo1.getRemainingItemTypes());
+        // Player 2
+        try {
+            findBackupComparisionInfo(backupComparisionInfos, playerBase2);
+            Assert.fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            // Ignore
+        }
+    }
+
+    private void assertQuestRegistered(List<BackupComparisionInfo> backupComparisionInfos, PlayerBase playerBase1) {
+        Assert.assertEquals(1, backupComparisionInfos.size());
+        // Player 1
+        BackupComparisionInfo backupComparisionInfo1 = findBackupComparisionInfo(backupComparisionInfos, playerBase1);
+        Assert.assertEquals(GameTestContent.QUEST_CONFIG_1_ID, backupComparisionInfo1.getQuestId());
+        Assert.assertFalse(backupComparisionInfo1.hasRemainingMilliSeconds());
+        backupComparisionInfo1.checkRemainingCount();
+        Assert.assertEquals(7, (int) backupComparisionInfo1.getRemainingCount());
+        Assert.assertNull(backupComparisionInfo1.getRemainingItemTypes());
+    }
+
+    private BackupComparisionInfo findBackupComparisionInfo(List<BackupComparisionInfo> backupComparisionInfos, PlayerBase playerBase1) {
+        for (BackupComparisionInfo backupComparisionInfo : backupComparisionInfos) {
+            if (backupComparisionInfo.getHumanPlayerId().equals(playerBase1.getHumanPlayerId())) {
+                return backupComparisionInfo;
+            }
+        }
+        throw new IllegalArgumentException("No BackupComparisionInfo found for HumanPlayerId: " + playerBase1.getHumanPlayerId());
     }
 
 }

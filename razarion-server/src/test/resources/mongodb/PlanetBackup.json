@@ -233,6 +233,28 @@
         },
         "level": 4
       }
+    ],
+    "backupComparisionInfos": [
+      {
+        "questId": 11,
+        "humanPlayerId": {
+          "playerId": 1,
+          "userId": 1
+        },
+        "remainingCount": 12345
+      },
+      {
+        "questId": 23,
+        "humanPlayerId": {
+          "playerId": 2,
+          "userId": 2
+        },
+        "remainingItemTypes": {
+          "1": 1,
+          "2": 2,
+          "3": 3
+        }
+      }
     ]
   }
 ]

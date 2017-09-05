@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.SimpleExecutorService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -79,6 +80,10 @@ public class WeldBaseTest {
 
     public ResourceService getResourceService() {
         return getWeldBean(ResourceService.class);
+    }
+
+    public QuestService getQuestService() {
+        return getWeldBean(QuestService.class);
     }
 
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {

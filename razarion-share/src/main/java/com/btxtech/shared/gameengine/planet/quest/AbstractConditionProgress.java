@@ -70,4 +70,16 @@ public class AbstractConditionProgress {
     public QuestConfig getQuestConfig() {
         return questConfig;
     }
+
+    public BackupComparisionInfo generateBackupComparisionInfo() {
+        BackupComparisionInfo backupComparisionInfo = new BackupComparisionInfo();
+        backupComparisionInfo.setQuestId(questConfig.getId());
+        backupComparisionInfo.setHumanPlayerId(humanPlayerId);
+        abstractComparison.fillGenericComparisonValues(backupComparisionInfo);
+        return backupComparisionInfo;
+    }
+
+    public void restore(BackupComparisionInfo backupComparisionInfo) {
+        abstractComparison.restoreFromGenericComparisonValue(backupComparisionInfo);
+    }
 }

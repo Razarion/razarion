@@ -9,25 +9,29 @@
     <th>Planet id</th>
     <th>Bases</th>
     <th>Items</th>
+    <th>Quests</th>
     <th>Restore</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let backupBaseOverview of backupBaseOverviews">
+  <tr *ngFor="let backupPlanetOverview of backupPlanetOverviews">
     <td>
-      {{ backupBaseOverview.date | date:'dd.MM.yyyy HH:mm:ss'}}
+      {{ backupPlanetOverview.date | date:'dd.MM.yyyy HH:mm:ss'}}
     </td>
     <td>
-      {{ backupBaseOverview.planetId }}
+      {{ backupPlanetOverview.planetId }}
     </td>
     <td>
-      {{ backupBaseOverview.bases }}
+      {{ backupPlanetOverview.bases }}
     </td>
     <td>
-      {{ backupBaseOverview.items }}
+      {{ backupPlanetOverview.items }}
     </td>
     <td>
-      <button (click)="onRestore(backupBaseOverview)">Restore</button>
+      {{ backupPlanetOverview.quests }}
+    </td>
+    <td>
+      <button (click)="onRestore(backupPlanetOverview)">Restore</button>
     </td>
   </tr>
   </tbody>

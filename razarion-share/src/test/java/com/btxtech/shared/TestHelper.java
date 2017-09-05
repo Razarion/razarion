@@ -16,6 +16,7 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -23,6 +24,19 @@ import java.util.stream.Collectors;
  * 01.11.2015.
  */
 public class TestHelper {
+    public static void assertItemTypeCountMap(Map<Integer, Integer> actual, int... expectedItemTypeIdCount) {
+        Assert.assertTrue("expectedItemTypeIdCount must have an even count. first itemTypeId, second count", expectedItemTypeIdCount.length % 2 == 0);
+        int count = expectedItemTypeIdCount.length / 2;
+        Assert.assertEquals("Map has wrong size", count, actual.size());
+        for (int i = 0; i < count; i++) {
+            int expectedItemTypeId = expectedItemTypeIdCount[i * 2];
+            Integer actualItemTypeCount = actual.get(expectedItemTypeId);
+            Assert.assertNotNull("No item type id: " + expectedItemTypeId, actualItemTypeCount);
+            Assert.assertEquals("Wrong count for item type id: " + expectedItemTypeId, expectedItemTypeIdCount[i * 2 + 1], (int) actualItemTypeCount);
+        }
+    }
+
+
     public static void assertVertex(Vertex expected, Vertex actual) {
         String message = "Expected: " + expected + " but was: " + actual;
         assertVertex(message, expected, actual);

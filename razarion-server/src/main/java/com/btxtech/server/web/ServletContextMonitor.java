@@ -22,7 +22,7 @@ public class ServletContextMonitor implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
-            gameEngineService.start(null);
+            gameEngineService.start(null, true);
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }

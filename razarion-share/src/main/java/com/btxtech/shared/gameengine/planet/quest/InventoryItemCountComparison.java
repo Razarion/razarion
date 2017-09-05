@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
 
@@ -55,16 +54,17 @@ public class InventoryItemCountComparison extends AbstractInventoryItemCompariso
     public void setCount(double count) {
         this.count = count;
     }
-//
-//    @Override
-//    public void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        genericComparisonValueContainer.addChild(GenericComparisonValueContainer.Key.REMAINING_COUNT, count);
-//    }
-//
-//    @Override
-//    public void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        count = (Double) genericComparisonValueContainer.getValue(GenericComparisonValueContainer.Key.REMAINING_COUNT);
-//    }
+
+    @Override
+    public void fillGenericComparisonValues(BackupComparisionInfo backupComparisionInfo) {
+        backupComparisionInfo.setRemainingCount((int) count);
+    }
+
+    @Override
+    public void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo) {
+        backupComparisionInfo.checkRemainingCount();
+        count = (double) backupComparisionInfo.getRemainingCount();
+    }
 
     @Override
     public QuestProgressInfo generateQuestProgressInfo() {

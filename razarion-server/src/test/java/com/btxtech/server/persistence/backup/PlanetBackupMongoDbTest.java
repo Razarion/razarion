@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.backup;
 
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.util.DateUtil;
-import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,37 +36,40 @@ public class PlanetBackupMongoDbTest extends ArquillianBaseTest {
 
     @Test
     public void testLoadLastBackup() {
-        BackupBaseInfo backupBaseInfo = planetBackupMongoDb.loadLastBackup(2);
-        Assert.assertEquals(2, backupBaseInfo.getPlanetId());
-        Assert.assertEquals(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), backupBaseInfo.getDate());
-        Assert.assertEquals(1, backupBaseInfo.getPlayerBaseInfos().size());
-        Assert.assertEquals(2, backupBaseInfo.getSyncBaseItemInfos().size());
+        BackupPlanetInfo backupPlanetInfo = planetBackupMongoDb.loadLastBackup(2);
+        Assert.assertEquals(2, backupPlanetInfo.getPlanetId());
+        Assert.assertEquals(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), backupPlanetInfo.getDate());
+        Assert.assertEquals(1, backupPlanetInfo.getPlayerBaseInfos().size());
+        Assert.assertEquals(2, backupPlanetInfo.getSyncBaseItemInfos().size());
+        Assert.assertEquals(2, backupPlanetInfo.getBackupComparisionInfos().size());
     }
 
     @Test
     public void testLoadAllBackupBaseOverviews() {
-        List<BackupBaseOverview> allBackups = planetBackupMongoDb.loadAllBackupBaseOverviews();
+        List<BackupPlanetOverview> allBackups = planetBackupMongoDb.loadAllBackupBaseOverviews();
         Assert.assertEquals(4, allBackups.size());
-        BackupBaseOverview backupBaseOverview = findBackupBaseOverviews(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), 2, allBackups);
-        Assert.assertEquals(1, backupBaseOverview.getBases());
-        Assert.assertEquals(2, backupBaseOverview.getItems());
+        BackupPlanetOverview backupPlanetOverview = findBackupBaseOverviews(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), 2, allBackups);
+        Assert.assertEquals(1, backupPlanetOverview.getBases());
+        Assert.assertEquals(2, backupPlanetOverview.getItems());
+        Assert.assertEquals(2, backupPlanetOverview.getQuests());
     }
 
     @Test
     public void testLoadBackup() {
-        BackupBaseInfo backupBaseInfo = planetBackupMongoDb.loadBackup(new BackupBaseOverview().setPlanetId(2).setDate(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648")));
-        Assert.assertEquals(2, backupBaseInfo.getPlanetId());
-        Assert.assertEquals(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), backupBaseInfo.getDate());
-        Assert.assertEquals(1, backupBaseInfo.getPlayerBaseInfos().size());
-        Assert.assertEquals(2, backupBaseInfo.getSyncBaseItemInfos().size());
+        BackupPlanetInfo backupPlanetInfo = planetBackupMongoDb.loadBackup(new BackupPlanetOverview().setPlanetId(2).setDate(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648")));
+        Assert.assertEquals(2, backupPlanetInfo.getPlanetId());
+        Assert.assertEquals(DateUtil.fromJsonTimeString("2017-09-03 19:59:04.648"), backupPlanetInfo.getDate());
+        Assert.assertEquals(1, backupPlanetInfo.getPlayerBaseInfos().size());
+        Assert.assertEquals(2, backupPlanetInfo.getSyncBaseItemInfos().size());
+        Assert.assertEquals(2, backupPlanetInfo.getBackupComparisionInfos().size());
     }
 
-    private BackupBaseOverview findBackupBaseOverviews(Date date, int planetId, List<BackupBaseOverview> backupBaseOverviews) {
-        for (BackupBaseOverview backupBaseOverview : backupBaseOverviews) {
-            if (backupBaseOverview.getPlanetId() == planetId && backupBaseOverview.getDate().equals(date)) {
-                return backupBaseOverview;
+    private BackupPlanetOverview findBackupBaseOverviews(Date date, int planetId, List<BackupPlanetOverview> backupPlanetOverviews) {
+        for (BackupPlanetOverview backupPlanetOverview : backupPlanetOverviews) {
+            if (backupPlanetOverview.getPlanetId() == planetId && backupPlanetOverview.getDate().equals(date)) {
+                return backupPlanetOverview;
             }
         }
-        throw new IllegalArgumentException("No  BackupBaseOverview for date: " + date + " planetId: " + planetId);
+        throw new IllegalArgumentException("No  BackupPlanetOverview for date: " + date + " planetId: " + planetId);
     }
 }

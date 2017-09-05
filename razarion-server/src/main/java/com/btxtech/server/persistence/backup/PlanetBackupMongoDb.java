@@ -3,7 +3,7 @@ package com.btxtech.server.persistence.backup;
 import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.datatypes.SingleHolder;
-import com.btxtech.shared.gameengine.datatypes.BackupBaseInfo;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,56 +33,57 @@ public class PlanetBackupMongoDb {
     @Inject
     private ExceptionHandler exceptionHandler;
 
-    public void saveBackup(BackupBaseInfo backupBaseInfo) throws JsonProcessingException {
-        mongoDbService.storeObject(backupBaseInfo, MongoDbService.CollectionName.PLANET_BACKUP);
+    public void saveBackup(BackupPlanetInfo backupPlanetInfo) throws JsonProcessingException {
+        mongoDbService.storeObject(backupPlanetInfo, MongoDbService.CollectionName.PLANET_BACKUP);
     }
 
-    public void removeBackup(BackupBaseOverview backupBaseOverview) throws JsonProcessingException {
+    public void removeBackup(BackupPlanetOverview backupPlanetOverview) throws JsonProcessingException {
         // TODO
     }
 
-    public List<BackupBaseOverview> loadAllBackupBaseOverviews() {
+    public List<BackupPlanetOverview> loadAllBackupBaseOverviews() {
         MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP);
         ObjectMapper objectMapper = mongoDbService.setupObjectMapper();
-        List<BackupBaseOverview> backupBaseOverviews = new ArrayList<>();
+        List<BackupPlanetOverview> backupPlanetOverviews = new ArrayList<>();
         List<Document> pipeline = Collections.singletonList(Document.parse("{\n" +
                 "        \"$project\": {\n" +
                 "            \"date\": 1,\n" +
                 "            \"planetId\": 1,\n" +
-                "            \"bases\": { \"$size\": \"$playerBaseInfos\" },\n" +
-                "            \"items\": { \"$size\": \"$syncBaseItemInfos\" }\n" +
+                "            \"bases\": { \"$size\": {\"$ifNull\": [\"$playerBaseInfos\" , [] ]}},\n" +
+                "            \"items\": { \"$size\": {\"$ifNull\": [\"$syncBaseItemInfos\" , [] ]}},\n" +
+                "            \"quests\": { \"$size\": {\"$ifNull\": [\"$backupComparisionInfos\", [] ]}}\n" +
                 "        }\n" +
                 "    }"));
         dbCollection.aggregate(pipeline).forEach((Block<Document>) document -> {
             try {
-                backupBaseOverviews.add(objectMapper.readValue(document.toJson(), BackupBaseOverview.class));
+                backupPlanetOverviews.add(objectMapper.readValue(document.toJson(), BackupPlanetOverview.class));
             } catch (IOException e) {
                 exceptionHandler.handleException(e);
             }
         });
-        return backupBaseOverviews;
+        return backupPlanetOverviews;
     }
 
-    public BackupBaseInfo loadBackup(BackupBaseOverview backupBaseOverview) {
-        SingleHolder<BackupBaseInfo> holder = new SingleHolder<>();
+    public BackupPlanetInfo loadBackup(BackupPlanetOverview backupPlanetOverview) {
+        SingleHolder<BackupPlanetInfo> holder = new SingleHolder<>();
         ObjectMapper objectMapper = mongoDbService.setupObjectMapper();
-        mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP).find(Filters.and(Filters.eq("date", DateUtil.tpoJsonTimeString(backupBaseOverview.getDate())), Filters.eq("planetId", backupBaseOverview.getPlanetId()))).forEach((Block<Document>) document -> {
+        mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP).find(Filters.and(Filters.eq("date", DateUtil.tpoJsonTimeString(backupPlanetOverview.getDate())), Filters.eq("planetId", backupPlanetOverview.getPlanetId()))).forEach((Block<Document>) document -> {
             try {
                 if (!holder.isEmpty()) {
-                    throw new IllegalStateException("More the one entry found. Date: " + backupBaseOverview.getDate() + " planet id: " + backupBaseOverview.getPlanetId());
+                    throw new IllegalStateException("More the one entry found. Date: " + backupPlanetOverview.getDate() + " planet id: " + backupPlanetOverview.getPlanetId());
                 }
-                holder.setO(objectMapper.readValue(document.toJson(), BackupBaseInfo.class));
+                holder.setO(objectMapper.readValue(document.toJson(), BackupPlanetInfo.class));
             } catch (IOException e) {
                 exceptionHandler.handleException(e);
             }
         });
         if (holder.isEmpty()) {
-            throw new IllegalStateException("No entries found. Date: " + backupBaseOverview.getDate() + " planet id: " + backupBaseOverview.getPlanetId());
+            throw new IllegalStateException("No entries found. Date: " + backupPlanetOverview.getDate() + " planet id: " + backupPlanetOverview.getPlanetId());
         }
         return holder.getO();
     }
 
-    public BackupBaseInfo loadLastBackup(int planetId) {
+    public BackupPlanetInfo loadLastBackup(int planetId) {
         MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP);
         List<Document> pipeline = new ArrayList<>();
         pipeline.add(Document.parse("{\n" +
@@ -101,7 +102,7 @@ public class PlanetBackupMongoDb {
         if (holder.isEmpty()) {
             return null;
         } else {
-            return loadBackup(new BackupBaseOverview().setDate(holder.getO()).setPlanetId(planetId));
+            return loadBackup(new BackupPlanetOverview().setDate(holder.getO()).setPlanetId(planetId));
         }
     }
 }

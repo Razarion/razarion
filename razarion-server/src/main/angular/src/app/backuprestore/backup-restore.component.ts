@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {BackupRestoreService} from "./backup-restore.service";
-import {BackupBaseOverview} from "./backup-restore.dto";
+import {BackupPlanetOverview} from "./backup-restore.dto";
 import {DatePipe} from "@angular/common";
 
 @Component({
@@ -10,7 +10,7 @@ import {DatePipe} from "@angular/common";
 })
 
 export class BackupRestoreComponent implements OnInit {
-  backupBaseOverviews: BackupBaseOverview[];
+  backupPlanetOverviews: BackupPlanetOverview[];
 
   constructor(private backupRestoreService: BackupRestoreService) {
   }
@@ -27,15 +27,15 @@ export class BackupRestoreComponent implements OnInit {
     });
   }
 
-  onRestore(backupBaseOverview: BackupBaseOverview) {
+  onRestore(backupBaseOverview: BackupPlanetOverview) {
      if(confirm("Restore to '" + new DatePipe("en-US").transform(backupBaseOverview.date, 'dd.MM.yyyy HH:mm:ss') + "'? Current bases/units will be overridden.")) {
        this.backupRestoreService.restore(backupBaseOverview);
      }
   }
 
-  private setBackupBaseOverviews(backupBaseOverviews: BackupBaseOverview[]): void {
-    this.backupBaseOverviews = backupBaseOverviews;
-    this.backupBaseOverviews.sort((a, b) => {
+  private setBackupBaseOverviews(backupBaseOverviews: BackupPlanetOverview[]): void {
+    this.backupPlanetOverviews = backupBaseOverviews;
+    this.backupPlanetOverviews.sort((a, b) => {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
   }

@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -33,7 +34,9 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -42,6 +45,7 @@ import java.util.Map;
  */
 @Singleton
 public class QuestService {
+    private Logger logger = Logger.getLogger(QuestService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -76,6 +80,11 @@ public class QuestService {
         if (conditionProgress.isFulfilled()) {
             conditionPassed(conditionProgress);
         }
+    }
+
+    public void clean() {
+        // TODO timer timeAwareList TimeAware
+        progressMap.clear();
     }
 
     public boolean hasActiveQuest(HumanPlayerId humanPlayerId) {
@@ -270,5 +279,37 @@ public class QuestService {
             return null;
         }
         return abstractConditionProgress.getAbstractComparison().generateQuestProgressInfo();
+    }
+
+    public void fillBackup(BackupPlanetInfo backupPlanetInfo) {
+        List<BackupComparisionInfo> backupComparisionInfos = new ArrayList<>();
+        synchronized (progressMap) {
+            progressMap.forEach((humanPlayerId, abstractConditionProgress) -> {
+                if (humanPlayerId.getUserId() != null) {
+                    backupComparisionInfos.add(abstractConditionProgress.generateBackupComparisionInfo());
+                }
+            });
+        }
+        backupPlanetInfo.setBackupComparisionInfos(backupComparisionInfos);
+    }
+
+    public void restore(BackupPlanetInfo backupPlanetInfo) {
+        if (backupPlanetInfo.getBackupComparisionInfos() == null) {
+            return;
+        }
+        synchronized (progressMap) {
+            backupPlanetInfo.getBackupComparisionInfos().forEach(backupComparisionInfo -> {
+                AbstractConditionProgress abstractConditionProgress = progressMap.get(backupComparisionInfo.getHumanPlayerId());
+                if (abstractConditionProgress == null) {
+                    logger.warning("QuestService.restore() No AbstractConditionProgress for HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId());
+                    return;
+                }
+                if(abstractConditionProgress.getQuestConfig().getId() != backupComparisionInfo.getQuestId()) {
+                    logger.warning("QuestService.restore() different quest. HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId() + ". Quest in backup: " + backupComparisionInfo.getQuestId()+  ". Active quest: " + abstractConditionProgress.getQuestConfig());
+                    return;
+                }
+                abstractConditionProgress.restore(backupComparisionInfo);
+            });
+        }
     }
 }

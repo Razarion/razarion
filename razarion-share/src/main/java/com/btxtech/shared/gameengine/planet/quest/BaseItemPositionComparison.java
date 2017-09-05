@@ -173,24 +173,24 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
         return tmpItemTypes.isEmpty();
     }
 
-//    @Override
-//    public void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        if (fulfilledTimeStamp != null) {
-//            long remainingTime = time - (System.currentTimeMillis() - fulfilledTimeStamp);
-//            genericComparisonValueContainer.addChild(GenericComparisonValueContainer.Key.REMAINING_TIME, remainingTime);
-//        }
-//    }
-//
-//    @Override
-//    public void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        fulfilledItems.clear();
-//        addInitial();
-//
-//        if (genericComparisonValueContainer.hasKey(GenericComparisonValueContainer.Key.REMAINING_TIME)) {
-//            long remainingTime = (Long) genericComparisonValueContainer.getValue(GenericComparisonValueContainer.Key.REMAINING_TIME);
-//            fulfilledTimeStamp = remainingTime + System.currentTimeMillis() - time;
-//        }
-//    }
+    @Override
+    public void fillGenericComparisonValues(BackupComparisionInfo backupComparisionInfo) {
+        if (fulfilledTimeStamp != null) {
+            long remainingTime = time - (System.currentTimeMillis() - fulfilledTimeStamp);
+            backupComparisionInfo.setRemainingMilliSeconds((int) remainingTime);
+        }
+    }
+
+    @Override
+    public void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo) {
+        fulfilledItems.clear();
+        addInitial();
+
+        if (backupComparisionInfo.hasRemainingMilliSeconds()) {
+            long remainingTime = (long) backupComparisionInfo.getRemainingMilliSeconds();
+            fulfilledTimeStamp = remainingTime + System.currentTimeMillis() - time;
+        }
+    }
 
     @Override
     public QuestProgressInfo generateQuestProgressInfo() {

@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
 
@@ -24,19 +23,14 @@ import javax.enterprise.context.Dependent;
  * Time: 16:31:29
  */
 @Dependent
-public class CountComparison extends AbstractBaseItemComparison {
+public class CountComparison extends AbstractUpdatingComparison {
+    private AbstractConditionProgress abstractConditionTrigger;
     private double count;
     private double countTotal;
 
     public void init(int count) {
         this.count = count;
         countTotal = count;
-    }
-
-    @Override
-    protected void privateOnSyncBaseItem(SyncBaseItem syncBaseItem) {
-        count -= 1.0;
-        onProgressChanged();
     }
 
     public void onValue(double value) {
@@ -49,6 +43,16 @@ public class CountComparison extends AbstractBaseItemComparison {
         return count <= 0.0;
     }
 
+    @Override
+    public AbstractConditionProgress getAbstractConditionProgress() {
+        return abstractConditionTrigger;
+    }
+
+    @Override
+    public void setAbstractConditionProgress(AbstractConditionProgress abstractConditionProgress) {
+        this.abstractConditionTrigger = abstractConditionProgress;
+    }
+
     public double getCount() {
         return count;
     }
@@ -56,16 +60,17 @@ public class CountComparison extends AbstractBaseItemComparison {
     public void setCount(double count) {
         this.count = count;
     }
-//
-//    @Override
-//    public void fillGenericComparisonValues(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        genericComparisonValueContainer.addChild(GenericComparisonValueContainer.Key.REMAINING_COUNT, count);
-//    }
-//
-//    @Override
-//    public void restoreFromGenericComparisonValue(GenericComparisonValueContainer genericComparisonValueContainer) {
-//        count = (Double) genericComparisonValueContainer.getValue(GenericComparisonValueContainer.Key.REMAINING_COUNT);
-//    }
+
+    @Override
+    public void fillGenericComparisonValues(BackupComparisionInfo backupComparisionInfo) {
+        backupComparisionInfo.setRemainingCount((int) count);
+    }
+
+    @Override
+    public void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo) {
+        backupComparisionInfo.checkRemainingCount();
+        count = (double) backupComparisionInfo.getRemainingCount();
+    }
 
     @Override
     public QuestProgressInfo generateQuestProgressInfo() {
