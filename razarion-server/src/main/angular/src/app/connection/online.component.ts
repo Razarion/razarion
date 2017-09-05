@@ -40,6 +40,6 @@ export class OnlineComponent implements OnInit {
   }
 
   onClickUser(onlineInfo: OnlineInfo) {
-    this.route.navigate(['/humanplayerid', onlineInfo.humanPlayerId]);
+    this.route.navigate(['/user', onlineInfo.humanPlayerId.playerId]);
   }
 }

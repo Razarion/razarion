@@ -1,5 +1,7 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.mgmt.QuestBackendInfo;
+import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -274,5 +276,48 @@ public class UserService {
             throw new IllegalArgumentException("No UserEntity for userId: " + userId);
         }
         return userEntity;
+    }
+
+    @Transactional
+    public UserBackendInfo findUserBackendInfo(int playerId) {
+        UserEntity userEntity = getUserEntity4PlayerId(playerId);
+        if (userEntity == null) {
+            return null;
+        }
+        UserBackendInfo userBackendInfo = new UserBackendInfo().setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId());
+        userBackendInfo.setHumanPlayerId(userEntity.createHumanPlayerId()).setLevelNumber(userEntity.getLevel().getNumber()).setXp(userEntity.getXp()).setCrystals(userEntity.getCrystals());
+        if (userEntity.getActiveQuest() != null) {
+            userBackendInfo.setActiveQuest(new QuestBackendInfo().setId(userEntity.getActiveQuest().getId()).setInternalName(userEntity.getActiveQuest().getInternalName()));
+        }
+        if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
+            userBackendInfo.setCompletedQuests(userEntity.getCompletedQuest().stream().map(questConfigEntity -> new QuestBackendInfo().setId(questConfigEntity.getId()).setInternalName(questConfigEntity.getInternalName())).collect(Collectors.toList()));
+        }
+        return userBackendInfo;
+    }
+
+    @Transactional
+    public UserBackendInfo removeCompletedQuest(int playerId, int questId) {
+        UserEntity userEntity = getUserEntity4PlayerId(playerId);
+        if (userEntity == null) {
+            return null;
+        }
+        userEntity.removeCompletedQuest(entityManager.find(QuestConfigEntity.class, questId));
+        entityManager.merge(userEntity);
+        return findUserBackendInfo(playerId);
+    }
+
+    private UserEntity getUserEntity4PlayerId(int playerId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> from = userQuery.from(UserEntity.class);
+        CriteriaQuery<UserEntity> userSelect = userQuery.select(from);
+        userSelect.where(criteriaBuilder.equal(from.join(UserEntity_.humanPlayerIdEntity).get(HumanPlayerIdEntity_.id), playerId));
+        List<UserEntity> list = entityManager.createQuery(userQuery).getResultList();
+        if (list == null || list.isEmpty()) {
+            return null;
+        } else if (list.size() > 1) {
+            throw new IllegalStateException("More then one user for playerId id: " + playerId);
+        }
+        return list.get(0);
     }
 }

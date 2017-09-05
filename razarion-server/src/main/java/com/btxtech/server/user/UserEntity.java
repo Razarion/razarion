@@ -53,6 +53,7 @@ public class UserEntity {
     private List<QuestConfigEntity> completedQuest;
     private Locale locale;
     private int xp;
+    private int crystals;
 
     public Integer getId() {
         return id;
@@ -104,6 +105,13 @@ public class UserEntity {
         completedQuest.add(quest);
     }
 
+    public void removeCompletedQuest(QuestConfigEntity quest) {
+        if (completedQuest == null) {
+            return;
+        }
+        completedQuest.remove(quest);
+    }
+
     public List<QuestConfigEntity> getCompletedQuest() {
         return completedQuest;
     }
@@ -118,6 +126,18 @@ public class UserEntity {
 
     public Locale getLocale() {
         return locale;
+    }
+
+    public String getFacebookUserId() {
+        return facebookUserId;
+    }
+
+    public Date getRegisterDate() {
+        return registerDate;
+    }
+
+    public int getCrystals() {
+        return crystals;
     }
 
     @Override

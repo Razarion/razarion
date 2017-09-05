@@ -1,0 +1,61 @@
+<!--<div *ngIf="userBackendInfo.humanPlayerId.userId; else elseBlock">Registered user-->
+<table *ngIf="userBackendInfo">
+  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+    <td>User id</td>
+    <td> {{userBackendInfo.humanPlayerId.userId}}</td>
+  </tr>
+  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+    <td>Register date</td>
+    <td> {{userBackendInfo.registerDate | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+  </tr>
+  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+    <td>Facebook id</td>
+    <td> {{userBackendInfo.facebookId}}</td>
+  </tr>
+  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+    <td>Name</td>
+    <td> {{userBackendInfo.name}}</td>
+  </tr>
+  <!--</div>-->
+  <!--<ng-template #elseBlock>Unregistered user</ng-template>-->
+  <tr>
+    <td>Player id</td>
+    <td> {{userBackendInfo.humanPlayerId.playerId}}</td>
+  </tr>
+  <tr>
+    <td>Level number</td>
+    <td> {{userBackendInfo.levelNumber}}</td>
+  </tr>
+  <tr>
+    <td>XP</td>
+    <td> {{userBackendInfo.xp}}</td>
+  </tr>
+  <tr>
+    <td>Crystals</td>
+    <td> {{userBackendInfo.crystals}}</td>
+  </tr>
+  <tr>
+    <td>Active quest</td>
+    <td>
+      <div *ngIf="userBackendInfo.activeQuest">{{userBackendInfo.activeQuest.internalName}}
+        ({{userBackendInfo.activeQuest.id}})
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>Completed quests</td>
+    <td>
+      <table>
+        <tr *ngFor="let completedQuest of userBackendInfo.completedQuests">
+          <td>
+            {{completedQuest.internalName}} ({{completedQuest.id}})
+          </td>
+          <td>
+            <button (click)="onRemoveCompletedQuest(completedQuest)">Remove</button>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<button (click)="onUpdate()">Update</button>

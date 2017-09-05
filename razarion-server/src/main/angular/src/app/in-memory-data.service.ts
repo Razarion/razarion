@@ -128,6 +128,37 @@ export class InMemoryDataService implements InMemoryDbService {
     }
   ];
 
+  loadbackenduserinfo: any = {
+    "humanPlayerId": {
+      "playerId": 1111,
+      "userId": 1234
+    },
+    "registerDate": 1789995250000,
+    "facebookId": "10238765617901",
+    // "name": "no name",
+    "activeQuest": {
+      "id": 12,
+      "internalName": "noob quest",
+    },
+    "completedQuests": [
+      {
+        "id": 13,
+        "internalName": "quest 1",
+      },
+      {
+        "id": 16,
+        "internalName": "quest 2",
+      },
+      {
+        "id": 24,
+        "internalName": "quest 3",
+      },
+    ],
+    "levelNumber": 5,
+    "xp": 123,
+    "crystals": 52,
+  };
+
   createDb() {
     return this.sessions;
   }
@@ -141,6 +172,8 @@ export class InMemoryDataService implements InMemoryDbService {
         body = this.allbackupoverviews;
       } else if (httpMethodInterceptorArgs.requestInfo.collectionName === "loadallonlines") {
         body = this.loadallonlines;
+      } else if (httpMethodInterceptorArgs.requestInfo.collectionName === "loadbackenduserinfo") {
+        body = this.loadbackenduserinfo;
       } else {
         body = "unhandled get request in InMemoryDataService for: '" + httpMethodInterceptorArgs.requestInfo.collectionName + "'";
       }

@@ -24,6 +24,13 @@ public class UnregisteredUser {
         completedQuestIds.add(questId);
     }
 
+    public void removeCompletedQuestId(int questId) {
+        if(completedQuestIds == null) {
+            return;
+        }
+        completedQuestIds.remove(questId);
+    }
+
     public QuestConfig getActiveQuest() {
         return activeQuest;
     }

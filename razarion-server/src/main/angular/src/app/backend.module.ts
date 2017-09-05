@@ -15,6 +15,8 @@ import {BackupRestoreService} from "./backuprestore/backup-restore.service";
 import {OnlineService} from "./connection/online.service";
 import {OnlineComponent} from "./connection/online.component";
 import {DurationPipe} from "./duration.pipe";
+import {UserComponent} from "./user/user.component";
+import {UserService} from "./user/user.service";
 
 @NgModule({
   declarations: [
@@ -24,7 +26,8 @@ import {DurationPipe} from "./duration.pipe";
     SessionDetails,
     BackupRestoreComponent,
     OnlineComponent,
-    DurationPipe
+    DurationPipe,
+    UserComponent
   ],
   imports: [
     BrowserModule,
@@ -33,7 +36,7 @@ import {DurationPipe} from "./duration.pipe";
     AppRoutingModule,
     // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/servermgmtprovider"})
   ],
-  providers: [SessionService, BackupRestoreService, OnlineService],
+  providers: [SessionService, BackupRestoreService, OnlineService, UserService],
   bootstrap: [MainWindow]
 })
 export class Backend {

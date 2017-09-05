@@ -106,6 +106,10 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
         return new ObjectNameId(id, internalName);
     }
 
+    public String getInternalName() {
+        return internalName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

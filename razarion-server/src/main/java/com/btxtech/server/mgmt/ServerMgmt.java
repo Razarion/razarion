@@ -1,0 +1,109 @@
+package com.btxtech.server.mgmt;
+
+import com.btxtech.server.connection.ClientSystemConnectionService;
+import com.btxtech.server.gameengine.ClientGameConnection;
+import com.btxtech.server.gameengine.ClientGameConnectionService;
+import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.persistence.QuestPersistence;
+import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.user.PlayerSession;
+import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.server.user.UserService;
+import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.HumanPlayerId;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Created by Beat
+ * on 05.09.2017.
+ */
+@Singleton
+public class ServerMgmt {
+    @Inject
+    private ClientSystemConnectionService clientSystemConnectionService;
+    @Inject
+    private ClientGameConnectionService clientGameConnectionService;
+    @Inject
+    private ServerGameEngineControl serverGameEngineControl;
+    @Inject
+    private UserService userService;
+    @Inject
+    private SessionService sessionService;
+    @Inject
+    private LevelPersistence levelPersistence;
+    @Inject
+    private QuestPersistence questPersistence;
+
+    @SecurityCheck
+    public List<OnlineInfo> loadAllOnlines() {
+        List<OnlineInfo> onlineInfos = new ArrayList<>();
+        clientSystemConnectionService.iteratorClientSystemConnection((playerSession, clientSystemConnection) -> {
+            OnlineInfo onlineInfo = new OnlineInfo().setSessionId(playerSession.getHttpSessionId()).setTime(clientSystemConnection.getTime()).setDuration(clientSystemConnection.getDuration());
+            if (playerSession.getUserContext() != null) {
+                onlineInfo.setHumanPlayerId(playerSession.getUserContext().getHumanPlayerId());
+            }
+            ClientGameConnection clientGameConnection = clientGameConnectionService.getClientGameConnection(playerSession);
+            if (clientGameConnection != null) {
+                onlineInfo.setMultiplayerDate(clientGameConnection.getTime()).setMultiplayerDuration(clientGameConnection.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getPlanetId()));
+            }
+            onlineInfos.add(onlineInfo);
+        });
+        return onlineInfos;
+    }
+
+    @SecurityCheck
+    public UserBackendInfo loadBackendUserInfo(int playerId) {
+        UserBackendInfo userBackendInfo = userService.findUserBackendInfo(playerId);
+        if (userBackendInfo != null) {
+            return userBackendInfo;
+        }
+        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession == null) {
+            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
+        }
+        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+    }
+
+    private UserBackendInfo setupUnregisteredUserBackendInfo(HumanPlayerId humanPlayerId, PlayerSession playerSession) {
+        UserBackendInfo userBackendInfo;
+        userBackendInfo = new UserBackendInfo().setHumanPlayerId(humanPlayerId);
+        if (playerSession.getUserContext() != null) {
+            userBackendInfo.setLevelNumber(levelPersistence.getLevelNumber4Id(playerSession.getUserContext().getLevelId()));
+            userBackendInfo.setXp(playerSession.getUserContext().getXp()).setCrystals(playerSession.getUserContext().getCrystals());
+        }
+        if (playerSession.getUnregisteredUser() != null) {
+            if (playerSession.getUnregisteredUser().getActiveQuest() != null) {
+                userBackendInfo.setActiveQuest(new QuestBackendInfo().setId(playerSession.getUnregisteredUser().getActiveQuest().getId()).setInternalName(playerSession.getUnregisteredUser().getActiveQuest().getInternalName()));
+            }
+            if (playerSession.getUnregisteredUser().getCompletedQuestIds() != null && !playerSession.getUnregisteredUser().getCompletedQuestIds().isEmpty()) {
+                userBackendInfo.setCompletedQuests(playerSession.getUnregisteredUser().getCompletedQuestIds().stream().map(questId -> questPersistence.findQuestBackendInfo(questId)).collect(Collectors.toList()));
+            }
+        }
+        return userBackendInfo;
+    }
+
+    @SecurityCheck
+    public UserBackendInfo removeCompletedQuest(int playerId, int questId) {
+        UserBackendInfo userBackendInfo = userService.removeCompletedQuest(playerId, questId);
+        if (userBackendInfo != null) {
+            return userBackendInfo;
+        }
+
+        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession == null) {
+            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
+        }
+
+        if (playerSession.getUnregisteredUser() != null) {
+            playerSession.getUnregisteredUser().removeCompletedQuestId(questId);
+        }
+        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+    }
+}
