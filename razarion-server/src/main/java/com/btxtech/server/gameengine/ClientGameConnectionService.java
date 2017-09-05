@@ -77,6 +77,10 @@ public class ClientGameConnectionService {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
+    public ClientGameConnection getClientGameConnection(PlayerSession playerSession) {
+        return clientGameConnections.get(playerSession);
+    }
+
     private void sendToClients(GameConnectionPacket packet, Object object) {
         String text;
         try {

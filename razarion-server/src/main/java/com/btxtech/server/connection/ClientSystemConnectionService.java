@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Beat
@@ -91,6 +92,12 @@ public class ClientSystemConnectionService {
             clientSystemConnection.sendToClient(text);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
+        }
+    }
+
+    public void iteratorClientSystemConnection(BiConsumer<PlayerSession, ClientSystemConnection> callback) {
+        synchronized (systemGameConnections) {
+            systemGameConnections.forEach(callback);
         }
     }
 }

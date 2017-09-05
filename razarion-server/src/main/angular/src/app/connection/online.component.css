@@ -25,14 +25,3 @@ tr:nth-child(even) {
 th, td {
   padding: 3px;
 }
-
-a {
-  color: #a15ab7;
-  text-decoration: none;
-}
-
-a:hover {
-  color: #ff1103;
-  text-decoration: underline;
-}
-

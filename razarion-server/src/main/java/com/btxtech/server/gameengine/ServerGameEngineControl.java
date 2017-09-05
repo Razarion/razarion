@@ -272,4 +272,8 @@ public class ServerGameEngineControl implements GameLogicListener {
     public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
         systemConnectionService.onQuestProgressInfo(humanPlayerId, questProgressInfo);
     }
+
+    public PlanetConfig getPlanetConfig() {
+        return planetService.getPlanetConfig();
+    }
 }

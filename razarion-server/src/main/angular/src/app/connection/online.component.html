@@ -1,0 +1,32 @@
+<table>
+  <thead>
+  <tr>
+    <th>Date</th>
+    <th>Duration</th>
+    <th>User</th>
+    <th>Session</th>
+    <th>Multiplayer Planet</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let onlineInfo of onlineInfos">
+    <td>{{ onlineInfo.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td>{{ onlineInfo.duration | duration}}</td>
+    <td (click)="onClickUser(onlineInfo)" style="cursor: pointer">
+      <div *ngIf="onlineInfo.humanPlayerId.userId; else elseBlock">Registered</div>
+      <ng-template #elseBlock>Unregistered</ng-template>
+    </td>
+    <td (click)="onClickSession(onlineInfo)" style="cursor: pointer">{{ onlineInfo.sessionId }}</td>
+    <td>
+      <table *ngIf="onlineInfo.multiplayerPlanet">
+        <tr>
+          <td>{{ onlineInfo.multiplayerPlanet }}</td>
+          <td>{{ onlineInfo.multiplayerDate | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+          <td>{{ onlineInfo.multiplayerDuration | duration}}</td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<button (click)="onUpdate()">Update</button> Last loaded: {{ lastLoaded | date:'dd.MM.yyyy HH:mm:ss'}}

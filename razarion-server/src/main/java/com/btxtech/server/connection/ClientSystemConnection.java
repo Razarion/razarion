@@ -21,6 +21,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import java.util.Date;
 
 /**
  * Created by Beat
@@ -39,6 +40,7 @@ public class ClientSystemConnection {
     private ObjectMapper mapper = new ObjectMapper();
     private EndpointConfig config;
     private RemoteEndpoint.Async async;
+    private Date time;
 
     @OnMessage
     public void onMessage(Session session, String text) {
@@ -54,6 +56,7 @@ public class ClientSystemConnection {
 
     @OnOpen
     public void open(Session session, EndpointConfig config) {
+        time = new Date();
         this.config = config;
         async = session.getAsyncRemote();
         clientSystemConnectionService.onOpen(this);
@@ -88,5 +91,13 @@ public class ClientSystemConnection {
     public PlayerSession getSession() {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         return sessionService.getSession(httpSession.getId());
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public int getDuration() {
+        return (int) (System.currentTimeMillis() - time.getTime());
     }
 }

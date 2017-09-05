@@ -83,6 +83,51 @@ export class InMemoryDataService implements InMemoryDbService {
     }
   ];
 
+  loadallonlines: any = [
+    {
+      "time": 1789995200000,
+      "duration": 3601000,
+      "humanPlayerId": {
+        "playerId": 1111,
+        "userId": 1234
+      },
+      "sessionId": "1++++GDHB3642307834GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/",
+    },
+    {
+      "time": 142925200501,
+      "duration": 61000,
+      "humanPlayerId": {
+        "playerId": 2222,
+      },
+      "sessionId": "2++++asddasaGDHB36423034GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/",
+      "multiplayerPlanet": "Sirius (4)",
+      "multiplayerDate": 1789995250000,
+      "multiplayerDuration": 2300000,
+    },
+    {
+      "time": 162925200501,
+      "duration": 360000000,
+      "humanPlayerId": {
+        "playerId": 2222,
+      },
+      "sessionId": "3++++asddasaGDHB36423034GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/",
+      "multiplayerPlanet": "Sirius (4)",
+      "multiplayerDate": 1789995250000,
+      "multiplayerDuration": 2300000,
+    },
+    {
+      "time": 172925200501,
+      "duration": 24000,
+      "humanPlayerId": {
+        "playerId": 2222,
+      },
+      "sessionId": "4++++asddasaGDHB36423034GZISBDGOIASWJDBGZHUBF)=(&*)=*RUOSBNDFOSW(DF/",
+      "multiplayerPlanet": "Sirius (4)",
+      "multiplayerDate": 1789995250000,
+      "multiplayerDuration": 2300000,
+    }
+  ];
+
   createDb() {
     return this.sessions;
   }
@@ -94,6 +139,8 @@ export class InMemoryDataService implements InMemoryDbService {
         body = this.sessionDetail;
       } else if (httpMethodInterceptorArgs.requestInfo.collectionName === "allbackupoverviews") {
         body = this.allbackupoverviews;
+      } else if (httpMethodInterceptorArgs.requestInfo.collectionName === "loadallonlines") {
+        body = this.loadallonlines;
       } else {
         body = "unhandled get request in InMemoryDataService for: '" + httpMethodInterceptorArgs.requestInfo.collectionName + "'";
       }

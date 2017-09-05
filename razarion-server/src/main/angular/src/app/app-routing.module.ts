@@ -6,8 +6,8 @@ import {BackupRestoreComponent} from "./backuprestore/backup-restore.component";
 
 const routes: Routes = [
   {path: 'dashboard', component: Dashboard},
-  {path: 'session/:id', component: SessionDetails },
-  {path: 'backuprestore', component: BackupRestoreComponent },
+  {path: 'session/:id', component: SessionDetails},
+  {path: 'backuprestore', component: BackupRestoreComponent},
   {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
 ];
 

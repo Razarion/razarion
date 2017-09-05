@@ -12,6 +12,9 @@ import {SessionService} from "./tracking/session.service";
 import {SessionDetails} from "./tracking/session-detail.component";
 import {BackupRestoreComponent} from "./backuprestore/backup-restore.component";
 import {BackupRestoreService} from "./backuprestore/backup-restore.service";
+import {OnlineService} from "./connection/online.service";
+import {OnlineComponent} from "./connection/online.component";
+import {DurationPipe} from "./duration.pipe";
 
 @NgModule({
   declarations: [
@@ -19,16 +22,18 @@ import {BackupRestoreService} from "./backuprestore/backup-restore.service";
     Dashboard,
     SessionHistory,
     SessionDetails,
-    BackupRestoreComponent
+    BackupRestoreComponent,
+    OnlineComponent,
+    DurationPipe
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/trackerbackend"})
+    // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/servermgmtprovider"})
   ],
-  providers: [SessionService, BackupRestoreService],
+  providers: [SessionService, BackupRestoreService, OnlineService],
   bootstrap: [MainWindow]
 })
 export class Backend {
