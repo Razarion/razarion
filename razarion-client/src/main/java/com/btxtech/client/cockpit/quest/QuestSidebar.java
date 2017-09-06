@@ -76,6 +76,7 @@ public class QuestSidebar extends Composite {
         activeQuest = null;
         if (descriptionConfig == null) {
             titleLabel.setText(I18nHelper.getConstants().noActiveQuest());
+            descriptionLabel.setText("");
             questDiv.getStyle().setProperty("display", "none");
             questDialogButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         } else {
