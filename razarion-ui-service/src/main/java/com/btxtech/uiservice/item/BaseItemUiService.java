@@ -241,6 +241,7 @@ public class BaseItemUiService {
         if (wasMyBase) {
             selectionHandler.onMyBaseRemoved();
             modalDialogManager.onShowBaseLost();
+            gameUiControl.onBaseLost();
         }
     }
 
@@ -263,7 +264,13 @@ public class BaseItemUiService {
     }
 
     public boolean isMyEnemy(SyncBaseItemSimpleDto syncBaseItem) {
-        return getBase(syncBaseItem).getCharacter() == Character.BOT;
+        try {
+            return getBase(syncBaseItem).getCharacter() == Character.BOT;
+        } catch (Exception e) {
+            // This may happen if own base gets lost and notified while items are still in syncItemStates variable
+            // Occurs white BaseItemPlacer in GameUiControl restart base scenario after base is lost
+            return true;
+        }
     }
 
     public SyncBaseItemMonitor monitorSyncItem(SyncBaseItemSimpleDto syncBaseItemSimpleDto) {

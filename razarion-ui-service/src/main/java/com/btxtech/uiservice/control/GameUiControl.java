@@ -392,6 +392,21 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         cockpitService.showRadar(radarState);
     }
 
+    public void onBaseLost() {
+        if (gameEngineMode == GameEngineMode.SLAVE) {
+            if(currentScene != null) {
+                currentScene.cleanup();
+            }
+            scenes = new ArrayList<>();
+            BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0);
+            baseItemPlacerConfig.setAllowedArea(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion());
+            scenes.add(new SceneConfig().setInternalName("Multiplayer wait for base created").setWaitForBaseCreated(true).setStartPointPlacerConfig(baseItemPlacerConfig));
+            scenes.add(new SceneConfig().setInternalName("script: Process Server Quests").setProcessServerQuests(true));
+            nextSceneNumber = 0;
+            runScene();
+        }
+    }
+
     public enum RadarState {
         NONE,
         NO_POWER,
