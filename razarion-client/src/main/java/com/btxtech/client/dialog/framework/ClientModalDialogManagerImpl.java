@@ -95,10 +95,14 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
                 (button, ignore) -> {
                     switch (button) {
                         case OK:
-                            okCallback.run();
+                            if (okCallback != null) {
+                                okCallback.run();
+                            }
                             break;
                         case CANCEL:
-                            cancelCallback.run();
+                            if (cancelCallback != null) {
+                                cancelCallback.run();
+                            }
                             break;
                         default:
                             throw new IllegalArgumentException("ClientModalDialogManagerImpl.showQuestionDialog() Unknown button: " + button);

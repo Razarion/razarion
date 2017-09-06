@@ -203,4 +203,8 @@ public class GameLogicService {
     public void onEnergyStateChanged(PlayerBase playerBase, int consuming, int generating) {
         gameLogicListener.ifPresent(listener -> listener.onEnergyStateChanged(playerBase, consuming, generating));
     }
+
+    public void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
+        gameLogicListener.ifPresent(listener -> listener.onResourcesBalanceChanged(playerBase, resources));
+    }
 }

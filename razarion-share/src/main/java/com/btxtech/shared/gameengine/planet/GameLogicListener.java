@@ -77,6 +77,8 @@ public interface GameLogicListener {
     }
 
     default void onEnergyStateChanged(PlayerBase base, int consuming, int generating) {
+    }
 
+    default void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
     }
 }

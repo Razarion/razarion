@@ -70,6 +70,10 @@ public class PlayerBase {
         this.resources += resources;
     }
 
+    public void setResources(double resources) {
+        this.resources = resources;
+    }
+
     public boolean withdrawalResource(double amount) {
         if(character.isBot()) {
             return true;

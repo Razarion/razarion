@@ -2,10 +2,8 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
@@ -30,6 +28,8 @@ import java.util.Map;
 public class ClientGameConnectionService {
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private SessionService sessionService;
     private final Map<PlayerSession, ClientGameConnection> clientGameConnections = new HashMap<>();
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -61,6 +61,13 @@ public class ClientGameConnectionService {
     public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
         SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
         sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
+    }
+
+    public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {
+        PlayerSession playerSession = getPlayerSessionBase(playerBase);
+        if (playerSession != null) {
+            sendToClient(playerSession, GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
+        }
     }
 
     public void onSyncItemRemoved(SyncItem syncItem, boolean explode) {
@@ -117,5 +124,9 @@ public class ClientGameConnectionService {
                 exceptionHandler.handleException(throwable);
             }
         }
+    }
+
+    private PlayerSession getPlayerSessionBase(PlayerBase playerBase) {
+        return sessionService.findPlayerSession(playerBase.getHumanPlayerId());
     }
 }

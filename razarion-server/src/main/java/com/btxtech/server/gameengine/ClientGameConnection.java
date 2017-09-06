@@ -3,6 +3,7 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -24,6 +25,7 @@ import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -94,6 +96,9 @@ public class ClientGameConnection {
             case PICK_BOX_COMMAND:
                 commandService.executeCommand((BaseCommand) param);
                 break;
+            case SELL_ITEMS:
+                baseItemService.sellItems((List<Integer>) param, getPlayerBase());
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
         }
@@ -114,5 +119,9 @@ public class ClientGameConnection {
 
     public int getDuration() {
         return (int) (System.currentTimeMillis() - time.getTime());
+    }
+
+    private PlayerBase getPlayerBase() {
+        return baseItemService.getPlayerBase4HumanPlayerId(getSession().getUserContext().getHumanPlayerId());
     }
 }

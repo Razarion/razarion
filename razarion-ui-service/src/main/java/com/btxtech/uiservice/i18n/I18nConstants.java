@@ -186,9 +186,11 @@ public interface I18nConstants {
     String notYourBase();
 
     // Sell
-    String sell();
+    String sellConfirmationTitle();
 
-    String sellNotAvailable();
+    String sellConfirmation();
+
+    String tooltipSell();
 
     // Register dialog
     String registerText();
@@ -225,8 +227,6 @@ public interface I18nConstants {
 
     // Side Cockpit
     String tooltipEnergy();
-
-    String tooltipSell();
 
     String tooltipMute();
 

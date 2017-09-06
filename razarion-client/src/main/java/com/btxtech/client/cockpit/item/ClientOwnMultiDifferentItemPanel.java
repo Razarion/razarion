@@ -1,8 +1,12 @@
 package com.btxtech.client.cockpit.item;
 
+import com.btxtech.client.cockpit.ClientCockpitHelper;
+import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.cockpit.item.OwnMultiDifferentItemPanel;
+import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -25,24 +29,27 @@ import java.util.Map;
  */
 @Templated("ClientOwnMultiDifferentItemPanel.html#own-multi-different-info-panel")
 public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMultiDifferentItemPanel {
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ClientCockpitHelper clientCockpitHelper;
     @Inject
     @DataField
     private Button leftArrowButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button rightArrowButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @ListContainer("tbody")
     private ListComponent<BaseItemTypeCount, BaseItemTypeCountPanel> selectedItemTypePanel;
+    @Inject
+    @DataField
+    private Button sellButton;
 
     @Override
     public void init(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes) {
         DOMUtil.removeAllElementChildren(selectedItemTypePanel.getElement()); // Remove placeholder table row from template.
         selectedItemTypePanel.setValue(setupBaseItemTypeCounts(itemTypes));
+        sellButton.setTitle(I18nHelper.getConstants().tooltipSell());
     }
 
     @EventHandler("leftArrowButton")
@@ -53,6 +60,11 @@ public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMu
     @EventHandler("rightArrowButton")
     private void rightArrowButtonClick(ClickEvent event) {
         throw new UnsupportedOperationException();
+    }
+
+    @EventHandler("sellButton")
+    private void sellButtonClick(ClickEvent event) {
+        clientCockpitHelper.sell();
     }
 
     private List<BaseItemTypeCount> setupBaseItemTypeCounts(Map<BaseItemType, Collection<SyncBaseItemSimpleDto>> itemTypes) {

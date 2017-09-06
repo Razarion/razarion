@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededExcep
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
+import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
@@ -48,6 +49,7 @@ import java.util.Map;
 @Singleton // Rename to BaseService
 public class BaseItemService {
     // private Logger logger = Logger.getLogger(BaseItemService.class.getName());
+    private static final double ITEM_SELL_FACTOR = 0.5;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -311,6 +313,27 @@ public class BaseItemService {
             energyService.onBaseKilled(base);
         }
     }
+
+    public void sellItems(Collection<Integer> syncBaseItemIds, PlayerBase playerBase) throws ItemDoesNotExistException, NotYourBaseException {
+        syncBaseItemIds.forEach(syncBaseItemId -> sellItem(syncBaseItemId, playerBase));
+    }
+
+    private void sellItem(int syncBaseItemId, PlayerBase playerBase) throws ItemDoesNotExistException, NotYourBaseException {
+        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemId);
+        if (!syncBaseItem.getBase().equals(playerBase)) {
+            throw new NotYourBaseException(playerBase, syncBaseItem.getBase());
+        }
+        double health = syncBaseItem.getHealth();
+        double fullHealth = syncBaseItem.getBaseItemType().getHealth();
+        double price = syncBaseItem.getBaseItemType().getPrice();
+        double buildup = syncBaseItem.getBuildup();
+        double spawnProgress = syncBaseItem.getSpawnProgress();
+        double resources = health / fullHealth * buildup * spawnProgress * price * ITEM_SELL_FACTOR;
+        syncBaseItem.getBase().addResource(resources);
+        gameLogicService.onResourcesBalanceChanged(syncBaseItem.getBase(), (int) syncBaseItem.getBase().getResources());
+        removeSyncItem(syncBaseItem);
+    }
+
 
     public void checkItemLimit4ItemAdding(BaseItemType newItemType, int itemCount2Add, PlayerBaseFull simpleBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         if (isLevelLimitation4ItemTypeExceeded(newItemType, itemCount2Add, simpleBase)) {

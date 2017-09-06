@@ -208,6 +208,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case PLAYBACK_SYNC_BOX_ITEM:
                 boxService.onSlaveSyncBoxItemChanged((SyncBoxItemInfo) controlPackage.getData(0));
                 break;
+            case SELL_ITEMS:
+                sellItems((List<Integer>) controlPackage.getData(0));
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }
@@ -553,6 +556,18 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
+    private void sellItems(List<Integer> items) {
+        if(gameEngineMode == GameEngineMode.MASTER) {
+            baseItemService.sellItems(items, playerBase);
+        } else if(gameEngineMode == GameEngineMode.SLAVE) {
+            if (serverConnection != null) {
+                serverConnection.sellItems(items);
+            }
+        } else {
+            throw new IllegalStateException("GameEngineWorker.sellItems() illegal gameEngineMode: " + gameEngineMode);
+        }
+    }
+
     public void onServerSyncItemDeleted(SyncItemDeletedInfo syncItemDeletedInfo) {
         SyncItem syncItem = syncItemContainerService.getSyncItem(syncItemDeletedInfo.getId());
         if (syncItem instanceof SyncBaseItem) {
@@ -585,6 +600,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     public void onEnergyStateChanged(PlayerBase base, int consuming, int generating) {
         if (playerBase != null && playerBase.equals(base)) {
             sendToClient(GameEngineControlPackage.Command.ENERGY_CHANGED, consuming, generating);
+        }
+    }
+
+    public void updateResourceSlave(Integer resources) {
+        if (playerBase != null) {
+            playerBase.setResources(resources);
         }
     }
 }

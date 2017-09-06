@@ -72,7 +72,9 @@ public class GameEngineControlPackage {
         PLAYBACK_SYNC_ITEM_DELETED,
         PLAYBACK_SYNC_BASE_ITEM,
         PLAYBACK_SYNC_RESOURCE_ITEM,
-        PLAYBACK_SYNC_BOX_ITEM;
+        PLAYBACK_SYNC_BOX_ITEM,
+        // Cockpit
+        SELL_ITEMS;
     }
 
     private Command command;

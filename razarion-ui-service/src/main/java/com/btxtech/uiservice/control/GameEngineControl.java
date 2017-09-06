@@ -183,6 +183,10 @@ public abstract class GameEngineControl {
         gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FABRICATE).setToBeBuiltId(toBeBuild.getId()));
     }
 
+    public void sellItems(Collection<SyncBaseItemSimpleDto> items) {
+        sendToWorker(GameEngineControlPackage.Command.SELL_ITEMS, SyncItemSimpleDtoUtils.toIds(items));
+    }
+
     public void activateQuest(QuestConfig questConfig) {
         sendToWorker(GameEngineControlPackage.Command.ACTIVATE_QUEST, questConfig);
     }

@@ -273,6 +273,11 @@ public class ServerGameEngineControl implements GameLogicListener {
         systemConnectionService.onQuestProgressInfo(humanPlayerId, questProgressInfo);
     }
 
+    @Override
+    public void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
+        clientGameConnectionService.sendResourcesBalanceChanged(playerBase, resources);
+    }
+
     public PlanetConfig getPlanetConfig() {
         return planetService.getPlanetConfig();
     }

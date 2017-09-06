@@ -17,6 +17,8 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
+import java.util.List;
+
 /**
  * Created by Beat
  * 21.04.2017.
@@ -26,6 +28,7 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     CREATE_BASE(DecimalPosition.class),
     BASE_CREATED(PlayerBaseInfo.class),
     BASE_DELETED(Integer.class),
+    RESOURCE_BALANCE_CHANGED(Integer.class),
     // Items
     SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class),
     SYNC_RESOURCE_ITEM_CHANGED(SyncResourceItemInfo.class),
@@ -40,7 +43,9 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     HARVESTER_COMMAND(HarvestCommand.class),
     LOAD_CONTAINER_COMMAND(LoadContainerCommand.class),
     MOVE_COMMAND(MoveCommand.class),
-    PICK_BOX_COMMAND(PickupBoxCommand.class);
+    PICK_BOX_COMMAND(PickupBoxCommand.class),
+    // Cockpit
+    SELL_ITEMS(List.class);
 
     private Class theClass;
 

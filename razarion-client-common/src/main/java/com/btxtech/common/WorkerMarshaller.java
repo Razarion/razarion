@@ -87,6 +87,7 @@ public class WorkerMarshaller {
             case PLAYBACK_SYNC_BOX_ITEM:
             case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
             case QUEST_PROGRESS:
+            case SELL_ITEMS:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -319,6 +320,9 @@ public class WorkerMarshaller {
                 break;
             case QUEST_PROGRESS:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), QuestProgressInfo.class));
+                break;
+            case SELL_ITEMS:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

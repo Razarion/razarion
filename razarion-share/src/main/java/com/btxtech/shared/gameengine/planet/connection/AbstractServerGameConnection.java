@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
 import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -43,6 +44,10 @@ public abstract class AbstractServerGameConnection {
         sendToServer(ConnectionMarshaller.marshall(baseCommand.connectionPackage(), toJson(baseCommand)));
     }
 
+    public void sellItems(List<Integer> items) {
+        sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SELL_ITEMS, toJson(items)));
+    }
+
     public void handleMessage(String text) {
         GameConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, GameConnectionPacket.class);
         String jsonString = ConnectionMarshaller.deMarshallPayload(text);
@@ -63,6 +68,9 @@ public abstract class AbstractServerGameConnection {
                 break;
             case SYNC_ITEM_DELETED:
                 gameEngineWorker.onServerSyncItemDeleted((SyncItemDeletedInfo) param);
+                break;
+            case RESOURCE_BALANCE_CHANGED:
+                gameEngineWorker.updateResourceSlave((Integer) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
