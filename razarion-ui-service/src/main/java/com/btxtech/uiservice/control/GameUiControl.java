@@ -397,6 +397,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             if (currentScene != null) {
                 currentScene.cleanup();
             }
+            cockpitService.onEnergyChanged(0,0);
             scenes = new ArrayList<>();
             BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0);
             baseItemPlacerConfig.setAllowedArea(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion());
