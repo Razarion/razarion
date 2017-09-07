@@ -294,7 +294,7 @@ public class QuestService {
     }
 
     public void restore(BackupPlanetInfo backupPlanetInfo) {
-        if (backupPlanetInfo.getBackupComparisionInfos() == null) {
+        if (backupPlanetInfo == null || backupPlanetInfo.getBackupComparisionInfos() == null) {
             return;
         }
         synchronized (progressMap) {
