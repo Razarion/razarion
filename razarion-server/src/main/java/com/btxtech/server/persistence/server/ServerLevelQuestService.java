@@ -107,22 +107,7 @@ public class ServerLevelQuestService implements QuestListener {
         clientSystemConnectionService.onQuestPassed(humanPlayerId, questConfig);
         historyPersistence.get().onQuest(humanPlayerId, questConfig, QuestHistoryEntity.Type.QUEST_PASSED);
         boolean registered = humanPlayerId.getUserId() != null;
-        UserContext userContext;
-        if (registered) {
-            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-            if (playerSession != null) {
-                userContext = playerSession.getUserContext();
-            } else {
-                userContext = userService.getUserEntity(humanPlayerId.getUserId()).toUserContext();
-            }
-        } else {
-            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-            if (playerSession == null) {
-                // Unregistered user is no longer online
-                return;
-            }
-            userContext = playerSession.getUserContext();
-        }
+        UserContext userContext = userService.getUserContext(humanPlayerId);
         // Check for level up
         int newXp = userContext.getXp() + questConfig.getXp();
         LevelEntity currentLevel = levelPersistence.getLevel4Id(userContext.getLevelId());

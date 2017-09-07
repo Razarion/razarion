@@ -9,6 +9,7 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -50,6 +51,8 @@ public class UserService {
     private LevelPersistence levelPersistence;
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
+    @Inject
+    private SessionService sessionService;
     private final Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
@@ -140,6 +143,16 @@ public class UserService {
         humanPlayerIdEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
         entityManager.persist(humanPlayerIdEntity);
         return humanPlayerIdEntity;
+    }
+
+    @Transactional
+    public HumanPlayerId findHumanPlayerId(int playerId) {
+        UserEntity userEntity = getUserEntity4PlayerId(playerId);
+        if (userEntity != null) {
+            return userEntity.createHumanPlayerId();
+        } else {
+            return new HumanPlayerId().setPlayerId(playerId);
+        }
     }
 
     @Transactional
@@ -320,4 +333,25 @@ public class UserService {
         }
         return list.get(0);
     }
+
+    public UserContext getUserContext(HumanPlayerId humanPlayerId) {
+        boolean registered = humanPlayerId.getUserId() != null;
+        UserContext userContext;
+        if (registered) {
+            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+            if (playerSession != null) {
+                return playerSession.getUserContext();
+            } else {
+                return getUserEntity(humanPlayerId.getUserId()).toUserContext();
+            }
+        } else {
+            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+            if (playerSession == null) {
+                throw new IllegalStateException("Unregistered user is no longer online: " + humanPlayerId);
+            }
+            return playerSession.getUserContext();
+        }
+    }
+
+
 }

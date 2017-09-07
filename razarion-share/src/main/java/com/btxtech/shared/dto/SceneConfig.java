@@ -15,6 +15,7 @@ public class SceneConfig {
     private String introText;
     private QuestConfig questConfig;
     private ViewFieldConfig viewFieldConfig;
+    private Boolean suppressSell;
     private List<BotConfig> botConfigs;
     private List<BotMoveCommandConfig> botMoveCommandConfigs;
     private List<BotHarvestCommandConfig> botHarvestCommandConfigs;
@@ -69,6 +70,15 @@ public class SceneConfig {
 
     public SceneConfig setViewFieldConfig(ViewFieldConfig viewFieldConfig) {
         this.viewFieldConfig = viewFieldConfig;
+        return this;
+    }
+
+    public Boolean isSuppressSell() {
+        return suppressSell;
+    }
+
+    public SceneConfig setSuppressSell(Boolean suppressSell) {
+        this.suppressSell = suppressSell;
         return this;
     }
 

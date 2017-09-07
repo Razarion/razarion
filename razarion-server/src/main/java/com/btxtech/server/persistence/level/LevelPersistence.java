@@ -105,6 +105,15 @@ public class LevelPersistence {
         return levelEntity;
     }
 
+    public LevelEntity getLevel4Number(int levelNumber) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LevelEntity> userQuery = criteriaBuilder.createQuery(LevelEntity.class);
+        Root<LevelEntity> from = userQuery.from(LevelEntity.class);
+        CriteriaQuery<LevelEntity> userSelect = userQuery.select(from);
+        userSelect.where(criteriaBuilder.equal(from.get(LevelEntity_.number), levelNumber));
+        return entityManager.createQuery(userSelect).getSingleResult();
+    }
+
     @Transactional
     public int getLevelNumber4Id(int levelId) {
         return getLevel4Id(levelId).getNumber();

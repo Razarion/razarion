@@ -5,12 +5,14 @@ import com.btxtech.server.gameengine.ClientGameConnection;
 import com.btxtech.server.gameengine.ClientGameConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.QuestPersistence;
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.UserContext;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -105,5 +107,31 @@ public class ServerMgmt {
             playerSession.getUnregisteredUser().removeCompletedQuestId(questId);
         }
         return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+    }
+
+    @SecurityCheck
+    public UserBackendInfo setLevelNumber(int playerId, int levelNumber) {
+        HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
+        UserContext userContext = userService.getUserContext(humanPlayerId);
+        LevelEntity newLevel = levelPersistence.getLevel4Number(levelNumber);
+        userContext.setLevelId(newLevel.getId());
+        clientSystemConnectionService.onLevelUp(humanPlayerId, userContext);
+        serverGameEngineControl.onLevelChanged(humanPlayerId, newLevel.getId());
+        if (humanPlayerId.getUserId() != null) {
+            userService.persistLevel(humanPlayerId.getUserId(), newLevel);
+        }
+        return loadBackendUserInfo(playerId);
+    }
+
+    @SecurityCheck
+    public UserBackendInfo setXp(int playerId, int xp) {
+        HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
+        UserContext userContext = userService.getUserContext(humanPlayerId);
+        userContext.setXp(xp);
+        clientSystemConnectionService.onXpChanged(humanPlayerId, xp);
+        if (humanPlayerId.getUserId() != null) {
+            userService.persistXp(humanPlayerId.getUserId(), xp);
+        }
+        return loadBackendUserInfo(playerId);
     }
 }

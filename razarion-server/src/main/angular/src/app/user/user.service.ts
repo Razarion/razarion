@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {UserBackendInfo} from "./user.dto";
 import {Common, URL_SERVER_MGMT} from "../Common";
-import {Http} from "@angular/http";
+import {Headers, Http} from "@angular/http";
 
 @Injectable()
 export class UserService {
@@ -19,6 +19,31 @@ export class UserService {
 
   removeCompletedQuest(humanPlayerId: number, questId: number): Promise<UserBackendInfo> {
     return this.http.delete(URL_SERVER_MGMT + '/removecompletedquest/' + humanPlayerId + "/" + questId)
+      .toPromise()
+      .then(response => {
+        return response.json();
+      })
+      .catch(Common.handleError);
+  }
+
+  setLevelNumber(humanPlayerId: number, levelNumber: number): Promise<UserBackendInfo> {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('playerId', humanPlayerId.toString());
+    urlSearchParams.append('levelNumber', levelNumber.toString());
+    return this.http.post(URL_SERVER_MGMT + '/setlevelnumber', urlSearchParams.toString(), {headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'})})
+      .toPromise()
+      .then(response => {
+        return response.json();
+      })
+      .catch(Common.handleError);
+  }
+
+
+  setXp(humanPlayerId: number, xp: number) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('playerId', humanPlayerId.toString());
+    urlSearchParams.append('xp', xp.toString());
+    return this.http.post(URL_SERVER_MGMT + '/setxp', urlSearchParams.toString(), {headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'})})
       .toPromise()
       .then(response => {
         return response.json();

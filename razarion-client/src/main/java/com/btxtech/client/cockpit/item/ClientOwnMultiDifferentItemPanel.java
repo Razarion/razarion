@@ -6,7 +6,9 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.cockpit.item.OwnMultiDifferentItemPanel;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -32,6 +34,8 @@ public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMu
     @Inject
     private ClientCockpitHelper clientCockpitHelper;
     @Inject
+    private GameUiControl gameUiControl;
+    @Inject
     @DataField
     private Button leftArrowButton;
     @Inject
@@ -50,6 +54,11 @@ public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMu
         DOMUtil.removeAllElementChildren(selectedItemTypePanel.getElement()); // Remove placeholder table row from template.
         selectedItemTypePanel.setValue(setupBaseItemTypeCounts(itemTypes));
         sellButton.setTitle(I18nHelper.getConstants().tooltipSell());
+        if(gameUiControl.isSellSuppressed()) {
+            sellButton.getElement().getStyle().setDisplay(Style.Display.NONE);
+        } else {
+            sellButton.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        }
     }
 
     @EventHandler("leftArrowButton")

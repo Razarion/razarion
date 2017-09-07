@@ -2,9 +2,11 @@ package com.btxtech.client.cockpit.item;
 
 import com.btxtech.client.cockpit.ClientCockpitHelper;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.cockpit.item.OwnInfoPanel;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -25,6 +27,8 @@ import javax.inject.Inject;
 public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
     @Inject
     private ClientCockpitHelper clientCockpitHelper;
+    @Inject
+    private GameUiControl gameUiControl;
     @Inject
     @DataField
     private Image image;
@@ -52,6 +56,11 @@ public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
             countLabel.setVisible(false);
         }
         sellButton.setTitle(I18nHelper.getConstants().tooltipSell());
+        if(gameUiControl.isSellSuppressed()) {
+            sellButton.getElement().getStyle().setDisplay(Style.Display.NONE);
+        } else {
+            sellButton.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+        }
     }
 
     @EventHandler("sellButton")

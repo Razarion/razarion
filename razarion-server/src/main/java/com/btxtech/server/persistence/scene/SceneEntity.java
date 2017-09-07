@@ -64,6 +64,7 @@ public class SceneEntity implements ObjectNameIdProvider {
             @AttributeOverride(name = "bottomWidth", column = @Column(name = "viewFieldBottomWidth")),
     })
     private ViewFieldConfig viewFieldConfig;
+    private Boolean suppressSell;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinTable(name = "SCENE_BOT",
             joinColumns = @JoinColumn(name = "sceneId"),
@@ -144,6 +145,7 @@ public class SceneEntity implements ObjectNameIdProvider {
             }
             sceneConfig.setBotConfigs(botConfigs);
         }
+        sceneConfig.setSuppressSell(suppressSell);
         if (botMoveCommandEntities != null && !botMoveCommandEntities.isEmpty()) {
             List<BotMoveCommandConfig> botMoveCommandConfigs = new ArrayList<>();
             for (BotMoveCommandEntity botMoveCommandEntity : botMoveCommandEntities) {
@@ -261,6 +263,7 @@ public class SceneEntity implements ObjectNameIdProvider {
             questConfig = null;
         }
         viewFieldConfig = sceneConfig.getViewFieldConfig();
+        suppressSell = sceneConfig.isSuppressSell();
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             if (startPointPlacerEntity == null) {
                 startPointPlacerEntity = new StartPointPlacerEntity();

@@ -76,6 +76,10 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @DataField
     private Input introText;
     @Inject
+    @Bound(converter = BooleanNullConverter.class)
+    @DataField
+    private CheckboxInput suppressSell;
+    @Inject
     @Bound
     @DataField
     private CheckboxInput removeLoadingCover;

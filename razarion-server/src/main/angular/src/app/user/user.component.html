@@ -1,18 +1,18 @@
 <!--<div *ngIf="userBackendInfo.humanPlayerId.userId; else elseBlock">Registered user-->
 <table *ngIf="userBackendInfo">
-  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+  <tr *ngIf="userBackendInfo.humanPlayerId.userId">
     <td>User id</td>
     <td> {{userBackendInfo.humanPlayerId.userId}}</td>
   </tr>
-  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+  <tr *ngIf="userBackendInfo.humanPlayerId.userId">
     <td>Register date</td>
     <td> {{userBackendInfo.registerDate | date:'dd.MM.yyyy HH:mm:ss'}}</td>
   </tr>
-  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+  <tr *ngIf="userBackendInfo.humanPlayerId.userId">
     <td>Facebook id</td>
     <td> {{userBackendInfo.facebookId}}</td>
   </tr>
-  <tr  *ngIf="userBackendInfo.humanPlayerId.userId">
+  <tr *ngIf="userBackendInfo.humanPlayerId.userId">
     <td>Name</td>
     <td> {{userBackendInfo.name}}</td>
   </tr>
@@ -24,11 +24,15 @@
   </tr>
   <tr>
     <td>Level number</td>
-    <td> {{userBackendInfo.levelNumber}}</td>
+    <td> {{userBackendInfo.levelNumber}} <input type="number" #levelBox min="0" step="1" style="width: 5em;">
+      <button (click)="onSetNewLevel(levelBox.value)">Activate</button>
+    </td>
   </tr>
   <tr>
     <td>XP</td>
-    <td> {{userBackendInfo.xp}}</td>
+    <td> {{userBackendInfo.xp}} <input type="number" #xpBox min="0" step="1" style="width: 5em;">
+      <button (click)="onSetNewXp(xpBox.value)">Activate</button>
+    </td>
   </tr>
   <tr>
     <td>Crystals</td>

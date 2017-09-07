@@ -30,4 +30,11 @@ export class UserComponent implements OnInit {
     this.userService.loadUserBackendInfo(this.userBackendInfo.humanPlayerId.playerId).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
   }
 
+  onSetNewLevel(levelNumber: number) {
+    this.userService.setLevelNumber(this.userBackendInfo.humanPlayerId.playerId, levelNumber).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+  }
+
+  onSetNewXp(xp: number) {
+    this.userService.setXp(this.userBackendInfo.humanPlayerId.playerId, xp).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+  }
 }

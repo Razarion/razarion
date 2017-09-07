@@ -394,7 +394,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public void onBaseLost() {
         if (gameEngineMode == GameEngineMode.SLAVE) {
-            if(currentScene != null) {
+            if (currentScene != null) {
                 currentScene.cleanup();
             }
             scenes = new ArrayList<>();
@@ -405,6 +405,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             nextSceneNumber = 0;
             runScene();
         }
+    }
+
+    public boolean isSellSuppressed() {
+        return currentScene != null && currentScene.getSceneConfig().isSuppressSell() != null && currentScene.getSceneConfig().isSuppressSell();
     }
 
     public enum RadarState {

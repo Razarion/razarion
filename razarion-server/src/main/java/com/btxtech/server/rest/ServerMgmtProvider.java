@@ -8,7 +8,9 @@ import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -61,5 +63,31 @@ public class ServerMgmtProvider {
             throw t;
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("setlevelnumber")
+    public UserBackendInfo setLevelNumber(@FormParam("playerId") int playerId, @FormParam("levelNumber") int levelNumber) {
+        try {
+            return serverMgmt.setLevelNumber(playerId, levelNumber);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("setxp")
+    public UserBackendInfo setXp(@FormParam("playerId") int playerId, @FormParam("xp") int xp) {
+        try {
+            return serverMgmt.setXp(playerId, xp);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+
 
 }
