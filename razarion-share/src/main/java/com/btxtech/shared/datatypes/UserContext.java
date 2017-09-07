@@ -12,16 +12,16 @@ import java.util.Set;
  */
 public class UserContext {
     private HumanPlayerId humanPlayerId;
-    private String name;
+    private String name; // May only in DB or unregistered user
     private boolean admin;
-    private int levelId;
-    private int xp;
-    private int crystals;
-    private List<Integer> inventoryItemIds = new ArrayList<>();
-    private List<Integer> inventoryArtifactIds = new ArrayList<>();
-    private Set<Integer> unlockedItemTypes = new HashSet<Integer>();
-    private Set<Integer> unlockedQuests = new HashSet<Integer>();
-    private Set<Integer> unlockedPlanets = new HashSet<Integer>();
+    private int levelId; // May only in DB or unregistered user
+    private int xp; // May only in DB or unregistered user
+    private int crystals; // May only in DB or unregistered user
+    private List<Integer> inventoryItemIds = new ArrayList<>(); // May only in DB or unregistered user
+    private List<Integer> inventoryArtifactIds = new ArrayList<>(); // May only in DB or unregistered user
+    private Set<Integer> unlockedItemTypes = new HashSet<Integer>(); // May only in DB or unregistered user
+    private Set<Integer> unlockedQuests = new HashSet<Integer>(); // May only in DB or unregistered user
+    private Set<Integer> unlockedPlanets = new HashSet<Integer>(); // May only in DB or unregistered user
 
     public HumanPlayerId getHumanPlayerId() {
         return humanPlayerId;
