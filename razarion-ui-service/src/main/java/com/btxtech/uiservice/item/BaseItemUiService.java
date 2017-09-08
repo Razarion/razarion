@@ -425,6 +425,10 @@ public class BaseItemUiService {
         return result;
     }
 
+    public Collection<SyncBaseItemSimpleDto> getSyncBaseItems() {
+        return syncBaseItems;
+    }
+
     public boolean hasRadar() {
         return hasRadar;
     }

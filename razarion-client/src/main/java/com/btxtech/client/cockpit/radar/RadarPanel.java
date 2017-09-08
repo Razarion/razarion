@@ -43,7 +43,9 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     @DataField
     private Element miniTerrainElement = (Element) Browser.getDocument().createCanvasElement();
     @DataField
-    private Element miniViewFiledElement = (Element) Browser.getDocument().createCanvasElement();
+    private Element miniViewFieldElement = (Element) Browser.getDocument().createCanvasElement();
+    @DataField
+    private Element miniItemViewElement = (Element) Browser.getDocument().createCanvasElement();
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -53,6 +55,8 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     private MiniTerrain miniTerrain;
     @Inject
     private MiniViewField miniViewField;
+    @Inject
+    private MiniItemView miniItemView ;
     @Inject
     @DataField
     private Button zoomInButton;
@@ -64,7 +68,8 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     @PostConstruct
     public void postConstruct() {
         miniTerrain.init(miniTerrainElement, WIDTH, HEIGHT, zoom, this::updateMiniMap);
-        miniViewField.init(miniViewFiledElement, WIDTH, HEIGHT, zoom);
+        miniViewField.init(miniViewFieldElement, WIDTH, HEIGHT, zoom);
+        miniItemView.init(miniItemViewElement, WIDTH, HEIGHT, zoom);
         viewService.addViewFieldListeners(this);
         miniMap.getStyle().setProperty("width", WIDTH + "px");
         miniMap.getStyle().setProperty("height", HEIGHT + "px");
@@ -73,6 +78,11 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
 
     public void show() {
         miniTerrain.show();
+        miniItemView.startUpdater();
+    }
+
+    public void stop() {
+        miniItemView.stopUpdater();
     }
 
     private void onMouseDown(MouseEvent mouseEvent) {
@@ -85,6 +95,7 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         miniViewField.setViewField(viewField);
         miniTerrain.setViewField(viewField);
+        miniItemView.setViewField(viewField);
 
         updateMiniMap();
     }
@@ -110,11 +121,13 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     private void changeZoom() {
         miniTerrain.setZoom(zoom);
         miniViewField.setZoom(zoom);
+        miniItemView.setZoom(zoom);
         updateMiniMap();
     }
 
     private void updateMiniMap() {
         miniTerrain.update();
         miniViewField.update();
+        miniItemView.update();
     }
 }

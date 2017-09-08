@@ -68,4 +68,9 @@ public class DevToolSideCockpit implements SideCockpit {
     public void showRadar(GameUiControl.RadarState radarState) {
         System.out.println("++++ showRadar: " + radarState);
     }
+
+    @Override
+    public void clean() {
+        System.out.println("++++ clean: ");
+    }
 }

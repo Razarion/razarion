@@ -12,7 +12,7 @@ public interface Colors {
 
     Color SELECTION_FRAME = new Color(0.2, 1.0, 0.2, 1.0);
 
-    Color OWN = new Color(0.5, 0.8, 0.5, 1.0);
+    Color OWN = new Color(0.6, 1.0, 0.6, 1.0);
     Color ENEMY = new Color(1.0, 0.0, 0.0, 1.0);
     Color FRIEND = new Color(0.0, 0.0, 1.0, 1.0);
     Color NONE_BASE = new Color(1.0, 1.0, 0.0, 1.0);

@@ -148,6 +148,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
                 radarPanelTableRow.getStyle().setProperty("display", "none");
                 radarNoEnergyDiv.getStyle().setProperty("display", "none");
                 radarPanel.getElement().getStyle().setDisplay(Style.Display.NONE);
+                radarPanel.stop();
                 break;
             case NO_POWER:
                 radarPanelTableRow.getStyle().setProperty("display", "table-row");
@@ -156,6 +157,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
                 radarNoEnergyInnerDiv.getStyle().setProperty("height", RadarPanel.HEIGHT + "px");
                 radarNoEnergyInnerDiv.setInnerHTML(I18nHelper.getConstants().radarNoPower());
                 radarPanel.getElement().getStyle().setDisplay(Style.Display.NONE);
+                radarPanel.stop();
                 break;
             case WORKING:
                 radarPanelTableRow.getStyle().setProperty("display", "table-row");
@@ -166,5 +168,10 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
             default:
                 throw new IllegalArgumentException("ClientSideCockpit.showRadar() Unknown radarState: " + radarState);
         }
+    }
+
+    @Override
+    public void clean() {
+        radarPanel.stop();
     }
 }

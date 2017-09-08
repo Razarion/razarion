@@ -25,4 +25,6 @@ public interface SideCockpit {
     void displayEnergy(int consuming, int generating);
 
     void showRadar(GameUiControl.RadarState radarState);
+
+    void clean();
 }

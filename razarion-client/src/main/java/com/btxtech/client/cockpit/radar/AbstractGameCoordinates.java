@@ -39,6 +39,10 @@ public abstract class AbstractGameCoordinates extends AbstractMiniMap {
         return real;
     }
 
+    protected Rectangle2D getVisibleField() {
+        return new Rectangle2D(canvasToReal(new DecimalPosition(0, getHeight())), canvasToReal(new DecimalPosition(getWidth(), 0)));
+    }
+
     protected float toCanvasPixel(double pixels) {
         return (float) (pixels / setupGameScale());
     }
