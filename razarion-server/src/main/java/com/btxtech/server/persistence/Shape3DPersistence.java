@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
+import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -33,6 +34,8 @@ public class Shape3DPersistence {
     private EntityManager entityManager;
     @Inject
     private ImagePersistence imagePersistence;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     @Transactional
     public List<ColladaEntity> readColladaEntities() {
@@ -47,7 +50,11 @@ public class Shape3DPersistence {
     public List<Shape3D> getShape3Ds() throws ParserConfigurationException, SAXException, IOException {
         List<Shape3D> shape3Ds = new ArrayList<>();
         for (ColladaEntity colladaEntity : readColladaEntities()) {
-            shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createShape3D(colladaEntity.getId()));
+            try {
+                shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createShape3D(colladaEntity.getId()));
+            } catch(Exception e) {
+                exceptionHandler.handleException(e);
+            }
         }
         return shape3Ds;
     }
