@@ -7,6 +7,58 @@
 <body>
 
 <div id="weaponTypePanel">
+    <table style="border-spacing: 0; border-collapse: separate;">
+        <tr>
+            <td><label for="range">Range</label></td>
+            <td><input id="range" type="number" min="0"></td>
+        </tr>
+        <tr>
+            <td><label for="damage">Damage</label></td>
+            <td><input id="damage" type="number" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td><label for="detonationRadius">Detonation radius</label></td>
+            <td><input id="detonationRadius" type="number" min="0"></td>
+        </tr>
+        <tr>
+            <td><label for="reloadTime">Reload times</label></td>
+            <td><input id="reloadTime" type="number" min="0">[s]</td>
+        </tr>
+        <tr>
+            <td>Disallowed base item types</td>
+            <td>
+                <div id="disallowedItemTypes"></div>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="projectileSpeed">Projectile speed</label></td>
+            <td><input id="projectileSpeed" type="number" min="0">[]m/s</td>
+        </tr>
+        <tr>
+            <td><label for="projectileShape3DId">Projectile shape 3D</label></td>
+            <td>
+                <div id="projectileShape3DId"></div>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="muzzleFlashParticleConfigId">Muzzle flash particle config id</label></td>
+            <td>
+                <input id="muzzleFlashParticleConfigId" type="number" min="0" step="1">
+            </td>
+        </tr>
+        <tr>
+            <td><label for="detonationParticleConfigId">Detonation particle config id</label></td>
+            <td>
+                <input id="detonationParticleConfigId" type="number" min="0" step="1">
+            </td>
+        </tr>
+        <tr>
+            <td>Turret</td>
+            <td>
+                <div id="turretType"></div>
+            </td>
+        </tr>
+    </table>
 </div>
 
 </body>
