@@ -20,6 +20,8 @@ public interface SideCockpit {
 
     Rectangle getInventoryDialogButtonLocation();
 
+    Rectangle getScrollHomeButtonLocation();
+
     void displayItemCount(int itemCount, int houseSpace);
 
     void displayEnergy(int consuming, int generating);

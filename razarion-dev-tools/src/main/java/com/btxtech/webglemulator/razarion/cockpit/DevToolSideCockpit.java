@@ -55,6 +55,11 @@ public class DevToolSideCockpit implements SideCockpit {
     }
 
     @Override
+    public Rectangle getScrollHomeButtonLocation() {
+        return new Rectangle(20, 10, 100, 20);
+    }
+
+    @Override
     public void displayItemCount(int itemCount, int houseSpace) {
         System.out.println("++++ item count: " + itemCount + " / " + houseSpace);
     }

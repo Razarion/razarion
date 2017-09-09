@@ -53,6 +53,10 @@ public class CockpitService {
         return sideCockpit.getInventoryDialogButtonLocation();
     }
 
+    public Rectangle getScrollHomeButtonLocation() {
+        return sideCockpit.getScrollHomeButtonLocation();
+    }
+
     public Rectangle getInventoryUseButtonLocation(int inventoryItemId) {
         if (inventoryPositionProvider == null) {
             throw new IllegalStateException("InventoryDialog is no shown");

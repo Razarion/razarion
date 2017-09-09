@@ -50,7 +50,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     private Button inventoryButton;
     @Inject
     @DataField
-    private Button homeButton;
+    private Button scrollHomeButton;
     @Inject
     @DataField
     private Button fullScreenButton;
@@ -111,8 +111,8 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
         modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
-    @EventHandler("homeButton")
-    private void onHomeButtonClick(ClickEvent event) {
+    @EventHandler("scrollHomeButton")
+    private void onScrollHomeButtonClick(ClickEvent event) {
         gameUiControl.scrollToHome();
     }
 
@@ -149,6 +149,11 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Override
     public Rectangle getInventoryDialogButtonLocation() {
         return new Rectangle(inventoryButton.getAbsoluteLeft(), inventoryButton.getAbsoluteTop(), inventoryButton.getOffsetWidth(), inventoryButton.getOffsetHeight());
+    }
+
+    @Override
+    public Rectangle getScrollHomeButtonLocation() {
+        return new Rectangle(scrollHomeButton.getAbsoluteLeft(), scrollHomeButton.getAbsoluteTop(), scrollHomeButton.getOffsetWidth(), scrollHomeButton.getOffsetHeight());
     }
 
     @Override

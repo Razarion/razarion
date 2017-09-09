@@ -18,7 +18,8 @@ public class GameTipConfig {
         START_PLACER,
         PICK_BOX,
         SPAN_INVENTORY_ITEM,
-        SCROLL
+        SCROLL,
+        SCROLL_HOME_BUTTON
         // WATCH_QUEST,
         // LOAD_CONTAINER,
         // UNLOAD_CONTAINER;

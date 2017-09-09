@@ -61,6 +61,10 @@ public class TipTaskFactory {
                 createScrollTipTask(tipTaskContainer, gameTipConfig);
                 break;
             }
+            case SCROLL_HOME_BUTTON: {
+                createScrollHomeTipTask(tipTaskContainer);
+                break;
+            }
             default:
                 throw new IllegalArgumentException("TipTaskFactory: unknown tip: " + gameTipConfig.getTip());
         }
@@ -118,6 +122,10 @@ public class TipTaskFactory {
         ScrollTipTask scrollTipTask = tipTaskInstance.select(ScrollTipTask.class).get();
         scrollTipTask.init(gameTipConfig.getTerrainPositionHint());
         tipTaskContainer.add(scrollTipTask);
+    }
+
+    private void createScrollHomeTipTask(TipTaskContainer tipTaskContainer) {
+        tipTaskContainer.add(tipTaskInstance.select(ScrollHomeButtonTipTask.class).get());
     }
 
     private SelectTipTask createSelectTipTask(int itemTypeId) {
