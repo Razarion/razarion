@@ -36,16 +36,21 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Inject
     private GameTipService gameTipService;
     @Inject
-    private UserUiService userUiService;
+    private GameUiControl gameUiControl;
     @Inject
-    @DataField
-    private Button inventoryButton;
+    private UserUiService userUiService;
     @Inject
     @DataField
     private TableRow editorTableRow;
     @Inject
     @DataField
     private Button editorButton;
+    @Inject
+    @DataField
+    private Button inventoryButton;
+    @Inject
+    @DataField
+    private Button homeButton;
     @Inject
     @DataField
     private Button fullScreenButton;
@@ -104,6 +109,11 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @EventHandler("editorButton")
     private void onEditorButtonClick(ClickEvent event) {
         modalDialogManager.show("Editor Menu", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, EditorMenuDialog.class, null, null, null, DialogButton.Button.CLOSE);
+    }
+
+    @EventHandler("homeButton")
+    private void onHomeButtonClick(ClickEvent event) {
+        gameUiControl.scrollToHome();
     }
 
     @EventHandler("fullScreenButton")

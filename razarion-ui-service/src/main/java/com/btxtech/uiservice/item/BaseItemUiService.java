@@ -425,6 +425,16 @@ public class BaseItemUiService {
         return result;
     }
 
+    public Collection<SyncBaseItemSimpleDto> findMyItems() {
+        Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if (isMyOwnProperty(syncBaseItem)) {
+                result.add(syncBaseItem);
+            }
+        }
+        return result;
+    }
+
     public Collection<SyncBaseItemSimpleDto> getSyncBaseItems() {
         return syncBaseItems;
     }

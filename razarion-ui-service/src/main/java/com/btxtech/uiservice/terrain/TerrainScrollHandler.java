@@ -287,4 +287,8 @@ public class TerrainScrollHandler {
         lastAutoScrollTimeStamp = System.currentTimeMillis();
         return distance;
     }
+
+    public boolean isScrollDisabled() {
+        return scrollDisabled;
+    }
 }

@@ -20,6 +20,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.TrackerService;
@@ -27,6 +29,8 @@ import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.user.UserUiService;
@@ -36,9 +40,11 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -48,6 +54,7 @@ import java.util.logging.Logger;
  */
 @Singleton // @ApplicationScoped lead to crashes with errai CDI
 public class GameUiControl { // Equivalent worker class is PlanetService
+    private static final long HOME_SCROLL_TIMEOUT = 5000;
     private Logger logger = Logger.getLogger(GameUiControl.class.getName());
     @Inject
     private Instance<Scene> sceneInstance;
@@ -81,6 +88,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private PlaybackControl playbackControl;
+    @Inject
+    private Camera camera;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
     private ColdGameUiControlConfig coldGameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -91,6 +102,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private GameEngineMode gameEngineMode;
     private int consuming;
     private int generating;
+    private long lastHomeScroll;
+    private Collection<SyncBaseItemSimpleDto> visitedHomeItems = new ArrayList<>();
 
     public void setColdGameUiControlConfig(ColdGameUiControlConfig coldGameUiControlConfig) {
         this.coldGameUiControlConfig = coldGameUiControlConfig;
@@ -397,7 +410,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             if (currentScene != null) {
                 currentScene.cleanup();
             }
-            cockpitService.onEnergyChanged(0,0);
+            cockpitService.onEnergyChanged(0, 0);
             scenes = new ArrayList<>();
             BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setEnemyFreeRadius(10.0);
             baseItemPlacerConfig.setAllowedArea(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlavePlanetConfig().getStartRegion());
@@ -410,6 +423,31 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public boolean isSellSuppressed() {
         return currentScene != null && currentScene.getSceneConfig().isSuppressSell() != null && currentScene.getSceneConfig().isSuppressSell();
+    }
+
+    public void scrollToHome() {
+        if(terrainScrollHandler.isScrollDisabled()) {
+            return;
+        }
+        if (System.currentTimeMillis() > lastHomeScroll + HOME_SCROLL_TIMEOUT) {
+            visitedHomeItems.clear();
+        }
+        lastHomeScroll = System.currentTimeMillis();
+        Collection<SyncBaseItemSimpleDto> myItems = baseItemUiService.findMyItems();
+        if (myItems.isEmpty()) {
+            return;
+        }
+        Optional<SyncBaseItemSimpleDto> optional = myItems.stream().filter(syncBaseItemSimpleDto -> !visitedHomeItems.contains(syncBaseItemSimpleDto)).findFirst();
+        SyncBaseItemSimpleDto itemToScrollTo;
+        if (optional.isPresent()) {
+            itemToScrollTo = optional.get();
+        } else {
+            visitedHomeItems.clear();
+            itemToScrollTo = CollectionUtils.getFirst(myItems);
+        }
+        DecimalPosition cameraPosition = projectionTransformation.viewFieldCenterToCamera(itemToScrollTo.getPosition2d(), 0);
+        camera.setTranslateXY(cameraPosition.getX(), cameraPosition.getY());
+        visitedHomeItems.add(itemToScrollTo);
     }
 
     public enum RadarState {

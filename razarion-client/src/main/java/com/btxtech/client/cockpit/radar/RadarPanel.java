@@ -35,19 +35,17 @@ public class RadarPanel extends Composite implements ViewService.ViewFieldListen
     private static final int DEFAULT_ZOOM = 3;
     // private Logger logger = Logger.getLogger(RadarPanel.class.getName());
     @Inject
-    private GameUiControl gameUiControl;
-    @Inject
     private ViewService viewService;
     @Inject
     private Camera camera;
+    @Inject
+    private ProjectionTransformation projectionTransformation;
     @DataField
     private Element miniTerrainElement = (Element) Browser.getDocument().createCanvasElement();
     @DataField
     private Element miniViewFieldElement = (Element) Browser.getDocument().createCanvasElement();
     @DataField
     private Element miniItemViewElement = (Element) Browser.getDocument().createCanvasElement();
-    @Inject
-    private ProjectionTransformation projectionTransformation;
     @Inject
     @DataField
     private Div miniMap;
