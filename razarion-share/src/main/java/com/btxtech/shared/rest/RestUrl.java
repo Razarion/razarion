@@ -35,6 +35,7 @@ public class RestUrl {
     public static final String FB_CLICK_TRACKING_TAGS_RECEIVER = "clicktrackerreceiver";
     public static final String SERVER_GAME_ENGINE_MGMT_PATH ="servergameenginemgmt";
     public static final String SERVER_MGMT_PROVIDER_PATH ="servermgmtprovider";
+    public static final String COMMON_EDITOR_PROVIDER_PATH ="commoneditorprovider";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache

@@ -47,6 +47,13 @@ public class I18nBundleEntity {
         return toI18nString().getString(language);
     }
 
+    public String getStringOrNull(Locale locale) {
+        if (localizedStrings == null) {
+            return null;
+        }
+        return localizedStrings.get(I18nString.convert(locale.getLanguage()));
+    }
+
     public void putString(Locale locale, String string) {
         if (localizedStrings == null) {
             localizedStrings = new HashMap<>();
