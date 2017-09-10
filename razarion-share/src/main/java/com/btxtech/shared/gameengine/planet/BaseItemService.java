@@ -607,7 +607,7 @@ public class BaseItemService {
         lastBaseItId = 1;
         backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
             lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
-            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(lastBaseItId, playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getHumanPlayerId()));
+            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getHumanPlayerId()));
         });
         Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
         for (SyncBaseItemInfo syncBaseItemInfo : backupPlanetInfo.getSyncBaseItemInfos()) {
