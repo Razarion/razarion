@@ -1,5 +1,6 @@
 package com.btxtech.shared.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,6 +11,10 @@ public class TerrainEditorUpdate {
     private List<TerrainSlopePosition> createdSlopes;
     private List<TerrainSlopePosition> updatedSlopes;
     private List<Integer> deletedSlopeIds;
+    private List<TerrainObjectPosition> createdTerrainObjects = new ArrayList<>();
+    private List<TerrainObjectPosition> updatedTerrainObjects = new ArrayList<>();
+    private List<Integer> deletedTerrainObjectsIds = new ArrayList<>();
+
 
     public List<TerrainSlopePosition> getCreatedSlopes() {
         return createdSlopes;
@@ -33,5 +38,33 @@ public class TerrainEditorUpdate {
 
     public void setDeletedSlopeIds(List<Integer> deletedSlopeIds) {
         this.deletedSlopeIds = deletedSlopeIds;
+    }
+
+    public List<TerrainObjectPosition> getCreatedTerrainObjects() {
+        return createdTerrainObjects;
+    }
+
+    public void setCreatedTerrainObjects(List<TerrainObjectPosition> createdTerrainObjects) {
+        this.createdTerrainObjects = createdTerrainObjects;
+    }
+
+    public List<TerrainObjectPosition> getUpdatedTerrainObjects() {
+        return updatedTerrainObjects;
+    }
+
+    public void setUpdatedTerrainObjects(List<TerrainObjectPosition> updatedTerrainObjects) {
+        this.updatedTerrainObjects = updatedTerrainObjects;
+    }
+
+    public List<Integer> getDeletedTerrainObjectsIds() {
+        return deletedTerrainObjectsIds;
+    }
+
+    public void setDeletedTerrainObjectsIds(List<Integer> deletedTerrainObjectsIds) {
+        this.deletedTerrainObjectsIds = deletedTerrainObjectsIds;
+    }
+
+    public boolean hasAnyChanged() {
+        return !createdSlopes.isEmpty() || updatedSlopes.isEmpty() || !deletedSlopeIds.isEmpty() || !createdTerrainObjects.isEmpty() || !updatedTerrainObjects.isEmpty() || !deletedTerrainObjectsIds.isEmpty();
     }
 }

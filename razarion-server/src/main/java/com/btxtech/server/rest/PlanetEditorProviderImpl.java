@@ -7,15 +7,13 @@ import com.btxtech.server.gameengine.TerrainShapeService;
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
-import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -34,39 +32,12 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     private ClientSystemConnectionService systemConnectionService;
 
     @Override
-    public void createTerrainObjectPositions(int planetId, List<TerrainObjectPosition> createdTerrainObjects) {
+    public TerrainEditorLoad readTerrainEditorLoad(int planetId) {
         try {
-            planetPersistence.createTerrainObjectPositions(planetId, createdTerrainObjects);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void updateTerrainObjectPositions(int planetId, List<TerrainObjectPosition> updatedTerrainObjects) {
-        try {
-            planetPersistence.updateTerrainObjectPositions(planetId, updatedTerrainObjects);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void deleteTerrainObjectPositionIds(int planetId, List<Integer> deletedTerrainIds) {
-        try {
-            planetPersistence.deleteTerrainObjectPositionIds(planetId, deletedTerrainIds);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
-    }
-
-    @Override
-    public List<TerrainSlopePosition> readTerrainSlopePositions(int planetId) {
-        try {
-            return planetPersistence.getTerrainSlopePositions(planetId);
+            TerrainEditorLoad terrainEditorLoad = new TerrainEditorLoad();
+            terrainEditorLoad.setSlopes(planetPersistence.getTerrainSlopePositions(planetId));
+            terrainEditorLoad.setTerrainObjects(planetPersistence.getTerrainObjectPositions(planetId));
+            return terrainEditorLoad;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -79,14 +50,24 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
             // Check if terrain is valid
             terrainShapeService.setupTerrainShapeDryRun(planetId, terrainEditorUpdate);
 
-            if (terrainEditorUpdate.getCreatedSlopes() != null) {
+            if (terrainEditorUpdate.getCreatedSlopes() != null && !terrainEditorUpdate.getCreatedSlopes().isEmpty()) {
                 planetPersistence.createTerrainSlopePositions(planetId, terrainEditorUpdate.getCreatedSlopes());
             }
-            if (terrainEditorUpdate.getUpdatedSlopes() != null) {
+            if (terrainEditorUpdate.getUpdatedSlopes() != null && !terrainEditorUpdate.getUpdatedSlopes().isEmpty()) {
                 planetPersistence.updateTerrainSlopePositions(planetId, terrainEditorUpdate.getUpdatedSlopes());
             }
-            if (terrainEditorUpdate.getDeletedSlopeIds() != null) {
+            if (terrainEditorUpdate.getDeletedSlopeIds() != null && !terrainEditorUpdate.getDeletedSlopeIds().isEmpty()) {
                 planetPersistence.deleteTerrainSlopePositions(planetId, terrainEditorUpdate.getDeletedSlopeIds());
+            }
+
+            if (terrainEditorUpdate.getCreatedTerrainObjects() != null && !terrainEditorUpdate.getCreatedTerrainObjects().isEmpty()) {
+                planetPersistence.createTerrainObjectPositions(planetId, terrainEditorUpdate.getCreatedTerrainObjects());
+            }
+            if (terrainEditorUpdate.getUpdatedTerrainObjects() != null && !terrainEditorUpdate.getUpdatedTerrainObjects().isEmpty()) {
+                planetPersistence.updateTerrainObjectPositions(planetId, terrainEditorUpdate.getUpdatedTerrainObjects());
+            }
+            if (terrainEditorUpdate.getDeletedTerrainObjectsIds() != null && !terrainEditorUpdate.getDeletedTerrainObjectsIds().isEmpty()) {
+                planetPersistence.deleteTerrainObjectPositionIds(planetId, terrainEditorUpdate.getDeletedTerrainObjectsIds());
             }
         } catch (Throwable e) {
             exceptionHandler.handleException(e);

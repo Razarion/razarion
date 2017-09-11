@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -87,7 +88,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     }
 
     public void showMessageDialog(String title, String message) {
-        show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
+        showMessageDialog(title, message, null);
+    }
+
+    public void showMessageDialog(String title, String message, Consumer<ModalDialogPanel> shownCallback) {
+        show(title, Type.STACK_ABLE, MessageDialog.class, message, null, shownCallback, DialogButton.Button.CLOSE);
     }
 
     public void showSingleNoClosableDialog(String title, String message) {
@@ -115,11 +120,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
                 }, null, DialogButton.Button.OK, DialogButton.Button.CANCEL);
     }
 
-    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Runnable shownCallback, DialogButton.Button... dialogButtons) {
+    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Consumer<ModalDialogPanel> shownCallback, DialogButton.Button... dialogButtons) {
         show(title, type, contentClass, t, listener, shownCallback, audioService.getAudioConfig().getDialogOpened(), dialogButtons);
     }
 
-    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
+    public <T> void show(String title, Type type, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, Consumer<ModalDialogPanel> shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
         if (activeDialog == null) {
             showDialog(title, contentClass, t, listener, shownCallback, audioId, dialogButtons);
         } else {
@@ -142,7 +147,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         }
     }
 
-    private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
+    private void showDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Consumer<ModalDialogPanel> shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
         try {
             ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
             modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
@@ -153,7 +158,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         }
     }
 
-    private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
+    private void showStackedDialog(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener listener, Consumer<ModalDialogPanel> shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
         try {
             ModalDialogPanel<Object> modalDialogPanel = containerInstance.get();
             modalDialogPanel.init(title, (Class<? extends ModalDialogContent<Object>>) contentClass, object, listener, dialogButtons);
@@ -164,11 +169,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         }
     }
 
-    private void showDialog(ModalDialogPanel modalDialogPanel, Runnable shownCallback, Integer audioId) {
+    private void showDialog(ModalDialogPanel modalDialogPanel, Consumer<ModalDialogPanel> shownCallback, Integer audioId) {
         audioService.onDialogOpened(audioId);
         RootPanel.get().add(modalDialogPanel);
         if (shownCallback != null) {
-            shownCallback.run();
+            shownCallback.accept(modalDialogPanel);
         }
     }
 
@@ -201,11 +206,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         private Class<? extends ModalDialogContent> contentClass;
         private Object object;
         private DialogButton.Listener<?> listener;
-        private Runnable shownCallback;
+        private Consumer<ModalDialogPanel> shownCallback;
         private Integer audioId;
         private DialogButton.Button[] dialogButtons;
 
-        DialogParameters(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener<?> listener, Runnable shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
+        DialogParameters(String title, Class<? extends ModalDialogContent> contentClass, Object object, DialogButton.Listener<?> listener, Consumer<ModalDialogPanel> shownCallback, Integer audioId, DialogButton.Button... dialogButtons) {
             this.title = title;
             this.contentClass = contentClass;
             this.object = object;

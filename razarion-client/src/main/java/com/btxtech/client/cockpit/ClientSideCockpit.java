@@ -103,7 +103,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("inventoryButton")
     private void onInventoryButtonClick(ClickEvent event) {
-        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, () -> gameTipService.onInventoryDialogOpened(), DialogButton.Button.CLOSE);
+        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, (modalDialogPanel) -> gameTipService.onInventoryDialogOpened(), DialogButton.Button.CLOSE);
     }
 
     @EventHandler("editorButton")

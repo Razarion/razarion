@@ -75,6 +75,20 @@ public class PlanetPersistence {
     }
 
     @Transactional
+    public List<TerrainObjectPosition> getTerrainObjectPositions(int planetId) {
+        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
+        if (planetEntity == null) {
+            throw new IllegalArgumentException("No planet for id: " + planetId);
+        }
+
+        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
+        for (TerrainObjectPositionEntity terrainObjectPositionEntity : planetEntity.getTerrainObjectPositionEntities()) {
+            terrainObjectPositions.add(terrainObjectPositionEntity.toTerrainObjectPosition());
+        }
+        return terrainObjectPositions;
+    }
+
+    @Transactional
     @SecurityCheck
     public void createTerrainObjectPositions(int planetId, List<TerrainObjectPosition> createdTerrainObjects) {
         List<TerrainObjectPositionEntity> terrainObjectPositionEntities = new ArrayList<>();

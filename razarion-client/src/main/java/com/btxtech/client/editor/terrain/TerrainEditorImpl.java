@@ -2,12 +2,14 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
+import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.terrain.renderer.TerrainEditorRenderTask;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -18,7 +20,6 @@ import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.EditorGameEngineListener;
 import com.btxtech.uiservice.EditorKeyboardListener;
 import com.btxtech.uiservice.EditorMouseListener;
-import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
@@ -93,6 +94,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private double terrainObjectRandomZRotation = Math.toDegrees(180);
     private double terrainObjectRandomScale = 1.5;
     private Consumer<Vertex> terrainPositionListener;
+    private ModalDialogPanel saveDialog;
 
     @Override
     public void onMouseMove(Vertex terrainPosition) {
@@ -222,29 +224,31 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         }
         active = true;
         cursor = setupCursor();
-        modifiedTerrainObjects = setupModifiedTerrainObjects();
-        terrainObjectModelMatrices = setupModelMatrices();
         renderService.addRenderTask(terrainEditorRenderTask, "Terrain Editor");
         terrainMouseHandler.setEditorMouseListener(this);
         keyboardEventHandler.setEditorKeyboardListener(this);
         modifiedSlopes = new ArrayList<>();
+        modifiedTerrainObjects = new ArrayList<>();
         loadFromServer();
     }
 
     private void loadFromServer() {
-        planetEditorServiceCaller.call(new RemoteCallback<List<TerrainSlopePosition>>() {
-            @Override
-            public void callback(List<TerrainSlopePosition> response) {
-                hoverSlope = null;
-                hoverTerrainObject = null;
-                terrainEditorRenderTask.deactivate();
-                modifiedSlopes = response.stream().map(ModifiedSlope::new).collect(Collectors.toList());
-                terrainEditorRenderTask.activate(cursor, modifiedSlopes);
+        planetEditorServiceCaller.call((RemoteCallback<TerrainEditorLoad>) terrainEditorLoad -> {
+            hoverSlope = null;
+            hoverTerrainObject = null;
+            terrainEditorRenderTask.deactivate();
+            modifiedSlopes = terrainEditorLoad.getSlopes().stream().map(ModifiedSlope::new).collect(Collectors.toList());
+            modifiedTerrainObjects = terrainEditorLoad.getTerrainObjects().stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
+            terrainObjectModelMatrices = setupModelMatrices();
+            terrainEditorRenderTask.activate(cursor, modifiedSlopes);
+            if (saveDialog != null) {
+                saveDialog.close();
+                saveDialog = null;
             }
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "readTerrainSlopePositions failed: " + message, throwable);
             return false;
-        }).readTerrainSlopePositions(getPlanetId());
+        }).readTerrainEditorLoad(getPlanetId());
     }
 
     public void deactivate() {
@@ -292,10 +296,6 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         return new Polygon2D(corners);
     }
 
-    private Collection<ModifiedTerrainObject> setupModifiedTerrainObjects() {
-        return getPlanetConfig().getTerrainObjectPositions().stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
-    }
-
     private List<ModelMatrices> setupModelMatrices() {
         return modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(modifiedTerrainObject -> modifiedTerrainObject.createModelMatrices(nativeMatrixFactory)).collect(Collectors.toList());
     }
@@ -310,11 +310,25 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     }
 
     public void save() {
-        saveInternal();
-        saveTerrainObjects();
+        TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
+        setupChangedSlopes(terrainEditorUpdate);
+        setupChangedTerrainObjects(terrainEditorUpdate);
+
+        if(!terrainEditorUpdate.hasAnyChanged()) {
+            return;
+        }
+        modalDialogManager.showMessageDialog("Save", "Please wait while saving terrain", modalDialogPanel -> this.saveDialog = modalDialogPanel);
+        planetEditorServiceCaller.call(ignore -> loadFromServer(), (message, throwable) -> {
+            if (saveDialog != null) {
+                saveDialog.close();
+                saveDialog = null;
+            }
+            modalDialogManager.showMessageDialog("Save failed", "Save terrain failed. message: " + message + " throwable: " + throwable);
+            return false;
+        }).updateTerrain(getPlanetId(), terrainEditorUpdate);
     }
 
-    private void saveInternal() {
+    private void setupChangedSlopes(TerrainEditorUpdate terrainEditorUpdate) {
         List<TerrainSlopePosition> createdSlopes = new ArrayList<>();
         List<TerrainSlopePosition> updatedSlopes = new ArrayList<>();
         List<Integer> deletedSlopeIds = new ArrayList<>();
@@ -331,22 +345,12 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 }
             }
         }
-        modifiedSlopes.clear();
-        if (!createdSlopes.isEmpty() || !updatedSlopes.isEmpty() || !deletedSlopeIds.isEmpty()) {
-            TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
-            terrainEditorUpdate.setCreatedSlopes(createdSlopes);
-            terrainEditorUpdate.setUpdatedSlopes(updatedSlopes);
-            terrainEditorUpdate.setDeletedSlopeIds(deletedSlopeIds);
-            planetEditorServiceCaller.call(ignore -> {
-            }, (message, throwable) -> {
-                modalDialogManager.showMessageDialog("Save failed", "Save terrain failed. message: " + message + " throwable: " + throwable);
-                return false;
-            }).updateTerrain(getPlanetId(), terrainEditorUpdate);
-        }
+        terrainEditorUpdate.setCreatedSlopes(createdSlopes);
+        terrainEditorUpdate.setUpdatedSlopes(updatedSlopes);
+        terrainEditorUpdate.setDeletedSlopeIds(deletedSlopeIds);
     }
 
-
-    private void saveTerrainObjects() {
+    private void setupChangedTerrainObjects(TerrainEditorUpdate terrainEditorUpdate) {
         List<TerrainObjectPosition> createdTerrainObjects = new ArrayList<>();
         List<TerrainObjectPosition> updatedTerrainObjects = new ArrayList<>();
         List<Integer> deletedTerrainObjectsIds = new ArrayList<>();
@@ -363,27 +367,9 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 }
             }
         }
-        modifiedTerrainObjects = setupModifiedTerrainObjects();
-        terrainObjectModelMatrices = setupModelMatrices();
-
-        if (!createdTerrainObjects.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Created. Reload needed."), (message, throwable) -> {
-                logger.log(Level.SEVERE, "createTerrainObjectPositions failed: " + message, throwable);
-                return false;
-            }).createTerrainObjectPositions(getPlanetId(), createdTerrainObjects);
-        }
-        if (!updatedTerrainObjects.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Updated. Reload needed."), (message, throwable) -> {
-                logger.log(Level.SEVERE, "updateTerrainObjectPositions failed: " + message, throwable);
-                return false;
-            }).updateTerrainObjectPositions(getPlanetId(), updatedTerrainObjects);
-        }
-        if (!deletedTerrainObjectsIds.isEmpty()) {
-            planetEditorServiceCaller.call(ignore -> modalDialogManager.showMessageDialog("Terrain Editor", "Terrain Object Deleted. Reload needed."), (message, throwable) -> {
-                logger.log(Level.SEVERE, "deleteTerrainObjectPositionIds failed: " + message, throwable);
-                return false;
-            }).deleteTerrainObjectPositionIds(getPlanetId(), deletedTerrainObjectsIds);
-        }
+        terrainEditorUpdate.setCreatedTerrainObjects(createdTerrainObjects);
+        terrainEditorUpdate.setUpdatedTerrainObjects(updatedTerrainObjects);
+        terrainEditorUpdate.setDeletedTerrainObjectsIds(deletedTerrainObjectsIds);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -23,26 +24,10 @@ import java.util.List;
  */
 @Path(RestUrl.PLANET_EDITOR_SERVICE_PATH)
 public interface PlanetEditorProvider {
-
-    @POST
-    @Path("createTerrainObjectPositions/{planetId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void createTerrainObjectPositions(@PathParam("planetId") int planetId, List<TerrainObjectPosition> createdTerrainObjects);
-
-    @PUT
-    @Path("updateTerrainObjectPositions/{planetId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void updateTerrainObjectPositions(@PathParam("planetId") int planetId, List<TerrainObjectPosition> updatedTerrainObjects);
-
-    @DELETE
-    @Path("deleteTerrainObjectPositionIds/{planetId}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void deleteTerrainObjectPositionIds(@PathParam("planetId") int planetId, List<Integer> deletedTerrainIds);
-
     @GET
     @Path("readTerrainSlopePositions/{planetId}")
     @Produces(MediaType.APPLICATION_JSON)
-    List<TerrainSlopePosition> readTerrainSlopePositions(@PathParam("planetId") int planetId);
+    TerrainEditorLoad readTerrainEditorLoad(@PathParam("planetId") int planetId);
 
     @PUT
     @Path("updateTerrain/{planetId}")
