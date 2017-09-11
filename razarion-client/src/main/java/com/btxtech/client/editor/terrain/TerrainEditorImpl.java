@@ -317,7 +317,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         if(!terrainEditorUpdate.hasAnyChanged()) {
             return;
         }
-        modalDialogManager.showMessageDialog("Save", "Please wait while saving terrain", modalDialogPanel -> this.saveDialog = modalDialogPanel);
+        modalDialogManager.showMessageNoClosableDialog("Save", "Please wait while saving terrain", modalDialogPanel -> this.saveDialog = modalDialogPanel);
         planetEditorServiceCaller.call(ignore -> loadFromServer(), (message, throwable) -> {
             if (saveDialog != null) {
                 saveDialog.close();

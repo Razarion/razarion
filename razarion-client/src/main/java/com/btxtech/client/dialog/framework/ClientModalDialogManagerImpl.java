@@ -88,11 +88,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     }
 
     public void showMessageDialog(String title, String message) {
-        showMessageDialog(title, message, null);
+        show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
     }
 
-    public void showMessageDialog(String title, String message, Consumer<ModalDialogPanel> shownCallback) {
-        show(title, Type.STACK_ABLE, MessageDialog.class, message, null, shownCallback, DialogButton.Button.CLOSE);
+    public void showMessageNoClosableDialog(String title, String message, Consumer<ModalDialogPanel> shownCallback) {
+        show(title, Type.STACK_ABLE, MessageDialog.class, message, null, shownCallback);
     }
 
     public void showSingleNoClosableDialog(String title, String message) {
