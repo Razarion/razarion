@@ -65,6 +65,6 @@ public class TerrainEditorUpdate {
     }
 
     public boolean hasAnyChanged() {
-        return !createdSlopes.isEmpty() || updatedSlopes.isEmpty() || !deletedSlopeIds.isEmpty() || !createdTerrainObjects.isEmpty() || !updatedTerrainObjects.isEmpty() || !deletedTerrainObjectsIds.isEmpty();
+        return !createdSlopes.isEmpty() || !updatedSlopes.isEmpty() || !deletedSlopeIds.isEmpty() || !createdTerrainObjects.isEmpty() || !updatedTerrainObjects.isEmpty() || !deletedTerrainObjectsIds.isEmpty();
     }
 }
