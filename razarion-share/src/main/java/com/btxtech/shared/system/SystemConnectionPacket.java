@@ -1,5 +1,6 @@
 package com.btxtech.shared.system;
 
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -9,6 +10,9 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
  * 25.04.2017.
  */
 public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
+    // System
+    SET_GAME_SESSION_UUID(String.class),
+    LIFECYCLE_CONTROL(LifecyclePacket.class),
     // Levels
     LEVEL_UPDATE_CLIENT(Integer.class),
     LEVEL_UPDATE_SERVER(UserContext.class),

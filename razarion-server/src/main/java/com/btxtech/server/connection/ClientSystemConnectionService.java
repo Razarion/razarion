@@ -3,6 +3,8 @@ package com.btxtech.server.connection;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -13,9 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -28,7 +28,7 @@ public class ClientSystemConnectionService {
     @Inject
     private SessionService sessionService;
     private ObjectMapper mapper = new ObjectMapper();
-    private final Map<PlayerSession, ClientSystemConnection> systemGameConnections = new HashMap<>();
+    private final MapCollection<PlayerSession, ClientSystemConnection> systemGameConnections = new MapCollection<>();
 
     public void onOpen(ClientSystemConnection clientSystemConnection) {
         synchronized (systemGameConnections) {
@@ -38,7 +38,7 @@ public class ClientSystemConnectionService {
 
     public void onClose(ClientSystemConnection clientSystemConnection) {
         synchronized (systemGameConnections) {
-            systemGameConnections.remove(clientSystemConnection.getSession());
+            systemGameConnections.remove(clientSystemConnection.getSession(), clientSystemConnection);
         }
     }
 
@@ -78,26 +78,48 @@ public class ClientSystemConnectionService {
         }
     }
 
+    public void sendLifecyclePacket(LifecyclePacket lifecyclePacket) {
+        sendToClients(SystemConnectionPacket.LIFECYCLE_CONTROL, lifecyclePacket);
+    }
+
     private void sendToClient(PlayerSession playerSession, SystemConnectionPacket packet, Object object) {
-        ClientSystemConnection clientSystemConnection;
+        Collection<ClientSystemConnection> clientSystemConnections;
         synchronized (systemGameConnections) {
-            clientSystemConnection = systemGameConnections.get(playerSession);
-            if (clientSystemConnection == null) {
+            clientSystemConnections = systemGameConnections.get(playerSession);
+            if (clientSystemConnections == null) {
                 return;
             }
         }
 
+        sendToClient(packet, object, clientSystemConnections);
+    }
+
+    private void sendToClients(SystemConnectionPacket packet, Object object) {
+        Collection<ClientSystemConnection> clientSystemConnections;
+        synchronized (systemGameConnections) {
+            clientSystemConnections = systemGameConnections.getAll();
+        }
+        sendToClient(packet, object, clientSystemConnections);
+    }
+
+    private void sendToClient(SystemConnectionPacket packet, Object object, Collection<ClientSystemConnection> clientSystemConnections) {
         try {
             String text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
-            clientSystemConnection.sendToClient(text);
+            clientSystemConnections.forEach(clientSystemConnection -> {
+                try {
+                    clientSystemConnection.sendToClient(text);
+                } catch (Throwable throwable) {
+                    exceptionHandler.handleException(throwable);
+                }
+            });
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
     }
 
-    public void iteratorClientSystemConnection(BiConsumer<PlayerSession, ClientSystemConnection> callback) {
+    public Collection<ClientSystemConnection> getClientSystemConnections() {
         synchronized (systemGameConnections) {
-            systemGameConnections.forEach(callback);
+            return systemGameConnections.getAll();
         }
     }
 }

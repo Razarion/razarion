@@ -1,9 +1,11 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.DataUrlDecoder;
+import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.TerrainShapeService;
 import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -28,6 +30,8 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     private TerrainShapeService terrainShapeService;
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
+    @Inject
+    private ClientSystemConnectionService systemConnectionService;
 
     @Override
     public void createTerrainObjectPositions(int planetId, List<TerrainObjectPosition> createdTerrainObjects) {
@@ -93,8 +97,10 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     @Override
     public void restartPlanet(int planetId) {
         try {
+            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
             terrainShapeService.setupTerrainShape(planetPersistence.loadPlanetConfig(planetId));
             serverGameEngineControl.restartPlanet();
+            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.RESTART_WARM));
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

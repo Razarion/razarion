@@ -90,6 +90,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
     }
 
+    public void showSingleNoClosableDialog(String title, String message) {
+        closeAll();
+        show(title, Type.PROMPTLY, MessageDialog.class, message, null, null);
+    }
+
     public void showQuestionDialog(String title, String question, Runnable okCallback, Runnable cancelCallback) {
         show(title, Type.STACK_ABLE, MessageDialog.class, question,
                 (button, ignore) -> {
@@ -178,6 +183,16 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
             }
         } else if (stackedDialogs.contains(modalDialogPanel)) {
             stackedDialogs.remove(modalDialogPanel);
+        }
+    }
+
+    public void closeAll() {
+        dialogQueue.clear();
+        while (!stackedDialogs.isEmpty()) {
+            close(stackedDialogs.get(0));
+        }
+        if (activeDialog != null) {
+            close(activeDialog);
         }
     }
 

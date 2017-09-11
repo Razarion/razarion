@@ -109,6 +109,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private AbstractServerGameConnection serverConnection;
     private GameEngineMode gameEngineMode;
     private WorkerTrackerHandler workerTrackerHandler;
+    private String gameSessionUuid;
 
     protected abstract void sendToClient(GameEngineControlPackage.Command command, Object... object);
 
@@ -218,6 +219,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, boolean detailedTracking, String gameSessionUuid) {
         try {
+            this.gameSessionUuid = gameSessionUuid;
             staticGameInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
             planetService.addTickListener(this);
             initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode, () -> {
@@ -607,5 +609,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (playerBase != null) {
             playerBase.setResources(resources);
         }
+    }
+
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
     }
 }

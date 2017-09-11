@@ -503,14 +503,6 @@ public interface I18nConstants {
 
     String planetLocked();
 
-    String serverRebootTitle();
-
-    String serverRebootMessage(int rebootInSeconds, int downTimeInMinutes);
-
-    String serverRebootMissionNotSaved();
-
-    String serverRebootNotRegistered();
-
     String createBase();
 
     String createBaseInBotFailed();
@@ -867,4 +859,18 @@ public interface I18nConstants {
 
     // Level up dialog
     String youReachedLevel(int level);
+
+    // System
+    String serverRebootTitle();
+
+    String serverRebootMessage(int rebootInSeconds, int downTimeInMinutes);
+
+    String serverRebootMissionNotSaved();
+
+    String serverRebootNotRegistered();
+
+    String planetRestartTitle();
+
+    String planetRestartMessage();
+
 }

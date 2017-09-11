@@ -1,5 +1,6 @@
 package com.btxtech.webglemulator.razarion;
 
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
@@ -86,5 +87,10 @@ public class DevToolServerSystemConnection extends AbstractServerSystemConnectio
     @Override
     public void close() {
         remoteEndpoint = null;
+    }
+
+    @Override
+    protected void onLifecyclePacket(LifecyclePacket lifecyclePacket) {
+        throw new UnsupportedOperationException("LifecyclePacket not supported on DevTools");
     }
 }

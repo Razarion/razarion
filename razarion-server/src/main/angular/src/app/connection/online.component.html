@@ -6,17 +6,24 @@
     <th>User</th>
     <th>Session</th>
     <th>Multiplayer Planet</th>
+    <th>Error</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let onlineInfo of onlineInfos">
     <td>{{ onlineInfo.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ onlineInfo.duration | duration}}</td>
-    <td (click)="onClickUser(onlineInfo)" style="cursor: pointer">
-      <div *ngIf="onlineInfo.humanPlayerId.userId; else elseBlock">Registered</div>
-      <ng-template #elseBlock>Unregistered</ng-template>
+    <td>
+      <div *ngIf="onlineInfo.humanPlayerId" (click)="onClickUser(onlineInfo)" style="cursor: pointer">
+        <div *ngIf="onlineInfo.humanPlayerId.userId; else elseBlock">Registered</div>
+        <ng-template #elseBlock>Unregistered</ng-template>
+      </div>
     </td>
-    <td (click)="onClickSession(onlineInfo)" style="cursor: pointer">{{ onlineInfo.sessionId }}</td>
+    <td>
+      <div *ngIf="onlineInfo.sessionId" (click)="onClickSession(onlineInfo)" style="cursor: pointer">{{
+        onlineInfo.sessionId }}
+      </div>
+    </td>
     <td>
       <table *ngIf="onlineInfo.multiplayerPlanet">
         <tr>
@@ -25,6 +32,14 @@
           <td>{{ onlineInfo.multiplayerDuration | duration}}</td>
         </tr>
       </table>
+    </td>
+    <td>
+      <div [ngSwitch]="onlineInfo.type">
+        <div *ngSwitchCase="'NORMAL'"></div>
+        <div *ngSwitchCase="'ORPHAN'" style="background-color: #ffb8b8">No system connection found</div>
+        <div *ngSwitchCase="'UNKNOWN'" style="background-color: #ffb8b8">No game session id</div>
+        <div *ngSwitchDefault style="background-color: #ffb8b8">Unknown type: {{ onlineInfo.type}}</div>
+      </div>
     </td>
   </tr>
   </tbody>

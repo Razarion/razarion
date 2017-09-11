@@ -24,6 +24,8 @@ import java.util.List;
  * 21.04.2017.
  */
 public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
+    // System
+    SET_GAME_SESSION_UUID(String.class),
     // Base
     CREATE_BASE(DecimalPosition.class),
     BASE_CREATED(PlayerBaseInfo.class),

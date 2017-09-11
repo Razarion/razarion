@@ -127,6 +127,13 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
     }
 
+    public void closeConnection() {
+        if (abstractServerSystemConnection != null) {
+            abstractServerSystemConnection.close();
+            abstractServerSystemConnection = null;
+        }
+    }
+
     public void initWarm() {
         gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
         terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
@@ -201,7 +208,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             // TODO Temporary fix for showing move to first multiplayer planet. Pervents loading new planet if multiplayer planet is done. Because there is no new planet
             modalDialogManager.showLeaveStartTutorial(() -> {
                 screenCover.fadeInLoadingCover();
-                clientRunner.startWarm();
+                clientRunner.startWarm(); // Replace by LifecycleService. Move clientRunner back to client package. Not needed in DevTools.
             });
         }
     }
@@ -426,7 +433,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void scrollToHome() {
-        if(terrainScrollHandler.isScrollDisabled()) {
+        if (terrainScrollHandler.isScrollDisabled()) {
             return;
         }
         if (System.currentTimeMillis() > lastHomeScroll + HOME_SCROLL_TIMEOUT) {

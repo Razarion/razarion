@@ -30,7 +30,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -51,8 +50,6 @@ public class ServerGameEngineControl implements GameLogicListener {
     private Event<StaticGameInitEvent> gameEngineInitEvent;
     @Inject
     private PlanetService planetService;
-    @Inject
-    private ExceptionHandler exceptionHandler;
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
     @Inject
@@ -148,11 +145,9 @@ public class ServerGameEngineControl implements GameLogicListener {
     @SecurityCheck
     public void restartPlanet() {
         long time = System.currentTimeMillis();
-        // TODO send client restart packet -> disconnection
         BackupPlanetInfo backupPlanetInfo = planetService.backup(true);
         stop();
         start(backupPlanetInfo, false);
-        // TODO restart client package -> reload browser
         logger.info("ServerGameEngineControl.restartPlanet() in: " + (System.currentTimeMillis() - time));
     }
 

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from "@angular/core";
-import {OnlineInfo} from "./online.dto";
+import {OnlineInfo, OnlineInfoType} from "./online.dto";
 import {OnlineService} from "./online.service";
 import {Router} from "@angular/router";
 
@@ -12,6 +12,7 @@ import {Router} from "@angular/router";
 export class OnlineComponent implements OnInit {
   onlineInfos: OnlineInfo[];
   @Input() lastLoaded: Date;
+  onlineType: OnlineInfoType;
 
   constructor(private onlineService: OnlineService, private route: Router) {
   }

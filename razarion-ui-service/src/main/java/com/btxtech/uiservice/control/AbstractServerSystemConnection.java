@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -21,6 +22,8 @@ public abstract class AbstractServerSystemConnection {
     private UserUiService userUiService;
 
     protected abstract void sendToServer(String text);
+
+    protected abstract void onLifecyclePacket(LifecyclePacket lifecyclePacket);
 
     protected abstract String toJson(Object param);
 
@@ -53,6 +56,9 @@ public abstract class AbstractServerSystemConnection {
                 break;
             case XP_CHANGED:
                 userUiService.onServerXpChange((Integer) param);
+                break;
+            case LIFECYCLE_CONTROL:
+                onLifecyclePacket((LifecyclePacket) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);

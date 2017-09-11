@@ -1,9 +1,11 @@
 package com.btxtech.worker;
 
 import com.btxtech.common.WebSocketHelper;
+import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental.client.Browser;
 import elemental.events.Event;
@@ -23,6 +25,8 @@ import java.util.logging.Logger;
 public class ClientServerGameConnection extends AbstractServerGameConnection {
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private GameEngineWorker gameEngineWorker;
     private Logger logger = Logger.getLogger(ClientServerGameConnection.class.getName());
     private WebSocket webSocket;
 
@@ -32,7 +36,9 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
         webSocket.setOnerror(evt -> logger.severe("ClientServerGameConnection WebSocket OnError: " + evt));
         webSocket.setOnclose(evt -> logger.severe("ClientServerGameConnection WebSocket Close: " + evt));
         webSocket.setOnmessage(this::handleMessage);
-        // webSocket.setOnopen(evt -> logger.severe("ClientServerGameConnection WebSocket Open"));
+        webSocket.setOnopen(evt -> {
+            sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SET_GAME_SESSION_UUID, toJson(gameEngineWorker.getGameSessionUuid())));
+        });
     }
 
     private void handleMessage(Event event) {

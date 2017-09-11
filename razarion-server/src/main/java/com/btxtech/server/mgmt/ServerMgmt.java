@@ -17,7 +17,10 @@ import com.btxtech.shared.datatypes.UserContext;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -43,18 +46,36 @@ public class ServerMgmt {
 
     @SecurityCheck
     public List<OnlineInfo> loadAllOnlines() {
-        List<OnlineInfo> onlineInfos = new ArrayList<>();
-        clientSystemConnectionService.iteratorClientSystemConnection((playerSession, clientSystemConnection) -> {
-            OnlineInfo onlineInfo = new OnlineInfo().setSessionId(playerSession.getHttpSessionId()).setTime(clientSystemConnection.getTime()).setDuration(clientSystemConnection.getDuration());
-            if (playerSession.getUserContext() != null) {
-                onlineInfo.setHumanPlayerId(playerSession.getUserContext().getHumanPlayerId());
+        Map<String,  ClientGameConnection> gameSessionUuids = new HashMap<>();
+        Collection<ClientGameConnection> unknowns = new ArrayList<>();
+        clientGameConnectionService.getClientGameConnections().forEach(clientGameConnection -> {
+            String gameSessionUuid = clientGameConnection.getGameSessionUuid();
+            if (gameSessionUuid != null) {
+                gameSessionUuids.put(gameSessionUuid, clientGameConnection);
+            } else {
+                unknowns.add(clientGameConnection);
             }
-            ClientGameConnection clientGameConnection = clientGameConnectionService.getClientGameConnection(playerSession);
+        });
+
+        List<OnlineInfo> onlineInfos = new ArrayList<>();
+        clientSystemConnectionService.getClientSystemConnections().forEach(clientSystemConnection -> {
+            OnlineInfo onlineInfo = new OnlineInfo().setType(OnlineInfo.Type.NORMAL).setSessionId(clientSystemConnection.getSession().getHttpSessionId()).setTime(clientSystemConnection.getTime()).setDuration(clientSystemConnection.getDuration());
+            if (clientSystemConnection.getSession().getUserContext() != null) {
+                onlineInfo.setHumanPlayerId(clientSystemConnection.getSession().getUserContext().getHumanPlayerId());
+            }
+            ClientGameConnection clientGameConnection = gameSessionUuids.remove(clientSystemConnection.getGameSessionUuid());
             if (clientGameConnection != null) {
                 onlineInfo.setMultiplayerDate(clientGameConnection.getTime()).setMultiplayerDuration(clientGameConnection.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getPlanetId()));
             }
             onlineInfos.add(onlineInfo);
         });
+        for (ClientGameConnection orphans : gameSessionUuids.values()) {
+            onlineInfos.add(new OnlineInfo().setType(OnlineInfo.Type.ORPHAN).setMultiplayerDate(orphans.getTime()).setMultiplayerDuration(orphans.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getPlanetId())));
+        }
+        for (ClientGameConnection unknown : unknowns) {
+            onlineInfos.add(new OnlineInfo().setType(OnlineInfo.Type.UNKNOWN).setMultiplayerDate(unknown.getTime()).setMultiplayerDuration(unknown.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getPlanetId())));
+        }
+
         return onlineInfos;
     }
 

@@ -2,6 +2,8 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -17,8 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -30,18 +31,18 @@ public class ClientGameConnectionService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private SessionService sessionService;
-    private final Map<PlayerSession, ClientGameConnection> clientGameConnections = new HashMap<>();
+    private final MapCollection<HumanPlayerId, ClientGameConnection> gameConnections = new MapCollection<>();
     private ObjectMapper mapper = new ObjectMapper();
 
-    public void onOpen(ClientGameConnection clientGameConnection, PlayerSession session) {
-        synchronized (clientGameConnections) {
-            clientGameConnections.put(session, clientGameConnection);
+    public void onOpen(ClientGameConnection clientGameConnection, HumanPlayerId humanPlayerId) {
+        synchronized (gameConnections) {
+            gameConnections.put(humanPlayerId, clientGameConnection);
         }
     }
 
     public void onClose(ClientGameConnection clientGameConnection) {
-        synchronized (clientGameConnections) {
-            clientGameConnections.remove(clientGameConnection.getSession());
+        synchronized (gameConnections) {
+            gameConnections.remove(clientGameConnection.getHumanPlayerId(), clientGameConnection);
         }
     }
 
@@ -66,7 +67,7 @@ public class ClientGameConnectionService {
     public void sendResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         PlayerSession playerSession = getPlayerSessionBase(playerBase);
         if (playerSession != null) {
-            sendToClient(playerSession, GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
+            sendToClient(playerBase.getHumanPlayerId(), GameConnectionPacket.RESOURCE_BALANCE_CHANGED, resources);
         }
     }
 
@@ -84,8 +85,10 @@ public class ClientGameConnectionService {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
-    public ClientGameConnection getClientGameConnection(PlayerSession playerSession) {
-        return clientGameConnections.get(playerSession);
+    public Collection<ClientGameConnection> getClientGameConnections() {
+        synchronized (gameConnections) {
+            return gameConnections.getAll();
+        }
     }
 
     private void sendToClients(GameConnectionPacket packet, Object object) {
@@ -97,32 +100,36 @@ public class ClientGameConnectionService {
             return;
         }
 
-        synchronized (clientGameConnections) {
-            for (ClientGameConnection clientGameConnection : clientGameConnections.values()) {
+        synchronized (gameConnections) {
+            gameConnections.getAll().forEach(clientGameConnection -> {
                 try {
                     clientGameConnection.sendToClient(text);
                 } catch (Throwable throwable) {
                     exceptionHandler.handleException(throwable);
                 }
-            }
+            });
         }
     }
 
-    private void sendToClient(PlayerSession playerSession, GameConnectionPacket packet, Object object) {
-        String text;
+    private void sendToClient(HumanPlayerId humanPlayerId, GameConnectionPacket packet, Object object) {
+        Collection<ClientGameConnection> clientGameConnections;
+        synchronized (gameConnections) {
+            clientGameConnections = gameConnections.get(humanPlayerId);
+            if (clientGameConnections == null) {
+                return;
+            }
+        }
         try {
-            text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+            String text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+            clientGameConnections.forEach(clientGameConnection -> {
+                try {
+                    clientGameConnection.sendToClient(text);
+                } catch (Throwable throwable) {
+                    exceptionHandler.handleException(throwable);
+                }
+            });
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
-            return;
-        }
-
-        synchronized (clientGameConnections) {
-            try {
-                clientGameConnections.get(playerSession).sendToClient(text);
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException(throwable);
-            }
         }
     }
 

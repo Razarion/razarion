@@ -53,11 +53,8 @@ public class LeftSideBarManager {
         RootPanel.get().add(sideBarPanel);
     }
 
-    // Is only called from SideBarPanel
-    void close() {
-        if (sideBarPanel == null) {
-            logger.severe("LeftSideBarManager already null");
-        } else {
+    public void close() {
+        if (sideBarPanel != null) {
             RootPanel.get().remove(sideBarPanel);
             sideBarPanel = null;
         }

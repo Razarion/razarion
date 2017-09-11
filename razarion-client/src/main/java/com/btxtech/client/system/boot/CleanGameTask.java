@@ -1,6 +1,7 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.system.LifecycleService;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.audio.AudioService;
@@ -29,56 +30,11 @@ import javax.inject.Inject;
 @Dependent
 public class CleanGameTask extends AbstractStartupTask {
     @Inject
-    private GameCanvas gameCanvas;
-    @Inject
-    private ClientPerformanceTrackerService clientPerformanceTrackerService;
-    @Inject
-    private PerfmonService perfmonService;
-    @Inject
-    private GameEngineControl gameEngineControl;
-    @Inject
-    private BaseItemUiService baseItemUiService;
-    @Inject
-    private BoxUiService boxUiService;
-    @Inject
-    private ItemMarkerService itemMarkerService;
-    @Inject
-    private ResourceUiService resourceUiService;
-    @Inject
-    private TerrainMouseHandler terrainMouseHandler;
-    @Inject
-    private CursorService cursorService;
-    @Inject
-    private ParticleService particleService;
-    @Inject
-    private ProjectileUiService projectileUiService;
-    @Inject
-    private TrailService trailService;
-    @Inject
-    private TerrainUiService terrainUiService;
-    @Inject
-    private AudioService audioService;
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
+    private LifecycleService lifecycleService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        gameEngineControl.stop(deferredStartup);
-        gameCanvas.stopRenderLoop();
-        clientPerformanceTrackerService.stop();
-        perfmonService.stop();
-        baseItemUiService.clear();
-        boxUiService.clear();
-        itemMarkerService.clear();
-        resourceUiService.clear();
-        terrainMouseHandler.clear();
-        cursorService.clear();
-        particleService.clear();
-        projectileUiService.clear();
-        trailService.clear();
-        terrainUiService.clear();
-        audioService.muteTerrainLoopAudio();
-        terrainScrollHandler.cleanup();
+        lifecycleService.clearAndHold(deferredStartup);
     }
 }

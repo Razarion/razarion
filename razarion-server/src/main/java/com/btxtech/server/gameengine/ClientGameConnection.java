@@ -3,6 +3,8 @@ package com.btxtech.server.gameengine;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -47,6 +49,7 @@ public class ClientGameConnection {
     private EndpointConfig config;
     private RemoteEndpoint.Async async;
     private Date time;
+    private String gameSessionUuid;
 
     @OnMessage
     public void onMessage(Session session, String text) {
@@ -56,7 +59,7 @@ public class ClientGameConnection {
             Object param = mapper.readValue(payload, packet.getTheClass());
             onPackageReceived(packet, param);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            exceptionHandler.handleException("text: " + text, t);
         }
     }
 
@@ -65,7 +68,7 @@ public class ClientGameConnection {
         time = new Date();
         this.config = config;
         async = session.getAsyncRemote();
-        clientGameConnectionService.onOpen(this, getSession());
+        clientGameConnectionService.onOpen(this, getHumanPlayerId());
     }
 
     @OnError
@@ -80,10 +83,10 @@ public class ClientGameConnection {
     }
 
     protected void onPackageReceived(GameConnectionPacket packet, Object param) {
-        PlayerSession playerSession = getSession();
         switch (packet) {
             case CREATE_BASE:
-                baseItemService.createHumanBaseWithBaseItem(playerSession.getUserContext().getLevelId(), playerSession.getUserContext().getHumanPlayerId(), playerSession.getUserContext().getName(), (DecimalPosition) param);
+                UserContext userContext = getUserContext();
+                baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName(), (DecimalPosition) param);
                 break;
             case FACTORY_COMMAND:
             case UNLOAD_CONTAINER_COMMAND:
@@ -99,6 +102,9 @@ public class ClientGameConnection {
             case SELL_ITEMS:
                 baseItemService.sellItems((List<Integer>) param, getPlayerBase());
                 break;
+            case SET_GAME_SESSION_UUID:
+                gameSessionUuid = (String) param;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
         }
@@ -108,9 +114,8 @@ public class ClientGameConnection {
         async.sendText(text);
     }
 
-    public PlayerSession getSession() {
-        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
-        return sessionService.getSession(httpSession.getId());
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
     }
 
     public Date getTime() {
@@ -121,7 +126,21 @@ public class ClientGameConnection {
         return (int) (System.currentTimeMillis() - time.getTime());
     }
 
+    public HumanPlayerId getHumanPlayerId() {
+        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
+        return sessionService.getSession(httpSession.getId()).getUserContext().getHumanPlayerId();
+    }
+
+    private UserContext getUserContext() {
+        return getPlayerSession().getUserContext();
+    }
+
     private PlayerBase getPlayerBase() {
-        return baseItemService.getPlayerBase4HumanPlayerId(getSession().getUserContext().getHumanPlayerId());
+        return baseItemService.getPlayerBase4HumanPlayerId(getHumanPlayerId());
+    }
+
+    private PlayerSession getPlayerSession() {
+        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
+        return sessionService.getSession(httpSession.getId());
     }
 }

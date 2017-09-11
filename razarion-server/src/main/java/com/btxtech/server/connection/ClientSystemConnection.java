@@ -41,6 +41,7 @@ public class ClientSystemConnection {
     private EndpointConfig config;
     private RemoteEndpoint.Async async;
     private Date time;
+    private String gameSessionUuid;
 
     @OnMessage
     public void onMessage(Session session, String text) {
@@ -50,7 +51,7 @@ public class ClientSystemConnection {
             Object param = mapper.readValue(payload, packet.getTheClass());
             onPackageReceived(packet, param);
         } catch (Throwable t) {
-            exceptionHandler.handleException(t);
+            exceptionHandler.handleException("text: " + text, t);
         }
     }
 
@@ -79,6 +80,9 @@ public class ClientSystemConnection {
             case LEVEL_UPDATE_CLIENT:
                 serverLevelQuestService.onClientLevelUpdate(httpSession.getId(), (int) param);
                 break;
+            case SET_GAME_SESSION_UUID:
+                gameSessionUuid = (String)param;
+                break;
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);
         }
@@ -91,6 +95,10 @@ public class ClientSystemConnection {
     public PlayerSession getSession() {
         HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         return sessionService.getSession(httpSession.getId());
+    }
+
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
     }
 
     public Date getTime() {

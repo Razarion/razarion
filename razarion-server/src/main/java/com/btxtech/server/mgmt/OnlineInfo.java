@@ -9,13 +9,19 @@ import java.util.Date;
  * on 05.09.2017.
  */
 public class OnlineInfo {
+    public enum Type {
+        NORMAL,
+        ORPHAN,
+        UNKNOWN
+    }
     private Date time;
-    private int duration;
+    private Integer duration;
     private HumanPlayerId humanPlayerId;
     private String sessionId;
     private String multiplayerPlanet;
     private Date multiplayerDate;
     private Integer multiplayerDuration;
+    private Type type;
 
     public Date getTime() {
         return time;
@@ -26,7 +32,7 @@ public class OnlineInfo {
         return this;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
@@ -77,6 +83,15 @@ public class OnlineInfo {
 
     public OnlineInfo setMultiplayerDuration(Integer multiplayerDuration) {
         this.multiplayerDuration = multiplayerDuration;
+        return this;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public OnlineInfo setType(Type type) {
+        this.type = type;
         return this;
     }
 }
