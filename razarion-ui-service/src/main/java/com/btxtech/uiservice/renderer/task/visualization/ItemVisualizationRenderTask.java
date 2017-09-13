@@ -38,7 +38,9 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
         deactivate();
         this.gameItemVisualization = inGameItemVisualization;
         setupCorners();
-        setupShape3D();
+        if (inGameItemVisualization.hasShape3DId()) {
+            setupShape3D();
+        }
         setupOutOfViewShape3D();
         active = true;
     }

@@ -167,6 +167,7 @@ public class Scene implements ViewService.ViewFieldListener {
             gameEngineControl.dropBoxes(sceneConfig.getBoxItemPositions());
         }
         if (sceneConfig.getGameTipConfig() != null) {
+            inGameQuestVisualizationService.setSuppressed(true);
             gameTipService.start(sceneConfig.getGameTipConfig());
         }
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
@@ -229,6 +230,7 @@ public class Scene implements ViewService.ViewFieldListener {
             questVisualizer.showSideBar(null, null, false);
         }
         if (sceneConfig.getGameTipConfig() != null) {
+            inGameQuestVisualizationService.setSuppressed(false);
             gameTipService.stop();
         }
         if (sceneConfig.getScrollUiQuest() != null) {
@@ -252,6 +254,7 @@ public class Scene implements ViewService.ViewFieldListener {
             } else {
                 modalDialogManager.showQuestPassed(sceneConfig.getQuestConfig());
                 if (sceneConfig.getGameTipConfig() != null) {
+                    inGameQuestVisualizationService.setSuppressed(false);
                     gameTipService.stop();
                 }
             }
@@ -264,6 +267,7 @@ public class Scene implements ViewService.ViewFieldListener {
             } else {
                 modalDialogManager.showQuestPassed(sceneConfig.getScrollUiQuest());
                 if (sceneConfig.getGameTipConfig() != null) {
+                    inGameQuestVisualizationService.setSuppressed(false);
                     gameTipService.stop();
                 }
             }

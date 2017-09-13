@@ -18,6 +18,7 @@ import javax.inject.Singleton;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 
 /**
@@ -39,20 +40,77 @@ public class InGameQuestVisualizationService {
     private Instance<QuestInGameItemVisualization> instance;
     private QuestInGameItemVisualization questInGameItemVisualization;
     private QuestConfig quest;
+    private Set<Integer> itemTypeFilter;
+    private boolean visible = true;
+    private Consumer<Boolean> visibleCallback;
+    private Consumer<Boolean> suppressCallback;
 
     public void onQuestActivated(QuestConfig quest) {
         stop();
         this.quest = quest;
+        if (visibleCallback != null) {
+            visibleCallback.accept(true);
+        }
+        visible = true;
+        showVisualization();
+    }
+
+    public void onQuestProgress(QuestProgressInfo questProgressInfo) {
+        itemTypeFilter = null;
+        if(quest == null) {
+            return;
+        }
+        if (quest.getConditionConfig().getConditionTrigger() == ConditionTrigger.SYNC_ITEM_KILLED) {
+            if (questProgressInfo.getTypeCount() != null) {
+                itemTypeFilter = new HashSet<>();
+                for (Map.Entry<Integer, Integer> entry : quest.getConditionConfig().getComparisonConfig().getTypeCount().entrySet()) {
+                    int actual = questProgressInfo.getTypeCount().get(entry.getKey());
+                    if (actual < entry.getValue()) {
+                        itemTypeFilter.add(entry.getKey());
+                    }
+                }
+                if (visible) {
+                    ((SyncBaseItemSetPositionMonitor) questInGameItemVisualization.getSyncItemSetPositionMonitor()).setItemTypeFilter(itemTypeFilter);
+                }
+            }
+        }
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+        if (visible) {
+            showVisualization();
+        } else {
+            hideVisualization();
+        }
+        visibleCallback.accept(visible);
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void stop() {
+        hideVisualization();
+        quest = null;
+        itemTypeFilter = null;
+    }
+
+    private void showVisualization() {
+        if(quest == null) {
+            return;
+        }
         switch (quest.getConditionConfig().getConditionTrigger()) {
             case SYNC_ITEM_KILLED:
-                Set<Integer> itemTypeFilter = null;
-                if (quest.getConditionConfig().getComparisonConfig().getTypeCount() != null) {
-                    itemTypeFilter = quest.getConditionConfig().getComparisonConfig().getTypeCount().keySet();
+                if (itemTypeFilter == null) {
+                    if (quest.getConditionConfig().getComparisonConfig().getTypeCount() != null) {
+                        itemTypeFilter = quest.getConditionConfig().getComparisonConfig().getTypeCount().keySet();
+                    }
                 }
-                startVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getAttackColor(), baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter));
+                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getAttackColor(), baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter));
                 break;
             case HARVEST:
-                startVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getHarvestColor(), resourceUiService.createSyncItemSetPositionMonitor());
+                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getHarvestColor(), resourceUiService.createSyncItemSetPositionMonitor());
                 break;
             case SYNC_ITEM_POSITION:
                 // TODO
@@ -62,34 +120,41 @@ public class InGameQuestVisualizationService {
         }
     }
 
-    public void onQuestProgress(QuestProgressInfo questProgressInfo) {
-        if (quest.getConditionConfig().getConditionTrigger() == ConditionTrigger.SYNC_ITEM_KILLED) {
-            if (questProgressInfo.getTypeCount() != null) {
-                Set<Integer> itemTypeFilter = new HashSet<>();
-                for (Map.Entry<Integer, Integer> entry : quest.getConditionConfig().getComparisonConfig().getTypeCount().entrySet()) {
-                    int actual = questProgressInfo.getTypeCount().get(entry.getKey());
-                    if (actual < entry.getValue()) {
-                        itemTypeFilter.add(entry.getKey());
-                    }
-                }
-                ((SyncBaseItemSetPositionMonitor) questInGameItemVisualization.getSyncItemSetPositionMonitor()).setItemTypeFilter(itemTypeFilter);
-            }
-        }
+    private void setupVisualization(Color color, AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor) {
+        InGameQuestVisualConfig inGameQuestVisualConfig = gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig();
+        questInGameItemVisualization = instance.get();
+        questInGameItemVisualization.init(color, inGameQuestVisualConfig, syncItemSetPositionMonitor);
+        itemVisualizationRenderTask.activate(questInGameItemVisualization);
     }
 
-    public void stop() {
+    private void hideVisualization() {
         if (questInGameItemVisualization != null) {
             questInGameItemVisualization.releaseMonitor();
             itemVisualizationRenderTask.deactivate();
             questInGameItemVisualization = null;
         }
-        quest = null;
     }
 
-    private void startVisualization(Color color, AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor) {
-        InGameQuestVisualConfig inGameQuestVisualConfig = gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig();
-        questInGameItemVisualization = instance.get();
-        questInGameItemVisualization.init(color, inGameQuestVisualConfig, syncItemSetPositionMonitor);
-        itemVisualizationRenderTask.activate(questInGameItemVisualization);
+    public void setVisibleCallback(Consumer<Boolean> visibleCallback) {
+        this.visibleCallback = visibleCallback;
+    }
+
+    public void setSuppressCallback(Consumer<Boolean> suppressCallback) {
+        this.suppressCallback = suppressCallback;
+    }
+
+    public void setSuppressed(boolean suppress) {
+        if (visibleCallback != null) {
+            visibleCallback.accept(!suppress);
+        }
+        if (suppressCallback != null) {
+            suppressCallback.accept(suppress);
+        }
+        visible = !suppress;
+        if (suppress) {
+            hideVisualization();
+        } else {
+            showVisualization();
+        }
     }
 }

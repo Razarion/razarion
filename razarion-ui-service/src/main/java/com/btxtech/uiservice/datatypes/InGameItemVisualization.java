@@ -30,6 +30,10 @@ public interface InGameItemVisualization {
         return null;
     }
 
+    default boolean hasShape3DId() {
+        return false;
+    }
+
     default List<ModelMatrices> provideShape3DModelMatrices() {
         return null;
     }

@@ -142,6 +142,11 @@ public abstract class InGameTipVisualization implements InGameItemVisualization,
         return shape3DId;
     }
 
+    @Override
+    public boolean hasShape3DId() {
+        return true;
+    }
+
     public Integer getOutOfViewShape3DId() {
         return outOfViewShape3DId;
     }

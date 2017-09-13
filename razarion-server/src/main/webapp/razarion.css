@@ -327,6 +327,11 @@ a:active {
     text-align: center;
 }
 
+.quest-sidebar-footer-text {
+    font-size: 80%;
+    color: #d8d0d0;
+}
+
 .quest-selection-dialog-tr-title {
     color: #3289bd;
     font-weight: bold;

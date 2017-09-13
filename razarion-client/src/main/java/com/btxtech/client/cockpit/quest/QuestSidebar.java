@@ -14,11 +14,14 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
+import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.databinding.client.components.ListComponent;
@@ -44,6 +47,8 @@ public class QuestSidebar extends Composite {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
+    private InGameQuestVisualizationService inGameQuestVisualizationService;
+    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @DataField
@@ -61,10 +66,21 @@ public class QuestSidebar extends Composite {
     @Inject
     @DataField
     private Button questDialogButton;
+    @Inject
+    @DataField
+    private CheckboxInput questVisualizationCheckbox;
+    @Inject
+    @DataField
+    private org.jboss.errai.common.client.dom.Label questVisualizationLabel;
     private QuestConfig activeQuest;
 
     @PostConstruct
     public void init() {
+        inGameQuestVisualizationService.setVisibleCallback(questVisualizationCheckbox::setChecked);
+        inGameQuestVisualizationService.setSuppressCallback(suppressed -> {
+            questVisualizationLabel.getStyle().setProperty("display", suppressed ? "none" : "inline");
+        });
+        questVisualizationCheckbox.setChecked(inGameQuestVisualizationService.isVisible());
         getElement().getStyle().setZIndex(ZIndexConstants.QUEST_SIDE_BAR);
         GwtUtils.preventContextMenu(this);
         //noinspection GWTStyleCheck
@@ -188,5 +204,10 @@ public class QuestSidebar extends Composite {
     @EventHandler("questDialogButton")
     public void onQuestDialogButtonClicked(ClickEvent event) {
         modalDialogManager.show(I18nHelper.getConstants().questDialog(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestSelectionDialog.class, null, null, null, DialogButton.Button.CLOSE);
+    }
+
+    @EventHandler("questVisualizationCheckbox")
+    public void onQuestVisualizationCheckboxClicked(ChangeEvent event) {
+        inGameQuestVisualizationService.setVisible(questVisualizationCheckbox.getChecked());
     }
 }
