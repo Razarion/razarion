@@ -278,9 +278,9 @@ public class Scene implements ViewService.ViewFieldListener {
 
     private void setupQuestVisualizer4Server() {
         serverQuest = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getActiveQuest();
-        questVisualizer.showSideBar(serverQuest,
-                gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo(), true);
+        questVisualizer.showSideBar(serverQuest, gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo(), true);
         inGameQuestVisualizationService.onQuestActivated(serverQuest);
+        inGameQuestVisualizationService.onQuestProgress(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo());
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {

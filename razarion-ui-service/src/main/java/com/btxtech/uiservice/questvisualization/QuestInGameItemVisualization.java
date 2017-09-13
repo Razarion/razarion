@@ -98,4 +98,8 @@ public class QuestInGameItemVisualization implements InGameItemVisualization {
             syncItemSetPositionMonitor = null;
         }
     }
+
+    public AbstractSyncItemSetPositionMonitor getSyncItemSetPositionMonitor() {
+        return syncItemSetPositionMonitor;
+    }
 }

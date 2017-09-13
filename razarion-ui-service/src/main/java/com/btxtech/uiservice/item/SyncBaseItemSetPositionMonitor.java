@@ -14,7 +14,7 @@ import java.util.Set;
  * on 13.09.2017.
  */
 public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionMonitor {
-    private final Set<Integer> itemTypeFilter;
+    private Set<Integer> itemTypeFilter;
     private List<Vertex> inViewVertices = new ArrayList<>();
     private DecimalPosition nearestOutOfViewPosition;
     private double minDistance;
@@ -63,6 +63,10 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
             minDistance = distance;
             nearestOutOfViewPosition = syncBaseItem.getPosition2d();
         }
+    }
+
+    public void setItemTypeFilter(Set<Integer> itemTypeFilter) {
+        this.itemTypeFilter = itemTypeFilter;
     }
 
     private boolean isAllowed(BaseItemType baseItemType) {
