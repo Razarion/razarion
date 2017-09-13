@@ -1,16 +1,16 @@
-package com.btxtech.uiservice.renderer.task.tip;
+package com.btxtech.uiservice.renderer.task.visualization;
 
 import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.Shape3DUiService;
+import com.btxtech.uiservice.datatypes.InGameItemVisualization;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
-import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -21,12 +21,12 @@ import java.util.logging.Logger;
  * 05.12.2016.
  */
 @ApplicationScoped
-public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
-    private Logger logger = Logger.getLogger(TipRenderTask.class.getName());
+public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVisualization> {
+    private Logger logger = Logger.getLogger(ItemVisualizationRenderTask.class.getName());
     @Inject
     private Shape3DUiService shape3DUiService;
     private boolean active;
-    private InGameTipVisualization inGameTipVisualization;
+    private InGameItemVisualization gameItemVisualization;
     private InGameDirectionVisualization inGameDirectionVisualization;
 
     @Override
@@ -34,9 +34,9 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
         return active;
     }
 
-    public void activate(InGameTipVisualization inGameTipVisualization) {
+    public void activate(InGameItemVisualization inGameItemVisualization) {
         deactivate();
-        this.inGameTipVisualization = inGameTipVisualization;
+        this.gameItemVisualization = inGameItemVisualization;
         setupCorners();
         setupShape3D();
         setupOutOfViewShape3D();
@@ -53,38 +53,38 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
     public void deactivate() {
         active = false;
         clear();
-        inGameTipVisualization = null;
+        gameItemVisualization = null;
         inGameDirectionVisualization = null;
     }
 
     @Override
     protected void preRender(long timeStamp) {
-        if (inGameTipVisualization != null) {
-            inGameTipVisualization.preRender();
+        if (gameItemVisualization != null) {
+            gameItemVisualization.preRender();
         }
     }
 
     private void setupCorners() {
-        ModelRenderer<InGameTipVisualization, CommonRenderComposite<AbstractInGameTipCornerRendererUnit, InGameTipVisualization>, AbstractInGameTipCornerRendererUnit, InGameTipVisualization> modelRenderer = create();
-        modelRenderer.init(inGameTipVisualization, timeStamp -> inGameTipVisualization.provideCornerModelMatrices(timeStamp));
-        CommonRenderComposite<AbstractInGameTipCornerRendererUnit, InGameTipVisualization> compositeRenderer = modelRenderer.create();
-        compositeRenderer.init(inGameTipVisualization);
-        compositeRenderer.setRenderUnit(AbstractInGameTipCornerRendererUnit.class);
-        modelRenderer.add(RenderUnitControl.TERRAIN_TIP_CORNERS, compositeRenderer);
+        ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractInGameItemCornerRendererUnit, InGameItemVisualization>, AbstractInGameItemCornerRendererUnit, InGameItemVisualization> modelRenderer = create();
+        modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideCornerModelMatrices(timeStamp));
+        CommonRenderComposite<AbstractInGameItemCornerRendererUnit, InGameItemVisualization> compositeRenderer = modelRenderer.create();
+        compositeRenderer.init(gameItemVisualization);
+        compositeRenderer.setRenderUnit(AbstractInGameItemCornerRendererUnit.class);
+        modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_CORNERS, compositeRenderer);
         add(modelRenderer);
         compositeRenderer.fillBuffers();
     }
 
     private void setupShape3D() {
-        if (inGameTipVisualization.getShape3DId() == null) {
-            logger.warning("TipRenderTask: no shape3DId for InGameTipVisualization: " + inGameTipVisualization);
+        if (gameItemVisualization.getShape3DId() == null) {
+            logger.warning("ItemVisualizationRenderTask: no shape3DId for GameItemVisualization: " + gameItemVisualization);
             return;
         }
 
-        ModelRenderer<InGameTipVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-        modelRenderer.init(inGameTipVisualization, timeStamp -> inGameTipVisualization.provideShape3DModelMatrices());
+        ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideShape3DModelMatrices());
 
-        Shape3D shape3D = shape3DUiService.getShape3D(inGameTipVisualization.getShape3DId());
+        Shape3D shape3D = shape3DUiService.getShape3D(gameItemVisualization.getShape3DId());
         for (Element3D element3D : shape3D.getElement3Ds()) {
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                 CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
@@ -92,7 +92,7 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
                 renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
                 renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                 renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                modelRenderer.add(RenderUnitControl.TERRAIN_TIP_IMAGE, renderComposite);
+                modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_IMAGE, renderComposite);
                 renderComposite.fillBuffers();
             }
         }
@@ -101,15 +101,15 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
 
 
     private void setupOutOfViewShape3D() {
-        if (inGameTipVisualization.getOutOfViewShape3DId() == null) {
-            logger.warning("TipRenderTask: no getOutOfViewShape3DId for InGameTipVisualization: " + inGameTipVisualization);
+        if (gameItemVisualization.getOutOfViewShape3DId() == null) {
+            logger.warning("ItemVisualizationRenderTask: no getOutOfViewShape3DId for GameItemVisualization: " + gameItemVisualization);
             return;
         }
 
-        ModelRenderer<InGameTipVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
-        modelRenderer.init(inGameTipVisualization, timeStamp -> inGameTipVisualization.provideOutOfViewShape3DModelMatrices());
+        ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideOutOfViewShape3DModelMatrices());
 
-        Shape3D shape3D = shape3DUiService.getShape3D(inGameTipVisualization.getOutOfViewShape3DId());
+        Shape3D shape3D = shape3DUiService.getShape3D(gameItemVisualization.getOutOfViewShape3DId());
         for (Element3D element3D : shape3D.getElement3Ds()) {
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                 CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
@@ -117,7 +117,7 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
                 renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
                 renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                 renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                modelRenderer.add(RenderUnitControl.TERRAIN_TIP_IMAGE, renderComposite);
+                modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_IMAGE, renderComposite);
                 renderComposite.fillBuffers();
             }
         }
@@ -127,7 +127,7 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
 
     private void setupDirectionShape3D() {
         if (inGameDirectionVisualization.getShape3DId() == null) {
-            logger.warning("TipRenderTask: no getOutOfViewShape3DId for InGameDirectionVisualization: " + inGameDirectionVisualization);
+            logger.warning("ItemVisualizationRenderTask: no getOutOfViewShape3DId for InGameDirectionVisualization: " + inGameDirectionVisualization);
             return;
         }
 
@@ -142,7 +142,7 @@ public class TipRenderTask extends AbstractRenderTask<InGameTipVisualization> {
                 renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
                 renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                 renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                modelRenderer.add(RenderUnitControl.TERRAIN_TIP_IMAGE, renderComposite);
+                modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_IMAGE, renderComposite);
                 renderComposite.fillBuffers();
             }
         }

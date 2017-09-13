@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import com.btxtech.uiservice.renderer.task.tip.AbstractInGameTipCornerRendererUnit;
+import com.btxtech.uiservice.renderer.task.visualization.AbstractInGameItemCornerRendererUnit;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
 
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @ColorBufferRenderer
 @Dependent
-public class ClientInGameTipCornerRendererUnit extends AbstractInGameTipCornerRendererUnit {
+public class ClientInGameItemCornerRendererUnit extends AbstractInGameItemCornerRendererUnit {
     @Inject
     private WebGlFacade webGlFacade;
     private VertexShaderAttribute positions;

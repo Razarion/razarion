@@ -14,6 +14,7 @@ import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
@@ -57,6 +58,8 @@ public class Scene implements ViewService.ViewFieldListener {
     private GameEngineControl gameEngineControl;
     @Inject
     private UserUiService userUiService;
+    @Inject
+    private InGameQuestVisualizationService inGameQuestVisualizationService;
     private SceneConfig sceneConfig;
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
@@ -123,6 +126,7 @@ public class Scene implements ViewService.ViewFieldListener {
             gameEngineControl.activateQuest(sceneConfig.getQuestConfig());
             audioService.onQuestActivated();
             questVisualizer.showSideBar(sceneConfig.getQuestConfig(), null, false);
+            inGameQuestVisualizationService.onQuestActivated(sceneConfig.getQuestConfig());
         }
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
             hasCompletionCallback = true;
@@ -237,6 +241,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
             questVisualizer.showSideBar(null, null, false);
         }
+        inGameQuestVisualizationService.stop();
     }
 
     void onQuestPassed() {
@@ -264,6 +269,7 @@ public class Scene implements ViewService.ViewFieldListener {
             }
             userUiService.increaseXp(sceneConfig.getScrollUiQuest().getXp());
         }
+        inGameQuestVisualizationService.stop();
     }
 
     public SceneConfig getSceneConfig() {
@@ -272,17 +278,24 @@ public class Scene implements ViewService.ViewFieldListener {
 
     private void setupQuestVisualizer4Server() {
         serverQuest = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getActiveQuest();
-        questVisualizer.showSideBar(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getActiveQuest(),
+        questVisualizer.showSideBar(serverQuest,
                 gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo(), true);
+        inGameQuestVisualizationService.onQuestActivated(serverQuest);
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
         questVisualizer.onQuestProgress(questProgressInfo);
+        inGameQuestVisualizationService.onQuestProgress(questProgressInfo);
     }
 
     public void onQuestActivated(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
             questVisualizer.showSideBar(quest, null, true);
+            if (quest != null) {
+                inGameQuestVisualizationService.onQuestActivated(quest);
+            } else {
+                inGameQuestVisualizationService.stop();
+            }
             serverQuest = quest;
         } else {
             logger.severe("Scene.onQuestActivated() but not sceneConfig.isProcessServerQuests()");
@@ -293,6 +306,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
             questVisualizer.showSideBar(null, null, true);
             modalDialogManager.showQuestPassed(quest);
+            inGameQuestVisualizationService.stop();
             serverQuest = null;
         } else {
             logger.severe("Scene.onQuestPassedServer() but not sceneConfig.isProcessServerQuests()");

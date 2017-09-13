@@ -12,6 +12,7 @@ import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
+import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import org.xml.sax.SAXException;
@@ -61,6 +62,7 @@ public class GameUiControlConfigPersistence {
         coldGameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         coldGameUiControlConfig.setAudioConfig(setupAudioConfig());
         coldGameUiControlConfig.setGameTipVisualConfig(setupGameTipVisualConfig());
+        coldGameUiControlConfig.setInGameQuestVisualConfig(setupInGameQuestVisualConfig());
         if (gameUiControlInput.checkPlayback()) {
             coldGameUiControlConfig.setWarmGameUiControlConfig(trackerPersistence.setupWarmGameUiControlConfig(gameUiControlInput));
         } else {
@@ -107,13 +109,24 @@ public class GameUiControlConfigPersistence {
         gameTipVisualConfig.setBaseItemPlacerShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
         gameTipVisualConfig.setGrabCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_GRAB_COMMAND_CORNER_COLOR));
         gameTipVisualConfig.setMoveCommandCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_MOVE_COMMAND_CORNER_COLOR));
-        gameTipVisualConfig.setToBeFinalizedCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_TO_BE_FINALIZED_CORENER_COLOR));
+        gameTipVisualConfig.setToBeFinalizedCornerColor(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_TO_BE_FINALIZED_CORNER_COLOR));
         gameTipVisualConfig.setWestLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_WEST_LEFT_MOUSE_IMAGE));
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SOUTH_LEFT_MOUSE_IMAGE));
         gameTipVisualConfig.setDirectionShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_DIRECTION_SHAPE3D));
         gameTipVisualConfig.setSplashScrollImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SPLASH_SCROLL_IMAGE));
         gameTipVisualConfig.setUseRightMouseButtonImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_USE_RIGHT_MOUSE_BUTTON_IMAGE));
         return gameTipVisualConfig;
+    }
+
+    private InGameQuestVisualConfig setupInGameQuestVisualConfig() {
+        InGameQuestVisualConfig inGameQuestVisualConfig = new InGameQuestVisualConfig();
+        inGameQuestVisualConfig.setCornerLength(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_LENGTH));
+        inGameQuestVisualConfig.setOutOfViewShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SHAPE3D));
+        inGameQuestVisualConfig.setMoveDistance(dbPropertiesService.getDoubleProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_MOVE_DISTANCE));
+        inGameQuestVisualConfig.setDuration(dbPropertiesService.getIntProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_MOVE_DURATION));
+        inGameQuestVisualConfig.setHarvestColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR));
+        inGameQuestVisualConfig.setAttackColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR));
+        return inGameQuestVisualConfig;
     }
 
     private AudioConfig setupAudioConfig() {

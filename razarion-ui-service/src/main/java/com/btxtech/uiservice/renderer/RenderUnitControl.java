@@ -20,8 +20,8 @@ public class RenderUnitControl {
     public static final RenderUnitControl SELECTION_FRAME = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
     public static final RenderUnitControl START_POINT_CIRCLE = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setDpDepthTest(false).setWriteDepthBuffer(false);
     public static final RenderUnitControl START_POINT_ITEM = new RenderUnitControl().setBlend(Blend.CONST_ALPHA).setConstAlpha(0.5).setBackCull(true);
-    public static final RenderUnitControl TERRAIN_TIP_IMAGE = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
-    public static final RenderUnitControl TERRAIN_TIP_CORNERS = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
+    public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_IMAGE = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
+    public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_CORNERS = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
 
     public enum Blend {
         SOURCE_ALPHA,

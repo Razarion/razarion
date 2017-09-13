@@ -2,7 +2,6 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -10,8 +9,12 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.uiservice.renderer.ViewField;
+import com.btxtech.uiservice.renderer.ViewService;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -26,7 +29,7 @@ import java.util.logging.Logger;
  * 06.01.2017.
  */
 @ApplicationScoped
-public class ResourceUiService {
+public class ResourceUiService implements ViewService.ViewFieldListener {
     private Logger logger = Logger.getLogger(ResourceUiService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
@@ -34,8 +37,16 @@ public class ResourceUiService {
     private SelectionHandler selectionHandler;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private ViewService viewService;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private final MapList<ResourceItemType, ModelMatrices> resourceModelMatrices = new MapList<>();
+    private SyncResourceItemSetPositionMonitor syncResourceItemSetPositionMonitor;
+
+    @PostConstruct
+    public void init() {
+        viewService.addViewFieldListeners(this);
+    }
 
     public void clear() {
         resources.clear();
@@ -48,16 +59,23 @@ public class ResourceUiService {
                 logger.warning("Resource already exists: " + syncResourceItem);
             }
         }
+        if (syncResourceItemSetPositionMonitor != null) {
+            syncResourceItemSetPositionMonitor.add(syncResourceItem);
+        }
         setupModelMatrices();
     }
 
     public void removeResource(int id) {
+        SyncResourceItemSimpleDto resource;
         synchronized (resources) {
-            SyncResourceItemSimpleDto resource = resources.remove(id);
+            resource = resources.remove(id);
             if (resource == null) {
                 throw new IllegalStateException("No resource for id: " + id);
             }
             selectionHandler.resourceItemRemove(resource);
+        }
+        if (syncResourceItemSetPositionMonitor != null) {
+            syncResourceItemSetPositionMonitor.remove(resource);
         }
         setupModelMatrices();
     }
@@ -110,9 +128,15 @@ public class ResourceUiService {
     private void setupModelMatrices() {
         synchronized (resourceModelMatrices) {
             resourceModelMatrices.clear();
+            Rectangle2D aabb = viewService.getCurrentAabb();
+            if(aabb == null) {
+                return;
+            }
             for (SyncResourceItemSimpleDto resourceItem : resources.values()) {
-                ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resourceItem.getItemTypeId());
-                resourceModelMatrices.put(resourceItemType, new ModelMatrices(resourceItem.getModel(), nativeMatrixFactory));
+                if (aabb.contains(resourceItem.getPosition2d())) {
+                    ResourceItemType resourceItemType = itemTypeService.getResourceItemType(resourceItem.getItemTypeId());
+                    resourceModelMatrices.put(resourceItemType, new ModelMatrices(resourceItem.getModel(), nativeMatrixFactory));
+                }
             }
         }
     }
@@ -129,5 +153,21 @@ public class ResourceUiService {
     public SyncItemMonitor monitorSyncResourceItem(SyncResourceItemSimpleDto syncResourceItemSimpleDto) {
         // No monitoring is done, since resources do not move
         return new SyncItemState(syncResourceItemSimpleDto, null, itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
+    }
+
+    public SyncResourceItemSetPositionMonitor createSyncItemSetPositionMonitor() {
+        if (syncResourceItemSetPositionMonitor != null) {
+            throw new IllegalStateException("BaseItemUiService.createSyncItemSetPositionMonitor() syncResourceItemSetPositionMonitor != null");
+        }
+        syncResourceItemSetPositionMonitor = new SyncResourceItemSetPositionMonitor(resources.values(), viewService.getCurrentViewField(), () -> syncResourceItemSetPositionMonitor = null);
+        return syncResourceItemSetPositionMonitor;
+    }
+
+    @Override
+    public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
+        setupModelMatrices();
+        if (syncResourceItemSetPositionMonitor != null) {
+            syncResourceItemSetPositionMonitor.onViewChanged(viewField);
+        }
     }
 }

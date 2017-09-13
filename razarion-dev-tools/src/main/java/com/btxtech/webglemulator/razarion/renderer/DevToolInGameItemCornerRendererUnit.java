@@ -9,7 +9,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import com.btxtech.uiservice.renderer.task.tip.AbstractInGameTipCornerRendererUnit;
+import com.btxtech.uiservice.renderer.task.visualization.AbstractInGameItemCornerRendererUnit;
 import com.btxtech.webglemulator.webgl.RenderMode;
 import com.btxtech.webglemulator.webgl.VertexShader;
 import com.btxtech.webglemulator.webgl.WebGlEmulator;
@@ -23,7 +23,7 @@ import java.util.List;
  * 07.12.2016.
  */
 @ColorBufferRenderer
-public class DevToolInGameTipCornerRendererUnit extends AbstractInGameTipCornerRendererUnit implements VertexShader {
+public class DevToolInGameItemCornerRendererUnit extends AbstractInGameItemCornerRendererUnit implements VertexShader {
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject

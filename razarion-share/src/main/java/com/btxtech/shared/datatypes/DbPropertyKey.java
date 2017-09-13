@@ -33,12 +33,19 @@ public enum DbPropertyKey {
     TIP_BASE_ITEM_PLACER_CORNER_COLOR("tip.baseItemPlacer.corner.color"),
     TIP_GRAB_COMMAND_CORNER_COLOR("tip.grab.command.corner.color"),
     TIP_MOVE_COMMAND_CORNER_COLOR("tip.move.command.corner.color"),
-    TIP_TO_BE_FINALIZED_CORENER_COLOR("tip.toBeFinalized.corner.color"),
+    TIP_TO_BE_FINALIZED_CORNER_COLOR("tip.toBeFinalized.corner.color"),
     TIP_WEST_LEFT_MOUSE_IMAGE("tip.west.leftMouseImage"),
     TIP_SOUTH_LEFT_MOUSE_IMAGE("tip.south.leftMouseImage"),
     TIP_DIRECTION_SHAPE3D("tip.direction.shape3d"),
     TIP_SPLASH_SCROLL_IMAGE("tip.splash.scroll.image"),
-    TIP_USE_RIGHT_MOUSE_BUTTON_IMAGE("tip.useRightMouseButton.image");
+    TIP_USE_RIGHT_MOUSE_BUTTON_IMAGE("tip.useRightMouseButton.image"),
+    // Quest in game visualization
+    QUEST_IN_GAME_VISUALIZATION_CORNER_LENGTH("questInGameVisualization.corner.length"),
+    QUEST_IN_GAME_VISUALIZATION_MOVE_DURATION("questInGameVisualization.move.duration"),
+    QUEST_IN_GAME_VISUALIZATION_MOVE_DISTANCE("questInGameVisualization.move.distance"),
+    QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SHAPE3D("questInGameVisualization.outOfView.shape3d"),
+    QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR("questInGameVisualization.corner.harvest.color"),
+    QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR("questInGameVisualization.corner.attack.color");
 
     private String key;
 
@@ -61,4 +68,4 @@ public enum DbPropertyKey {
                 " ,name='" + name() + '\'' +
                 '}';
     }
-}
+    }

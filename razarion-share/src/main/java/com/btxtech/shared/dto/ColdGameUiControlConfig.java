@@ -18,6 +18,7 @@ public class ColdGameUiControlConfig {
     private List<Shape3D> shape3Ds;
     private AudioConfig audioConfig;
     private GameTipVisualConfig gameTipVisualConfig;
+    private InGameQuestVisualConfig inGameQuestVisualConfig;
     private WarmGameUiControlConfig warmGameUiControlConfig;
 
     public StaticGameConfig getStaticGameConfig() {
@@ -62,6 +63,15 @@ public class ColdGameUiControlConfig {
 
     public ColdGameUiControlConfig setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
         this.gameTipVisualConfig = gameTipVisualConfig;
+        return this;
+    }
+
+    public InGameQuestVisualConfig getInGameQuestVisualConfig() {
+        return inGameQuestVisualConfig;
+    }
+
+    public ColdGameUiControlConfig setInGameQuestVisualConfig(InGameQuestVisualConfig inGameQuestVisualConfig) {
+        this.inGameQuestVisualConfig = inGameQuestVisualConfig;
         return this;
     }
 

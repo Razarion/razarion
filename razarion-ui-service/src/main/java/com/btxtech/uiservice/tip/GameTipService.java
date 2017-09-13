@@ -8,7 +8,7 @@ import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.ViewService;
-import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
+import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
 import com.btxtech.uiservice.tip.tiptask.AbstractTipTask;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.tip.tiptask.TipTaskContainer;
@@ -32,7 +32,7 @@ public class GameTipService {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private TipRenderTask tipRenderTask;
+    private ItemVisualizationRenderTask tipRenderTask;
     @Inject
     private GuiTipVisualizationService guiTipVisualizationService;
     @Inject

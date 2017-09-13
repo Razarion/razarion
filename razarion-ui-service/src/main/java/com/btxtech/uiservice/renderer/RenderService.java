@@ -15,7 +15,7 @@ import com.btxtech.uiservice.renderer.task.particle.ParticleRenderTask;
 import com.btxtech.uiservice.renderer.task.selection.ItemMarkerRenderTask;
 import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
-import com.btxtech.uiservice.renderer.task.tip.TipRenderTask;
+import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.inject.Instance;
@@ -62,7 +62,7 @@ public abstract class RenderService {
         addRenderTask(ProjectileRenderTask.class, "Projectile");
         addRenderTask(BaseItemPlacerRenderTask.class, "Base Item Placer");
         addRenderTask(SelectionFrameRenderTask.class, "Selection Frame");
-        addRenderTask(TipRenderTask.class, "Tip");
+        addRenderTask(ItemVisualizationRenderTask.class, "Tip");
         addRenderTask(ParticleRenderTask.class, "Particle");
 
         fillBuffers();

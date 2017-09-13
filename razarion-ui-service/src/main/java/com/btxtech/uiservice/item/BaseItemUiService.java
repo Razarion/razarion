@@ -2,6 +2,7 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -76,6 +78,7 @@ public class BaseItemUiService {
     private MapList<BaseItemType, ModelMatrices> builderModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> weaponTurretModelMatrices = new MapList<>();
     private long lastUpdateTimeStamp;
+    private SyncBaseItemSetPositionMonitor syncBaseItemSetPositionMonitor;
 
     public void clear() {
         bases.clear();
@@ -142,6 +145,10 @@ public class BaseItemUiService {
         int tmpItemCount = 0;
         int usedHouseSpace = 0;
         boolean radar = false;
+        Polygon2D viewFieldCache = null;
+        if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null) {
+            syncBaseItemSetPositionMonitor.init(viewService.getCurrentViewField().calculateCenter());
+        }
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (isMyOwnProperty(syncBaseItem)) {
@@ -154,14 +161,20 @@ public class BaseItemUiService {
             updateSyncItemMonitor(syncBaseItem);
             if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
+                if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && isMyEnemy(syncBaseItem) && !syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup()) {
+                    syncBaseItemSetPositionMonitor.notInViewAabb(syncBaseItem, baseItemType);
+                }
                 continue;
             }
+            boolean attackAble = true;
             // Spawning
             if (syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup()) {
+                attackAble = false;
                 spawningModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getSpawning(), nativeMatrixFactory));
             }
             // Buildup
             if (!syncBaseItem.checkSpawning() && !syncBaseItem.checkBuildup()) {
+                attackAble = false;
                 buildupModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getBuildup(), nativeMatrixFactory));
             }
             // Alive
@@ -171,6 +184,17 @@ public class BaseItemUiService {
                     weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity(), nativeMatrixFactory));
                 }
             }
+            if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(syncBaseItem)) {
+                if (viewFieldCache == null) {
+                    viewFieldCache = viewService.getCurrentViewField().toPolygon();
+                }
+                if (viewFieldCache.isInside(syncBaseItem.getPosition2d())) {
+                    syncBaseItemSetPositionMonitor.inViewAabb(syncBaseItem, baseItemType);
+                } else {
+                    syncBaseItemSetPositionMonitor.notInViewAabb(syncBaseItem, baseItemType);
+                }
+            }
+
             // Demolition
             if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && !syncBaseItem.checkHealth()) {
                 ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity(), syncBaseItem.getHealth(), nativeMatrixFactory);
@@ -307,6 +331,14 @@ public class BaseItemUiService {
         } else {
             return null;
         }
+    }
+
+    public SyncBaseItemSetPositionMonitor createSyncItemSetPositionMonitor(Set<Integer> itemTypeFilter) {
+        if (syncBaseItemSetPositionMonitor != null) {
+            throw new IllegalStateException("BaseItemUiService.createSyncItemSetPositionMonitor() syncBaseItemSetPositionMonitor != null");
+        }
+        syncBaseItemSetPositionMonitor = new SyncBaseItemSetPositionMonitor(itemTypeFilter, () -> syncBaseItemSetPositionMonitor = null);
+        return syncBaseItemSetPositionMonitor;
     }
 
     public int getResources() {

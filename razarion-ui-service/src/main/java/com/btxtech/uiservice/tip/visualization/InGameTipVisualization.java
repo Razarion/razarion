@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.uiservice.datatypes.InGameItemVisualization;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrix;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
@@ -20,7 +21,7 @@ import java.util.List;
  * Date: 21.08.12
  * Time: 22:51
  */
-public abstract class InGameTipVisualization implements ViewService.ViewFieldListener {
+public abstract class InGameTipVisualization implements InGameItemVisualization, ViewService.ViewFieldListener {
     private static final int READY_CHECK_DELAY = 500;
     private List<Vertex> cornerVertices;
     private final double moveDistance;
@@ -41,7 +42,7 @@ public abstract class InGameTipVisualization implements ViewService.ViewFieldLis
         this.shape3DId = shape3DId;
         this.outOfViewShape3DId = outOfViewShape3DId;
         this.nativeMatrixFactory = nativeMatrixFactory;
-        setupCornerVertices(cornerLength);
+        cornerVertices = setupCornerVertices(cornerLength);
     }
 
     abstract Vertex getPosition3D();
@@ -147,16 +148,6 @@ public abstract class InGameTipVisualization implements ViewService.ViewFieldLis
 
     public List<Vertex> getCornerVertices() {
         return cornerVertices;
-    }
-
-    private void setupCornerVertices(double cornerLength) {
-        cornerVertices = new ArrayList<>();
-        // Leg 1
-        cornerVertices.add(new Vertex(-cornerLength, 0, 0));
-        cornerVertices.add(new Vertex(0, 0, 0));
-        // Leg 2
-        cornerVertices.add(new Vertex(0, 0, 0));
-        cornerVertices.add(new Vertex(0, cornerLength, 0));
     }
 
     @Override
