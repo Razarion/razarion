@@ -51,6 +51,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
     public void clear() {
         resources.clear();
         resourceModelMatrices.clear();
+        syncResourceItemSetPositionMonitor = null;
     }
 
     public void addResource(SyncResourceItemSimpleDto syncResourceItem) {

@@ -97,6 +97,7 @@ public class BaseItemUiService {
         builderModelMatrices.clear();
         weaponTurretModelMatrices.clear();
         lastUpdateTimeStamp = 0;
+        syncBaseItemSetPositionMonitor = null;
     }
 
     public Collection<BaseItemType> getBaseItemTypes() {
