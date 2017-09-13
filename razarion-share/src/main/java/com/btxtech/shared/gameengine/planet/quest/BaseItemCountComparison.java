@@ -26,9 +26,11 @@ import javax.enterprise.context.Dependent;
 @Dependent
 public class BaseItemCountComparison extends AbstractBaseItemComparison {
     private int count;
+    private double countTotal;
 
     public void init(int count) {
         this.count = count;
+        countTotal = count;
     }
 
     @Override
@@ -60,6 +62,6 @@ public class BaseItemCountComparison extends AbstractBaseItemComparison {
 
     @Override
     public QuestProgressInfo generateQuestProgressInfo() {
-        return new QuestProgressInfo().setCount(count);
+        return new QuestProgressInfo().setCount((int) (countTotal - count));
     }
 }
