@@ -158,7 +158,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
 
     public SyncResourceItemSetPositionMonitor createSyncItemSetPositionMonitor() {
         if (syncResourceItemSetPositionMonitor != null) {
-            throw new IllegalStateException("BaseItemUiService.createSyncItemSetPositionMonitor() syncResourceItemSetPositionMonitor != null");
+            throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() syncResourceItemSetPositionMonitor != null");
         }
         syncResourceItemSetPositionMonitor = new SyncResourceItemSetPositionMonitor(resources.values(), viewService.getCurrentViewField(), () -> syncResourceItemSetPositionMonitor = null);
         return syncResourceItemSetPositionMonitor;
