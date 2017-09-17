@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 public class PlanetService implements Runnable { // Only available in worker. On ui part is GameUiControl
     public static final PlanetMode MODE = PlanetMode.MASTER;
     public static final int TICK_TIME_MILLI_SECONDS = 100;
+    public static final int TICKS_PER_SECONDS = (int) (1000.0 / TICK_TIME_MILLI_SECONDS);
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
     private Logger logger = Logger.getLogger(PlanetService.class.getName());
     @Inject
@@ -163,6 +164,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
             slaveSyncItemInfo.setActualBaseId(playerBase.getBaseId());
         }
         slaveSyncItemInfo.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
+        slaveSyncItemInfo.setSyncBoxItemInfos(boxService.getSyncBoxItemInfos());
         return slaveSyncItemInfo;
     }
 }

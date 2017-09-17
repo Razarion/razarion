@@ -91,11 +91,14 @@ public abstract class SyncItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SyncItem)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SyncItem)) {
+            return false;
+        }
 
         SyncItem syncItem = (SyncItem) o;
-
         return id == syncItem.id;
 
     }

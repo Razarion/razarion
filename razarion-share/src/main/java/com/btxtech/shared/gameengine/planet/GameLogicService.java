@@ -160,6 +160,10 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeletedSlave(box));
     }
 
+    public void onBoxDeleted(SyncBoxItem box) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box));
+    }
+
     public void onBuilderNoRazarion(SyncBaseItem syncBaseItem) {
     }
 

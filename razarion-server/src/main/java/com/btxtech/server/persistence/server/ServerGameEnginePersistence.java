@@ -9,6 +9,7 @@ import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -81,6 +82,10 @@ public class ServerGameEnginePersistence {
     @Transactional
     public Collection<BotConfig> readBotConfigs() {
         return read().getBotConfigs();
+    }
+
+    public Collection<BoxRegionConfig> readBoxRegionConfigs() {
+        return read().getBoxRegionConfigs();
     }
 
     @Transactional

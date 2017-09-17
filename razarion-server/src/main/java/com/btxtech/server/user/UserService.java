@@ -2,6 +2,7 @@ package com.btxtech.server.user;
 
 import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
+import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -156,16 +157,30 @@ public class UserService {
     }
 
     @Transactional
-    public void persistLevel(Integer userId, LevelEntity newLevel) {
+    public void persistLevel(int userId, LevelEntity newLevel) {
         UserEntity userEntity = getUserEntity(userId);
         userEntity.setLevel(newLevel);
         entityManager.merge(userEntity);
     }
 
     @Transactional
-    public void persistXp(Integer userId, int xp) {
+    public void persistXp(int userId, int xp) {
         UserEntity userEntity = getUserEntity(userId);
         userEntity.setXp(xp);
+        entityManager.merge(userEntity);
+    }
+
+    @Transactional
+    public void persistAddInventoryItem(int userId, InventoryItemEntity inventoryItemEntity) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.addInventoryItem(inventoryItemEntity);
+        entityManager.merge(userEntity);
+    }
+
+    @Transactional
+    public void persistRemoveInventoryItem(int userId, InventoryItemEntity inventoryItemEntity) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.removeInventoryItem(inventoryItemEntity);
         entityManager.merge(userEntity);
     }
 

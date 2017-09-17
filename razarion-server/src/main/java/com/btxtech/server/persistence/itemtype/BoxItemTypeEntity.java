@@ -40,7 +40,7 @@ public class BoxItemTypeEntity {
     private ImageLibraryEntity thumbnail;
     private double radius;
     private boolean fixVerticalNorm;
-    private Integer ttl;
+    private Integer ttl; // seconds
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity i18nName;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

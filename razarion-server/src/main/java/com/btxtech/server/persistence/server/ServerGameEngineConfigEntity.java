@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -43,6 +44,9 @@ public class ServerGameEngineConfigEntity {
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
     private List<ServerResourceRegionConfigEntity> resourceRegionConfigs;
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "serverGameEngineId", nullable = false)
+    private List<ServerBoxRegionConfigEntity> boxRegionConfigs;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
     private List<StartRegionLevelConfigEntity> startRegionLevelConfigs;
@@ -86,6 +90,17 @@ public class ServerGameEngineConfigEntity {
             botConfigs.add(botConfigEntity.toBotConfig());
         }
         return botConfigs;
+    }
+
+    public Collection<BoxRegionConfig> getBoxRegionConfigs() {
+        Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
+        if (this.boxRegionConfigs == null) {
+            return boxRegionConfigs;
+        }
+        for (ServerBoxRegionConfigEntity serverBoxRegionConfigEntity : this.boxRegionConfigs) {
+            boxRegionConfigs.add(serverBoxRegionConfigEntity.toBoxRegionConfig());
+        }
+        return boxRegionConfigs;
     }
 
     public void setPlanetEntity(PlanetEntity planetEntity) {

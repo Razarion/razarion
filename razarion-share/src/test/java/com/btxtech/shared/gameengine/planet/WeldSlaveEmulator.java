@@ -35,12 +35,17 @@ public class WeldSlaveEmulator extends WeldBaseTest {
 
         @Override
         public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-            getWeldBean(BaseItemService.class).onSlaveSyncBaseItemChanged(syncBaseItem.getSyncInfo());
+            getBaseItemService().onSlaveSyncBaseItemChanged(syncBaseItem.getSyncInfo());
         }
 
         @Override
         public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
-            getWeldBean(BaseItemService.class).onSlaveSyncBaseItemChanged(syncBaseItem.getSyncInfo());
+            getBaseItemService().onSlaveSyncBaseItemChanged(syncBaseItem.getSyncInfo());
+        }
+
+        @Override
+        public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {
+            getBoxService().onSlaveSyncBoxItemChanged(syncBoxItem.getSyncInfo());
         }
 
         @Override

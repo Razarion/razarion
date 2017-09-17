@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public class SlaveSyncItemInfo {
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<PlayerBaseInfo> playerBaseInfos;
     private List<SyncResourceItemInfo> syncResourceItemInfos;
-    // TODO boxes
+    private List<SyncBoxItemInfo> syncBoxItemInfos;
 
     public Integer getActualBaseId() {
         return actualBaseId;
@@ -53,5 +54,12 @@ public class SlaveSyncItemInfo {
         return this;
     }
 
+    public List<SyncBoxItemInfo> getSyncBoxItemInfos() {
+        return syncBoxItemInfos;
+    }
 
+    public SlaveSyncItemInfo setSyncBoxItemInfos(List<SyncBoxItemInfo> syncBoxItemInfos) {
+        this.syncBoxItemInfos = syncBoxItemInfos;
+        return this;
+    }
 }

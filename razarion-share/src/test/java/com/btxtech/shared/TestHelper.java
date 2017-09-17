@@ -14,6 +14,9 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,6 +39,12 @@ public class TestHelper {
         }
     }
 
+    public static void assertIds(Collection<Integer> actualIds, Integer... expectedIds) {
+        Assert.assertEquals("Wrong size", expectedIds.length, actualIds.size());
+        Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedIds));
+        expectedCollection.removeAll(actualIds);
+        Assert.assertTrue(expectedCollection.isEmpty());
+    }
 
     public static void assertVertex(Vertex expected, Vertex actual) {
         String message = "Expected: " + expected + " but was: " + actual;

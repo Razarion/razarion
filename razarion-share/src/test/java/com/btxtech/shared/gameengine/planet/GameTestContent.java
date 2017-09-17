@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
@@ -12,6 +13,8 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ConsumerType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
@@ -41,9 +44,13 @@ public interface GameTestContent {
     int CONSUMER_ITEM_TYPE_ID = 5;
     int HARVESTER_ITEM_TYPE_ID = 6;
     int RESOURCE_ITEM_TYPE_ID = 101;
+    int BOX_ITEM_TYPE_ID = 501;
+    int BOX_ITEM_TYPE_LONG_ID = 502;
     int LEVEL_ID_1 = 1;
     int QUEST_CONFIG_1_ID = 1001;
     int QUEST_CONFIG_2_ID = 1002;
+    int INVENTORY_ITEM_ATTACKER_ID = 1;
+    int INVENTORY_ITEM_GOLD_ID = 1;
 
     static StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
@@ -51,6 +58,8 @@ public interface GameTestContent {
         staticGameConfig.setLevelConfigs(setupLevelConfigs());
         staticGameConfig.setBaseItemTypes(setupBaseItemType());
         staticGameConfig.setResourceItemTypes(setupResourceItemType());
+        staticGameConfig.setBoxItemTypes(setupBoxItemType());
+        staticGameConfig.setInventoryItems(setupInventoryItems());
         return staticGameConfig;
     }
 
@@ -76,7 +85,7 @@ public interface GameTestContent {
 
     static void setupBuilder(List<BaseItemType> baseItemTypes) {
         BaseItemType bulldozer = new BaseItemType();
-        bulldozer.setHealth(40).setId(BUILDER_ITEM_TYPE_ID).setInternalName("Builder test");
+        bulldozer.setHealth(40).setBoxPickupRange(1).setId(BUILDER_ITEM_TYPE_ID).setInternalName("Builder test");
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(2).setSpeed(20.0));
         bulldozer.setBuilderType(new BuilderType().setAbleToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID)).setAnimationOrigin(new Vertex(3, 5, 17)).setProgress(5).setRange(2.7));
         baseItemTypes.add(bulldozer);
@@ -133,6 +142,41 @@ public interface GameTestContent {
         resourceItemType.setId(RESOURCE_ITEM_TYPE_ID).setInternalName("Test resource");
         resourceItemType.setRadius(1).setAmount(10000000).setFixVerticalNorm(false);
         baseItemTypes.add(resourceItemType);
+    }
+
+    static List<BoxItemType> setupBoxItemType() {
+        List<BoxItemType> boxItemTypes = new ArrayList<>();
+        setupBox(boxItemTypes);
+        setupLongBox(boxItemTypes);
+        return boxItemTypes;
+    }
+
+    static void setupBox(List<BoxItemType> boxItemTypes) {
+        BoxItemType resourceItemType = new BoxItemType();
+        resourceItemType.setId(BOX_ITEM_TYPE_ID).setInternalName("Test box");
+        resourceItemType.setRadius(1).setFixVerticalNorm(false);
+        // resourceItemType.setBoxItemTypePossibilities()
+        resourceItemType.setTtl(250);
+        boxItemTypes.add(resourceItemType);
+    }
+
+    static void setupLongBox(List<BoxItemType> boxItemTypes) {
+        BoxItemType resourceItemType = new BoxItemType();
+        resourceItemType.setId(BOX_ITEM_TYPE_LONG_ID).setInternalName("Test box long");
+        resourceItemType.setRadius(1).setFixVerticalNorm(false);
+        List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
+        boxItemTypePossibilities.add(new BoxItemTypePossibility().setInventoryItemId(INVENTORY_ITEM_ATTACKER_ID).setPossibility(1));
+        boxItemTypePossibilities.add(new BoxItemTypePossibility().setInventoryItemId(INVENTORY_ITEM_GOLD_ID).setPossibility(1));
+        resourceItemType.setBoxItemTypePossibilities(boxItemTypePossibilities);
+        resourceItemType.setTtl(Integer.MAX_VALUE);
+        boxItemTypes.add(resourceItemType);
+    }
+
+    static List<InventoryItem> setupInventoryItems() {
+        List<InventoryItem> inventoryItems = new ArrayList<>();
+        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM_ATTACKER_ID).setBaseItemTypeCount(3).setBaseItemTypeId(ATTACKER_ITEM_TYPE_ID).setBaseItemTypeFreeRange(1));
+        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM_GOLD_ID).setGold(100));
+        return inventoryItems;
     }
 
     static List<LevelConfig> setupLevelConfigs() {

@@ -4,6 +4,7 @@ import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -83,6 +84,11 @@ public class ClientGameConnectionService {
 
     public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
+    }
+
+    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
+        //TODO
+        throw new UnsupportedOperationException();
     }
 
     public Collection<ClientGameConnection> getClientGameConnections() {

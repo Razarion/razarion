@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.shared.datatypes.HumanPlayerId;
@@ -51,6 +52,11 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = @JoinColumn(name = "quest"))
     private List<QuestConfigEntity> completedQuest;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "USER_INVENTORY",
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "inventory"))
+    private List<InventoryItemEntity> inventory;
     private Locale locale;
     private int xp;
     private int crystals;
@@ -122,6 +128,20 @@ public class UserEntity {
         } else {
             return null;
         }
+    }
+
+    public void addInventoryItem(InventoryItemEntity inventoryItemEntity) {
+        if (inventory == null) {
+            inventory = new ArrayList<>();
+        }
+        inventory.add(inventoryItemEntity);
+    }
+
+    public void removeInventoryItem(InventoryItemEntity inventoryItemEntity) {
+        if (inventory == null) {
+            return;
+        }
+        inventory.remove(inventoryItemEntity);
     }
 
     public Locale getLocale() {

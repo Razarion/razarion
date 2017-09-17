@@ -29,7 +29,7 @@ public class ServerResourceRegionConfigEntity implements ObjectNameIdProvider {
     private String internalName;
     private int count;
     private double minDistanceToItems;
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private ResourceItemTypeEntity resourceItemType;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity region;

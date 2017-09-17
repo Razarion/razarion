@@ -86,6 +86,10 @@ public class WeldBaseTest {
         return getWeldBean(QuestService.class);
     }
 
+    public BoxService getBoxService() {
+        return getWeldBean(BoxService.class);
+    }
+
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {
         return baseItemService.getSyncBaseItemInfos();
     }
@@ -148,6 +152,31 @@ public class WeldBaseTest {
         return found.get(0);
     }
 
+    public SyncBoxItem findSyncBoxItem(int boxItemTypeId, SyncBoxItem... exclusion) {
+        List<SyncBoxItem> exclusionList = Arrays.asList(exclusion);
+        List<SyncBoxItem> found = new ArrayList<>();
+
+        getSyncItemContainerService().iterateOverItems(false, true, null, syncItem -> {
+            if (!(syncItem instanceof SyncBoxItem)) {
+                return null;
+            }
+            SyncBoxItem syncBoxItem = (SyncBoxItem) syncItem;
+            if (exclusionList.contains(syncBoxItem)) {
+                return null;
+            }
+            found.add(syncBoxItem);
+            return null;
+        });
+
+        if (found.isEmpty()) {
+            throw new IllegalArgumentException("No SyncBoxItem found for id: " + boxItemTypeId);
+        }
+        if (found.size() > 1) {
+            throw new IllegalArgumentException("More then one SyncBoxItem found for id: " + boxItemTypeId);
+        }
+        return found.get(0);
+    }
+
     public TestGameLogicListener getTestGameLogicListener() {
         return testGameLogicListener;
     }
@@ -188,9 +217,9 @@ public class WeldBaseTest {
             }
             return null;
         });
-        Assert.assertEquals("Base items", baseCount, (int)actualBaseCount.getO());
-        Assert.assertEquals("Resource items", resourceCount, (int)actualResourceCount.getO());
-        Assert.assertEquals("Box items", boxCount, (int)actualBoxCount.getO());
+        Assert.assertEquals("Base items", baseCount, (int) actualBaseCount.getO());
+        Assert.assertEquals("Resource items", resourceCount, (int) actualResourceCount.getO());
+        Assert.assertEquals("Box items", boxCount, (int) actualBoxCount.getO());
     }
 
     public void printAllSyncItems() {

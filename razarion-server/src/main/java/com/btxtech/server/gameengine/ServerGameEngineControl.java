@@ -6,12 +6,14 @@ import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.server.user.ServerInventoryService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -76,6 +78,8 @@ public class ServerGameEngineControl implements GameLogicListener {
     private BoxService boxService;
     @Inject
     private PlanetBackupMongoDb planetBackupMongoDb;
+    @Inject
+    private ServerInventoryService serverInventoryService;
     private final Object reloadLook = new Object();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -90,7 +94,7 @@ public class ServerGameEngineControl implements GameLogicListener {
                 planetService.restoreBases(finaBackupPlanetInfo);
             }
             resourceService.startResourceRegions();
-            boxService.startBoxRegions();
+            boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
             botService.startBots(serverGameEnginePersistence.readBotConfigs());
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
         if (activateQuests) {
@@ -237,6 +241,12 @@ public class ServerGameEngineControl implements GameLogicListener {
     @Override
     public void onSyncBoxDeleted(SyncBoxItem box) {
         clientGameConnectionService.onSyncItemRemoved(box, false);
+    }
+
+    @Override
+    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
+        serverInventoryService.onBoxPicked(humanPlayerId, boxContent);
+        clientGameConnectionService.onBoxPicked(humanPlayerId, boxContent);
     }
 
     @Override

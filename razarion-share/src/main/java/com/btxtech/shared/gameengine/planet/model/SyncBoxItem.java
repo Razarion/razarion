@@ -25,11 +25,11 @@ import javax.enterprise.context.Dependent;
  */
 @Dependent
 public class SyncBoxItem extends SyncItem {
-    private long createdTimeStamp; // Is not synchronized
+    private int ttlCount; // Is not synchronized
     private boolean alive; // Synchronized in super class
 
-    public void setup() {
-        createdTimeStamp = System.currentTimeMillis();
+    public void setup(int ttlCount) {
+        this.ttlCount = ttlCount;
         alive = true;
     }
 
@@ -42,9 +42,15 @@ public class SyncBoxItem extends SyncItem {
         alive = false;
     }
 
-    public boolean isInTTL() {
-        return getBoxItemType().getTtl() == null || System.currentTimeMillis() - createdTimeStamp < getBoxItemType().getTtl();
-
+    /**
+     * Tick the box
+     *
+     * @param ttlAmount amount of ticks to subtract from TTL count
+     * @return return true if still in valid TTL
+     */
+    public boolean tickTtl(int ttlAmount) {
+        ttlCount -= ttlAmount;
+        return ttlCount > 0;
     }
 
     public BoxItemType getBoxItemType() {
