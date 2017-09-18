@@ -15,7 +15,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.utils.CommonUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.event.Observes;
@@ -85,6 +84,17 @@ public class BoxService {
         ticksSinceLastCheck = 0;
     }
 
+    public void stopBoxRegions() {
+        boxRegion = null;
+        synchronized (boxes) {
+            boxes.values().forEach(syncBoxItem -> {
+                removeSyncBox(syncBoxItem);
+                gameLogicService.onBoxDeletedSlave(syncBoxItem);
+            });
+            boxes.clear();
+        }
+    }
+
     public void dropBoxes(List<BoxItemPosition> boxItemPositions) {
         for (BoxItemPosition boxItemPosition : boxItemPositions) {
             dropBox(boxItemPosition.getBoxItemTypeId(), boxItemPosition.getPosition(), boxItemPosition.getRotationZ());
@@ -94,7 +104,11 @@ public class BoxService {
     public SyncBoxItem dropBox(Integer boxItemTypeId, DecimalPosition position2d, double zRotation) {
         BoxItemType boxItemType = itemTypeService.getBoxItemType(boxItemTypeId);
         SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItem(boxItemType, position2d, zRotation);
-        syncBoxItem.setup(CommonUtils.valueOrDefault(boxItemType.getTtl(), Integer.MAX_VALUE) * PlanetService.TICKS_PER_SECONDS);
+        int ttlTicks = Integer.MAX_VALUE;
+        if (boxItemType.getTtl() != null) {
+            ttlTicks = boxItemType.getTtl() * PlanetService.TICKS_PER_SECONDS;
+        }
+        syncBoxItem.setup(ttlTicks);
         synchronized (boxes) {
             boxes.put(syncBoxItem.getId(), syncBoxItem);
         }
@@ -108,8 +122,8 @@ public class BoxService {
         }
 
         removeSyncBox(box);
+        gameLogicService.onBoxDeletedSlave(box);
         if (picker.getBase().isAbandoned()) {
-            gameLogicService.onBoxDeletedSlave(box);
             return;
         }
 
@@ -190,8 +204,8 @@ public class BoxService {
             boxesToRemove = boxes.values().stream().filter(syncBoxItem -> !syncBoxItem.tickTtl((int) TICK_TO_SLEEP_MS)).collect(Collectors.toList());
         }
         boxesToRemove.forEach(syncBoxItem -> {
-            gameLogicService.onBoxDeleted(syncBoxItem);
             removeSyncBox(syncBoxItem);
+            gameLogicService.onBoxDeleted(syncBoxItem);
         });
         boxRegion.forEach(this::handleBoxRegion);
     }

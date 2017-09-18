@@ -51,7 +51,7 @@ public class ItemTypeService {
     public BoxItemType getBoxItemType(Integer boxItemTypeId) {
         BoxItemType boxItemType = boxItemTypes.get(boxItemTypeId);
         if (boxItemType == null) {
-            throw new NoSuchItemTypeException(BaseItemType.class, boxItemTypeId);
+            throw new NoSuchItemTypeException(BoxItemType.class, boxItemTypeId);
         }
         return boxItemType;
     }

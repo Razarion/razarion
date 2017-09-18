@@ -2,7 +2,10 @@ package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.dto.BoxRegionConfig;
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -19,7 +22,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "SERVER_BOX_REGION_CONFIG")
-public class ServerBoxRegionConfigEntity {
+public class ServerBoxRegionConfigEntity implements ObjectNameIdProvider {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -33,6 +36,10 @@ public class ServerBoxRegionConfigEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity region;
 
+    public Integer getId() {
+        return id;
+    }
+
     public BoxRegionConfig toBoxRegionConfig() {
         BoxRegionConfig boxRegionConfig = new BoxRegionConfig().setId(id).setInternalName(internalName).setCount(count).setMinInterval(minInterval).setMaxInterval(maxInterval).setMinDistanceToItems(minDistanceToItems);
         if (boxItemTypeId != null) {
@@ -42,6 +49,28 @@ public class ServerBoxRegionConfigEntity {
             boxRegionConfig.setRegion(region.toPlaceConfig());
         }
         return boxRegionConfig;
+    }
+
+    public void fromBoxRegionConfig(ItemTypePersistence itemTypePersistence, BoxRegionConfig boxRegionConfig) {
+        internalName = boxRegionConfig.getInternalName();
+        boxItemTypeId = itemTypePersistence.readBoxItemTypeEntity(boxRegionConfig.getBoxItemTypeId());
+        minInterval = boxRegionConfig.getMinInterval();
+        maxInterval = boxRegionConfig.getMaxInterval();
+        count = boxRegionConfig.getCount();
+        minDistanceToItems = boxRegionConfig.getMinDistanceToItems();
+        if (region != null && boxRegionConfig.getRegion() != null) {
+            region.fromPlaceConfig(boxRegionConfig.getRegion());
+        } else if (region != null && boxRegionConfig.getRegion() == null) {
+            region = null;
+        } else if (region == null && boxRegionConfig.getRegion() != null) {
+            region = new PlaceConfigEntity();
+            region.fromPlaceConfig(boxRegionConfig.getRegion());
+        }
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     @Override

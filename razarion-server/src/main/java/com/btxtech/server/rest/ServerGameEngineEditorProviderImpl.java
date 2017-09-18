@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -279,6 +280,56 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     public BotConfig readBotConfig(int id) {
         try {
             return serverGameEnginePersistence.getBotConfigCrud().read(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public BoxRegionConfig createBoxRegionConfig() {
+        try {
+            return serverGameEnginePersistence.getBoxRegionConfigCrud().create();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateBoxRegionConfig(BoxRegionConfig resourceRegionConfig) {
+        try {
+            serverGameEnginePersistence.getBoxRegionConfigCrud().update(resourceRegionConfig);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void deleteBoxRegionConfig(int id) {
+        try {
+            serverGameEnginePersistence.getBoxRegionConfigCrud().delete(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public BoxRegionConfig readBoxRegionConfig(int id) {
+        try {
+            return serverGameEnginePersistence.getBoxRegionConfigCrud().read(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<ObjectNameId> readBoxRegionObjectNameIds() {
+        try {
+            return serverGameEnginePersistence.getBoxRegionConfigCrud().readObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

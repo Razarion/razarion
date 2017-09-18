@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
@@ -154,4 +155,30 @@ public interface ServerGameEngineEditorProvider {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readBotConfig/{id}")
     BotConfig readBotConfig(@PathParam("id") int id);
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("createBoxRegionConfig")
+    BoxRegionConfig createBoxRegionConfig();
+
+    @PUT
+    @Path("updateBoxRegionConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateBoxRegionConfig(BoxRegionConfig resourceRegionConfig);
+
+    @DELETE
+    @Path("deleteBoxRegionConfig/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteBoxRegionConfig(@PathParam("id") int id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readBoxRegionConfig/{id}")
+    BoxRegionConfig readBoxRegionConfig(@PathParam("id") int id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readBoxRegionObjectNameIds")
+    List<ObjectNameId> readBoxRegionObjectNameIds();
+
 }

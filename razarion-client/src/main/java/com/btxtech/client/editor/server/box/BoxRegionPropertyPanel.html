@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div id="propertyPanel">
+    <table style="border-spacing: 0; border-collapse: separate;">
+        <tr>
+            <td>Id</td>
+            <td>
+                <div id="id"></div>
+            </td>
+        </tr>
+        <tr>
+            <td><label for="internalName">Internal Name</label></td>
+            <td><input id="internalName"></td>
+        </tr>
+        <tr>
+            <td>Box item type</td>
+            <td><div id="boxItemTypeWidget"></div></td>
+        </tr>
+        <tr>
+            <td><label for="minInterval">Min interva</label></td>
+            <td><input id="minInterval" type="number" min="0" step="1">[s]</td>
+        </tr>
+        <tr>
+            <td><label for="maxInterval">Max interval</label></td>
+            <td><input id="maxInterval" type="number" min="0" step="1">[s]</td>
+        </tr>
+        <tr>
+            <td>Place config</td>
+            <td><div id="region"></div></td>
+        </tr>
+        <tr>
+            <td><label for="count">Count</label></td>
+            <td><input id="count" type="number" min="0" step="1"></td>
+        </tr>
+        <tr>
+            <td><label for="minDistanceToItems">Minimal distance to items</label></td>
+            <td><input id="minDistanceToItems" type="number" min="0"></td>
+        </tr>
+        <tr>
+            <td>Polygon</td>
+            <td>
+                <div id="polygonField"></div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * Created by Beat
  * on 15.09.2017.
  */
-public class BoxRegionConfig {
+public class BoxRegionConfig implements ObjectNameIdProvider{
     private int id;
     private String internalName;
     private Integer boxItemTypeId;
@@ -86,5 +86,10 @@ public class BoxRegionConfig {
     public BoxRegionConfig setRegion(PlaceConfig region) {
         this.region = region;
         return this;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 }

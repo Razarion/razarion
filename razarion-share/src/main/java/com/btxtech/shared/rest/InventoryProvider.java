@@ -15,6 +15,6 @@ import javax.ws.rs.core.MediaType;
 public interface InventoryProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{id}")
+    @Path("loadInventory")
     InventoryInfo loadInventory();
 }

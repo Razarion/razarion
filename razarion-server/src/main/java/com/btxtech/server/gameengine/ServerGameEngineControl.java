@@ -146,6 +146,14 @@ public class ServerGameEngineControl implements GameLogicListener {
     }
 
     @SecurityCheck
+    public void restartBoxRegions() {
+        synchronized (reloadLook) {
+            boxService.stopBoxRegions();
+            boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
+        }
+    }
+
+    @SecurityCheck
     public void restartPlanet() {
         long time = System.currentTimeMillis();
         BackupPlanetInfo backupPlanetInfo = planetService.backup(true);

@@ -16,6 +16,7 @@ import com.btxtech.client.editor.particle.ParticleCrudeSidebar;
 import com.btxtech.client.editor.perfmon.PerfmonDialog;
 import com.btxtech.client.editor.renderpanel.RenderEngineEditorPanel;
 import com.btxtech.client.editor.server.bot.BotSidebar;
+import com.btxtech.client.editor.server.box.BoxRegionSidebar;
 import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
@@ -67,6 +68,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button resourceRegionButton;
+    @Inject
+    @DataField
+    private Button boxRegionButton;
     @Inject
     @DataField
     private Button startRegionsButton;
@@ -154,6 +158,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("resourceRegionButton")
     private void onResourceRegionsButtonClicked(ClickEvent event) {
         openEditor(ResourceRegionSidebar.class);
+    }
+
+    @EventHandler("boxRegionButton")
+    private void onBoxRegionsButtonClicked(ClickEvent event) {
+        openEditor(BoxRegionSidebar.class);
     }
 
     @EventHandler("startRegionsButton")

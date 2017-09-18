@@ -61,6 +61,8 @@ public class ServerGameEnginePersistence {
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig>> resourceRegionCrud;
     @Inject
     private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig>> botConfigCrud;
+    @Inject
+    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig>> boxRegionCrud;
 
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
@@ -84,6 +86,7 @@ public class ServerGameEnginePersistence {
         return read().getBotConfigs();
     }
 
+    @Transactional
     public Collection<BoxRegionConfig> readBoxRegionConfigs() {
         return read().getBoxRegionConfigs();
     }
@@ -286,6 +289,20 @@ public class ServerGameEnginePersistence {
         crud.setEntityFactory(() -> new BotConfigEntity().setAutoAttack(true));
         crud.setEntityFiller((botConfigEntity, botConfig) -> {
             botConfigEntity.fromBotConfig(itemTypePersistence, botConfig);
+        });
+        return crud;
+    }
+
+    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> getBoxRegionConfigCrud() {
+        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> crud = boxRegionCrud.get();
+        crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
+        crud.setEntitiesGetter((entityManager) -> read().getServerBoxRegionConfigEntities());
+        crud.setEntitiesSetter((entityManager, boxRegionConfigEntities) -> read().setServerBoxRegionConfigEntities(boxRegionConfigEntities));
+        crud.setEntityIdProvider(ServerBoxRegionConfigEntity::getId).setConfigIdProvider(BoxRegionConfig::getId);
+        crud.setConfigGenerator(ServerBoxRegionConfigEntity::toBoxRegionConfig);
+        crud.setEntityFactory(ServerBoxRegionConfigEntity::new);
+        crud.setEntityFiller((serverBoxRegionConfigEntity, boxRegionConfig) -> {
+            serverBoxRegionConfigEntity.fromBoxRegionConfig(itemTypePersistence, boxRegionConfig);
         });
         return crud;
     }

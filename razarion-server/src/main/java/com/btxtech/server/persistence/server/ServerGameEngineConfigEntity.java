@@ -206,6 +206,14 @@ public class ServerGameEngineConfigEntity {
         this.botConfigs = botConfigs;
     }
 
+    public List<ServerBoxRegionConfigEntity> getServerBoxRegionConfigEntities() {
+        return boxRegionConfigs;
+    }
+
+    public void setServerBoxRegionConfigEntities(List<ServerBoxRegionConfigEntity> boxRegionConfigs) {
+        this.boxRegionConfigs = boxRegionConfigs;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

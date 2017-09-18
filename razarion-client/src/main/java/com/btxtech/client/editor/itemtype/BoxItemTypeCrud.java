@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class BoxItemTypeCrud extends AbstractCrudeEditor<BoxItemType> {
     private Logger logger = Logger.getLogger(BoxItemTypeCrud.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<ItemTypeProvider> provider;
     @Inject
@@ -31,13 +30,10 @@ public class BoxItemTypeCrud extends AbstractCrudeEditor<BoxItemType> {
 
     @Override
     public void create() {
-        provider.call(new RemoteCallback<BoxItemType>() {
-            @Override
-            public void callback(BoxItemType boxItemType) {
-                itemTypeService.overrideBoxItemType(boxItemType);
-                fire();
-                fireSelection(boxItemType.createObjectNameId());
-            }
+        provider.call((RemoteCallback<BoxItemType>) boxItemType -> {
+            itemTypeService.overrideBoxItemType(boxItemType);
+            fire();
+            fireSelection(boxItemType.createObjectNameId());
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "BoxItemTypeCrud.createBoxItemType failed: " + message, throwable);
             return false;
@@ -65,13 +61,10 @@ public class BoxItemTypeCrud extends AbstractCrudeEditor<BoxItemType> {
 
     @Override
     public void reload() {
-        provider.call(new RemoteCallback<List<BoxItemType>>() {
-            @Override
-            public void callback(List<BoxItemType> boxItemTypes) {
-                itemTypeService.setBoxItemTypes(boxItemTypes);
-                fire();
-                fireChange(boxItemTypes);
-            }
+        provider.call((RemoteCallback<List<BoxItemType>>) boxItemTypes -> {
+            itemTypeService.setBoxItemTypes(boxItemTypes);
+            fire();
+            fireChange(boxItemTypes);
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "BoxItemTypeCrud.readBoxItemType failed: " + message, throwable);
             return false;
