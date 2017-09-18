@@ -1,7 +1,7 @@
 package com.btxtech.server.connection;
 
 import com.btxtech.server.gameengine.WebSocketEndpointConfigAware;
-import com.btxtech.server.persistence.server.ServerLevelQuestService;
+import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.rest.RestUrl;

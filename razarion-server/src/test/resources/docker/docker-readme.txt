@@ -1,4 +1,5 @@
 # !!! On windows line separator must be corrected on shell scripts (LF UNIX)
+# Start Docker Quick Start Terminal if Dockertools is used
 
 # Build container
 docker build -t wildfly_ok_1 .

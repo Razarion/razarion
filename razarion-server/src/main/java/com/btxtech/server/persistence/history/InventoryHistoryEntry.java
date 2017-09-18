@@ -12,27 +12,34 @@ import java.util.Date;
 
 /**
  * Created by Beat
- * 22.05.2017.
+ * on 18.09.2017.
  */
 @Entity
-@Table(name = "HISTORY_QUEST")
-public class QuestHistoryEntity {
+@Table(name = "HISTORY_INVENTORY")
+public class InventoryHistoryEntry {
     public enum Type {
-        QUEST_ACTIVATED,
-        QUEST_DEACTIVATED,
-        QUEST_PASSED
+        BOX_PICKED,
+        INVENTORY_ITEM_USED
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(nullable = false)
     private Date timeStamp;
+    private int humanPlayerIdEntityId;
     @Enumerated(EnumType.STRING)
     private Type type;
-    private int humanPlayerIdEntityId;
-    private int questId;
-    private String questInternalName;
+    private Integer crystals;
+    private Integer inventoryItemId;
+    private String inventoryItemName;
+
+    public int getHumanPlayerIdEntityId() {
+        return humanPlayerIdEntityId;
+    }
+
+    public void setHumanPlayerIdEntityId(int humanPlayerIdEntityId) {
+        this.humanPlayerIdEntityId = humanPlayerIdEntityId;
+    }
 
     public Date getTimeStamp() {
         return timeStamp;
@@ -50,28 +57,28 @@ public class QuestHistoryEntity {
         this.type = type;
     }
 
-    public int getHumanPlayerIdEntityId() {
-        return humanPlayerIdEntityId;
+    public Integer getCrystals() {
+        return crystals;
     }
 
-    public void setHumanPlayerIdEntityId(int humanPlayerIdEntityId) {
-        this.humanPlayerIdEntityId = humanPlayerIdEntityId;
+    public void setCrystals(Integer crystals) {
+        this.crystals = crystals;
     }
 
-    public int getQuestId() {
-        return questId;
+    public Integer getInventoryItemId() {
+        return inventoryItemId;
     }
 
-    public void setQuestId(int questId) {
-        this.questId = questId;
+    public void setInventoryItemId(Integer inventoryItemId) {
+        this.inventoryItemId = inventoryItemId;
     }
 
-    public String getQuestInternalName() {
-        return questInternalName;
+    public String getInventoryItemName() {
+        return inventoryItemName;
     }
 
-    public void setQuestInternalName(String questInternalName) {
-        this.questInternalName = questInternalName;
+    public void setInventoryItemName(String inventoryItemName) {
+        this.inventoryItemName = inventoryItemName;
     }
 
     @Override
@@ -83,7 +90,7 @@ public class QuestHistoryEntity {
             return false;
         }
 
-        QuestHistoryEntity that = (QuestHistoryEntity) o;
+        InventoryHistoryEntry that = (InventoryHistoryEntry) o;
         return id != null && id.equals(that.id);
     }
 

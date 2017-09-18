@@ -4,7 +4,7 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
-import com.btxtech.server.persistence.server.ServerLevelQuestService;
+import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;

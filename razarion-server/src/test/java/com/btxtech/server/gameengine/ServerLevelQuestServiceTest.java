@@ -1,4 +1,4 @@
-package com.btxtech.server.persistence.server;
+package com.btxtech.server.gameengine;
 
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
@@ -6,10 +6,12 @@ import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.persistence.history.LevelHistoryEntity;
 import com.btxtech.server.persistence.history.QuestHistoryEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
+import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;

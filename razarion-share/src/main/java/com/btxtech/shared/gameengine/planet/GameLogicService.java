@@ -149,7 +149,7 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onBoxCreated(syncBoxItem));
     }
 
-    public void onBoxPicket(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
+    public void onBoxPicked(SyncBoxItem box, SyncBaseItem picker, BoxContent boxContent) {
         gameLogicListener.ifPresent(listener -> listener.onBoxPicked(picker.getBase().getHumanPlayerId(), boxContent));
         gameLogicListener.ifPresent(listener -> listener.onSyncBoxDeleted(box));
         questServiceInstance.get().onSyncBoxItemPicked(picker);

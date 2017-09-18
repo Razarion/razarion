@@ -1,14 +1,12 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.server.ServerLevelQuestService;
+import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.QuestProvider;
-import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
-import javax.ws.rs.Path;
 import java.util.List;
 
 /**
