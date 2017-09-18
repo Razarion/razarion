@@ -4,7 +4,9 @@ import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.components.ListComponent;
@@ -22,11 +24,15 @@ import javax.inject.Inject;
 public class BoxContentDialog extends Composite implements ModalDialogContent<BoxContent> {
     @Inject
     @DataField
+    private Label crystalLabel;
+    @Inject
+    @DataField
     @ListContainer("div")
     private ListComponent<InventoryItem, InventoryItemComponent> inventoryItemTable;
 
     @Override
     public void init(BoxContent boxContent) {
+        crystalLabel.setText(I18nHelper.getConstants().crystalAmount(boxContent.getCrystals()));
         DOMUtil.removeAllElementChildren(inventoryItemTable.getElement()); // Remove placeholder table row from template.
         inventoryItemTable.setValue(boxContent.getInventoryItems());
     }

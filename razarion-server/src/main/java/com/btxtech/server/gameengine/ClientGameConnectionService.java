@@ -86,11 +86,6 @@ public class ClientGameConnectionService {
         sendToClients(GameConnectionPacket.SYNC_BOX_ITEM_CHANGED, syncBoxItem.getSyncInfo());
     }
 
-    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
-        //TODO
-        throw new UnsupportedOperationException();
-    }
-
     public Collection<ClientGameConnection> getClientGameConnections() {
         synchronized (gameConnections) {
             return gameConnections.getAll();

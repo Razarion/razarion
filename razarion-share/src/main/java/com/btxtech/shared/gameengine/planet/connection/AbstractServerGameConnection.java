@@ -1,13 +1,16 @@
 package com.btxtech.shared.gameengine.planet.connection;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
@@ -25,6 +28,8 @@ public abstract class AbstractServerGameConnection {
     private BaseItemService baseItemService;
     @Inject
     private ResourceService resourceService;
+    @Inject
+    private BoxService boxService;
 
     protected abstract void sendToServer(String text);
 
@@ -48,6 +53,10 @@ public abstract class AbstractServerGameConnection {
         sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SELL_ITEMS, toJson(items)));
     }
 
+    public void useInventoryItem(UseInventoryItem useInventoryItem) {
+        sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.USE_INVENTORY_ITEM, toJson(useInventoryItem)));
+    }
+
     public void handleMessage(String text) {
         GameConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, GameConnectionPacket.class);
         String jsonString = ConnectionMarshaller.deMarshallPayload(text);
@@ -65,6 +74,9 @@ public abstract class AbstractServerGameConnection {
                 break;
             case SYNC_RESOURCE_ITEM_CHANGED:
                 resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) param);
+                break;
+            case SYNC_BOX_ITEM_CHANGED:
+                boxService.onSlaveSyncBoxItemChanged((SyncBoxItemInfo) param);
                 break;
             case SYNC_ITEM_DELETED:
                 gameEngineWorker.onServerSyncItemDeleted((SyncItemDeletedInfo) param);

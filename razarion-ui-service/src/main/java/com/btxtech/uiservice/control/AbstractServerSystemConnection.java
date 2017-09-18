@@ -2,11 +2,13 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
+import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
@@ -20,6 +22,8 @@ public abstract class AbstractServerSystemConnection {
     private GameUiControl gameUiControl;
     @Inject
     private UserUiService userUiService;
+    @Inject
+    private InventoryUiService inventoryUiService;
 
     protected abstract void sendToServer(String text);
 
@@ -56,6 +60,9 @@ public abstract class AbstractServerSystemConnection {
                 break;
             case XP_CHANGED:
                 userUiService.onServerXpChange((Integer) param);
+                break;
+            case BOX_PICKED:
+                inventoryUiService.onOnBoxPicked((BoxContent) param);
                 break;
             case LIFECYCLE_CONTROL:
                 onLifecyclePacket((LifecyclePacket) param);

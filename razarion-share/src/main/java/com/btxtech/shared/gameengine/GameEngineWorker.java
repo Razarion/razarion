@@ -10,6 +10,7 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -149,8 +150,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (HumanPlayerId) controlPackage.getData(1), (String) controlPackage.getData(2), (DecimalPosition) controlPackage.getData(3));
                 break;
-            case SPAWN_BASE_ITEMS:
-                baseItemService.spawnSyncBaseItems((Integer) controlPackage.getData(0), (Collection<DecimalPosition>) controlPackage.getData(1), (PlayerBaseFull) playerBase);
+            case USE_INVENTORY_ITEM:
+                useInventoryItem((UseInventoryItem) controlPackage.getData(0));
                 break;
             case CREATE_BOXES:
                 boxService.dropBoxes((List<BoxItemPosition>) controlPackage.getSingleData());
@@ -190,9 +191,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 break;
             case TERRAIN_TILE_REQUEST:
                 getTerrainTile((Index) controlPackage.getData(0));
-                break;
-            case EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST:
-                reloadPlanetShape4Editor();
                 break;
             case PLAYBACK_PLAYER_BASE:
                 onPlayerBaseTracking((PlayerBaseTracking) controlPackage.getData(0));
@@ -549,24 +547,27 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
     }
 
-    private void reloadPlanetShape4Editor() {
-        try {
-            terrainService.setup(() -> sendToClient(GameEngineControlPackage.Command.EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE, ""), s -> sendToClient(GameEngineControlPackage.Command.EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE, s));
-            logger.warning("reloadPlanetShape4Editor done");
-        } catch (NoInterpolatedTerrainTriangleException e) {
-            exceptionHandler.handleException("reloadPlanetShape4Editor failed", e);
-        }
-    }
-
     private void sellItems(List<Integer> items) {
-        if(gameEngineMode == GameEngineMode.MASTER) {
+        if (gameEngineMode == GameEngineMode.MASTER) {
             baseItemService.sellItems(items, playerBase);
-        } else if(gameEngineMode == GameEngineMode.SLAVE) {
+        } else if (gameEngineMode == GameEngineMode.SLAVE) {
             if (serverConnection != null) {
                 serverConnection.sellItems(items);
             }
         } else {
             throw new IllegalStateException("GameEngineWorker.sellItems() illegal gameEngineMode: " + gameEngineMode);
+        }
+    }
+
+    private void useInventoryItem(UseInventoryItem useInventoryItem) {
+        if (gameEngineMode == GameEngineMode.MASTER) {
+            baseItemService.useInventoryItem(useInventoryItem, (PlayerBaseFull) playerBase);
+        } else if (gameEngineMode == GameEngineMode.SLAVE) {
+            if (serverConnection != null) {
+                serverConnection.useInventoryItem(useInventoryItem);
+            }
+        } else {
+            throw new IllegalStateException("GameEngineWorker.useInventoryItem() illegal gameEngineMode: " + gameEngineMode);
         }
     }
 

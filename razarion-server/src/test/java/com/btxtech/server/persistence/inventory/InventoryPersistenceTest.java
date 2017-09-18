@@ -31,13 +31,13 @@ public class InventoryPersistenceTest extends ArquillianBaseTest {
         });
 
         InventoryItem expectedInventoryItem = inventoryPersistence.createInventoryItem();
-        expectedInventoryItem.setI18nName(i18nHelper("aiudhoais paisuhdpaisd")).setInternalName("adesasd").setGold(999).setBaseItemTypeCount(3).setBaseItemTypeId(baseItemTypeId).setBaseItemTypeFreeRange(1234).setImageId(1);
+        expectedInventoryItem.setI18nName(i18nHelper("aiudhoais paisuhdpaisd")).setInternalName("adesasd").setRazarion(999).setBaseItemTypeCount(3).setBaseItemTypeId(baseItemTypeId).setBaseItemTypeFreeRange(1234).setImageId(1);
         inventoryPersistence.updateInventoryItem(expectedInventoryItem);
         List<InventoryItem> actualInventoryItems = inventoryPersistence.readInventoryItems();
         Assert.assertEquals(1, actualInventoryItems.size());
         ReflectionAssert.assertReflectionEquals(expectedInventoryItem, actualInventoryItems.get(0));
 
-        expectedInventoryItem.setI18nName(i18nHelper("ddd www")).setInternalName("rrr").setGold(1).setBaseItemTypeCount(0).setBaseItemTypeId(null).setBaseItemTypeFreeRange(0).setImageId(23);
+        expectedInventoryItem.setI18nName(i18nHelper("ddd www")).setInternalName("rrr").setRazarion(1).setBaseItemTypeCount(0).setBaseItemTypeId(null).setBaseItemTypeFreeRange(0).setImageId(23);
         inventoryPersistence.updateInventoryItem(expectedInventoryItem);
         actualInventoryItems = inventoryPersistence.readInventoryItems();
         Assert.assertEquals(1, actualInventoryItems.size());

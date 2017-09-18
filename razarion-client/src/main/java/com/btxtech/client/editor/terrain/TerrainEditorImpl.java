@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
-import com.btxtech.uiservice.EditorGameEngineListener;
 import com.btxtech.uiservice.EditorKeyboardListener;
 import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -25,7 +24,6 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.RenderService;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -44,7 +42,7 @@ import java.util.stream.Collectors;
  * 05.05.2016.
  */
 @ApplicationScoped
-public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardListener, EditorGameEngineListener {
+public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardListener {
     public enum CursorType {
         CREATE,
         MODIFY,
@@ -52,8 +50,6 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     }
 
     private Logger logger = Logger.getLogger(TerrainEditorImpl.class.getName());
-    @Inject
-    private TerrainUiService terrainUiService;
     @Inject
     private Caller<PlanetEditorProvider> planetEditorServiceCaller;
     @Inject
@@ -314,7 +310,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         setupChangedSlopes(terrainEditorUpdate);
         setupChangedTerrainObjects(terrainEditorUpdate);
 
-        if(!terrainEditorUpdate.hasAnyChanged()) {
+        if (!terrainEditorUpdate.hasAnyChanged()) {
             return;
         }
         modalDialogManager.showMessageNoClosableDialog("Save", "Please wait while saving terrain", modalDialogPanel -> this.saveDialog = modalDialogPanel);
@@ -370,15 +366,6 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         terrainEditorUpdate.setCreatedTerrainObjects(createdTerrainObjects);
         terrainEditorUpdate.setUpdatedTerrainObjects(updatedTerrainObjects);
         terrainEditorUpdate.setDeletedTerrainObjectsIds(deletedTerrainObjectsIds);
-    }
-
-    @Override
-    public void onTerrainShapeReloaded(String errorString) {
-        if (errorString.trim().isEmpty()) {
-            terrainUiService.clearTerrainTilesForEditor();
-        } else {
-            modalDialogManager.showMessageDialog("Terrain Editor", "Terrain saved failed: " + errorString);
-        }
     }
 
     public void setSlope4New(ObjectNameId slope4New) {

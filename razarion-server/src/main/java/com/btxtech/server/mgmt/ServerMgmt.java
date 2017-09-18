@@ -98,9 +98,10 @@ public class ServerMgmt {
         userBackendInfo = new UserBackendInfo().setHumanPlayerId(humanPlayerId);
         if (playerSession.getUserContext() != null) {
             userBackendInfo.setLevelNumber(levelPersistence.getLevelNumber4Id(playerSession.getUserContext().getLevelId()));
-            userBackendInfo.setXp(playerSession.getUserContext().getXp()).setCrystals(playerSession.getUserContext().getCrystals());
+            userBackendInfo.setXp(playerSession.getUserContext().getXp());
         }
         if (playerSession.getUnregisteredUser() != null) {
+            userBackendInfo.setCrystals(playerSession.getUnregisteredUser().getCrystals());
             if (playerSession.getUnregisteredUser().getActiveQuest() != null) {
                 userBackendInfo.setActiveQuest(new QuestBackendInfo().setId(playerSession.getUnregisteredUser().getActiveQuest().getId()).setInternalName(playerSession.getUnregisteredUser().getActiveQuest().getInternalName()));
             }

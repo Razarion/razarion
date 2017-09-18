@@ -46,6 +46,13 @@ public class TestHelper {
         Assert.assertTrue(expectedCollection.isEmpty());
     }
 
+    public static <T> void assertObjects(Collection<T> actualObjects, T... expectedObjects) {
+        Assert.assertEquals("Wrong size", expectedObjects.length, actualObjects.size());
+        Collection<T> expectedCollection = new ArrayList<>(Arrays.asList(expectedObjects));
+        expectedCollection.removeAll(actualObjects);
+        Assert.assertTrue(expectedCollection.isEmpty());
+    }
+
     public static void assertVertex(Vertex expected, Vertex actual) {
         String message = "Expected: " + expected + " but was: " + actual;
         assertVertex(message, expected, actual);

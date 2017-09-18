@@ -2,6 +2,8 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -46,6 +48,16 @@ public class WeldSlaveEmulator extends WeldBaseTest {
         @Override
         public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {
             getBoxService().onSlaveSyncBoxItemChanged(syncBoxItem.getSyncInfo());
+        }
+
+        @Override
+        public void onBaseCreated(PlayerBaseFull playerBase) {
+            getBaseItemService().createBaseSlave(playerBase.getPlayerBaseInfo());
+        }
+
+        @Override
+        public void onBaseDeleted(PlayerBase playerBase) {
+            getBaseItemService().deleteBaseSlave(playerBase.getBaseId());
         }
 
         @Override

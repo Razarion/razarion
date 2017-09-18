@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.planet.connection;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.UseInventoryItem;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
@@ -47,7 +49,8 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     MOVE_COMMAND(MoveCommand.class),
     PICK_BOX_COMMAND(PickupBoxCommand.class),
     // Cockpit
-    SELL_ITEMS(List.class);
+    SELL_ITEMS(List.class),
+    USE_INVENTORY_ITEM(UseInventoryItem.class);
 
     private Class theClass;
 

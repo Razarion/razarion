@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.widgets.itemtype.inventoryitem;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 public class InventoryItemWidget {
     // private Logger logger = Logger.getLogger(InventoryItemWidget.class.getName());
     @Inject
-    private InventoryService inventoryService;
+    private InventoryTypeService inventoryTypeService;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
@@ -52,7 +52,7 @@ public class InventoryItemWidget {
 
     private void setupNameLabel() {
         if (inventoryItemId != null) {
-            nameLabel.setInnerHTML(inventoryService.getInventoryItem(inventoryItemId).createObjectNameId().toString());
+            nameLabel.setInnerHTML(inventoryTypeService.getInventoryItem(inventoryItemId).createObjectNameId().toString());
         } else {
             nameLabel.setInnerHTML("-");
         }

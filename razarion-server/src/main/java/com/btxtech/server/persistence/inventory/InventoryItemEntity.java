@@ -34,7 +34,7 @@ public class InventoryItemEntity {
     private BaseItemTypeEntity baseItemType;
     private int baseItemTypeCount;
     private double itemFreeRange;
-    private Integer gold;
+    private Integer razarion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity image;
@@ -51,7 +51,7 @@ public class InventoryItemEntity {
         if (i18nName != null) {
             inventoryItem.setI18nName(i18nName.toI18nString());
         }
-        inventoryItem.setGold(gold);
+        inventoryItem.setRazarion(razarion);
         if (image != null) {
             inventoryItem.setImageId(image.getId());
         }
@@ -63,7 +63,7 @@ public class InventoryItemEntity {
         i18nName = I18nBundleEntity.fromI18nStringSafe(inventoryItem.getI18nName(), i18nName);
         baseItemTypeCount = inventoryItem.getBaseItemTypeCount();
         itemFreeRange = inventoryItem.getBaseItemTypeFreeRange();
-        gold = inventoryItem.getGold();
+        razarion = inventoryItem.getRazarion();
     }
 
     public void setBaseItemType(BaseItemTypeEntity baseItemType) {
@@ -72,6 +72,10 @@ public class InventoryItemEntity {
 
     public void setImage(ImageLibraryEntity image) {
         this.image = image;
+    }
+
+    public String getInternalName() {
+        return internalName;
     }
 
     @Override

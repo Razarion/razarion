@@ -59,7 +59,7 @@ public class CockpitService {
 
     public Rectangle getInventoryUseButtonLocation(int inventoryItemId) {
         if (inventoryPositionProvider == null) {
-            throw new IllegalStateException("InventoryDialog is no shown");
+            throw new IllegalStateException("InventoryDialog is not shown");
         }
         return inventoryPositionProvider.apply(inventoryItemId);
     }

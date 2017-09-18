@@ -41,7 +41,7 @@ public class GameEngineControlPackage {
         CREATE_HUMAN_BASE_WITH_BASE_ITEM,
         BASE_CREATED,
         BASE_DELETED,
-        SPAWN_BASE_ITEMS,
+        USE_INVENTORY_ITEM,
         UPDATE_LEVEL,
         // Base items
         SYNC_ITEM_START_SPAWNED,
@@ -64,9 +64,6 @@ public class GameEngineControlPackage {
         SINGLE_Z_TERRAIN_ANSWER_FAIL,
         TERRAIN_TILE_REQUEST,
         TERRAIN_TILE_RESPONSE,
-        // Editor
-        EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST,
-        EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE,
         // Playback
         PLAYBACK_PLAYER_BASE,
         PLAYBACK_SYNC_ITEM_DELETED,

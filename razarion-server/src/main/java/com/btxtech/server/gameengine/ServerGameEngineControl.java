@@ -6,7 +6,6 @@ import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.server.user.ServerInventoryService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
@@ -246,7 +245,7 @@ public class ServerGameEngineControl implements GameLogicListener {
     @Override
     public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
         serverInventoryService.onBoxPicked(humanPlayerId, boxContent);
-        clientGameConnectionService.onBoxPicked(humanPlayerId, boxContent);
+        systemConnectionService.onBoxPicked(humanPlayerId, boxContent);
     }
 
     @Override

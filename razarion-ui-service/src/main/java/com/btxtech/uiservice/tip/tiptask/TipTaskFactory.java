@@ -2,7 +2,7 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.GameTipConfig;
-import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.uiservice.tip.GameTipService;
 
@@ -20,7 +20,7 @@ public class TipTaskFactory {
     @Inject
     private Instance<AbstractTipTask> tipTaskInstance;
     @Inject
-    private InventoryService inventoryService;
+    private InventoryTypeService inventoryTypeService;
 
     public TipTaskContainer create(GameTipService gameTipService, GameTipConfig gameTipConfig) {
         TipTaskContainer tipTaskContainer = new TipTaskContainer(gameTipService);
@@ -115,7 +115,7 @@ public class TipTaskFactory {
     private void createSpawnInventoryItem(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(tipTaskInstance.select(OpenInventoryTipTask.class).get());
         tipTaskContainer.add(createUseInventoryItemTipTask(gameTipConfig.getInventoryItemId()));
-        tipTaskContainer.add(createSpawnPlacerTipTask(inventoryService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemTypeId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.add(createSpawnPlacerTipTask(inventoryTypeService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemTypeId(), gameTipConfig.getTerrainPositionHint()));
     }
 
     private void createScrollTipTask(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {

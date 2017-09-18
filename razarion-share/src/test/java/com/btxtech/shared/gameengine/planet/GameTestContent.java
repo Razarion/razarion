@@ -167,6 +167,7 @@ public interface GameTestContent {
         List<BoxItemTypePossibility> boxItemTypePossibilities = new ArrayList<>();
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setInventoryItemId(INVENTORY_ITEM_ATTACKER_ID).setPossibility(1));
         boxItemTypePossibilities.add(new BoxItemTypePossibility().setInventoryItemId(INVENTORY_ITEM_GOLD_ID).setPossibility(1));
+        boxItemTypePossibilities.add(new BoxItemTypePossibility().setCrystals(10).setPossibility(1));
         resourceItemType.setBoxItemTypePossibilities(boxItemTypePossibilities);
         resourceItemType.setTtl(Integer.MAX_VALUE);
         boxItemTypes.add(resourceItemType);
@@ -175,7 +176,7 @@ public interface GameTestContent {
     static List<InventoryItem> setupInventoryItems() {
         List<InventoryItem> inventoryItems = new ArrayList<>();
         inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM_ATTACKER_ID).setBaseItemTypeCount(3).setBaseItemTypeId(ATTACKER_ITEM_TYPE_ID).setBaseItemTypeFreeRange(1));
-        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM_GOLD_ID).setGold(100));
+        inventoryItems.add(new InventoryItem().setId(INVENTORY_ITEM_GOLD_ID).setRazarion(100));
         return inventoryItems;
     }
 

@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -68,13 +69,19 @@ public class ClientSystemConnectionService {
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.XP_CHANGED, xp);
         }
-
     }
 
     public void onLevelUp(HumanPlayerId humanPlayerId, UserContext newLevelId) {
         PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.LEVEL_UPDATE_SERVER, newLevelId);
+        }
+    }
+
+    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession != null) {
+            sendToClient(playerSession, SystemConnectionPacket.BOX_PICKED, boxContent);
         }
     }
 

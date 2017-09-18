@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
@@ -19,6 +21,7 @@ public class TestGameLogicListener implements GameLogicListener {
     private List<SyncBaseItem> syncBaseItemKilled = new ArrayList<>();
     private List<SyncResourceItem> resourceCreated = new ArrayList<>();
     private List<SyncResourceItem> resourceDeleted = new ArrayList<>();
+    private List<BoxPickedEntry> boxPicked = new ArrayList<>();
     private TestWebSocket testWebSocket = new TestWebSocket();
 
     public void clearAll() {
@@ -42,6 +45,10 @@ public class TestGameLogicListener implements GameLogicListener {
 
     public List<SyncResourceItem> getResourceDeleted() {
         return resourceDeleted;
+    }
+
+    public List<BoxPickedEntry> getBoxPicked() {
+        return boxPicked;
     }
 
     public TestWebSocket getTestWebSocket() {
@@ -103,6 +110,11 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
+    public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
+        boxPicked.add(new BoxPickedEntry(humanPlayerId, boxContent));
+    }
+
+    @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
         testWebSocket.sendSyncBaseItem(syncBaseItem);
     }
@@ -147,6 +159,24 @@ public class TestGameLogicListener implements GameLogicListener {
 
         public int getConsuming() {
             return consuming;
+        }
+    }
+
+    public static class BoxPickedEntry {
+        private HumanPlayerId humanPlayerId;
+        private BoxContent boxContent;
+
+        public BoxPickedEntry(HumanPlayerId humanPlayerId, BoxContent boxContent) {
+            this.humanPlayerId = humanPlayerId;
+            this.boxContent = boxContent;
+        }
+
+        public HumanPlayerId getHumanPlayerId() {
+            return humanPlayerId;
+        }
+
+        public BoxContent getBoxContent() {
+            return boxContent;
         }
     }
 }

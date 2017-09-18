@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -10,6 +9,7 @@ import java.util.List;
  */
 public class BoxContent {
     private List<InventoryItem> inventoryItems = new ArrayList<>();
+    private int crystals;
 
     public void addInventoryItem(InventoryItem inventoryItem) {
         inventoryItems.add(inventoryItem);
@@ -17,5 +17,13 @@ public class BoxContent {
 
     public List<InventoryItem> getInventoryItems() {
         return inventoryItems;
+    }
+
+    public void addCrystals(int crystals) {
+        this.crystals += crystals;
+    }
+
+    public int getCrystals() {
+        return crystals;
     }
 }

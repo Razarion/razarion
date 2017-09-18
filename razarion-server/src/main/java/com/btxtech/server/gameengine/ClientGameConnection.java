@@ -5,7 +5,9 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -45,6 +47,8 @@ public class ClientGameConnection {
     private ClientGameConnectionService clientGameConnectionService;
     @Inject
     private CommandService commandService;
+    @Inject
+    private ServerInventoryService serverInventoryService;
     private ObjectMapper mapper = new ObjectMapper();
     private EndpointConfig config;
     private RemoteEndpoint.Async async;
@@ -102,6 +106,9 @@ public class ClientGameConnection {
             case SELL_ITEMS:
                 baseItemService.sellItems((List<Integer>) param, getPlayerBase());
                 break;
+            case USE_INVENTORY_ITEM:
+                serverInventoryService.useInventoryItem((UseInventoryItem) param, getPlayerSession(), getPlayerBaseFull());
+                break;
             case SET_GAME_SESSION_UUID:
                 gameSessionUuid = (String) param;
                 break;
@@ -127,8 +134,7 @@ public class ClientGameConnection {
     }
 
     public HumanPlayerId getHumanPlayerId() {
-        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
-        return sessionService.getSession(httpSession.getId()).getUserContext().getHumanPlayerId();
+        return getPlayerSession().getUserContext().getHumanPlayerId();
     }
 
     private UserContext getUserContext() {
@@ -137,6 +143,10 @@ public class ClientGameConnection {
 
     private PlayerBase getPlayerBase() {
         return baseItemService.getPlayerBase4HumanPlayerId(getHumanPlayerId());
+    }
+
+    private PlayerBaseFull getPlayerBaseFull() {
+        return baseItemService.getPlayerBaseFull4HumanPlayerId(getHumanPlayerId());
     }
 
     private PlayerSession getPlayerSession() {

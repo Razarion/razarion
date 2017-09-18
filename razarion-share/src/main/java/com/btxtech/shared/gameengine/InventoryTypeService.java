@@ -14,7 +14,7 @@ import java.util.List;
  * 25.10.2016.
  */
 @ApplicationScoped
-public class InventoryService {
+public class InventoryTypeService {
     private final HashMap<Integer, InventoryItem> inventoryItems = new HashMap<>();
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {

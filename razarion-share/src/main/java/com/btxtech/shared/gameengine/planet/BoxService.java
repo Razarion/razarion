@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.BoxRegionConfig;
-import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -42,7 +42,7 @@ public class BoxService {
     @Inject
     private GameLogicService gameLogicService;
     @Inject
-    private InventoryService inventoryService;
+    private InventoryTypeService inventoryTypeService;
     @Inject
     private ExceptionHandler exceptionHandler;
     private GameEngineMode gameEngineMode;
@@ -116,7 +116,7 @@ public class BoxService {
         BoxContent boxContent = new BoxContent();
         box.getBoxItemType().getBoxItemTypePossibilities().stream().filter(boxItemTypePossibility -> MathHelper.isRandomPossibility(boxItemTypePossibility.getPossibility())).forEach(boxItemTypePossibility -> setupBoxContent(boxItemTypePossibility, boxContent));
 
-        gameLogicService.onBoxPicket(box, picker, boxContent);
+        gameLogicService.onBoxPicked(box, picker, boxContent);
     }
 
     public void onSlaveSyncBoxItemChanged(SyncBoxItemInfo syncBoxItemInfo) {
@@ -153,7 +153,7 @@ public class BoxService {
 
     private void setupBoxContent(BoxItemTypePossibility boxItemTypePossibility, BoxContent boxContent) {
         if (boxItemTypePossibility.getInventoryItemId() != null) {
-            InventoryItem inventoryItem = inventoryService.getInventoryItem(boxItemTypePossibility.getInventoryItemId());
+            InventoryItem inventoryItem = inventoryTypeService.getInventoryItem(boxItemTypePossibility.getInventoryItemId());
             boxContent.addInventoryItem(inventoryItem);
 //            gameLogicService.onInventoryItemFromBox(userContext, syncBoxItem, boxItemTypePossibility);
 //        } else if (boxItemTypePossibility.getDbInventoryArtifact() != null) {
@@ -161,11 +161,8 @@ public class BoxService {
 //            serverConditionService.onArtifactItemAdded(userContext, true, boxItemTypePossibility.getDbInventoryArtifact().getId());
 //            historyService.addInventoryArtifactFromBox(userContext, boxItemTypePossibility.getDbInventoryArtifact().getName());
 //            builder.append("Artifact: ").append(boxItemTypePossibility.getDbInventoryArtifact().getName());
-//        } else if (boxItemTypePossibility.getCrystals() != null) {
-//            userContext.addCrystals(boxItemTypePossibility.getCrystals());
-//            historyService.addCrystalsFromBox(userContext, boxItemTypePossibility.getCrystals());
-//            serverConditionService.onCrystalsIncreased(userContext, true, boxItemTypePossibility.getCrystals());
-//            builder.append("Crystals: ").append(boxItemTypePossibility.getCrystals());
+        } else if (boxItemTypePossibility.getCrystals() != null) {
+            boxContent.addCrystals(boxItemTypePossibility.getCrystals());
         } else {
             throw new IllegalArgumentException("Can not handle boxItemTypePossibility: " + boxItemTypePossibility);
         }

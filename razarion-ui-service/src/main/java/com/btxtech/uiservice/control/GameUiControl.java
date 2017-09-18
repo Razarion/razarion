@@ -8,7 +8,7 @@ import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
-import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -69,7 +69,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private LevelService levelService;
     @Inject
-    private InventoryService inventoryService;
+    private InventoryTypeService inventoryTypeService;
     @Inject
     private UserUiService userUiService;
     @Inject
@@ -122,7 +122,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         itemTypeService.init(coldGameUiControlConfig.getStaticGameConfig());
         terrainTypeService.init(coldGameUiControlConfig.getStaticGameConfig());
         levelService.init(coldGameUiControlConfig.getStaticGameConfig());
-        inventoryService.init(coldGameUiControlConfig.getStaticGameConfig());
+        inventoryTypeService.init(coldGameUiControlConfig.getStaticGameConfig());
         gameUiControlInitEvent.fire(new GameUiControlInitEvent(coldGameUiControlConfig));
         terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
     }
@@ -461,5 +461,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         NONE,
         NO_POWER,
         WORKING
+    }
+
+    public GameEngineMode getGameEngineMode() {
+        return gameEngineMode;
     }
 }

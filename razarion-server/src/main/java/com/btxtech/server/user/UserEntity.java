@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.InventoryInfo;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +18,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -158,6 +158,19 @@ public class UserEntity {
 
     public int getCrystals() {
         return crystals;
+    }
+
+    public void setCrystals(int crystals) {
+        this.crystals = crystals;
+    }
+
+    public InventoryInfo toInventoryInfo() {
+        InventoryInfo inventoryInfo = new InventoryInfo();
+        inventoryInfo.setCrystals(crystals);
+        if (inventory != null) {
+            inventoryInfo.setInventoryItemIds(inventory.stream().map(InventoryItemEntity::getId).collect(Collectors.toList()));
+        }
+        return inventoryInfo;
     }
 
     @Override

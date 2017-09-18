@@ -7,6 +7,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class BoxItemTypePossibility {
     private double possibility;
     private Integer inventoryItemId;
+    private Integer crystals;
 
     public double getPossibility() {
         return possibility;
@@ -23,6 +24,15 @@ public class BoxItemTypePossibility {
 
     public BoxItemTypePossibility setInventoryItemId(Integer inventoryItemId) {
         this.inventoryItemId = inventoryItemId;
+        return this;
+    }
+
+    public Integer getCrystals() {
+        return crystals;
+    }
+
+    public BoxItemTypePossibility setCrystals(Integer crystals) {
+        this.crystals = crystals;
         return this;
     }
 }

@@ -61,7 +61,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         staticGameConfig.setLevelConfigs(Collections.emptyList());
         staticGameConfig.setWaterConfig(defaultWaterConfig());
         ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
-        coldGameUiControlConfig.setUserContext(new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("Emulator Name").setLevelId(1).setInventoryItemIds(Collections.emptyList()));
+        coldGameUiControlConfig.setUserContext(new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("Emulator Name").setLevelId(1));
         coldGameUiControlConfig.setAudioConfig(new AudioConfig());
         coldGameUiControlConfig.setStaticGameConfig(staticGameConfig);
         coldGameUiControlConfig.setGameTipVisualConfig(defaultGameTipVisualConfig());

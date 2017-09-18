@@ -2,8 +2,6 @@ package com.btxtech.uiservice.user;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
-import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -14,7 +12,6 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -22,8 +19,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class UserUiService {
-    private static final String FACEBOOK_STATUS_CONNECTED = "connected";
-    private Logger logger = Logger.getLogger(UserUiService.class.getName());
+    // private Logger logger = Logger.getLogger(UserUiService.class.getName());
     @Inject
     private GameEngineControl gameEngineControl;
     @Inject
@@ -66,13 +62,6 @@ public class UserUiService {
             userContext.setXp(xp);
             cockpitService.updateLevelAndXp(userContext);
         }
-    }
-
-    public void onOnBoxPicked(BoxContent boxContent) {
-        for (InventoryItem inventoryItem : boxContent.getInventoryItems()) {
-            userContext.addInventoryItem(inventoryItem.getId());
-        }
-        dialogManager.showBoxPicked(boxContent);
     }
 
     public void onServerLevelChange(UserContext userContext) {

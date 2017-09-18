@@ -3,14 +3,13 @@ package com.btxtech.webglemulator;
 import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.control.GameEngineControl;
-import com.btxtech.uiservice.inventory.InventoryItemModel;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
@@ -118,7 +117,7 @@ public class WebGlEmulatorController implements Initializable {
     @Inject
     private JsonProviderEmulator jsonProviderEmulator;
     @Inject
-    private InventoryService inventoryService;
+    private InventoryTypeService inventoryTypeService;
     @Inject
     private InventoryUiService inventoryUiService;
     @Inject
@@ -400,14 +399,17 @@ public class WebGlEmulatorController implements Initializable {
             alert.setHeaderText("Inventory Items");
             alert.setContentText("Choose your option.");
 
-            for (InventoryItemModel inventoryItemModel : inventoryUiService.gatherInventoryItemModels()) {
-                alert.getButtonTypes().add(new ButtonType(Integer.toString(inventoryItemModel.getInventoryItem().getId())));
-            }
+            inventoryUiService.provideInventoryInfo(inventoryInfo -> {
+                if (inventoryInfo.getInventoryItemIds() != null) {
+                    inventoryInfo.getInventoryItemIds().forEach(inventoryItemId -> alert.getButtonTypes().add(new ButtonType(Integer.toString(inventoryItemId))));
+                }
+            });
 
             Optional<ButtonType> result = alert.showAndWait();
-            InventoryItem inventoryItem = inventoryService.getInventoryItem(Integer.parseInt(result.get().getText()));
+            InventoryItem inventoryItem = inventoryTypeService.getInventoryItem(Integer.parseInt(result.get().getText()));
             System.out.println("pressed: " + inventoryItem);
             inventoryUiService.useItem(inventoryItem);
+
         });
         gameTipService.onInventoryDialogOpened();
     }

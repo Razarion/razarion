@@ -45,13 +45,10 @@ public class UserServiceTest extends ArquillianBaseTest {
 
         UserContext userContext = userService.getUserContextFromSession();
         Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId());
-        Assert.assertEquals(0, userContext.getCrystals());
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertNull(userContext.getHumanPlayerId().getUserId());
         Assert.assertEquals("Unregistered User", userContext.getName());
         Assert.assertFalse(userContext.isAdmin());
-        Assert.assertTrue(userContext.getInventoryItemIds().isEmpty());
-        Assert.assertTrue(userContext.getInventoryArtifactIds().isEmpty());
         Assert.assertTrue(userContext.getUnlockedItemTypes().isEmpty());
         Assert.assertTrue(userContext.getUnlockedQuests().isEmpty());
         Assert.assertTrue(userContext.getUnlockedPlanets().isEmpty());

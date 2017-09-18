@@ -13,6 +13,7 @@ import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 import javax.inject.Inject;
@@ -181,6 +182,13 @@ public class UserService {
     public void persistRemoveInventoryItem(int userId, InventoryItemEntity inventoryItemEntity) {
         UserEntity userEntity = getUserEntity(userId);
         userEntity.removeInventoryItem(inventoryItemEntity);
+        entityManager.merge(userEntity);
+    }
+
+    @Transactional
+    public void persistAddCrystals(int userId, int crystals) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.setCrystals(userEntity.getCrystals() + crystals);
         entityManager.merge(userEntity);
     }
 
@@ -368,5 +376,8 @@ public class UserService {
         }
     }
 
-
+    @Transactional
+    public InventoryInfo readInventoryInfo(int userId) {
+        return getUserEntity(userId).toInventoryInfo();
+    }
 }

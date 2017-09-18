@@ -2,6 +2,7 @@ package com.btxtech.shared.system;
 
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 
@@ -21,7 +22,9 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     QUEST_PASSED(QuestConfig.class),
     QUEST_PROGRESS_CHANGED(QuestProgressInfo.class),
     // XP
-    XP_CHANGED(Integer.class);
+    XP_CHANGED(Integer.class),
+    // Inventory
+    BOX_PICKED(BoxContent.class);
 
     private Class theClass;
 

@@ -2,7 +2,7 @@ package com.btxtech.client.editor.widgets.itemtype.inventoryitem;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.shared.gameengine.InventoryService;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.DOMUtil;
@@ -25,7 +25,7 @@ import java.util.List;
 @Templated("InventoryItemSelectionDialog.html#inventory-item-selection-dialog")
 public class InventoryItemSelectionDialog extends Composite implements ModalDialogContent<Integer> {
     @Inject
-    private InventoryService inventoryService;
+    private InventoryTypeService inventoryTypeService;
     @Inject
     @AutoBound
     private DataBinder<List<InventoryItem>> binder;
@@ -40,11 +40,11 @@ public class InventoryItemSelectionDialog extends Composite implements ModalDial
     public void init(Integer selectedId) {
         DOMUtil.removeAllElementChildren(inventoryItems.getElement()); // Remove placeholder table row from template.
         inventoryItems.addComponentCreationHandler(inventoryItemEntry -> inventoryItemEntry.setInventoryItemSelectionDialog(InventoryItemSelectionDialog.this));
-        binder.setModel(new ArrayList<>(inventoryService.getInventoryItems()));
+        binder.setModel(new ArrayList<>(inventoryTypeService.getInventoryItems()));
         inventoryItems.setSelector(inventoryItemEntry -> inventoryItemEntry.setSelected(true));
         inventoryItems.setDeselector(inventoryItemEntry -> inventoryItemEntry.setSelected(false));
         if (selectedId != null) {
-            inventoryItems.selectModel(inventoryService.getInventoryItem(selectedId));
+            inventoryItems.selectModel(inventoryTypeService.getInventoryItem(selectedId));
         }
     }
 

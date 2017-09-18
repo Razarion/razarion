@@ -2,11 +2,14 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.dto.UseInventoryItem;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -64,6 +67,8 @@ public class BaseItemService {
     private ItemTypeService itemTypeService;
     @Inject
     private EnergyService energyService;
+    @Inject
+    private InventoryTypeService inventoryTypeService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
@@ -144,16 +149,17 @@ public class BaseItemService {
     }
 
     private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, HumanPlayerId humanPlayerId) {
+        PlayerBaseFull playerBase;
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            PlayerBaseFull playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, humanPlayerId);
+            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, humanPlayerId);
             bases.put(lastBaseItId, playerBase);
-            gameLogicService.onBaseCreated(playerBase);
-            return playerBase;
         }
+        gameLogicService.onBaseCreated(playerBase);
+        return playerBase;
     }
 
     public void createBaseSlave(PlayerBaseInfo playerBaseInfo) {
@@ -197,10 +203,19 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public void spawnSyncBaseItems(int baseItemTypeId, Collection<DecimalPosition> positions, PlayerBaseFull base) throws ItemLimitExceededException, HouseSpaceExceededException {
-        BaseItemType baseItemType = itemTypeService.getBaseItemType(baseItemTypeId);
-        for (DecimalPosition position : positions) {
-            spawnSyncBaseItem(baseItemType, position, 0, base, false);
+    public void useInventoryItem(UseInventoryItem useInventoryItem, PlayerBaseFull base) throws ItemLimitExceededException, HouseSpaceExceededException {
+        InventoryItem inventoryItem = inventoryTypeService.getInventoryItem(useInventoryItem.getInventoryId());
+        if (inventoryItem.getRazarion() != null && inventoryItem.getRazarion() > 0) {
+            base.addResource(inventoryItem.getRazarion());
+            gameLogicService.onResourcesBalanceChanged(base, (int) base.getResources());
+        } else if (inventoryItem.getBaseItemTypeId() != null) {
+            if (inventoryItem.getBaseItemTypeCount() != useInventoryItem.getPositions().size()) {
+                throw new IllegalArgumentException("BaseItemService.useInventoryItem() inventoryItem.getBaseItemTypeCount() != useInventoryItem.getPositions().size(): " + inventoryItem.getBaseItemTypeCount() + ", " + useInventoryItem.getPositions().size());
+            }
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(inventoryItem.getBaseItemTypeId());
+            for (DecimalPosition position : useInventoryItem.getPositions()) {
+                spawnSyncBaseItem(baseItemType, position, 0, base, false);
+            }
         }
     }
 

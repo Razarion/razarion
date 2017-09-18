@@ -12,7 +12,7 @@ public class InventoryItem implements ObjectNameIdProvider {
     private int id;
     private I18nString i18nName;
     private String internalName;
-    private Integer gold;
+    private Integer razarion;
     private Integer baseItemTypeId;
     private int baseItemTypeCount;
     private double baseItemTypeFreeRange;
@@ -45,12 +45,12 @@ public class InventoryItem implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getGold() {
-        return gold;
+    public Integer getRazarion() {
+        return razarion;
     }
 
-    public InventoryItem setGold(Integer gold) {
-        this.gold = gold;
+    public InventoryItem setRazarion(Integer razarion) {
+        this.razarion = razarion;
         return this;
     }
 
@@ -123,7 +123,7 @@ public class InventoryItem implements ObjectNameIdProvider {
         return "InventoryItem{" +
                 "id=" + id +
                 ", name='" + internalName + '\'' +
-                ", gold=" + gold +
+                ", razarion=" + razarion +
                 ", baseItemTypeId=" + baseItemTypeId +
                 ", baseItemTypeCount=" + baseItemTypeCount +
                 ", baseItemTypeFreeRange=" + baseItemTypeFreeRange +

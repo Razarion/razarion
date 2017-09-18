@@ -27,9 +27,10 @@ public class BoxItemTypePossibilityEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private InventoryItemEntity inventoryItem;
+    private Integer crystals;
 
     public BoxItemTypePossibility toBoxItemTypePossibility() {
-        BoxItemTypePossibility boxItemTypePossibility = new BoxItemTypePossibility().setPossibility(possibility);
+        BoxItemTypePossibility boxItemTypePossibility = new BoxItemTypePossibility().setPossibility(possibility).setCrystals(crystals);
         if (inventoryItem != null) {
             boxItemTypePossibility.setInventoryItemId(inventoryItem.getId());
         }
@@ -38,6 +39,7 @@ public class BoxItemTypePossibilityEntity {
 
     public void fromBoxItemTypePossibility(BoxItemTypePossibility boxItemTypePossibility, InventoryPersistence inventoryPersistence) {
         possibility = boxItemTypePossibility.getPossibility();
+        crystals = boxItemTypePossibility.getCrystals();
         if (inventoryItem != null) {
             boxItemTypePossibility.setInventoryItemId(inventoryItem.getId());
         }

@@ -7,7 +7,6 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import org.junit.Assert;
@@ -88,15 +87,25 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         assertSyncItemCount(0, 0, 1);
         // Start base
         UserContext userContext = createLevel1UserContext(1);
-        TestHelper.assertIds(userContext.getInventoryItemIds());
+        WeldSlaveEmulator permanentSalve = new WeldSlaveEmulator();
+        permanentSalve.connectToMater(userContext, this);
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);
         tickPlanetServiceBaseServiceActive();
+        permanentSalve.assertSyncItemCount(1, 0, 1);
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
         // Pick box
         getCommandService().pickupBox(builder, findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_LONG_ID));
         tickPlanetServiceBaseServiceActive();
         // Verify
-        TestHelper.assertIds(userContext.getInventoryItemIds(), GameTestContent.INVENTORY_ITEM_ATTACKER_ID, GameTestContent.INVENTORY_ITEM_GOLD_ID);
+        permanentSalve.assertSyncItemCount(1, 0, 0);
+        Assert.assertEquals(1, getTestGameLogicListener().getBoxPicked().size());
+        TestGameLogicListener.BoxPickedEntry boxPickedEntry = getTestGameLogicListener().getBoxPicked().get(0);
+        Assert.assertEquals(1, (int) boxPickedEntry.getHumanPlayerId().getUserId());
+        Assert.assertEquals(10, boxPickedEntry.getBoxContent().getCrystals());
+        Assert.assertEquals(2, boxPickedEntry.getBoxContent().getInventoryItems().size());
+        TestHelper.assertObjects(boxPickedEntry.getBoxContent().getInventoryItems(),
+                getInventoryTypeService().getInventoryItem(GameTestContent.INVENTORY_ITEM_GOLD_ID),
+                getInventoryTypeService().getInventoryItem(GameTestContent.INVENTORY_ITEM_ATTACKER_ID));
     }
 
     private void tickBoxService(int count) {

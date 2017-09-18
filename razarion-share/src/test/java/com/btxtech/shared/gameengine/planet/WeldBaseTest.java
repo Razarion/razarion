@@ -6,6 +6,7 @@ import com.btxtech.shared.cdimock.TestSimpleExecutorService;
 import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -88,6 +89,10 @@ public class WeldBaseTest {
 
     public BoxService getBoxService() {
         return getWeldBean(BoxService.class);
+    }
+
+    public InventoryTypeService getInventoryTypeService() {
+        return getWeldBean(InventoryTypeService.class);
     }
 
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {

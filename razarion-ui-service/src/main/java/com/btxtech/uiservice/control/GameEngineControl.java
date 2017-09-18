@@ -9,6 +9,7 @@ import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -28,12 +29,11 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
-import com.btxtech.uiservice.EditorGameEngineListener;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
+import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
@@ -45,7 +45,6 @@ import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.user.UserUiService;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,13 +78,11 @@ public abstract class GameEngineControl {
     @Inject
     private UserUiService userUiService;
     @Inject
+    private InventoryUiService inventoryUiService;
+    @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private SimpleExecutorService simpleExecutorService;
-    @Inject
     private ClientRunner clientRunner;
-    @Inject
-    private Instance<EditorGameEngineListener> editorListener;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
 
@@ -144,8 +141,8 @@ public abstract class GameEngineControl {
                 position);
     }
 
-    public void spawnSyncBaseItem(BaseItemType baseItemType, Collection<DecimalPosition> decimalPositions) {
-        sendToWorker(GameEngineControlPackage.Command.SPAWN_BASE_ITEMS, baseItemType.getId(), new ArrayList<>(decimalPositions));
+    public void useInventoryItem(UseInventoryItem useInventoryItem) {
+        sendToWorker(GameEngineControlPackage.Command.USE_INVENTORY_ITEM, useInventoryItem);
     }
 
     public void moveCmd(Collection<SyncBaseItemSimpleDto> items, DecimalPosition position) {
@@ -210,10 +207,6 @@ public abstract class GameEngineControl {
 
     public void requestTerrainTile(Index terrainTileIndex) {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
-    }
-
-    public void reloadTerrainShape4Editor() {
-        sendToWorker(GameEngineControlPackage.Command.EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST);
     }
 
     private void onTickUpdate(Collection<SyncBaseItemSimpleDto> updatedSyncBaseItems, GameInfo gameInfo, Collection<SyncBaseItemSimpleDto> baseItemRemoved, Collection<SyncBaseItemSimpleDto> baseItemKilled) {
@@ -328,7 +321,7 @@ public abstract class GameEngineControl {
                 gameUiControl.onQuestPassed();
                 break;
             case BOX_PICKED:
-                userUiService.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
+                inventoryUiService.onOnBoxPicked((BoxContent) controlPackage.getSingleData());
                 break;
             case PROJECTILE_FIRED:
                 projectileUiService.onProjectileFired((int) controlPackage.getData(0), (Vertex) controlPackage.getData(1), (Vertex) controlPackage.getData(2));
@@ -350,9 +343,6 @@ public abstract class GameEngineControl {
                 break;
             case STOP_RESPONSE:
                 onStopped();
-                break;
-            case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
-                editorListener.get().onTerrainShapeReloaded((String) controlPackage.getData(0));
                 break;
             case QUEST_PROGRESS:
                 gameUiControl.onQuestProgress((QuestProgressInfo) controlPackage.getData(0));

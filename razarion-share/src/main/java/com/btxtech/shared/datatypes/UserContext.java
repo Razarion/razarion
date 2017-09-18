@@ -1,9 +1,7 @@
 package com.btxtech.shared.datatypes;
 
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -16,9 +14,6 @@ public class UserContext {
     private boolean admin;
     private int levelId; // May only in DB or unregistered user
     private int xp; // May only in DB or unregistered user
-    private int crystals; // May only in DB or unregistered user
-    private List<Integer> inventoryItemIds = new ArrayList<>(); // May only in DB or unregistered user
-    private List<Integer> inventoryArtifactIds = new ArrayList<>(); // May only in DB or unregistered user
     private Set<Integer> unlockedItemTypes = new HashSet<Integer>(); // May only in DB or unregistered user
     private Set<Integer> unlockedQuests = new HashSet<Integer>(); // May only in DB or unregistered user
     private Set<Integer> unlockedPlanets = new HashSet<Integer>(); // May only in DB or unregistered user
@@ -65,41 +60,6 @@ public class UserContext {
 
     public UserContext setXp(int xp) {
         this.xp = xp;
-        return this;
-    }
-
-    public List<Integer> getInventoryItemIds() {
-        return inventoryItemIds;
-    }
-
-    public UserContext setInventoryItemIds(List<Integer> inventoryItemIds) {
-        this.inventoryItemIds = inventoryItemIds;
-        return this;
-    }
-
-    public void addInventoryItem(int inventoryItemId) {
-        inventoryItemIds.add(inventoryItemId);
-    }
-
-    public void removeInventoryItem(int inventoryItemId) {
-        inventoryItemIds.remove((Integer)inventoryItemId);
-    }
-
-    public List<Integer> getInventoryArtifactIds() {
-        return inventoryArtifactIds;
-    }
-
-    public UserContext setInventoryArtifactIds(List<Integer> inventoryArtifactIds) {
-        this.inventoryArtifactIds = inventoryArtifactIds;
-        return this;
-    }
-
-    public int getCrystals() {
-        return crystals;
-    }
-
-    public UserContext setCrystals(int crystals) {
-        this.crystals = crystals;
         return this;
     }
 

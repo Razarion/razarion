@@ -19,7 +19,6 @@ import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
-import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -53,8 +52,6 @@ public class TerrainUiService {
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
-    @Inject
-    private Instance<ViewService> viewServiceInstance;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
@@ -101,12 +98,6 @@ public class TerrainUiService {
             uiTerrainTile.dispose();
         }
         cacheTerrainTiles.clear();
-    }
-
-    public void clearTerrainTilesForEditor() {
-        clearTerrainTiles();
-        ViewService viewService = viewServiceInstance.get();
-        onViewChanged(viewService.getCurrentViewField(), viewService.getCurrentAabb());
     }
 
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {

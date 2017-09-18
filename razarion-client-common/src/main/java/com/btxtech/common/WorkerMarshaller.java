@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -59,7 +60,6 @@ public class WorkerMarshaller {
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
-            case EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -85,9 +85,9 @@ public class WorkerMarshaller {
             case PLAYBACK_SYNC_BASE_ITEM:
             case PLAYBACK_SYNC_RESOURCE_ITEM:
             case PLAYBACK_SYNC_BOX_ITEM:
-            case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
             case QUEST_PROGRESS:
             case SELL_ITEMS:
+            case USE_INVENTORY_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -99,7 +99,6 @@ public class WorkerMarshaller {
             case COMMAND_PICK_BOX:
             case BASE_CREATED:
             case BASE_DELETED:
-            case SPAWN_BASE_ITEMS:
             case PROJECTILE_DETONATION:
             case SINGLE_Z_TERRAIN_ANSWER:
             case ENERGY_CHANGED:
@@ -158,7 +157,6 @@ public class WorkerMarshaller {
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
-            case EDITOR_RELOAD_TERRAIN_SHAPE_REQUEST:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), StaticGameConfig.class));
@@ -244,9 +242,8 @@ public class WorkerMarshaller {
             case BASE_DELETED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
                 break;
-            case SPAWN_BASE_ITEMS:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), List.class));
+            case USE_INVENTORY_ITEM:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), UseInventoryItem.class));
                 break;
             case SYNC_ITEM_START_SPAWNED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemSimpleDto.class));
@@ -294,9 +291,6 @@ public class WorkerMarshaller {
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
                 break;
-            case EDITOR_RELOAD_TERRAIN_SHAPE_RESPONSE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), String.class));
-                // Native demarshal terrain buffers
             case TERRAIN_TILE_REQUEST:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Index.class));
                 break;
