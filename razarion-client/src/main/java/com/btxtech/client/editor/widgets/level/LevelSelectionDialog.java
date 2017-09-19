@@ -2,11 +2,11 @@ package com.btxtech.client.editor.widgets.level;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DSelectionEntry;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -44,7 +44,8 @@ public class LevelSelectionDialog extends Composite implements ModalDialogConten
         levels.setSelector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(true));
         levels.setDeselector(shape3DSelectionEntry -> shape3DSelectionEntry.setSelected(false));
         if (selectedId != null) {
-            levels.selectModel(levelService.getLevel(selectedId));
+            // Problem whit Errai binder proxy end equals
+            levels.selectModel(BindableProxyFactory.getBindableProxy(levelService.getLevel(selectedId)));
         }
     }
 
