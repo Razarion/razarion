@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.AbstractSyncItemSetPositionMonitor;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.BoxUiService;
 import com.btxtech.uiservice.item.ResourceUiService;
 import com.btxtech.uiservice.item.SyncBaseItemSetPositionMonitor;
 import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
@@ -37,6 +38,8 @@ public class InGameQuestVisualizationService {
     @Inject
     private ResourceUiService resourceUiService;
     @Inject
+    private BoxUiService boxUiService;
+    @Inject
     private Instance<QuestInGameItemVisualization> instance;
     private QuestInGameItemVisualization questInGameItemVisualization;
     private QuestConfig quest;
@@ -57,7 +60,7 @@ public class InGameQuestVisualizationService {
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
         itemTypeFilter = null;
-        if(quest == null) {
+        if (quest == null) {
             return;
         }
         if (quest.getConditionConfig().getConditionTrigger() == ConditionTrigger.SYNC_ITEM_KILLED) {
@@ -97,7 +100,7 @@ public class InGameQuestVisualizationService {
     }
 
     private void showVisualization() {
-        if(quest == null) {
+        if (quest == null) {
             return;
         }
         switch (quest.getConditionConfig().getConditionTrigger()) {
@@ -116,6 +119,7 @@ public class InGameQuestVisualizationService {
                 // TODO
                 break;
             case BOX_PICKED:
+                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getPickColor(), boxUiService.createSyncItemSetPositionMonitor());
                 break;
         }
     }

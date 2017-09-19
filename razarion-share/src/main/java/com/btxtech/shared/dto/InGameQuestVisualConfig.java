@@ -13,6 +13,7 @@ public class InGameQuestVisualConfig {
     private long duration;
     private Color harvestColor;
     private Color attackColor;
+    private Color pickColor;
 
     public double getCornerLength() {
         return cornerLength;
@@ -60,5 +61,13 @@ public class InGameQuestVisualConfig {
 
     public void setAttackColor(Color attackColor) {
         this.attackColor = attackColor;
+    }
+
+    public Color getPickColor() {
+        return pickColor;
+    }
+
+    public void setPickColor(Color pickColor) {
+        this.pickColor = pickColor;
     }
 }

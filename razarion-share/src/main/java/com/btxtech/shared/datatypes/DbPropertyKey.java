@@ -45,7 +45,8 @@ public enum DbPropertyKey {
     QUEST_IN_GAME_VISUALIZATION_MOVE_DISTANCE("questInGameVisualization.move.distance"),
     QUEST_IN_GAME_VISUALIZATION_OUT_OF_VIEW_SHAPE3D("questInGameVisualization.outOfView.shape3d"),
     QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR("questInGameVisualization.corner.harvest.color"),
-    QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR("questInGameVisualization.corner.attack.color");
+    QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR("questInGameVisualization.corner.attack.color"),
+    QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR("questInGameVisualization.corner.pick.color");
 
     private String key;
 

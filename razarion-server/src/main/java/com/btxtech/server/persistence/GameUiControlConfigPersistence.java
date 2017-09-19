@@ -126,6 +126,7 @@ public class GameUiControlConfigPersistence {
         inGameQuestVisualConfig.setDuration(dbPropertiesService.getIntProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_MOVE_DURATION));
         inGameQuestVisualConfig.setHarvestColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_HARVEST_COLOR));
         inGameQuestVisualConfig.setAttackColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_ATTACK_COLOR));
+        inGameQuestVisualConfig.setPickColor(dbPropertiesService.getColorProperty(DbPropertyKey.QUEST_IN_GAME_VISUALIZATION_CORNER_PICK_COLOR));
         return inGameQuestVisualConfig;
     }
 

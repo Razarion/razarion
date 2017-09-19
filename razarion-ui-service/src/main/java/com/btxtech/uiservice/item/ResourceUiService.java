@@ -41,7 +41,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
     private ViewService viewService;
     private final Map<Integer, SyncResourceItemSimpleDto> resources = new HashMap<>();
     private final MapList<ResourceItemType, ModelMatrices> resourceModelMatrices = new MapList<>();
-    private SyncResourceItemSetPositionMonitor syncResourceItemSetPositionMonitor;
+    private SyncStaticItemSetPositionMonitor syncStaticItemSetPositionMonitor;
 
     @PostConstruct
     public void init() {
@@ -51,7 +51,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
     public void clear() {
         resources.clear();
         resourceModelMatrices.clear();
-        syncResourceItemSetPositionMonitor = null;
+        syncStaticItemSetPositionMonitor = null;
     }
 
     public void addResource(SyncResourceItemSimpleDto syncResourceItem) {
@@ -60,8 +60,8 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
                 logger.warning("Resource already exists: " + syncResourceItem);
             }
         }
-        if (syncResourceItemSetPositionMonitor != null) {
-            syncResourceItemSetPositionMonitor.add(syncResourceItem);
+        if (syncStaticItemSetPositionMonitor != null) {
+            syncStaticItemSetPositionMonitor.add(syncResourceItem);
         }
         setupModelMatrices();
     }
@@ -75,8 +75,8 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
             }
             selectionHandler.resourceItemRemove(resource);
         }
-        if (syncResourceItemSetPositionMonitor != null) {
-            syncResourceItemSetPositionMonitor.remove(resource);
+        if (syncStaticItemSetPositionMonitor != null) {
+            syncStaticItemSetPositionMonitor.remove(resource);
         }
         setupModelMatrices();
     }
@@ -156,19 +156,19 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
         return new SyncItemState(syncResourceItemSimpleDto, null, itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
-    public SyncResourceItemSetPositionMonitor createSyncItemSetPositionMonitor() {
-        if (syncResourceItemSetPositionMonitor != null) {
-            throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() syncResourceItemSetPositionMonitor != null");
+    public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor() {
+        if (syncStaticItemSetPositionMonitor != null) {
+            throw new IllegalStateException("ResourceUiService.createSyncItemSetPositionMonitor() syncStaticItemSetPositionMonitor != null");
         }
-        syncResourceItemSetPositionMonitor = new SyncResourceItemSetPositionMonitor(resources.values(), viewService.getCurrentViewField(), () -> syncResourceItemSetPositionMonitor = null);
-        return syncResourceItemSetPositionMonitor;
+        syncStaticItemSetPositionMonitor = new SyncStaticItemSetPositionMonitor(resources.values(), viewService.getCurrentViewField(), () -> syncStaticItemSetPositionMonitor = null);
+        return syncStaticItemSetPositionMonitor;
     }
 
     @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
         setupModelMatrices();
-        if (syncResourceItemSetPositionMonitor != null) {
-            syncResourceItemSetPositionMonitor.onViewChanged(viewField);
+        if (syncStaticItemSetPositionMonitor != null) {
+            syncStaticItemSetPositionMonitor.onViewChanged(viewField);
         }
     }
 }

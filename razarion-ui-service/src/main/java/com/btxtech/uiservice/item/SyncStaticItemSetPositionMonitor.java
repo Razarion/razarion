@@ -3,7 +3,7 @@ package com.btxtech.uiservice.item;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import java.util.ArrayList;
@@ -16,18 +16,18 @@ import java.util.Set;
  * Created by Beat
  * on 12.09.2017.
  */
-public class SyncResourceItemSetPositionMonitor extends AbstractSyncItemSetPositionMonitor{
-    private Set<SyncResourceItemSimpleDto> resources = new HashSet<>();
+public class SyncStaticItemSetPositionMonitor extends AbstractSyncItemSetPositionMonitor {
+    private Set<SyncItemSimpleDto> syncItems = new HashSet<>();
     private List<Vertex> inViewVertices = new ArrayList<>();
     private Polygon2D viewFieldPolygon;
     private DecimalPosition viewFieldCenter;
     private DecimalPosition nearestOutOfViewPosition;
 
-    public SyncResourceItemSetPositionMonitor(Collection<SyncResourceItemSimpleDto> resources, ViewField viewField, Runnable releaseCallback) {
+    public SyncStaticItemSetPositionMonitor(Collection<? extends SyncItemSimpleDto> syncItems, ViewField viewField, Runnable releaseCallback) {
         super(releaseCallback);
         viewFieldPolygon = viewField.toPolygon();
         viewFieldCenter = viewField.calculateCenter();
-        this.resources = new HashSet<>(resources);
+        this.syncItems = new HashSet<>(syncItems);
         setupVertices();
     }
 
@@ -46,13 +46,13 @@ public class SyncResourceItemSetPositionMonitor extends AbstractSyncItemSetPosit
         return inViewVertices;
     }
 
-    public void add(SyncResourceItemSimpleDto resource) {
-        resources.add(resource);
+    public void add(SyncItemSimpleDto resource) {
+        syncItems.add(resource);
         setupVertices();
     }
 
-    public void remove(SyncResourceItemSimpleDto resource) {
-        resources.remove(resource);
+    public void remove(SyncItemSimpleDto resource) {
+        syncItems.remove(resource);
         setupVertices();
     }
 
@@ -65,7 +65,7 @@ public class SyncResourceItemSetPositionMonitor extends AbstractSyncItemSetPosit
     private void setupVertices() {
         inViewVertices.clear();
         double distance = Double.MAX_VALUE;
-        for (SyncResourceItemSimpleDto resource : resources) {
+        for (SyncItemSimpleDto resource : syncItems) {
             if (viewFieldPolygon.isInside(resource.getPosition2d())) {
                 inViewVertices.add(resource.getPosition3d());
                 nearestOutOfViewPosition = null;
