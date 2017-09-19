@@ -61,6 +61,9 @@ public class BaseItemTypeEntity {
     @JoinColumn
     private AudioLibraryEntity spawnAudio;
     private int spawnDurationMillis;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private BoxItemTypeEntity dropBoxItemTypeEntity;
     private double dropBoxPossibility;
     private double boxPickupRange;
     private Integer unlockCrystals;
@@ -103,6 +106,9 @@ public class BaseItemTypeEntity {
 
     public BaseItemType toBaseItemType() {
         BaseItemType baseItemType = new BaseItemType().setPrice(price).setXpOnKilling(xpOnKilling).setDropBoxPossibility(dropBoxPossibility);
+        if (dropBoxItemTypeEntity != null) {
+            baseItemType.setDropBoxItemTypeId(dropBoxItemTypeEntity.getId());
+        }
         baseItemType.setBoxPickupRange(boxPickupRange).setUnlockCrystals(unlockCrystals).setHealth(health).setBuildup(buildup);
         baseItemType.setId(id).setInternalName(internalName);
         if (i18nName != null) {
@@ -188,6 +194,7 @@ public class BaseItemTypeEntity {
         xpOnKilling = baseItemType.getXpOnKilling();
         i18nName = I18nBundleEntity.fromI18nStringSafe(baseItemType.getI18nName(), i18nName);
         i18nDescription = I18nBundleEntity.fromI18nStringSafe(baseItemType.getI18nDescription(), i18nDescription);
+        dropBoxItemTypeEntity = itemTypePersistence.readBoxItemTypeEntity(baseItemType.getDropBoxItemTypeId());
         dropBoxPossibility = baseItemType.getDropBoxPossibility();
         boxPickupRange = baseItemType.getBoxPickupRange();
         unlockCrystals = baseItemType.getUnlockCrystals();

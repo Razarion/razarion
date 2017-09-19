@@ -36,6 +36,7 @@ public class BaseItemType extends ItemType {
     private ItemContainerType itemContainerType;
     private HouseType houseType;
     private SpecialType specialType;
+    private Integer dropBoxItemTypeId;
     private double dropBoxPossibility;
     private double boxPickupRange;
     private Integer unlockCrystals;
@@ -72,6 +73,15 @@ public class BaseItemType extends ItemType {
 
     public BaseItemType setPrice(int price) {
         this.price = price;
+        return this;
+    }
+
+    public Integer getDropBoxItemTypeId() {
+        return dropBoxItemTypeId;
+    }
+
+    public BaseItemType setDropBoxItemTypeId(Integer dropBoxItemTypeId) {
+        this.dropBoxItemTypeId = dropBoxItemTypeId;
         return this;
     }
 

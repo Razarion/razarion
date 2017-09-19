@@ -1,19 +1,28 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.TestHelper;
+import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.system.SimpleExecutorService;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -106,6 +115,43 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         TestHelper.assertObjects(boxPickedEntry.getBoxContent().getInventoryItems(),
                 getInventoryTypeService().getInventoryItem(GameTestContent.INVENTORY_ITEM_GOLD_ID),
                 getInventoryTypeService().getInventoryItem(GameTestContent.INVENTORY_ITEM_ATTACKER_ID));
+    }
+
+    @Test
+    public void testItemDropBoxes() {
+        StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
+        BaseItemType builderType = GameTestContent.findBaseItemType(GameTestContent.BUILDER_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
+        builderType.setDropBoxPossibility(1.0);
+        builderType.setDropBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_LONG_ID);
+        BaseItemType factoryType = GameTestContent.findBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
+        factoryType.setDropBoxPossibility(1.0);
+        factoryType.setDropBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_LONG_ID);
+        setupMasterEnvironment(staticGameConfig);
+        // Setup target to drop boxes
+        UserContext userContext = createLevel1UserContext();
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        getCommandService().build(builder, new DecimalPosition(30, 20), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        // Setup attacker bot
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true));
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+        getBotService().startBots(botConfigs);
+        // Attack
+        assertSyncItemCount(5,0,0);
+        TestSimpleScheduledFuture botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT);
+        for (int i = 0; i < 100; i++) {
+            botScheduledFuture.invokeRun();
+            tickPlanetServiceBaseServiceActive();
+        }
+        assertSyncItemCount(3,0,2);
+
     }
 
     private void tickBoxService(int count) {

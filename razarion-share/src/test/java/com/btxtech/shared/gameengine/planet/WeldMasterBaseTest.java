@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 
 import java.util.ArrayList;
@@ -19,7 +20,11 @@ public class WeldMasterBaseTest extends WeldBaseTest {
     private int nextHumanPlayerId = 1;
 
     protected void setupMasterEnvironment() {
-        setupEnvironment(GameTestContent.setupStaticGameConfig(), GameTestContent.setupPlanetConfig());
+        setupMasterEnvironment(GameTestContent.setupStaticGameConfig());
+    }
+
+    protected void setupMasterEnvironment(StaticGameConfig staticGameConfig) {
+        setupEnvironment(staticGameConfig, GameTestContent.setupPlanetConfig());
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
     }
 

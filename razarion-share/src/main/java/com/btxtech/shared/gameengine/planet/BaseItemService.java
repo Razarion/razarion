@@ -69,6 +69,8 @@ public class BaseItemService {
     private EnergyService energyService;
     @Inject
     private InventoryTypeService inventoryTypeService;
+    @Inject
+    private BoxService boxService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
@@ -304,6 +306,7 @@ public class BaseItemService {
         base.removeItem(target);
         syncItemContainerService.destroySyncItem(target);
         energyService.onBaseItemRemoved(target);
+        boxService.onSyncBaseItemKilled(target);
         if (base.getItemCount() == 0) {
             gameLogicService.onBaseKilled(base, actor);
             synchronized (bases) {

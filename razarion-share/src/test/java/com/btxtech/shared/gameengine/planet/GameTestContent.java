@@ -27,6 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,11 @@ public interface GameTestContent {
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 6, 6));
         planetConfig.setStartBaseItemTypeId(BUILDER_ITEM_TYPE_ID);
         return planetConfig;
+    }
+
+
+    static BaseItemType findBaseItemType(int baseItemTypeId, Collection<BaseItemType> baseItemTypes) {
+        return baseItemTypes.stream().filter(baseItemType -> baseItemType.getId() == baseItemTypeId).findFirst().orElseThrow(IllegalArgumentException::new);
     }
 
     static List<BaseItemType> setupBaseItemType() {

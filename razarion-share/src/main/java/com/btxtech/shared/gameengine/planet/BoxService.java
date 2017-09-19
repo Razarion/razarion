@@ -239,4 +239,20 @@ public class BoxService {
         }
         return syncBoxItemInfos;
     }
+
+    public void onSyncBaseItemKilled(SyncBaseItem syncBaseItem) {
+        Integer dropBoxItemTypeId = syncBaseItem.getBaseItemType().getDropBoxItemTypeId();
+        if (dropBoxItemTypeId == null) {
+            return;
+        }
+        if(syncBaseItem.isSpawning()) {
+            return;
+        }
+        if(!syncBaseItem.isBuildup()) {
+            return;
+        }
+        if(MathHelper.isRandomPossibility(syncBaseItem.getDropBoxPossibility())) {
+            dropBox(dropBoxItemTypeId, syncBaseItem.getSyncPhysicalArea().getPosition2d(), MathHelper.getRandomAngle());
+        }
+    }
 }

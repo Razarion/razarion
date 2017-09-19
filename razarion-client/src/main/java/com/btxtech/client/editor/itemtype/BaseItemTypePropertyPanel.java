@@ -6,6 +6,7 @@ import com.btxtech.client.editor.widgets.audio.AudioWidget;
 import com.btxtech.client.editor.widgets.childpanel.ChildContainer;
 import com.btxtech.client.editor.widgets.childtable.ChildTable;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
+import com.btxtech.client.editor.widgets.itemtype.box.BoxItemTypeWidget;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.utils.GradToRadConverter;
@@ -106,6 +107,9 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
     @DataField
     private NumberInput consumingHouseSpace;
     @Inject
+    @DataField
+    private BoxItemTypeWidget dropBoxItemTypeWidget;
+    @Inject
     @Bound
     @DataField
     private CommaDoubleBox dropBoxPossibility;
@@ -175,6 +179,7 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
         });
         i18nName.init(baseItemType.getI18nName(), baseItemType::setI18nName);
         i18nDescription.init(baseItemType.getI18nDescription(), baseItemType::setI18nDescription);
+        dropBoxItemTypeWidget.init(baseItemType.getDropBoxItemTypeId(), baseItemType::setDropBoxItemTypeId);
         thumbnail.setImageId(baseItemType.getThumbnail(), baseItemType::setThumbnail);
         spawnAudioId.init(baseItemType.getSpawnAudioId(), baseItemType::setSpawnAudioId);
         demolitionStepEffects.init(baseItemType.getDemolitionStepEffects(), baseItemType::setDemolitionStepEffects, DemolitionStepEffect::new, DemolitionStepEffectPanel.class);
