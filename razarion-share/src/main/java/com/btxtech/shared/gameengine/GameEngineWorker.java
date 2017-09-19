@@ -388,11 +388,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onSyncBoxDeletedSlave(SyncBoxItem syncBoxItem) {
-        sendToClient(GameEngineControlPackage.Command.BOX_DELETED, syncBoxItem.getId());
-    }
-
-    @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
         sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createSyncBaseItemSimpleDto());
         if (workerTrackerHandler != null) {
@@ -580,7 +575,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         } else if (syncItem instanceof SyncBoxItem) {
             boxService.removeSyncBoxSlave((SyncBoxItem) syncItem);
         } else {
-            throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem);
+            throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem + " syncItemDeletedInfo: " + syncItemDeletedInfo);
         }
     }
 

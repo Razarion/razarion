@@ -52,9 +52,6 @@ public interface GameLogicListener {
     default void onSyncBoxDeleted(SyncBoxItem box) {
     }
 
-    default void onSyncBoxDeletedSlave(SyncBoxItem box) {
-    }
-
     default void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
     }
 

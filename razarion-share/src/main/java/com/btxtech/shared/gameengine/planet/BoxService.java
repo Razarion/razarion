@@ -87,9 +87,10 @@ public class BoxService {
     public void stopBoxRegions() {
         boxRegion = null;
         synchronized (boxes) {
-            boxes.values().forEach(syncBoxItem -> {
+            Collection<SyncBoxItem> tmp = new ArrayList<>(boxes.values());
+            tmp.forEach(syncBoxItem -> {
                 removeSyncBox(syncBoxItem);
-                gameLogicService.onBoxDeletedSlave(syncBoxItem);
+                gameLogicService.onBoxDeleted(syncBoxItem);
             });
             boxes.clear();
         }
@@ -122,7 +123,7 @@ public class BoxService {
         }
 
         removeSyncBox(box);
-        gameLogicService.onBoxDeletedSlave(box);
+        gameLogicService.onBoxDeleted(box);
         if (picker.getBase().isAbandoned()) {
             return;
         }
@@ -153,7 +154,7 @@ public class BoxService {
 
     public void removeSyncBoxSlave(SyncBoxItem box) {
         removeSyncBox(box);
-        gameLogicService.onBoxDeletedSlave(box);
+        gameLogicService.onBoxDeleted(box);
     }
 
 
