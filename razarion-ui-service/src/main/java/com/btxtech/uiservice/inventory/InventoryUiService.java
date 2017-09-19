@@ -51,9 +51,9 @@ public abstract class InventoryUiService {
 
     public void provideInventoryInfo(Consumer<InventoryInfo> inventoryInfoConsumer) {
         if (gameUiControl.getGameEngineMode() == GameEngineMode.SLAVE) {
-            inventoryInfoConsumer.accept(new InventoryInfo().setCrystals(0).setInventoryItemIds(inventoryItemIds).setInventoryArtifactIds(inventoryArtifactIds));
-        } else if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
             loadServerInventoryInfo(inventoryInfoConsumer);
+        } else if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
+            inventoryInfoConsumer.accept(new InventoryInfo().setCrystals(0).setInventoryItemIds(inventoryItemIds).setInventoryArtifactIds(inventoryArtifactIds));
         } else {
             throw new IllegalArgumentException("InventoryUiService.gatherInventoryItemModels(): Unknown GameEngineMode: " + gameUiControl.getGameEngineMode());
         }
@@ -71,6 +71,9 @@ public abstract class InventoryUiService {
     public void useItem(InventoryItem inventoryItem) {
         if (inventoryItem.getRazarion() != null && inventoryItem.getRazarion() > 0) {
             gameEngineControl.useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()));
+            if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
+                inventoryItemIds.remove((Integer)inventoryItem.getId());
+            }
         } else if (inventoryItem.hasBaseItemTypeId()) {
             try {
                 BaseItemType baseItemType = itemTypeService.getBaseItemType(inventoryItem.getBaseItemTypeId());
@@ -85,8 +88,8 @@ public abstract class InventoryUiService {
                     baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getBaseItemTypeFreeRange());
                     baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
                         gameEngineControl.useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()).setPositions(new ArrayList<>(decimalPositions)));
-                        if (gameUiControl.getGameEngineMode() == GameEngineMode.SLAVE) {
-                            inventoryItemIds.remove(inventoryItem.getId());
+                        if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
+                            inventoryItemIds.remove((Integer)inventoryItem.getId());
                         }
                     });
                     gameTipService.onInventoryItemPlacerActivated(inventoryItem);
@@ -95,8 +98,5 @@ public abstract class InventoryUiService {
                 exceptionHandler.handleException("InventoryUiService.useItem()", e);
             }
         }
-    }
-
-    public void useClientItem(InventoryItem inventoryItem) {
     }
 }
