@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -46,7 +47,8 @@ public class BoxItemTypeSelectionDialog extends Composite implements ModalDialog
         boxItemTypes.setSelector(boxItemTypeSelectionEntry -> boxItemTypeSelectionEntry.setSelected(true));
         boxItemTypes.setDeselector(boxItemTypeSelectionEntry -> boxItemTypeSelectionEntry.setSelected(false));
         if (selectedId != null) {
-            boxItemTypes.selectModel(itemTypeService.getBoxItemType(selectedId));
+            // Problem whit Errai binder proxy end equals
+            boxItemTypes.selectModel(BindableProxyFactory.getBindableProxy(itemTypeService.getBoxItemType(selectedId)));
         }
     }
 

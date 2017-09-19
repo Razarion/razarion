@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -44,7 +45,8 @@ public class ResourceItemTypeSelectionDialog extends Composite implements ModalD
         resourceItemTypes.setSelector(resourceItemTypeSelectionEntry -> resourceItemTypeSelectionEntry.setSelected(true));
         resourceItemTypes.setDeselector(resourceItemTypeSelectionEntry -> resourceItemTypeSelectionEntry.setSelected(false));
         if (selectedId != null) {
-            resourceItemTypes.selectModel(itemTypeService.getResourceItemType(selectedId));
+            // Problem whit Errai binder proxy end equals
+            resourceItemTypes.selectModel(BindableProxyFactory.getBindableProxy(itemTypeService.getResourceItemType(selectedId)));
         }
     }
 

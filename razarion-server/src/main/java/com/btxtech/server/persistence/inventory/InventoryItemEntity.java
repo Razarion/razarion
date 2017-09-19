@@ -38,6 +38,7 @@ public class InventoryItemEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity image;
+    private Integer crystalCost;
 
     public Integer getId() {
         return id;
@@ -55,6 +56,7 @@ public class InventoryItemEntity {
         if (image != null) {
             inventoryItem.setImageId(image.getId());
         }
+        inventoryItem.setCrystalCost(crystalCost);
         return inventoryItem;
     }
 
@@ -64,6 +66,7 @@ public class InventoryItemEntity {
         baseItemTypeCount = inventoryItem.getBaseItemTypeCount();
         itemFreeRange = inventoryItem.getBaseItemTypeFreeRange();
         razarion = inventoryItem.getRazarion();
+        crystalCost = inventoryItem.getCrystalCost();
     }
 
     public void setBaseItemType(BaseItemTypeEntity baseItemType) {

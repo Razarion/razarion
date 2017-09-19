@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<div data-field="inventory-item-property-panel">
+    <table style="border-spacing: 0; border-collapse: separate;">
+        <tr class="editor-table-even-odd">
+            <td>Id</td>
+            <td>
+                <div data-field="id"></div>
+            </td>
+        </tr>
+        <tr class="editor-table-even-odd">
+            <td><label for="internalName">Internal name</label></td>
+            <td><input id="internalName"></td>
+        </tr>
+        <tr class="editor-table-even-odd">
+            <td>Name</td>
+            <td>
+                <div data-field="i18nName"></div>
+            </td>
+        </tr>
+        <tr class="editor-table-even-odd">
+            <td>Thumbnail</td>
+            <td>
+                <div data-field="thumbnail"></div>
+                50x50
+            </td>
+        </tr>
+        <tr class="editor-table-even-odd">
+            <td>Content</td>
+            <td>
+                <table>
+                    <tr>
+                        <td><label for="razarion">Razarion</label></td>
+                        <td><input id="razarion" min="0" step="1"></td>
+                    </tr>
+                    <tr>
+                        Either razarion or base item type
+                        <td><label for="razarion">Razarion</label></td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>Type</td>
+                                    <td>
+                                        <div id="baseItemType"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="baseItemTypeCount">Count</label></td>
+                                    <td><input id="baseItemTypeCount" min="0" step="1"></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="baseItemTypeFreeRange">Free range</label></td>
+                                    <td><input id="baseItemTypeFreeRange" min="0"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr class="editor-table-even-odd">
+            <td>Cost</td>
+            <td>
+                <table>
+                    <tr>
+                        <td><label for="crystalCost">Crystals</label></td>
+                        <td><input id="crystalCost" min="0" step="1">(If empty not in market)</td>
+                    </tr>
+                    <tr>
+                        <td>Artifacts</td>
+                        <td>TODO</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

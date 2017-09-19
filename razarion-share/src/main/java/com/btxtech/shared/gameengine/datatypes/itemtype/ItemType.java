@@ -119,12 +119,12 @@ public abstract class ItemType implements ObjectNameIdProvider {
         if (this == o) {
             return true;
         }
-        if (o == null || !getClass().equals(o.getClass())) { // equals needed because Errai binder proxy
+        if (o == null || !getClass().equals(o.getClass())) { // equals needed because Errai binder proxy. May be wrong -> BindableProxyFactory.getBindableProxy()
             return false;
         }
 
         ItemType itemType = (ItemType) o;
-        return getId() == itemType.getId(); // itemType.getId() needed because Errai binder proxy
+        return getId() == itemType.getId(); // itemType.getId() needed because Errai binder proxy. May be wrong -> BindableProxyFactory.getBindableProxy()
     }
 
     @Override

@@ -17,6 +17,7 @@ public class InventoryItem implements ObjectNameIdProvider {
     private int baseItemTypeCount;
     private double baseItemTypeFreeRange;
     private Integer imageId;
+    private Integer crystalCost;
 
     public int getId() {
         return id;
@@ -94,6 +95,14 @@ public class InventoryItem implements ObjectNameIdProvider {
         return baseItemTypeId != null;
     }
 
+    public Integer getCrystalCost() {
+        return crystalCost;
+    }
+
+    public void setCrystalCost(Integer crystalCost) {
+        this.crystalCost = crystalCost;
+    }
+
     @Override
     public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
@@ -104,13 +113,13 @@ public class InventoryItem implements ObjectNameIdProvider {
         if (this == o) {
             return true;
         }
-        if (o == null || !getClass().equals(o.getClass())) { // equals needed because Errai binder proxy
+        if (o == null || !getClass().equals(o.getClass())) { // equals needed because Errai binder proxy. May be wrong -> BindableProxyFactory.getBindableProxy()
             return false;
         }
 
         InventoryItem that = (InventoryItem) o;
 
-        return getId() == that.getId(); // itemType.getId() needed because Errai binder proxy
+        return getId() == that.getId(); // itemType.getId() needed because Errai binder proxy. May be wrong -> BindableProxyFactory.getBindableProxy()
     }
 
     @Override

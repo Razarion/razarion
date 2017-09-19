@@ -3,12 +3,14 @@ package com.btxtech.server.persistence.inventory;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -28,6 +30,17 @@ public class InventoryPersistence {
     private ImagePersistence imagePersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
+
+    @Transactional
+    @SecurityCheck
+    public List<ObjectNameId> readInventoryItemObjectNameIds() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<InventoryItemEntity> root = cq.from(InventoryItemEntity.class);
+        cq.multiselect(root.get(InventoryItemEntity_.id), root.get(InventoryItemEntity_.internalName));
+        List<Tuple> tupleResult = entityManager.createQuery(cq).getResultList();
+        return tupleResult.stream().map(t -> new ObjectNameId((int) t.get(0), (String) t.get(1))).collect(Collectors.toList());
+    }
 
     @Transactional
     @SecurityCheck
@@ -74,5 +87,10 @@ public class InventoryPersistence {
             throw new IllegalArgumentException("No InventoryItemEntity for id: " + id);
         }
         return inventoryItemEntity;
+    }
+
+    @Transactional
+    public InventoryItem readInventoryItem(int id) {
+        return entityManager.find(InventoryItemEntity.class, id).toInventoryItem();
     }
 }

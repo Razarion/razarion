@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -44,7 +45,8 @@ public class InventoryItemSelectionDialog extends Composite implements ModalDial
         inventoryItems.setSelector(inventoryItemEntry -> inventoryItemEntry.setSelected(true));
         inventoryItems.setDeselector(inventoryItemEntry -> inventoryItemEntry.setSelected(false));
         if (selectedId != null) {
-            inventoryItems.selectModel(inventoryTypeService.getInventoryItem(selectedId));
+            // Problem whit Errai binder proxy end equals
+            inventoryItems.selectModel(BindableProxyFactory.getBindableProxy(inventoryTypeService.getInventoryItem(selectedId)));
         }
     }
 

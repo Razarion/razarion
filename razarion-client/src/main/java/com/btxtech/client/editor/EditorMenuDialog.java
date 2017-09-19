@@ -8,6 +8,7 @@ import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.i18n.I18nPanel;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
+import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
 import com.btxtech.client.editor.itemtype.BaseItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.BoxItemTypeCrudSidebar;
 import com.btxtech.client.editor.itemtype.ResourceItemTypeCrudSidebar;
@@ -121,6 +122,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private Button levelConfigButton;
     @Inject
     @DataField
+    private Button inventoryItemButton;
+    @Inject
+    @DataField
     private Button i18nPanelButton;
     private ModalDialogPanel<Void> modalDialogPanel;
 
@@ -173,6 +177,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("levelQuestButton")
     private void levelQuestButtonClicked(ClickEvent event) {
         openEditor(LevelQuestSidebar.class);
+    }
+
+    @EventHandler("inventoryItemButton")
+    private void inventoryItemButtonClicked(ClickEvent event) {
+        openEditor(InventoryItemCrudSidebar.class);
     }
 
     @EventHandler("botButton")
