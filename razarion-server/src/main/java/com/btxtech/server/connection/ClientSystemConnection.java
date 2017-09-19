@@ -38,10 +38,10 @@ public class ClientSystemConnection {
     @Inject
     private SessionService sessionService;
     private ObjectMapper mapper = new ObjectMapper();
-    private EndpointConfig config;
     private RemoteEndpoint.Async async;
     private Date time;
     private String gameSessionUuid;
+    private String httpSessionId;
 
     @OnMessage
     public void onMessage(Session session, String text) {
@@ -58,8 +58,8 @@ public class ClientSystemConnection {
     @OnOpen
     public void open(Session session, EndpointConfig config) {
         time = new Date();
-        this.config = config;
         async = session.getAsyncRemote();
+        httpSessionId = ((HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY)).getId() ;
         clientSystemConnectionService.onOpen(this);
     }
 
@@ -75,10 +75,9 @@ public class ClientSystemConnection {
     }
 
     private void onPackageReceived(SystemConnectionPacket packet, Object param) {
-        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         switch (packet) {
             case LEVEL_UPDATE_CLIENT:
-                serverLevelQuestService.onClientLevelUpdate(httpSession.getId(), (int) param);
+                serverLevelQuestService.onClientLevelUpdate(httpSessionId, (int) param);
                 break;
             case SET_GAME_SESSION_UUID:
                 gameSessionUuid = (String)param;
@@ -93,8 +92,7 @@ public class ClientSystemConnection {
     }
 
     public PlayerSession getSession() {
-        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
-        return sessionService.getSession(httpSession.getId());
+        return sessionService.getSession(httpSessionId);
     }
 
     public String getGameSessionUuid() {

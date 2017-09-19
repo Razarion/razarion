@@ -50,10 +50,10 @@ public class ClientGameConnection {
     @Inject
     private ServerInventoryService serverInventoryService;
     private ObjectMapper mapper = new ObjectMapper();
-    private EndpointConfig config;
     private RemoteEndpoint.Async async;
     private Date time;
     private String gameSessionUuid;
+    private String httpSessionId;
 
     @OnMessage
     public void onMessage(Session session, String text) {
@@ -70,8 +70,8 @@ public class ClientGameConnection {
     @OnOpen
     public void open(Session session, EndpointConfig config) {
         time = new Date();
-        this.config = config;
         async = session.getAsyncRemote();
+        httpSessionId = ((HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY)).getId() ;
         clientGameConnectionService.onOpen(this, getHumanPlayerId());
     }
 
@@ -150,7 +150,6 @@ public class ClientGameConnection {
     }
 
     private PlayerSession getPlayerSession() {
-        HttpSession httpSession = (HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
-        return sessionService.getSession(httpSession.getId());
+        return sessionService.getSession(httpSessionId);
     }
 }
