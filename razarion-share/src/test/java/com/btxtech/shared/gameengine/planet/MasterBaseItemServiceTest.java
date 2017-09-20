@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
 
         setup(planetConfig, GameEngineMode.MASTER, null, null);
 
-        PlayerBaseFull base1 = getBaseItemService().createHumanBase(1000, 1, new HumanPlayerId().setPlayerId(105), "Unit test Base human");
+        PlayerBaseFull base1 = getBaseItemService().createHumanBase(1000, 1, Collections.emptyMap(), new HumanPlayerId().setPlayerId(105), "Unit test Base human");
         PlayerBaseFull base2 = getBaseItemService().createBotBase(new BotConfig().setName("Test Bot").setNpc(false));
         int builderId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(GameTestContent.BUILDER_ITEM_TYPE_ID), new DecimalPosition(100, 200), Math.toRadians(80), base1, true).getId();
         int factoryId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID), new DecimalPosition(200, 200), Math.toRadians(100), base2, true).getId();

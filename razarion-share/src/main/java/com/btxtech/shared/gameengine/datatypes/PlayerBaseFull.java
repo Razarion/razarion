@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -19,10 +20,12 @@ public class PlayerBaseFull extends PlayerBase {
     private final Collection<SyncBaseItem> items = new ArrayList<>();
     private int usedHouseSpace = 0;
     private Integer levelId;
+    private Map<Integer, Integer> unlockedItemLimit;
 
-    public PlayerBaseFull(int baseId, String name, Character character, double startRazarion, Integer levelId, HumanPlayerId humanPlayerId) {
+    public PlayerBaseFull(int baseId, String name, Character character, double startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId) {
         super(baseId, name, character, startRazarion, humanPlayerId);
         this.levelId = levelId;
+        this.unlockedItemLimit = unlockedItemLimit;
     }
 
     public void addItem(SyncBaseItem syncBaseItem) {
@@ -64,6 +67,13 @@ public class PlayerBaseFull extends PlayerBase {
         this.levelId = levelId;
     }
 
+    public Map<Integer, Integer> getUnlockedItemLimit() {
+        return unlockedItemLimit;
+    }
+
+    public void setUnlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
+        this.unlockedItemLimit = unlockedItemLimit;
+    }
 
     public BackupPlayerBaseInfo getBackupPlayerBaseInfo() {
         BackupPlayerBaseInfo playerBaseInfo = new BackupPlayerBaseInfo();
@@ -73,6 +83,7 @@ public class PlayerBaseFull extends PlayerBase {
         playerBaseInfo.setHumanPlayerId(getHumanPlayerId());
         playerBaseInfo.setResources(getResources());
         playerBaseInfo.setLevel(levelId);
+        playerBaseInfo.setUnlockedItemLimit(unlockedItemLimit);
         return playerBaseInfo;
     }
 }

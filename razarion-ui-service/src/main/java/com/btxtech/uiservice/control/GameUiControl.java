@@ -241,9 +241,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public int getMyLimitation4ItemType(int itemTypeId) {
+        int unlockedCount = userUiService.getUserContext().getUnlockedItemLimit().getOrDefault(itemTypeId, 0);
         int levelCount = levelService.getLevel(userUiService.getUserContext().getLevelId()).limitation4ItemType(itemTypeId);
         int planetCount = getPlanetConfig().imitation4ItemType(itemTypeId);
-        return Math.min(levelCount, planetCount);
+        return Math.min(levelCount + unlockedCount, planetCount);
     }
 
     private List<SceneConfig> setupSlaveScenes() {

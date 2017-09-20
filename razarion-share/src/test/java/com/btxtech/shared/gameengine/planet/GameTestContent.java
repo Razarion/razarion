@@ -201,8 +201,8 @@ public interface GameTestContent {
 
     static Map<Integer, Integer> setupPlanetItemTypeLimitations() {
         Map<Integer, Integer> levelLimitation = new HashMap<>();
-        levelLimitation.put(BUILDER_ITEM_TYPE_ID, 1);
-        levelLimitation.put(FACTORY_ITEM_TYPE_ID, 2);
+        levelLimitation.put(BUILDER_ITEM_TYPE_ID, 2);
+        levelLimitation.put(FACTORY_ITEM_TYPE_ID, 3);
         levelLimitation.put(ATTACKER_ITEM_TYPE_ID, 5);
         levelLimitation.put(GENERATOR_ITEM_TYPE_ID, 6);
         levelLimitation.put(CONSUMER_ITEM_TYPE_ID, 6);

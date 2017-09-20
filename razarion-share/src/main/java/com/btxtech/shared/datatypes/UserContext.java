@@ -2,6 +2,7 @@ package com.btxtech.shared.datatypes;
 
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -10,13 +11,11 @@ import java.util.Set;
  */
 public class UserContext {
     private HumanPlayerId humanPlayerId;
-    private String name; // May only in DB or unregistered user
+    private String name;
     private boolean admin;
-    private int levelId; // May only in DB or unregistered user
-    private int xp; // May only in DB or unregistered user
-    private Set<Integer> unlockedItemTypes = new HashSet<Integer>(); // May only in DB or unregistered user
-    private Set<Integer> unlockedQuests = new HashSet<Integer>(); // May only in DB or unregistered user
-    private Set<Integer> unlockedPlanets = new HashSet<Integer>(); // May only in DB or unregistered user
+    private int levelId;
+    private Map<Integer, Integer> unlockedItemLimit;
+    private int xp;
 
     public HumanPlayerId getHumanPlayerId() {
         return humanPlayerId;
@@ -54,43 +53,21 @@ public class UserContext {
         return this;
     }
 
+    public Map<Integer, Integer> getUnlockedItemLimit() {
+        return unlockedItemLimit;
+    }
+
+    public UserContext setUnlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
+        this.unlockedItemLimit = unlockedItemLimit;
+        return this;
+    }
+
     public int getXp() {
         return xp;
     }
 
     public UserContext setXp(int xp) {
         this.xp = xp;
-        return this;
-    }
-
-    public Set<Integer> getUnlockedItemTypes() {
-        return unlockedItemTypes;
-    }
-
-    public UserContext setUnlockedItemTypes(Set<Integer> unlockedItemTypes) {
-        this.unlockedItemTypes = unlockedItemTypes;
-        return this;
-    }
-
-    public boolean containsUnlockedItemTypeId(int itemTypeId) {
-        return unlockedItemTypes.contains(itemTypeId);
-    }
-
-    public Set<Integer> getUnlockedQuests() {
-        return unlockedQuests;
-    }
-
-    public UserContext setUnlockedQuests(Set<Integer> unlockedQuests) {
-        this.unlockedQuests = unlockedQuests;
-        return this;
-    }
-
-    public Set<Integer> getUnlockedPlanets() {
-        return unlockedPlanets;
-    }
-
-    public UserContext setUnlockedPlanets(Set<Integer> unlockedPlanets) {
-        this.unlockedPlanets = unlockedPlanets;
         return this;
     }
 }

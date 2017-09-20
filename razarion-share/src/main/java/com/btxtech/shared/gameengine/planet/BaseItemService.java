@@ -117,8 +117,8 @@ public class BaseItemService {
         throw new IllegalStateException("No human base found");
     }
 
-    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, HumanPlayerId humanPlayerId, String name) {
-        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, humanPlayerId);
+    public PlayerBaseFull createHumanBase(int startRazarion, int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name) {
+        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, unlockedItemLimit, humanPlayerId);
     }
 
     private void surrenderHumanBase(HumanPlayerId humanPlayerId) {
@@ -131,9 +131,9 @@ public class BaseItemService {
         }
     }
 
-    public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
+    public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
         surrenderHumanBase(humanPlayerId);
-        PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, humanPlayerId, name);
+        PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, unlockedItemLimit, humanPlayerId, name);
         spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
         return playerBase;
     }
@@ -146,18 +146,26 @@ public class BaseItemService {
         playerBase.setLevelId(levelId);
     }
 
-    public PlayerBaseFull createBotBase(BotConfig botConfig) {
-        return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null);
+    public void updateUnlockedItemLimit(HumanPlayerId humanPlayerId, Map<Integer, Integer> unlockedItemLimit) {
+        PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
+        if (playerBase == null) {
+            throw new IllegalArgumentException("No base for humanPlayerId: " + humanPlayerId);
+        }
+        playerBase.setUnlockedItemLimit(unlockedItemLimit);
     }
 
-    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, HumanPlayerId humanPlayerId) {
+    public PlayerBaseFull createBotBase(BotConfig botConfig) {
+        return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null, null);
+    }
+
+    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId) {
         PlayerBaseFull playerBase;
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, humanPlayerId);
+            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, unlockedItemLimit, humanPlayerId);
             bases.put(lastBaseItId, playerBase);
         }
         gameLogicService.onBaseCreated(playerBase);
@@ -366,7 +374,7 @@ public class BaseItemService {
         if (playerBase.getCharacter().isBot()) {
             return false;
         }
-        return getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(newItemType.getId(), playerBase.getLevelId());
+        return getItemCount(playerBase, newItemType) + itemCount2Add > getLimitation4ItemType(newItemType.getId(), playerBase.getLevelId(), playerBase.getUnlockedItemLimit());
     }
 
     public int getItemCount(PlayerBaseFull playerBase, BaseItemType baseItemType) {
@@ -408,10 +416,11 @@ public class BaseItemService {
         return nearest;
     }
 
-    public int getLimitation4ItemType(int itemTypeId, int levelId) {
+    public int getLimitation4ItemType(int itemTypeId, int levelId, Map<Integer, Integer> unlockedItemLimitation) {
+        int unlockedCount = unlockedItemLimitation.getOrDefault(itemTypeId, 0);
         int levelCount = levelService.getLevel(levelId).limitation4ItemType(itemTypeId);
         int planetCount = planetConfig.imitation4ItemType(itemTypeId);
-        return Math.min(levelCount, planetCount);
+        return Math.min(levelCount + unlockedCount, planetCount);
     }
 
     public boolean isEnemy(SyncBaseItem syncBaseItem1, SyncBaseItem syncBaseItem2) {
@@ -625,7 +634,7 @@ public class BaseItemService {
         lastBaseItId = 1;
         backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
             lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
-            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getHumanPlayerId()));
+            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getUnlockedItemLimit(), playerBaseInfo.getHumanPlayerId()));
         });
         Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
         for (SyncBaseItemInfo syncBaseItemInfo : backupPlanetInfo.getSyncBaseItemInfos()) {

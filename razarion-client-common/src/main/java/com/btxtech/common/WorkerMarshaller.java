@@ -30,6 +30,7 @@ import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -115,11 +116,17 @@ public class WorkerMarshaller {
             // Quadruple JSON data
             case INITIALIZE_WARM:
             case TICK_UPDATE_RESPONSE:
+                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
                 break;
             // Multiple  JSON data
             case INITIALIZE:
@@ -187,6 +194,7 @@ public class WorkerMarshaller {
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Map.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), HumanPlayerId.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), String.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_3), DecimalPosition.class));

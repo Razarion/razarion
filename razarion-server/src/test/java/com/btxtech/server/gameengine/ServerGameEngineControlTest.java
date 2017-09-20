@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -56,7 +57,7 @@ public class ServerGameEngineControlTest extends ArquillianBaseTest {
         // UserContext userContext = userService.getUserContextFromSession(); // Simulate anonymous login
         UserContext userContext = userService.handleFacebookUserLogin("0000001");
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
-        baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(21, 34));
+        baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(21, 34));
         serverGameEngineControl.backupPlanet();
 
         planetBackupMongoDb.loadLastBackup(2);

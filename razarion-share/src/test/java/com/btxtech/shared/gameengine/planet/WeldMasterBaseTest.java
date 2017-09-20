@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Beat
@@ -43,7 +44,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
     }
 
     protected PlayerBaseFull createHumanBaseWithBaseItem(DecimalPosition position, UserContext userContext) {
-        return getBaseItemService().createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName(), position);
+        return getBaseItemService().createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), position);
     }
 
     protected PlayerBaseFull findBotBase(int botId) {
@@ -57,7 +58,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
 
     protected UserContext createLevel1UserContext(Integer userId) {
         int humanPlayerId = nextHumanPlayerId++;
-        return new UserContext().setLevelId(GameTestContent.LEVEL_ID_1).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId).setUserId(userId)).setName("test base " + humanPlayerId);
+        return new UserContext().setLevelId(GameTestContent.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId).setUserId(userId)).setName("test base " + humanPlayerId);
     }
 
     protected UserContext createLevel1UserContext() {

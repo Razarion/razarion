@@ -71,7 +71,7 @@ public class ClientGameConnection {
     public void open(Session session, EndpointConfig config) {
         time = new Date();
         async = session.getAsyncRemote();
-        httpSessionId = ((HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY)).getId() ;
+        httpSessionId = ((HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY)).getId();
         clientGameConnectionService.onOpen(this, getHumanPlayerId());
     }
 
@@ -90,7 +90,7 @@ public class ClientGameConnection {
         switch (packet) {
             case CREATE_BASE:
                 UserContext userContext = getUserContext();
-                baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getHumanPlayerId(), userContext.getName(), (DecimalPosition) param);
+                baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), (DecimalPosition) param);
                 break;
             case FACTORY_COMMAND:
             case UNLOAD_CONTAINER_COMMAND:

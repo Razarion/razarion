@@ -62,6 +62,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -148,7 +149,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 resourceService.createResources((Collection<ResourceItemPosition>) controlPackage.getSingleData());
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
-                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (HumanPlayerId) controlPackage.getData(1), (String) controlPackage.getData(2), (DecimalPosition) controlPackage.getData(3));
+                createHumanBaseWithBaseItem((Integer) controlPackage.getData(0), (Map<Integer, Integer>) controlPackage.getData(1), (HumanPlayerId) controlPackage.getData(2), (String) controlPackage.getData(3), (DecimalPosition) controlPackage.getData(4));
                 break;
             case USE_INVENTORY_ITEM:
                 useInventoryItem((UseInventoryItem) controlPackage.getData(0));
@@ -266,11 +267,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 , failCallback);
     }
 
-    private void createHumanBaseWithBaseItem(int levelId, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
+    private void createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
         } else {
-            playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, humanPlayerId, name, position);
+            playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, unlockedItemLimit, humanPlayerId, name, position);
         }
     }
 

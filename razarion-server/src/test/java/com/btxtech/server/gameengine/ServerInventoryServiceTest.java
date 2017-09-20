@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.Collections;
 
 /**
  * Created by Beat
@@ -58,7 +59,7 @@ public class ServerInventoryServiceTest extends ArquillianBaseTest {
         serverGameEngineControl.start(null, true);
         UserContext userContext = userService.handleFacebookUserLogin("0000001");
         int userId = userContext.getHumanPlayerId().getUserId();
-        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), "Test base", new DecimalPosition(100, 100));
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), "Test base", new DecimalPosition(100, 100));
         // Verify
         InventoryInfo inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());
         Assert.assertEquals(0, inventoryInfo.getCrystals());
@@ -135,7 +136,7 @@ public class ServerInventoryServiceTest extends ArquillianBaseTest {
         // Start from ServletContextMonitor.contextInitialized() not working
         serverGameEngineControl.start(null, true);
         UserContext userContext = userService.getUserContextFromSession(); // Simulate anonymous login
-        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), "Test base", new DecimalPosition(100, 100));
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), "Test base", new DecimalPosition(100, 100));
         // Verify
         InventoryInfo inventoryInfo = serverInventoryService.loadInventory(sessionHolder.getPlayerSession());
         Assert.assertEquals(0, inventoryInfo.getCrystals());
@@ -203,7 +204,7 @@ public class ServerInventoryServiceTest extends ArquillianBaseTest {
         Assert.assertEquals(110, inventoryInfo.getCrystals());
         Assert.assertTrue(inventoryInfo.getInventoryArtifactIds().isEmpty());
         Assert.assertTrue(inventoryInfo.getInventoryItemIds().isEmpty());
-        assertUnregisteredUser( 110);
+        assertUnregisteredUser(110);
         assertCount(6, InventoryHistoryEntry.class);
     }
 
@@ -216,7 +217,7 @@ public class ServerInventoryServiceTest extends ArquillianBaseTest {
     }
 
     private void assertUnregisteredUser(int expectedCrystals, Integer... expectedInventoryItemIds) throws Exception {
-        InventoryInfo inventoryInfo =sessionHolder.getPlayerSession().getUnregisteredUser().toInventoryInfo();
+        InventoryInfo inventoryInfo = sessionHolder.getPlayerSession().getUnregisteredUser().toInventoryInfo();
         Assert.assertEquals(expectedCrystals, inventoryInfo.getCrystals());
         TestHelper.assertIds(inventoryInfo.getInventoryItemIds(), expectedInventoryItemIds);
     }
