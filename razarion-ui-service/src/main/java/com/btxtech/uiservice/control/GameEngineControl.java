@@ -49,6 +49,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -195,6 +196,10 @@ public abstract class GameEngineControl {
 
     public void updateLevel(int levelId) {
         sendToWorker(GameEngineControlPackage.Command.UPDATE_LEVEL, levelId);
+    }
+
+    public void updateUnlockItemLimitChanged(Map<Integer, Integer> unlockedItemLimit) {
+        sendToWorker(GameEngineControlPackage.Command.UPDATE_UNLOCK_ITEM_LIMIT, unlockedItemLimit);
     }
 
     public void perfmonRequest(Consumer<Collection<PerfmonStatistic>> perfmonConsumer) {

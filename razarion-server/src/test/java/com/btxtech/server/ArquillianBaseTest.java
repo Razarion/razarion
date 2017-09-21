@@ -10,6 +10,7 @@ import com.btxtech.server.persistence.itemtype.BoxItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
@@ -73,6 +74,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -117,6 +119,10 @@ public class ArquillianBaseTest {
     public static int SERVER_QUEST_ID_L5_1;
     public static int SERVER_QUEST_ID_L5_2;
     public static int SERVER_QUEST_ID_L5_3;
+    // Unlock
+    public static int LEVEL_UNLOCK_ID_L4_1;
+    public static int LEVEL_UNLOCK_ID_L5_1;
+    public static int LEVEL_UNLOCK_ID_L5_2;
     @PersistenceContext
     private EntityManager em;
     @Inject
@@ -317,8 +323,14 @@ public class ArquillianBaseTest {
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
         levelEntity4.fromLevelConfig(new LevelConfig().setNumber(4).setXp2LevelUp(300), itemTypeLimitation4);
+        LevelUnlockEntity levelUnlockEntity4_1 = new LevelUnlockEntity();
+        levelUnlockEntity4_1.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
+        levelUnlockEntity4_1.setBaseItemTypeCount(1);
+        levelUnlockEntity4_1.setInternalName("levelUnlockEntity4_1");
+        levelEntity4.setUnlockItemTypeLimitation(Collections.singleton(levelUnlockEntity4_1));
         em.persist(levelEntity4);
         LEVEL_4_ID = levelEntity4.getId();
+        LEVEL_UNLOCK_ID_L4_1 = levelUnlockEntity4_1.getId();
         // Level 5
         LevelEntity levelEntity5 = new LevelEntity();
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation5 = new HashMap<>();
@@ -327,18 +339,29 @@ public class ArquillianBaseTest {
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
         levelEntity5.fromLevelConfig(new LevelConfig().setNumber(5).setXp2LevelUp(400), itemTypeLimitation5);
+        LevelUnlockEntity levelUnlockEntity5_1 = new LevelUnlockEntity();
+        levelUnlockEntity5_1.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID));
+        levelUnlockEntity5_1.setBaseItemTypeCount(2);
+        levelUnlockEntity5_1.setCrystalCost(10);
+        levelUnlockEntity5_1.setInternalName("levelUnlockEntity5_1");
+        LevelUnlockEntity levelUnlockEntity5_2 = new LevelUnlockEntity();
+        levelUnlockEntity5_2.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID));
+        levelUnlockEntity5_2.setBaseItemTypeCount(1);
+        levelUnlockEntity5_2.setCrystalCost(20);
+        levelUnlockEntity5_2.setInternalName("levelUnlockEntity5_2");
+        levelEntity5.setUnlockItemTypeLimitation(Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
         em.persist(levelEntity5);
         LEVEL_5_ID = levelEntity5.getId();
+        LEVEL_UNLOCK_ID_L5_1 = levelUnlockEntity5_1.getId();
+        LEVEL_UNLOCK_ID_L5_2 = levelUnlockEntity5_2.getId();
 
         utx.commit();
     }
 
     protected void cleanLevels() throws Exception {
-        utx.begin();
-        em.joinTransaction();
-        em.createNativeQuery("DELETE FROM LEVEL_LIMITATION").executeUpdate();
-        em.createQuery("DELETE FROM LevelEntity").executeUpdate();
-        utx.commit();
+        cleanTable(LevelUnlockEntity.class);
+        cleanTableNative("LEVEL_LIMITATION");
+        cleanTable(LevelEntity.class);
         cleanItemTypes();
     }
 

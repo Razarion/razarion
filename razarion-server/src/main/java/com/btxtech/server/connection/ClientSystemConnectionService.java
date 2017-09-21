@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -82,6 +83,13 @@ public class ClientSystemConnectionService {
         PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
         if (playerSession != null) {
             sendToClient(playerSession, SystemConnectionPacket.BOX_PICKED, boxContent);
+        }
+    }
+
+    public void onUnlockedItemLimit(HumanPlayerId humanPlayerId, Map<Integer, Integer> unlockedItemLimit) {
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession != null) {
+            sendToClient(playerSession, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, unlockedItemLimit);
         }
     }
 

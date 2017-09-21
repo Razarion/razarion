@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.level;
 
+import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -16,6 +17,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +98,11 @@ public class LevelPersistence {
         return entityManager.createQuery(userSelect).setFirstResult(0).setMaxResults(1).getSingleResult();
     }
 
+    @Transactional
+    public List<LevelUnlockEntity> getStartUnlockedItemLimit() {
+        return new ArrayList<>();
+    }
+
     public LevelEntity getLevel4Id(Integer levelId) {
         if (levelId == null) {
             return null;
@@ -142,4 +151,19 @@ public class LevelPersistence {
             return null;
         }
     }
+
+    @Transactional
+    public int readLevelUnlockEntityCrystals(int levelId, int levelUnlockEntityId) {
+        return getLevel4Id(levelId).getLevelUnlockEntity(levelUnlockEntityId).getCrystalCost();
+    }
+
+    @Transactional
+    public Map<Integer, Integer> setupUnlockedItemLimit(Collection<Integer> levelUnlockEntityIds) {
+        if (levelUnlockEntityIds == null) {
+            return Collections.emptyMap();
+        }
+        Collection<LevelUnlockEntity> levelUnlockEntities = levelUnlockEntityIds.stream().map(levelUnlockEntityId -> entityManager.find(LevelUnlockEntity.class, levelUnlockEntityId)).collect(Collectors.toList());
+        return ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities);
+    }
+
 }

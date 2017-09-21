@@ -3,14 +3,19 @@ package com.btxtech.server.persistence.level;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +35,9 @@ public class LevelEntity {
     @MapKeyJoinColumn(name = "baseItemTypeEntityId")
     @CollectionTable(name = "LEVEL_LIMITATION")
     private Map<BaseItemTypeEntity, Integer> itemTypeLimitation;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "level")
+    private Collection<LevelUnlockEntity> unlockItemTypeLimitation;
 
     public Integer getId() {
         return id;
@@ -61,6 +69,17 @@ public class LevelEntity {
 
     public int getXp2LevelUp() {
         return xp2LevelUp;
+    }
+
+    public void setUnlockItemTypeLimitation(Collection<LevelUnlockEntity> unlockItemTypeLimitation) {
+        this.unlockItemTypeLimitation = unlockItemTypeLimitation;
+    }
+
+    public LevelUnlockEntity getLevelUnlockEntity(int levelUnlockEntityId) {
+        if (unlockItemTypeLimitation == null) {
+            throw new IllegalArgumentException("No LevelUnlockEntity for levelUnlockEntityId: " + levelUnlockEntityId + " in level with id: " + id);
+        }
+        return unlockItemTypeLimitation.stream().filter(levelUnlockEntity -> levelUnlockEntityId == levelUnlockEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No LevelUnlockEntity for levelUnlockEntityId: " + levelUnlockEntityId + " in level with id: " + id));
     }
 
     @Override

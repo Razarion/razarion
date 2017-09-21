@@ -15,6 +15,7 @@ public class UnregisteredUser {
     private QuestConfig activeQuest;
     private int crystals;
     private Collection<Integer> inventoryItemIds;
+    private Collection<Integer> levelUnlockEntityIds;
 
     public Collection<Integer> getCompletedQuestIds() {
         return completedQuestIds;
@@ -50,6 +51,10 @@ public class UnregisteredUser {
         this.crystals += crystals;
     }
 
+    public void removeCrystals(int crystals) {
+        this.crystals -= crystals;
+    }
+
     public Collection<Integer> getInventoryItemIds() {
         return inventoryItemIds;
     }
@@ -74,5 +79,19 @@ public class UnregisteredUser {
             inventoryInfo.setInventoryItemIds(new ArrayList<>(inventoryItemIds));
         }
         return inventoryInfo;
+    }
+
+    public void addLevelUnlockEntityId(int levelUnlockEntityId) {
+        if (levelUnlockEntityIds == null) {
+            levelUnlockEntityIds = new ArrayList<>();
+        }
+        if (levelUnlockEntityIds.contains(levelUnlockEntityId)) {
+            throw new IllegalArgumentException("UnregisteredUser already has levelUnlockEntityId: " + levelUnlockEntityId);
+        }
+        levelUnlockEntityIds.add(levelUnlockEntityId);
+    }
+
+    public Collection<Integer> getLevelUnlockEntityIds() {
+        return levelUnlockEntityIds;
     }
 }

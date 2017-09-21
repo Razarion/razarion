@@ -49,7 +49,6 @@ public class HttpSessionMonitor implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        userService.logoutUserUser(se.getSession().getId());
         sessionService.sessionDestroyed(se.getSession().getId());
     }
 }

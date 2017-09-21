@@ -1,10 +1,12 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
+import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
@@ -27,7 +29,6 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,7 +56,6 @@ public class UserService {
     private ServerGameEnginePersistence serverGameEnginePersistence;
     @Inject
     private SessionService sessionService;
-    private final Map<String, UserContext> loggedInUserContext = new HashMap<>();
 
     @Transactional
     public UserContext getUserContextFromSession() {
@@ -100,6 +100,7 @@ public class UserService {
         //    userContext.setLevelId(DEBUG_LEVEL_ID);
         //} else {
         userContext.setLevelId(levelPersistence.getStarterLevel().getId());
+        userContext.setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelPersistence.getStartUnlockedItemLimit()));
         //}
         userContext.setName("Unregistered User");
         return userContext;
@@ -109,7 +110,6 @@ public class UserService {
         PlayerSession playerSession = sessionHolder.getPlayerSession();
         playerSession.setUserContext(userContext);
         playerSession.setUnregisteredUser(unregisteredUser);
-        loggedInUserContext.put(playerSession.getHttpSessionId(), userContext);
         return userContext;
     }
 
@@ -117,6 +117,7 @@ public class UserService {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId(), sessionHolder.getPlayerSession().getLocale());
         userEntity.setLevel(levelPersistence.getStarterLevel());
+        userEntity.setLevelUnlockEntities(levelPersistence.getStartUnlockedItemLimit());
         entityManager.persist(userEntity);
         return userEntity;
     }
@@ -188,8 +189,19 @@ public class UserService {
     @Transactional
     public void persistAddCrystals(int userId, int crystals) {
         UserEntity userEntity = getUserEntity(userId);
-        userEntity.setCrystals(userEntity.getCrystals() + crystals);
+        userEntity.addCrystals(crystals);
         entityManager.merge(userEntity);
+    }
+
+    @Transactional
+    public void persistUnlockViaCrystals(int userId, int levelUnlockEntityId) {
+        UserEntity userEntity = getUserEntity(userId);
+        LevelUnlockEntity levelUnlockEntity = userEntity.getLevel().getLevelUnlockEntity(levelUnlockEntityId);
+        if (levelUnlockEntity.getCrystalCost() > userEntity.getCrystals()) {
+            throw new IllegalArgumentException("User does not have enough crystals to unlock LevelUnlockEntity. User id: " + userEntity.getId() + " LevelUnlockEntity id: " + levelUnlockEntity.getId());
+        }
+        userEntity.addLevelUnlockEntity(levelUnlockEntity);
+        userEntity.removeCrystals(levelUnlockEntity.getCrystalCost());
     }
 
     @Transactional
@@ -286,26 +298,6 @@ public class UserService {
         return humanPlayerIdEntity;
     }
 
-    public void logoutUserUser(String sessionId) {
-        loggedInUserContext.remove(sessionId);
-    }
-
-    public UserContext getLoggedInUser(String sessionId) {
-        UserContext userContext = loggedInUserContext.get(sessionId);
-        if (userContext == null) {
-            throw new IllegalArgumentException("No User for sessionId: " + sessionId);
-        }
-        return userContext;
-    }
-
-    public UserContext getLoggedInUserContext(String sessionId) {
-        UserContext userContext = loggedInUserContext.get(sessionId);
-        if (userContext == null) {
-            throw new IllegalArgumentException("No userContext for sessionId: " + sessionId);
-        }
-        return userContext;
-    }
-
     public UserEntity getUserEntity(int userId) {
         UserEntity userEntity = entityManager.find(UserEntity.class, userId);
         if (userEntity == null) {
@@ -359,7 +351,6 @@ public class UserService {
 
     public UserContext getUserContext(HumanPlayerId humanPlayerId) {
         boolean registered = humanPlayerId.getUserId() != null;
-        UserContext userContext;
         if (registered) {
             PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
             if (playerSession != null) {
@@ -379,5 +370,10 @@ public class UserService {
     @Transactional
     public InventoryInfo readInventoryInfo(int userId) {
         return getUserEntity(userId).toInventoryInfo();
+    }
+
+    @Transactional
+    public UserContext readUserContext(int userId) {
+        return getUserEntity(userId).toUserContext();
     }
 }

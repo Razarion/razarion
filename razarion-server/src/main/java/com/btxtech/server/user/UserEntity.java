@@ -1,7 +1,9 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
@@ -60,6 +62,11 @@ public class UserEntity {
     private Locale locale;
     private int xp;
     private int crystals;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "USER_UNLOCKED",
+            joinColumns = @JoinColumn(name = "user"),
+            inverseJoinColumns = @JoinColumn(name = "levelUnlockEntity"))
+    private List<LevelUnlockEntity> levelUnlockEntities;
 
     public Integer getId() {
         return id;
@@ -73,7 +80,7 @@ public class UserEntity {
     }
 
     public UserContext toUserContext() {
-        return new UserContext().setName("Registered User").setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setAdmin(admin).setXp(xp);
+        return new UserContext().setName("Registered User").setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities)).setAdmin(admin).setXp(xp);
     }
 
     public HumanPlayerId createHumanPlayerId() {
@@ -160,8 +167,12 @@ public class UserEntity {
         return crystals;
     }
 
-    public void setCrystals(int crystals) {
-        this.crystals = crystals;
+    public void addCrystals(int crystals) {
+        this.crystals += crystals;
+    }
+
+    public void removeCrystals(int crystals) {
+        this.crystals -= crystals;
     }
 
     public InventoryInfo toInventoryInfo() {
@@ -171,6 +182,28 @@ public class UserEntity {
             inventoryInfo.setInventoryItemIds(inventory.stream().map(InventoryItemEntity::getId).collect(Collectors.toList()));
         }
         return inventoryInfo;
+    }
+
+    public void addLevelUnlockEntity(LevelUnlockEntity levelUnlockEntity) {
+        if (levelUnlockEntities == null) {
+            levelUnlockEntities = new ArrayList<>();
+        }
+        if (levelUnlockEntities.contains(levelUnlockEntity)) {
+            throw new IllegalArgumentException("User already has unlocked LevelUnlockEntity with id: " + levelUnlockEntity.getId() + " UserEntity id: " + id);
+        }
+        levelUnlockEntities.add(levelUnlockEntity);
+    }
+
+    public void setLevelUnlockEntities(List<LevelUnlockEntity> levelUnlockEntities) {
+        if(this.levelUnlockEntities == null) {
+            this.levelUnlockEntities = new ArrayList<>();
+        }
+        this.levelUnlockEntities.clear();
+        this.levelUnlockEntities.addAll(levelUnlockEntities);
+    }
+
+    public List<LevelUnlockEntity> getLevelUnlockEntities() {
+        return levelUnlockEntities;
     }
 
     @Override

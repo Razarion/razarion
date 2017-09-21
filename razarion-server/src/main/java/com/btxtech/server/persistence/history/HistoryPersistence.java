@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.history;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -99,6 +100,23 @@ public class HistoryPersistence {
             InventoryItemEntity inventoryItemEntity = inventoryPersistence.readInventoryItemEntity(inventoryItemId);
             inventoryHistoryEntry.setInventoryItemId(inventoryItemId);
             inventoryHistoryEntry.setInventoryItemName(inventoryItemEntity.getInternalName());
+            entityManager.persist(inventoryHistoryEntry);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    @Transactional
+    public void onLevelUnlockEntityUsedViaCrystals(HumanPlayerId humanPlayerId, int levelUnlockEntityId) {
+        try {
+            Date date = new Date();
+            LevelUnlockHistoryEntry inventoryHistoryEntry = new LevelUnlockHistoryEntry();
+            inventoryHistoryEntry.setHumanPlayerIdEntityId(humanPlayerId.getPlayerId());
+            inventoryHistoryEntry.setTimeStamp(date);
+            LevelUnlockEntity levelUnlockEntity = entityManager.find(LevelUnlockEntity.class, levelUnlockEntityId);
+            inventoryHistoryEntry.setUnlockEntityId(levelUnlockEntityId);
+            inventoryHistoryEntry.setUnlockEntityName(levelUnlockEntity.getInternalName());
+            inventoryHistoryEntry.setCrystals(levelUnlockEntity.getCrystalCost());
             entityManager.persist(inventoryHistoryEntry);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);

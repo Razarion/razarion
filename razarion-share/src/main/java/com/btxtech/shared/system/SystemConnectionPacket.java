@@ -6,6 +6,8 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 
+import java.util.Map;
+
 /**
  * Created by Beat
  * 25.04.2017.
@@ -24,7 +26,9 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     // XP
     XP_CHANGED(Integer.class),
     // Inventory
-    BOX_PICKED(BoxContent.class);
+    BOX_PICKED(BoxContent.class),
+    // Unlock
+    UNLOCKED_ITEM_LIMIT(Map.class);
 
     private Class theClass;
 

@@ -140,18 +140,16 @@ public class BaseItemService {
 
     public void updateLevel(HumanPlayerId humanPlayerId, int levelId) {
         PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
-        if (playerBase == null) {
-            throw new IllegalArgumentException("No base for humanPlayerId: " + humanPlayerId);
+        if (playerBase != null) {
+            playerBase.setLevelId(levelId);
         }
-        playerBase.setLevelId(levelId);
     }
 
     public void updateUnlockedItemLimit(HumanPlayerId humanPlayerId, Map<Integer, Integer> unlockedItemLimit) {
         PlayerBaseFull playerBase = getPlayerBaseFull4HumanPlayerId(humanPlayerId);
-        if (playerBase == null) {
-            throw new IllegalArgumentException("No base for humanPlayerId: " + humanPlayerId);
+        if (playerBase != null) {
+            playerBase.setUnlockedItemLimit(unlockedItemLimit);
         }
-        playerBase.setUnlockedItemLimit(unlockedItemLimit);
     }
 
     public PlayerBaseFull createBotBase(BotConfig botConfig) {

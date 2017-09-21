@@ -27,6 +27,14 @@ public class UserServiceTest extends ArquillianBaseTest {
 
         UserEntity userEntity = userService.getUserForFacebookId("0000001");
 
+        UserContext userContext = userService.getUserContextFromSession();
+        Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId());
+        Assert.assertEquals(0, userContext.getXp());
+        Assert.assertEquals(userEntity.getId(), userContext.getHumanPlayerId().getUserId());
+        Assert.assertEquals("Registered User", userContext.getName());
+        Assert.assertFalse(userContext.isAdmin());
+        Assert.assertTrue(userContext.getUnlockedItemLimit().isEmpty());
+
         runInTransaction(em -> {
             UserEntity actualUserEntity = em.find(UserEntity.class, userEntity.getId());
             Assert.assertEquals(LEVEL_1_ID, (int) actualUserEntity.getLevel().getId());
@@ -49,6 +57,7 @@ public class UserServiceTest extends ArquillianBaseTest {
         Assert.assertNull(userContext.getHumanPlayerId().getUserId());
         Assert.assertEquals("Unregistered User", userContext.getName());
         Assert.assertFalse(userContext.isAdmin());
+        Assert.assertTrue(userContext.getUnlockedItemLimit().isEmpty());
 
         cleanLevels();
     }

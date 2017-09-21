@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -10,6 +11,8 @@ import javax.inject.Singleton;
  * Created by Beat
  * 16.07.2016.
  */
+// Only used on the server. See: com.btxtech.server.gameengine.ServerUnlockService
+@Deprecated
 @Singleton
 public class UnlockService {
 

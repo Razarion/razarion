@@ -182,7 +182,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 commandService.pickupBox((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case UPDATE_LEVEL:
-                baseItemService.updateLevel(userContext.getHumanPlayerId(), (int) controlPackage.getData(0));
+                updateLevel((int) controlPackage.getData(0));
+                break;
+            case UPDATE_UNLOCK_ITEM_LIMIT:
+                updateUnlockedItemLimit((Map<Integer, Integer>) controlPackage.getData(0));
                 break;
             case PERFMON_REQUEST:
                 onPerfmonRequest();
@@ -578,6 +581,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         } else {
             throw new IllegalArgumentException("GameEngineWorker.onServerSyncItemDeleted(): unknown type: " + syncItem + " syncItemDeletedInfo: " + syncItemDeletedInfo);
         }
+    }
+
+    private void updateLevel(int levelId) {
+        userContext.setLevelId(levelId);
+        baseItemService.updateLevel(userContext.getHumanPlayerId(), levelId);
+    }
+
+    private void updateUnlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
+        userContext.setUnlockedItemLimit(unlockedItemLimit);
+        baseItemService.updateUnlockedItemLimit(userContext.getHumanPlayerId(), unlockedItemLimit);
     }
 
     public void onPlayerBaseTracking(PlayerBaseTracking playerBaseTracking) {

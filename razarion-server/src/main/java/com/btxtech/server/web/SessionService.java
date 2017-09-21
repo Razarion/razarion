@@ -2,6 +2,7 @@ package com.btxtech.server.web;
 
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.UserContext;
 
 import javax.inject.Singleton;
 import java.util.HashMap;
@@ -50,5 +51,15 @@ public class SessionService {
             }
         }
         return null;
+    }
+
+    public void updateUserContext(HumanPlayerId humanPlayerId, UserContext userContext) {
+        synchronized (sessions) {
+            for (PlayerSession playerSession : sessions.values()) {
+                if (playerSession.getUserContext() != null && playerSession.getUserContext().getHumanPlayerId() != null && playerSession.getUserContext().getHumanPlayerId().equals(humanPlayerId)) {
+                    playerSession.setUserContext(userContext);
+                }
+            }
+        }
     }
 }

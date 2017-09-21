@@ -43,6 +43,7 @@ public class GameEngineControlPackage {
         BASE_DELETED,
         USE_INVENTORY_ITEM,
         UPDATE_LEVEL,
+        UPDATE_UNLOCK_ITEM_LIMIT,
         // Base items
         SYNC_ITEM_START_SPAWNED,
         SYNC_ITEM_IDLE,

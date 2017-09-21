@@ -12,6 +12,7 @@ import com.btxtech.uiservice.dialog.ModalDialogManager;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -75,4 +76,10 @@ public class UserUiService {
         userContext.setXp(xp);
         cockpitService.updateLevelAndXp(userContext);
     }
+
+    public void onUnlockItemLimitChanged(Map<Integer, Integer> unlockedItemLimit) {
+        userContext.setUnlockedItemLimit(unlockedItemLimit);
+        gameEngineControl.updateUnlockItemLimitChanged(unlockedItemLimit);
+    }
+
 }

@@ -12,6 +12,7 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -63,6 +64,9 @@ public abstract class AbstractServerSystemConnection {
                 break;
             case BOX_PICKED:
                 inventoryUiService.onOnBoxPicked((BoxContent) param);
+                break;
+            case UNLOCKED_ITEM_LIMIT:
+                userUiService.onUnlockItemLimitChanged((Map<Integer, Integer>) param);
                 break;
             case LIFECYCLE_CONTROL:
                 onLifecyclePacket((LifecyclePacket) param);

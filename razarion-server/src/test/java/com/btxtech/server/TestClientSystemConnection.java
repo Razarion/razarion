@@ -2,13 +2,18 @@ package com.btxtech.server;
 
 import com.btxtech.server.connection.ClientSystemConnection;
 import com.btxtech.server.user.PlayerSession;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
+import org.unitils.reflectionassert.ReflectionAssert;
 
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.Session;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -55,6 +60,23 @@ public class TestClientSystemConnection extends ClientSystemConnection {
     public void assertMessageSent(int index, String expectedMessage) {
         String actualMessage = messagesSent.get(index);
         Assert.assertEquals(expectedMessage, actualMessage);
+    }
+
+    public String assertAndExtractBody(int index, String packetString) {
+        String actualMessage = messagesSent.get(index);
+        Assert.assertTrue("Message does not start with: " + packetString + "#" + ". Message: " + actualMessage, actualMessage.startsWith(packetString + "#"));
+        return actualMessage.substring(packetString.length() + 1, actualMessage.length());
+    }
+
+    public <T> void assertMessageSent(int index, String packetString, Map<Integer, Integer> expected) throws IOException {
+        Map<Integer, Integer> actual = new ObjectMapper().readValue(assertAndExtractBody(index, packetString), new TypeReference<Map<Integer, Integer>>() {
+        });
+        ReflectionAssert.assertReflectionEquals(expected, actual);
+    }
+
+    public <T> void assertMessageSent(int index, String packetString, Class<T> expectedClass, T expected) throws IOException {
+        Object actual = new ObjectMapper().readValue(assertAndExtractBody(index, packetString), expectedClass);
+        ReflectionAssert.assertReflectionEquals(expected, actual);
     }
 
     public void assertMessageSentCount(int expectedCount) {
