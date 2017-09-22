@@ -4,6 +4,7 @@ import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ClientGameConnection;
 import com.btxtech.server.gameengine.ClientGameConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.QuestPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
@@ -43,10 +44,12 @@ public class ServerMgmt {
     private LevelPersistence levelPersistence;
     @Inject
     private QuestPersistence questPersistence;
+    @Inject
+    private ServerUnlockService serverUnlockService;
 
     @SecurityCheck
     public List<OnlineInfo> loadAllOnlines() {
-        Map<String,  ClientGameConnection> gameSessionUuids = new HashMap<>();
+        Map<String, ClientGameConnection> gameSessionUuids = new HashMap<>();
         Collection<ClientGameConnection> unknowns = new ArrayList<>();
         clientGameConnectionService.getClientGameConnections().forEach(clientGameConnection -> {
             String gameSessionUuid = clientGameConnection.getGameSessionUuid();
@@ -137,7 +140,7 @@ public class ServerMgmt {
         UserContext userContext = userService.getUserContext(humanPlayerId);
         LevelEntity newLevel = levelPersistence.getLevel4Number(levelNumber);
         userContext.setLevelId(newLevel.getId());
-        clientSystemConnectionService.onLevelUp(humanPlayerId, userContext);
+        clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, serverUnlockService.gatherAvailableUnlocks(humanPlayerId, newLevel.getId()));
         serverGameEngineControl.onLevelChanged(humanPlayerId, newLevel.getId());
         if (humanPlayerId.getUserId() != null) {
             userService.persistLevel(humanPlayerId.getUserId(), newLevel);

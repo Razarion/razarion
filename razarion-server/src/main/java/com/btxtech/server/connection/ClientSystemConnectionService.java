@@ -3,10 +3,12 @@ package com.btxtech.server.connection;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,10 +75,10 @@ public class ClientSystemConnectionService {
         }
     }
 
-    public void onLevelUp(HumanPlayerId humanPlayerId, UserContext newLevelId) {
+    public void onLevelUp(HumanPlayerId humanPlayerId, UserContext newLevelId, List<LevelUnlockConfig> levelUnlockConfigs) {
         PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
         if (playerSession != null) {
-            sendToClient(playerSession, SystemConnectionPacket.LEVEL_UPDATE_SERVER, newLevelId);
+            sendToClient(playerSession, SystemConnectionPacket.LEVEL_UPDATE_SERVER, new LevelUpPacket().setUserContext(newLevelId).setLevelUnlockConfigs(levelUnlockConfigs));
         }
     }
 

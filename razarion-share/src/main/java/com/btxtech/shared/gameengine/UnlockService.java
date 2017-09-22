@@ -11,7 +11,7 @@ import javax.inject.Singleton;
  * Created by Beat
  * 16.07.2016.
  */
-// Only used on the server. See: com.btxtech.server.gameengine.ServerUnlockService
+// Only used on the server. See: com.btxtech.server.gameengine.ServerUnlockService, com.btxtech.uiservice.unlock.UnlockUiService
 @Deprecated
 @Singleton
 public class UnlockService {

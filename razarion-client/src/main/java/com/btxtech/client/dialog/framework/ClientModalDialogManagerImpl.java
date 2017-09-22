@@ -6,8 +6,8 @@ import com.btxtech.client.dialog.common.MessageDialog;
 import com.btxtech.client.dialog.common.MessageImage;
 import com.btxtech.client.dialog.common.MessageImageDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -53,8 +53,8 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     }
 
     @Override
-    protected void showLevelUp(LevelConfig newLevelConfig, Runnable closeListener) {
-        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, newLevelConfig, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
+    protected void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener) {
+        show("Level Up", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, levelUpPacket, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
     }
 
     @Override

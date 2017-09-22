@@ -37,7 +37,7 @@ public class LevelEntity {
     private Map<BaseItemTypeEntity, Integer> itemTypeLimitation;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "level")
-    private Collection<LevelUnlockEntity> unlockItemTypeLimitation;
+    private Collection<LevelUnlockEntity> levelUnlockEntities;
 
     public Integer getId() {
         return id;
@@ -71,15 +71,15 @@ public class LevelEntity {
         return xp2LevelUp;
     }
 
-    public void setUnlockItemTypeLimitation(Collection<LevelUnlockEntity> unlockItemTypeLimitation) {
-        this.unlockItemTypeLimitation = unlockItemTypeLimitation;
+    public void setLevelUnlockEntities(Collection<LevelUnlockEntity> unlockItemTypeLimitation) {
+        this.levelUnlockEntities = unlockItemTypeLimitation;
     }
 
     public LevelUnlockEntity getLevelUnlockEntity(int levelUnlockEntityId) {
-        if (unlockItemTypeLimitation == null) {
+        if (levelUnlockEntities == null) {
             throw new IllegalArgumentException("No LevelUnlockEntity for levelUnlockEntityId: " + levelUnlockEntityId + " in level with id: " + id);
         }
-        return unlockItemTypeLimitation.stream().filter(levelUnlockEntity -> levelUnlockEntityId == levelUnlockEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No LevelUnlockEntity for levelUnlockEntityId: " + levelUnlockEntityId + " in level with id: " + id));
+        return levelUnlockEntities.stream().filter(levelUnlockEntity -> levelUnlockEntityId == levelUnlockEntity.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No LevelUnlockEntity for levelUnlockEntityId: " + levelUnlockEntityId + " in level with id: " + id));
     }
 
     @Override

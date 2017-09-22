@@ -6,6 +6,7 @@ import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,8 +14,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
+import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -166,4 +169,21 @@ public class LevelPersistence {
         return ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities);
     }
 
+    @Transactional
+    public List<LevelUnlockConfig> readUnlocks(int levelId, Collection<Integer> unlockedEntityIds) {
+        LevelEntity levelEntity = getLevel4Id(levelId);
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LevelUnlockEntity> criteriaQuery = criteriaBuilder.createQuery(LevelUnlockEntity.class);
+        Root<LevelEntity> root = criteriaQuery.from(LevelEntity.class);
+        CollectionJoin<LevelEntity, LevelUnlockEntity> collectionJoin = root.join(LevelEntity_.levelUnlockEntities);
+        CriteriaQuery<LevelUnlockEntity> userSelect = criteriaQuery.select(collectionJoin);
+        Predicate levelNumber = criteriaBuilder.lessThanOrEqualTo(root.get(LevelEntity_.number), levelEntity.getNumber());
+        if(unlockedEntityIds != null && !unlockedEntityIds.isEmpty()) {
+            Predicate notIn = criteriaBuilder.not(collectionJoin.get(LevelUnlockEntity_.id).in(unlockedEntityIds));
+            userSelect.where(criteriaBuilder.and(levelNumber, notIn));
+        } else  {
+            userSelect.where(levelNumber);
+        }
+        return entityManager.createQuery(userSelect).getResultList().stream().map(LevelUnlockEntity::toLevelUnlockConfig).collect(Collectors.toList());
+    }
 }

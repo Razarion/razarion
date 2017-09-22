@@ -2,6 +2,7 @@ package com.btxtech.client.dialog.levelup;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -24,7 +25,7 @@ import java.util.Map;
  * 24.09.2016.
  */
 @Templated("LevelUpDialog.html#level-up-dialog")
-public class LevelUpDialog extends Composite implements ModalDialogContent<LevelConfig> {
+public class LevelUpDialog extends Composite implements ModalDialogContent<LevelUpPacket> {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -38,8 +39,9 @@ public class LevelUpDialog extends Composite implements ModalDialogContent<Level
     private ListComponent<ItemTypeLimitation, ItemTypeLimitationComponent> itemLimitationTable;
 
     @Override
-    public void init(LevelConfig levelConfig) {
-        levelUpText.setText(I18nHelper.getConstants().youReachedLevel(levelService.getLevel(levelConfig.getLevelId()).getNumber()));
+    public void init(LevelUpPacket levelUpPacket) {
+        LevelConfig levelConfig = levelService.getLevel(levelUpPacket.getUserContext().getLevelId());
+        levelUpText.setText(I18nHelper.getConstants().youReachedLevel(levelConfig.getNumber()));
         DOMUtil.removeAllElementChildren(itemLimitationTable.getElement()); // Remove placeholder table row from template.
         List<ItemTypeLimitation> itemTypeLimitations = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : levelConfig.getItemTypeLimitation().entrySet()) {
@@ -49,7 +51,7 @@ public class LevelUpDialog extends Composite implements ModalDialogContent<Level
     }
 
     @Override
-    public void customize(ModalDialogPanel<LevelConfig> modalDialogPanel) {
+    public void customize(ModalDialogPanel<LevelUpPacket> modalDialogPanel) {
     }
 
     @Override

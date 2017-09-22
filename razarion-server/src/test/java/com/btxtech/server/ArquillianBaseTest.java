@@ -327,7 +327,7 @@ public class ArquillianBaseTest {
         levelUnlockEntity4_1.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
         levelUnlockEntity4_1.setBaseItemTypeCount(1);
         levelUnlockEntity4_1.setInternalName("levelUnlockEntity4_1");
-        levelEntity4.setUnlockItemTypeLimitation(Collections.singleton(levelUnlockEntity4_1));
+        levelEntity4.setLevelUnlockEntities(Collections.singleton(levelUnlockEntity4_1));
         em.persist(levelEntity4);
         LEVEL_4_ID = levelEntity4.getId();
         LEVEL_UNLOCK_ID_L4_1 = levelUnlockEntity4_1.getId();
@@ -349,7 +349,7 @@ public class ArquillianBaseTest {
         levelUnlockEntity5_2.setBaseItemTypeCount(1);
         levelUnlockEntity5_2.setCrystalCost(20);
         levelUnlockEntity5_2.setInternalName("levelUnlockEntity5_2");
-        levelEntity5.setUnlockItemTypeLimitation(Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
+        levelEntity5.setLevelUnlockEntities(Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
         em.persist(levelEntity5);
         LEVEL_5_ID = levelEntity5.getId();
         LEVEL_UNLOCK_ID_L5_1 = levelUnlockEntity5_1.getId();

@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.user;
 
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -8,6 +9,7 @@ import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.unlock.UnlockUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -33,6 +35,8 @@ public class UserUiService {
     private ModalDialogManager dialogManager;
     @Inject
     private Instance<GameUiControl> gameUiControlInstance;
+    @Inject
+    private UnlockUiService unlockUiService;
     private UserContext userContext;
 
     public void setUserContext(UserContext userContext) {
@@ -57,7 +61,7 @@ public class UserUiService {
             gameEngineControl.updateLevel(newLevelConfig.getLevelId());
             cockpitService.updateLevelAndXp(userContext);
             itemCockpitService.onStateChanged();
-            dialogManager.onLevelPassed(newLevelConfig);
+            dialogManager.onLevelPassed(new LevelUpPacket().setUserContext(userContext));
             gameUiControlInstance.get().onLevelUpdate(newLevelConfig);
         } else {
             userContext.setXp(xp);
@@ -65,11 +69,13 @@ public class UserUiService {
         }
     }
 
-    public void onServerLevelChange(UserContext userContext) {
-        this.userContext = userContext;
+    public void onServerLevelChange(LevelUpPacket levelUpPacket) {
+        userContext = levelUpPacket.getUserContext();
+        gameEngineControl.updateLevel(userContext.getLevelId());
         cockpitService.updateLevelAndXp(userContext);
         itemCockpitService.onStateChanged();
-        dialogManager.onLevelPassed(levelService.getLevel(userContext.getLevelId()));
+        dialogManager.onLevelPassed(levelUpPacket);
+        unlockUiService.setLevelUnlockConfigs(levelUpPacket.getLevelUnlockConfigs());
     }
 
     public void onServerXpChange(Integer xp) {

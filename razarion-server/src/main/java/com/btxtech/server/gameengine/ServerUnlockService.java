@@ -2,6 +2,7 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.persistence.history.HistoryPersistence;
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.PlayerSession;
@@ -10,12 +11,15 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -79,4 +83,18 @@ public class ServerUnlockService {
         return unlockedItemLimit;
     }
 
+    public List<LevelUnlockConfig> gatherAvailableUnlocks(HumanPlayerId humanPlayerId, int levelId) {
+        Collection<Integer> unlockedEntityIds;
+        if (humanPlayerId.getUserId() != null) {
+            unlockedEntityIds = userService.unlockedEntityIds(humanPlayerId.getUserId());
+        } else {
+            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+            if (playerSession != null && playerSession.getUnregisteredUser() != null) {
+                unlockedEntityIds = playerSession.getUnregisteredUser().getLevelUnlockEntityIds();
+            } else {
+                return Collections.emptyList();
+            }
+        }
+        return levelPersistence.readUnlocks(levelId, unlockedEntityIds);
+    }
 }

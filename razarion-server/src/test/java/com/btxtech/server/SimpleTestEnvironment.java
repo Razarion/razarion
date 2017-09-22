@@ -16,11 +16,11 @@ import java.util.function.Supplier;
  */
 public class SimpleTestEnvironment {
 
-    public static void injectService(String fieldName, Object service, Object serviceToInject) {
-        injectService(fieldName, service, service.getClass(), serviceToInject);
+    public static Ejector injectService(String fieldName, Object service, Object serviceToInject) {
+        return injectService(fieldName, service, service.getClass(), serviceToInject);
     }
 
-    public static void injectService(String fieldName, Object service, Class theClazz, Object serviceToInject) {
+    public static Ejector injectService(String fieldName, Object service, Class theClazz, Object serviceToInject) {
         try {
             Class clazz = theClazz;
             if (service instanceof TargetInstanceProxy) {
@@ -33,8 +33,10 @@ public class SimpleTestEnvironment {
             }
             Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
+            Object originalService = field.get(service);
             field.set(service, serviceToInject);
             field.setAccessible(false);
+            return new Ejector(fieldName, service, theClazz, originalService);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -52,7 +54,7 @@ public class SimpleTestEnvironment {
         }
     }
 
-    public static void injectInstance(String fieldName, Object object, Supplier getSupplier) {
+    public static Ejector injectInstance(String fieldName, Object object, Supplier getSupplier) {
         Class clazz = object.getClass();
         if (object instanceof TargetInstanceProxy) {
             // Weld deproxy unproxy
@@ -107,8 +109,10 @@ public class SimpleTestEnvironment {
         try {
             Field field = clazz.getDeclaredField(fieldName);
             field.setAccessible(true);
+            Object original = field.get(object);
             field.set(object, instance);
             field.setAccessible(false);
+            return new Ejector(fieldName, object, clazz, original);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -217,4 +221,22 @@ public class SimpleTestEnvironment {
 //        syncBaseItem.setup(playerBase, ItemLifecycle.ALIVE);
 //        return syncBaseItem;
 //    }
+
+    public static class Ejector {
+        private final String fieldName;
+        private final Object service;
+        private final Class theClazz;
+        private final Object originalService;
+
+        public Ejector(String fieldName, Object service, Class theClazz, Object originalService) {
+            this.fieldName = fieldName;
+            this.service = service;
+            this.theClazz = theClazz;
+            this.originalService = originalService;
+        }
+
+        public void eject() {
+            injectService(fieldName, service, theClazz, originalService);
+        }
+    }
 }

@@ -5,6 +5,7 @@ import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.TestHelper;
+import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.persistence.history.LevelUnlockHistoryEntry;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.PlayerSession;
@@ -15,6 +16,8 @@ import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.GameUiControlInput;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.easymock.EasyMock;
 import org.junit.After;
@@ -29,8 +32,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -49,6 +54,8 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
     private ClientSystemConnectionServiceTestHelper systemConnectionService;
     @Inject
     private SessionService sessionService;
+    @Inject
+    private GameUiControlConfigPersistence gameUiControlConfigPersistence;
 
     @Before
     public void before() throws Exception {
@@ -94,8 +101,11 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
 
         SimpleTestEnvironment.injectService("baseItemService", serverUnlockService, baseItemServiceMock);
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
+        serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_5_ID);
+        assertAvailableUnlocks(LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
         assertHelper.assertState(humanPlayerId, 0);
+        assertAvailableUnlocks(LEVEL_UNLOCK_ID_L4_1);
         TestClientSystemConnection systemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         // Unlock
         serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L4_1);
@@ -103,6 +113,7 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
         UserContext userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit1, userContext.getUnlockedItemLimit());
         assertHelper.assertState(humanPlayerId, 0, LEVEL_UNLOCK_ID_L4_1);
+        assertAvailableUnlocks();
         // Try unlock same again
         try {
             serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L4_1);
@@ -124,11 +135,13 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
         // Level up and unlock lvl 5
         crystalSetter.accept(15);
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_5_ID);
+        assertAvailableUnlocks(LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
         serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L5_1);
         // Verify
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit2, userContext.getUnlockedItemLimit());
         assertHelper.assertState(humanPlayerId, 5, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1);
+        assertAvailableUnlocks(LEVEL_UNLOCK_ID_L5_2);
         // Unlock but not enough crystals
         try {
             serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L5_2);
@@ -140,6 +153,7 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit2, userContext.getUnlockedItemLimit());
         assertHelper.assertState(humanPlayerId, 5, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1);
+        assertAvailableUnlocks(LEVEL_UNLOCK_ID_L5_2);
         // Unlock
         crystalSetter.accept(17);
         serverUnlockService.unlockViaCrystals(humanPlayerId, LEVEL_UNLOCK_ID_L5_2);
@@ -147,6 +161,7 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
         userContext = userService.getUserContextFromSession();
         Assert.assertEquals(expectedItemLimit3, userContext.getUnlockedItemLimit());
         assertHelper.assertState(humanPlayerId, 2, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
+        assertAvailableUnlocks();
 
         systemConnection.assertMessageSentCount(3);
         systemConnection.assertMessageSent(0, "UNLOCKED_ITEM_LIMIT", expectedItemLimit1);
@@ -155,6 +170,14 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
 
         EasyMock.verify(baseItemServiceMock);
         assertCount(3, LevelUnlockHistoryEntry.class);
+    }
+
+    private void assertAvailableUnlocks(Integer... expectedLevelUnlockIds) throws Exception {
+        List<LevelUnlockConfig> actualLevelUnlockConfigs = gameUiControlConfigPersistence.load(new GameUiControlInput(), Locale.ENGLISH, userService.getUserContextFromSession()).getLevelUnlockConfigs();
+        Assert.assertEquals(expectedLevelUnlockIds.length, actualLevelUnlockConfigs.size());
+        Collection<Integer> expectedCollection = new ArrayList<>(Arrays.asList(expectedLevelUnlockIds));
+        expectedCollection.removeAll(actualLevelUnlockConfigs.stream().map(LevelUnlockConfig::getId).collect(Collectors.toList()));
+        Assert.assertTrue(expectedCollection.isEmpty());
     }
 
     private void assertRegisteredState(HumanPlayerId humanPlayerId, int expectedCrystals, Integer... expectedLevelUnlockEntityIds) throws Exception {

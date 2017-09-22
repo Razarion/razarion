@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -57,7 +57,7 @@ public abstract class AbstractServerSystemConnection {
                 gameUiControl.onQuestPassedServer((QuestConfig) param);
                 break;
             case LEVEL_UPDATE_SERVER:
-                userUiService.onServerLevelChange((UserContext) param);
+                userUiService.onServerLevelChange((LevelUpPacket) param);
                 break;
             case XP_CHANGED:
                 userUiService.onServerXpChange((Integer) param);

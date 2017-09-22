@@ -1,7 +1,7 @@
 package com.btxtech.shared.system;
 
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -18,7 +18,7 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     LIFECYCLE_CONTROL(LifecyclePacket.class),
     // Levels
     LEVEL_UPDATE_CLIENT(Integer.class),
-    LEVEL_UPDATE_SERVER(UserContext.class),
+    LEVEL_UPDATE_SERVER(LevelUpPacket.class),
     // Quest
     QUEST_ACTIVATED(QuestConfig.class),
     QUEST_PASSED(QuestConfig.class),

@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -29,7 +29,7 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
     }
 
     @Override
-    public void showLevelUp(LevelConfig newLevelConfig, Runnable closeListener) {
+    public void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Level Up");

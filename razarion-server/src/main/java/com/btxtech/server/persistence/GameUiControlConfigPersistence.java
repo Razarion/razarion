@@ -1,10 +1,11 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.gameengine.ServerLevelQuestService;
+import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
-import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
@@ -53,12 +54,15 @@ public class GameUiControlConfigPersistence {
     private TrackerPersistence trackerPersistence;
     @Inject
     private ServerLevelQuestService serverLevelQuestService;
+    @Inject
+    private ServerUnlockService serverUnlockService;
 
     @Transactional
     public ColdGameUiControlConfig load(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
         ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
         coldGameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
         coldGameUiControlConfig.setUserContext(userContext);
+        coldGameUiControlConfig.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
         coldGameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
         coldGameUiControlConfig.setAudioConfig(setupAudioConfig());
         coldGameUiControlConfig.setGameTipVisualConfig(setupGameTipVisualConfig());

@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 public class ColdGameUiControlConfig {
     // User
     private UserContext userContext;
+    private List<LevelUnlockConfig> levelUnlockConfigs;
     private StaticGameConfig staticGameConfig;
     private List<Shape3D> shape3Ds;
     private AudioConfig audioConfig;
@@ -54,6 +56,15 @@ public class ColdGameUiControlConfig {
 
     public ColdGameUiControlConfig setUserContext(UserContext userContext) {
         this.userContext = userContext;
+        return this;
+    }
+
+    public List<LevelUnlockConfig> getLevelUnlockConfigs() {
+        return levelUnlockConfigs;
+    }
+
+    public ColdGameUiControlConfig setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
+        this.levelUnlockConfigs = levelUnlockConfigs;
         return this;
     }
 

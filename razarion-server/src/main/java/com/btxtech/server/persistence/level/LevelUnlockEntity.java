@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -64,6 +65,14 @@ public class LevelUnlockEntity {
         this.baseItemTypeCount = count;
     }
 
+    public LevelUnlockConfig toLevelUnlockConfig() {
+        LevelUnlockConfig levelUnlockConfig = new LevelUnlockConfig().setId(id).setInternalName(internalName).setBaseItemTypeCount(baseItemTypeCount).setCrystalCost(crystalCost);
+        if (baseItemType != null) {
+            levelUnlockConfig.setBaseItemType(baseItemType.getId());
+        }
+        return levelUnlockConfig;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -81,5 +90,4 @@ public class LevelUnlockEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

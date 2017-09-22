@@ -376,4 +376,9 @@ public class UserService {
     public UserContext readUserContext(int userId) {
         return getUserEntity(userId).toUserContext();
     }
+
+    @Transactional
+    public Collection<Integer> unlockedEntityIds(int userId) {
+        return getUserEntity(userId).getLevelUnlockEntities().stream().map(LevelUnlockEntity::getId).collect(Collectors.toList());
+    }
 }

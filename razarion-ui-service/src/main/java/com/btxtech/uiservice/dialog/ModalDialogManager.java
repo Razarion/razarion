@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.dialog;
 
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -21,7 +21,7 @@ public abstract class ModalDialogManager {
 
     protected abstract void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener);
 
-    protected abstract void showLevelUp(LevelConfig newLevelConfig, Runnable closeListener);
+    protected abstract void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener);
 
     public abstract void showBoxPicked(BoxContent boxContent);
 
@@ -45,8 +45,8 @@ public abstract class ModalDialogManager {
         });
     }
 
-    public void onLevelPassed(LevelConfig newLevelConfig) {
-        showLevelUp(newLevelConfig, () -> {
+    public void onLevelPassed(LevelUpPacket levelUpPacket) {
+        showLevelUp(levelUpPacket, () -> {
             if (levelUpCallback != null) {
                 Runnable tmpLevelUpCallback = levelUpCallback;
                 levelUpCallback = null;

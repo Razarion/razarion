@@ -16,6 +16,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
@@ -55,6 +56,8 @@ public class ServerLevelQuestService implements QuestListener {
     private ClientSystemConnectionService clientSystemConnectionService;
     @Inject
     private Instance<ServerGameEngineControl> serverGameEngineControlInstance;
+    @Inject
+    private ServerUnlockService serverUnlockService;
 
     @PostConstruct
     public void init() {
@@ -117,7 +120,8 @@ public class ServerLevelQuestService implements QuestListener {
                 userContext.setLevelId(newLevel.getId());
                 userContext.setXp(0);
                 historyPersistence.get().onLevelUp(humanPlayerId, newLevel);
-                clientSystemConnectionService.onLevelUp(humanPlayerId, userContext);
+                List<LevelUnlockConfig> levelUnlockConfigs = serverUnlockService.gatherAvailableUnlocks(humanPlayerId, newLevel.getId());
+                clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, levelUnlockConfigs);
                 serverGameEngineControlInstance.get().onLevelChanged(humanPlayerId, newLevel.getId());
                 if (registered) {
                     userService.persistLevel(humanPlayerId.getUserId(), newLevel);

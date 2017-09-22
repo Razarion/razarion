@@ -34,6 +34,7 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
+import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.event.Event;
@@ -94,6 +95,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private Camera camera;
     @Inject
     private ProjectionTransformation projectionTransformation;
+    @Inject
+    private UnlockUiService unlockUiService;
     private ColdGameUiControlConfig coldGameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -111,6 +114,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         this.coldGameUiControlConfig = coldGameUiControlConfig;
         gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
         userUiService.setUserContext(coldGameUiControlConfig.getUserContext());
+        unlockUiService.setLevelUnlockConfigs(coldGameUiControlConfig.getLevelUnlockConfigs());
     }
 
     public void onWarmGameConfigLoaded(WarmGameUiControlConfig warmGameUiControlConfig) {
