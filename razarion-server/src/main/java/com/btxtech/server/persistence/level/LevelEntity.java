@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -15,9 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -53,14 +56,31 @@ public class LevelEntity {
         return new LevelConfig().setLevelId(id).setNumber(number).setXp2LevelUp(xp2LevelUp).setItemTypeLimitation(itemTypeLimitation);
     }
 
-    public void fromLevelConfig(LevelConfig levelConfig, Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
-        this.number = levelConfig.getNumber();
-        this.xp2LevelUp = levelConfig.getXp2LevelUp();
+    public LevelEditConfig toLevelEditConfig() {
+        LevelEditConfig levelEditConfig = new LevelEditConfig();
+        levelEditConfig.setLevelId(id).setNumber(number).setXp2LevelUp(xp2LevelUp);
+        if (this.itemTypeLimitation != null) {
+            levelEditConfig.setItemTypeLimitation(this.itemTypeLimitation.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b)));
+        }
+        if (levelUnlockEntities != null) {
+            levelEditConfig.setLevelUnlockConfigs(levelUnlockEntities.stream().map(LevelUnlockEntity::toLevelUnlockConfig).collect(Collectors.toList()));
+        }
+        return levelEditConfig;
+    }
+
+    public void fromLevelEditConfig(LevelEditConfig levelEditConfig, Map<BaseItemTypeEntity, Integer> itemTypeLimitation, Collection<LevelUnlockEntity> levelUnlockEntities) {
+        this.number = levelEditConfig.getNumber();
+        this.xp2LevelUp = levelEditConfig.getXp2LevelUp();
         if (this.itemTypeLimitation == null) {
             this.itemTypeLimitation = new HashMap<>();
         }
         this.itemTypeLimitation.clear();
         this.itemTypeLimitation.putAll(itemTypeLimitation);
+        if (this.levelUnlockEntities == null) {
+            this.levelUnlockEntities = new ArrayList<>();
+        }
+        this.levelUnlockEntities.clear();
+        this.levelUnlockEntities.addAll(levelUnlockEntities);
     }
 
     public int getNumber() {
@@ -69,10 +89,6 @@ public class LevelEntity {
 
     public int getXp2LevelUp() {
         return xp2LevelUp;
-    }
-
-    public void setLevelUnlockEntities(Collection<LevelUnlockEntity> unlockItemTypeLimitation) {
-        this.levelUnlockEntities = unlockItemTypeLimitation;
     }
 
     public LevelUnlockEntity getLevelUnlockEntity(int levelUnlockEntityId) {

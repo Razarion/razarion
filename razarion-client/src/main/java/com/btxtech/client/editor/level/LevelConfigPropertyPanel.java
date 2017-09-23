@@ -1,8 +1,10 @@
 package com.btxtech.client.editor.level;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
+import com.btxtech.client.editor.widgets.childtable.ChildTable;
 import com.btxtech.client.editor.widgets.itemtype.basecount.BaseItemTypeCountWidget;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -18,10 +20,10 @@ import javax.inject.Inject;
  * on 22.08.2017.
  */
 @Templated("LevelConfigPropertyPanel.html#levelConfigPropertyPanel")
-public class LevelConfigPropertyPanel extends AbstractPropertyPanel<LevelConfig> {
+public class LevelConfigPropertyPanel extends AbstractPropertyPanel<LevelEditConfig> {
     @Inject
     @AutoBound
-    private DataBinder<LevelConfig> dataBinder;
+    private DataBinder<LevelEditConfig> dataBinder;
     @Inject
     @Bound
     @DataField
@@ -37,15 +39,19 @@ public class LevelConfigPropertyPanel extends AbstractPropertyPanel<LevelConfig>
     @Inject
     @DataField
     private BaseItemTypeCountWidget itemTypeLimitation;
+    @Inject
+    @DataField
+    private ChildTable<LevelUnlockConfig> levelUnlockConfigChildTable;
 
     @Override
-    public void init(LevelConfig levelConfig) {
-        dataBinder.setModel(levelConfig);
-        itemTypeLimitation.init(levelConfig.getItemTypeLimitation(), levelConfig::setItemTypeLimitation);
+    public void init(LevelEditConfig levelEditConfig) {
+        dataBinder.setModel(levelEditConfig);
+        itemTypeLimitation.init(levelEditConfig.getItemTypeLimitation(), levelEditConfig::setItemTypeLimitation);
+        levelUnlockConfigChildTable.init(levelEditConfig.getLevelUnlockConfigs(), levelEditConfig::setLevelUnlockConfigs, LevelUnlockConfig::new, LevelUnlockConfigPanel.class);
     }
 
     @Override
-    public LevelConfig getConfigObject() {
+    public LevelEditConfig getConfigObject() {
         return dataBinder.getModel();
     }
 }

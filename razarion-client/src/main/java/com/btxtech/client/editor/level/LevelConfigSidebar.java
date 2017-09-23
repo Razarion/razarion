@@ -2,7 +2,7 @@ package com.btxtech.client.editor.level;
 
 import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * on 28.07.2017.
  */
 @Templated("../framework/AbstractCrudeParentSidebar.html#abstract-crud-parent")
-public class LevelConfigSidebar extends AbstractCrudeParentSidebar<LevelConfig, LevelConfigPropertyPanel> {
+public class LevelConfigSidebar extends AbstractCrudeParentSidebar<LevelEditConfig, LevelConfigPropertyPanel> {
     private Logger logger = Logger.getLogger(LevelConfigSidebar.class.getName());
     @Inject
     private Instance<LevelConfigPropertyPanel> instance;
@@ -37,7 +37,7 @@ public class LevelConfigSidebar extends AbstractCrudeParentSidebar<LevelConfig, 
     }
 
     @Override
-    protected CrudEditor<LevelConfig> getCrudEditor() {
+    protected CrudEditor<LevelEditConfig> getCrudEditor() {
         return levelConfigCrudEditor;
     }
 

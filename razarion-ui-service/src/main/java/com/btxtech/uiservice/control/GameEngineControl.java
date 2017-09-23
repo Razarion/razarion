@@ -198,10 +198,6 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.UPDATE_LEVEL, levelId);
     }
 
-    public void updateUnlockItemLimitChanged(Map<Integer, Integer> unlockedItemLimit) {
-        sendToWorker(GameEngineControlPackage.Command.UPDATE_UNLOCK_ITEM_LIMIT, unlockedItemLimit);
-    }
-
     public void perfmonRequest(Consumer<Collection<PerfmonStatistic>> perfmonConsumer) {
         this.perfmonConsumer = perfmonConsumer;
         sendToWorker(GameEngineControlPackage.Command.PERFMON_REQUEST);

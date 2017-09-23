@@ -71,7 +71,6 @@ public class UserUiService {
 
     public void onServerLevelChange(LevelUpPacket levelUpPacket) {
         userContext = levelUpPacket.getUserContext();
-        gameEngineControl.updateLevel(userContext.getLevelId());
         cockpitService.updateLevelAndXp(userContext);
         itemCockpitService.onStateChanged();
         unlockUiService.setLevelUnlockConfigs(levelUpPacket.getLevelUnlockConfigs());
@@ -85,7 +84,7 @@ public class UserUiService {
 
     public void onUnlockItemLimitChanged(Map<Integer, Integer> unlockedItemLimit) {
         userContext.setUnlockedItemLimit(unlockedItemLimit);
-        gameEngineControl.updateUnlockItemLimitChanged(unlockedItemLimit);
+        itemCockpitService.onStateChanged();
     }
 
 }

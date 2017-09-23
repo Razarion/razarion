@@ -7,7 +7,7 @@ import com.btxtech.shared.datatypes.I18nString;
  * on 22.09.2017.
  */
 public class LevelUnlockConfig {
-    private int id;
+    private Integer id;
     private String internalName;
     private Integer thumbnail;
     private I18nString i18nName;
@@ -16,11 +16,11 @@ public class LevelUnlockConfig {
     private int baseItemTypeCount;
     private int crystalCost;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public LevelUnlockConfig setId(int id) {
+    public LevelUnlockConfig setId(Integer id) {
         this.id = id;
         return this;
     }

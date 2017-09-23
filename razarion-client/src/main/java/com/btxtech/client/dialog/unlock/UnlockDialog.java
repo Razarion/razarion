@@ -53,11 +53,11 @@ public class UnlockDialog extends Composite implements ModalDialogContent<Void> 
         DOMUtil.removeAllElementChildren(unlockTable.getElement()); // Remove placeholder table row from template.
         if (unlockUiService.hasItems2Unlock()) {
             unlockDialogText.setTextContent(I18nHelper.getConstants().unlockDialogText());
-            unlockDialogTable.getStyle().setProperty("display", "none");
+            unlockDialogTable.getStyle().setProperty("display", "table");
             unlockTable.setValue(unlockUiService.getLevelUnlockConfigs().stream().map(levelUnlockConfig -> new UnlockItemModel(levelUnlockConfig, this)).collect(Collectors.toList()));
         } else {
             unlockDialogText.setTextContent(I18nHelper.getConstants().nothingToUnlockDialogText());
-            unlockDialogTable.getStyle().setProperty("display", "table");
+            unlockDialogTable.getStyle().setProperty("display", "none");
         }
         inventoryProvider.call((RemoteCallback<Integer>) crystals -> unlockDialogCrystals.setTextContent(I18nHelper.getConstants().availableCrystals(Integer.toString(crystals))), (message, throwable) -> {
             logger.log(Level.SEVERE, "UnlockDialog: InventoryProvider.loadCrystals() failed: message: " + message, throwable);

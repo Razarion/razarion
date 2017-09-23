@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.rest.LevelEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -20,7 +20,7 @@ public class LevelEditorProviderImpl implements LevelEditorProvider {
     private LevelPersistence levelPersistence;
 
     @Override
-    public LevelConfig create() {
+    public LevelEditConfig create() {
         try {
             return levelPersistence.create();
         } catch (Throwable t) {
@@ -40,7 +40,7 @@ public class LevelEditorProviderImpl implements LevelEditorProvider {
     }
 
     @Override
-    public LevelConfig reads(int id) {
+    public LevelEditConfig read(int id) {
         try {
             return levelPersistence.readLevelConfig(id);
         } catch (Throwable t) {
@@ -50,9 +50,9 @@ public class LevelEditorProviderImpl implements LevelEditorProvider {
     }
 
     @Override
-    public void update(LevelConfig levelConfig) {
+    public void update(LevelEditConfig levelEditConfig) {
         try {
-            levelPersistence.update(levelConfig);
+            levelPersistence.update(levelEditConfig);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

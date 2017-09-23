@@ -1,7 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -22,7 +22,7 @@ public interface LevelEditorProvider {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("create")
-    LevelConfig create();
+    LevelEditConfig create();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -32,12 +32,12 @@ public interface LevelEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("read/{id}")
-    LevelConfig reads(@PathParam("id") int id);
+    LevelEditConfig read(@PathParam("id") int id);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("update")
-    void update(LevelConfig levelConfig);
+    void update(LevelEditConfig levelConfig);
 
     @DELETE
     @Path("delete/{id}")

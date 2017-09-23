@@ -34,7 +34,7 @@ import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -295,7 +295,7 @@ public class ArquillianBaseTest {
         LevelEntity levelEntity1 = new LevelEntity();
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation1 = new HashMap<>();
         itemTypeLimitation1.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        levelEntity1.fromLevelConfig(new LevelConfig().setNumber(1).setXp2LevelUp(10), itemTypeLimitation1);
+        levelEntity1.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(1).setXp2LevelUp(10), itemTypeLimitation1, null);
         em.persist(levelEntity1);
         LEVEL_1_ID = levelEntity1.getId();
         // Level 2
@@ -303,7 +303,7 @@ public class ArquillianBaseTest {
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation2 = new HashMap<>();
         itemTypeLimitation2.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
         itemTypeLimitation2.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
-        levelEntity2.fromLevelConfig(new LevelConfig().setNumber(2).setXp2LevelUp(20), itemTypeLimitation2);
+        levelEntity2.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(2).setXp2LevelUp(20), itemTypeLimitation2, null);
         em.persist(levelEntity2);
         LEVEL_2_ID = levelEntity2.getId();
         // Level 3
@@ -312,7 +312,7 @@ public class ArquillianBaseTest {
         itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
         itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
         itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
-        levelEntity3.fromLevelConfig(new LevelConfig().setNumber(3).setXp2LevelUp(30), itemTypeLimitation3);
+        levelEntity3.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(3).setXp2LevelUp(30), itemTypeLimitation3, null);
         em.persist(levelEntity3);
         LEVEL_3_ID = levelEntity3.getId();
         // Level 4
@@ -322,12 +322,11 @@ public class ArquillianBaseTest {
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
         itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
-        levelEntity4.fromLevelConfig(new LevelConfig().setNumber(4).setXp2LevelUp(300), itemTypeLimitation4);
         LevelUnlockEntity levelUnlockEntity4_1 = new LevelUnlockEntity();
         levelUnlockEntity4_1.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
         levelUnlockEntity4_1.setBaseItemTypeCount(1);
         levelUnlockEntity4_1.setInternalName("levelUnlockEntity4_1");
-        levelEntity4.setLevelUnlockEntities(Collections.singleton(levelUnlockEntity4_1));
+        levelEntity4.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(4).setXp2LevelUp(300), itemTypeLimitation4, Collections.singletonList(levelUnlockEntity4_1));
         em.persist(levelEntity4);
         LEVEL_4_ID = levelEntity4.getId();
         LEVEL_UNLOCK_ID_L4_1 = levelUnlockEntity4_1.getId();
@@ -338,7 +337,6 @@ public class ArquillianBaseTest {
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 4);
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
         itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
-        levelEntity5.fromLevelConfig(new LevelConfig().setNumber(5).setXp2LevelUp(400), itemTypeLimitation5);
         LevelUnlockEntity levelUnlockEntity5_1 = new LevelUnlockEntity();
         levelUnlockEntity5_1.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID));
         levelUnlockEntity5_1.setBaseItemTypeCount(2);
@@ -349,7 +347,7 @@ public class ArquillianBaseTest {
         levelUnlockEntity5_2.setBaseItemTypeCount(1);
         levelUnlockEntity5_2.setCrystalCost(20);
         levelUnlockEntity5_2.setInternalName("levelUnlockEntity5_2");
-        levelEntity5.setLevelUnlockEntities(Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
+        levelEntity5.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(5).setXp2LevelUp(400), itemTypeLimitation5, Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
         em.persist(levelEntity5);
         LEVEL_5_ID = levelEntity5.getId();
         LEVEL_UNLOCK_ID_L5_1 = levelUnlockEntity5_1.getId();

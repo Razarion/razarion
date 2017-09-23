@@ -76,7 +76,6 @@ public class WorkerMarshaller {
             case BOX_PICKED:
             case ACTIVATE_QUEST:
             case UPDATE_LEVEL:
-            case UPDATE_UNLOCK_ITEM_LIMIT:
             case PERFMON_RESPONSE:
             case INITIALISING_FAILED:
             case SINGLE_Z_TERRAIN:
@@ -277,9 +276,6 @@ public class WorkerMarshaller {
                 break;
             case UPDATE_LEVEL:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                break;
-            case UPDATE_UNLOCK_ITEM_LIMIT:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Map.class));
                 break;
             case PROJECTILE_FIRED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));

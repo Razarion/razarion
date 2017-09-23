@@ -184,9 +184,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case UPDATE_LEVEL:
                 updateLevel((int) controlPackage.getData(0));
                 break;
-            case UPDATE_UNLOCK_ITEM_LIMIT:
-                updateUnlockedItemLimit((Map<Integer, Integer>) controlPackage.getData(0));
-                break;
             case PERFMON_REQUEST:
                 onPerfmonRequest();
                 break;
@@ -586,11 +583,6 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void updateLevel(int levelId) {
         userContext.setLevelId(levelId);
         baseItemService.updateLevel(userContext.getHumanPlayerId(), levelId);
-    }
-
-    private void updateUnlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
-        userContext.setUnlockedItemLimit(unlockedItemLimit);
-        baseItemService.updateUnlockedItemLimit(userContext.getHumanPlayerId(), unlockedItemLimit);
     }
 
     public void onPlayerBaseTracking(PlayerBaseTracking playerBaseTracking) {
