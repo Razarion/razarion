@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {UserBackendInfo} from "./user.dto";
+import {UnlockedBackendInfo, UserBackendInfo} from "./user.dto";
 import {Common, URL_SERVER_MGMT} from "../Common";
 import {Headers, Http} from "@angular/http";
 
@@ -44,6 +44,27 @@ export class UserService {
     urlSearchParams.append('playerId', humanPlayerId.toString());
     urlSearchParams.append('xp', xp.toString());
     return this.http.post(URL_SERVER_MGMT + '/setxp', urlSearchParams.toString(), {headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'})})
+      .toPromise()
+      .then(response => {
+        return response.json();
+      })
+      .catch(Common.handleError);
+  }
+
+  setCrystals(humanPlayerId: number, crystals: number) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('playerId', humanPlayerId.toString());
+    urlSearchParams.append('crystals', crystals.toString());
+    return this.http.post(URL_SERVER_MGMT + '/setcrystals', urlSearchParams.toString(), {headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'})})
+      .toPromise()
+      .then(response => {
+        return response.json();
+      })
+      .catch(Common.handleError);
+  }
+
+  removeUnlocked(humanPlayerId: number, unlockedBackendInfo: UnlockedBackendInfo) {
+    return this.http.delete(URL_SERVER_MGMT + '/removeunlocked/' + humanPlayerId + "/" + unlockedBackendInfo.id)
       .toPromise()
       .then(response => {
         return response.json();

@@ -111,6 +111,9 @@ public class ServerMgmt {
             if (playerSession.getUnregisteredUser().getCompletedQuestIds() != null && !playerSession.getUnregisteredUser().getCompletedQuestIds().isEmpty()) {
                 userBackendInfo.setCompletedQuests(playerSession.getUnregisteredUser().getCompletedQuestIds().stream().map(questId -> questPersistence.findQuestBackendInfo(questId)).collect(Collectors.toList()));
             }
+            if (playerSession.getUnregisteredUser().getLevelUnlockEntityIds() != null && !playerSession.getUnregisteredUser().getLevelUnlockEntityIds().isEmpty()) {
+                userBackendInfo.setUnlockedBackendInfos(playerSession.getUnregisteredUser().getLevelUnlockEntityIds().stream().map(levelUnlockId -> levelPersistence.findUnlockedBackendInfo(levelUnlockId)).collect(Collectors.toList()));
+            }
         }
         return userBackendInfo;
     }
@@ -135,6 +138,13 @@ public class ServerMgmt {
     }
 
     @SecurityCheck
+    public UserBackendInfo removeUnlockedItem(int playerId, int unlockItemId) {
+        HumanPlayerId humanPlayerId = sessionService.findPlayerSession(new HumanPlayerId().setPlayerId(playerId)).getUserContext().getHumanPlayerId();
+        serverUnlockService.removeUnlocked(humanPlayerId, unlockItemId);
+        return loadBackendUserInfo(playerId);
+    }
+
+    @SecurityCheck
     public UserBackendInfo setLevelNumber(int playerId, int levelNumber) {
         HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
         UserContext userContext = userService.getUserContext(humanPlayerId);
@@ -156,6 +166,20 @@ public class ServerMgmt {
         clientSystemConnectionService.onXpChanged(humanPlayerId, xp);
         if (humanPlayerId.getUserId() != null) {
             userService.persistXp(humanPlayerId.getUserId(), xp);
+        }
+        return loadBackendUserInfo(playerId);
+    }
+
+    @SecurityCheck
+    public UserBackendInfo setCrystals(int playerId, int crystals) {
+        HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
+        if (humanPlayerId.getUserId() != null) {
+            userService.persistCrystals(humanPlayerId.getUserId(), crystals);
+        } else {
+            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+            if (playerSession != null && playerSession.getUnregisteredUser() != null) {
+                playerSession.getUnregisteredUser().setCrystals(crystals);
+            }
         }
         return loadBackendUserInfo(playerId);
     }

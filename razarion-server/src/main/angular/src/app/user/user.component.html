@@ -36,7 +36,9 @@
   </tr>
   <tr>
     <td>Crystals</td>
-    <td> {{userBackendInfo.crystals}}</td>
+    <td> {{userBackendInfo.crystals}}  <input type="number" #crystalsBox min="0" step="1" style="width: 5em;">
+      <button (click)="onSetNewCrystals(crystalsBox.value)">Activate</button>
+    </td>
   </tr>
   <tr>
     <td>Active quest</td>
@@ -56,6 +58,21 @@
           </td>
           <td>
             <button (click)="onRemoveCompletedQuest(completedQuest)">Remove</button>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>Unlocked</td>
+    <td>
+      <table>
+        <tr *ngFor="let unlockedBackendInfo of userBackendInfo.unlockedBackendInfos">
+          <td>
+            {{unlockedBackendInfo.internalName}} ({{unlockedBackendInfo.id}})
+          </td>
+          <td>
+            <button (click)="onRemoveUnlocked(unlockedBackendInfo)">Remove</button>
           </td>
         </tr>
       </table>

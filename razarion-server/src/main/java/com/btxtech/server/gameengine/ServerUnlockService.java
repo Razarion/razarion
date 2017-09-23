@@ -6,6 +6,7 @@ import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.user.PlayerSession;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UnregisteredUser;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
@@ -96,5 +97,28 @@ public class ServerUnlockService {
             }
         }
         return levelPersistence.readUnlocks(levelId, unlockedEntityIds);
+    }
+
+    @SecurityCheck
+    public void removeUnlocked(HumanPlayerId humanPlayerId, int levelUnlockEntityId) {
+        UserContext userContext;
+        if (humanPlayerId.getUserId() != null) {
+            userService.persistRemoveUnlocked(humanPlayerId.getUserId(), levelUnlockEntityId);
+            userContext = userService.readUserContext(humanPlayerId.getUserId());
+            sessionService.updateUserContext(humanPlayerId, userContext);
+        } else {
+            PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+            if (playerSession != null && playerSession.getUnregisteredUser() != null) {
+                UnregisteredUser unregisteredUser = playerSession.getUnregisteredUser();
+                unregisteredUser.getLevelUnlockEntityIds().remove(levelUnlockEntityId);
+                userContext = playerSession.getUserContext();
+                userContext.setUnlockedItemLimit(levelPersistence.setupUnlockedItemLimit(unregisteredUser.getLevelUnlockEntityIds()));
+            } else {
+                return;
+            }
+        }
+        baseItemService.updateUnlockedItemLimit(humanPlayerId, userContext.getUnlockedItemLimit());
+        systemConnectionService.onUnlockedItemLimit(humanPlayerId, userContext.getUnlockedItemLimit());
+        historyPersistence.onLevelUnlockEntityUsedViaCrystals(humanPlayerId, levelUnlockEntityId);
     }
 }

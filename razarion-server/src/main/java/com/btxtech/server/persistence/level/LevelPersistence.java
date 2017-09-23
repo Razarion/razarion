@@ -1,6 +1,8 @@
 package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
+import com.btxtech.server.mgmt.UnlockedBackendInfo;
+import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
@@ -205,5 +207,11 @@ public class LevelPersistence {
             userSelect.where(levelNumber);
         }
         return entityManager.createQuery(userSelect).getResultList().stream().map(LevelUnlockEntity::toLevelUnlockConfig).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UnlockedBackendInfo findUnlockedBackendInfo(int levelUnlockId) {
+        LevelUnlockEntity levelUnlockEntity =  entityManager.find(LevelUnlockEntity.class,levelUnlockId);
+        return new UnlockedBackendInfo().setId(levelUnlockEntity.getId()).setInternalName(levelUnlockEntity.getInternalName());
     }
 }

@@ -19,6 +19,7 @@ public class UserBackendInfo {
     private int levelNumber;
     private int xp;
     private int crystals;
+    private List<UnlockedBackendInfo> unlockedBackendInfos;
 
     public HumanPlayerId getHumanPlayerId() {
         return humanPlayerId;
@@ -98,6 +99,15 @@ public class UserBackendInfo {
 
     public UserBackendInfo setCrystals(int crystals) {
         this.crystals = crystals;
+        return this;
+    }
+
+    public List<UnlockedBackendInfo> getUnlockedBackendInfos() {
+        return unlockedBackendInfos;
+    }
+
+    public UserBackendInfo setUnlockedBackendInfos(List<UnlockedBackendInfo> unlockedBackendInfos) {
+        this.unlockedBackendInfos = unlockedBackendInfos;
         return this;
     }
 }

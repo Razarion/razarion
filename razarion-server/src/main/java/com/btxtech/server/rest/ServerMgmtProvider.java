@@ -88,6 +88,29 @@ public class ServerMgmtProvider {
         }
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("setcrystals")
+    public UserBackendInfo setCrystals(@FormParam("playerId") int playerId, @FormParam("crystals") int crystals) {
+        try {
+            return serverMgmt.setCrystals(playerId, crystals);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("removeunlocked/{playerId}/{unlockedBackendInfoId}")
+    public UserBackendInfo removeUnlocked(@PathParam("playerId") int playerId, @PathParam("unlockedBackendInfoId") int unlockedBackendInfoId) {
+        try {
+            return serverMgmt.removeUnlockedItem(playerId, unlockedBackendInfoId);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
 
 
 }

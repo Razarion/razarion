@@ -2,6 +2,7 @@ package com.btxtech.server.user;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.QuestBackendInfo;
+import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
@@ -194,6 +195,14 @@ public class UserService {
     }
 
     @Transactional
+    @SecurityCheck
+    public void persistCrystals(int userId, int crystals) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.setCrystals(crystals);
+        entityManager.merge(userEntity);
+    }
+
+    @Transactional
     public void persistUnlockViaCrystals(int userId, int levelUnlockEntityId) {
         UserEntity userEntity = getUserEntity(userId);
         LevelUnlockEntity levelUnlockEntity = userEntity.getLevel().getLevelUnlockEntity(levelUnlockEntityId);
@@ -202,6 +211,14 @@ public class UserService {
         }
         userEntity.addLevelUnlockEntity(levelUnlockEntity);
         userEntity.removeCrystals(levelUnlockEntity.getCrystalCost());
+    }
+
+    @Transactional
+    @SecurityCheck
+    public void persistRemoveUnlocked(int userId, int levelUnlockEntityId) {
+        UserEntity userEntity = getUserEntity(userId);
+        userEntity.getLevelUnlockEntities().removeIf(levelUnlockEntity -> levelUnlockEntity.getId() == levelUnlockEntityId);
+        entityManager.merge(userEntity);
     }
 
     @Transactional
@@ -319,6 +336,9 @@ public class UserService {
         }
         if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
             userBackendInfo.setCompletedQuests(userEntity.getCompletedQuest().stream().map(questConfigEntity -> new QuestBackendInfo().setId(questConfigEntity.getId()).setInternalName(questConfigEntity.getInternalName())).collect(Collectors.toList()));
+        }
+        if (userEntity.getLevelUnlockEntities() != null && !userEntity.getLevelUnlockEntities().isEmpty()) {
+            userBackendInfo.setUnlockedBackendInfos(userEntity.getLevelUnlockEntities().stream().map(levelUnlockEntity -> new UnlockedBackendInfo().setId(levelUnlockEntity.getId()).setInternalName(levelUnlockEntity.getInternalName())).collect(Collectors.toList()));
         }
         return userBackendInfo;
     }

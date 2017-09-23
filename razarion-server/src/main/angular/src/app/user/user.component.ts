@@ -1,7 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {UserService} from "./user.service";
-import {UserBackendInfo} from "./user.dto";
+import {UnlockedBackendInfo, UserBackendInfo} from "./user.dto";
 import {QuestBackendInfo} from "../Common";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/toPromise";
@@ -36,5 +36,13 @@ export class UserComponent implements OnInit {
 
   onSetNewXp(xp: number) {
     this.userService.setXp(this.userBackendInfo.humanPlayerId.playerId, xp).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+  }
+
+  onSetNewCrystals(crystals: number) {
+    this.userService.setCrystals(this.userBackendInfo.humanPlayerId.playerId, crystals).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+  }
+
+  onRemoveUnlocked(unlockedBackendInfo: UnlockedBackendInfo) {
+    this.userService.removeUnlocked(this.userBackendInfo.humanPlayerId.playerId, unlockedBackendInfo).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
   }
 }

@@ -10,4 +10,10 @@ export class UserBackendInfo {
   levelNumber: number;
   xp: number;
   crystals: number;
+  unlockedBackendInfos: UnlockedBackendInfo[];
+}
+
+export class UnlockedBackendInfo {
+  id: number;
+  internalName: string;
 }
