@@ -74,8 +74,8 @@ public class UserUiService {
         gameEngineControl.updateLevel(userContext.getLevelId());
         cockpitService.updateLevelAndXp(userContext);
         itemCockpitService.onStateChanged();
-        dialogManager.onLevelPassed(levelUpPacket);
         unlockUiService.setLevelUnlockConfigs(levelUpPacket.getLevelUnlockConfigs());
+        dialogManager.onLevelPassed(levelUpPacket);
     }
 
     public void onServerXpChange(Integer xp) {

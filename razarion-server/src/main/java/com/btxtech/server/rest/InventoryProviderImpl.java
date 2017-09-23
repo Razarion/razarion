@@ -29,4 +29,14 @@ public class InventoryProviderImpl implements InventoryProvider {
             throw e;
         }
     }
+
+    @Override
+    public int loadCrystals() {
+        try {
+            return serverInventoryService.loadCrystals(sessionHolder.getPlayerSession());
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
 }

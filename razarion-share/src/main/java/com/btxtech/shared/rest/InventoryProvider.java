@@ -17,4 +17,9 @@ public interface InventoryProvider {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("loadInventory")
     InventoryInfo loadInventory();
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("loadCrystals")
+    int loadCrystals();
 }

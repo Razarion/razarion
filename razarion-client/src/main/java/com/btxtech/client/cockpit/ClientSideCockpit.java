@@ -3,6 +3,7 @@ package com.btxtech.client.cockpit;
 import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.inventory.InventoryDialog;
+import com.btxtech.client.dialog.unlock.UnlockDialog;
 import com.btxtech.client.editor.EditorMenuDialog;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
@@ -55,6 +56,9 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @DataField
     private Button fullScreenButton;
     @Inject
+    @DataField
+    private Button unlockButton;
+    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @DataField
@@ -103,6 +107,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("inventoryButton")
     private void onInventoryButtonClick(ClickEvent event) {
+        // TODO i18n
         modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, (modalDialogPanel) -> gameTipService.onInventoryDialogOpened(), DialogButton.Button.CLOSE);
     }
 
@@ -119,6 +124,12 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @EventHandler("fullScreenButton")
     private void onFullScreenButtonClick(ClickEvent event) {
         GwtUtils.toggleFullscreen(RootPanel.get().getElement());
+    }
+
+    @EventHandler("unlockButton")
+    private void onUnlockButtonClick(ClickEvent event) {
+        // TODO i18n
+        modalDialogManager.show("Freischalten", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnlockDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
     @Override

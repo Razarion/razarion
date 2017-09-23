@@ -109,6 +109,8 @@ public interface I18nConstants {
 
     String connectWithFacebook();
 
+    String availableCrystals(String text);
+
     // Login logout
     String login();
 
@@ -479,30 +481,19 @@ public interface I18nConstants {
     String startupDeltaStartSimulatedGame();
 
     // Unlock dialogs
-    String unlockItemDialogTitle();
+    String unlockDialogTitle();
 
-    String unlockQuestDialogTitle();
+    String unlockDialogText();
 
-    String unlockPlanetDialogTitle();
+    String nothingToUnlockDialogText();
 
-    String itemDialogNoCrystalsMessage(String itemTypeName);
+    String unlockCrystalCost(int crystals);
 
-    String questDialogNoCrystalsMessage(String questName);
+    String unlockFailed();
 
-    String planetDialogNoCrystalsMessage(String planetName);
+    String unlockNotEnoughCrystals();
 
-    String itemIsLocked(String itemTypeName);
-
-    String questIsLocked(String title);
-
-    String planetIsLocked(String planetName);
-
-    String unlockButton();
-
-    String questLocked();
-
-    String planetLocked();
-
+    // ???
     String createBase();
 
     String createBaseInBotFailed();
@@ -858,6 +849,8 @@ public interface I18nConstants {
     String ok();
 
     // Level up dialog
+    String levelUpDialogTitle();
+
     String youReachedLevel(int level);
 
     // System

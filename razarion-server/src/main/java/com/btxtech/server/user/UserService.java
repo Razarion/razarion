@@ -373,6 +373,11 @@ public class UserService {
     }
 
     @Transactional
+    public int readCrystals(int userId) {
+        return getUserEntity(userId).getCrystals();
+    }
+
+    @Transactional
     public UserContext readUserContext(int userId) {
         return getUserEntity(userId).toUserContext();
     }

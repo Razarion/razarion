@@ -38,6 +38,7 @@ public class RestUrl {
     public static final String COMMON_EDITOR_PROVIDER_PATH = "commoneditorprovider";
     public static final String INVENTORY_PROVIDER_PATH = "inventoryprovider";
     public static final String INVENTORY_EDITOR_PROVIDER_PATH = "inventoryeditorprovider";
+    public static final String UNLOCK_PROVIDER_PATH = "unlockprovider";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache

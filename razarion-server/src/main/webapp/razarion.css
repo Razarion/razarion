@@ -593,6 +593,43 @@ a:active {
 
 /** -------------------------- DIALOG BOX CONTENT ENDS -------------------------- */
 
+/** -------------------------- DIALOG BOX CONTENT  -------------------------- */
+
+.unlock-dialog-text {
+    margin-bottom: 10px;
+}
+
+.unlock-dialog-crystals {
+    font-size: 90%;
+}
+
+.unlock-dialog-table {
+    border-collapse: collapse;
+}
+
+.unlock-dialog-table-row {
+    border: 1px solid #d8d0d0;
+    background-color: rgba(2, 48, 86, 0.38);
+}
+
+.unlock-dialog-cell {
+}
+
+.unlock-dialog-tr-title {
+    color: #3289bd;
+    font-weight: bold;
+}
+
+.unlock-dialog-tr-description {
+    font-size: 90%;
+}
+
+.unlock-dialog-tr-cost {
+    font-size: 80%;
+}
+
+/** -------------------------- DIALOG BOX CONTENT ENDS -------------------------- */
+
 /** -------------------------- THANK YOU PAGE -------------------------- */
 .center-thank-you {
     position: absolute;
