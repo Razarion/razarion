@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.user;
 
 import com.btxtech.shared.datatypes.LevelUpPacket;
+import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
@@ -14,7 +15,6 @@ import com.btxtech.uiservice.unlock.UnlockUiService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -82,8 +82,8 @@ public class UserUiService {
         cockpitService.updateLevelAndXp(userContext);
     }
 
-    public void onUnlockItemLimitChanged(Map<Integer, Integer> unlockedItemLimit) {
-        userContext.setUnlockedItemLimit(unlockedItemLimit);
+    public void onUnlockItemLimitChanged(UnlockedItemPacket unlockedItemLimit) {
+        userContext.setUnlockedItemLimit(unlockedItemLimit.getUnlockedItemLimit());
         itemCockpitService.onStateChanged();
     }
 

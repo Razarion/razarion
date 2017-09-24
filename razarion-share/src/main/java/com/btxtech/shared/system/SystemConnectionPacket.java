@@ -2,6 +2,7 @@ package com.btxtech.shared.system;
 
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
@@ -13,6 +14,8 @@ import java.util.Map;
  * 25.04.2017.
  */
 public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
+    // Do not use Collections with generic types as top level parameter e.g. Map<Integer, Integer> List<Double>
+
     // System
     SET_GAME_SESSION_UUID(String.class),
     LIFECYCLE_CONTROL(LifecyclePacket.class),
@@ -28,7 +31,7 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     // Inventory
     BOX_PICKED(BoxContent.class),
     // Unlock
-    UNLOCKED_ITEM_LIMIT(Map.class);
+    UNLOCKED_ITEM_LIMIT(UnlockedItemPacket.class);
 
     private Class theClass;
 

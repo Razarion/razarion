@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
@@ -92,7 +93,7 @@ public class ClientSystemConnectionService {
     public void onUnlockedItemLimit(HumanPlayerId humanPlayerId, Map<Integer, Integer> unlockedItemLimit) {
         PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
         if (playerSession != null) {
-            sendToClient(playerSession, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, unlockedItemLimit);
+            sendToClient(playerSession, SystemConnectionPacket.UNLOCKED_ITEM_LIMIT, new UnlockedItemPacket().setUnlockedItemLimit(unlockedItemLimit));
         }
     }
 

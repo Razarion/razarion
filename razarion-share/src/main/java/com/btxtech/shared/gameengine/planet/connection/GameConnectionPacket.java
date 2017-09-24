@@ -26,6 +26,8 @@ import java.util.List;
  * 21.04.2017.
  */
 public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
+    // Do not use Collections with generic types as top level parameter e.g. Map<Integer, Integer> List<Double>
+
     // System
     SET_GAME_SESSION_UUID(String.class),
     // Base

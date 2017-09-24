@@ -5,6 +5,8 @@ package com.btxtech.shared.system;
  * 25.04.2017.
  */
 public interface ConnectionMarshaller {
+    // Do not use Collections with generic types as top level parameter e.g. Map<Integer, Integer> List<Double>
+
     interface Packet {
         Class getTheClass();
 

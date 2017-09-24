@@ -2,6 +2,7 @@ package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -66,7 +67,7 @@ public abstract class AbstractServerSystemConnection {
                 inventoryUiService.onOnBoxPicked((BoxContent) param);
                 break;
             case UNLOCKED_ITEM_LIMIT:
-                userUiService.onUnlockItemLimitChanged((Map<Integer, Integer>) param);
+                userUiService.onUnlockItemLimitChanged((UnlockedItemPacket) param);
                 break;
             case LIFECYCLE_CONTROL:
                 onLifecyclePacket((LifecyclePacket) param);
