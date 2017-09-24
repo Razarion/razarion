@@ -107,8 +107,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("inventoryButton")
     private void onInventoryButtonClick(ClickEvent event) {
-        // TODO i18n
-        modalDialogManager.show("Inventory", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, (modalDialogPanel) -> gameTipService.onInventoryDialogOpened(), DialogButton.Button.CLOSE);
+        modalDialogManager.show(I18nHelper.getConstants().inventory(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, InventoryDialog.class, null, null, (modalDialogPanel) -> gameTipService.onInventoryDialogOpened(), DialogButton.Button.CLOSE);
     }
 
     @EventHandler("editorButton")
@@ -128,8 +127,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("unlockButton")
     private void onUnlockButtonClick(ClickEvent event) {
-        // TODO i18n
-        modalDialogManager.show("Freischalten", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnlockDialog.class, null, null, null, DialogButton.Button.CLOSE);
+        modalDialogManager.show(I18nHelper.getConstants().unlockDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnlockDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
     @Override
