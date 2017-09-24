@@ -119,6 +119,5 @@ public class ServerUnlockService {
         }
         baseItemService.updateUnlockedItemLimit(humanPlayerId, userContext.getUnlockedItemLimit());
         systemConnectionService.onUnlockedItemLimit(humanPlayerId, userContext.getUnlockedItemLimit());
-        historyPersistence.onLevelUnlockEntityUsedViaCrystals(humanPlayerId, levelUnlockEntityId);
     }
 }
