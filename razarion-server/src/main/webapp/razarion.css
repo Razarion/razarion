@@ -65,6 +65,16 @@ a:active {
     cursor: default;
 }
 
+@keyframes buttonBlink {
+    0%   { border-color: #0f4261; }
+    50%  { border-color: #FF0000; }
+    100% { border-color: #0f4261; }
+}
+
+.button-blink {
+    animation: buttonBlink 1s ease-in-out infinite;
+}
+
 .image-button {
     padding: 1px 6px 0 6px;
 }

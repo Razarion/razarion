@@ -12,11 +12,15 @@ import java.util.function.Consumer;
  */
 public abstract class UnlockUiService {
     private List<LevelUnlockConfig> levelUnlockConfigs;
+    private Consumer<Boolean> blinkListener;
 
     protected abstract void unlockViaCrystalCall(LevelUnlockConfig levelUnlockConfig, Consumer<UnlockResultInfo> callback);
 
     public void setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
         this.levelUnlockConfigs = levelUnlockConfigs;
+        if (blinkListener != null) {
+            blinkListener.accept(hasItems2Unlock());
+        }
     }
 
     public List<LevelUnlockConfig> getLevelUnlockConfigs() {
@@ -32,10 +36,14 @@ public abstract class UnlockUiService {
             if (unlockResultInfo.isNotEnoughCrystals()) {
                 successCallback.accept(false);
             } else {
-                this.levelUnlockConfigs = unlockResultInfo.getAvailableUnlocks();
+                setLevelUnlockConfigs(unlockResultInfo.getAvailableUnlocks());
                 successCallback.accept(true);
             }
         });
     }
 
+    public void setBlinkListener(Consumer<Boolean> blinkListener) {
+        this.blinkListener = blinkListener;
+        blinkListener.accept(hasItems2Unlock());
+    }
 }

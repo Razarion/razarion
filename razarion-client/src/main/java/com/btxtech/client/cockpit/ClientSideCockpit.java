@@ -12,6 +12,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.tip.GameTipService;
+import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -40,6 +41,8 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     private GameUiControl gameUiControl;
     @Inject
     private UserUiService userUiService;
+    @Inject
+    private UnlockUiService unlockUiService;
     @Inject
     @DataField
     private TableRow editorTableRow;
@@ -92,6 +95,15 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
         GwtUtils.preventContextMenu(this);
+        unlockUiService.setBlinkListener(blink -> {
+            if(blink) {
+                //noinspection GWTStyleCheck
+                unlockButton.addStyleName("button-blink");
+            } else {
+                //noinspection GWTStyleCheck
+                unlockButton.removeStyleName("button-blink");
+            }
+        });
     }
 
     @Override
