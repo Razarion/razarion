@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class PerfmonService {
     public static final int COUNT = 180;
-    public static final long DUMP_DELAY = 1000;
+    public static final long DUMP_DELAY = 2000;
     private Logger logger = Logger.getLogger(PerfmonService.class.getName());
     @Inject
     private SimpleExecutorService simpleExecutorService;
@@ -71,11 +71,10 @@ public class PerfmonService {
         }
     }
 
-    public void onTile() {
-
-    }
-
     public void onEntered(PerfmonEnum perfmonEnum) {
+        if (!perfmonEnum.isFps()) {
+            return;
+        }
         if (enterTimes.containsKey(perfmonEnum)) {
             logger.warning("PerfmonService.onEntered(): onEntered has already been called for " + perfmonEnum);
         }
@@ -83,6 +82,9 @@ public class PerfmonService {
     }
 
     public void onLeft(PerfmonEnum perfmonEnum) {
+        if (!perfmonEnum.isFps()) {
+            return;
+        }
         Long startTime = enterTimes.remove(perfmonEnum);
         if (startTime == null) {
             logger.warning("PerfmonService.onLeft(): onEntered was not called before " + perfmonEnum);
@@ -91,18 +93,13 @@ public class PerfmonService {
         sampleEntries.add(new SampleEntry(perfmonEnum, startTime));
     }
 
-    public MapList<PerfmonEnum, StatisticEntry> getStatisticEntries() {
-        return statisticEntries;
-    }
-
     public List<PerfmonStatistic> getPerfmonStatistics(int count) {
         List<PerfmonStatistic> perfmonStatistics = new ArrayList<>();
         for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
             PerfmonStatistic perfmonStatistic = new PerfmonStatistic();
             perfmonStatistic.setTimeStamp(new Date());
             perfmonStatistic.setPerfmonEnum(entry.getKey());
-            List<Double> frequency = new ArrayList<>();
-            List<Double> avgDuration = new ArrayList<>();
+            List<PerfmonStatisticEntry> perfmonStatisticEntries = new ArrayList<>();
             List<StatisticEntry> value = entry.getValue();
             if (count < 1) {
                 count = value.size() - 1;
@@ -111,13 +108,14 @@ public class PerfmonService {
             }
             for (int i = count; i >= 0; i--) {
                 StatisticEntry statisticEntry = value.get(i);
-                frequency.add(statisticEntry.getFrequency());
-                avgDuration.add(statisticEntry.getAvgDuration());
+                PerfmonStatisticEntry perfmonStatisticEntry = new PerfmonStatisticEntry();
+                perfmonStatisticEntry.setFrequency(statisticEntry.getFrequency());
+                perfmonStatisticEntry.setAvgDuration(statisticEntry.getAvgDuration());
+                perfmonStatisticEntry.setDate(new Date(statisticEntry.getFistSample()));
+                perfmonStatisticEntries.add(perfmonStatisticEntry);
             }
-            Collections.reverse(frequency);
-            perfmonStatistic.setFrequency(frequency);
-            Collections.reverse(avgDuration);
-            perfmonStatistic.setAvgDuration(avgDuration);
+            Collections.reverse(perfmonStatisticEntries);
+            perfmonStatistic.setPerfmonStatisticEntries(perfmonStatisticEntries);
             perfmonStatistics.add(perfmonStatistic);
         }
         return perfmonStatistics;

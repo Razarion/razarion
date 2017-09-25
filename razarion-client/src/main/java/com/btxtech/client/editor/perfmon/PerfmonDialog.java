@@ -5,6 +5,7 @@ import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
+import com.btxtech.shared.system.perfmon.PerfmonStatisticEntry;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Composite;
@@ -73,6 +74,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
         int barPairWidth = WIDTH / PerfmonService.COUNT;
         int barWidth = barPairWidth / 2;
         int y = 0;
+        long minTime = calculateMinTime(allStatistics);
         for (PerfmonStatistic perfmonStatistic : allStatistics) {
             // Text
             SVGTextElement descr = Browser.getDocument().createSVGTextElement();
@@ -83,12 +85,13 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
             descr.getStyle().setFontSize(15, CSSStyleDeclaration.Unit.PX);
             svg.appendChild(descr);
             // Bars
-            for (int index = 0; index < perfmonStatistic.size(); index++) {
-                double frequency = perfmonStatistic.getFrequency(index);
+            for (int index = 0; index < perfmonStatistic.getPerfmonStatisticEntries().size(); index++) {
+                PerfmonStatisticEntry perfmonStatisticEntry = perfmonStatistic.getPerfmonStatisticEntries().get(index);
                 // First bar is frequency
                 SVGRectElement frequencyBar = Browser.getDocument().createSVGRectElement();
-                frequencyBar.getX().getBaseVal().setValue(index * barPairWidth);
+                frequencyBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, minTime, 0));
                 frequencyBar.getAnimatedWidth().getBaseVal().setValue(barWidth);
+                double frequency = perfmonStatisticEntry.getFrequency();
                 if (Double.isFinite(frequency) && !Double.isNaN(frequency)) {
                     float heightValue = (float) (HEIGHT / 2.0 * frequency / MAX_AVG_FREQUENCY);
                     frequencyBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
@@ -104,9 +107,9 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
                 svg.appendChild(frequencyBar);
                 // Second bar is avg duration
                 SVGRectElement durationBar = Browser.getDocument().createSVGRectElement();
-                durationBar.getX().getBaseVal().setValue(index * barPairWidth + barWidth);
+                durationBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, minTime, barWidth));
                 durationBar.getAnimatedWidth().getBaseVal().setValue(barWidth);
-                double avgDuration = perfmonStatistic.getAvgDuration(index);
+                double avgDuration = perfmonStatisticEntry.getAvgDuration();
                 if (Double.isFinite(avgDuration) && !Double.isNaN(avgDuration)) {
                     float heightValue = (float) (HEIGHT / 2.0 * avgDuration / MAX_AVG_DURATION);
                     durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
@@ -123,6 +126,20 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
             }
             y += HEIGHT / 2;
         }
+    }
+
+    private long calculateMinTime(Collection<PerfmonStatistic> allStatistics) {
+        long min = Long.MAX_VALUE;
+        for (PerfmonStatistic allStatistic : allStatistics) {
+            min = Math.min(allStatistic.getPerfmonStatisticEntries().get(0).getDate().getTime(), min);
+        }
+        return min;
+    }
+
+    private float setupX(int index, PerfmonStatistic perfmonStatistic, long minTime, int additional) {
+        long time = perfmonStatistic.getPerfmonStatisticEntries().get(index).getDate().getTime();
+        long lapsOfTime = PerfmonService.COUNT * PerfmonService.DUMP_DELAY;
+        return (float) (WIDTH * ((double) (time - minTime) / (double) (lapsOfTime)) + additional);
     }
 
     @Override

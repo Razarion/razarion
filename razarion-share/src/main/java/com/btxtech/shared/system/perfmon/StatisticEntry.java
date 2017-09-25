@@ -8,7 +8,6 @@ public class StatisticEntry {
     private PerfmonEnum perfmonEnum;
     private long fistSample;
     private long lastSample;
-    private double samplingDuration;
     private int samples;
     private double frequency;
     private int totalDuration;
@@ -36,6 +35,10 @@ public class StatisticEntry {
         return avgDuration;
     }
 
+    public long getFistSample() {
+        return fistSample;
+    }
+
     public void analyze(SampleEntry sample) {
         samples++;
         totalDuration += sample.getDuration();
@@ -52,7 +55,7 @@ public class StatisticEntry {
     }
 
     public void finalizeStatistic() {
-        samplingDuration = (double) (lastSample - fistSample) / 1000.0;
+        double samplingDuration = (double) (lastSample - fistSample) / 1000.0;
         frequency = (double) samples / samplingDuration;
         avgDuration = (double) totalDuration / (double) samples / 1000.0;
     }

@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -46,7 +45,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -415,23 +413,7 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onPerfomButtonClicked() {
-        List<PerfmonStatistic> clientPerfmonStatistics = perfmonService.getPerfmonStatistics(-1);
-        System.out.println("Client---------------------------------------------------------------------------------------------------------");
-        for (PerfmonStatistic perfmonStatistic : clientPerfmonStatistics) {
-            for (int i = 0; i < perfmonStatistic.size(); i++) {
-                System.out.println(perfmonStatistic.toInfoString(i));
-            }
-        }
-        System.out.println("---------------------------------------------------------------------------------------------------------");
-        gameEngineControl.perfmonRequest(perfmonStatistics -> {
-            System.out.println("Worker---------------------------------------------------------------------------------------------------------");
-            for (PerfmonStatistic perfmonStatistic : perfmonStatistics) {
-                for (int i = 0; i < perfmonStatistic.size(); i++) {
-                    System.out.println(perfmonStatistic.toInfoString(i));
-                }
-            }
-            System.out.println("---------------------------------------------------------------------------------------------------------");
-        });
+        System.out.println("******************* TODO *******************");
     }
 
     public void displayResource(int resource) {

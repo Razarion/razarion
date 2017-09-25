@@ -3,22 +3,23 @@ package com.btxtech.server.persistence.tracker;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 
-import javax.persistence.CollectionTable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -31,35 +32,23 @@ public class PerfmonStatisticEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Date timeStamp;
-    @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @Column(nullable = false, length = 190)
+// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;
     @Enumerated(EnumType.STRING)
     private PerfmonEnum perfmonEnum;
-    @ElementCollection
-    @CollectionTable(name = "TRACKER_PERFMON_FREQUENCY", joinColumns = @JoinColumn(name = "perfmonStatisticEntityId"))
-    @OrderColumn(name = "orderColumn")
-    private List<Double> frequency;
-    @ElementCollection
-    @CollectionTable(name = "TRACKER_PERFMON_DURATION", joinColumns = @JoinColumn(name = "perfmonStatisticEntityId"))
-    @OrderColumn(name = "orderColumn")
-    private List<Double> avgDuration;
     private Date clientTimeStamp;
+    @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "perfmonStatisticEntity", nullable = false)
+    @OrderColumn(name = "orderColumn")
+    private List<PerfmonStatisticEntryEntity> perfmonStatisticEntryEntities;
 
     public void fromPerfmonStatistic(String sessionId, Date timeStamp, PerfmonStatistic perfmonStatistic) {
         this.sessionId = sessionId;
         this.timeStamp = timeStamp;
         perfmonEnum = perfmonStatistic.getPerfmonEnum();
-        if (frequency == null) {
-            frequency = new ArrayList<>();
-        }
-        frequency.clear();
-        frequency.addAll(perfmonStatistic.getFrequency());
-        if (avgDuration == null) {
-            avgDuration = new ArrayList<>();
-        }
-        avgDuration.clear();
-        avgDuration.addAll(perfmonStatistic.getAvgDuration());
         clientTimeStamp = perfmonStatistic.getTimeStamp();
+        perfmonStatisticEntryEntities = perfmonStatistic.getPerfmonStatisticEntries().stream().map(perfmonStatisticEntry -> new PerfmonStatisticEntryEntity().fromPerfmonStatisticEntry(perfmonStatisticEntry)).collect(Collectors.toList());
     }
 
     @Override

@@ -6,18 +6,24 @@ package com.btxtech.shared.system.perfmon;
  * Time: 15:00
  */
 public enum PerfmonEnum {
-    RENDERER("Renderer"),
-    GAME_ENGINE("Game Engine"),
-    BOT("Bot"),
-    DETAILED_TRACKING("Detailed Tracking");
+    RENDERER("Renderer", true),
+    GAME_ENGINE("Game Engine", true),
+    BOT("Bot", false),
+    DETAILED_TRACKING("Detailed Tracking", false);
 
     private String displayName;
+    private boolean fps;
 
-    PerfmonEnum(String displayName) {
+    PerfmonEnum(String displayName, boolean fps) {
         this.displayName = displayName;
+        this.fps = fps;
     }
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public boolean isFps() {
+        return fps;
     }
 }
