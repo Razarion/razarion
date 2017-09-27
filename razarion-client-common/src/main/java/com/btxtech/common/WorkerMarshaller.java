@@ -194,10 +194,10 @@ public class WorkerMarshaller {
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Map.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), HumanPlayerId.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), String.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_3), DecimalPosition.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Map.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), HumanPlayerId.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_3), String.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_4), DecimalPosition.class));
                 break;
             case TICK_UPDATE_RESPONSE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
