@@ -1,20 +1,23 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemServiceBase;
+import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainServiceTestBase;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.gui.astar.TerrainAStarTestDisplay;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -29,8 +32,8 @@ import java.util.List;
  * Created by Beat
  * on 10.07.2017.
  */
-public class AStarTest extends TerrainServiceTestBase {
-    protected PathingService setup(SlopeSkeletonConfig.Type type, TerrainSlopeCorner... terrainSlopeCorners) {
+public class AStarTest extends WeldTerrainServiceTestBase {
+    protected void setup(SlopeSkeletonConfig.Type type, TerrainSlopeCorner... terrainSlopeCorners) {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(type);
@@ -64,28 +67,40 @@ public class AStarTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null);
+        List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(1).setRadius(1));
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setRadius(5));
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
 
-        PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 1, 1));
+        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
+        planetConfig.setPlayGround(new Rectangle2D(50, 50, 5000, 5000));
+        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
+        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(76, 30))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(114, 28))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(95, 11))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(223, 95))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(191, 116))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(48, 124))));
+        terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(132, 131))));
+        planetConfig.setTerrainObjectPositions(terrainObjectPositions);
 
-        setupTerrainService(heights, splattings, slopeSkeletonConfigs, terrainSlopePositions);
-
-        PathingService pathingService = new PathingService();
-        SimpleTestEnvironment.injectService("terrainService", pathingService, getTerrainService());
-        return pathingService;
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions);
     }
 
     @Test
     public void expandAllNodes() throws Exception {
-        PathingService pathingService = setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
+        setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
                 createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
                 createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
 
         SyncBaseItem syncBaseItem = BaseItemServiceBase.createMockSyncBaseItem(new DecimalPosition(50, 15));
         // SimplePath simplePath = pathingService.setupPathToDestination(syncBaseItem, new DecimalPosition(72, 56));
 
-        AStar aStar = setupPathToDestination(syncBaseItem, new DecimalPosition(72, 56), 0);
+        SuccessorNodeCache successorNodeCache = new SuccessorNodeCache();
+        AStar aStar = setupPathToDestination(syncBaseItem, new DecimalPosition(72, 56), 0, successorNodeCache);
+        aStar = setupPathToDestination(syncBaseItem, new DecimalPosition(72, 56), 0, successorNodeCache);
+        aStar = setupPathToDestination(syncBaseItem, new DecimalPosition(72, 56), 0, successorNodeCache);
 
 
         /////////
@@ -108,7 +123,7 @@ public class AStarTest extends TerrainServiceTestBase {
         Assert.fail("TODO assert");
     }
 
-    private AStar setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
+    private AStar setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange, SuccessorNodeCache successorNodeCache) {
         SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
         PathingNodeWrapper startNode = getTerrainService().getPathingAccess().getPathingNodeWrapper(syncItem.getSyncPhysicalArea().getPosition2d());
@@ -123,16 +138,20 @@ public class AStarTest extends TerrainServiceTestBase {
             throw new IllegalArgumentException("Destination start tile is not free: " + destination);
         }
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope);
+        long time = System.currentTimeMillis();
+        AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope, successorNodeCache);
         try {
             aStar.expandAllNodes();
         } catch (Exception e) {
             e.printStackTrace();
             return aStar;
         }
-//        for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
-//            positions.add(pathingNodeWrapper.getCenter());
-//        }
+        for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
+            positions.add(pathingNodeWrapper.getCenter());
+        }
+        System.out.println("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
+
+
 //        positions.add(destination);
 //        path.setWayPositions(positions);
 //        path.setTotalRange(totalRange);

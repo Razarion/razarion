@@ -27,10 +27,12 @@ public class PathingService {
     public static final double PENETRATION_TOLERANCE = 0.1;
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double STOP_DETECTION_DISTANCE = 0.1;
+    // private Logger logger = Logger.getLogger(PathingService.class.getName());
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
+    private SuccessorNodeCache successorNodeCache = new SuccessorNodeCache();
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, destination, 0);
@@ -62,11 +64,13 @@ public class PathingService {
 
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
 
-        AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope);
+        // long time = System.currentTimeMillis();
+        AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope, successorNodeCache);
         aStar.expandAllNodes();
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
             positions.add(pathingNodeWrapper.getCenter());
         }
+        // logger.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
         positions.add(destination);
         path.setWayPositions(positions);
         path.setTotalRange(totalRange);

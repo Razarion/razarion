@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.SimpleExecutorService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -56,7 +57,7 @@ public class WeldBaseTest {
         testGameLogicListener = new TestGameLogicListener();
         getWeldBean(GameLogicService.class).setGameLogicListener(testGameLogicListener);
         fireStaticGameConfig(staticGameConfig);
-        getWeldBean(TestNativeTerrainShapeAccess.class).setPlanetConfig(planetConfig);
+        getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
     }
 
     public <T> T getWeldBean(Class<T> clazz) {
@@ -93,6 +94,14 @@ public class WeldBaseTest {
 
     public InventoryTypeService getInventoryTypeService() {
         return getWeldBean(InventoryTypeService.class);
+    }
+
+    public TerrainService getTerrainService() {
+        return getWeldBean(TerrainService.class);
+    }
+
+    public TestNativeTerrainShapeAccess getTestNativeTerrainShapeAccess() {
+        return getWeldBean(TestNativeTerrainShapeAccess.class);
     }
 
     public List<SyncBaseItemInfo> getSyncBaseItemInfos() {

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,11 +25,13 @@ public class AStar {
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
     private List<Index> subNodeIndexScope;
+    private SuccessorNodeCache successorNodeCache;
 
-    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode, List<Index> subNodeIndexScope) {
+    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode, List<Index> subNodeIndexScope, SuccessorNodeCache successorNodeCache) {
         this.startNode = startNode;
         this.destinationNode = new AStarNode(destinationNode);
         this.subNodeIndexScope = subNodeIndexScope;
+        this.successorNodeCache = successorNodeCache;
         openList.add(new AStarNode(startNode));
     }
 
@@ -57,14 +60,33 @@ public class AStar {
     }
 
     private void handleAllSuccessorNodes(AStarNode current) {
+        Collection<PathingNodeWrapper> cached = successorNodeCache.get(current.getPathingNodeWrapper());
+        if(cached != null) {
+            cached.forEach(successor -> handleSuccessorNode(current, successor));
+            return;
+        }
+        Collection<PathingNodeWrapper> toBeCached = new ArrayList<>();
         // North
-        current.getPathingNodeWrapper().provideNorthSuccessors(subNodeIndexScope, northSuccessor -> handleSuccessorNode(current, northSuccessor));
+        current.getPathingNodeWrapper().provideNorthSuccessors(subNodeIndexScope, northSuccessor -> {
+            toBeCached.add(northSuccessor);
+            handleSuccessorNode(current, northSuccessor);
+        });
         // East
-        current.getPathingNodeWrapper().provideEastSuccessors(subNodeIndexScope, eastSuccessor -> handleSuccessorNode(current, eastSuccessor));
+        current.getPathingNodeWrapper().provideEastSuccessors(subNodeIndexScope, eastSuccessor -> {
+            toBeCached.add(eastSuccessor);
+            handleSuccessorNode(current, eastSuccessor);
+        });
         // South
-        current.getPathingNodeWrapper().provideSouthSuccessors(subNodeIndexScope, southSuccessor -> handleSuccessorNode(current, southSuccessor));
+        current.getPathingNodeWrapper().provideSouthSuccessors(subNodeIndexScope, southSuccessor -> {
+            toBeCached.add(southSuccessor);
+            handleSuccessorNode(current, southSuccessor);
+        });
         // West
-        current.getPathingNodeWrapper().provideWestSuccessors(subNodeIndexScope, westSuccessor -> handleSuccessorNode(current, westSuccessor));
+        current.getPathingNodeWrapper().provideWestSuccessors(subNodeIndexScope, westSuccessor -> {
+            toBeCached.add(westSuccessor);
+            handleSuccessorNode(current, westSuccessor);
+        });
+        successorNodeCache.put(current.getPathingNodeWrapper(), toBeCached);
     }
 
     private void handleSuccessorNode(AStarNode current, PathingNodeWrapper successorTilePosition) {
@@ -126,4 +148,7 @@ public class AStar {
         return tilePath;
     }
 
+    public int getCloseListSize() {
+        return closedList.size();
+    }
 }

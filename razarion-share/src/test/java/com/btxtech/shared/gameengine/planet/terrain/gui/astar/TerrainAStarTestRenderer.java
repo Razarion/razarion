@@ -94,7 +94,7 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
         DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
         displayNodes(absolute, terrainShapeTile);
-        // displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
+        displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
     }
 
     private void displayNodes(DecimalPosition absoluteTile, TerrainShapeTile terrainShapeTile) {
@@ -117,7 +117,7 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
         displayObstacles(terrainShapeNode);
-        //displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
+        displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
     }
 
     private void displayGroundSlopeConnections(List<List<Vertex>> groundSlopeConnections) {

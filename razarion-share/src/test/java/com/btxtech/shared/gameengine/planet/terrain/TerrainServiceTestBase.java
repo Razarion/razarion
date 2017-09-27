@@ -33,6 +33,8 @@ import java.util.List;
  * Created by Beat
  * 03.04.2017.
  */
+@Deprecated
+// Use WeldTerrainServiceTestBase
 public class TerrainServiceTestBase {
     private TerrainTypeService terrainTypeService;
     private NativeTerrainShapeAccess nativeTerrainShapeAccess;

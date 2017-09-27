@@ -22,14 +22,19 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Inject
     private TerrainTypeService terrainTypeService;
     private PlanetConfig planetConfig;
+    private List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, new ArrayList<>(), new ArrayList<>());
+        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, planetConfig.getTerrainObjectPositions());
         loadedCallback.accept(terrainShape.toNativeTerrainShape());
     }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
+    }
+
+    public void setTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions) {
+        this.terrainSlopePositions = terrainSlopePositions;
     }
 }

@@ -29,6 +29,8 @@ import java.util.function.Supplier;
  * Created by Beat
  * 16.04.2017.
  */
+@Deprecated
+// WeldMasterBaseTest
 public class BaseItemServiceBase {
     private BaseItemService baseItemService;
     private SyncItemContainerService syncItemContainerService;
