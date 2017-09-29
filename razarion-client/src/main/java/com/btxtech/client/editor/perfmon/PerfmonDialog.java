@@ -74,7 +74,6 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
         int barPairWidth = WIDTH / PerfmonService.COUNT;
         int barWidth = barPairWidth / 2;
         int y = 0;
-        long minTime = calculateMinTime(allStatistics);
         for (PerfmonStatistic perfmonStatistic : allStatistics) {
             // Text
             SVGTextElement descr = Browser.getDocument().createSVGTextElement();
@@ -89,7 +88,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
                 PerfmonStatisticEntry perfmonStatisticEntry = perfmonStatistic.getPerfmonStatisticEntries().get(index);
                 // First bar is frequency
                 SVGRectElement frequencyBar = Browser.getDocument().createSVGRectElement();
-                frequencyBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, minTime, 0));
+                frequencyBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, 0));
                 frequencyBar.getAnimatedWidth().getBaseVal().setValue(barWidth);
                 double frequency = perfmonStatisticEntry.getFrequency();
                 if (Double.isFinite(frequency) && !Double.isNaN(frequency)) {
@@ -107,7 +106,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
                 svg.appendChild(frequencyBar);
                 // Second bar is avg duration
                 SVGRectElement durationBar = Browser.getDocument().createSVGRectElement();
-                durationBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, minTime, barWidth));
+                durationBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, barWidth));
                 durationBar.getAnimatedWidth().getBaseVal().setValue(barWidth);
                 double avgDuration = perfmonStatisticEntry.getAvgDuration();
                 if (Double.isFinite(avgDuration) && !Double.isNaN(avgDuration)) {
@@ -128,18 +127,10 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
         }
     }
 
-    private long calculateMinTime(Collection<PerfmonStatistic> allStatistics) {
-        long min = Long.MAX_VALUE;
-        for (PerfmonStatistic allStatistic : allStatistics) {
-            min = Math.min(allStatistic.getPerfmonStatisticEntries().get(0).getDate().getTime(), min);
-        }
-        return min;
-    }
-
-    private float setupX(int index, PerfmonStatistic perfmonStatistic, long minTime, int additional) {
+    private float setupX(int index, PerfmonStatistic perfmonStatistic, int additional) {
         long time = perfmonStatistic.getPerfmonStatisticEntries().get(index).getDate().getTime();
         long lapsOfTime = PerfmonService.COUNT * PerfmonService.DUMP_DELAY;
-        return (float) (WIDTH * ((double) (time - minTime) / (double) (lapsOfTime)) + additional);
+        return (float) (WIDTH * ((double) (time - (System.currentTimeMillis() - lapsOfTime)) / (double) (lapsOfTime)) + additional);
     }
 
     @Override
