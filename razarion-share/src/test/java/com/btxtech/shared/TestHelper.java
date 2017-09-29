@@ -1,6 +1,7 @@
 package com.btxtech.shared;
 
 import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
@@ -202,5 +203,39 @@ public class TestHelper {
             output[i + 2] = transformedVertex.getZ();
         }
         return output;
+    }
+
+    public static void assertDecimalPosition(DecimalPosition expected, DecimalPosition actual) {
+        if (expected == null && actual == null) {
+            return;
+        } else if (expected != null && actual == null) {
+            Assert.fail("Expected is: " + expected + ". Actual is null");
+        } else if (expected == null) {
+            Assert.fail("Expected is null. Actual: " + actual);
+        }
+        Assert.assertTrue("Expected: " + expected + " Actual: " + actual, expected.equalsDelta(actual, 0.001));
+    }
+
+    public static void assertDecimalPositions(List<DecimalPosition> expected, List<DecimalPosition> actual) {
+        Assert.assertEquals("Size is not same", expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertDecimalPosition(expected.get(i), actual.get(i));
+        }
+    }
+
+    public static void printDecimalPositions(List<DecimalPosition> indexList) {
+        System.out.println("-----------------------------------------------------------");
+        StringBuilder builder = new StringBuilder();
+        builder.append("List<DecimalPosition> positions = Arrays.asList(");
+        for (int i = 0; i < indexList.size(); i++) {
+            DecimalPosition decimalPosition = indexList.get(i);
+            builder.append("new DecimalPosition(").append(decimalPosition.getX()).append(", ").append(decimalPosition.getY()).append(")");
+            if (i < indexList.size() - 1) {
+                builder.append(", ");
+            }
+        }
+        builder.append(");");
+        System.out.println(builder.toString());
+        System.out.println("-----------------------------------------------------------");
     }
 }

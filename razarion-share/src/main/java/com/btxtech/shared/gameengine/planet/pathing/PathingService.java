@@ -61,11 +61,11 @@ public class PathingService {
         if (!destinationNode.isFree()) {
             throw new IllegalArgumentException("Destination start tile is not free: " + destination);
         }
-
-        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-
         // long time = System.currentTimeMillis();
-        AStar aStar = new AStar(startNode, destinationNode, subNodeIndexScope, successorNodeCache);
+        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        DestinationFinder destinationFinder = new DestinationFinder(destinationNode, subNodeIndexScope, terrainService.getPathingAccess());
+        PathingNodeWrapper correctedDestinationNode = destinationFinder.find();
+        AStar aStar = new AStar(startNode, correctedDestinationNode, subNodeIndexScope, successorNodeCache);
         aStar.expandAllNodes();
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
             positions.add(pathingNodeWrapper.getCenter());

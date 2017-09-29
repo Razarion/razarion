@@ -36,12 +36,14 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
     private TerrainShape actual;
     private SimplePath simplePath;
     private AStar aStar;
+    private DisplayDTO displayDTO;
     private TerrainShapeTile[][] terrainShapeTiles;
 
-    public TerrainAStarTestRenderer(TerrainShape actual, SimplePath simplePath, AStar aStar) {
-        this.actual = actual;
-        this.simplePath = simplePath;
-        this.aStar = aStar;
+    public TerrainAStarTestRenderer(DisplayDTO displayDTO) {
+        actual = displayDTO.getTerrainShape();
+        simplePath = displayDTO.getSimplePath();
+        aStar = displayDTO.getaStar();
+        this.displayDTO = displayDTO;
         try {
             Field field = TerrainShape.class.getDeclaredField("terrainShapeTiles");
             field.setAccessible(true);
@@ -65,6 +67,16 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
         displayClosedList();
         if (simplePath != null) {
             strokeLine(simplePath.getWayPositions(), LINE_WIDTH, Color.OLIVEDRAB, true);
+        }
+        if(displayDTO.getPathingNodeWrapper() != null) {
+            getGc().setFill(new Color(1, 0, 0, 1));
+            if(displayDTO.getPathingNodeWrapper().getNodeIndex() != null) {
+                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(displayDTO.getPathingNodeWrapper().getNodeIndex());
+                getGc().fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
+            } else if(displayDTO.getPathingNodeWrapper().getSubNodePosition() != null) {
+                double length = TerrainUtil.calculateSubNodeLength(displayDTO.getPathingNodeWrapper().getTerrainShapeSubNode().getDepth());
+                getGc().fillRect(displayDTO.getPathingNodeWrapper().getSubNodePosition().getX(), displayDTO.getPathingNodeWrapper().getSubNodePosition().getY(), length, length);
+            }
         }
     }
 

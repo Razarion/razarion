@@ -187,13 +187,17 @@ public class PathingNodeWrapper {
 
     private Consumer<PathingNodeWrapper> checkScopeAdapter(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
         return pathingNodeWrapper -> {
-            if (pathingNodeWrapper.getTerrainShapeSubNode() != null) {
-                for (Index index : subNodeIndexScope) {
-                    if (!pathingAccess.isTerrainFree(pathingNodeWrapper.getSubNodePosition().add(index.getX(), index.getY()))) {
-                        return;
+            if (subNodeIndexScope != null) {
+                if (pathingNodeWrapper.getTerrainShapeSubNode() != null) {
+                    for (Index index : subNodeIndexScope) {
+                        if (!pathingAccess.isTerrainFree(pathingNodeWrapper.getSubNodePosition().add(index.getX(), index.getY()))) {
+                            return;
+                        }
                     }
+                    northNodeHandler.accept(pathingNodeWrapper);
+                } else {
+                    northNodeHandler.accept(pathingNodeWrapper);
                 }
-                northNodeHandler.accept(pathingNodeWrapper);
             } else {
                 northNodeHandler.accept(pathingNodeWrapper);
             }
@@ -224,5 +228,13 @@ public class PathingNodeWrapper {
         } else {
             return subNodePosition.hashCode();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "PathingNodeWrapper{" +
+                "nodeIndex=" + nodeIndex +
+                ", subNodePosition=" + subNodePosition +
+                '}';
     }
 }
