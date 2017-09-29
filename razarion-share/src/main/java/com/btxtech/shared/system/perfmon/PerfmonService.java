@@ -25,7 +25,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class PerfmonService {
-    public static final int COUNT = 180;
+    public static final int COUNT = 100;
     public static final long DUMP_DELAY = 2000;
     private Logger logger = Logger.getLogger(PerfmonService.class.getName());
     @Inject
