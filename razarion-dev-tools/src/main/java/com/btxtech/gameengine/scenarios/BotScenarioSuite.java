@@ -37,7 +37,7 @@ public class BotScenarioSuite extends ScenarioSuite {
                 List<BotItemConfig> botItems = new ArrayList<>();
                 botItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setAngle(MathHelper.QUARTER_RADIANT).setNoSpawn(true));
                 botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+                botConfigs.add(new BotConfig().setId(1).setAuxiliaryId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
             }
 
             @Override
@@ -58,7 +58,7 @@ public class BotScenarioSuite extends ScenarioSuite {
                 List<BotItemConfig> botItems = new ArrayList<>();
                 botItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true));
                 botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
+                botConfigs.add(new BotConfig().setId(1).setAuxiliaryId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(true));
             }
 
             @Override
@@ -81,13 +81,13 @@ public class BotScenarioSuite extends ScenarioSuite {
                 targetItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(35, 30))).setNoSpawn(true).setNoRebuild(true));
                 targetItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(35, 35))).setNoSpawn(true).setNoRebuild(true));
                 targetEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(targetItems));
-                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(targetEnragementStates).setName("Kenny").setNpc(true));
+                botConfigs.add(new BotConfig().setId(1).setAuxiliaryId(1).setActionDelay(3000).setBotEnragementStateConfigs(targetEnragementStates).setName("Target Bot").setNpc(true));
                 // Attacker bot
                 List<BotEnragementStateConfig> attackerEnragementStates = new ArrayList<>();
                 List<BotItemConfig> attackerItems = new ArrayList<>();
                 attackerItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true).setNoRebuild(true));
                 attackerEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(attackerItems));
-                botConfigs.add(new BotConfig().setId(2).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
+                botConfigs.add(new BotConfig().setId(2).setAuxiliaryId(2).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Attacker Bot").setNpc(false));
             }
 
             @Override
@@ -113,7 +113,7 @@ public class BotScenarioSuite extends ScenarioSuite {
                 List<BotItemConfig> attackerItems = new ArrayList<>();
                 attackerItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(0, 0))).setNoSpawn(true).setNoRebuild(true));
                 attackerEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(attackerItems));
-                botConfigs.add(new BotConfig().setId(2).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
+                botConfigs.add(new BotConfig().setId(2).setAuxiliaryId(2).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
             }
 
             @Override
@@ -133,7 +133,7 @@ public class BotScenarioSuite extends ScenarioSuite {
                 botItemConfigs.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId()).setCount(10).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(new Rectangle2D(0,0, 20,20).toPolygon())).setNoSpawn(true).setNoRebuild(true));
                 botItemConfigs.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()).setCount(5).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(new Rectangle2D(0,30, 20,20).toPolygon())).setNoSpawn(true).setNoRebuild(true));
                 attackerEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItemConfigs));
-                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
+                botConfigs.add(new BotConfig().setId(1).setAuxiliaryId(1).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
             }
 
             @Override
@@ -151,7 +151,7 @@ public class BotScenarioSuite extends ScenarioSuite {
                 botItemConfigs.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.ATTACKER_ITEM_TYPE.getId()).setCount(10).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(new Rectangle2D(0,0, 20,20).toPolygon())).setNoSpawn(true).setNoRebuild(true));
                 botItemConfigs.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()).setCount(5).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(new Rectangle2D(0,30, 20,20).toPolygon())).setNoSpawn(true).setNoRebuild(true));
                 attackerEnragementStates.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItemConfigs));
-                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
+                botConfigs.add(new BotConfig().setId(1).setAuxiliaryId(1).setActionDelay(3000).setBotEnragementStateConfigs(attackerEnragementStates).setName("Kenny").setNpc(false));
             }
 
             @Override

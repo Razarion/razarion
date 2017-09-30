@@ -66,7 +66,7 @@ public class AttackScenarioSuite extends ScenarioSuite {
                 List<BotItemConfig> botItems = new ArrayList<>();
                 botItems.add(new BotItemConfig().setBaseItemTypeId(ScenarioService.HARVESTER_ITEM_TYPE.getId()).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(50, 0))).setNoSpawn(true).setNoRebuild(true));
                 botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-                botConfigs.add(new BotConfig().setId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
+                botConfigs.add(new BotConfig().setId(1).setAuxiliaryId(1).setActionDelay(3000).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
             }
 
 
@@ -78,6 +78,11 @@ public class AttackScenarioSuite extends ScenarioSuite {
             @Override
             public QuestConfig setupQuest() {
                 return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1)));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
     }
