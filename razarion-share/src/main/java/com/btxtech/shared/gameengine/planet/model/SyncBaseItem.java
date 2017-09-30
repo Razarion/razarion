@@ -571,13 +571,15 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (!isAlive()) {
             return;
         }
+        if (!actor.isAlive()) {
+            return;
+        }
         if (syncWeapon == null) {
             return;
         }
         if (!isIdle()) {
             return;
         }
-        SyncWeapon syncWeapon = getSyncWeapon();
         if (!syncWeapon.isAttackAllowed(actor)) {
             return;
         }
