@@ -66,6 +66,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
     private Collection<PlanetTickListener> tickListeners = new ArrayList<>();
+    private PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
 
     @PostConstruct
     public void postConstruct() {
@@ -82,6 +83,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     }
 
     public void start() {
+        planetServiceTracker.clear();
         scheduledFuture.start();
     }
 
@@ -117,12 +119,20 @@ public class PlanetService implements Runnable { // Only available in worker. On
             return;
         }
         try {
-            questService.checkPositionCondition();
+            planetServiceTracker.startTick();
+            questService.tick();
+            planetServiceTracker.afterQuestService();
             pathingService.tick();
+            planetServiceTracker.afterPathingService();
             baseItemService.tick();
+            planetServiceTracker.afterBaseItemService();
             projectileService.tick();
+            planetServiceTracker.afterProjectileService();
             energyService.tick();
+            planetServiceTracker.afterEnergyService();
             boxService.tick();
+            planetServiceTracker.afterBoxService();
+            planetServiceTracker.endTick();
             notifyTickListeners();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -166,5 +176,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
         slaveSyncItemInfo.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
         slaveSyncItemInfo.setSyncBoxItemInfos(boxService.getSyncBoxItemInfos());
         return slaveSyncItemInfo;
+    }
+
+    public void enableTracking(boolean track) {
+        planetServiceTracker.setRunning(track);
     }
 }

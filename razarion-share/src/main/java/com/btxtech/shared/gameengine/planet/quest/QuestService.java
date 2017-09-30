@@ -100,7 +100,7 @@ public class QuestService {
         // TODO }
     }
 
-    public void checkPositionCondition() {
+    public void tick() {
         Collection<PlayerBase> playerBases = new ArrayList<>();
         synchronized (progressMap) {
             for (AbstractConditionProgress abstractConditionProgress : progressMap.values()) {
