@@ -83,11 +83,6 @@ public class FabricateScenarioSuite extends ScenarioSuite {
                     backgroundWorker = null;
                 }
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
 
     }
