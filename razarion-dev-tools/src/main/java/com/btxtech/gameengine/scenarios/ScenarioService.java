@@ -169,7 +169,7 @@ public class ScenarioService implements QuestListener {
         TOWER_ITEM_TYPE = tower;
 
         // Finalize factory
-        factory.setFactoryType(new FactoryType().setProgress(1.0).setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE.getId(), HARVESTER_ITEM_TYPE.getId())));
+        factory.setFactoryType(new FactoryType().setProgress(4).setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE.getId(), HARVESTER_ITEM_TYPE.getId())));
 
         ResourceItemType resource = new ResourceItemType();
         resource.setRadius(2).setAmount(1000).setId(++itemId);
@@ -295,6 +295,7 @@ public class ScenarioService implements QuestListener {
                 planetService.enableTracking(true);
                 planetService.start();
                 perfmonService.start();
+                resourceService.startResourceRegions();
                 PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), Collections.emptyMap(), userContext.getHumanPlayerId(), userContext.getName());
                 currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService, syncItemContainerService);
                 List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();
