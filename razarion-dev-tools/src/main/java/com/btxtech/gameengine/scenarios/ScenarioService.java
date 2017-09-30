@@ -42,6 +42,7 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.quest.QuestListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.webglemulator.razarion.DevToolNativeTerrainShapeAccess;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
@@ -101,6 +102,8 @@ public class ScenarioService implements QuestListener {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private DevToolNativeTerrainShapeAccess devToolNativeTerrainShapeAccess;
+    @Inject
+    private PerfmonService perfmonService;
     private List<ScenarioSuite> scenarioSuites = new ArrayList<>();
     private Scenario currentScenario;
 
@@ -289,7 +292,9 @@ public class ScenarioService implements QuestListener {
             gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
             planetService.initialise(planetConfig, GameEngineMode.MASTER, masterPlanetConfig, null, () -> {
                 currentScenario.setupBots(botService);
+                planetService.enableTracking(true);
                 planetService.start();
+                perfmonService.start();
                 PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), Collections.emptyMap(), userContext.getHumanPlayerId(), userContext.getName());
                 currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService, syncItemContainerService);
                 List<AbstractBotCommandConfig> botCommandConfigs = new ArrayList<>();

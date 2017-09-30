@@ -2,13 +2,11 @@ package com.btxtech.gameengine;
 
 import com.btxtech.gameengine.scenarios.ScenarioService;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.SimpleExecutorService;
-import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
-import com.btxtech.shared.system.perfmon.StatisticEntry;
+import com.btxtech.shared.system.perfmon.PerfmonStatisticEntry;
 import com.btxtech.webglemulator.razarion.DevToolFutureControl;
 import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 import javafx.application.Platform;
@@ -26,7 +24,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -313,6 +310,12 @@ public class GameEngineMonitorController implements Initializable {
     }
 
     public void onPerfmonButtonClicked() {
-        System.out.println("******************* TODO *******************");
+        List<PerfmonStatistic> perfmonStatistics = perfmonService.getPerfmonStatistics(-1);
+        for (PerfmonStatistic perfmonStatistic : perfmonStatistics) {
+            System.out.println("--------------------" + perfmonStatistic.getPerfmonEnum() + "--------------------");
+            for (PerfmonStatisticEntry perfmonStatisticEntry : perfmonStatistic.getPerfmonStatisticEntries()) {
+                System.out.println(perfmonStatisticEntry.getDate() + " " + perfmonStatisticEntry.getAvgDuration() + "s " + perfmonStatisticEntry.getFrequency() + "hz");
+            }
+        }
     }
 }
