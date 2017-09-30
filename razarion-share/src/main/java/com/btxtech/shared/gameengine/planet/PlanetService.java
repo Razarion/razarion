@@ -95,13 +95,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
     }
 
     public BackupPlanetInfo backup(boolean saveUnregistered) {
-        long time = System.currentTimeMillis();
         BackupPlanetInfo backupPlanetInfo = new BackupPlanetInfo();
         backupPlanetInfo.setDate(new Date());
         backupPlanetInfo.setPlanetId(planetConfig.getPlanetId());
         baseItemService.fillBackup(backupPlanetInfo, saveUnregistered);
         questService.fillBackup(backupPlanetInfo);
-        logger.info("PlanetService.restoreBases() in:" + (System.currentTimeMillis() - time));
         return backupPlanetInfo;
     }
 
