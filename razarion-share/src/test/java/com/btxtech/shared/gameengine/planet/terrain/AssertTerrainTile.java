@@ -21,12 +21,12 @@ import java.util.List;
  * Created by Beat
  * 09.04.2017.
  */
-public class TerrainTileTestHelper {
+public class AssertTerrainTile {
     private static final boolean SHOW_GUI = false;
-    private static final String DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
+    private static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private Collection<TerrainTile> expected;
 
-    public TerrainTileTestHelper(Class theClass, String resourceName) {
+    public AssertTerrainTile(Class theClass, String resourceName) {
         InputStream inputStream = theClass.getResourceAsStream(resourceName);
         if (inputStream == null) {
             throw new RuntimeException("Resource does not exist: " + theClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + resourceName);
@@ -134,7 +134,7 @@ public class TerrainTileTestHelper {
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {
         try {
-            new ObjectMapper().writeValue(new File(DIRECTORY, fileName), terrainTiles);
+            new ObjectMapper().writeValue(new File(SAVE_DIRECTORY, fileName), terrainTiles);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

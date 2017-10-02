@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.List;
  * Created by Beat
  * 10.04.2017.
  */
-public class SlopeWaterTerrainServiceTest extends TerrainServiceTestBase {
+public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testTerrainSlopeWaterTileGeneration() {
@@ -54,14 +53,14 @@ public class SlopeWaterTerrainServiceTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainService(heights, splattings, slopeSkeletonConfigs, terrainSlopePositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
 
-        TerrainTile terrainTile = generateTerrainTile(new Index(0, 0));
+        TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
-        TerrainTileTestDisplay.show(terrainTile);
-        // TerrainTileTestHelper.saveTerrainTile(terrainTile, "testTerrainSlopeWaterTileGeneration.json");
-        TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testTerrainSlopeWaterTileGeneration.json");
-        terrainTileTestHelper.assertEquals(terrainTile);
+        // TerrainTileTestDisplay.show(terrainTile);
+        // AssertTerrainTile.saveTerrainTile(terrainTile, "testTerrainSlopeWaterTileGeneration.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeWaterTileGeneration.json");
+        assertTerrainTile.assertEquals(terrainTile);
     }
 
     @Test
@@ -100,17 +99,17 @@ public class SlopeWaterTerrainServiceTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainService(heights, splattings, slopeSkeletonConfigs, terrainSlopePositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null,terrainSlopePositions);
 
         Collection<TerrainTile> terrainTiles = new ArrayList<>();
-        terrainTiles.add(generateTerrainTile(new Index(0, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(0, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 1)));
 
-        // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testTerrainSlopeWaterTileGeneration4Tiles.json");
-        TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testTerrainSlopeWaterTileGeneration4Tiles.json");
-        terrainTileTestHelper.assertEquals(terrainTiles);
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testTerrainSlopeWaterTileGeneration4Tiles.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeWaterTileGeneration4Tiles.json");
+        assertTerrainTile.assertEquals(terrainTiles);
     }
 
 }

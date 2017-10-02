@@ -42,8 +42,11 @@ public class WeldTerrainServiceTestBase extends WeldBaseTest {
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();
-        drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(10)));
+        drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(30)));
         staticGameConfig.setDrivewayConfigs(drivewayConfigs);
+        if (planetConfig == null) {
+            planetConfig = GameTestContent.setupPlanetConfig();
+        }
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getTestNativeTerrainShapeAccess().setTerrainSlopePositions(terrainSlopePositions);

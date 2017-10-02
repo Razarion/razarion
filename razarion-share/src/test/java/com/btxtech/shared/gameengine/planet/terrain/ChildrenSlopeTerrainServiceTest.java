@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Beat
  * 03.04.2017.
  */
-public class ChildrenSlopeTerrainServiceTest extends TerrainServiceTestBase {
+public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     private static int SKELETON_CONFIG_ID_1 = 1;
 
     @Test
@@ -36,9 +36,9 @@ public class ChildrenSlopeTerrainServiceTest extends TerrainServiceTestBase {
 
         Collection<TerrainTile> terrainTiles = setup(parent);
 
-        // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testSingleChild1.json");
-        TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testSingleChild1.json");
-        terrainTileTestHelper.assertEquals(terrainTiles);
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSingleChild1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSingleChild1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
 
     }
 
@@ -74,18 +74,18 @@ public class ChildrenSlopeTerrainServiceTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainService(heights, splattings, slopeSkeletonConfigs, terrainSlopePositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
 
         Collection<TerrainTile> terrainTiles = new ArrayList<>();
-        terrainTiles.add(generateTerrainTile(new Index(0, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(0, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(0, 2)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 2)));
-        terrainTiles.add(generateTerrainTile(new Index(2, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(2, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(2, 2)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 2)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 2)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 2)));
 
         return terrainTiles;
     }

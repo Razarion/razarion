@@ -9,9 +9,8 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainServiceTestBase;
-import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestDisplay;
-import org.junit.Assert;
+import com.btxtech.shared.gameengine.planet.GameTestContent;
+import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.List;
  * Created by Beat
  * on 30.06.2017.
  */
-public class TerrainShapeTest extends TerrainServiceTestBase {
+public class TerrainShapeTest extends WeldTerrainServiceTestBase {
 
     protected TerrainShape setup(SlopeSkeletonConfig.Type type, List<TerrainObjectPosition> terrainObjectPositions, TerrainSlopeCorner... terrainSlopeCorners) {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
@@ -63,36 +62,37 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs);
-
-        PlanetConfig planetConfig = new PlanetConfig();
+        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 1, 1));
-
-        return new TerrainShape(planetConfig, getTerrainTypeService(), terrainSlopePositions, terrainObjectPositions);
+        planetConfig.setTerrainObjectPositions(terrainObjectPositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions);
+        return getTerrainShape();
     }
 
     @Test
     public void testSimpleSlope() {
         TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, null, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
-        TerrainShapeTestDisplay.show(terrainShape);
-        Assert.fail("TODO assert");
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testSimpleSlopeShape1.json");
+        // TerrainShapeTestDisplay.show(terrainShape);
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSimpleSlopeShape1.json", terrainShape);
     }
 
     @Test
-    public void testSlopeDriveway() {
+    public void testSlopeDrivewayShape() {
         TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, null, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(78, 40, null),
                 createTerrainSlopeCorner(78, 60, 1), createTerrainSlopeCorner(78, 90, 1), // driveway
                 createTerrainSlopeCorner(78, 110, null), createTerrainSlopeCorner(30, 110, null));
-        TerrainShapeTestDisplay.show(terrainShape);
-        Assert.fail("TODO assert");
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testSlopeDrivewayShape1.json");
+        // TerrainShapeTestDisplay.show(terrainShape);
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSlopeDrivewayShape1.json", terrainShape);
     }
 
-    @Test
-    public void testWater() {
-        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.WATER, null, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
-        TerrainShapeTestDisplay.show(terrainShape);
-        Assert.fail("TODO assert");
-    }
+//    @Test
+//    public void testWaterShape() {
+//        TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.WATER, null, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
+//        TerrainShapeTestDisplay.show(terrainShape);
+//        Assert.fail("TODO assert");
+//    }
 
     @Test
     public void testTerrainObject() {
@@ -108,7 +108,8 @@ public class TerrainShapeTest extends TerrainServiceTestBase {
         TerrainShape terrainShape = setup(SlopeSkeletonConfig.Type.LAND, terrainObjectPositions, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(80, 40, null),
                 createTerrainSlopeCorner(80, 60, 1), createTerrainSlopeCorner(80, 90, 1), // driveway
                 createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
-        TerrainShapeTestDisplay.show(terrainShape);
-        Assert.fail("TODO assert");
+        // TerrainShapeTestDisplay.show(terrainShape);
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShape1.json");
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShape1.json", terrainShape);
     }
 }

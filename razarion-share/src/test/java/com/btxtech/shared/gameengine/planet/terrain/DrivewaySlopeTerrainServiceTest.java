@@ -5,7 +5,6 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -17,36 +16,28 @@ import java.util.List;
  * Created by Beat
  * 03.04.2017.
  */
-public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
+public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testEdge() {
         Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(103, 40, null),
                 createTerrainSlopeCorner(103, 60, 1), createTerrainSlopeCorner(103, 90, 1), // driveway
                 createTerrainSlopeCorner(103, 110, null), createTerrainSlopeCorner(50, 110, null));
-        // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
-        TerrainTileTestDisplay.show(terrainTiles);
-        TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testDrivewayEdge1.json");
-        terrainTileTestHelper.assertEquals(terrainTiles);
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
+        // TerrainTileTestDisplay.show(terrainTiles);
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayEdge1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
     }
 
     @Test
     public void testCorner() {
-        Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 40, null),
-                createTerrainSlopeCorner(70, 40, 1), createTerrainSlopeCorner(90, 40, 1), createTerrainSlopeCorner(100, 40, 1), createTerrainSlopeCorner(100, 50, 1), createTerrainSlopeCorner(100, 80, 1),// driveway
-                createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
-        // TerrainTileTestHelper.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
-        TerrainTileTestDisplay.show(terrainTiles);
-        TerrainTileTestHelper terrainTileTestHelper = new TerrainTileTestHelper(getClass(), "testDrivewayCorner1.json");
-        terrainTileTestHelper.assertEquals(terrainTiles);
+        Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 150, null),
+                createTerrainSlopeCorner(70, 150, 1), createTerrainSlopeCorner(90, 150, 1), createTerrainSlopeCorner(100, 150, 1), createTerrainSlopeCorner(100, 160, 1), createTerrainSlopeCorner(100, 180, 1),// driveway
+                createTerrainSlopeCorner(100, 210, null), createTerrainSlopeCorner(50, 210, null));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
+        // TerrainTileTestDisplay.show(terrainTiles);
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayCorner1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
     }
-
-//    @Test
-//    public void testFromFile() throws IOException {
-//        String string = new String(Files.readAllBytes(new File("C:\\dev\\projects\\razarion\\code\\tmp\\slopedriveway.json").toPath()));
-//        List<TerrainSlopeCorner> terrainSlopeCorners = new ObjectMapper().readValue(string, new TypeReference<List<TerrainSlopeCorner>>() {
-//        });
-//        setup(terrainSlopeCorners.toArray(new TerrainSlopeCorner[terrainSlopeCorners.size()]));
-//    }
 
     private Collection<TerrainTile> setup(TerrainSlopeCorner... slopePolygon) {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
@@ -84,18 +75,18 @@ public class DrivewaySlopeTerrainServiceTest extends TerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainService(heights, splattings, slopeSkeletonConfigs, terrainSlopePositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
 
         Collection<TerrainTile> terrainTiles = new ArrayList<>();
-        terrainTiles.add(generateTerrainTile(new Index(0, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(0, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(0, 2)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(1, 2)));
-        terrainTiles.add(generateTerrainTile(new Index(2, 0)));
-        terrainTiles.add(generateTerrainTile(new Index(2, 1)));
-        terrainTiles.add(generateTerrainTile(new Index(2, 2)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 2)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 2)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 0)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 1)));
+        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 2)));
 
         return terrainTiles;
     }

@@ -37,6 +37,7 @@ import java.util.Map;
  * on 23.08.2017.
  */
 public interface GameTestContent {
+    int PLANET_ID = 100;
     int GROUND_SKELETON_ID = 1;
     int BUILDER_ITEM_TYPE_ID = 1;
     int FACTORY_ITEM_TYPE_ID = 2;
@@ -66,6 +67,7 @@ public interface GameTestContent {
 
     static PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
+        planetConfig.setPlanetId(PLANET_ID);
         planetConfig.setItemTypeLimitation(setupPlanetItemTypeLimitations());
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 1000, 1000));
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 6, 6));

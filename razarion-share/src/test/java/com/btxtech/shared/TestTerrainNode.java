@@ -8,13 +8,13 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
  * 31.03.2017.
  */
 public class TestTerrainNode extends TerrainNode {
-    private TerrainSubNode[][] terrainSubNodes;
+    private TestTerrainSubNode[][] terrainSubNodes;
     private boolean land;
     private double height;
 
     @Override
     public void initTerrainSubNodeField(int terrainSubNodeEdgeCount) {
-        terrainSubNodes = new TerrainSubNode[terrainSubNodeEdgeCount][terrainSubNodeEdgeCount];
+        terrainSubNodes = new TestTerrainSubNode[terrainSubNodeEdgeCount][terrainSubNodeEdgeCount];
     }
 
     @Override
@@ -24,7 +24,7 @@ public class TestTerrainNode extends TerrainNode {
 
     @Override
     public void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode) {
-        terrainSubNodes[x][y] = terrainSubNode;
+        terrainSubNodes[x][y] = (TestTerrainSubNode) terrainSubNode;
     }
 
     @Override
