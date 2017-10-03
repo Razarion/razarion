@@ -95,6 +95,10 @@ public class ClientSystemConnection {
         return sessionService.getSession(httpSessionId);
     }
 
+    public String getHttpSessionId() {
+        return httpSessionId;
+    }
+
     public String getGameSessionUuid() {
         return gameSessionUuid;
     }

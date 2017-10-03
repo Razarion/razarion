@@ -14,6 +14,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -46,6 +47,8 @@ public class ServerMgmt {
     private QuestPersistence questPersistence;
     @Inject
     private ServerUnlockService serverUnlockService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     @SecurityCheck
     public List<OnlineInfo> loadAllOnlines() {
@@ -62,9 +65,13 @@ public class ServerMgmt {
 
         List<OnlineInfo> onlineInfos = new ArrayList<>();
         clientSystemConnectionService.getClientSystemConnections().forEach(clientSystemConnection -> {
-            OnlineInfo onlineInfo = new OnlineInfo().setType(OnlineInfo.Type.NORMAL).setSessionId(clientSystemConnection.getSession().getHttpSessionId()).setTime(clientSystemConnection.getTime()).setDuration(clientSystemConnection.getDuration());
-            if (clientSystemConnection.getSession().getUserContext() != null) {
-                onlineInfo.setHumanPlayerId(clientSystemConnection.getSession().getUserContext().getHumanPlayerId());
+            OnlineInfo onlineInfo = new OnlineInfo().setType(OnlineInfo.Type.NORMAL).setSessionId(clientSystemConnection.getHttpSessionId()).setTime(clientSystemConnection.getTime()).setDuration(clientSystemConnection.getDuration());
+            try {
+                if (clientSystemConnection.getSession().getUserContext() != null) {
+                    onlineInfo.setHumanPlayerId(clientSystemConnection.getSession().getUserContext().getHumanPlayerId());
+                }
+            } catch(Exception e) {
+                exceptionHandler.handleException(e);
             }
             ClientGameConnection clientGameConnection = gameSessionUuids.remove(clientSystemConnection.getGameSessionUuid());
             if (clientGameConnection != null) {
