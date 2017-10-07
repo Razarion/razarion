@@ -132,7 +132,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    // Errai can not handle is-getter
+    // Errai can not handle is-getter. Most likely chained properties with UI binding.
     public boolean getSlopeOriented() {
         return slopeOriented;
     }

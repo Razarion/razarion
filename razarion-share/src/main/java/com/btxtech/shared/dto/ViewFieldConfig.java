@@ -44,7 +44,7 @@ public class ViewFieldConfig {
         return this;
     }
 
-    // Errai can not handle is-getter
+    // Errai can not handle is-getter. Most likely chained properties with UI binding.
     public boolean getCameraLocked() {
         return cameraLocked;
     }

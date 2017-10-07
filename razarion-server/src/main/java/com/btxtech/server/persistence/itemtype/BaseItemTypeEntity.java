@@ -183,7 +183,7 @@ public class BaseItemTypeEntity {
     public void fromBaseItemType(BaseItemType baseItemType, ItemTypePersistence itemTypePersistence, Shape3DPersistence shape3DPersistence) {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
-        fixVerticalNorm = baseItemType.getPhysicalAreaConfig().isFixVerticalNorm();
+        fixVerticalNorm = baseItemType.getPhysicalAreaConfig().getFixVerticalNorm();
         angularVelocity = baseItemType.getPhysicalAreaConfig().getAngularVelocity();
         speed = baseItemType.getPhysicalAreaConfig().getSpeed();
         acceleration = baseItemType.getPhysicalAreaConfig().getAcceleration();
