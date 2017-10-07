@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTer
  * on 20.06.2017.
  */
 public class TerrainShapeSubNode {
-    private Boolean notLand;
+    private TerrainType terrainType;
     private Double height;
     private int depth;
     private TerrainShapeSubNode parent;
@@ -25,7 +25,7 @@ public class TerrainShapeSubNode {
     public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
         this.parent = parent;
         this.depth = depth;
-        notLand = nativeTerrainShapeSubNode.notLand;
+        terrainType = TerrainType.values()[nativeTerrainShapeSubNode.terrainTypeOrdinal];
         height = nativeTerrainShapeSubNode.height;
         terrainShapeSubNodes = fromNativeTerrainShapeSubNode(this, depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
     }
@@ -38,11 +38,12 @@ public class TerrainShapeSubNode {
         return getHeightRecursively();
     }
 
+    @Deprecated // too complex
     private Double getHeightRecursively() {
-        if(height != null) {
+        if (height != null) {
             return height;
         }
-        if(parent != null) {
+        if (parent != null) {
             return parent.getHeightRecursively();
         }
         return null;
@@ -52,23 +53,28 @@ public class TerrainShapeSubNode {
         return Vertex.Z_NORM; // TODO
     }
 
+    @Deprecated // use
     public boolean isLand() {
-        Boolean notLand = isNotLandRecursively();
-        return notLand == null || !notLand;
+        return terrainType == TerrainType.LAND;
     }
 
-    private Boolean isNotLandRecursively() {
-        if(notLand != null && notLand) {
-            return true;
-        }
-        if(parent != null) {
-            return parent.isNotLandRecursively();
-        }
-        return null;
+    public TerrainType getTerrainType() {
+        return terrainType;
     }
 
-    public void setNoLand() {
-        notLand = true;
+//    @Deprecated // too complex
+//     private Boolean isNotLandRecursively() {
+//        if(notLand != null && notLand) {
+//            return true;
+//        }
+//        if(parent != null) {
+//            return parent.isNotLandRecursively();
+//        }
+//        return null;
+//    }
+
+    public void setTerrainType(TerrainType terrainType) {
+        this.terrainType = terrainType;
     }
 
     public TerrainShapeSubNode[] getTerrainShapeSubNodes() {
@@ -81,7 +87,7 @@ public class TerrainShapeSubNode {
 
     public NativeTerrainShapeSubNode toNativeTerrainShapeSubNode() {
         NativeTerrainShapeSubNode nativeTerrainShapeSubNode = new NativeTerrainShapeSubNode();
-        nativeTerrainShapeSubNode.notLand = notLand;
+        nativeTerrainShapeSubNode.terrainTypeOrdinal = terrainType != null ? terrainType.ordinal() : TerrainType.BLOCKED.ordinal();
         nativeTerrainShapeSubNode.height = height;
         nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes = toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         return nativeTerrainShapeSubNode;
@@ -235,39 +241,40 @@ public class TerrainShapeSubNode {
     }
 
     public void merge(TerrainShapeSubNode terrainShapeSubNode) {
-        Boolean notLand = isNotLandRecursively();
-        Boolean otherNotLand = terrainShapeSubNode.isNotLandRecursively();
-        if (notLand == null && otherNotLand != null) {
-            if (otherNotLand) {
-                this.notLand = true;
-            }
-        } else if (notLand != null && otherNotLand != null) {
-            if (notLand || otherNotLand) {
-                this.notLand = true;
-            } else {
-                this.notLand = null;
-            }
-        } else if (notLand != null) {
-            if (notLand) {
-                this.notLand = true;
-            } else {
-                this.notLand = null;
-            }
-        }
-
-        if (height == null && terrainShapeSubNode.height != null) {
-            height = terrainShapeSubNode.height;
-        }
-
-        if (terrainShapeSubNodes == null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
-            terrainShapeSubNodes = terrainShapeSubNode.getTerrainShapeSubNodes();
-            for (TerrainShapeSubNode shapeSubNode : terrainShapeSubNodes) {
-                shapeSubNode.parent = this;
-            }
-        } else if (terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
-            for (int i = 0; i < terrainShapeSubNodes.length; i++) {
-                terrainShapeSubNodes[i].merge(terrainShapeSubNode.getTerrainShapeSubNodes()[i]);
-            }
-        }
+        System.out.println(" FIX ME com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode at 244 ********************* " + terrainShapeSubNode);
+//        Boolean notLand = isNotLandRecursively();
+//        Boolean otherNotLand = terrainShapeSubNode.isNotLandRecursively();
+//        if (notLand == null && otherNotLand != null) {
+//            if (otherNotLand) {
+//                this.notLand = true;
+//            }
+//        } else if (notLand != null && otherNotLand != null) {
+//            if (notLand || otherNotLand) {
+//                this.notLand = true;
+//            } else {
+//                this.notLand = null;
+//            }
+//        } else if (notLand != null) {
+//            if (notLand) {
+//                this.notLand = true;
+//            } else {
+//                this.notLand = null;
+//            }
+//        }
+//
+//        if (height == null && terrainShapeSubNode.height != null) {
+//            height = terrainShapeSubNode.height;
+//        }
+//
+//        if (terrainShapeSubNodes == null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+//            terrainShapeSubNodes = terrainShapeSubNode.getTerrainShapeSubNodes();
+//            for (TerrainShapeSubNode shapeSubNode : terrainShapeSubNodes) {
+//                shapeSubNode.parent = this;
+//            }
+//        } else if (terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
+//            for (int i = 0; i < terrainShapeSubNodes.length; i++) {
+//                terrainShapeSubNodes[i].merge(terrainShapeSubNode.getTerrainShapeSubNodes()[i]);
+//            }
+//        }
     }
 }

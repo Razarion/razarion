@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain.slope;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -33,6 +32,7 @@ public class Slope {
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
     private Polygon2D innerPolygon;
     private Polygon2D outerPolygon;
+    private Polygon2D coastDelimiterPolygon;
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
     private Set<DecimalPosition> innerDriveway = new HashSet<>();
@@ -58,7 +58,7 @@ public class Slope {
             verticalSegments.addAll(border.setupVerticalSegments(this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders)));
         }
 
-        setupInnerOuter();
+        setupTerrainTypePolygon();
     }
 
     public double getGroundHeight() {
@@ -177,21 +177,20 @@ public class Slope {
         return slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
     }
 
-    private void setupInnerOuter() {
+    private void setupTerrainTypePolygon() {
         List<DecimalPosition> innerLine = new ArrayList<>();
         List<DecimalPosition> outerLine = new ArrayList<>();
+        List<DecimalPosition> coastDelimiterLine = new ArrayList<>();
 
         DecimalPosition lastInner = null;
         DecimalPosition lastOuter = null;
+        DecimalPosition lastCoastDelimiter = null;
 
         List<DecimalPosition> passableDrivewayInner = null;
         List<DecimalPosition> passableDrivewayOuter = null;
         for (VerticalSegment verticalSegment : verticalSegments) {
-            SlopeNode innerNode = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), 0);
-            SlopeNode outerNode = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1);
-
-            DecimalPosition inner = verticalSegment.getInner().getPointWithDistance(innerNode.getPosition().getX(), verticalSegment.getOuter(), true);
-            DecimalPosition outer = verticalSegment.getInner().getPointWithDistance(outerNode.getPosition().getX(), verticalSegment.getOuter(), true);
+            DecimalPosition inner = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLine(), verticalSegment.getInner(), true);
+            DecimalPosition outer = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getOuterLine(), verticalSegment.getInner(), true);
 
             if (verticalSegment.getDrivewayHeightFactor() <= 0) {
                 if (passableDrivewayInner == null) {
@@ -214,23 +213,11 @@ public class Slope {
                 passableDrivewayOuter = null;
             }
 
-            if (lastInner != null) {
-                if (!lastInner.equalsDelta(inner)) {
-                    innerLine.add(inner);
-                    lastInner = inner;
-                }
-            } else {
-                innerLine.add(inner);
-                lastInner = inner;
-            }
-            if (lastOuter != null) {
-                if (!lastOuter.equalsDelta(outer)) {
-                    outerLine.add(outer);
-                    lastOuter = outer;
-                }
-            } else {
-                outerLine.add(outer);
-                lastOuter = outer;
+            lastInner = correctMinimalDelta(inner, lastInner, innerLine);
+            lastOuter = correctMinimalDelta(outer, lastOuter, outerLine);
+            if (hasWater()) {
+                DecimalPosition coastDelimiter = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLine(), verticalSegment.getInner(), true);
+                lastCoastDelimiter = correctMinimalDelta(coastDelimiter, lastCoastDelimiter, coastDelimiterLine);
             }
         }
 
@@ -240,9 +227,28 @@ public class Slope {
         if (outerLine.get(0).equalsDelta(outerLine.get(outerLine.size() - 1))) {
             outerLine.remove(0);
         }
-
         innerPolygon = new Polygon2D(innerLine);
         outerPolygon = new Polygon2D(outerLine);
+        if (hasWater()) {
+            if (coastDelimiterLine.get(0).equalsDelta(coastDelimiterLine.get(coastDelimiterLine.size() - 1))) {
+                coastDelimiterLine.remove(0);
+            }
+            coastDelimiterPolygon = new Polygon2D(coastDelimiterLine);
+        }
+    }
+
+    private DecimalPosition correctMinimalDelta(DecimalPosition current, DecimalPosition last, List<DecimalPosition> line) {
+        if (last != null) {
+            if (!last.equalsDelta(current)) {
+                line.add(current);
+                return current;
+            } else {
+                return last;
+            }
+        } else {
+            line.add(current);
+            return current;
+        }
     }
 
     public List<VerticalSegment> getVerticalSegments() {
@@ -259,6 +265,10 @@ public class Slope {
 
     public Polygon2D getInnerPolygon() {
         return innerPolygon;
+    }
+
+    public Polygon2D getCoastDelimiterPolygon() {
+        return coastDelimiterPolygon;
     }
 
     public double getHeight() {

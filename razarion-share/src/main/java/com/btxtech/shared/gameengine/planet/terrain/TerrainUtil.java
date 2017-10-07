@@ -14,8 +14,9 @@ public interface TerrainUtil {
     int TERRAIN_TILE_NODES_COUNT = 20;
     int TERRAIN_TILE_TOTAL_NODES_COUNT = TERRAIN_TILE_NODES_COUNT * TERRAIN_TILE_NODES_COUNT;
     double TERRAIN_TILE_ABSOLUTE_LENGTH = TERRAIN_NODE_ABSOLUTE_LENGTH * TERRAIN_TILE_NODES_COUNT;
-    int MAX_DEPTH = 2;
-    double MIN_SUB_NODE_LENGTH = calculateSubNodeLength(MAX_DEPTH);
+    int MAX_SUB_NODE_DEPTH = 2;
+    double MIN_SUB_NODE_LENGTH = calculateSubNodeLength(MAX_SUB_NODE_DEPTH);
+    int TOTAL_MIN_SUB_NODE_COUNT = (int) (TERRAIN_NODE_ABSOLUTE_LENGTH / MIN_SUB_NODE_LENGTH);
 
     static Index toTile(DecimalPosition absolute) {
         return absolute.divide(TERRAIN_TILE_ABSOLUTE_LENGTH).toIndexFloor();

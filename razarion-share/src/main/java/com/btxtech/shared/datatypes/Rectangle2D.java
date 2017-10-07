@@ -15,6 +15,7 @@ package com.btxtech.shared.datatypes;
 
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -248,6 +249,10 @@ public class Rectangle2D {
 
     public Line lineN() {
         return new Line(new DecimalPosition(cornerTopRight()), new DecimalPosition(cornerTopLeft()));
+    }
+
+    public List<Line> toLines() {
+        return Arrays.asList(lineN(), lineE(), lineS(), lineW());
     }
 
     public boolean isLineCrossing(List<Line> lines) {

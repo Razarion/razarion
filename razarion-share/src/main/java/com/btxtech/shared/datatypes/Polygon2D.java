@@ -14,6 +14,12 @@ import java.util.List;
  * 11.03.2016.
  */
 public class Polygon2D {
+    public enum Inside {
+        OUTSIDE,
+        PARTLY,
+        INSIDE
+    }
+
     // private Logger logger = Logger.getLogger(Polygon2D.class.getName());
     private List<DecimalPosition> corners = new ArrayList<>();
     private List<Line> lines = new ArrayList<>();
@@ -80,6 +86,34 @@ public class Polygon2D {
         return false;
     }
 
+    public Inside isInside(Rectangle2D rectangle2D) {
+        List<DecimalPosition> corners = rectangle2D.toCorners();
+        int insideCornerCount = 0;
+        for (DecimalPosition position : corners) {
+            if (isInside(position)) {
+                insideCornerCount++;
+            }
+        }
+        if (insideCornerCount == 4) {
+            if (isLineCrossing(rectangle2D.toLines())) {
+                return Inside.PARTLY;
+            } else {
+                return Inside.INSIDE;
+            }
+        }
+        if (insideCornerCount == 0) {
+            if (isLineCrossing(rectangle2D.toLines())) {
+                return Inside.PARTLY;
+            } else {
+                if (rectangle2D.contains(corners)) {
+                    return Inside.PARTLY;
+                } else {
+                    return Inside.OUTSIDE;
+                }
+            }
+        }
+        return Inside.PARTLY;
+    }
 
     /**
      * Returns true if polygons do cross. Returns false if one polygon is inside the other.
@@ -88,37 +122,15 @@ public class Polygon2D {
      * @return true if crossing
      */
     public boolean isLineCrossing(Polygon2D other) {
+        return isLineCrossing(other.getLines());
+    }
+
+    public boolean isLineCrossing(Collection<Line> otherLines) {
         for (Line line : lines) {
-            for (Line otherLine : other.getLines()) {
+            for (Line otherLine : otherLines) {
                 if (line.getCrossInclusive(otherLine) != null) {
                     return true;
                 }
-            }
-        }
-        return false;
-    }
-
-    public boolean isLineCrossing(Line testLine) {
-        for (Line line : lines) {
-            if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
-                continue;
-            }
-            DecimalPosition cross = line.getCrossInclusive(testLine);
-            if (cross != null && !cross.equalsDelta(testLine.getPoint1()) && !cross.equalsDelta(testLine.getPoint2()) && !cross.equalsDelta(line.getPoint1()) && !cross.equalsDelta(line.getPoint2())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isLineCrossing2(Line testLine) {
-        for (Line line : lines) {
-            if (MathHelper.compareWithPrecision(line.getM(), testLine.getM(), 0.00001)) {
-                continue;
-            }
-            DecimalPosition cross = line.getCrossInclusive(testLine);
-            if (cross != null && !cross.equalsDelta(testLine.getPoint1(), 1.0) && !cross.equalsDelta(testLine.getPoint2(), 1.0)) {
-                return true;
             }
         }
         return false;

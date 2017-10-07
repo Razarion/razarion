@@ -40,6 +40,31 @@ public class PathingAccess {
         this.terrainShape = terrainShape;
     }
 
+    public TerrainType getTerrainType(DecimalPosition position) {
+        return terrainShape.terrainImpactCallback(position, new TerrainImpactCallback<TerrainType>() {
+            @Override
+            public TerrainType landNoTile(Index tileIndex) {
+                return TerrainType.LAND;
+            }
+
+            @Override
+            public TerrainType inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
+                return terrainShapeTile.getTerrainType();
+            }
+
+            @Override
+            public TerrainType inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+                return terrainShapeNode.getTerrainType();
+            }
+
+            @Override
+            public TerrainType inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
+                return terrainShapeSubNode.getTerrainType();
+            }
+        });
+    }
+
+
     public boolean isTerrainFree(DecimalPosition position) {
         return terrainShape.terrainImpactCallback(position, new TerrainImpactCallback<Boolean>() {
             @Override

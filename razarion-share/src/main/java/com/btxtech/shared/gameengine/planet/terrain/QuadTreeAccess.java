@@ -13,7 +13,7 @@ public class QuadTreeAccess {
     }
 
     private static TerrainSubNode getSubNode(DecimalPosition relativePosition, int depth, TerrainSubNode[][] terrainSubNodes) {
-        int divisor = 1 << TerrainUtil.MAX_DEPTH - depth;
+        int divisor = 1 << TerrainUtil.MAX_SUB_NODE_DEPTH - depth;
         Index index = relativePosition.divide(divisor).toIndex();
         TerrainSubNode terrainSubNode = terrainSubNodes[index.getX()][index.getY()];
         if (terrainSubNode == null) {

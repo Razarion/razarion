@@ -51,6 +51,7 @@ public class TerrainShapeNode {
     private Collection<Obstacle> obstacles;
     private Boolean hiddenUnderSlope;
     private Boolean drivewayBreakingLine;
+    private TerrainType terrainType;
 
     public TerrainShapeNode() {
     }
@@ -61,6 +62,7 @@ public class TerrainShapeNode {
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
         hiddenUnderSlope = nativeTerrainShapeNode.hiddenUnderSlope;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
+        terrainType = TerrainType.values()[nativeTerrainShapeNode.terrainTypeOrdinal];
 
         if (nativeTerrainShapeNode.obstacles != null) {
             Collection<Obstacle> obstacles = new ArrayList<>();
@@ -149,6 +151,14 @@ public class TerrainShapeNode {
         return fullDrivewayHeights != null;
     }
 
+    public TerrainType getTerrainType() {
+        return terrainType;
+    }
+
+    public void setTerrainType(TerrainType terrainType) {
+        this.terrainType = terrainType;
+    }
+
     public boolean isFullWater() {
         return fullWaterLevel != null;
     }
@@ -163,6 +173,10 @@ public class TerrainShapeNode {
 
     public TerrainShapeSubNode[] getTerrainShapeSubNodes() {
         return terrainShapeSubNodes;
+    }
+
+    public void setTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
+        this.terrainShapeSubNodes = terrainShapeSubNodes;
     }
 
     public void mergeTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
@@ -248,6 +262,7 @@ public class TerrainShapeNode {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
         nativeTerrainShapeNode.fullDrivewayHeights = fullDrivewayHeights;
         nativeTerrainShapeNode.uniformGroundHeight = uniformGroundHeight;
+        nativeTerrainShapeNode.terrainTypeOrdinal = terrainType != null ? terrainType.ordinal() : TerrainType.BLOCKED.ordinal();
         if (groundSlopeConnections != null) {
             nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
             for (int i = 0; i < groundSlopeConnections.size(); i++) {

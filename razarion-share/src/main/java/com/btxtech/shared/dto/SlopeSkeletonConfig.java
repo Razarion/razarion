@@ -17,6 +17,9 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private int rows;
     private double width;
     private double height;
+    private double outerLine;
+    private double innerLine;
+    private double coastDelimiterLine;
     private double verticalSpace;
     private Type type;
     private SlopeNode[][] slopeNodes;
@@ -93,6 +96,33 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     public SlopeSkeletonConfig setBmDepth(double bmDepth) {
         this.bmDepth = bmDepth;
+        return this;
+    }
+
+    public double getOuterLine() {
+        return outerLine;
+    }
+
+    public SlopeSkeletonConfig setOuterLine(double outerLine) {
+        this.outerLine = outerLine;
+        return this;
+    }
+
+    public double getInnerLine() {
+        return innerLine;
+    }
+
+    public SlopeSkeletonConfig setInnerLine(double innerLine) {
+        this.innerLine = innerLine;
+        return this;
+    }
+
+    public double getCoastDelimiterLine() {
+        return coastDelimiterLine;
+    }
+
+    public SlopeSkeletonConfig setCoastDelimiterLine(double coastDelimiterLine) {
+        this.coastDelimiterLine = coastDelimiterLine;
         return this;
     }
 

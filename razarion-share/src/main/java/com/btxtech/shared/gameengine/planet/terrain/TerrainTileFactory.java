@@ -177,8 +177,13 @@ public class TerrainTileFactory {
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
             Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation();
-            for (int row = 0; row < slopeSkeletonConfig.getRows(); row++) {
-                SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(fractionalSlopeSegment.getIndex(), row);
+            for (int row = 0; row - 1 < slopeSkeletonConfig.getRows(); row++) {
+                SlopeNode slopeNode;
+                if (row == 0) {
+                    slopeNode = new SlopeNode().setPosition(new Vertex(0, 0, 0)).setSlopeFactor(0);
+                } else {
+                    slopeNode = slopeSkeletonConfig.getSlopeNode(fractionalSlopeSegment.getIndex(), row - 1);
+                }
                 Vertex skeletonVertex = slopeNode.getPosition();
                 if (fractionalSlopeSegment.getDrivewayHeightFactor() < 1.0) {
                     skeletonVertex = skeletonVertex.multiply(1.0, 1.0, fractionalSlopeSegment.getDrivewayHeightFactor());

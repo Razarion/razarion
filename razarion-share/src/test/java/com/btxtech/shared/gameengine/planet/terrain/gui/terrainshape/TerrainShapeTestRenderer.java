@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
 import com.btxtech.shared.utils.InterpolationUtils;
 import javafx.scene.paint.Color;
@@ -60,7 +61,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
         displayNodes(absolute, terrainShapeTile);
-        // displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
+        displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
     }
 
     private void displayNodes(DecimalPosition absoluteTile, TerrainShapeTile terrainShapeTile) {
@@ -195,14 +196,28 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
             for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 double z = actual.getSurfaceAccess().getInterpolatedZ(samplePosition);
-                boolean free = actual.getPathingAccess().isTerrainFree(samplePosition);
+                TerrainType terrainType = actual.getPathingAccess().getTerrainType(samplePosition);
                 double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
                 getGc().setFill(new Color(v, v, v, 1));
                 getGc().fillRect(x, y, 1, 1);
-                if (free) {
-                    getGc().setFill(Color.GREEN);
-                } else {
-                    getGc().setFill(Color.RED);
+                switch (terrainType) {
+                    case LAND:
+                        getGc().setFill(Color.GREEN);
+                        break;
+                    case WATER:
+                        getGc().setFill(Color.BLUE);
+                        break;
+                    case LAND_COST:
+                        getGc().setFill(Color.LIGHTGREEN);
+                        break;
+                    case WATER_COST:
+                        getGc().setFill(Color.SANDYBROWN);
+                        break;
+                    case BLOCKED:
+                        getGc().setFill(Color.RED);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown terrainType: " + terrainType);
                 }
                 getGc().fillRect(x, y, 0.6, 0.6);
             }
