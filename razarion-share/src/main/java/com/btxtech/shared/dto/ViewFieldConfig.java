@@ -44,7 +44,8 @@ public class ViewFieldConfig {
         return this;
     }
 
-    public boolean isCameraLocked() {
+    // Errai can not handle is-getter
+    public boolean getCameraLocked() {
         return cameraLocked;
     }
 

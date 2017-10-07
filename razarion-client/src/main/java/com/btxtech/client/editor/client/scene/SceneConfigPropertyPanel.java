@@ -112,7 +112,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     @DataField
     private CommaDoubleBox vfcSpeed;
     @Inject
-    @Bound(property = "viewFieldConfig.cameraLocked", converter = BooleanNullConverter.class)
+    @Bound(property = "viewFieldConfig.cameraLocked")
     @DataField
     private CheckboxInput vfcCameraLocked;
     @Inject

@@ -217,7 +217,7 @@ public class TerrainScrollHandler {
                 }, SimpleExecutorService.Type.UNSPECIFIED);
             }
         } else {
-            setScrollDisabled(viewFieldConfig.isCameraLocked(), viewFieldConfig.getBottomWidth());
+            setScrollDisabled(viewFieldConfig.getCameraLocked(), viewFieldConfig.getBottomWidth());
             if (viewFieldConfig.getToPosition() != null) {
                 setCameraPosition(setupPossibleCameraPosition(viewFieldConfig.getToPosition()));
             }
@@ -225,7 +225,7 @@ public class TerrainScrollHandler {
     }
 
     private void finishExecuteViewPositionConfig(ViewFieldConfig viewFieldConfig, Optional<Runnable> completionCallback) {
-        setScrollDisabled(viewFieldConfig.isCameraLocked(), viewFieldConfig.getBottomWidth());
+        setScrollDisabled(viewFieldConfig.getCameraLocked(), viewFieldConfig.getBottomWidth());
         moveHandler.cancel();
         moveHandler = null;
         completionCallback.ifPresent(Runnable::run);

@@ -43,7 +43,7 @@ public class I18nStringWidget {
     @EventHandler("deI18nStringField")
     public void deI18nStringFieldChanged(ChangeEvent e) {
         checkCreation();
-        i18nString.setString(I18nString.DE, enI18nStringField.getText());
+        i18nString.setString(I18nString.DE, deI18nStringField.getText());
     }
 
     private void checkCreation() {
