@@ -9,7 +9,7 @@ import jsinterop.annotations.JsType;
  */
 @JsType(name = "NativeTerrainShapeSubNode", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeTerrainShapeSubNode {
-    public int terrainTypeOrdinal;
+    public Integer terrainTypeOrdinal;
     public Double height;
     public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes;
 }

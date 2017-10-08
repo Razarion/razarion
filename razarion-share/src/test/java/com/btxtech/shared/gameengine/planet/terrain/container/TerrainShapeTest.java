@@ -11,8 +11,6 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
-import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestDisplay;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -105,8 +103,9 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
     @Test
     public void testWaterShape() {
         TerrainShape terrainShape = setup(2, null, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
-        TerrainShapeTestDisplay.show(terrainShape);
-        // Assert.fail("TODO assert");
+        // TerrainShapeTestDisplay.show(terrainShape);
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testWaterShape1.json");
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testWaterShape1.json", terrainShape);
     }
 
     @Test

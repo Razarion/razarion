@@ -18,5 +18,5 @@ public class NativeTerrainShapeNode {
     public Boolean hiddenUnderSlope;
     public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes;
     public Boolean drivewayBreakingLine;
-    public int terrainTypeOrdinal;
+    public Integer terrainTypeOrdinal;
 }

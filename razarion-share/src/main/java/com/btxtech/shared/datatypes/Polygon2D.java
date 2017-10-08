@@ -86,7 +86,7 @@ public class Polygon2D {
         return false;
     }
 
-    public Inside isInside(Rectangle2D rectangle2D) {
+    public Inside checkInside(Rectangle2D rectangle2D) {
         List<DecimalPosition> corners = rectangle2D.toCorners();
         int insideCornerCount = 0;
         for (DecimalPosition position : corners) {

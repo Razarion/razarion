@@ -25,6 +25,7 @@ import com.btxtech.shared.utils.GeometricUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -107,10 +108,13 @@ public class TerrainShapeSetup {
         prepareSlopeContext(slope.getOuterPolygon().getCorners(), slope.getOuterDriveway(), slope.getOuterToInnerDriveway(), true, slopeContext);
 
         if (slope.hasWater()) {
-            setupTerrainType(slope.getCoastDelimiterPolygon(), TerrainType.WATER_COST, TerrainType.LAND_COST);
-            setupTerrainType(slope.getOuterPolygon(), TerrainType.LAND_COST, TerrainType.LAND);
-            setupTerrainType(slope.getCoastDelimiterPolygon(), TerrainType.WATER_COST, null);
-            setupTerrainType(slope.getInnerPolygon(), TerrainType.WATER, null);
+            Map<Index, TerrainShapeNode> concentrationNeeded = new HashMap<>();
+            setupTerrainType(slope.getCoastDelimiterPolygon(), concentrationNeeded, TerrainType.WATER_COST, TerrainType.LAND_COST);
+            setupTerrainType(slope.getOuterPolygon(), concentrationNeeded, TerrainType.LAND_COST, TerrainType.LAND);
+            setupTerrainType(slope.getCoastDelimiterPolygon(), concentrationNeeded, TerrainType.WATER_COST, null);
+            setupTerrainType(slope.getInnerPolygon(), concentrationNeeded, TerrainType.WATER, null);
+
+            concentrationNeeded.values().forEach(terrainShapeNode -> terrainShapeSubNodeFactory.concentrate(terrainShapeNode));
 
             // TODO rework below -------------------------------------
             Polygon2D innerPolygon = slope.getInnerPolygon();
@@ -243,11 +247,11 @@ public class TerrainShapeSetup {
         }
     }
 
-    private void setupTerrainType(Polygon2D terrainRegion, TerrainType innerTerrainType, TerrainType outerTerrainType) {
+    private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> concentrationNeeded, TerrainType innerTerrainType, TerrainType outerTerrainType) {
         Rectangle2D aabb = terrainRegion.toAabb();
         for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-            switch (terrainRegion.isInside(terrainRect)) {
+            switch (terrainRegion.checkInside(terrainRect)) {
                 case INSIDE: {
                     // TODO setFullWaterLevel() terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
                     if (innerTerrainType != null) {
@@ -260,6 +264,7 @@ public class TerrainShapeSetup {
                 }
                 case PARTLY: {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    concentrationNeeded.putIfAbsent(nodeIndex, terrainShapeNode);
                     if (innerTerrainType != null && outerTerrainType != null) {
                         terrainShapeNode.setTerrainType(null);
                         terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, outerTerrainType);
@@ -284,7 +289,7 @@ public class TerrainShapeSetup {
                     break;
                 }
                 default:
-                    throw new IllegalArgumentException("TerrainShapeSetup.processSlope() unknown Polygon2D.Inside: " + terrainRegion.isInside(terrainRect));
+                    throw new IllegalArgumentException("TerrainShapeSetup.processSlope() unknown Polygon2D.Inside: " + terrainRegion.checkInside(terrainRect));
             }
         }
     }

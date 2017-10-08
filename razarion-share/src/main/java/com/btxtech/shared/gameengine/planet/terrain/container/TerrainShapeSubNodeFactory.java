@@ -17,7 +17,7 @@ public class TerrainShapeSubNodeFactory {
             for (int x = 0; x < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; x += TerrainUtil.MIN_SUB_NODE_LENGTH) {
                 DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(new Index(x, y)).add(terrainRect.getStart());
                 TerrainType terrainType = terrainTypeRegion.isInside(scanPosition) ? innerTerrainType : outerTerrainType;
-                if(terrainType == null) {
+                if (terrainType == null) {
                     continue;
                 }
                 int depth0Index = calculateArrayIndex(x, y, 0);
@@ -37,6 +37,35 @@ public class TerrainShapeSubNodeFactory {
                 TerrainShapeSubNode terrainShapeSubNode2 = getOrCreateTerrainShapeSubNode(terrainShapeSubNode1, 2, depth2Index);
                 terrainShapeSubNode2.setTerrainType(terrainType);
             }
+        }
+    }
+
+    public void concentrate(TerrainShapeNode terrainShapeNode) {
+        TerrainShapeSubNode[] terrainShapeSubNodes = terrainShapeNode.getTerrainShapeSubNodes();
+        if (terrainShapeSubNodes == null) {
+            return;
+        }
+        TerrainType lastTerrainType = null;
+        boolean mixed = false;
+        for (TerrainShapeSubNode terrainShapeSubNode : terrainShapeSubNodes) {
+            ConcentrateResult concentrateResult = concentrate(terrainShapeSubNode);
+            if (concentrateResult.isMixed()) {
+                mixed = true;
+            }
+            if(mixed) {
+                continue;
+            }
+            if (lastTerrainType == null) {
+                lastTerrainType = concentrateResult.getTerrainType();
+            } else if (lastTerrainType != concentrateResult.getTerrainType()) {
+                mixed = true;
+            }
+        }
+        if (mixed) {
+            terrainShapeNode.setTerrainType(null);
+        } else {
+            terrainShapeNode.setTerrainShapeSubNodes(null);
+            terrainShapeNode.setTerrainType(lastTerrainType);
         }
     }
 
@@ -65,5 +94,58 @@ public class TerrainShapeSubNodeFactory {
             parent.setTerrainShapeSubNodes(children);
         }
         return children[arrayIndex];
+    }
+
+    private ConcentrateResult concentrate(TerrainShapeSubNode terrainShapeSubNode) {
+        if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
+            return new ConcentrateResult().setTerrainType(terrainShapeSubNode.getTerrainType());
+        }
+        TerrainType lastTerrainType = null;
+        boolean mixed = false;
+        for (TerrainShapeSubNode child : terrainShapeSubNode.getTerrainShapeSubNodes()) {
+            ConcentrateResult concentrateResult = concentrate(child);
+            if(concentrateResult.isMixed()) {
+                mixed = true;
+            }
+            if(mixed) {
+                continue;
+            }
+            if (lastTerrainType == null) {
+                lastTerrainType = concentrateResult.getTerrainType();
+            } else if (lastTerrainType != concentrateResult.getTerrainType()) {
+                mixed = true;
+            }
+        }
+        if (mixed) {
+            terrainShapeSubNode.setTerrainType(null);
+            return new ConcentrateResult().setMixed();
+        } else {
+            terrainShapeSubNode.setTerrainShapeSubNodes(null);
+            terrainShapeSubNode.setTerrainType(lastTerrainType);
+            return new ConcentrateResult().setTerrainType(lastTerrainType);
+        }
+    }
+
+    private static class ConcentrateResult {
+        private boolean mixed;
+        private TerrainType terrainType;
+
+        public boolean isMixed() {
+            return mixed;
+        }
+
+        public ConcentrateResult setMixed() {
+            mixed = true;
+            return this;
+        }
+
+        public TerrainType getTerrainType() {
+            return terrainType;
+        }
+
+        public ConcentrateResult setTerrainType(TerrainType terrainType) {
+            this.terrainType = terrainType;
+            return this;
+        }
     }
 }

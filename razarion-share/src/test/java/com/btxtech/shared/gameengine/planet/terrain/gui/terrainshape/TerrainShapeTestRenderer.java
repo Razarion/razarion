@@ -47,7 +47,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
 
     @Override
     protected void doRender() {
-        renderPathingAccess();
+        // renderPathingAccess();
         for (int x = 0; x < actual.getTileXCount(); x++) {
             for (int y = 0; y < actual.getTileYCount(); y++) {
                 displayTerrainShapeTile(new Index(x, y).add(actual.getTileOffset()), terrainShapeTiles[x][y]);
@@ -79,6 +79,10 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
 
     private void displayNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {
         DecimalPosition absolute = TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(absoluteTile);
+        if (terrainShapeNode.getTerrainType() != null) {
+            getGc().setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
+            getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+        }
         getGc().setLineWidth(LINE_WIDTH);
         getGc().setStroke(Color.BLACK);
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
@@ -140,6 +144,10 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
 
     private void displaySubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
+        if (terrainShapeSubNode.getTerrainType() != null) {
+            getGc().setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
+            getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+        }
         if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
 //            if (terrainShapeSubNode.isLand()) {
 //                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
@@ -200,29 +208,27 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
                 double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
                 getGc().setFill(new Color(v, v, v, 1));
                 getGc().fillRect(x, y, 1, 1);
-                switch (terrainType) {
-                    case LAND:
-                        getGc().setFill(Color.GREEN);
-                        break;
-                    case WATER:
-                        getGc().setFill(Color.BLUE);
-                        break;
-                    case LAND_COST:
-                        getGc().setFill(Color.LIGHTGREEN);
-                        break;
-                    case WATER_COST:
-                        getGc().setFill(Color.SANDYBROWN);
-                        break;
-                    case BLOCKED:
-                        getGc().setFill(Color.RED);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown terrainType: " + terrainType);
-                }
+                getGc().setFill(color4TerrainType(terrainType));
                 getGc().fillRect(x, y, 0.6, 0.6);
             }
         }
     }
 
+    private Color color4TerrainType(TerrainType terrainType) {
+        switch (terrainType) {
+            case LAND:
+                return Color.GREEN;
+            case WATER:
+                return Color.BLUE;
+            case LAND_COST:
+                return Color.LIGHTGREEN;
+            case WATER_COST:
+                return Color.SANDYBROWN;
+            case BLOCKED:
+                return Color.RED;
+            default:
+                throw new IllegalArgumentException("Unknown terrainType: " + terrainType);
+        }
+    }
 
 }

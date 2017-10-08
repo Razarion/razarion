@@ -62,8 +62,9 @@ public class TerrainShapeNode {
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
         hiddenUnderSlope = nativeTerrainShapeNode.hiddenUnderSlope;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
-        terrainType = TerrainType.values()[nativeTerrainShapeNode.terrainTypeOrdinal];
-
+        if (nativeTerrainShapeNode.terrainTypeOrdinal != null) {
+            terrainType = TerrainType.values()[nativeTerrainShapeNode.terrainTypeOrdinal];
+        }
         if (nativeTerrainShapeNode.obstacles != null) {
             Collection<Obstacle> obstacles = new ArrayList<>();
             for (NativeObstacle nativeObstacle : nativeTerrainShapeNode.obstacles) {
@@ -262,7 +263,7 @@ public class TerrainShapeNode {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
         nativeTerrainShapeNode.fullDrivewayHeights = fullDrivewayHeights;
         nativeTerrainShapeNode.uniformGroundHeight = uniformGroundHeight;
-        nativeTerrainShapeNode.terrainTypeOrdinal = terrainType != null ? terrainType.ordinal() : TerrainType.BLOCKED.ordinal();
+        nativeTerrainShapeNode.terrainTypeOrdinal = terrainType != null ? terrainType.ordinal() : null;
         if (groundSlopeConnections != null) {
             nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
             for (int i = 0; i < groundSlopeConnections.size(); i++) {

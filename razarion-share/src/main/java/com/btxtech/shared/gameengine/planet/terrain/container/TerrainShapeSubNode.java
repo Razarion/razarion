@@ -25,7 +25,9 @@ public class TerrainShapeSubNode {
     public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
         this.parent = parent;
         this.depth = depth;
-        terrainType = TerrainType.values()[nativeTerrainShapeSubNode.terrainTypeOrdinal];
+        if (nativeTerrainShapeSubNode.terrainTypeOrdinal != null) {
+            terrainType = TerrainType.values()[nativeTerrainShapeSubNode.terrainTypeOrdinal];
+        }
         height = nativeTerrainShapeSubNode.height;
         terrainShapeSubNodes = fromNativeTerrainShapeSubNode(this, depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
     }
@@ -87,7 +89,7 @@ public class TerrainShapeSubNode {
 
     public NativeTerrainShapeSubNode toNativeTerrainShapeSubNode() {
         NativeTerrainShapeSubNode nativeTerrainShapeSubNode = new NativeTerrainShapeSubNode();
-        nativeTerrainShapeSubNode.terrainTypeOrdinal = terrainType != null ? terrainType.ordinal() : TerrainType.BLOCKED.ordinal();
+        nativeTerrainShapeSubNode.terrainTypeOrdinal = terrainType != null ? terrainType.ordinal() : null;
         nativeTerrainShapeSubNode.height = height;
         nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes = toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         return nativeTerrainShapeSubNode;
@@ -241,7 +243,7 @@ public class TerrainShapeSubNode {
     }
 
     public void merge(TerrainShapeSubNode terrainShapeSubNode) {
-        System.out.println(" FIX ME com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode at 244 ********************* " + terrainShapeSubNode);
+        System.out.println(" FIX ME com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode at 246 ********************* " + terrainShapeSubNode);
 //        Boolean notLand = isNotLandRecursively();
 //        Boolean otherNotLand = terrainShapeSubNode.isNotLandRecursively();
 //        if (notLand == null && otherNotLand != null) {
