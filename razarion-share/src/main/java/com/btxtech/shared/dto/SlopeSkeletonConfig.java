@@ -17,9 +17,9 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private int rows;
     private double width;
     private double height;
-    private double outerLine;
-    private double innerLine;
-    private double coastDelimiterLine;
+    private double outerLineTerrainType;
+    private double innerLineTerrainType;
+    private double coastDelimiterLineTerrainType;
     private double verticalSpace;
     private Type type;
     private SlopeNode[][] slopeNodes;
@@ -99,30 +99,30 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public double getOuterLine() {
-        return outerLine;
+    public double getOuterLineTerrainType() {
+        return outerLineTerrainType;
     }
 
-    public SlopeSkeletonConfig setOuterLine(double outerLine) {
-        this.outerLine = outerLine;
+    public SlopeSkeletonConfig setOuterLineTerrainType(double outerLineTerrainType) {
+        this.outerLineTerrainType = outerLineTerrainType;
         return this;
     }
 
-    public double getInnerLine() {
-        return innerLine;
+    public double getInnerLineTerrainType() {
+        return innerLineTerrainType;
     }
 
-    public SlopeSkeletonConfig setInnerLine(double innerLine) {
-        this.innerLine = innerLine;
+    public SlopeSkeletonConfig setInnerLineTerrainType(double innerLineTerrainType) {
+        this.innerLineTerrainType = innerLineTerrainType;
         return this;
     }
 
-    public double getCoastDelimiterLine() {
-        return coastDelimiterLine;
+    public double getCoastDelimiterLineTerrainType() {
+        return coastDelimiterLineTerrainType;
     }
 
-    public SlopeSkeletonConfig setCoastDelimiterLine(double coastDelimiterLine) {
-        this.coastDelimiterLine = coastDelimiterLine;
+    public SlopeSkeletonConfig setCoastDelimiterLineTerrainType(double coastDelimiterLineTerrainType) {
+        this.coastDelimiterLineTerrainType = coastDelimiterLineTerrainType;
         return this;
     }
 

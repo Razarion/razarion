@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -163,14 +164,14 @@ public class TerrainUiService {
         }
     }
 
-    public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition) {
+    public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition, TerrainType terrainType) {
         Index terrainTile = TerrainUtil.toTile(terrainPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
         if (uiTerrainTile == null) {
             throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(DecimalPosition) UiTerrainTile not loaded: " + terrainTile);
         }
 
-        return uiTerrainTile.isTerrainFree(terrainPosition);
+        return uiTerrainTile.isTerrainFree(terrainPosition, terrainType);
     }
 
     public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {

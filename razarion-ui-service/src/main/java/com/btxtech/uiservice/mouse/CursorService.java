@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
@@ -126,7 +127,7 @@ public abstract class CursorService {
         } else {
             Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
             if (!movables.isEmpty()) {
-                setCursor(CursorType.GO, terrainUiService.isTerrainFreeInDisplay(terrainPosition));
+                setCursor(CursorType.GO, terrainUiService.isTerrainFreeInDisplay(terrainPosition, TerrainType.WATER));
             } else {
                 setPointerCursor();
             }

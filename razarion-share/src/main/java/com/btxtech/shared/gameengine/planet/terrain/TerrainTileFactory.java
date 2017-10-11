@@ -173,7 +173,7 @@ public class TerrainTileFactory {
 
     private void generateSlopeTerrainTile(TerrainTileContext terrainTileContext, FractionalSlope fractionalSlope) {
         SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeSkeletonConfigId());
-        TerrainSlopeTileContext terrainSlopeTileContext = terrainTileContext.createTerrainSlopeTileContext(fractionalSlope.getSlopeSkeletonConfigId(), fractionalSlope.getFractionalSlopeSegments().size(), slopeSkeletonConfig.getRows());
+        TerrainSlopeTileContext terrainSlopeTileContext = terrainTileContext.createTerrainSlopeTileContext(fractionalSlope.getSlopeSkeletonConfigId(), fractionalSlope.getFractionalSlopeSegments().size(), slopeSkeletonConfig.getRows() + 1);
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
             Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation();
@@ -260,6 +260,9 @@ public class TerrainTileFactory {
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode != null) {
                 TerrainNode terrainNode = jsInteropObjectFactory.generateTerrainNode();
+                if (terrainShapeNode.getTerrainType() != null) {
+                    terrainNode.setTerrainType(terrainShapeNode.getTerrainType().ordinal());
+                }
                 if (terrainShapeNode.isFullLand()) {
                     terrainNode.setLand(true);
                 }
@@ -306,6 +309,9 @@ public class TerrainTileFactory {
         TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
         if (terrainShapeSubNode.isLand()) {
             terrainSubNode.setLand(true);
+        }
+        if (terrainShapeSubNode.getTerrainType() != null) {
+            terrainSubNode.setTerrainType(terrainShapeSubNode.getTerrainType().ordinal());
         }
         if (terrainShapeSubNode.getHeight() != null) {
             terrainSubNode.setHeight(terrainShapeSubNode.getHeight());

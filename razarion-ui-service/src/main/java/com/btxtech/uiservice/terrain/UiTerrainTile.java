@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
@@ -180,6 +181,7 @@ public class UiTerrainTile {
         });
     }
 
+    @Deprecated // isTerrainFree(DecimalPosition terrainPosition, TerrainType terrainType)
     public boolean isTerrainFree(DecimalPosition terrainPosition) {
         return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
             @Override
@@ -200,6 +202,30 @@ public class UiTerrainTile {
             @Override
             public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
                 return terrainSubNode.isLand() != null && terrainSubNode.isLand();
+            }
+        });
+    }
+
+    public boolean isTerrainFree(DecimalPosition terrainPosition, TerrainType terrainType) {
+        return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
+            @Override
+            public Boolean terrainTileNotLoaded() {
+                return false;
+            }
+
+            @Override
+            public Boolean onTerrainTile() {
+                return terrainType == TerrainType.LAND;
+            }
+
+            @Override
+            public Boolean onTerrainNode(TerrainNode terrainNode) {
+                return terrainNode.getTerrainType() != null && terrainNode.getTerrainType() == terrainType.ordinal();
+            }
+
+            @Override
+            public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
+                return terrainSubNode.getTerrainType() != null &&terrainSubNode.getTerrainType() == terrainType.ordinal();
             }
         });
     }

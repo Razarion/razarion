@@ -30,9 +30,11 @@ public class Slope {
     private final TerrainTypeService terrainTypeService;
     private List<AbstractBorder> borders = new ArrayList<>();
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
-    private Polygon2D innerPolygon;
-    private Polygon2D outerPolygon;
-    private Polygon2D coastDelimiterPolygon;
+    private Polygon2D innerPolygonSlope; // Ground water renderer border
+    private Polygon2D outerPolygonSlope; // Ground water renderer border
+    private Polygon2D innerPolygonTerrainType;
+    private Polygon2D outerPolygonTerrainType;
+    private Polygon2D coastDelimiterPolygonTerrainType;
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
     private Set<DecimalPosition> innerDriveway = new HashSet<>();
@@ -178,32 +180,33 @@ public class Slope {
     }
 
     private void setupTerrainTypePolygon() {
-        List<DecimalPosition> innerLine = new ArrayList<>();
-        List<DecimalPosition> outerLine = new ArrayList<>();
-        List<DecimalPosition> coastDelimiterLine = new ArrayList<>();
+        List<DecimalPosition> innerLineSlope = new ArrayList<>();
+        List<DecimalPosition> outerLineSlope = new ArrayList<>();
+        List<DecimalPosition> innerLineTerrainType = new ArrayList<>();
+        List<DecimalPosition> outerLineTerrainType = new ArrayList<>();
+        List<DecimalPosition> coastDelimiterLineTerrainType = new ArrayList<>();
 
-        DecimalPosition lastInner = null;
-        DecimalPosition lastOuter = null;
-        DecimalPosition lastCoastDelimiter = null;
+        DecimalPosition lastInnerSlope = null;
+        DecimalPosition lastOuterSlope = null;
+        DecimalPosition lastInnerTerrainType = null;
+        DecimalPosition lastOuterTerrainType = null;
+        DecimalPosition lastCoastDelimiterTerrainType = null;
 
         List<DecimalPosition> passableDrivewayInner = null;
         List<DecimalPosition> passableDrivewayOuter = null;
         for (VerticalSegment verticalSegment : verticalSegments) {
-            DecimalPosition inner = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLine(), verticalSegment.getInner(), true);
-            DecimalPosition outer = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getOuterLine(), verticalSegment.getInner(), true);
-
             if (verticalSegment.getDrivewayHeightFactor() <= 0) {
                 if (passableDrivewayInner == null) {
                     passableDrivewayInner = new ArrayList<>();
                     passableDrivewayOuter = new ArrayList<>();
                 }
-                innerDriveway.add(inner);
-                outerDriveway.put(outer, inner);
-                if (!passableDrivewayInner.contains(inner)) {
-                    passableDrivewayInner.add(inner);
+                innerDriveway.add(verticalSegment.getInner());
+                outerDriveway.put(verticalSegment.getOuter(), verticalSegment.getInner());
+                if (!passableDrivewayInner.contains(verticalSegment.getInner())) {
+                    passableDrivewayInner.add(verticalSegment.getInner());
                 }
-                if (!passableDrivewayOuter.contains(outer)) {
-                    passableDrivewayOuter.add(outer);
+                if (!passableDrivewayOuter.contains(verticalSegment.getOuter())) {
+                    passableDrivewayOuter.add(verticalSegment.getOuter());
                 }
             } else if (passableDrivewayInner != null) {
                 Collections.reverse(passableDrivewayOuter);
@@ -213,31 +216,45 @@ public class Slope {
                 passableDrivewayOuter = null;
             }
 
-            lastInner = correctMinimalDelta(inner, lastInner, innerLine);
-            lastOuter = correctMinimalDelta(outer, lastOuter, outerLine);
+            lastOuterSlope = addCorrectedMinimalDelta(verticalSegment.getOuter(), lastOuterSlope, outerLineSlope);
+            double slopeSkeletonWidth = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1).getPosition().getX();
+            lastInnerSlope = addCorrectedMinimalDelta(verticalSegment.getOuter().getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true), lastInnerSlope, innerLineSlope);
+
+            DecimalPosition innerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLineTerrainType(), verticalSegment.getInner(), true);
+            DecimalPosition outerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getOuterLineTerrainType(), verticalSegment.getInner(), true);
+            lastInnerTerrainType = addCorrectedMinimalDelta(innerTerrainType, lastInnerTerrainType, innerLineTerrainType);
+            lastOuterTerrainType = addCorrectedMinimalDelta(outerTerrainType, lastOuterTerrainType, outerLineTerrainType);
             if (hasWater()) {
-                DecimalPosition coastDelimiter = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLine(), verticalSegment.getInner(), true);
-                lastCoastDelimiter = correctMinimalDelta(coastDelimiter, lastCoastDelimiter, coastDelimiterLine);
+                DecimalPosition coastDelimiter = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineTerrainType(), verticalSegment.getInner(), true);
+                lastCoastDelimiterTerrainType = addCorrectedMinimalDelta(coastDelimiter, lastCoastDelimiterTerrainType, coastDelimiterLineTerrainType);
             }
         }
 
-        if (innerLine.get(0).equalsDelta(innerLine.get(innerLine.size() - 1))) {
-            innerLine.remove(0);
+        if (innerLineSlope.get(0).equalsDelta(innerLineSlope.get(innerLineSlope.size() - 1))) {
+            innerLineSlope.remove(0);
         }
-        if (outerLine.get(0).equalsDelta(outerLine.get(outerLine.size() - 1))) {
-            outerLine.remove(0);
+        if (outerLineSlope.get(0).equalsDelta(outerLineSlope.get(outerLineSlope.size() - 1))) {
+            outerLineSlope.remove(0);
         }
-        innerPolygon = new Polygon2D(innerLine);
-        outerPolygon = new Polygon2D(outerLine);
+        if (innerLineTerrainType.get(0).equalsDelta(innerLineTerrainType.get(innerLineTerrainType.size() - 1))) {
+            innerLineTerrainType.remove(0);
+        }
+        if (outerLineTerrainType.get(0).equalsDelta(outerLineTerrainType.get(outerLineTerrainType.size() - 1))) {
+            outerLineTerrainType.remove(0);
+        }
+        innerPolygonSlope = new Polygon2D(innerLineSlope);
+        outerPolygonSlope = new Polygon2D(outerLineSlope);
+        innerPolygonTerrainType = new Polygon2D(innerLineTerrainType);
+        outerPolygonTerrainType = new Polygon2D(outerLineTerrainType);
         if (hasWater()) {
-            if (coastDelimiterLine.get(0).equalsDelta(coastDelimiterLine.get(coastDelimiterLine.size() - 1))) {
-                coastDelimiterLine.remove(0);
+            if (coastDelimiterLineTerrainType.get(0).equalsDelta(coastDelimiterLineTerrainType.get(coastDelimiterLineTerrainType.size() - 1))) {
+                coastDelimiterLineTerrainType.remove(0);
             }
-            coastDelimiterPolygon = new Polygon2D(coastDelimiterLine);
+            coastDelimiterPolygonTerrainType = new Polygon2D(coastDelimiterLineTerrainType);
         }
     }
 
-    private DecimalPosition correctMinimalDelta(DecimalPosition current, DecimalPosition last, List<DecimalPosition> line) {
+    private DecimalPosition addCorrectedMinimalDelta(DecimalPosition current, DecimalPosition last, List<DecimalPosition> line) {
         if (last != null) {
             if (!last.equalsDelta(current)) {
                 line.add(current);
@@ -259,16 +276,24 @@ public class Slope {
         return slopeSkeletonConfig;
     }
 
-    public Polygon2D getOuterPolygon() {
-        return outerPolygon;
+    public Polygon2D getInnerPolygonSlope() {
+        return innerPolygonSlope;
     }
 
-    public Polygon2D getInnerPolygon() {
-        return innerPolygon;
+    public Polygon2D getOuterPolygonSlope() {
+        return outerPolygonSlope;
     }
 
-    public Polygon2D getCoastDelimiterPolygon() {
-        return coastDelimiterPolygon;
+    public Polygon2D getOuterPolygonTerrainType() {
+        return outerPolygonTerrainType;
+    }
+
+    public Polygon2D getInnerPolygonTerrainType() {
+        return innerPolygonTerrainType;
+    }
+
+    public Polygon2D getCoastDelimiterPolygonTerrainType() {
+        return coastDelimiterPolygonTerrainType;
     }
 
     public double getHeight() {
@@ -325,10 +350,10 @@ public class Slope {
         return false;
     }
 
-    public int getNearestInnerPolygon(DecimalPosition position) {
+    public int getNearestInnerSlopePolygon(DecimalPosition position) {
         double mindDistance = Double.MAX_VALUE;
         Integer index = null;
-        List<DecimalPosition> corners = innerPolygon.getCorners();
+        List<DecimalPosition> corners = innerPolygonSlope.getCorners();
         for (int i = 0; i < corners.size(); i++) {
             DecimalPosition inner = corners.get(i);
             double distance = inner.getDistance(position);
@@ -338,15 +363,15 @@ public class Slope {
             }
         }
         if (index == null) {
-            throw new IllegalStateException("Slope.getNearestInnerPolygon() index == null");
+            throw new IllegalStateException("Slope.getNearestInnerSlopePolygon() index == null");
         }
         return index;
     }
 
     public List<DecimalPosition> getFirstOutOfRectCounterClock(int startIndex, Rectangle2D terrainRect) {
         List<DecimalPosition> result = new ArrayList<>();
-        for (int i = 0; i < innerPolygon.size(); i++) {
-            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(i + startIndex, innerPolygon.getCorners());
+        for (int i = 0; i < innerPolygonSlope.size(); i++) {
+            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(i + startIndex, innerPolygonSlope.getCorners());
             result.add(decimalPosition);
             if (!terrainRect.contains(decimalPosition)) {
                 return result;
@@ -357,8 +382,8 @@ public class Slope {
 
     public List<DecimalPosition> getFirstOutOfRectClockWise(int startIndex, Rectangle2D terrainRect) {
         List<DecimalPosition> result = new ArrayList<>();
-        for (int i = 0; i < innerPolygon.size(); i++) {
-            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(startIndex - i, innerPolygon.getCorners());
+        for (int i = 0; i < innerPolygonSlope.size(); i++) {
+            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(startIndex - i, innerPolygonSlope.getCorners());
             result.add(decimalPosition);
             if (!terrainRect.contains(decimalPosition)) {
                 return result;

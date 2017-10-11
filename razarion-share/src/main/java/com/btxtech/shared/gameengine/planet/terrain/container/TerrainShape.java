@@ -56,7 +56,7 @@ public class TerrainShape {
         TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
-        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time));
+        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getPlanetId());
     }
 
     public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {

@@ -26,8 +26,6 @@ public class ClientViewController implements Initializable {
     private AnchorPane mainPanel;
     @Inject
     private Instance<ClientViewRenderer> instance;
-    @Inject
-    private TerrainUiService terrainUiService;
     private ClientViewRenderer clientViewRenderer;
     private double zoom = 1.0;
 

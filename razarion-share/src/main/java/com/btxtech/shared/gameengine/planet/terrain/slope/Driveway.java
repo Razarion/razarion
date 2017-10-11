@@ -171,7 +171,7 @@ public class Driveway {
         }
         if (terrainRect.contains(breakingLine.get(0))) {
             DecimalPosition start = breakingLine.get(0);
-            int nearestIndex = slope.getNearestInnerPolygon(start);
+            int nearestIndex = slope.getNearestInnerSlopePolygon(start);
             List<DecimalPosition> piercing;
             if (ground) {
                 piercing = slope.getFirstOutOfRectClockWise(nearestIndex, terrainRect);
@@ -192,7 +192,7 @@ public class Driveway {
         }
         if (terrainRect.contains(breakingLine.get(breakingLine.size() - 1))) {
             DecimalPosition end = breakingLine.get(breakingLine.size() - 1);
-            int nearestIndex = slope.getNearestInnerPolygon(end);
+            int nearestIndex = slope.getNearestInnerSlopePolygon(end);
             List<DecimalPosition> piercing;
             if (ground) {
                 piercing = slope.getFirstOutOfRectCounterClock(nearestIndex, terrainRect);

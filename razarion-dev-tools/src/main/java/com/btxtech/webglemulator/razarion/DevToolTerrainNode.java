@@ -11,6 +11,7 @@ public class DevToolTerrainNode extends TerrainNode {
     private TerrainSubNode[][] terrainSubNodes;
     private boolean land;
     private double height;
+    private Integer terrainTypeOrdinal;
 
     @Override
     public TerrainSubNode[][] getTerrainSubNodes() {
@@ -45,5 +46,15 @@ public class DevToolTerrainNode extends TerrainNode {
     @Override
     public double getHeight() {
         return height;
+    }
+
+    @Override
+    public Integer getTerrainType() {
+        return terrainTypeOrdinal;
+    }
+
+    @Override
+    public void setTerrainType(Integer terrainTypeOrdinal) {
+        this.terrainTypeOrdinal = terrainTypeOrdinal;
     }
 }

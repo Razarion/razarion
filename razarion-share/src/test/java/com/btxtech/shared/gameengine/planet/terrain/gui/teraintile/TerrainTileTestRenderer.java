@@ -8,7 +8,9 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
+import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestRenderer;
 import javafx.scene.paint.Color;
 
 import java.util.Collection;
@@ -41,9 +43,13 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-
     public void drawTerrainTile(TerrainTile terrainTile) {
         getGc().setLineWidth(LINE_WIDTH);
+        if (terrainTile.getTerrainWaterTile() != null) {
+            drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
+        }
+
+        // drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
@@ -58,12 +64,6 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
                 drawTerrainSlopeTile(terrainSlopeTile);
             }
         }
-
-        if (terrainTile.getTerrainWaterTile() != null) {
-            drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
-        }
-
-        drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
     }
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
@@ -184,13 +184,18 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawNode(TerrainNode terrainNode, DecimalPosition absoluteNodePosition) {
+        if (terrainNode.getTerrainType() != null) {
+            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(TerrainType.values()[terrainNode.getTerrainType()]));
+            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+        }
+
 //        getGc().setFill(new Color(0.5, 0.5, 0.5, 0.5));
 //        getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //        if (!terrainNode.isLand()) {
 //            getGc().setFill(new Color(1, 0, 0, 0.5));
 //            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //        }
-//        drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
+        drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
     }
 
     private void drawSubNodes(TerrainSubNode[][] terrainSubNodes, DecimalPosition absolutePosition, int depth) {
@@ -209,19 +214,24 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
-        getGc().setStroke(new Color(0, 0, 1, 1));
-        getGc().strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
-        if (terrainSubNode.getTerrainSubNodes() == null) {
-            if (terrainSubNode.isLand() == null || !terrainSubNode.isLand()) {
-                getGc().setFill(new Color(1, 0, 0, 0.5));
-                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
-            }
-
-            double height = terrainSubNode.getHeight();
-            double v = (height + 5) / 25.0;
-            getGc().setFill(Color.color(v, v, v, 0.5));
-            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+        if (terrainSubNode.getTerrainType() != null) {
+            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(TerrainType.values()[terrainSubNode.getTerrainType()]));
+            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
         }
+
+//        getGc().setStroke(new Color(0, 0, 1, 1));
+//        getGc().strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+//        if (terrainSubNode.getTerrainSubNodes() == null) {
+//            if (terrainSubNode.isLand() == null || !terrainSubNode.isLand()) {
+//                getGc().setFill(new Color(1, 0, 0, 0.5));
+//                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+//            }
+//
+//            double height = terrainSubNode.getHeight();
+//            double v = (height + 5) / 25.0;
+//            getGc().setFill(Color.color(v, v, v, 0.5));
+//            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+//        }
         drawSubNodes(terrainSubNode.getTerrainSubNodes(), absolutePosition, depth + 1);
 
     }
@@ -241,6 +251,4 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
             getGc().strokePolygon(xCorners, yCorners, 3);
         }
     }
-
-
 }

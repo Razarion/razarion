@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.context.Dependent;
@@ -22,7 +21,7 @@ public class TerrainSlopeTileContext {
     private int slopeSkeletonConfigId;
     private int xCount;
     private int yCount;
-    private SlopeVertex[][] verticesVertices;
+    private SlopeVertex[][] mesh;
     private TerrainSlopeTile terrainSlopeTile;
     private TerrainTileContext terrainTileContext;
 
@@ -31,11 +30,11 @@ public class TerrainSlopeTileContext {
         this.xCount = xCount;
         this.yCount = yCount;
         this.terrainTileContext = terrainTileContext;
-        verticesVertices = new SlopeVertex[xCount][yCount];
+        mesh = new SlopeVertex[xCount][yCount];
     }
 
     public void addVertex(int x, int y, Vertex vertex, double slopeFactor, double splatting) {
-        verticesVertices[x][y] = new SlopeVertex(vertex, slopeFactor, splatting);
+        mesh[x][y] = new SlopeVertex(vertex, slopeFactor, splatting);
     }
 
     public TerrainSlopeTile getTerrainSlopeTile() {
@@ -49,27 +48,27 @@ public class TerrainSlopeTileContext {
         int triangleIndex = 0;
         for (int x = 1; x < xCount - 2; x++) {
             for (int y = 0; y < yCount - 1; y++) {
-                Vertex vertexBL = verticesVertices[x][y].getVertex();
-                Vertex vertexBR = verticesVertices[x + 1][y].getVertex();
-                Vertex vertexTR = verticesVertices[x + 1][y + 1].getVertex();
-                Vertex vertexTL = verticesVertices[x][y + 1].getVertex();
+                Vertex vertexBL = mesh[x][y].getVertex();
+                Vertex vertexBR = mesh[x + 1][y].getVertex();
+                Vertex vertexTR = mesh[x + 1][y + 1].getVertex();
+                Vertex vertexTL = mesh[x][y + 1].getVertex();
 
                 Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY());
                 Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY());
                 Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY());
                 Vertex tangentTL = setupTangent(x, y + 1, vertexTL.toXY());
-                double slopeFactorBR = verticesVertices[x + 1][y].getSlopeFactor();
-                double slopeFactorTL = verticesVertices[x][y + 1].getSlopeFactor();
-                double splattingBR = verticesVertices[x + 1][y].getSplatting();
-                double splattingTL = verticesVertices[x][y + 1].getSplatting();
+                double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
+                double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
+                double splattingBR = mesh[x + 1][y].getSplatting();
+                double splattingTL = mesh[x][y + 1].getSplatting();
 
                 if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
                     int triangleCornerIndex = triangleIndex * 3;
 
                     Vertex normBL = setupNorm(x, y, vertexBL.toXY());
                     Vertex tangentBL = setupTangent(x, y, vertexBL.toXY());
-                    double slopeFactorBL = verticesVertices[x][y].getSlopeFactor();
-                    double splattingBL = verticesVertices[x][y].getSplatting();
+                    double slopeFactorBL = mesh[x][y].getSlopeFactor();
+                    double splattingBL = mesh[x][y].getSplatting();
 
                     insertTriangleCorner(vertexBL, normBL, tangentBL, slopeFactorBL, splattingBL, triangleCornerIndex);
                     insertTriangleCorner(vertexBR, normBR, tangentBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
@@ -82,8 +81,8 @@ public class TerrainSlopeTileContext {
 
                     Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY());
                     Vertex tangentTR = setupTangent(x + 1, y + 1, vertexTR.toXY());
-                    double slopeFactorTR = verticesVertices[x + 1][y + 1].getSlopeFactor();
-                    double splattingTR = verticesVertices[x + 1][y + 1].getSplatting();
+                    double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
+                    double splattingTR = mesh[x + 1][y + 1].getSplatting();
 
                     insertTriangleCorner(vertexBR, normBR, tangentBR, slopeFactorBR, splattingBR, triangleCornerIndex);
                     insertTriangleCorner(vertexTR, normTR, tangentTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
@@ -103,10 +102,10 @@ public class TerrainSlopeTileContext {
             // Inner take norm from ground
             return terrainTileContext.interpolateNorm(absolutePosition);
         }
-        Vertex vertical = verticesVertices[x][y + 1].getVertex().sub(verticesVertices[x][y - 1].getVertex());
+        Vertex vertical = mesh[x][y + 1].getVertex().sub(mesh[x][y - 1].getVertex());
 
-        Vertex east = verticesVertices[x + 1][y].getVertex();
-        Vertex west = verticesVertices[x - 1][y].getVertex();
+        Vertex east = mesh[x + 1][y].getVertex();
+        Vertex west = mesh[x - 1][y].getVertex();
         Vertex horizontal = east.sub(west).normalize(1);
         return horizontal.cross(vertical).normalize(1.0);
     }
@@ -121,9 +120,9 @@ public class TerrainSlopeTileContext {
                 return terrainTileContext.interpolateTangent(absolutePosition);
             }
 
-            Vertex current = verticesVertices[x][y].getVertex();
-            Vertex east = verticesVertices[x + 1][y].getVertex();
-            Vertex west = verticesVertices[x - 1][y].getVertex();
+            Vertex current = mesh[x][y].getVertex();
+            Vertex east = mesh[x + 1][y].getVertex();
+            Vertex west = mesh[x - 1][y].getVertex();
             return east.sub(west).normalize(1);
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "FIX ME 2", t);

@@ -58,45 +58,40 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
     private void displayTerrainShapeTile(Index tileIndex, TerrainShapeTile terrainShapeTile) {
         getGc().setLineWidth(LINE_WIDTH * 4.0);
         getGc().setStroke(Color.DARKGREEN);
-        DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
-        getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
-        displayNodes(absolute, terrainShapeTile);
-        displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
-    }
-
-    private void displayNodes(DecimalPosition absoluteTile, TerrainShapeTile terrainShapeTile) {
-        if (!terrainShapeTile.hasNodes()) {
-            return;
-        }
+        DecimalPosition absoluteTile = TerrainUtil.toTileAbsolute(tileIndex);
+        getGc().strokeRect(absoluteTile.getX(), absoluteTile.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
+        // displayTerrainTypeNodes(absoluteTile, terrainShapeTile);
+        // displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode == null) {
                 return;
             }
-            displayNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
+            // displayTerrainTypeNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
+            // displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREEN);
+            // displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
         });
 
     }
 
-    private void displayNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {
+    private void displayTerrainTypeNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {
         DecimalPosition absolute = TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(absoluteTile);
         if (terrainShapeNode.getTerrainType() != null) {
             getGc().setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
-            getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+            getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
-        getGc().setLineWidth(LINE_WIDTH);
-        getGc().setStroke(Color.BLACK);
-        getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-        displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
-        displayObstacles(terrainShapeNode);
-        //displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
+        // getGc().setLineWidth(LINE_WIDTH);
+        // getGc().setStroke(Color.BLACK);
+        // getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+        displayTerrainTypeSubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
+        // displayObstacles(terrainShapeNode);
     }
 
-    private void displayGroundSlopeConnections(List<List<Vertex>> groundSlopeConnections) {
+    private void displaySlopeConnections(List<List<Vertex>> groundSlopeConnections, Color color) {
         if (groundSlopeConnections == null) {
             return;
         }
         for (List<Vertex> groundSlopeConnection : groundSlopeConnections) {
-            strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, Color.GREEN, true);
+            strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, color, true);
         }
     }
 
@@ -119,53 +114,53 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-    private void displaySubNodes(int depth, DecimalPosition absolute, TerrainShapeSubNode[] terrainShapeSubNodes) {
+    private void displayTerrainTypeSubNodes(int depth, DecimalPosition absolute, TerrainShapeSubNode[] terrainShapeSubNodes) {
         if (terrainShapeSubNodes == null) {
             return;
         }
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
         TerrainShapeSubNode bottomLeft = terrainShapeSubNodes[0];
         if (bottomLeft != null) {
-            displaySubNode(depth, absolute, bottomLeft);
+            displayTerrainTypeSubSubNode(depth, absolute, bottomLeft);
         }
         TerrainShapeSubNode bottomRight = terrainShapeSubNodes[1];
         if (bottomRight != null) {
-            displaySubNode(depth, absolute.add(subLength, 0), bottomRight);
+            displayTerrainTypeSubSubNode(depth, absolute.add(subLength, 0), bottomRight);
         }
         TerrainShapeSubNode topRight = terrainShapeSubNodes[2];
         if (topRight != null) {
-            displaySubNode(depth, absolute.add(subLength, subLength), topRight);
+            displayTerrainTypeSubSubNode(depth, absolute.add(subLength, subLength), topRight);
         }
         TerrainShapeSubNode topLeft = terrainShapeSubNodes[3];
         if (topLeft != null) {
-            displaySubNode(depth, absolute.add(0, subLength), topLeft);
+            displayTerrainTypeSubSubNode(depth, absolute.add(0, subLength), topLeft);
         }
     }
 
-    private void displaySubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
+    private void displayTerrainTypeSubSubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
         if (terrainShapeSubNode.getTerrainType() != null) {
             getGc().setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
-            getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+            getGc().fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
         }
-        if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
-//            if (terrainShapeSubNode.isLand()) {
-//                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
-//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-//            } else {
-//                getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
-//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-//            }
-//            if (terrainShapeSubNode.getHeight() != null) {
-//                double v = terrainShapeSubNode.getHeight() / 20.0;
-//                getGc().setFill(new Color(v, v, v, 1f));
-//                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-//            }
-        }
-        getGc().setStroke(Color.BLUEVIOLET);
-        getGc().setLineWidth(LINE_WIDTH);
-        getGc().strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
-        displaySubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
+//        if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
+////            if (terrainShapeSubNode.isLand()) {
+////                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
+////                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+////            } else {
+////                getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
+////                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+////            }
+////            if (terrainShapeSubNode.getHeight() != null) {
+////                double v = terrainShapeSubNode.getHeight() / 20.0;
+////                getGc().setFill(new Color(v, v, v, 1f));
+////                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
+////            }
+//        }
+//        getGc().setStroke(Color.BLUEVIOLET);
+//        getGc().setLineWidth(LINE_WIDTH);
+//        getGc().strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
+        displayTerrainTypeSubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
     }
 
     private void displayFractionalSlope(List<FractionalSlope> fractionalSlopes) {
@@ -214,7 +209,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-    private Color color4TerrainType(TerrainType terrainType) {
+    public static Color color4TerrainType(TerrainType terrainType) {
         switch (terrainType) {
             case LAND:
                 return Color.GREEN;

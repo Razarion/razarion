@@ -265,8 +265,8 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
             List<DecimalPosition> polygon = terrainSlopePosition.getPolygon().stream().map(TerrainSlopeCorner::getPosition).collect(Collectors.toList());
             Slope slope = new Slope(terrainSlopePosition.getId(), terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId()), terrainSlopePosition.getPolygon(), 0.0, terrainTypeService);
             egc.strokePolygon(polygon, 0.1, Color.GREEN, true);
-            egc.strokePolygon(slope.getInnerPolygon(), 0.1, Color.RED, true);
-            egc.strokePolygon(slope.getOuterPolygon(), 0.1, Color.RED, true);
+            egc.strokePolygon(slope.getInnerPolygonSlope(), 0.1, Color.RED, true);
+            egc.strokePolygon(slope.getOuterPolygonSlope(), 0.1, Color.RED, true);
         }
     }
 
