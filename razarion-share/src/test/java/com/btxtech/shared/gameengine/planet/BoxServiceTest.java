@@ -103,7 +103,9 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         permanentSalve.assertSyncItemCount(1, 0, 1);
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
         // Pick box
-        getCommandService().pickupBox(builder, findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_LONG_ID));
+        SyncBoxItem syncBoxItem = findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_LONG_ID);
+        getCommandService().pickupBox(builder, syncBoxItem);
+        verifySlavePick(permanentSalve, builder.getId(), syncBoxItem.getId());
         tickPlanetServiceBaseServiceActive();
         // Verify
         permanentSalve.assertSyncItemCount(1, 0, 0);
@@ -169,6 +171,13 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         tmpSalve.connectToMater(tmpUserContext, this);
         tmpSalve.assertSyncItemCount(0, 0, boxCount);
         tmpSalve.disconnectFromMaster();
+    }
+
+    private void verifySlavePick(WeldSlaveEmulator permanentSalve, int pickerId, int boxId) {
+        SyncBaseItem syncBaseItem = permanentSalve.getSyncItemContainerService().getSyncBaseItem(pickerId);
+        Assert.assertFalse(syncBaseItem.isIdle());
+        permanentSalve.getBaseItemService().tick();
+        Assert.assertFalse(syncBaseItem.isIdle());
     }
 
 }

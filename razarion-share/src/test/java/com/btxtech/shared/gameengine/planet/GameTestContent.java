@@ -51,6 +51,7 @@ public interface GameTestContent {
     int LEVEL_ID_1 = 1;
     int QUEST_CONFIG_1_ID = 1001;
     int QUEST_CONFIG_2_ID = 1002;
+    int QUEST_CONFIG_3_ID = 1003;
     int INVENTORY_ITEM_ATTACKER_ID = 1;
     int INVENTORY_ITEM_GOLD_ID = 1;
 
@@ -225,5 +226,13 @@ public interface GameTestContent {
         typeCount.put(CONSUMER_ITEM_TYPE_ID, 6);
         typeCount.put(HARVESTER_ITEM_TYPE_ID, 3);
         return new QuestConfig().setId(QUEST_CONFIG_2_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
+    }
+
+    static QuestConfig createNoPositionAddExistingQuest() {
+        Map<Integer, Integer> typeCount = new HashMap<>();
+        typeCount.put(BUILDER_ITEM_TYPE_ID, 1);
+        typeCount.put(FACTORY_ITEM_TYPE_ID, 1);
+        typeCount.put(ATTACKER_ITEM_TYPE_ID, 7);
+        return new QuestConfig().setId(QUEST_CONFIG_3_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setAddExisting(true)));
     }
 }
