@@ -60,7 +60,7 @@ public class QuestService {
     public void activateCondition(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
         AbstractComparison abstractComparison = null;
         if (questConfig.getConditionConfig().getConditionTrigger().isComparisonNeeded()) {
-            abstractComparison = createAbstractComparison(humanPlayerId, questConfig.getConditionConfig());
+            abstractComparison = createAbstractComparison(humanPlayerId, questConfig.getConditionConfig(), questConfig.getConditionConfig().getConditionTrigger());
 //            if (abstractComparison instanceof AbstractUpdatingComparison) {
 //                ((AbstractUpdatingComparison) abstractComparison).setGlobalServices(getGlobalServices());
 //            }
@@ -182,15 +182,30 @@ public class QuestService {
         questListeners.remove(questListener);
     }
 
-    private AbstractComparison createAbstractComparison(HumanPlayerId humanPlayerId, ConditionConfig conditionConfig) {
+    private AbstractComparison createAbstractComparison(HumanPlayerId humanPlayerId, ConditionConfig conditionConfig, ConditionTrigger conditionTrigger) {
         ComparisonConfig comparisonConfig = conditionConfig.getComparisonConfig();
-        switch (conditionConfig.getConditionTrigger().getType()) {
-            case BASE_ITEM: {
-                if (comparisonConfig.getPlaceConfig() != null) {
-                    BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
-                    baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), humanPlayerId);
-                    return baseItemPositionComparison;
-                } else if (comparisonConfig.getTypeCount() != null) {
+        switch (conditionTrigger) {
+            case HARVEST:
+            case BASE_KILLED:
+            case BOX_PICKED:
+                if (comparisonConfig.getCount() != null) {
+                    CountComparison countComparison = instance.select(CountComparison.class).get();
+                    countComparison.init(comparisonConfig.getCount());
+                    return countComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            case INVENTORY_ITEM_PLACED:
+                if (comparisonConfig.getCount() != null) {
+                    InventoryItemCountComparison inventoryItemCountComparison = instance.select(InventoryItemCountComparison.class).get();
+                    inventoryItemCountComparison.init(comparisonConfig.getCount());
+                    return inventoryItemCountComparison;
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+            case SYNC_ITEM_KILLED:
+            case SYNC_ITEM_CREATED:
+                if (comparisonConfig.getTypeCount() != null) {
                     BaseItemTypeComparison syncItemTypeComparison = instance.select(BaseItemTypeComparison.class).get();
                     syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()));
                     return syncItemTypeComparison;
@@ -201,25 +216,12 @@ public class QuestService {
                 } else {
                     throw new UnsupportedOperationException();
                 }
-            }
-            case COUNT:
-                if (comparisonConfig.getCount() != null) {
-                    CountComparison countComparison = instance.select(CountComparison.class).get();
-                    countComparison.init(comparisonConfig.getCount());
-                    return countComparison;
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-            case INVENTORY_ITEM:
-                if (comparisonConfig.getCount() != null) {
-                    InventoryItemCountComparison inventoryItemCountComparison = instance.select(InventoryItemCountComparison.class).get();
-                    inventoryItemCountComparison.init(comparisonConfig.getCount());
-                    return inventoryItemCountComparison;
-                } else {
-                    throw new UnsupportedOperationException();
-                }
+            case SYNC_ITEM_POSITION:
+                BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
+                baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), humanPlayerId);
+                return baseItemPositionComparison;
             default:
-                throw new UnsupportedOperationException("Don't known: " + conditionConfig.getConditionTrigger().getType());
+                throw new IllegalArgumentException("QuestService.createAbstractComparison() Unknown conditionTrigger: " + conditionTrigger);
         }
     }
 
@@ -304,8 +306,8 @@ public class QuestService {
                     logger.warning("QuestService.restore() No AbstractConditionProgress for HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId());
                     return;
                 }
-                if(abstractConditionProgress.getQuestConfig().getId() != backupComparisionInfo.getQuestId()) {
-                    logger.warning("QuestService.restore() different quest. HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId() + ". Quest in backup: " + backupComparisionInfo.getQuestId()+  ". Active quest: " + abstractConditionProgress.getQuestConfig());
+                if (abstractConditionProgress.getQuestConfig().getId() != backupComparisionInfo.getQuestId()) {
+                    logger.warning("QuestService.restore() different quest. HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId() + ". Quest in backup: " + backupComparisionInfo.getQuestId() + ". Active quest: " + abstractConditionProgress.getQuestConfig());
                     return;
                 }
                 abstractConditionProgress.restore(backupComparisionInfo);

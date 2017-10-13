@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
@@ -9,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -51,7 +53,9 @@ public interface GameTestContent {
     int LEVEL_ID_1 = 1;
     int QUEST_CONFIG_1_ID = 1001;
     int QUEST_CONFIG_2_ID = 1002;
-    int QUEST_CONFIG_3_ID = 1003;
+    int QUEST_CONFIG_3_ID = 1002;
+    int QUEST_CONFIG_4_ID = 1003;
+    int QUEST_CONFIG_5_ID = 1004;
     int INVENTORY_ITEM_ATTACKER_ID = 1;
     int INVENTORY_ITEM_GOLD_ID = 1;
 
@@ -194,7 +198,7 @@ public interface GameTestContent {
         Map<Integer, Integer> level1Limitation = new HashMap<>();
         level1Limitation.put(BUILDER_ITEM_TYPE_ID, 1);
         level1Limitation.put(FACTORY_ITEM_TYPE_ID, 2);
-        level1Limitation.put(ATTACKER_ITEM_TYPE_ID, 5);
+        level1Limitation.put(ATTACKER_ITEM_TYPE_ID, 10);
         level1Limitation.put(GENERATOR_ITEM_TYPE_ID, 6);
         level1Limitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         level1Limitation.put(HARVESTER_ITEM_TYPE_ID, 3);
@@ -206,7 +210,7 @@ public interface GameTestContent {
         Map<Integer, Integer> levelLimitation = new HashMap<>();
         levelLimitation.put(BUILDER_ITEM_TYPE_ID, 2);
         levelLimitation.put(FACTORY_ITEM_TYPE_ID, 3);
-        levelLimitation.put(ATTACKER_ITEM_TYPE_ID, 5);
+        levelLimitation.put(ATTACKER_ITEM_TYPE_ID, 10);
         levelLimitation.put(GENERATOR_ITEM_TYPE_ID, 6);
         levelLimitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         levelLimitation.put(HARVESTER_ITEM_TYPE_ID, 3);
@@ -228,11 +232,25 @@ public interface GameTestContent {
         return new QuestConfig().setId(QUEST_CONFIG_2_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
     }
 
+    static QuestConfig createItemTypeCountCreatedQuest2() {
+        Map<Integer, Integer> typeCount = new HashMap<>();
+        typeCount.put(FACTORY_ITEM_TYPE_ID, 1);
+        typeCount.put(ATTACKER_ITEM_TYPE_ID, 2);
+        typeCount.put(HARVESTER_ITEM_TYPE_ID, 1);
+        return new QuestConfig().setId(QUEST_CONFIG_3_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
+    }
+
     static QuestConfig createNoPositionAddExistingQuest() {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(BUILDER_ITEM_TYPE_ID, 1);
         typeCount.put(FACTORY_ITEM_TYPE_ID, 1);
         typeCount.put(ATTACKER_ITEM_TYPE_ID, 7);
-        return new QuestConfig().setId(QUEST_CONFIG_3_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setAddExisting(true)));
+        return new QuestConfig().setId(QUEST_CONFIG_4_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setAddExisting(true)));
+    }
+
+    static QuestConfig createPositionAddExistingQuest() {
+        Map<Integer, Integer> typeCount = new HashMap<>();
+        typeCount.put(ATTACKER_ITEM_TYPE_ID, 3);
+        return new QuestConfig().setId(QUEST_CONFIG_5_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 80, 40, 80)))));
     }
 }

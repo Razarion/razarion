@@ -26,19 +26,19 @@ import com.btxtech.shared.gameengine.planet.quest.ValueConditionProgress;
  * Time: 20:30:23
  */
 public enum ConditionTrigger {
-    SYNC_ITEM_KILLED(Type.BASE_ITEM, true) {
+    SYNC_ITEM_KILLED(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new BaseItemConditionProgress(this, abstractComparison);
         }
     },
-    HARVEST(Type.COUNT, true) {
+    HARVEST(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new ValueConditionProgress(this, abstractComparison);
         }
     },
-    SYNC_ITEM_CREATED(Type.BASE_ITEM, true) {
+    SYNC_ITEM_CREATED(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new BaseItemConditionProgress(this, abstractComparison);
@@ -50,7 +50,7 @@ public enum ConditionTrigger {
 //            return new ValueConditionProgress(this, abstractComparison);
 //        }
 //    },
-    BASE_KILLED(Type.COUNT, true) {
+    BASE_KILLED(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new ValueConditionProgress(this, abstractComparison);
@@ -62,7 +62,7 @@ public enum ConditionTrigger {
 //            return new SimpleConditionTrigger(this);
 //        }
 //    },
-    SYNC_ITEM_POSITION(Type.BASE_ITEM, true) {
+    SYNC_ITEM_POSITION(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new BaseItemConditionProgress(this, abstractComparison);
@@ -80,13 +80,13 @@ public enum ConditionTrigger {
 //            return new ArtifactItemIdConditionTrigger(this, abstractComparison);
 //        }
 //    },
-    BOX_PICKED(Type.COUNT, true) {
+    BOX_PICKED(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new ValueConditionProgress(this, abstractComparison);
         }
     },
-    INVENTORY_ITEM_PLACED(Type.INVENTORY_ITEM, true) {
+    INVENTORY_ITEM_PLACED(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
             return new InventoryItemConditionProgress(this, abstractComparison);
@@ -99,19 +99,13 @@ public enum ConditionTrigger {
         COUNT
     }
 
-    private Type type;
     private boolean comparisonNeeded;
 
-    ConditionTrigger(Type type, boolean comparisonNeeded) {
-        this.type = type;
+    ConditionTrigger(boolean comparisonNeeded) {
         this.comparisonNeeded = comparisonNeeded;
     }
 
     public abstract AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison);
-
-    public Type getType() {
-        return type;
-    }
 
     public boolean isComparisonNeeded() {
         return comparisonNeeded;
