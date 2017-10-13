@@ -55,7 +55,7 @@ public class TerrainShapeSubNode {
         return Vertex.Z_NORM; // TODO
     }
 
-    @Deprecated // use
+    @Deprecated // use getTerrainType()
     public boolean isLand() {
         return terrainType == TerrainType.LAND;
     }

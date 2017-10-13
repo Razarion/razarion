@@ -39,7 +39,7 @@ public class Slope {
     private Collection<Slope> children;
     private Set<DecimalPosition> innerDriveway = new HashSet<>();
     private Map<DecimalPosition, DecimalPosition> outerDriveway = new HashMap<>();
-    private Collection<Polygon2D> passableDrivewaySlope = new ArrayList<>();
+    private DrivewayTerrainTypeHandler drivewayTerrainTypeHandler = new DrivewayTerrainTypeHandler();
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
@@ -60,7 +60,7 @@ public class Slope {
             verticalSegments.addAll(border.setupVerticalSegments(this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders)));
         }
 
-        setupTerrainTypePolygon();
+        setupLimitationPolygon();
     }
 
     public double getGroundHeight() {
@@ -179,7 +179,7 @@ public class Slope {
         return slopeSkeletonConfig.getWidth() / Math.tan((MathHelper.ONE_RADIANT - innerAngle) / 2.0);
     }
 
-    private void setupTerrainTypePolygon() {
+    private void setupLimitationPolygon() {
         List<DecimalPosition> innerLineSlope = new ArrayList<>();
         List<DecimalPosition> outerLineSlope = new ArrayList<>();
         List<DecimalPosition> innerLineTerrainType = new ArrayList<>();
@@ -211,7 +211,7 @@ public class Slope {
             } else if (passableDrivewayInner != null) {
                 Collections.reverse(passableDrivewayOuter);
                 passableDrivewayInner.addAll(passableDrivewayOuter);
-                passableDrivewaySlope.add(new Polygon2D(passableDrivewayInner));
+                drivewayTerrainTypeHandler.addDriveway(passableDrivewayInner);
                 passableDrivewayInner = null;
                 passableDrivewayOuter = null;
             }
@@ -341,13 +341,8 @@ public class Slope {
         return driveways;
     }
 
-    public boolean isInsidePassableDriveway(Rectangle2D rect) {
-        for (Polygon2D passable : passableDrivewaySlope) {
-            if (passable.isOneCornerInside(rect.toCorners())) {
-                return true;
-            }
-        }
-        return false;
+    public DrivewayTerrainTypeHandler getDrivewayTerrainTypeHandler() {
+        return drivewayTerrainTypeHandler;
     }
 
     public int getNearestInnerSlopePolygon(DecimalPosition position) {

@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayTerrainTypeHandler;
 
 /**
  * Created by Beat
@@ -12,11 +13,16 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
  */
 public class TerrainShapeSubNodeFactory {
 
-    public void fillTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, TerrainType outerTerrainType) {
+    public void fillTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler) {
         for (int y = 0; y < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; y += TerrainUtil.MIN_SUB_NODE_LENGTH) {
             for (int x = 0; x < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; x += TerrainUtil.MIN_SUB_NODE_LENGTH) {
                 DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(new Index(x, y)).add(terrainRect.getStart());
-                TerrainType terrainType = terrainTypeRegion.isInside(scanPosition) ? innerTerrainType : outerTerrainType;
+                TerrainType terrainType;
+                if (drivewayTerrainTypeHandler != null && drivewayTerrainTypeHandler.isInside(scanPosition)) {
+                    terrainType = TerrainType.LAND;
+                } else {
+                    terrainType = terrainTypeRegion.isInside(scanPosition) ? innerTerrainType : outerTerrainType;
+                }
                 if (terrainType == null) {
                     continue;
                 }
@@ -52,7 +58,7 @@ public class TerrainShapeSubNodeFactory {
             if (concentrateResult.isMixed()) {
                 mixed = true;
             }
-            if(mixed) {
+            if (mixed) {
                 continue;
             }
             if (lastTerrainType == null) {
@@ -104,10 +110,10 @@ public class TerrainShapeSubNodeFactory {
         boolean mixed = false;
         for (TerrainShapeSubNode child : terrainShapeSubNode.getTerrainShapeSubNodes()) {
             ConcentrateResult concentrateResult = concentrate(child);
-            if(concentrateResult.isMixed()) {
+            if (concentrateResult.isMixed()) {
                 mixed = true;
             }
-            if(mixed) {
+            if (mixed) {
                 continue;
             }
             if (lastTerrainType == null) {

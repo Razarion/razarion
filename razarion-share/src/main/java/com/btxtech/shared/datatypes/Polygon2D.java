@@ -105,7 +105,7 @@ public class Polygon2D {
             if (isLineCrossing(rectangle2D.toLines())) {
                 return Inside.PARTLY;
             } else {
-                if (rectangle2D.contains(corners)) {
+                if (rectangle2D.contains(this.corners)) {
                     return Inside.PARTLY;
                 } else {
                     return Inside.OUTSIDE;

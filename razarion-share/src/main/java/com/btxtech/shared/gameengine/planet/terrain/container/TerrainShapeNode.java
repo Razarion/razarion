@@ -148,6 +148,7 @@ public class TerrainShapeNode {
         return groundSlopeConnections == null && waterSegments == null && !isFullDriveway() && !isFullWater() && !isHiddenUnderSlope();
     }
 
+    @Deprecated // use getTerrainType()
     public boolean isFullDriveway() {
         return fullDrivewayHeights != null;
     }

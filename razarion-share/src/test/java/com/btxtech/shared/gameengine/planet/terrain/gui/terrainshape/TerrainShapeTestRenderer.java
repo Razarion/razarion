@@ -60,17 +60,15 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         getGc().setStroke(Color.DARKGREEN);
         DecimalPosition absoluteTile = TerrainUtil.toTileAbsolute(tileIndex);
         getGc().strokeRect(absoluteTile.getX(), absoluteTile.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
-        // displayTerrainTypeNodes(absoluteTile, terrainShapeTile);
-        // displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode == null) {
                 return;
             }
             // displayTerrainTypeNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
-            // displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREEN);
-            // displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
+            displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREEN);
+            displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
         });
-
+        displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
     }
 
     private void displayTerrainTypeNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {
