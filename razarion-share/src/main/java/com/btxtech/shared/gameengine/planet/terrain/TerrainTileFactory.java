@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.InterpolationUtils;
@@ -41,6 +42,8 @@ public class TerrainTileFactory {
     private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
     private PerfmonService perfmonService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
@@ -214,7 +217,13 @@ public class TerrainTileFactory {
         }
         terrainShapeTile.iterateOverTerrainNodes((nodeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode != null && terrainShapeNode.getGroundSlopeConnections() != null) {
-                terrainShapeNode.getGroundSlopeConnections().forEach(connections -> Triangulator.calculate(connections, terrainTileContext::insertTriangleGroundSlopeConnection));
+                terrainShapeNode.getGroundSlopeConnections().forEach(connections -> {
+                    try {
+                        Triangulator.calculate(connections, terrainTileContext::insertTriangleGroundSlopeConnection);
+                    } catch (Exception e) {
+                        exceptionHandler.handleException(e);
+                    }
+                });
             }
         });
     }
