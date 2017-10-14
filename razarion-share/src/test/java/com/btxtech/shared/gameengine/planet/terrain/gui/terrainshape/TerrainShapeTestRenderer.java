@@ -65,10 +65,11 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
                 return;
             }
             displayTerrainTypeNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
-            displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREEN);
-            displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
+            // displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREEN);
+            // displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
+            displayObstacles(terrainShapeNode);
         });
-        displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
+        // displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
     }
 
     private void displayTerrainTypeNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {
@@ -81,7 +82,6 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         // getGc().setStroke(Color.BLACK);
         // getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         displayTerrainTypeSubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
-        displayObstacles(terrainShapeNode);
     }
 
     private void displaySlopeConnections(List<List<Vertex>> groundSlopeConnections, Color color) {
@@ -100,11 +100,11 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         for (Obstacle obstacle : terrainShapeNode.getObstacles()) {
             if (obstacle instanceof ObstacleSlope) {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
-                getGc().setStroke(Color.RED);
+                getGc().setStroke(Color.TURQUOISE);
                 getGc().strokeLine(obstacleSlope.getLine().getPoint1().getX(), obstacleSlope.getLine().getPoint1().getY(), obstacleSlope.getLine().getPoint2().getX(), obstacleSlope.getLine().getPoint2().getY());
             } else if (obstacle instanceof ObstacleTerrainObject) {
                 ObstacleTerrainObject obstacleTerrainObject = (ObstacleTerrainObject) obstacle;
-                getGc().setStroke(Color.RED);
+                getGc().setStroke(Color.TURQUOISE);
                 getGc().strokeOval(obstacleTerrainObject.getCircle().getCenter().getX() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getCenter().getY() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius());
             } else {
                 throw new IllegalArgumentException("Unknown: " + obstacle);

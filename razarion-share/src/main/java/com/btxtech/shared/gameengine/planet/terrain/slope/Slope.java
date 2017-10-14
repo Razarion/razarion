@@ -12,11 +12,7 @@ import com.btxtech.shared.utils.MathHelper;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Beat
@@ -37,8 +33,6 @@ public class Slope {
     private Polygon2D coastDelimiterPolygonTerrainType;
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
-    private Set<DecimalPosition> innerDriveway = new HashSet<>();
-    private Map<DecimalPosition, DecimalPosition> outerDriveway = new HashMap<>();
     private DrivewayTerrainTypeHandler drivewayTerrainTypeHandler = new DrivewayTerrainTypeHandler();
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
@@ -195,23 +189,25 @@ public class Slope {
         List<DecimalPosition> passableDrivewayInner = null;
         List<DecimalPosition> passableDrivewayOuter = null;
         for (VerticalSegment verticalSegment : verticalSegments) {
+            DecimalPosition innerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLineTerrainType(), verticalSegment.getInner(), true);
+            DecimalPosition outerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getOuterLineTerrainType(), verticalSegment.getInner(), true);
             if (verticalSegment.getDrivewayHeightFactor() <= 0) {
                 if (passableDrivewayInner == null) {
                     passableDrivewayInner = new ArrayList<>();
                     passableDrivewayOuter = new ArrayList<>();
                 }
-                innerDriveway.add(verticalSegment.getInner());
-                outerDriveway.put(verticalSegment.getOuter(), verticalSegment.getInner());
-                if (!passableDrivewayInner.contains(verticalSegment.getInner())) {
-                    passableDrivewayInner.add(verticalSegment.getInner());
+                drivewayTerrainTypeHandler.addInnerDriveway(innerTerrainType);
+                drivewayTerrainTypeHandler.putOuterInnerConnection(outerTerrainType, innerTerrainType);
+                if (!passableDrivewayInner.contains(innerTerrainType)) {
+                    passableDrivewayInner.add(innerTerrainType);
                 }
-                if (!passableDrivewayOuter.contains(verticalSegment.getOuter())) {
-                    passableDrivewayOuter.add(verticalSegment.getOuter());
+                if (!passableDrivewayOuter.contains(outerTerrainType)) {
+                    passableDrivewayOuter.add(outerTerrainType);
                 }
             } else if (passableDrivewayInner != null) {
                 Collections.reverse(passableDrivewayOuter);
                 passableDrivewayInner.addAll(passableDrivewayOuter);
-                drivewayTerrainTypeHandler.addDriveway(passableDrivewayInner);
+                drivewayTerrainTypeHandler.addDrivewayPolygon(passableDrivewayInner);
                 passableDrivewayInner = null;
                 passableDrivewayOuter = null;
             }
@@ -220,8 +216,6 @@ public class Slope {
             double slopeSkeletonWidth = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1).getPosition().getX();
             lastInnerSlope = addCorrectedMinimalDelta(verticalSegment.getOuter().getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true), lastInnerSlope, innerLineSlope);
 
-            DecimalPosition innerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLineTerrainType(), verticalSegment.getInner(), true);
-            DecimalPosition outerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getOuterLineTerrainType(), verticalSegment.getInner(), true);
             lastInnerTerrainType = addCorrectedMinimalDelta(innerTerrainType, lastInnerTerrainType, innerLineTerrainType);
             lastOuterTerrainType = addCorrectedMinimalDelta(outerTerrainType, lastOuterTerrainType, outerLineTerrainType);
             if (hasWater()) {
@@ -385,18 +379,6 @@ public class Slope {
             }
         }
         throw new IllegalStateException("Slope.getFirstOutOfRectClockWise()");
-    }
-
-    public Collection<DecimalPosition> getInnerDriveway() {
-        return innerDriveway;
-    }
-
-    public Collection<DecimalPosition> getOuterDriveway() {
-        return outerDriveway.keySet();
-    }
-
-    public Map<DecimalPosition, DecimalPosition> getOuterToInnerDriveway() {
-        return outerDriveway;
     }
 
     public static class Corner {
