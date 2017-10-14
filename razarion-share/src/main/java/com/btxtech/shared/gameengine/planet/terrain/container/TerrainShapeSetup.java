@@ -84,11 +84,9 @@ public class TerrainShapeSetup {
             return;
         }
         long time = System.currentTimeMillis();
-        for (int i = 0; i < terrainSlopePositions.size(); i++) {
-            TerrainSlopePosition terrainSlopePosition = terrainSlopePositions.get(i);
+        for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             try {
                 processSlope(setupSlope(terrainSlopePosition, 0), dirtyTerrainShapeNodes);
-                System.out.println("Slope processed: " + i + "/" + terrainSlopePositions.size());
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Can not handle slope with id: " + terrainSlopePosition.getId(), e);
             }
@@ -219,13 +217,7 @@ public class TerrainShapeSetup {
 
     private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler) {
         Rectangle2D aabb = terrainRegion.toAabb();
-        List<Index> nodeIndices = GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-        System.out.println("nodeIndices: " + nodeIndices.size());
-        for (int i = 0; i < nodeIndices.size(); i++) {
-            Index nodeIndex = nodeIndices.get(i);
-            if (i % 10000 == 0) {
-                System.out.println("nodeIndices " + i + "/" + nodeIndices.size());
-            }
+        for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
             if (drivewayTerrainTypeHandler != null) {
                 switch (drivewayTerrainTypeHandler.checkInside(terrainRect)) {
