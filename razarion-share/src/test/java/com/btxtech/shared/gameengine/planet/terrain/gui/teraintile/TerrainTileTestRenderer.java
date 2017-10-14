@@ -49,7 +49,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
             drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
         }
 
-        // drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
+        drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 

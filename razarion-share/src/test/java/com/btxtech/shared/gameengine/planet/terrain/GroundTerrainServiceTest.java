@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 /**
@@ -51,7 +52,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
-        // TerrainTileTestDisplay.show(terrainTile);
+        TerrainTileTestDisplay.show(terrainTile);
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration2.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration2.json");
         assertTerrainTile.assertEquals(terrainTile);

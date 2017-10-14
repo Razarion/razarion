@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -22,13 +23,13 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0, 0.3),},
                 {createSlopeNode(2, 5, 1),},
                 {createSlopeNode(4, 10, 0.7),},
                 {createSlopeNode(7, 20, 0.7),},
         };
+        slopeSkeletonConfigLand.setOuterLineTerrainType(1).setInnerLineTerrainType(6);
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
@@ -55,7 +56,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
-        // TerrainTileTestDisplay.show(terrainTile);
+        TerrainTileTestDisplay.show(terrainTile);
 
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testTerrainSlopeTileGeneration.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeTileGeneration.json");
@@ -67,14 +68,14 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0, 0.3),},
                 {createSlopeNode(2, 5, 1),},
                 {createSlopeNode(4, 10, 0.7),},
                 {createSlopeNode(7, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigLand.setOuterLineTerrainType(2).setInnerLineTerrainType(5);
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -104,7 +105,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 1)));
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 0)));
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 1)));
-        // TerrainTileTestDisplay.show(terrainTiles);
+        TerrainTileTestDisplay.show(terrainTiles);
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testTerrainSlopeTileGeneration4Tiles.json");
 
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeTileGeneration4Tiles.json");

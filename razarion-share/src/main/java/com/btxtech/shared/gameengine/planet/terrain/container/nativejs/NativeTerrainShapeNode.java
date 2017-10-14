@@ -15,7 +15,7 @@ public class NativeTerrainShapeNode {
     public NativeVertex[][] waterSegments;
     public Double fullWaterLevel;
     public NativeObstacle[] obstacles;
-    public Boolean hiddenUnderSlope;
+    public Boolean doNotRenderGround;
     public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes;
     public Boolean drivewayBreakingLine;
     public Integer terrainTypeOrdinal;

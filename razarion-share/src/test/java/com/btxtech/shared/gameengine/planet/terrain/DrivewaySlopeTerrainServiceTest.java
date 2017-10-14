@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 createTerrainSlopeCorner(103, 60, 1), createTerrainSlopeCorner(103, 90, 1), // driveway
                 createTerrainSlopeCorner(103, 110, null), createTerrainSlopeCorner(50, 110, null));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
-        // TerrainTileTestDisplay.show(terrainTiles);
+        TerrainTileTestDisplay.show(terrainTiles);
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayEdge1.json");
         assertTerrainTile.assertEquals(terrainTiles);
     }
@@ -34,7 +35,7 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 createTerrainSlopeCorner(70, 150, 1), createTerrainSlopeCorner(90, 150, 1), createTerrainSlopeCorner(100, 150, 1), createTerrainSlopeCorner(100, 160, 1), createTerrainSlopeCorner(100, 180, 1),// driveway
                 createTerrainSlopeCorner(100, 210, null), createTerrainSlopeCorner(50, 210, null));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
-        // TerrainTileTestDisplay.show(terrainTiles);
+        TerrainTileTestDisplay.show(terrainTiles);
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayCorner1.json");
         assertTerrainTile.assertEquals(terrainTiles);
     }
@@ -43,15 +44,15 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(6).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0, 0.3),},
                 {createSlopeNode(2, 5, 1),},
                 {createSlopeNode(4, 10, 0.7),},
                 {createSlopeNode(7, 20, 0.7),},
                 {createSlopeNode(10, 20, 0.7),},
                 {createSlopeNode(11, 20, 0.7),},
         };
+        slopeSkeletonConfigLand.setOuterLineTerrainType(3).setInnerLineTerrainType(7);
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 

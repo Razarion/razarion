@@ -68,7 +68,7 @@ public class TerrainTileFactory {
                 } else if (terrainShapeNode != null) {
                     if (terrainShapeNode.isFullDriveway()) {
                         insertDrivewayTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainTileContext);
-                    } else if (terrainShapeNode.isFullLand()) {
+                    } else if (terrainShapeNode.isRenderGround()) {
                         insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getUniformGroundHeight(), terrainTileContext);
                     }
                 }
@@ -316,7 +316,7 @@ public class TerrainTileFactory {
         if (terrainShapeSubNode.getHeight() != null) {
             terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
         } else {
-            if (terrainShapeNode.isHiddenUnderSlope()) {
+            if (terrainShapeNode.getDoNotRenderGround()) {
                 terrainSubNode.setHeight(terrainShapeNode.getUniformGroundHeight());
             } else if (terrainShapeNode.isFullDriveway()) {
                 DecimalPosition normalizedOffset = subNodePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);

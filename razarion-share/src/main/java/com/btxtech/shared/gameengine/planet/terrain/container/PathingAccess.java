@@ -79,7 +79,7 @@ public class PathingAccess {
 
             @Override
             public Boolean inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return !terrainShapeNode.isFullWater() && !terrainShapeNode.isHiddenUnderSlope();
+                return !terrainShapeNode.isFullWater() && !terrainShapeNode.getDoNotRenderGround();
             }
 
             @Override

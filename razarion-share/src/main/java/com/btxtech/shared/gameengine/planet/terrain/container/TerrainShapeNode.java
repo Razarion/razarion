@@ -49,7 +49,7 @@ public class TerrainShapeNode {
     private List<List<Vertex>> waterSegments;
     private Double fullWaterLevel;
     private Collection<Obstacle> obstacles;
-    private Boolean hiddenUnderSlope;
+    private Boolean doNotRenderGround;
     private Boolean drivewayBreakingLine;
     private TerrainType terrainType;
 
@@ -60,7 +60,7 @@ public class TerrainShapeNode {
         fullDrivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
         uniformGroundHeight = nativeTerrainShapeNode.uniformGroundHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
-        hiddenUnderSlope = nativeTerrainShapeNode.hiddenUnderSlope;
+        doNotRenderGround = nativeTerrainShapeNode.doNotRenderGround;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
         if (nativeTerrainShapeNode.terrainTypeOrdinal != null) {
             terrainType = TerrainType.values()[nativeTerrainShapeNode.terrainTypeOrdinal];
@@ -120,8 +120,8 @@ public class TerrainShapeNode {
         this.uniformGroundHeight = uniformGroundHeight;
     }
 
-    public void setHiddenUnderSlope() {
-        hiddenUnderSlope = true;
+    public void setDoNotRenderGround() {
+        doNotRenderGround = true;
     }
 
     public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection) {
@@ -145,7 +145,11 @@ public class TerrainShapeNode {
     }
 
     public boolean isFullLand() {
-        return groundSlopeConnections == null && waterSegments == null && !isFullDriveway() && !isFullWater() && !isHiddenUnderSlope();
+        return groundSlopeConnections == null && waterSegments == null && !isFullDriveway() && !isFullWater() && !getDoNotRenderGround();
+    }
+
+    public boolean isRenderGround() {
+        return groundSlopeConnections == null && waterSegments == null && !getDoNotRenderGround();
     }
 
     @Deprecated // use getTerrainType()
@@ -204,8 +208,8 @@ public class TerrainShapeNode {
         }
     }
 
-    public boolean isHiddenUnderSlope() {
-        return hiddenUnderSlope != null && hiddenUnderSlope;
+    public boolean getDoNotRenderGround() {
+        return doNotRenderGround != null && doNotRenderGround;
     }
 
     public double getUniformGroundHeight() {
@@ -283,7 +287,7 @@ public class TerrainShapeNode {
         if (obstacles != null) {
             nativeTerrainShapeNode.obstacles = obstacles.stream().map(Obstacle::toNativeObstacle).toArray(NativeObstacle[]::new);
         }
-        nativeTerrainShapeNode.hiddenUnderSlope = hiddenUnderSlope;
+        nativeTerrainShapeNode.doNotRenderGround = doNotRenderGround;
         nativeTerrainShapeNode.nativeTerrainShapeSubNodes = TerrainShapeSubNode.toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         nativeTerrainShapeNode.drivewayBreakingLine = drivewayBreakingLine;
         return nativeTerrainShapeNode;

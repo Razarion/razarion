@@ -145,7 +145,9 @@ public class TerrainShapeSetup {
                         }
                     }
                 } else if (inside == InsideCheckResult.INSIDE) {
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
+                    TerrainShapeNode terrainShapeNode  = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    terrainShapeNode.setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
+                    terrainShapeNode.setDoNotRenderGround();
                 }
             }
         } else {
@@ -196,6 +198,14 @@ public class TerrainShapeSetup {
                         }
                     }
                 }
+
+                if(innerPiercings == null && outerPiercings == null) {
+                    Rectangle2D shrunken = terrainRect.shrink(0.01);
+                    if(outerPolygon.checkInside(shrunken) == InsideCheckResult.INSIDE && slope.getInnerPolygonSlope().checkInside(shrunken) == InsideCheckResult.OUTSIDE) {
+                        terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setDoNotRenderGround();
+                    }
+                }
+
             }
         }
         if (slope.getChildren() != null) {

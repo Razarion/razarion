@@ -42,14 +42,14 @@ public class SurfaceAccess {
 
             @Override
             public Double inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                if (!terrainShapeNode.isFullWater() && !terrainShapeNode.isFullDriveway() && !terrainShapeNode.isHiddenUnderSlope()) {
+                if (!terrainShapeNode.isFullWater() && !terrainShapeNode.isFullDriveway() && !terrainShapeNode.getDoNotRenderGround()) {
                     return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getUniformGroundHeight();
                 } else if (terrainShapeNode.isFullWater()) {
                     return terrainShapeNode.getFullWaterLevel();
                 } else if (terrainShapeNode.isFullDriveway()) {
                     DecimalPosition relative = TerrainUtil.toNodeAbsolute(absolutePosition.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(TerrainUtil.toTileAbsolute(tileIndex))));
                     return InterpolationUtils.rectangleInterpolate(relative, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
-                } else if (terrainShapeNode.isHiddenUnderSlope()) {
+                } else if (terrainShapeNode.getDoNotRenderGround()) {
                     return terrainShapeNode.getUniformGroundHeight();
                 } else {
                     throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() unknown state");
@@ -64,7 +64,7 @@ public class SurfaceAccess {
                     if(terrainShapeNode.isFullDriveway()) {
                         DecimalPosition relative = TerrainUtil.toNodeAbsolute(absolutePosition.sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(TerrainUtil.toTileAbsolute(tileIndex))));
                         return InterpolationUtils.rectangleInterpolate(relative, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
-                    } else if(terrainShapeNode.isHiddenUnderSlope()) {
+                    } else if(terrainShapeNode.getDoNotRenderGround()) {
                         return terrainShapeNode.getUniformGroundHeight();
                     } else {
                         return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeNode.getUniformGroundHeight();
