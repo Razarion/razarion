@@ -1,11 +1,14 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayTerrainTypeHandler;
+
+import java.util.Collection;
 
 /**
  * Created by Beat
@@ -26,27 +29,34 @@ public class TerrainShapeSubNodeFactory {
                 if (terrainType == null) {
                     continue;
                 }
-                int depth0Index = calculateArrayIndex(x, y, 0);
-                int depth1Index = calculateArrayIndex(x, y, 1);
-                int depth2Index = calculateArrayIndex(x, y, 2);
-                TerrainShapeSubNode[] terrainShapeSubNodes0 = terrainShapeNode.getTerrainShapeSubNodes();
-                if (terrainShapeSubNodes0 == null) {
-                    terrainShapeSubNodes0 = new TerrainShapeSubNode[4];
-                    terrainShapeSubNodes0[0] = new TerrainShapeSubNode(null, 0);
-                    terrainShapeSubNodes0[1] = new TerrainShapeSubNode(null, 0);
-                    terrainShapeSubNodes0[2] = new TerrainShapeSubNode(null, 0);
-                    terrainShapeSubNodes0[3] = new TerrainShapeSubNode(null, 0);
-                    terrainShapeNode.setTerrainShapeSubNodes(terrainShapeSubNodes0);
-                }
-                TerrainShapeSubNode terrainShapeSubNode0 = terrainShapeSubNodes0[depth0Index];
-                TerrainShapeSubNode terrainShapeSubNode1 = getOrCreateTerrainShapeSubNode(terrainShapeSubNode0, 1, depth1Index);
-                TerrainShapeSubNode terrainShapeSubNode2 = getOrCreateTerrainShapeSubNode(terrainShapeSubNode1, 2, depth2Index);
-                terrainShapeSubNode2.setTerrainType(terrainType);
+                getOrCreateDeepestTerrainShapeSubNode(terrainShapeNode, y, x).setTerrainType(terrainType);
             }
         }
     }
 
-    public void concentrate(TerrainShapeNode terrainShapeNode) {
+    public void fillTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Circle2D circle) {
+        for (int y = 0; y < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; y += TerrainUtil.MIN_SUB_NODE_LENGTH) {
+            for (int x = 0; x < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; x += TerrainUtil.MIN_SUB_NODE_LENGTH) {
+                DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(new Index(x, y)).add(terrainRect.getStart());
+                TerrainShapeSubNode terrainShapeSubNode = getOrCreateDeepestTerrainShapeSubNode(terrainShapeNode, y, x);
+                if (circle.inside(scanPosition)) {
+                    terrainShapeSubNode.setTerrainType(TerrainType.BLOCKED);
+                } else if (terrainShapeSubNode.getTerrainType() == null) {
+                    if (terrainShapeNode.getTerrainType() != null) {
+                        terrainShapeSubNode.setTerrainType(terrainShapeNode.getTerrainType());
+                    } else {
+                        terrainShapeSubNode.setTerrainType(TerrainType.LAND);
+                    }
+                }
+            }
+        }
+    }
+
+    public void concentrate(Collection<TerrainShapeNode> terrainShapeNodes) {
+        terrainShapeNodes.forEach(this::concentrate);
+    }
+
+    private void concentrate(TerrainShapeNode terrainShapeNode) {
         TerrainShapeSubNode[] terrainShapeSubNodes = terrainShapeNode.getTerrainShapeSubNodes();
         if (terrainShapeSubNodes == null) {
             return;
@@ -73,6 +83,24 @@ public class TerrainShapeSubNodeFactory {
             terrainShapeNode.setTerrainShapeSubNodes(null);
             terrainShapeNode.setTerrainType(lastTerrainType);
         }
+    }
+
+    private TerrainShapeSubNode getOrCreateDeepestTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, int y, int x) {
+        int depth0Index = calculateArrayIndex(x, y, 0);
+        int depth1Index = calculateArrayIndex(x, y, 1);
+        int depth2Index = calculateArrayIndex(x, y, 2);
+        TerrainShapeSubNode[] terrainShapeSubNodes0 = terrainShapeNode.getTerrainShapeSubNodes();
+        if (terrainShapeSubNodes0 == null) {
+            terrainShapeSubNodes0 = new TerrainShapeSubNode[4];
+            terrainShapeSubNodes0[0] = new TerrainShapeSubNode(null, 0);
+            terrainShapeSubNodes0[1] = new TerrainShapeSubNode(null, 0);
+            terrainShapeSubNodes0[2] = new TerrainShapeSubNode(null, 0);
+            terrainShapeSubNodes0[3] = new TerrainShapeSubNode(null, 0);
+            terrainShapeNode.setTerrainShapeSubNodes(terrainShapeSubNodes0);
+        }
+        TerrainShapeSubNode terrainShapeSubNode0 = terrainShapeSubNodes0[depth0Index];
+        TerrainShapeSubNode terrainShapeSubNode1 = getOrCreateTerrainShapeSubNode(terrainShapeSubNode0, 1, depth1Index);
+        return getOrCreateTerrainShapeSubNode(terrainShapeSubNode1, 2, depth2Index);
     }
 
     private int calculateArrayIndex(int x, int y, int depth) {

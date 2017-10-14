@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.DoubleHolder;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.InsideCheckResult;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -42,6 +43,7 @@ public class TerrainShapeSetup {
     private TerrainShape terrainShape;
     private TerrainTypeService terrainTypeService;
     private TerrainShapeSubNodeFactory terrainShapeSubNodeFactory;
+    private Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes = new HashMap<>();
 
     public TerrainShapeSetup(TerrainShape terrainShape, TerrainTypeService terrainTypeService) {
         this.terrainShape = terrainShape;
@@ -56,13 +58,23 @@ public class TerrainShapeSetup {
         long time = System.currentTimeMillis();
         for (TerrainObjectPosition objectPosition : terrainObjectPositions) {
             TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(objectPosition.getTerrainObjectId());
-            Circle2D terrainObjectArea = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius());
-            ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectArea);
+            Circle2D terrainObjectCircle = new Circle2D(objectPosition.getPosition(), terrainObjectConfig.getRadius());
+            ObstacleTerrainObject obstacleTerrainObject = new ObstacleTerrainObject(terrainObjectCircle);
             for (Index nodeIndex : GeometricUtil.rasterizeCircle(obstacleTerrainObject.getCircle(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
                 TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                 terrainShapeNode.addObstacle(obstacleTerrainObject);
-                if (!terrainShapeNode.isFullWater() && !terrainShapeNode.isHiddenUnderSlope()) {
-                    fillTerrainObjectSubNodes(terrainShapeNode, nodeIndex, terrainObjectArea);
+                // Create terrain type
+                Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                switch (terrainObjectCircle.checkInside(terrainRect)) {
+                    case INSIDE:
+                        terrainShapeNode.setTerrainType(TerrainType.BLOCKED);
+                        // terrainShapeNode.setTerrainShapeSubNodes(null);
+                        dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
+                        break;
+                    case PARTLY:
+                        terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainObjectCircle);
+                        dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
+                        break;
                 }
             }
         }
@@ -76,12 +88,16 @@ public class TerrainShapeSetup {
         long time = System.currentTimeMillis();
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
             try {
-                processSlope(setupSlope(terrainSlopePosition, 0));
+                processSlope(setupSlope(terrainSlopePosition, 0), dirtyTerrainShapeNodes);
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Can not handle slope with id: " + terrainSlopePosition.getId(), e);
             }
         }
         logger.severe("Generate Slopes: " + (System.currentTimeMillis() - time));
+    }
+
+    public void finish() {
+       terrainShapeSubNodeFactory.concentrate(dirtyTerrainShapeNodes.values());
     }
 
     private Slope setupSlope(TerrainSlopePosition terrainSlopePosition, double groundHeight) {
@@ -102,26 +118,24 @@ public class TerrainShapeSetup {
         slope.setChildren(children);
     }
 
-    private void processSlope(Slope slope) {
+    private void processSlope(Slope slope, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes) {
         SlopeContext slopeContext = new SlopeContext(slope);
         prepareVerticalSegments(slope);
         prepareSlopeContext(slope.getInnerPolygonSlope().getCorners(), slope.getInnerDriveway(), null, false, slopeContext);
         prepareSlopeContext(slope.getOuterPolygonSlope().getCorners(), slope.getOuterDriveway(), slope.getOuterToInnerDriveway(), true, slopeContext);
-
-        Map<Index, TerrainShapeNode> concentrationNeeded = new HashMap<>();
         if (slope.hasWater()) {
             // Setup TerrainType
-            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), concentrationNeeded, TerrainType.WATER_COST, TerrainType.LAND_COST, null);
-            setupTerrainType(slope.getOuterPolygonTerrainType(), concentrationNeeded, TerrainType.LAND_COST, TerrainType.LAND, null);
-            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), concentrationNeeded, TerrainType.WATER_COST, null, null);
-            setupTerrainType(slope.getInnerPolygonTerrainType(), concentrationNeeded, TerrainType.WATER, null, null);
+            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COST, TerrainType.LAND_COST, null);
+            setupTerrainType(slope.getOuterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COST, TerrainType.LAND, null);
+            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COST, null, null);
+            setupTerrainType(slope.getInnerPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER, null, null);
             // Setup slope ground connection
             Polygon2D outerPolygon = slope.getOuterPolygonSlope();
             Rectangle2D aabb = outerPolygon.toAabb();
             for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
                 Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                Polygon2D.Inside inside = outerPolygon.checkInside(terrainRect);
-                if (inside == Polygon2D.Inside.PARTLY) {
+                InsideCheckResult inside = outerPolygon.checkInside(terrainRect);
+                if (inside == InsideCheckResult.PARTLY) {
                     List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
                     if (outerPiercings != null) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
@@ -130,14 +144,14 @@ public class TerrainShapeSetup {
                             terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
                         }
                     }
-                } else if (inside == Polygon2D.Inside.INSIDE) {
+                } else if (inside == InsideCheckResult.INSIDE) {
                     terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
                 }
             }
         } else {
             // Setup TerrainType
-            setupTerrainType(slope.getOuterPolygonTerrainType(), concentrationNeeded, TerrainType.BLOCKED, TerrainType.LAND, slope.getDrivewayTerrainTypeHandler());
-            setupTerrainType(slope.getInnerPolygonTerrainType(), concentrationNeeded, TerrainType.LAND, null, null);
+            setupTerrainType(slope.getOuterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.BLOCKED, TerrainType.LAND, slope.getDrivewayTerrainTypeHandler());
+            setupTerrainType(slope.getInnerPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND, null, null);
             // Setup slope ground connection
             Polygon2D outerPolygon = slope.getOuterPolygonSlope();
             Rectangle2D aabb = outerPolygon.toAabb();
@@ -184,15 +198,14 @@ public class TerrainShapeSetup {
                 }
             }
         }
-        concentrationNeeded.values().forEach(terrainShapeNode -> terrainShapeSubNodeFactory.concentrate(terrainShapeNode));
         if (slope.getChildren() != null) {
             for (Slope childSlope : slope.getChildren()) {
-                processSlope(childSlope);
+                processSlope(childSlope, dirtyTerrainShapeNodes);
             }
         }
     }
 
-    private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> concentrationNeeded, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler) {
+    private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler) {
         Rectangle2D aabb = terrainRegion.toAabb();
         for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
@@ -201,10 +214,10 @@ public class TerrainShapeSetup {
                     case INSIDE:
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setTerrainType(TerrainType.LAND);
-                        terrainShapeNode.setTerrainShapeSubNodes(null);
+                        // terrainShapeNode.setTerrainShapeSubNodes(null);
                         continue;
                     case PARTLY:
-                        handleParty(terrainRegion, concentrationNeeded, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler, nodeIndex, terrainRect);
+                        handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler, nodeIndex, terrainRect);
                         continue;
                 }
             }
@@ -219,7 +232,7 @@ public class TerrainShapeSetup {
                     break;
                 }
                 case PARTLY: {
-                    handleParty(terrainRegion, concentrationNeeded, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler, nodeIndex, terrainRect);
+                    handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler, nodeIndex, terrainRect);
                     break;
                 }
                 case OUTSIDE: {
@@ -237,18 +250,18 @@ public class TerrainShapeSetup {
         }
     }
 
-    private void handleParty(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> concentrationNeeded, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler, Index nodeIndex, Rectangle2D terrainRect) {
+    private void handleParty(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler, Index nodeIndex, Rectangle2D terrainRect) {
         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-        concentrationNeeded.putIfAbsent(nodeIndex, terrainShapeNode);
+        dirtyTerrainShapeNodes.putIfAbsent(nodeIndex, terrainShapeNode);
         if (innerTerrainType != null && outerTerrainType != null) {
-            terrainShapeNode.setTerrainType(null);
+            // terrainShapeNode.setTerrainType(null);
             terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler);
         } else if (innerTerrainType != null) {
             terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, terrainShapeNode.getTerrainType(), drivewayTerrainTypeHandler);
-            terrainShapeNode.setTerrainType(null);
+            // terrainShapeNode.setTerrainType(null);
         } else if (outerTerrainType != null) {
             terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, terrainShapeNode.getTerrainType(), outerTerrainType, drivewayTerrainTypeHandler);
-            terrainShapeNode.setTerrainType(null);
+            // terrainShapeNode.setTerrainType(null);
         } else {
             throw new IllegalArgumentException("TerrainShapeSetup.setupTerrainType() innerTerrainType == null && outerTerrainType == null");
         }

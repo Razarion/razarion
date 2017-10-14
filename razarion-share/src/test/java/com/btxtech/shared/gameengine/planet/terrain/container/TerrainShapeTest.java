@@ -109,7 +109,7 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
     }
 
     @Test
-    public void testTerrainObject() {
+    public void testTerrainObjectLand() {
         List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
                 new TerrainObjectPosition().setTerrainObjectId(1).setPosition(new DecimalPosition(10, 10)),
                 new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(21, 32)),
@@ -123,7 +123,26 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 createTerrainSlopeCorner(80, 60, 1), createTerrainSlopeCorner(80, 90, 1), // driveway
                 createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
-        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShape1.json");
-        //AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShape1.json", terrainShape);
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShape1.json"); land
+        //AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShape1.json", terrainShape); land
+    }
+
+    @Test
+    public void testTerrainObjectWater() {
+        List<TerrainObjectPosition> terrainObjectPositions = Arrays.asList(
+                new TerrainObjectPosition().setTerrainObjectId(1).setPosition(new DecimalPosition(10, 10)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(21, 32)),
+                new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(135, 130)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(44, 27.5)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(72, 88)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(20, 60)),
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(92, 64))
+        );
+        TerrainShape terrainShape = setup(2, terrainObjectPositions, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(80, 40, null),
+                createTerrainSlopeCorner(80, 60, null), createTerrainSlopeCorner(80, 90, null), // driveway
+                createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
+        TerrainShapeTestDisplay.show(terrainShape);
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShape1.json"); water
+        //AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShape1.json", terrainShape); water
     }
 }

@@ -90,4 +90,14 @@ public class Circle2D {
         return true;
     }
 
+    public InsideCheckResult checkInside(Rectangle2D rectangle) {
+        if (inside(rectangle) ) {
+            return InsideCheckResult.INSIDE;
+        }
+        if(intersects(rectangle)) {
+            return InsideCheckResult.PARTLY;
+        } else {
+            return InsideCheckResult.OUTSIDE;
+        }
+    }
 }

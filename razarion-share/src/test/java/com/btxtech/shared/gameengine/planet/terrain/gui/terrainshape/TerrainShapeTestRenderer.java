@@ -64,7 +64,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
             if (terrainShapeNode == null) {
                 return;
             }
-            // displayTerrainTypeNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
+            displayTerrainTypeNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
             displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREEN);
             displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
         });
@@ -81,7 +81,7 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         // getGc().setStroke(Color.BLACK);
         // getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         displayTerrainTypeSubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
-        // displayObstacles(terrainShapeNode);
+        displayObstacles(terrainShapeNode);
     }
 
     private void displaySlopeConnections(List<List<Vertex>> groundSlopeConnections, Color color) {

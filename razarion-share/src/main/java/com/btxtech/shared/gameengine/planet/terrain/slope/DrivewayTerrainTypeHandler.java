@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.InsideCheckResult;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 
@@ -19,15 +20,15 @@ public class DrivewayTerrainTypeHandler {
         passableDrivewaySlope.add(new Polygon2D(passableDrivewayInner));
     }
 
-    public Polygon2D.Inside checkInside(Rectangle2D rect) {
+    public InsideCheckResult checkInside(Rectangle2D rect) {
         for (Polygon2D passable : passableDrivewaySlope) {
-            Polygon2D.Inside inside = passable.checkInside(rect);
-            if (inside == Polygon2D.Inside.OUTSIDE) {
+            InsideCheckResult inside = passable.checkInside(rect);
+            if (inside == InsideCheckResult.OUTSIDE) {
                 continue;
             }
             return inside;
         }
-        return Polygon2D.Inside.OUTSIDE;
+        return InsideCheckResult.OUTSIDE;
     }
 
     public boolean isInside(DecimalPosition position) {

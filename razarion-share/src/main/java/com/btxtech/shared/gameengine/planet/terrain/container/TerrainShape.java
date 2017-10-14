@@ -56,6 +56,7 @@ public class TerrainShape {
         TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
+        terrainShapeSetup.finish();
         logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getPlanetId());
     }
 

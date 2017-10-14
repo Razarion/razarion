@@ -14,11 +14,6 @@ import java.util.List;
  * 11.03.2016.
  */
 public class Polygon2D {
-    public enum Inside {
-        OUTSIDE,
-        PARTLY,
-        INSIDE
-    }
 
     // private Logger logger = Logger.getLogger(Polygon2D.class.getName());
     private List<DecimalPosition> corners = new ArrayList<>();
@@ -86,7 +81,7 @@ public class Polygon2D {
         return false;
     }
 
-    public Inside checkInside(Rectangle2D rectangle2D) {
+    public InsideCheckResult checkInside(Rectangle2D rectangle2D) {
         List<DecimalPosition> corners = rectangle2D.toCorners();
         int insideCornerCount = 0;
         for (DecimalPosition position : corners) {
@@ -96,23 +91,23 @@ public class Polygon2D {
         }
         if (insideCornerCount == 4) {
             if (isLineCrossing(rectangle2D.toLines())) {
-                return Inside.PARTLY;
+                return InsideCheckResult.PARTLY;
             } else {
-                return Inside.INSIDE;
+                return InsideCheckResult.INSIDE;
             }
         }
         if (insideCornerCount == 0) {
             if (isLineCrossing(rectangle2D.toLines())) {
-                return Inside.PARTLY;
+                return InsideCheckResult.PARTLY;
             } else {
                 if (rectangle2D.contains(this.corners)) {
-                    return Inside.PARTLY;
+                    return InsideCheckResult.PARTLY;
                 } else {
-                    return Inside.OUTSIDE;
+                    return InsideCheckResult.OUTSIDE;
                 }
             }
         }
-        return Inside.PARTLY;
+        return InsideCheckResult.PARTLY;
     }
 
     /**
