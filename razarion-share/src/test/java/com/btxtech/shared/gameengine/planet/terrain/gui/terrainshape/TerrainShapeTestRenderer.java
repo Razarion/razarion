@@ -65,8 +65,8 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
                 return;
             }
             displayTerrainTypeNode(absoluteTile, nodeRelativeIndex, terrainShapeNode);
-            // displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREEN);
-            // displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
+            displaySlopeConnections(terrainShapeNode.getGroundSlopeConnections(), Color.GREENYELLOW);
+            displaySlopeConnections(terrainShapeNode.getWaterSegments(), Color.BLUE);
             displayObstacles(terrainShapeNode);
         });
         // displayFractionalSlope(terrainShapeTile.getFractionalSlopes());

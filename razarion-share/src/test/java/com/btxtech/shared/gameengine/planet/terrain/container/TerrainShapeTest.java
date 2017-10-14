@@ -87,7 +87,7 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
         TerrainShape terrainShape = setup(1, null, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null), createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
         // AssertTerrainShape.saveTerrainShape( terrainShape, "testSimpleSlopeShape1.json");
         TerrainShapeTestDisplay.show(terrainShape);
-        // AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSimpleSlopeShape1.json", terrainShape);
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSimpleSlopeShape1.json", terrainShape);
     }
 
     @Test
@@ -97,7 +97,7 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 createTerrainSlopeCorner(78, 110, null), createTerrainSlopeCorner(30, 110, null));
         // AssertTerrainShape.saveTerrainShape( terrainShape, "testSlopeDrivewayShape1.json");
         TerrainShapeTestDisplay.show(terrainShape);
-        //AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSlopeDrivewayShape1.json", terrainShape);
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSlopeDrivewayShape1.json", terrainShape);
     }
 
     @Test
@@ -123,8 +123,8 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 createTerrainSlopeCorner(80, 60, 1), createTerrainSlopeCorner(80, 90, 1), // driveway
                 createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
-        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShape1.json"); land
-        //AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShape1.json", terrainShape); land
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShapeLand1.json"); land
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShapeLand1.json", terrainShape);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 createTerrainSlopeCorner(80, 60, null), createTerrainSlopeCorner(80, 90, null), // driveway
                 createTerrainSlopeCorner(80, 110, null), createTerrainSlopeCorner(30, 110, null));
         TerrainShapeTestDisplay.show(terrainShape);
-        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShape1.json"); water
-        //AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShape1.json", terrainShape); water
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testTerrainObjectShapeWater1.json"); water
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testTerrainObjectShapeWater1.json", terrainShape);
     }
 }
