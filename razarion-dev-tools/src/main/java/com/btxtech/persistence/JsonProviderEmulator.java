@@ -9,12 +9,16 @@ import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.webglemulator.razarion.HttpConnectionEmu;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
 import java.io.File;
@@ -34,14 +38,16 @@ public class JsonProviderEmulator {
     private static final String FILE_NAME_MULTI_PLAYER = "GameUiControlConfigMultiplayer.json";
     private static final String VERTEX_CONTAINER_BUFFERS_FILE_NAME = "VertexContainerBuffers.json";
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
-    private static final String URL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH + "/" + RestUrl.COLD;
+    private static final String URL_GAME_UI_CONTROL = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH + "/" + RestUrl.COLD;
+    private static final String URL_LOGIN = "http://localhost:8080";
     private static final String URL_TERRAIN_SHAPE = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.TERRAIN_SHAPE_PROVIDER + "/";
     private static final String URL_SLOPES_PROVIDER = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.PLANET_EDITOR_SERVICE_PATH + "/" + "readTerrainSlopePositions/";
     private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = "http://localhost:8080/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.SHAPE_3D_PROVIDER + "/" + RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     private static final String GAME_UI_CONTROL_INPUT = "{\"playbackGameSessionUuid\": null, \"playbackSessionUuid\": null}";
+    private static final String FB_USER_ID_TEST = "100003634094139";
 
     public ColdGameUiControlConfig readFromServer() {
-        return ClientBuilder.newClient().target(URL).request(MediaType.APPLICATION_JSON).get(ColdGameUiControlConfig.class);
+        return ClientBuilder.newClient().target(URL_GAME_UI_CONTROL).request(MediaType.APPLICATION_JSON).get(ColdGameUiControlConfig.class);
     }
 
     public ColdGameUiControlConfig readFromFile(boolean tutorial) {
@@ -89,11 +95,27 @@ public class JsonProviderEmulator {
             client.register((ClientResponseFilter) (requestContext, responseContext) -> {
                 for (Map.Entry<String, NewCookie> entry : responseContext.getCookies().entrySet()) {
                     if (entry.getKey().equals(HttpConnectionEmu.SESSION_KEY)) {
-                        emu.setSessionCookie(entry.getValue());
+                        if (emu.getSessionCookie() == null) {
+                            emu.setSessionCookie(entry.getValue());
+                        }
                     }
                 }
             });
-            String string = client.target(URL).request(MediaType.APPLICATION_JSON).post(Entity.entity(GAME_UI_CONTROL_INPUT, MediaType.APPLICATION_JSON_TYPE), String.class);
+            // client.register(new LoggingFilter(Logger.getLogger(JsonProviderEmulator.class.getName()), true));
+            // Execute Get Page to read JSF form javax.faces.ViewState
+            String homePage = client.target(URL_LOGIN).request(MediaType.TEXT_HTML).get(String.class);
+            Document doc = Jsoup.parse(homePage);
+            Element formFiled = doc.getElementById("j_id1:javax.faces.ViewState:0");
+            String FormValueViewState = formFiled.attr("value");
+            // Execute Login with jsession cookie and javax.faces.ViewState from above
+            Form formData = new Form();
+            formData.param("helperForm", "helperForm");
+            formData.param("helperForm:fbUserIdField", FB_USER_ID_TEST);
+            formData.param("helperForm:fbResponseFormButton", "Submit");
+            formData.param("javax.faces.ViewState", FormValueViewState);
+            client.target(URL_LOGIN).request(MediaType.TEXT_HTML).cookie(emu.getSessionCookie()).post(Entity.entity(formData, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+            // Execute Get with jsession cookie and GAME_UI_CONTROL
+            String string = client.target(URL_GAME_UI_CONTROL).request(MediaType.APPLICATION_JSON).cookie(emu.getSessionCookie()).post(Entity.entity(GAME_UI_CONTROL_INPUT, MediaType.APPLICATION_JSON_TYPE), String.class);
             emu.setColdGameUiControlConfig(new ObjectMapper().readValue(string, ColdGameUiControlConfig.class));
             return emu;
         } catch (IOException e) {
@@ -147,8 +169,8 @@ public class JsonProviderEmulator {
     }
 
     public void fromServerToFile() {
-        fromServerToFilePost(FILE_NAME_MULTI_PLAYER, URL, GAME_UI_CONTROL_INPUT);
-        fromServerToFilePost(FILE_NAME_TUTORIAL, URL, GAME_UI_CONTROL_INPUT);
+        fromServerToFilePost(FILE_NAME_MULTI_PLAYER, URL_GAME_UI_CONTROL, GAME_UI_CONTROL_INPUT);
+        fromServerToFilePost(FILE_NAME_TUTORIAL, URL_GAME_UI_CONTROL, GAME_UI_CONTROL_INPUT);
     }
 
     public void fromServerToFileVertexContainerBuffer() {
