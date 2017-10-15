@@ -644,6 +644,13 @@ com = {
                         this.height = height;
                     };
 
+                    this.getTerrainType = function () {
+                        return this.terrainType;
+                    };
+                    this.setTerrainType = function (terrainType) {
+                        this.terrainType = terrainType;
+                    };
+
                     this.toArray = function () {
                         var terrainSubNodesField = [];
                         if (typeof this.terrainSubNodes !== 'undefined' && this.terrainSubNodes.length > 0) {
@@ -658,14 +665,15 @@ com = {
                                 }
                             }
                         }
-                        return [this.land, this.height, terrainSubNodesField];
+                        return [this.land, this.height, this.terrainType, terrainSubNodesField];
                     };
 
                     this.fromArray = function (terrainNodeArray) {
                         this.land = terrainNodeArray[0];
                         this.height = terrainNodeArray[1];
+                        this.terrainType = terrainNodeArray[2];
 
-                        var terrainSubNodesField = terrainNodeArray[2];
+                        var terrainSubNodesField = terrainNodeArray[3];
                         if (typeof terrainSubNodesField !== 'undefined' && terrainSubNodesField.length > 0) {
                             this.terrainSubNodes = new Array(terrainSubNodesField.length);
                             for (var x = 0; x < terrainSubNodesField.length; x++) {
@@ -715,6 +723,13 @@ com = {
                         this.height = height;
                     };
 
+                    this.getTerrainType = function () {
+                        return this.terrainType;
+                    };
+                    this.setTerrainType = function (terrainType) {
+                        this.terrainType = terrainType;
+                    };
+
                     this.toArray = function () {
                         var terrainSubNodesField = [];
                         if (typeof this.terrainSubNodes !== 'undefined' && this.terrainSubNodes.length > 0) {
@@ -729,14 +744,15 @@ com = {
                                 }
                             }
                         }
-                        return [this.land, this.height, terrainSubNodesField];
+                        return [this.land, this.height, this.terrainType, terrainSubNodesField];
                     };
 
                     this.fromArray = function (terrainNodeArray) {
                         this.land = terrainNodeArray[0];
                         this.height = terrainNodeArray[1];
+                        this.terrainType = terrainNodeArray[2];
 
-                        var terrainSubNodesField = terrainNodeArray[2];
+                        var terrainSubNodesField = terrainNodeArray[3];
                         if (typeof terrainSubNodesField !== 'undefined' && terrainSubNodesField.length > 0) {
                             this.terrainSubNodes = new Array(terrainSubNodesField.length);
                             for (var x = 0; x < terrainSubNodesField.length; x++) {
