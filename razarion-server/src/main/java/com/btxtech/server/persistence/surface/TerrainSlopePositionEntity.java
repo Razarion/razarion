@@ -30,7 +30,7 @@ public class TerrainSlopePositionEntity {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn
     private SlopeConfigEntity slopeConfigEntity;
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "terrainSlopePositionId")
     @OrderColumn(name = "orderColumn")
     private List<TerrainSlopeCornerEntity> polygon;

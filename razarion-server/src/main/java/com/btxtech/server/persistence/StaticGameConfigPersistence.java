@@ -24,7 +24,6 @@ public class StaticGameConfigPersistence {
     @Inject
     private InventoryPersistence inventoryPersistence;
 
-    @Transactional
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
