@@ -25,6 +25,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -64,7 +65,14 @@ public class ExtendedGraphicsContext {
             gc.strokeLine(vertexB.getX(), vertexB.getY(), vertexC.getX(), vertexC.getY());
             gc.strokeLine(vertexC.getX(), vertexC.getY(), vertexA.getX(), vertexA.getY());
         }
+    }
 
+    public void strokeTriangles(double[] vertexParts, double lineWidth, Paint color) {
+        List<Vertex> vertices = new ArrayList<>();
+        for (int i = 0; i < vertexParts.length; i += 3) {
+            vertices.add(new Vertex(vertexParts[i], vertexParts[i + 1], vertexParts[i + 2]));
+        }
+        strokeTriangles(vertices, lineWidth, color);
     }
 
     public void strokeVertexList(Float32ArrayEmu verticesFloat32ArrayEmu, double lineWidth, Paint color) {

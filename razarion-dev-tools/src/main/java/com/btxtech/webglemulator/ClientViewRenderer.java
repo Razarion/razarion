@@ -6,6 +6,8 @@ import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -69,26 +71,51 @@ public class ClientViewRenderer extends Abstract2dRenderer {
             renderHeight(egc, active, rectangle2D.getStart());
             // egc.getGc().setFill(Color.color(0.0, 1.0, 0.0, 0.5));
             // egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
-            renderIsFree(egc, active, rectangle2D.getStart());
+            renderTerrainType(egc, active, rectangle2D.getStart());
+            renderTriangles(egc, active.getTerrainTile());
         }
 
         for (UiTerrainTile inActive : new ArrayList<>(cacheTerrainTiles.values())) {
             Rectangle2D rectangle2D = TerrainUtil.toAbsoluteTileRectangle(new Index(inActive.getTerrainTile().getIndexX(), inActive.getTerrainTile().getIndexY()));
             // egc.getGc().setFill(Color.color(1.0, 0.0, 0.0, 0.5));
             // egc.getGc().fillRect(rectangle2D.startX(), rectangle2D.startY(), rectangle2D.width() - 2, rectangle2D.height() - 2);
-            renderIsFree(egc, inActive, rectangle2D.getStart());
+            renderTerrainType(egc, inActive, rectangle2D.getStart());
+            renderTriangles(egc, inActive.getTerrainTile());
         }
     }
 
-    private void renderIsFree(ExtendedGraphicsContext egc, UiTerrainTile uiTerrainTile, DecimalPosition offset) {
+    private void renderTerrainType(ExtendedGraphicsContext egc, UiTerrainTile uiTerrainTile, DecimalPosition offset) {
         for (double x = 0; x < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; x++) {
             for (double y = 0; y < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; y++) {
                 DecimalPosition terrainPosition = new DecimalPosition(x, y).add(offset);
-                if (uiTerrainTile.isTerrainFree(terrainPosition.add(0.5, 0.5), TerrainType.WATER)) {
-                    egc.getGc().setFill(Color.GREEN);
-                } else {
-                    egc.getGc().setFill(Color.RED);
+                TerrainType terrainType = uiTerrainTile.getTerrainType(terrainPosition.add(0.5, 0.5));
+                if (terrainType == null) {
+                    continue;
                 }
+                switch (terrainType) {
+                    case LAND:
+                        egc.getGc().setFill(Color.GREEN);
+                        break;
+                    case WATER:
+                        egc.getGc().setFill(Color.BLUE);
+                        break;
+                    case LAND_COST:
+                        egc.getGc().setFill(Color.LIGHTGREEN);
+                        break;
+                    case WATER_COST:
+                        egc.getGc().setFill(Color.SANDYBROWN);
+                        break;
+                    case BLOCKED:
+                        egc.getGc().setFill(Color.RED);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unknown TerrainType: " + terrainType);
+                }
+//                if (uiTerrainTile.isTerrainFree(terrainPosition.add(0.5, 0.5), TerrainType.WATER)) {
+//                    egc.getGc().setFill(Color.GREEN);
+//                } else {
+//                    egc.getGc().setFill(Color.RED);
+//                }
                 egc.getGc().fillRect(terrainPosition.getX(), terrainPosition.getY(), 0.5, 0.5);
 
             }
@@ -104,6 +131,18 @@ public class ClientViewRenderer extends Abstract2dRenderer {
                 egc.getGc().setFill(Color.color(v, v, v, 1));
                 egc.getGc().fillRect(terrainPosition.getX(), terrainPosition.getY(), 1, 1);
             }
+        }
+    }
+
+    private void renderTriangles(ExtendedGraphicsContext egc, TerrainTile terrainTile) {
+        egc.strokeTriangles(terrainTile.getGroundVertices(), 0.1, Color.GREEN);
+        if (terrainTile.getTerrainSlopeTiles() != null) {
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+                egc.strokeTriangles(terrainSlopeTile.getVertices(), 0.1, Color.DARKGRAY);
+            }
+        }
+        if (terrainTile.getTerrainWaterTile() != null) {
+            egc.strokeTriangles(terrainTile.getTerrainWaterTile().getVertices(), 0.1, Color.BLUE);
         }
     }
 }
