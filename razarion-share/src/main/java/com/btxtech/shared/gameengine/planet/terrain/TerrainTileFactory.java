@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeNode;
@@ -221,7 +222,8 @@ public class TerrainTileFactory {
                     try {
                         Triangulator.calculate(connections, terrainTileContext::insertTriangleGroundSlopeConnection);
                     } catch (Exception e) {
-                        exceptionHandler.handleException(e);
+                        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeIndex));
+                        exceptionHandler.handleException("TerrainTileFactory.insertSlopeGroundConnectionPart(); Triangulator.calculate() failed. terrainRect: " + terrainRect, e);
                     }
                 });
             }
