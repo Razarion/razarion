@@ -37,6 +37,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -292,7 +293,7 @@ public class WebGlEmulatorController implements Initializable {
             final Stage stage = new Stage();
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/webglemulation/ClientView.fxml"));
             loader.setControllerFactory(param -> clientViewController);
-            AnchorPane root = loader.load();
+            BorderPane root = loader.load();
             stage.setTitle("Client View");
             stage.setScene(new Scene(root));
 //            stage.setX(-1288);
