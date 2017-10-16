@@ -225,7 +225,37 @@ public class UiTerrainTile {
 
             @Override
             public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return terrainSubNode.getTerrainType() != null &&terrainSubNode.getTerrainType() == terrainType.ordinal();
+                return terrainSubNode.getTerrainType() != null && terrainSubNode.getTerrainType() == terrainType.ordinal();
+            }
+        });
+    }
+
+    public TerrainType getTerrainType(DecimalPosition terrainPosition) {
+        return findNode(terrainPosition, new TerrainTileAccess<TerrainType>() {
+            @Override
+            public TerrainType terrainTileNotLoaded() {
+                return null;
+            }
+
+            @Override
+            public TerrainType onTerrainTile() {
+                return null;
+            }
+
+            @Override
+            public TerrainType onTerrainNode(TerrainNode terrainNode) {
+                if(terrainNode.getTerrainType() == null) {
+                    return null;
+                }
+                return TerrainType.values()[terrainNode.getTerrainType()];
+            }
+
+            @Override
+            public TerrainType onTerrainSubNode(TerrainSubNode terrainSubNode) {
+                if(terrainSubNode.getTerrainType() == null) {
+                    return null;
+                }
+                return TerrainType.values()[terrainSubNode.getTerrainType()];
             }
         });
     }
