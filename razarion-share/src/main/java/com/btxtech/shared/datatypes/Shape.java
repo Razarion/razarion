@@ -14,7 +14,7 @@ public class Shape {
 
     public Shape(List<SlopeShape> entries) {
         this.entries = entries;
-        distance = Math.abs(entries.get(0).getPosition().getX() - entries.get(entries.size() - 1).getPosition().getX());
+        distance = Math.abs(entries.get(entries.size() - 1).getPosition().getX());
     }
 
     public int getVertexCount() {

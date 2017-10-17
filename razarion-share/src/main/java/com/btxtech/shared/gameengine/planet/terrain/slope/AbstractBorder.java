@@ -33,15 +33,13 @@ public abstract class AbstractBorder {
         return distance;
     }
 
-    public List<VerticalSegment> setupVerticalSegments(Slope slope, double verticalSpace, AbstractBorder next) {
-        List<VerticalSegment> verticalSegments = new ArrayList<>();
+    public void fillVerticalSegments(List<VerticalSegment> verticalSegments, Slope slope, double verticalSpace, AbstractBorder next) {
         int count = getSegmentCount(verticalSpace);
         double length = getSegmentLength(count);
         for (int i = 0; i < count; i++) {
             DecimalPosition pointFromStart = setupInnerPointFormStart(length, i);
-            verticalSegments.add(new VerticalSegment(slope, i, pointFromStart, setupOuterPointFormStart(length, i), calculateDrivewayHeightFactor(pointFromStart, next)));
+            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, setupOuterPointFormStart(length, i), calculateDrivewayHeightFactor(pointFromStart, next)));
         }
-        return verticalSegments;
     }
 
     private double calculateDrivewayHeightFactor(DecimalPosition actualPosition, AbstractBorder next) {

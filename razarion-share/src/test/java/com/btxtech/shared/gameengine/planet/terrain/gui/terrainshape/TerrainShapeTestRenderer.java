@@ -50,7 +50,10 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
         // renderPathingAccess();
         for (int x = 0; x < actual.getTileXCount(); x++) {
             for (int y = 0; y < actual.getTileYCount(); y++) {
-                displayTerrainShapeTile(new Index(x, y).add(actual.getTileOffset()), terrainShapeTiles[x][y]);
+                TerrainShapeTile terrainShapeTile = terrainShapeTiles[x][y];
+                if (terrainShapeTile != null) {
+                    displayTerrainShapeTile(new Index(x, y).add(actual.getTileOffset()), terrainShapeTile);
+                }
             }
         }
     }

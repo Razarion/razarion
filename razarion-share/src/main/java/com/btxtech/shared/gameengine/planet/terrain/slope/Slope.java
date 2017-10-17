@@ -51,7 +51,7 @@ public class Slope {
         // Setup vertical segments
         for (int i = 0; i < borders.size(); i++) {
             AbstractBorder border = borders.get(i);
-            verticalSegments.addAll(border.setupVerticalSegments(this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders)));
+            border.fillVerticalSegments(verticalSegments, this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders));
         }
 
         setupLimitationPolygon();
