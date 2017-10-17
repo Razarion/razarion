@@ -212,17 +212,17 @@ public class JsonProviderEmulator {
         System.out.println("skeletonConfig.setId(" + slopeSkeletonConfig.getId() + ").setType(SlopeSkeletonConfig.Type." + slopeSkeletonConfig.getType() + ");");
         System.out.println("skeletonConfig.setRows(" + slopeSkeletonConfig.getRows() + ").setSegments(" + slopeSkeletonConfig.getSegments() + ").setWidth(" + slopeSkeletonConfig.getWidth() + ").setVerticalSpace(" + slopeSkeletonConfig.getVerticalSpace() + ").setHeight(" + slopeSkeletonConfig.getHeight() + ");");
         System.out.println("SlopeNode[][] slopeNodes = new SlopeNode[][]{");
-        for (int y = 0; y < slopeSkeletonConfig.getRows(); y++) {
+        for (int x = 0; x < slopeSkeletonConfig.getSegments(); x++) {
             System.out.print("{");
-            for (int x = 0; x < slopeSkeletonConfig.getSegments(); x++) {
-                SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(x, slopeSkeletonConfig.getRows() - 1 - y);
+            for (int y = 0; y < slopeSkeletonConfig.getRows(); y++) {
+                SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(x, y);
                 System.out.print("createSlopeNode(" + slopeNode.getPosition().getX() + ", " + slopeNode.getPosition().getZ() + ", " + slopeNode.getSlopeFactor() + ")");
-                if (x + 1 < slopeSkeletonConfig.getSegments()) {
+                if (y + 1 < slopeSkeletonConfig.getRows()) {
                     System.out.print(", ");
                 }
             }
             System.out.print("}");
-            if (y + 1 < slopeSkeletonConfig.getRows()) {
+            if (x + 1 < slopeSkeletonConfig.getSegments()) {
                 System.out.println(",");
             } else {
                 System.out.println();
