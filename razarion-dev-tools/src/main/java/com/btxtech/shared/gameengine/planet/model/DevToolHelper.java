@@ -8,9 +8,10 @@ import com.btxtech.shared.datatypes.DecimalPosition;
  */
 public class DevToolHelper {
     public static SyncPhysicalArea generateSyncPhysicalArea(DecimalPosition position, double radius) {
-        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea();
-        syncPhysicalArea.init(null, radius, false, position, 0);
-        return syncPhysicalArea;
+        throw new UnsupportedOperationException();
+        //        SyncPhysicalArea syncPhysicalArea = new SyncPhysicalArea();
+//        syncPhysicalArea.init(null, radius, false, position, 0);
+//        return syncPhysicalArea;
     }
 
     public static SyncBaseItem generateSyncBaseItem(DecimalPosition position) {

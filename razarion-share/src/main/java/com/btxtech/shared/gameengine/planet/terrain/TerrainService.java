@@ -1,23 +1,16 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.SurfaceAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeAccess;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -25,11 +18,9 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class TerrainService {
-    private Logger logger = Logger.getLogger(TerrainService.class.getName());
+    // private Logger logger = Logger.getLogger(TerrainService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
-    @Inject
-    private ItemTypeService itemTypeService;
     @Inject
     private TerrainTileFactory terrainTileFactory;
     @Inject
@@ -57,10 +48,6 @@ public class TerrainService {
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex) {
         return terrainTileFactory.generateTerrainTile(terrainTileIndex, terrainShape);
-    }
-
-    public boolean hasSurfaceTypeInRegion(SurfaceType surfaceType, Rectangle absRectangle) {
-        throw new UnsupportedOperationException();
     }
 
     public PathingAccess getPathingAccess() {

@@ -43,6 +43,7 @@ public class TerrainShapeTile {
     private Double uniformGroundHeight;
     private List<FractionalSlope> fractionalSlopes;
 
+    @Deprecated // User getTerrainType
     public boolean isLand() {
         return fullWaterLevel == null;
     }

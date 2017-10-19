@@ -1,49 +1,48 @@
-package com.btxtech.shared.gameengine.planet.terrain.gui.astar;
+package com.btxtech.shared.gameengine.planet.terrain.gui.weld;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
-import com.btxtech.shared.gameengine.planet.pathing.AStar;
-import com.btxtech.shared.gameengine.planet.pathing.AStarNode;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
+import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestRenderer;
 import javafx.scene.paint.Color;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 /**
  * Created by Beat
  * on 30.06.2017.
  */
-public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
+@Singleton
+public class WeldTestRenderer extends AbstractTerrainTestRenderer {
+    @Inject
+    private TerrainService terrainService;
     private TerrainShape actual;
-    private SimplePath simplePath;
-    private AStar aStar;
-    private DisplayDTO displayDTO;
     private TerrainShapeTile[][] terrainShapeTiles;
+    private UserDataRenderer userDataRenderer;
 
-    public TerrainAStarTestRenderer(DisplayDTO displayDTO) {
-        actual = displayDTO.getTerrainShape();
-        simplePath = displayDTO.getSimplePath();
-        aStar = displayDTO.getaStar();
-        this.displayDTO = displayDTO;
+    public void setupFields(Object[] userObjects) {
+        if (userObjects != null && userObjects.length > 0) {
+            userDataRenderer = new UserDataRenderer(this, userObjects);
+        }
+        actual = (TerrainShape) SimpleTestEnvironment.readField("terrainShape", terrainService);
         try {
             Field field = TerrainShape.class.getDeclaredField("terrainShapeTiles");
             field.setAccessible(true);
@@ -64,41 +63,41 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
                 }
             }
         }
-        displayClosedList();
-        if (simplePath != null) {
-            strokeLine(simplePath.getWayPositions(), LINE_WIDTH, Color.OLIVEDRAB, true);
-        }
-        if(displayDTO.getPathingNodeWrapper() != null) {
-            getGc().setFill(new Color(1, 0, 0, 1));
-            if(displayDTO.getPathingNodeWrapper().getNodeIndex() != null) {
-                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(displayDTO.getPathingNodeWrapper().getNodeIndex());
-                getGc().fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
-            } else if(displayDTO.getPathingNodeWrapper().getSubNodePosition() != null) {
-                double length = TerrainUtil.calculateSubNodeLength(displayDTO.getPathingNodeWrapper().getTerrainShapeSubNode().getDepth());
-                getGc().fillRect(displayDTO.getPathingNodeWrapper().getSubNodePosition().getX(), displayDTO.getPathingNodeWrapper().getSubNodePosition().getY(), length, length);
-            }
+//        displayClosedList();
+//        if(displayDTO.getPathingNodeWrapper() != null) {
+//            getGc().setFill(new Color(1, 0, 0, 1));
+//            if(displayDTO.getPathingNodeWrapper().getNodeIndex() != null) {
+//                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(displayDTO.getPathingNodeWrapper().getNodeIndex());
+//                getGc().fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
+//            } else if(displayDTO.getPathingNodeWrapper().getSubNodePosition() != null) {
+//                double length = TerrainUtil.calculateSubNodeLength(displayDTO.getPathingNodeWrapper().getTerrainShapeSubNode().getDepth());
+//                getGc().fillRect(displayDTO.getPathingNodeWrapper().getSubNodePosition().getX(), displayDTO.getPathingNodeWrapper().getSubNodePosition().getY(), length, length);
+//            }
+//        }
+        if (userDataRenderer != null) {
+            userDataRenderer.render();
         }
     }
 
-    private void displayClosedList() {
-        if (aStar == null) {
-            return;
-        }
-        Map<PathingNodeWrapper, AStarNode> closedList = (Map<PathingNodeWrapper, AStarNode>) SimpleTestEnvironment.readField("closedList", aStar);
-        for (Map.Entry<PathingNodeWrapper, AStarNode> entry : closedList.entrySet()) {
-            PathingNodeWrapper pathingNodeWrapper = entry.getKey();
-            if(pathingNodeWrapper.getNodeIndex() != null) {
-                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(pathingNodeWrapper.getNodeIndex());
-                getGc().setFill(new Color(0, 1, 1, 0.3));
-                getGc().fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
-            }
-            if(pathingNodeWrapper.getTerrainShapeSubNode() != null) {
-                double length = TerrainUtil.calculateSubNodeLength(pathingNodeWrapper.getTerrainShapeSubNode().getDepth());
-                getGc().setFill(new Color(1, 0, 1, 0.3));
-                getGc().fillRect(pathingNodeWrapper.getSubNodePosition().getX(), pathingNodeWrapper.getSubNodePosition().getY(), length - 0.1, length - 0.1);
-            }
-        }
-    }
+//    private void displayClosedList() {
+//        if (aStar == null) {
+//            return;
+//        }
+//        Map<PathingNodeWrapper, AStarNode> closedList = (Map<PathingNodeWrapper, AStarNode>) SimpleTestEnvironment.readField("closedList", aStar);
+//        for (Map.Entry<PathingNodeWrapper, AStarNode> entry : closedList.entrySet()) {
+//            PathingNodeWrapper pathingNodeWrapper = entry.getKey();
+//            if(pathingNodeWrapper.getNodeIndex() != null) {
+//                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(pathingNodeWrapper.getNodeIndex());
+//                getGc().setFill(new Color(0, 1, 1, 0.3));
+//                getGc().fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
+//            }
+//            if(pathingNodeWrapper.getTerrainShapeSubNode() != null) {
+//                double length = TerrainUtil.calculateSubNodeLength(pathingNodeWrapper.getTerrainShapeSubNode().getDepth());
+//                getGc().setFill(new Color(1, 0, 1, 0.3));
+//                getGc().fillRect(pathingNodeWrapper.getSubNodePosition().getX(), pathingNodeWrapper.getSubNodePosition().getY(), length - 0.1, length - 0.1);
+//            }
+//        }
+//    }
 
     private void displayTerrainShapeTile(Index tileIndex, TerrainShapeTile terrainShapeTile) {
         getGc().setLineWidth(LINE_WIDTH * 4.0);
@@ -128,8 +127,12 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
         getGc().setStroke(Color.BLACK);
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
-        displayObstacles(terrainShapeNode);
+        // displayObstacles(terrainShapeNode);
         displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
+        if (terrainShapeNode.getTerrainType() != null) {
+            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainShapeNode.getTerrainType()));
+            getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+        }
     }
 
     private void displayGroundSlopeConnections(List<List<Vertex>> groundSlopeConnections) {
@@ -185,22 +188,14 @@ public class TerrainAStarTestRenderer extends AbstractTerrainTestRenderer {
 
     private void displaySubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
-        if (terrainShapeSubNode.getTerrainShapeSubNodes() == null) {
-            if (terrainShapeSubNode.isLand()) {
-                getGc().setFill(new Color(0.0f, 0.8f, 0.0f, 0.5f));
-                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-            } else {
-                getGc().setFill(new Color(0.8f, 0.0f, 0.0f, 0.5f));
-                getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-            }
-//            double v = terrainShapeSubNode.getHeight() / 20.0;
-//            getGc().setFill(new Color(v, v, v, 1f));
-//            getGc().fillRect(absolute.getX(), absolute.getY(), subLength, subLength);
-        }
         getGc().setStroke(Color.BLUEVIOLET);
         getGc().setLineWidth(LINE_WIDTH);
         getGc().strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
         displaySubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
+        if (terrainShapeSubNode.getTerrainType() != null) {
+            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainShapeSubNode.getTerrainType()));
+            getGc().fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
+        }
     }
 
     private void displayFractionalSlope(List<FractionalSlope> fractionalSlopes) {

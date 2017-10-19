@@ -117,7 +117,8 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(44, 27.5)),
                 new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(72, 88)),
                 new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(20, 60)),
-                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(92, 64))
+                new TerrainObjectPosition().setTerrainObjectId(2).setPosition(new DecimalPosition(92, 64)),
+                new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(47, 117))
         );
         TerrainShape terrainShape = setup(1, terrainObjectPositions, createTerrainSlopeCorner(30, 40, null), createTerrainSlopeCorner(80, 40, null),
                 createTerrainSlopeCorner(80, 60, 1), createTerrainSlopeCorner(80, 90, 1), // driveway

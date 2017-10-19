@@ -14,9 +14,12 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+
 public class ResourceItemType extends ItemType {
     private double radius;
     private boolean fixVerticalNorm;
+    private TerrainType terrainType;
     private int amount;
 
     public double getRadius() {
@@ -25,6 +28,15 @@ public class ResourceItemType extends ItemType {
 
     public ResourceItemType setRadius(double radius) {
         this.radius = radius;
+        return this;
+    }
+
+    public TerrainType getTerrainType() {
+        return terrainType;
+    }
+
+    public ResourceItemType setTerrainType(TerrainType terrainType) {
+        this.terrainType = terrainType;
         return this;
     }
 

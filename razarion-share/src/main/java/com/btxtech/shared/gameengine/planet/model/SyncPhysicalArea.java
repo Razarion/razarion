@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -33,18 +34,24 @@ public class SyncPhysicalArea {
     private Vertex norm;
     private double radius;
     private boolean fixVerticalNorm;
+    private TerrainType terrainType;
     private Matrix4 modelMatrices;
 
-    public void init(SyncItem syncItem, double radius, boolean fixVerticalNorm, DecimalPosition position2d, double angle) {
+    public void init(SyncItem syncItem, double radius, boolean fixVerticalNorm, TerrainType terrainType, DecimalPosition position2d, double angle) {
         this.syncItem = syncItem;
         this.radius = radius;
         this.fixVerticalNorm = fixVerticalNorm;
+        this.terrainType = terrainType;
         setPosition2d(position2d);
         this.angle = angle;
     }
 
     public double getRadius() {
         return radius;
+    }
+
+    public TerrainType getTerrainType() {
+        return terrainType;
     }
 
     public DecimalPosition getPosition2d() {

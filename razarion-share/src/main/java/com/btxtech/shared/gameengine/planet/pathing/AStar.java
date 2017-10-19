@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,12 +25,14 @@ public class AStar {
     private List<PathingNodeWrapper> tilePath;
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
+    private TerrainType terrainType;
     private List<Index> subNodeIndexScope;
     private SuccessorNodeCache successorNodeCache;
 
-    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode, List<Index> subNodeIndexScope, SuccessorNodeCache successorNodeCache) {
+    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode, TerrainType terrainType, List<Index> subNodeIndexScope, SuccessorNodeCache successorNodeCache) {
         this.startNode = startNode;
         this.destinationNode = new AStarNode(destinationNode);
+        this.terrainType = terrainType;
         this.subNodeIndexScope = subNodeIndexScope;
         this.successorNodeCache = successorNodeCache;
         openList.add(new AStarNode(startNode));
@@ -61,28 +64,28 @@ public class AStar {
 
     private void handleAllSuccessorNodes(AStarNode current) {
         Collection<PathingNodeWrapper> cached = successorNodeCache.get(current.getPathingNodeWrapper());
-        if(cached != null) {
+        if (cached != null) {
             cached.forEach(successor -> handleSuccessorNode(current, successor));
             return;
         }
         Collection<PathingNodeWrapper> toBeCached = new ArrayList<>();
         // North
-        current.getPathingNodeWrapper().provideNorthSuccessors(subNodeIndexScope, northSuccessor -> {
+        current.getPathingNodeWrapper().provideNorthSuccessors(terrainType, subNodeIndexScope, northSuccessor -> {
             toBeCached.add(northSuccessor);
             handleSuccessorNode(current, northSuccessor);
         });
         // East
-        current.getPathingNodeWrapper().provideEastSuccessors(subNodeIndexScope, eastSuccessor -> {
+        current.getPathingNodeWrapper().provideEastSuccessors(terrainType, subNodeIndexScope, eastSuccessor -> {
             toBeCached.add(eastSuccessor);
             handleSuccessorNode(current, eastSuccessor);
         });
         // South
-        current.getPathingNodeWrapper().provideSouthSuccessors(subNodeIndexScope, southSuccessor -> {
+        current.getPathingNodeWrapper().provideSouthSuccessors(terrainType, subNodeIndexScope, southSuccessor -> {
             toBeCached.add(southSuccessor);
             handleSuccessorNode(current, southSuccessor);
         });
         // West
-        current.getPathingNodeWrapper().provideWestSuccessors(subNodeIndexScope, westSuccessor -> {
+        current.getPathingNodeWrapper().provideWestSuccessors(terrainType, subNodeIndexScope, westSuccessor -> {
             toBeCached.add(westSuccessor);
             handleSuccessorNode(current, westSuccessor);
         });

@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.terrain.gui.astar;
+package com.btxtech.shared.gameengine.planet.terrain.gui.weld;
 
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.pathing.AStar;
@@ -10,32 +10,29 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Created by Beat
  * 24.01.2016.
  */
-public class TerrainAStarTestDisplay extends Application {
-    private static DisplayDTO displayDTO;
+@Singleton
+public class WeldDisplay extends Application {
+    @Inject
+    private WeldTestController gameEngineMonitorController;
+    private static WeldDisplay uglyFxHackThis;
 
-    public static void show(TerrainShape terrainShape, SimplePath simplePath, AStar aStar) {
-        displayDTO = new DisplayDTO();
-        displayDTO.setTerrainShape(terrainShape);
-        displayDTO.setSimplePath(simplePath);
-        displayDTO.setaStar(aStar);
-        Application.launch(TerrainAStarTestDisplay.class);
-    }
-
-    public static void show(TerrainShape terrainShape, PathingNodeWrapper pathingNodeWrapper) {
-        displayDTO = new DisplayDTO();
-        displayDTO.setTerrainShape(terrainShape);
-        displayDTO.setPathingNodeWrapper(pathingNodeWrapper);
-        Application.launch(TerrainAStarTestDisplay.class);
+    public void show(Object[] userObject) {
+        uglyFxHackThis = this;
+        gameEngineMonitorController.setUserObjects(userObject);
+        Application.launch(WeldDisplay.class);
     }
 
     @Override
     public void start(final Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TerrainTestApplication.fxml"));
-        loader.setControllerFactory(param -> new TerrainAStarTestController(displayDTO));
+        loader.setControllerFactory(param -> uglyFxHackThis.gameEngineMonitorController);
         Parent root = loader.load();
         stage.setTitle("AStar Gui");
         stage.setScene(new Scene(root));

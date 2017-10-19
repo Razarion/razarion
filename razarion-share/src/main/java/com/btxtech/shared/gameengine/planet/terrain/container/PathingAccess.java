@@ -64,7 +64,11 @@ public class PathingAccess {
         });
     }
 
+    public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition position) {
+        return TerrainType.isAllowed(terrainType, getTerrainType(position));
+    }
 
+    @Deprecated // Use isTerrainTypeAllowed
     public boolean isTerrainFree(DecimalPosition position) {
         return terrainShape.terrainImpactCallback(position, new TerrainImpactCallback<Boolean>() {
             @Override
@@ -89,6 +93,7 @@ public class PathingAccess {
         });
     }
 
+    @Deprecated // Use isTerrainTypeAllowed
     public boolean isTerrainFree(DecimalPosition position, double radius) {
         IterationControl iterationControl = new IterationControl();
         terrainShape.terrainRegionImpactCallback(position, radius, iterationControl, new TerrainRegionImpactCallback() {
@@ -193,7 +198,7 @@ public class PathingAccess {
         return terrainShape;
     }
 
-    public void outerDirectionCallback(DecimalPosition subNodePosition, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
+    public void outerDirectionCallback(TerrainType terrainType, DecimalPosition subNodePosition, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
         Index nodeIndex = TerrainUtil.toNode(subNodePosition);
         TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
 
@@ -201,13 +206,13 @@ public class PathingAccess {
         DecimalPosition nodeRelative = subNodePosition.sub(TerrainUtil.toNodeAbsolute(nodeIndex));
         TerrainShapeSubNode[] terrainShapeSubNodes = terrainShapeNode.getTerrainShapeSubNodes();
         if (nodeRelative.getX() < length && nodeRelative.getY() < length) {
-            terrainShapeSubNodes[0].outerDirectionCallback(nodeRelative, subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[0].outerDirectionCallback(terrainType, nodeRelative, subNodePosition, destinationDepth, direction, directionConsumer);
         } else if (nodeRelative.getX() >= length && nodeRelative.getY() < length) {
-            terrainShapeSubNodes[1].outerDirectionCallback(nodeRelative.sub(length, 0), subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[1].outerDirectionCallback(terrainType, nodeRelative.sub(length, 0), subNodePosition, destinationDepth, direction, directionConsumer);
         } else if (nodeRelative.getX() >= length && nodeRelative.getY() >= length) {
-            terrainShapeSubNodes[2].outerDirectionCallback(nodeRelative.sub(length, length), subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[2].outerDirectionCallback(terrainType, nodeRelative.sub(length, length), subNodePosition, destinationDepth, direction, directionConsumer);
         } else if (nodeRelative.getX() < length && nodeRelative.getY() >= length) {
-            terrainShapeSubNodes[3].outerDirectionCallback(nodeRelative.sub(0, length), subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[3].outerDirectionCallback(terrainType, nodeRelative.sub(0, length), subNodePosition, destinationDepth, direction, directionConsumer);
         } else {
             throw new IllegalArgumentException("PathingAccess.outerDirectionCallback()");
         }

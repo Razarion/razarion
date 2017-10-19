@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+
 /**
  * Created by Beat
  * 16.09.2016.
@@ -7,9 +9,11 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 public class PhysicalAreaConfig {
     private double radius;
     private boolean fixVerticalNorm;
+    private TerrainType terrainType;
     private Double angularVelocity; //Rad per second
     private Double speed;
     private Double acceleration;
+
 
     public double getRadius() {
         return radius;
@@ -17,6 +21,15 @@ public class PhysicalAreaConfig {
 
     public PhysicalAreaConfig setRadius(double radius) {
         this.radius = radius;
+        return this;
+    }
+
+    public TerrainType getTerrainType() {
+        return terrainType;
+    }
+
+    public PhysicalAreaConfig setTerrainType(TerrainType terrainType) {
+        this.terrainType = terrainType;
         return this;
     }
 

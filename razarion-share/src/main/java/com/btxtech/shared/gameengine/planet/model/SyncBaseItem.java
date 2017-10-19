@@ -519,12 +519,14 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
     public void setContained(int itemContainer) {
         this.containedIn = itemContainer;
-        getSyncItemArea().setPosition(null);
+        // getSyncItemArea().setPosition(null);
+        throw new UnsupportedOperationException();
     }
 
     public void clearContained(DecimalPosition position) {
         containedIn = null;
-        getSyncItemArea().setPosition(position);
+        // getSyncItemArea().setPosition(position);
+        throw new UnsupportedOperationException();
     }
 
     public Integer getContainedIn() {

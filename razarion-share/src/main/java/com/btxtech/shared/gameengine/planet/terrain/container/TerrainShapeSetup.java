@@ -66,11 +66,11 @@ public class TerrainShapeSetup {
                 switch (terrainObjectCircle.checkInside(terrainRect)) {
                     case INSIDE:
                         terrainShapeNode.setTerrainType(TerrainType.BLOCKED);
-                        // terrainShapeNode.setTerrainShapeSubNodes(null);
+                        terrainShapeNode.setTerrainShapeSubNodes(null);
                         dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
                         break;
                     case PARTLY:
-                        terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainObjectCircle);
+                        terrainShapeSubNodeFactory.fillTerrainObjectTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainObjectCircle);
                         dirtyTerrainShapeNodes.put(nodeIndex, terrainShapeNode);
                         break;
                 }
@@ -265,12 +265,12 @@ public class TerrainShapeSetup {
         dirtyTerrainShapeNodes.putIfAbsent(nodeIndex, terrainShapeNode);
         if (innerTerrainType != null && outerTerrainType != null) {
             // terrainShapeNode.setTerrainType(null);
-            terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler);
+            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler);
         } else if (innerTerrainType != null) {
-            terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, terrainShapeNode.getTerrainType(), drivewayTerrainTypeHandler);
+            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, terrainShapeNode.getTerrainType(), drivewayTerrainTypeHandler);
             // terrainShapeNode.setTerrainType(null);
         } else if (outerTerrainType != null) {
-            terrainShapeSubNodeFactory.fillTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, terrainShapeNode.getTerrainType(), outerTerrainType, drivewayTerrainTypeHandler);
+            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, terrainShapeNode.getTerrainType(), outerTerrainType, drivewayTerrainTypeHandler);
             // terrainShapeNode.setTerrainType(null);
         } else {
             throw new IllegalArgumentException("TerrainShapeSetup.setupTerrainType() innerTerrainType == null && outerTerrainType == null");

@@ -15,14 +15,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.gameengine.datatypes.TerrainType;
-import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
-import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.system.ExceptionHandler;
-
-import javax.inject.Inject;
 
 /**
  * User: beat
@@ -32,8 +25,6 @@ import javax.inject.Inject;
 public abstract class SyncItem {
     public static final String SYNC_PHYSICAL_AREA = "SYNC_PHYSICAL_AREA";
     public static final String SYNC_PHYSICAL_MOVABLE = "SYNC_PHYSICAL_MOVABLE";
-    @Inject
-    private ExceptionHandler exceptionHandler;
     private int id;
     // Own states
     private ItemType itemType;
@@ -59,15 +50,6 @@ public abstract class SyncItem {
 
     @Deprecated
     public abstract boolean isAlive();
-
-    @Deprecated
-    public SyncItemArea getSyncItemArea() {
-        throw new UnsupportedOperationException("SyncItemArea is no longer supported");
-    }
-
-    public TerrainType getTerrainType() {
-        return itemType.getTerrainType();
-    }
 
     public SyncPhysicalArea getSyncPhysicalArea() {
         return syncPhysicalArea;

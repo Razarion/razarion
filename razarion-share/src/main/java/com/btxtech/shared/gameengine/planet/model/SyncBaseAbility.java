@@ -34,11 +34,6 @@ public abstract class SyncBaseAbility {
         return syncBaseItem;
     }
 
-    @Deprecated
-    public SyncItemArea getSyncItemArea() {
-        return syncBaseItem.getSyncItemArea();
-    }
-
     public SyncPhysicalArea getSyncPhysicalArea() {
         return syncBaseItem.getSyncPhysicalArea();
     }

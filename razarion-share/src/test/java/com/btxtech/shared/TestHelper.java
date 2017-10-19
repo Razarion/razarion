@@ -205,7 +205,7 @@ public class TestHelper {
         return output;
     }
 
-    public static void assertDecimalPosition(DecimalPosition expected, DecimalPosition actual) {
+    public static void assertDecimalPosition(String message, DecimalPosition expected, DecimalPosition actual) {
         if (expected == null && actual == null) {
             return;
         } else if (expected != null && actual == null) {
@@ -213,20 +213,24 @@ public class TestHelper {
         } else if (expected == null) {
             Assert.fail("Expected is null. Actual: " + actual);
         }
-        Assert.assertTrue("Expected: " + expected + " Actual: " + actual, expected.equalsDelta(actual, 0.001));
+        Assert.assertTrue(message + " Expected: " + expected + " Actual: " + actual, expected.equalsDelta(actual, 0.001));
     }
 
     public static void assertDecimalPositions(List<DecimalPosition> expected, List<DecimalPosition> actual) {
         Assert.assertEquals("Size is not same", expected.size(), actual.size());
         for (int i = 0; i < expected.size(); i++) {
-            assertDecimalPosition(expected.get(i), actual.get(i));
+            assertDecimalPosition("At position: " + i + ".", expected.get(i), actual.get(i));
         }
     }
 
     public static void printDecimalPositions(List<DecimalPosition> indexList) {
         System.out.println("-----------------------------------------------------------");
+        System.out.println("List<DecimalPosition> positions = Arrays.asList(" + decimalPositionsToString(indexList) + ");");
+        System.out.println("-----------------------------------------------------------");
+    }
+
+    public static String decimalPositionsToString(List<DecimalPosition> indexList) {
         StringBuilder builder = new StringBuilder();
-        builder.append("List<DecimalPosition> positions = Arrays.asList(");
         for (int i = 0; i < indexList.size(); i++) {
             DecimalPosition decimalPosition = indexList.get(i);
             builder.append("new DecimalPosition(").append(decimalPosition.getX()).append(", ").append(decimalPosition.getY()).append(")");
@@ -234,8 +238,6 @@ public class TestHelper {
                 builder.append(", ");
             }
         }
-        builder.append(");");
-        System.out.println(builder.toString());
-        System.out.println("-----------------------------------------------------------");
+        return builder.toString();
     }
 }

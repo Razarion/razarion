@@ -91,7 +91,7 @@ public abstract class AbstractTerrainTestController implements Initializable {
 
     // Override in subclass
     protected void onMousePressedTerrain(DecimalPosition position) {
-
+        System.out.println("onMousePressedTerrain: " + position);
     }
 
 }

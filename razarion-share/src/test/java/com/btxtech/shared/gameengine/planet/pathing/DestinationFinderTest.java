@@ -17,7 +17,7 @@ import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
-import com.btxtech.shared.gameengine.planet.terrain.gui.astar.TerrainAStarTestDisplay;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -95,11 +95,11 @@ public class DestinationFinderTest extends WeldTerrainServiceTestBase {
 
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper destinationNode = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(60, 41));
-        DestinationFinder destinationFinder = new DestinationFinder(destinationNode, subNodeIndexScope, getTerrainService().getPathingAccess());
+        DestinationFinder destinationFinder = new DestinationFinder(destinationNode, TerrainType.LAND, subNodeIndexScope, getTerrainService().getPathingAccess());
         PathingNodeWrapper correctedDestinationNode = destinationFinder.find();
 
-        // TerrainAStarTestDisplay.show(getTerrainShape(), correctedDestinationNode);
+        // WeldDisplay.show(getTerrainShape(), correctedDestinationNode);
         Assert.assertNull(correctedDestinationNode.getNodeIndex());
-        TestHelper.assertDecimalPosition(new DecimalPosition(60,44), correctedDestinationNode.getSubNodePosition());
+        TestHelper.assertDecimalPosition(null, new DecimalPosition(60, 44), correctedDestinationNode.getSubNodePosition());
     }
 }

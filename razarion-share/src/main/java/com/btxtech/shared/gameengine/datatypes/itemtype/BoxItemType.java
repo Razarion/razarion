@@ -14,16 +14,33 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+
 import java.util.List;
 
 public class BoxItemType extends ItemType {
     private Integer ttl;  // seconds
     private double radius;
     private boolean fixVerticalNorm;
+    private TerrainType terrainType;
     private List<BoxItemTypePossibility> boxItemTypePossibilities;
+
+    public BoxItemType setRadius(double radius) {
+        this.radius = radius;
+        return this;
+    }
 
     public double getRadius() {
         return radius;
+    }
+
+    public TerrainType getTerrainType() {
+        return terrainType;
+    }
+
+    public BoxItemType setTerrainType(TerrainType terrainType) {
+        this.terrainType = terrainType;
+        return this;
     }
 
     public boolean isFixVerticalNorm() {
@@ -50,12 +67,6 @@ public class BoxItemType extends ItemType {
 
     public BoxItemType setBoxItemTypePossibilities(List<BoxItemTypePossibility> boxItemTypePossibilities) {
         this.boxItemTypePossibilities = boxItemTypePossibilities;
-        return this;
-    }
-
-
-    public BoxItemType setRadius(double radius) {
-        this.radius = radius;
         return this;
     }
 }

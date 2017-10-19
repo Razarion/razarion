@@ -66,12 +66,12 @@ public class PathingAccessTest extends WeldTerrainServiceTestBase {
         setup();
 
         PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(70, 20));
-        Assert.assertTrue(pathingNodeWrapper.isFree());
+        Assert.assertTrue(pathingNodeWrapper.isFree(TerrainType.LAND));
         Assert.assertNull(pathingNodeWrapper.getTerrainShapeNode());
         Assert.assertNull(pathingNodeWrapper.getTerrainShapeSubNode());
         Assert.assertEquals(new Index(8, 2), pathingNodeWrapper.getNodeIndex());
 
-        // TerrainAStarTestDisplay.show(getTerrainShape(), null, null);
+        // WeldDisplay.show(getTerrainShape(), null, null);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class PathingAccessTest extends WeldTerrainServiceTestBase {
         NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(70, 20));
-        pathingNodeWrapper.provideNorthSuccessors(subNodeIndexScope, actual -> {
+        pathingNodeWrapper.provideNorthSuccessors(TerrainType.LAND, subNodeIndexScope, actual -> {
             Assert.assertEquals(new Index(8, 3), actual.getNodeIndex());
             Assert.assertNull(actual.getSubNodePosition());
             nodeHandlerHelper.increaseActualCount();
@@ -187,6 +187,6 @@ public class PathingAccessTest extends WeldTerrainServiceTestBase {
 
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(59.5, 32.5));
-        pathingNodeWrapper.provideNorthSuccessors(subNodeIndexScope, actual -> Assert.fail());
+        pathingNodeWrapper.provideNorthSuccessors(TerrainType.LAND, subNodeIndexScope, actual -> Assert.fail());
     }
 }

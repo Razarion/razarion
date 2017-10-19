@@ -16,10 +16,6 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
-import com.btxtech.shared.gameengine.datatypes.SurfaceType;
-import com.btxtech.shared.gameengine.datatypes.TerrainType;
-
-import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -31,8 +27,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
     private String internalName;
     private I18nString i18nName;
     private I18nString i18nDescription;
-    private TerrainType terrainType;
-    private SurfaceType adjoinSurfaceType;
     private Integer shape3DId;
     private Integer thumbnail;
 
@@ -70,24 +64,6 @@ public abstract class ItemType implements ObjectNameIdProvider {
 
     public ItemType setI18nName(I18nString i18nName) {
         this.i18nName = i18nName;
-        return this;
-    }
-
-    public ItemType setTerrainType(TerrainType terrainType) {
-        this.terrainType = terrainType;
-        return this;
-    }
-
-    public TerrainType getTerrainType() {
-        return terrainType;
-    }
-
-    public SurfaceType getAdjoinSurfaceType() {
-        return adjoinSurfaceType;
-    }
-
-    public ItemType setAdjoinSurfaceType(SurfaceType adjoinSurfaceType) {
-        this.adjoinSurfaceType = adjoinSurfaceType;
         return this;
     }
 

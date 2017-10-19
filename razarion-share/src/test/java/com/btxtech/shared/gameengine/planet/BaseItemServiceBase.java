@@ -113,12 +113,4 @@ public class BaseItemServiceBase {
     public BaseItemType getBaseItemType(int baseItemTypeId) {
         return itemTypeService.getBaseItemType(baseItemTypeId);
     }
-
-    public static SyncBaseItem createMockSyncBaseItem(DecimalPosition position) {
-        SyncBaseItem syncBaseItem = new SyncBaseItem();
-        SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
-        SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
-        syncBaseItem.init(-99, null, syncPhysicalMovable);
-        return syncBaseItem;
-    }
 }

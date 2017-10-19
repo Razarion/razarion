@@ -59,7 +59,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private DecimalPosition velocity;
 
     public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle, DecimalPosition velocity) {
-        super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.getFixVerticalNorm(), position2d, angle);
+        super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.getFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, angle);
         this.velocity = velocity;
         maxSpeed = physicalAreaConfig.getSpeed();
         angularVelocity = physicalAreaConfig.getAngularVelocity();

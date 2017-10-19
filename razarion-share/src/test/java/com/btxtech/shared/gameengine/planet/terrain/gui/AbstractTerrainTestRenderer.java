@@ -16,7 +16,8 @@ import java.util.List;
  * 25.06.2016.
  */
 public abstract class AbstractTerrainTestRenderer {
-    protected static final double LINE_WIDTH = 0.1;
+    public static final double LINE_WIDTH = 0.1;
+    public static final double FAT_LINE_WIDTH = 0.3;
     protected static final int GRID_SPACING_100 = 100;
     protected static final int GRID_SPACING_08 = 8;
     private Canvas canvas;
@@ -147,7 +148,7 @@ public abstract class AbstractTerrainTestRenderer {
         postRender();
     }
 
-    protected void strokePolygon(List<DecimalPosition> polygon, double strokeWidth, Color color, boolean showPoint) {
+    public void strokePolygon(List<DecimalPosition> polygon, double strokeWidth, Color color, boolean showPoint) {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
         gc.setLineWidth(strokeWidth);
@@ -162,11 +163,11 @@ public abstract class AbstractTerrainTestRenderer {
         }
     }
 
-    protected void strokeVertexPolygon(List<Vertex> polygon, double strokeWidth, Color color, boolean showPoint) {
+    public void strokeVertexPolygon(List<Vertex> polygon, double strokeWidth, Color color, boolean showPoint) {
         strokePolygon(Vertex.toXY(polygon), strokeWidth, color, showPoint);
     }
 
-    protected void strokeLine(List<DecimalPosition> line, double strokeWidth, Color color, boolean showPoint) {
+    public void strokeLine(List<DecimalPosition> line, double strokeWidth, Color color, boolean showPoint) {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
         gc.setLineWidth(strokeWidth);

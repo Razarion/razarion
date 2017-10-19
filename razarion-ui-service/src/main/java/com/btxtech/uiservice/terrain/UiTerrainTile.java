@@ -220,12 +220,12 @@ public class UiTerrainTile {
 
             @Override
             public Boolean onTerrainNode(TerrainNode terrainNode) {
-                return terrainNode.getTerrainType() != null && terrainNode.getTerrainType() == terrainType.ordinal();
+                return TerrainType.isAllowedOrdinal(terrainType, terrainNode.getTerrainType());
             }
 
             @Override
             public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return terrainSubNode.getTerrainType() != null && terrainSubNode.getTerrainType() == terrainType.ordinal();
+                return TerrainType.isAllowedOrdinal(terrainType, terrainSubNode.getTerrainType());
             }
         });
     }
@@ -244,7 +244,7 @@ public class UiTerrainTile {
 
             @Override
             public TerrainType onTerrainNode(TerrainNode terrainNode) {
-                if(terrainNode.getTerrainType() == null) {
+                if (terrainNode.getTerrainType() == null) {
                     return null;
                 }
                 return TerrainType.values()[terrainNode.getTerrainType()];
@@ -252,7 +252,7 @@ public class UiTerrainTile {
 
             @Override
             public TerrainType onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                if(terrainSubNode.getTerrainType() == null) {
+                if (terrainSubNode.getTerrainType() == null) {
                     return null;
                 }
                 return TerrainType.values()[terrainSubNode.getTerrainType()];

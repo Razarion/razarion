@@ -35,13 +35,13 @@ public class PathingNodeWrapper {
         this.terrainShapeSubNode = terrainShapeSubNode;
     }
 
-    public boolean isFree() {
+    public boolean isFree(TerrainType terrainType) {
         if (terrainShapeNode == null && terrainShapeSubNode == null) {
-            return true;
+            return terrainType == TerrainType.LAND;
         } else if (terrainShapeNode != null) {
-            return terrainShapeNode.isFullLand() || terrainShapeNode.isFullDriveway();
+            return TerrainType.isAllowed(terrainType, terrainShapeNode.getTerrainType());
         } else {
-            return terrainShapeSubNode.isLand();
+            return TerrainType.isAllowed(terrainType, terrainShapeSubNode.getTerrainType());
         }
     }
 
@@ -60,23 +60,23 @@ public class PathingNodeWrapper {
         }
     }
 
-    public void provideNorthSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
-        provideSuccessors(new Index(0, 1), checkScopeAdapter(subNodeIndexScope, northNodeHandler));
+    public void provideNorthSuccessors(TerrainType terrainType, List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
+        provideSuccessors(terrainType, new Index(0, 1), checkScopeAdapter(terrainType, subNodeIndexScope, northNodeHandler));
     }
 
-    public void provideEastSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> eastNodeHandler) {
-        provideSuccessors(new Index(1, 0), checkScopeAdapter(subNodeIndexScope, eastNodeHandler));
+    public void provideEastSuccessors(TerrainType terrainType, List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> eastNodeHandler) {
+        provideSuccessors(terrainType, new Index(1, 0), checkScopeAdapter(terrainType, subNodeIndexScope, eastNodeHandler));
     }
 
-    public void provideSouthSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> southNodeHandler) {
-        provideSuccessors(new Index(0, -1), checkScopeAdapter(subNodeIndexScope, southNodeHandler));
+    public void provideSouthSuccessors(TerrainType terrainType, List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> southNodeHandler) {
+        provideSuccessors(terrainType, new Index(0, -1), checkScopeAdapter(terrainType, subNodeIndexScope, southNodeHandler));
     }
 
-    public void provideWestSuccessors(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> westNodeHandler) {
-        provideSuccessors(new Index(-1, 0), checkScopeAdapter(subNodeIndexScope, westNodeHandler));
+    public void provideWestSuccessors(TerrainType terrainType, List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> westNodeHandler) {
+        provideSuccessors(terrainType, new Index(-1, 0), checkScopeAdapter(terrainType, subNodeIndexScope, westNodeHandler));
     }
 
-    private void provideSuccessors(Index direction, Consumer<PathingNodeWrapper> northNodeHandler) {
+    private void provideSuccessors(TerrainType terrainType, Index direction, Consumer<PathingNodeWrapper> northNodeHandler) {
         if (nodeIndex != null && terrainShapeSubNode == null) {
             Index neighborNodeIndex = nodeIndex.add(direction);
             if (!pathingAccess.isNodeInBoundary(neighborNodeIndex)) {
@@ -84,9 +84,11 @@ public class PathingNodeWrapper {
             }
             TerrainShapeNode neighborNode = pathingAccess.getTerrainShapeNode(neighborNodeIndex);
             if (neighborNode == null) {
-                northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex));
+                if (TerrainType.isAllowed(terrainType, null)) {
+                    northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex));
+                }
             } else {
-                neighborNode.outerDirectionCallback(direction, TerrainUtil.toNodeAbsolute(neighborNodeIndex), new TerrainShapeNode.DirectionConsumer() {
+                neighborNode.outerDirectionCallback(terrainType, direction, TerrainUtil.toNodeAbsolute(neighborNodeIndex), new TerrainShapeNode.DirectionConsumer() {
                     @Override
                     public void onTerrainShapeNode(TerrainShapeNode terrainShapeNode) {
                         northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex, terrainShapeNode));
@@ -118,13 +120,15 @@ public class PathingNodeWrapper {
             pathingAccess.getTerrainShape().terrainImpactCallback(neighborSubNodePosition, new TerrainImpactCallback<Void>() {
                 @Override
                 public Void landNoTile(Index tileIndex) {
-                    northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toNode(neighborSubNodePosition)));
+                    if (TerrainType.isAllowed(terrainType, null)) {
+                        northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toNode(neighborSubNodePosition)));
+                    }
                     return null;
                 }
 
                 @Override
                 public Void inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                    if (terrainShapeTile.isLand()) {
+                    if (TerrainType.isAllowed(terrainType, terrainShapeTile.getTerrainType())) {
                         northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toNode(neighborSubNodePosition)));
                     }
                     return null;
@@ -132,7 +136,7 @@ public class PathingNodeWrapper {
 
                 @Override
                 public Void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                    if (terrainShapeNode.isFullLand() || terrainShapeNode.isFullDriveway()) {
+                    if (TerrainType.isAllowed(terrainType, terrainShapeNode.getTerrainType())) {
                         northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.tileToNode(tileIndex).add(nodeRelativeIndex), terrainShapeNode));
                     }
                     return null;
@@ -143,7 +147,7 @@ public class PathingNodeWrapper {
                     Index nodeIndex = TerrainUtil.tileToNode(tileIndex).add(nodeRelativeIndex);
                     if (PathingNodeWrapper.this.terrainShapeSubNode.getDepth() < terrainShapeSubNode.getDepth()) {
                         DecimalPosition correctedSubNodePosition = TerrainUtil.toSubNodeAbsolute(TerrainUtil.toNodeAbsolute(nodeIndex).add(nodeRelative), PathingNodeWrapper.this.terrainShapeSubNode.getDepth());
-                        pathingAccess.outerDirectionCallback(correctedSubNodePosition, PathingNodeWrapper.this.terrainShapeSubNode.getDepth(), direction, new TerrainShapeNode.DirectionConsumer() {
+                        pathingAccess.outerDirectionCallback(terrainType, correctedSubNodePosition, PathingNodeWrapper.this.terrainShapeSubNode.getDepth(), direction, new TerrainShapeNode.DirectionConsumer() {
                             @Override
                             public void onTerrainShapeNode(TerrainShapeNode terrainShapeNode) {
                                 throw new IllegalStateException("PathingNodeWrapper.provideSuccessors()");
@@ -151,13 +155,11 @@ public class PathingNodeWrapper {
 
                             @Override
                             public void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition subNodePosition) {
-                                if (terrainShapeSubNode.isLand()) {
-                                    northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, subNodePosition, terrainShapeSubNode));
-                                }
+                                northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, subNodePosition, terrainShapeSubNode));
                             }
                         });
                     } else {
-                        if (terrainShapeSubNode.isLand()) {
+                        if (TerrainType.isAllowed(terrainType, terrainShapeSubNode.getTerrainType())) {
                             northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toSubNodeAbsolute(neighborSubNodePosition, terrainShapeSubNode.getDepth()), terrainShapeSubNode));
                         }
                     }
@@ -185,12 +187,12 @@ public class PathingNodeWrapper {
         return subNodePosition;
     }
 
-    private Consumer<PathingNodeWrapper> checkScopeAdapter(List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
+    private Consumer<PathingNodeWrapper> checkScopeAdapter(TerrainType terrainType, List<Index> subNodeIndexScope, Consumer<PathingNodeWrapper> northNodeHandler) {
         return pathingNodeWrapper -> {
             if (subNodeIndexScope != null) {
                 if (pathingNodeWrapper.getTerrainShapeSubNode() != null) {
                     for (Index index : subNodeIndexScope) {
-                        if (!pathingAccess.isTerrainFree(pathingNodeWrapper.getSubNodePosition().add(index.getX(), index.getY()))) {
+                        if (!pathingAccess.isTerrainTypeAllowed(terrainType, pathingNodeWrapper.getSubNodePosition().add(index.getX(), index.getY()))) {
                             return;
                         }
                     }

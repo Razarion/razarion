@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
-import com.btxtech.shared.gameengine.datatypes.SurfaceType;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemContainerFullException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
@@ -100,7 +99,6 @@ public class SyncItemContainer extends SyncBaseAbility {
             return false;
         }
 
-        getSyncItemArea().turnTo(unloadPos);
         unload();
         stop();
         return false;
@@ -172,13 +170,14 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     private void isOnOperationSurfaceThrow() throws WrongOperationSurfaceException {
-        SurfaceType operationSurfaceType = itemContainerType.getOperationSurfaceType();
-        if (operationSurfaceType == null || operationSurfaceType == SurfaceType.NONE) {
-            return;
-        }
-        if (!terrainService.hasSurfaceTypeInRegion(operationSurfaceType, getSyncItemArea().generateCoveringRectangle())) {
-            throw new WrongOperationSurfaceException(getSyncBaseItem());
-        }
+        throw new UnsupportedOperationException();
+//        SurfaceType operationSurfaceType = itemContainerType.getOperationSurfaceType();
+//        if (operationSurfaceType == null || operationSurfaceType == SurfaceType.NONE) {
+//            return;
+//        }
+//        if (!terrainService.hasSurfaceTypeInRegion(operationSurfaceType, getSyncItemArea().generateCoveringRectangle())) {
+//            throw new WrongOperationSurfaceException(getSyncBaseItem());
+//        }
     }
 
     public boolean isAbleToLoad(SyncBaseItem syncBaseItem) {

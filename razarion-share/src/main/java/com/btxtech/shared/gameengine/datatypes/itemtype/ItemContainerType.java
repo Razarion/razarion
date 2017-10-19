@@ -14,8 +14,6 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
-import com.btxtech.shared.gameengine.datatypes.SurfaceType;
-
 import java.util.Collection;
 
 /**
@@ -25,7 +23,7 @@ import java.util.Collection;
  */
 public class ItemContainerType {
     private Collection<Integer> ableToContain;
-    private SurfaceType operationSurfaceType;
+    // private SurfaceType operationSurfaceType;
     private int maxCount;
     private int range;
 
@@ -35,9 +33,9 @@ public class ItemContainerType {
     public ItemContainerType() {
     }
 
-    public ItemContainerType(Collection<Integer> ableToContain, SurfaceType operationSurfaceType, int maxCount, int range) {
+    public ItemContainerType(Collection<Integer> ableToContain, /*SurfaceType operationSurfaceType, */int maxCount, int range) {
         this.ableToContain = ableToContain;
-        this.operationSurfaceType = operationSurfaceType;
+        // this.operationSurfaceType = operationSurfaceType;
         this.maxCount = maxCount;
         this.range = range;
     }
@@ -54,10 +52,6 @@ public class ItemContainerType {
         return ableToContain.contains(itemTypeId);
     }
 
-    public SurfaceType getOperationSurfaceType() {
-        return operationSurfaceType;
-    }
-
     public boolean isAbleToContainAtLeastOne(Collection<Integer> ids) {
         for (Integer id : ids) {
             if (ableToContain.contains(id)) {
@@ -69,7 +63,7 @@ public class ItemContainerType {
 
     public void changeTo(ItemContainerType itemContainerType) {
         ableToContain = itemContainerType.ableToContain;
-        operationSurfaceType = itemContainerType.operationSurfaceType;
+        // operationSurfaceType = itemContainerType.operationSurfaceType;
         maxCount = itemContainerType.maxCount;
         range = itemContainerType.range;
     }
