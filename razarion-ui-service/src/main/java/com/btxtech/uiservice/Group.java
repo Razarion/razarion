@@ -17,15 +17,18 @@ package com.btxtech.uiservice;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: beat
@@ -178,6 +181,17 @@ public class Group {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
                 movable.add(syncBaseItem);
+            }
+        }
+        return movable;
+    }
+
+    public Set<TerrainType> getMovableTerrainTypes() {
+        Set<TerrainType> movable = new HashSet<>();
+        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+            if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+                movable.add(baseItemType.getPhysicalAreaConfig().getTerrainType());
             }
         }
         return movable;

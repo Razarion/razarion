@@ -15,6 +15,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 public abstract class CursorService {
     @Inject
@@ -125,9 +126,9 @@ public abstract class CursorService {
         if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {
             setCursor(CursorType.UNLOAD, atLeastOnAllowedForUnload(terrainPosition));
         } else {
-            Collection<SyncBaseItemSimpleDto> movables = selectionHandler.getOwnSelection().getMovables();
-            if (!movables.isEmpty()) {
-                setCursor(CursorType.GO, terrainUiService.isTerrainFreeInDisplay(terrainPosition, TerrainType.WATER));
+            Set<TerrainType> terrainTypes = selectionHandler.getOwnSelection().getMovableTerrainTypes();
+            if (!terrainTypes.isEmpty()) {
+                setCursor(CursorType.GO, terrainUiService.isAtLeaseOneTerrainFreeInDisplay(terrainPosition, terrainTypes));
             } else {
                 setPointerCursor();
             }

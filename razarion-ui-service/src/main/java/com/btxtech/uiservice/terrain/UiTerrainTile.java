@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
@@ -20,6 +21,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -206,7 +208,7 @@ public class UiTerrainTile {
         });
     }
 
-    public boolean isTerrainFree(DecimalPosition terrainPosition, TerrainType terrainType) {
+    public boolean isAtLeaseOneTerrainFree(DecimalPosition terrainPosition, Set<TerrainType> terrainTypes) {
         return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
             @Override
             public Boolean terrainTileNotLoaded() {
@@ -215,17 +217,17 @@ public class UiTerrainTile {
 
             @Override
             public Boolean onTerrainTile() {
-                return terrainType == TerrainType.LAND;
+                return terrainTypes.size() == 1 && CollectionUtils.getFirst(terrainTypes) == TerrainType.LAND;
             }
 
             @Override
             public Boolean onTerrainNode(TerrainNode terrainNode) {
-                return TerrainType.isAllowedOrdinal(terrainType, terrainNode.getTerrainType());
+                return TerrainType.isAtLeaseOneAllowedOrdinal(terrainTypes, terrainNode.getTerrainType());
             }
 
             @Override
             public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return TerrainType.isAllowedOrdinal(terrainType, terrainSubNode.getTerrainType());
+                return TerrainType.isAtLeaseOneAllowedOrdinal(terrainTypes, terrainSubNode.getTerrainType());
             }
         });
     }

@@ -1,5 +1,9 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
+import com.btxtech.shared.utils.CollectionUtils;
+
+import java.util.Set;
+
 /**
  * Created by Beat
  * on 03.10.2017.
@@ -15,10 +19,15 @@ public enum TerrainType {
         return actual == null && expected == LAND || expected == actual;
     }
 
-    public static boolean isAllowedOrdinal(TerrainType expected, Integer actualOrdinal) {
+    public static boolean isAtLeaseOneAllowedOrdinal(Set<TerrainType> expected, Integer actualOrdinal) {
         if (actualOrdinal == null) {
-            return expected == LAND;
+            return expected.size() == 1 && CollectionUtils.getFirst(expected) == LAND;
         }
-        return expected.ordinal() == actualOrdinal;
+        for (TerrainType expectedTerrainType : expected) {
+            if (actualOrdinal == expectedTerrainType.ordinal()) {
+                return true;
+            }
+        }
+        return false;
     }
 }
