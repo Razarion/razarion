@@ -6,9 +6,12 @@ import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,6 +43,8 @@ public class BoxItemTypeEntity {
     private ImageLibraryEntity thumbnail;
     private double radius;
     private boolean fixVerticalNorm;
+    @Enumerated(EnumType.STRING)
+    private TerrainType terrainType;
     private Integer ttl; // seconds
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity i18nName;
@@ -55,7 +60,7 @@ public class BoxItemTypeEntity {
 
     public BoxItemType toBoxItemType() {
         BoxItemType boxItemType = new BoxItemType();
-        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setId(id).setInternalName(internalName);
+        boxItemType.setRadius(radius).setTtl(ttl).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).setId(id).setInternalName(internalName);
         if (shape3DId != null) {
             boxItemType.setShape3DId(shape3DId.getId());
         }
@@ -82,6 +87,7 @@ public class BoxItemTypeEntity {
         internalName = boxItemType.getInternalName();
         radius = boxItemType.getRadius();
         fixVerticalNorm = boxItemType.isFixVerticalNorm();
+        terrainType = boxItemType.getTerrainType();
         ttl = boxItemType.getTtl();
         i18nName = I18nBundleEntity.fromI18nStringSafe(boxItemType.getI18nName(), i18nName);
         i18nDescription = I18nBundleEntity.fromI18nStringSafe(boxItemType.getI18nDescription(), i18nDescription);

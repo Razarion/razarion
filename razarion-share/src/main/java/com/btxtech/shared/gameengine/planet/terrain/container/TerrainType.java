@@ -7,8 +7,8 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 public enum TerrainType {
     LAND,
     WATER,
-    LAND_COST,
-    WATER_COST,
+    LAND_COAST,
+    WATER_COAST,
     BLOCKED;
 
     public static boolean isAllowed(TerrainType expected, TerrainType actual) {

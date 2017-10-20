@@ -8,9 +8,12 @@ import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -37,6 +40,8 @@ public class BaseItemTypeEntity {
     private String internalName;
     private double radius;
     private boolean fixVerticalNorm;
+    @Enumerated(EnumType.STRING)
+    private TerrainType terrainType;
     private Double angularVelocity; //Rad per second
     private Double speed;
     private Double acceleration;
@@ -117,7 +122,7 @@ public class BaseItemTypeEntity {
         if (i18nDescription != null) {
             baseItemType.setI18nDescription(i18nDescription.toI18nString());
         }
-        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(radius).setFixVerticalNorm(fixVerticalNorm).setSpeed(speed).setAcceleration(acceleration).setAngularVelocity(angularVelocity));
+        baseItemType.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(radius).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).setSpeed(speed).setAcceleration(acceleration).setAngularVelocity(angularVelocity));
         if (shape3DId != null) {
             baseItemType.setShape3DId(shape3DId.getId());
         }
@@ -184,6 +189,7 @@ public class BaseItemTypeEntity {
         internalName = baseItemType.getInternalName();
         radius = baseItemType.getPhysicalAreaConfig().getRadius();
         fixVerticalNorm = baseItemType.getPhysicalAreaConfig().getFixVerticalNorm();
+        terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
         angularVelocity = baseItemType.getPhysicalAreaConfig().getAngularVelocity();
         speed = baseItemType.getPhysicalAreaConfig().getSpeed();
         acceleration = baseItemType.getPhysicalAreaConfig().getAcceleration();

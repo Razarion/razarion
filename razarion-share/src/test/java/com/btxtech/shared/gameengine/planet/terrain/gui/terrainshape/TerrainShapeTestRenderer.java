@@ -216,9 +216,9 @@ public class TerrainShapeTestRenderer extends AbstractTerrainTestRenderer {
                 return Color.GREEN;
             case WATER:
                 return Color.BLUE;
-            case LAND_COST:
+            case LAND_COAST:
                 return Color.LIGHTGREEN;
-            case WATER_COST:
+            case WATER_COAST:
                 return Color.SANDYBROWN;
             case BLOCKED:
                 return Color.RED;

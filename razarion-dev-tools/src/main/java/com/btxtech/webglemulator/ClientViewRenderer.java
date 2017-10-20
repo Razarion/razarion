@@ -99,10 +99,10 @@ public class ClientViewRenderer extends Abstract2dRenderer {
                     case WATER:
                         egc.getGc().setFill(Color.BLUE);
                         break;
-                    case LAND_COST:
+                    case LAND_COAST:
                         egc.getGc().setFill(Color.LIGHTGREEN);
                         break;
-                    case WATER_COST:
+                    case WATER_COAST:
                         egc.getGc().setFill(Color.SANDYBROWN);
                         break;
                     case BLOCKED:

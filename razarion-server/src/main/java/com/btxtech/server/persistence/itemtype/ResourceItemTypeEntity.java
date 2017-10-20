@@ -4,9 +4,12 @@ import com.btxtech.server.persistence.ColladaEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,6 +34,9 @@ public class ResourceItemTypeEntity {
     @JoinColumn
     private ColladaEntity shape3DId;
     private double radius;
+    @Enumerated(EnumType.STRING)
+    private TerrainType terrainType;
+    private boolean fixVerticalNorm;
     private int amount;
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private I18nBundleEntity i18nName;
@@ -39,7 +45,6 @@ public class ResourceItemTypeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity thumbnail;
-    private boolean fixVerticalNorm;
 
     public Integer getId() {
         return id;
@@ -47,7 +52,7 @@ public class ResourceItemTypeEntity {
 
     public ResourceItemType toResourceItemType() {
         ResourceItemType resourceItemType = new ResourceItemType();
-        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setId(id).setInternalName(internalName);
+        resourceItemType.setRadius(radius).setAmount(amount).setFixVerticalNorm(fixVerticalNorm).setTerrainType(terrainType).setId(id).setInternalName(internalName);
         if (shape3DId != null) {
             resourceItemType.setShape3DId(shape3DId.getId());
         }
@@ -66,10 +71,11 @@ public class ResourceItemTypeEntity {
     public void fromResourceItemType(ResourceItemType resourceItemType) {
         internalName = resourceItemType.getInternalName();
         radius = resourceItemType.getRadius();
+        fixVerticalNorm = resourceItemType.isFixVerticalNorm();
+        terrainType = resourceItemType.getTerrainType();
         amount = resourceItemType.getAmount();
         i18nName = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nName(), i18nName);
         i18nDescription = I18nBundleEntity.fromI18nStringSafe(resourceItemType.getI18nDescription(), i18nDescription);
-        fixVerticalNorm = resourceItemType.isFixVerticalNorm();
     }
 
     public void setShape3DId(ColladaEntity shape3DId) {

@@ -125,9 +125,9 @@ public class TerrainShapeSetup {
         SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getOuterPolygonSlope().getCorners(), true, slopeContext);
         if (slope.hasWater()) {
             // Setup TerrainType
-            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COST, TerrainType.LAND_COST, null);
-            setupTerrainType(slope.getOuterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COST, TerrainType.LAND, null);
-            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COST, null, null);
+            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, TerrainType.LAND_COAST, null);
+            setupTerrainType(slope.getOuterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, TerrainType.LAND, null);
+            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, null, null);
             setupTerrainType(slope.getInnerPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER, null, null);
             // Setup slope ground connection
             Polygon2D outerPolygon = slope.getOuterPolygonSlope();

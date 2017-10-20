@@ -3,11 +3,14 @@ package com.btxtech.client.editor.itemtype;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ValueListBox;
+import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
@@ -15,6 +18,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 /**
  * Created by Beat
@@ -42,9 +46,16 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
     @DataField
     private Shape3DReferenceFiled shape3DReferenceFiled;
     @Inject
+    @DataField
+    private ValueListBox<TerrainType> terrainType;
+    @Inject
     @Bound
     @DataField
     private DoubleBox radius;
+    @Inject
+    @Bound
+    @DataField
+    private CheckboxInput fixVerticalNorm;
     @Inject
     @Bound
     @DataField
@@ -56,6 +67,11 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
         shape3DReferenceFiled.init(resourceItemType.getShape3DId(), shape3DId -> {
             resourceItemType.setShape3DId(shape3DId);
             resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType);
+        });
+        terrainType.setAcceptableValues(Arrays.asList(TerrainType.values()));
+        terrainType.setValue(resourceItemType.getTerrainType());
+        terrainType.addValueChangeHandler(event -> {
+            resourceItemType.setTerrainType(terrainType.getValue());
         });
     }
 

@@ -217,7 +217,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
     public void harbor1() throws Exception {
         setup();
         SyncBaseItem builder = GameTestHelper.createMockSyncBaseItem(4, TerrainType.LAND, new DecimalPosition(188, 92));
-        SimplePath simplePath = getPathingService().setupPathToDestination(builder, 10, TerrainType.WATER_COST, new DecimalPosition(96, 197), 5);
+        SimplePath simplePath = getPathingService().setupPathToDestination(builder, 10, TerrainType.WATER_COAST, new DecimalPosition(96, 197), 5);
         printSimplePath(simplePath);
         // showDisplay(simplePath);
         assertSimplePath(simplePath, 19.0, new DecimalPosition(188.0, 100.0), new DecimalPosition(180.0, 100.0), new DecimalPosition(178.0, 106.0),

@@ -19,9 +19,11 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -31,6 +33,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 /**
  * Created by Beat
@@ -66,6 +69,9 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
     @Inject
     @DataField
     private ImageItemWidget thumbnail;
+    @Inject
+    @DataField
+    private ValueListBox<TerrainType> physicalTerrainType;
     @Inject
     @Bound(property = "physicalAreaConfig.radius")
     @DataField
@@ -181,6 +187,11 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
         i18nDescription.init(baseItemType.getI18nDescription(), baseItemType::setI18nDescription);
         dropBoxItemTypeWidget.init(baseItemType.getDropBoxItemTypeId(), baseItemType::setDropBoxItemTypeId);
         thumbnail.setImageId(baseItemType.getThumbnail(), baseItemType::setThumbnail);
+        physicalTerrainType.setAcceptableValues(Arrays.asList(TerrainType.values()));
+        physicalTerrainType.setValue(baseItemType.getPhysicalAreaConfig().getTerrainType());
+        physicalTerrainType.addValueChangeHandler(event -> {
+            baseItemType.getPhysicalAreaConfig().setTerrainType(physicalTerrainType.getValue());
+        });
         spawnAudioId.init(baseItemType.getSpawnAudioId(), baseItemType::setSpawnAudioId);
         demolitionStepEffects.init(baseItemType.getDemolitionStepEffects(), baseItemType::setDemolitionStepEffects, DemolitionStepEffect::new, DemolitionStepEffectPanel.class);
         wreckageShape3DId.init(baseItemType.getWreckageShape3DId(), baseItemType::setWreckageShape3DId);
