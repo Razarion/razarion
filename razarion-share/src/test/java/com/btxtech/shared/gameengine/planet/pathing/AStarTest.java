@@ -148,6 +148,17 @@ public class AStarTest extends WeldTerrainServiceTestBase {
     }
 
     @Test
+    public void landDestinationNearBlocked() throws Exception {
+        setup();
+        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(3, TerrainType.LAND, new DecimalPosition(115, 124));
+        SimplePath simplePath = getPathingService().setupPathToDestination(syncBaseItem, new DecimalPosition(77, 119.9));
+        // printSimplePath(simplePath);
+        // showDisplay(simplePath);
+        assertSimplePath(simplePath, 0.0, new DecimalPosition(108.0, 124.0), new DecimalPosition(100.0, 124.0), new DecimalPosition(92.0, 124.0), new DecimalPosition(84.0, 124.0), new DecimalPosition(77.0, 119.9));
+
+    }
+
+    @Test
     public void water() throws Exception {
         setup();
         SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.WATER, new DecimalPosition(207, 240));
@@ -199,6 +210,23 @@ public class AStarTest extends WeldTerrainServiceTestBase {
             // Expected
             Assert.assertTrue(e.getMessage().startsWith("Destination start tile is not free:"));
         }
+    }
+
+
+    @Test
+    public void harbor1() throws Exception {
+        setup();
+        SyncBaseItem builder = GameTestHelper.createMockSyncBaseItem(4, TerrainType.LAND, new DecimalPosition(188, 92));
+        SimplePath simplePath = getPathingService().setupPathToDestination(builder, 10, TerrainType.WATER_COST, new DecimalPosition(96, 197), 5);
+        printSimplePath(simplePath);
+        // showDisplay(simplePath);
+        assertSimplePath(simplePath, 19.0, new DecimalPosition(188.0, 100.0), new DecimalPosition(180.0, 100.0), new DecimalPosition(178.0, 106.0),
+                new DecimalPosition(172.0, 108.0), new DecimalPosition(164.0, 108.0), new DecimalPosition(164.0, 116.0), new DecimalPosition(156.0, 116.0),
+                new DecimalPosition(148.0, 116.0), new DecimalPosition(140.0, 116.0), new DecimalPosition(132.0, 116.0), new DecimalPosition(124.0, 116.0),
+                new DecimalPosition(122.0, 122.0), new DecimalPosition(116.0, 124.0), new DecimalPosition(116.0, 132.0), new DecimalPosition(116.0, 140.0),
+                new DecimalPosition(116.0, 148.0), new DecimalPosition(116.0, 156.0), new DecimalPosition(116.0, 164.0), new DecimalPosition(116.0, 172.0),
+                new DecimalPosition(108.0, 172.0), new DecimalPosition(108.0, 180.0), new DecimalPosition(100.0, 180.0), new DecimalPosition(98.0, 186.0),
+                new DecimalPosition(95.5, 190.5));
     }
 
 

@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
@@ -35,19 +36,19 @@ public class PathingService {
     private SuccessorNodeCache successorNodeCache = new SuccessorNodeCache();
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
-        return setupPathToDestination(syncItem, destination, 0);
+        return setupPathToDestination(syncItem, syncItem.getSyncPhysicalArea().getTerrainType(), destination, 0);
     }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, SyncItem target) {
-        return setupPathToDestination(syncBaseItem, range, target.getSyncPhysicalArea().getPosition2d(), target.getSyncPhysicalArea().getRadius());
+        return setupPathToDestination(syncBaseItem, range, target.getSyncPhysicalArea().getTerrainType(), target.getSyncPhysicalArea().getPosition2d(), target.getSyncPhysicalArea().getRadius());
     }
 
-    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, DecimalPosition targetPosition, double targetRadius) {
+    public SimplePath setupPathToDestination(SyncBaseItem syncBaseItem, double range, TerrainType targetTerrainType, DecimalPosition targetPosition, double targetRadius) {
         double totalRange = syncBaseItem.getSyncPhysicalArea().getRadius() + targetRadius + range;
-        return setupPathToDestination(syncBaseItem, targetPosition, totalRange);
+        return setupPathToDestination(syncBaseItem, targetTerrainType, targetPosition, totalRange);
     }
 
-    private SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination, double totalRange) {
+    private SimplePath setupPathToDestination(SyncBaseItem syncItem, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
         SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
         PathingNodeWrapper startNode = terrainService.getPathingAccess().getPathingNodeWrapper(syncItem.getSyncPhysicalArea().getPosition2d());
@@ -58,8 +59,14 @@ public class PathingService {
             path.setTotalRange(totalRange);
             return path;
         }
-        if (!destinationNode.isFree(syncItem.getSyncPhysicalArea().getTerrainType())) {
+        if (!destinationNode.isFree(targetTerrainType)) {
             throw new PathFindingNotFreeException("Destination start tile is not free: " + destination);
+        }
+        DecimalPosition correctedDestination = destination;
+        if (syncItem.getSyncPhysicalArea().getTerrainType() != targetTerrainType) {
+            DifferentTerrainTypeDestinationFinder differentTerrainTypeDestinationFinder = new DifferentTerrainTypeDestinationFinder(syncItem.getSyncPhysicalArea().getTerrainType(), destination, totalRange, terrainService.getPathingAccess());
+            correctedDestination = differentTerrainTypeDestinationFinder.find();
+            destinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(correctedDestination);
         }
         // long time = System.currentTimeMillis();
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
@@ -71,7 +78,7 @@ public class PathingService {
             positions.add(pathingNodeWrapper.getCenter());
         }
         // logger.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
-        positions.add(destination);
+        positions.add(correctedDestination);
         path.setWayPositions(positions);
         path.setTotalRange(totalRange);
         return path;

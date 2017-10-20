@@ -84,7 +84,7 @@ public class CommandService { // Is part of the Base service
         builderCommand.updateTimeStamp();
         builderCommand.setToBeBuiltId(itemTypeToBuild.getId());
         builderCommand.setPositionToBeBuilt(positionToBeBuild);
-        SimplePath path = pathingService.setupPathToDestination(builder, builder.getBaseItemType().getBuilderType().getRange(), positionToBeBuild, itemTypeToBuild.getPhysicalAreaConfig().getRadius());
+        SimplePath path = pathingService.setupPathToDestination(builder, builder.getBaseItemType().getBuilderType().getRange(), itemTypeToBuild.getPhysicalAreaConfig().getTerrainType(), positionToBeBuild, itemTypeToBuild.getPhysicalAreaConfig().getRadius());
         if (moveIfPathTargetUnreachable(builder, path)) {
             return;
         }
