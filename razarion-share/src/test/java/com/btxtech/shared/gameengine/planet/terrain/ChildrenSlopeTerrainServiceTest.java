@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,13 +26,13 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         TerrainSlopePosition child = new TerrainSlopePosition();
         child.setId(2);
         child.setSlopeConfigId(SKELETON_CONFIG_ID_1);
-        child.setPolygon(Arrays.asList(createTerrainSlopeCorner(100, 90, null), createTerrainSlopeCorner(170, 90, null), createTerrainSlopeCorner(170, 140, null), createTerrainSlopeCorner(100, 140, null)));
+        child.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(100, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 140, null), GameTestHelper.createTerrainSlopeCorner(100, 140, null)));
         children.add(child);
 
         TerrainSlopePosition parent = new TerrainSlopePosition();
         parent.setId(1);
         parent.setSlopeConfigId(SKELETON_CONFIG_ID_1);
-        parent.setPolygon(Arrays.asList(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(220, 40, null), createTerrainSlopeCorner(220, 200, null), createTerrainSlopeCorner(50, 200, null)));
+        parent.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 200, null), GameTestHelper.createTerrainSlopeCorner(50, 200, null)));
         parent.setChildren(children);
 
         Collection<TerrainTile> terrainTiles = setup(parent);
@@ -48,12 +49,12 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         slopeSkeletonConfigLand.setId(SKELETON_CONFIG_ID_1).setType(SlopeSkeletonConfig.Type.LAND);
         slopeSkeletonConfigLand.setRows(6).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0, 0.3),},
-                {createSlopeNode(2, 5, 1),},
-                {createSlopeNode(4, 10, 0.7),},
-                {createSlopeNode(7, 20, 0.7),},
-                {createSlopeNode(10, 20, 0.7),},
-                {createSlopeNode(11, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(0, 0, 0.3),},
+                {GameTestHelper.createSlopeNode(2, 5, 1),},
+                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
+                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(10, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);

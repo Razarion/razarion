@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -12,6 +13,7 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -21,11 +23,12 @@ public class WeldMasterBaseTest extends WeldBaseTest {
     private int nextHumanPlayerId = 1;
 
     protected void setupMasterEnvironment() {
-        setupMasterEnvironment(GameTestContent.setupStaticGameConfig());
+        setupMasterEnvironment(GameTestContent.setupStaticGameConfig(), null);
     }
 
-    protected void setupMasterEnvironment(StaticGameConfig staticGameConfig) {
+    protected void setupMasterEnvironment(StaticGameConfig staticGameConfig, List<TerrainSlopePosition> terrainSlopePositions) {
         setupEnvironment(staticGameConfig, GameTestContent.setupPlanetConfig());
+        getTestNativeTerrainShapeAccess().setTerrainSlopePositions(terrainSlopePositions);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
     }
 

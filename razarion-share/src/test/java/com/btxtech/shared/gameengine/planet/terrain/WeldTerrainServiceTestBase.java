@@ -77,14 +77,6 @@ public class WeldTerrainServiceTestBase extends WeldBaseTest {
         return columnRow;
     }
 
-    protected SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
-        return new SlopeNode().setPosition(new Vertex(x, 0, z)).setSlopeFactor(slopeFactor);
-    }
-
-    protected TerrainSlopeCorner createTerrainSlopeCorner(double x, double y, Integer slopeDrivewayId) {
-        return new TerrainSlopeCorner().setPosition(new DecimalPosition(x, y)).setSlopeDrivewayId(slopeDrivewayId);
-    }
-
     protected TerrainShape getTerrainShape() {
         return (TerrainShape) SimpleTestEnvironment.readField("terrainShape", getTerrainService());
     }

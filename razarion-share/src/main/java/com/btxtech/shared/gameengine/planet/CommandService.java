@@ -59,9 +59,6 @@ public class CommandService { // Is part of the Base service
     }
 
     public void move(SyncBaseItem syncBaseItem, DecimalPosition destination) {
-        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(), destination)) {
-            return;
-        }
         MoveCommand moveCommand = new MoveCommand();
         moveCommand.setId(syncBaseItem.getId());
         moveCommand.updateTimeStamp();
@@ -76,9 +73,6 @@ public class CommandService { // Is part of the Base service
     }
 
     public void build(SyncBaseItem builder, DecimalPosition positionToBeBuild, BaseItemType itemTypeToBuild) {
-        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(itemTypeToBuild.getPhysicalAreaConfig().getTerrainType(), positionToBeBuild)) {
-            return;
-        }
         BuilderCommand builderCommand = new BuilderCommand();
         builderCommand.setId(builder.getId());
         builderCommand.updateTimeStamp();

@@ -126,7 +126,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         BaseItemType factoryType = GameTestContent.findBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
         factoryType.setDropBoxPossibility(1.0);
         factoryType.setDropBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_LONG_ID);
-        setupMasterEnvironment(staticGameConfig);
+        setupMasterEnvironment(staticGameConfig, null);
         // Setup target to drop boxes
         UserContext userContext = createLevel1UserContext();
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);

@@ -9,11 +9,21 @@ import java.util.Set;
  * on 03.10.2017.
  */
 public enum TerrainType {
-    LAND,
-    WATER,
-    LAND_COAST,
-    WATER_COAST,
-    BLOCKED;
+    LAND(true),
+    WATER(true),
+    LAND_COAST(false),
+    WATER_COAST(false),
+    BLOCKED(false);
+
+    private boolean areaCheck;
+
+    TerrainType(boolean areaCheck)  {
+        this.areaCheck = areaCheck;
+    }
+
+    public boolean isAreaCheck() {
+        return areaCheck;
+    }
 
     public static boolean isAllowed(TerrainType expected, TerrainType actual) {
         return actual == null && expected == LAND || expected == actual;

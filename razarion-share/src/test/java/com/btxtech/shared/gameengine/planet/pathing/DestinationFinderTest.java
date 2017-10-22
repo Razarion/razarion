@@ -14,6 +14,9 @@ import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
+import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
+import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
@@ -36,14 +39,14 @@ public class DestinationFinderTest extends WeldTerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(type);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0, 0.3),},
-                {createSlopeNode(2, 5, 1),},
-                {createSlopeNode(4, 10, 0.7),},
-                {createSlopeNode(7, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(2, 5, 1),},
+                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
+                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigLand.setOuterLineTerrainType(1).setCoastDelimiterLineTerrainType(3).setInnerLineTerrainType(6);
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -89,16 +92,19 @@ public class DestinationFinderTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void find() throws Exception {
-        setup(SlopeSkeletonConfig.Type.LAND, createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
-                createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
-                createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null));
+        setup(SlopeSkeletonConfig.Type.LAND, GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null));
+
+        PositionMarker positionMarker = new PositionMarker();
+        positionMarker.addPosition(new DecimalPosition(60, 41));
+        showDisplay();
 
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper destinationNode = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(60, 41));
         DestinationFinder destinationFinder = new DestinationFinder(destinationNode, TerrainType.LAND, subNodeIndexScope, getTerrainService().getPathingAccess());
         PathingNodeWrapper correctedDestinationNode = destinationFinder.find();
 
-        // WeldDisplay.show(getTerrainShape(), correctedDestinationNode);
         Assert.assertNull(correctedDestinationNode.getNodeIndex());
         TestHelper.assertDecimalPosition(null, new DecimalPosition(60, 44), correctedDestinationNode.getSubNodePosition());
     }

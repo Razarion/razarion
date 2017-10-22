@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.enterprise.inject.Instance;
@@ -330,22 +331,22 @@ public class SyncItemContainerService {
         return result;
     }
 
-    public DecimalPosition getFreeRandomPosition(double radius, PlaceConfig placeConfig) {
+    public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, PlaceConfig placeConfig) {
         Polygon2D polygon = placeConfig.getPolygon2D();
         if (polygon == null) {
             throw new IllegalArgumentException("To find a random place, a polygon must be set");
         }
 
-        return GeometricUtil.findFreeRandomPosition(polygon, decimalPosition -> isFree(decimalPosition, radius));
+        return GeometricUtil.findFreeRandomPosition(polygon, decimalPosition -> isFree(terrainType, decimalPosition, radius));
     }
 
-    private boolean isFree(DecimalPosition position, double radius) {
-        return terrainService.getPathingAccess().isTerrainFree(position, radius) && !hasItemsInRange(position, radius);
+    private boolean isFree(TerrainType terrainType, DecimalPosition position, double radius) {
+        return terrainService.getPathingAccess().isTerrainTypeAllowed(terrainType, position, radius) && !hasItemsInRange(position, radius);
     }
 
     public boolean isFree(DecimalPosition position, BaseItemType baseItemType) {
         double radius = baseItemType.getPhysicalAreaConfig().getRadius();
-        return isFree(position, radius);
+        return isFree(baseItemType.getPhysicalAreaConfig().getTerrainType(), position, radius);
     }
 
     public Collection<SyncResourceItem> findResourceItemWithPlace(int resourceItemTypeId, PlaceConfig resourceSelection) {

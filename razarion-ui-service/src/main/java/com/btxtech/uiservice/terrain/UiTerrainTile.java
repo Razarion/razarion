@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -13,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
@@ -21,6 +23,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -183,29 +186,19 @@ public class UiTerrainTile {
         });
     }
 
-    @Deprecated // isTerrainFree(DecimalPosition terrainPosition, TerrainType terrainType)
-    public boolean isTerrainFree(DecimalPosition terrainPosition) {
-        return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
-            @Override
-            public Boolean terrainTileNotLoaded() {
+    public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition position) {
+        return TerrainType.isAllowed(terrainType, getTerrainType(position));
+    }
+
+    public boolean isTerrainTypeInAreaAllowed(TerrainType terrainType, DecimalPosition position, double radius) {
+        List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        for (Index subNodeIndex : subNodeIndices) {
+            DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(position);
+            if(!isTerrainTypeAllowed(terrainType, scanPosition)) {
                 return false;
             }
-
-            @Override
-            public Boolean onTerrainTile() {
-                return terrainTile.isFullWater() == null || !terrainTile.isFullWater();
-            }
-
-            @Override
-            public Boolean onTerrainNode(TerrainNode terrainNode) {
-                return terrainNode.isLand();
-            }
-
-            @Override
-            public Boolean onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                return terrainSubNode.isLand() != null && terrainSubNode.isLand();
-            }
-        });
+        }
+        return true;
     }
 
     public boolean isAtLeaseOneTerrainFree(DecimalPosition terrainPosition, Set<TerrainType> terrainTypes) {

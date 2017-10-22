@@ -206,6 +206,10 @@ public class TestHelper {
     }
 
     public static void assertDecimalPosition(String message, DecimalPosition expected, DecimalPosition actual) {
+        assertDecimalPosition(message, expected, actual, 0.001);
+    }
+
+    public static void assertDecimalPosition(String message, DecimalPosition expected, DecimalPosition actual, double delta) {
         if (expected == null && actual == null) {
             return;
         } else if (expected != null && actual == null) {
@@ -213,7 +217,7 @@ public class TestHelper {
         } else if (expected == null) {
             Assert.fail("Expected is null. Actual: " + actual);
         }
-        Assert.assertTrue(message + " Expected: " + expected + " Actual: " + actual, expected.equalsDelta(actual, 0.001));
+        Assert.assertTrue(message + " Expected: " + expected + " Actual: " + actual, expected.equalsDelta(actual, delta));
     }
 
     public static void assertDecimalPositions(List<DecimalPosition> expected, List<DecimalPosition> actual) {

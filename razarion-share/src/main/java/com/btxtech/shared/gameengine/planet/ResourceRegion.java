@@ -60,7 +60,7 @@ public class ResourceRegion {
 
     private void generateResource() {
         try {
-            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(resourceItemType.getRadius() + resourceRegionConfig.getMinDistanceToItems(), resourceRegionConfig.getRegion());
+            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(resourceItemType.getTerrainType(), resourceItemType.getRadius() + resourceRegionConfig.getMinDistanceToItems(), resourceRegionConfig.getRegion());
             SyncResourceItem syncResourceItem = resourceService.createResource(resourceItemType.getId(), position, MathHelper.getRandomAngle());
             synchronized (syncResourceItems) {
                 syncResourceItems.add(syncResourceItem.getId());

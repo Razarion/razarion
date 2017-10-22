@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.terrain.gui.weld;
+package com.btxtech.shared.gameengine.planet.gui;
 
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestController;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;

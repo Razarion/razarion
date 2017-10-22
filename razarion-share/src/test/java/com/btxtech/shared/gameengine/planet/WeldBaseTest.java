@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
+import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
@@ -243,5 +244,9 @@ public class WeldBaseTest {
             return null;
         });
         System.out.println("---------------------------------------------------------------");
+    }
+
+    public void showDisplay(Object... userObject) {
+        getWeldBean(WeldDisplay.class).show(userObject);
     }
 }

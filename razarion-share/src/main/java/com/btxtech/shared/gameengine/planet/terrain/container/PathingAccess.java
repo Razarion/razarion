@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
@@ -7,9 +8,11 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -93,33 +96,22 @@ public class PathingAccess {
         });
     }
 
-    @Deprecated // Use isTerrainTypeAllowed
-    public boolean isTerrainFree(DecimalPosition position, double radius) {
-        IterationControl iterationControl = new IterationControl();
-        terrainShape.terrainRegionImpactCallback(position, radius, iterationControl, new TerrainRegionImpactCallback() {
-
-            @Override
-            public void inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                if (!terrainShapeTile.isLand()) {
-                    iterationControl.doStop();
+    public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition terrainPosition, double radius) {
+        if(terrainType == null) {
+            throw new NullPointerException("PathingAccess.isTerrainTypeAllowed() terrainType==null");
+        }
+        if (terrainType.isAreaCheck()) {
+            List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+            for (Index subNodeIndex : subNodeIndices) {
+                DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(terrainPosition);
+                if (!isTerrainTypeAllowed(terrainType, scanPosition)) {
+                    return false;
                 }
             }
-
-            @Override
-            public void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, Index tileIndex) {
-                if (terrainShapeNode.isFullWater()) {
-                    iterationControl.doStop();
-                }
-            }
-
-            @Override
-            public void inSubNode(TerrainShapeSubNode terrainShapeSubNode) {
-                if (!terrainShapeSubNode.isLand()) {
-                    iterationControl.doStop();
-                }
-            }
-        });
-        return !iterationControl.isNotLane();
+            return true;
+        } else {
+            return isTerrainTypeAllowed(terrainType, terrainPosition);
+        }
     }
 
     public Collection<Obstacle> getObstacles(DecimalPosition position, double radius) {

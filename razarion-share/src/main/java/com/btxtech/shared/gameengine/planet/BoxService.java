@@ -225,7 +225,7 @@ public class BoxService {
     private void dropRegionBoxes(BoxRegion boxRegion) {
         BoxItemType boxItemType = itemTypeService.getBoxItemType(boxRegion.getBoxRegionConfig().getBoxItemTypeId());
         for (int i = 0; i < boxRegion.getBoxRegionConfig().getCount(); i++) {
-            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(boxItemType.getRadius() + boxRegion.getBoxRegionConfig().getMinDistanceToItems(), boxRegion.getBoxRegionConfig().getRegion());
+            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(boxItemType.getTerrainType(), boxItemType.getRadius() + boxRegion.getBoxRegionConfig().getMinDistanceToItems(), boxRegion.getBoxRegionConfig().getRegion());
             dropBox(boxItemType.getId(), position, MathHelper.getRandomAngle());
         }
     }
@@ -245,13 +245,13 @@ public class BoxService {
         if (dropBoxItemTypeId == null) {
             return;
         }
-        if(syncBaseItem.isSpawning()) {
+        if (syncBaseItem.isSpawning()) {
             return;
         }
-        if(!syncBaseItem.isBuildup()) {
+        if (!syncBaseItem.isBuildup()) {
             return;
         }
-        if(MathHelper.isRandomPossibility(syncBaseItem.getDropBoxPossibility())) {
+        if (MathHelper.isRandomPossibility(syncBaseItem.getDropBoxPossibility())) {
             dropBox(dropBoxItemTypeId, syncBaseItem.getSyncPhysicalArea().getPosition2d(), MathHelper.getRandomAngle());
         }
     }

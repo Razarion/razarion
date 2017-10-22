@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
@@ -25,10 +26,10 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         slopeSkeletonConfigWater.setId(10).setType(SlopeSkeletonConfig.Type.WATER);
         slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(9).setVerticalSpace(6).setHeight(-2);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(2, 0.5, 0.5),},
-                {createSlopeNode(4, -0.1, 1),},
-                {createSlopeNode(6, -0.8, 1),},
-                {createSlopeNode(9, -2, 1),}
+                {GameTestHelper.createSlopeNode(2, 0.5, 0.5),},
+                {GameTestHelper.createSlopeNode(4, -0.1, 1),},
+                {GameTestHelper.createSlopeNode(6, -0.8, 1),},
+                {GameTestHelper.createSlopeNode(9, -2, 1),}
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigWater.setOuterLineTerrainType(3).setCoastDelimiterLineTerrainType(5).setInnerLineTerrainType(7);
@@ -38,7 +39,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigId(10);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(22.250, 48.000, null), createTerrainSlopeCorner(56.250, 50.000, null), createTerrainSlopeCorner(55.750, 20.500, null), createTerrainSlopeCorner(94.750, 20.000, null), createTerrainSlopeCorner(93.750, 51.000, null), createTerrainSlopeCorner(114.750, 51.500, null), createTerrainSlopeCorner(114.750, 86.500, null), createTerrainSlopeCorner(94.750, 85.500, null), createTerrainSlopeCorner(91.750, 114.500, null), createTerrainSlopeCorner(56.750, 112.500, null), createTerrainSlopeCorner(59.750, 84.000, null), createTerrainSlopeCorner(19.750, 82.000, null)));
+        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(22.250, 48.000, null), GameTestHelper.createTerrainSlopeCorner(56.250, 50.000, null), GameTestHelper.createTerrainSlopeCorner(55.750, 20.500, null), GameTestHelper.createTerrainSlopeCorner(94.750, 20.000, null), GameTestHelper.createTerrainSlopeCorner(93.750, 51.000, null), GameTestHelper.createTerrainSlopeCorner(114.750, 51.500, null), GameTestHelper.createTerrainSlopeCorner(114.750, 86.500, null), GameTestHelper.createTerrainSlopeCorner(94.750, 85.500, null), GameTestHelper.createTerrainSlopeCorner(91.750, 114.500, null), GameTestHelper.createTerrainSlopeCorner(56.750, 112.500, null), GameTestHelper.createTerrainSlopeCorner(59.750, 84.000, null), GameTestHelper.createTerrainSlopeCorner(19.750, 82.000, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{
@@ -71,10 +72,10 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         slopeSkeletonConfigWater.setId(10).setType(SlopeSkeletonConfig.Type.WATER);
         slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(9).setVerticalSpace(6).setHeight(-2);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(2, 0.5, 0.5),},
-                {createSlopeNode(4, -0.1, 1),},
-                {createSlopeNode(6, -0.8, 1),},
-                {createSlopeNode(9, -2, 1),}
+                {GameTestHelper.createSlopeNode(2, 0.5, 0.5),},
+                {GameTestHelper.createSlopeNode(4, -0.1, 1),},
+                {GameTestHelper.createSlopeNode(6, -0.8, 1),},
+                {GameTestHelper.createSlopeNode(9, -2, 1),}
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigWater.setOuterLineTerrainType(3).setCoastDelimiterLineTerrainType(5).setInnerLineTerrainType(7);
@@ -84,7 +85,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigId(10);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(292.500, 280.000, null), createTerrainSlopeCorner(276.500, 300.000, null), createTerrainSlopeCorner(248.500, 300.000, null), createTerrainSlopeCorner(236.500, 300.000, null), createTerrainSlopeCorner(222.500, 301.000, null), createTerrainSlopeCorner(212.500, 275.000, null), createTerrainSlopeCorner(182.500, 252.000, null), createTerrainSlopeCorner(174.500, 264.000, null), createTerrainSlopeCorner(143.500, 299.000, null), createTerrainSlopeCorner(121.500, 300.000, null), createTerrainSlopeCorner(96.500, 300.000, null), createTerrainSlopeCorner(69.500, 298.000, null), createTerrainSlopeCorner(40.500, 254.000, null), createTerrainSlopeCorner(31.500, 193.000, null), createTerrainSlopeCorner(53.500, 139.000, null), createTerrainSlopeCorner(63.500, 102.000, null), createTerrainSlopeCorner(78.500, 74.000, null), createTerrainSlopeCorner(113.500, 112.000, null), createTerrainSlopeCorner(136.500, 134.000, null), createTerrainSlopeCorner(157.500, 89.000, null), createTerrainSlopeCorner(165.500, 49.000, null), createTerrainSlopeCorner(201.500, 34.000, null), createTerrainSlopeCorner(237.500, 44.000, null), createTerrainSlopeCorner(263.500, 65.000, null), createTerrainSlopeCorner(275.500, 100.000, null), createTerrainSlopeCorner(268.500, 131.000, null), createTerrainSlopeCorner(262.500, 177.000, null), createTerrainSlopeCorner(270.500, 196.000, null), createTerrainSlopeCorner(280.500, 218.000, null), createTerrainSlopeCorner(287.500, 257.000, null)));
+        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(292.500, 280.000, null), GameTestHelper.createTerrainSlopeCorner(276.500, 300.000, null), GameTestHelper.createTerrainSlopeCorner(248.500, 300.000, null), GameTestHelper.createTerrainSlopeCorner(236.500, 300.000, null), GameTestHelper.createTerrainSlopeCorner(222.500, 301.000, null), GameTestHelper.createTerrainSlopeCorner(212.500, 275.000, null), GameTestHelper.createTerrainSlopeCorner(182.500, 252.000, null), GameTestHelper.createTerrainSlopeCorner(174.500, 264.000, null), GameTestHelper.createTerrainSlopeCorner(143.500, 299.000, null), GameTestHelper.createTerrainSlopeCorner(121.500, 300.000, null), GameTestHelper.createTerrainSlopeCorner(96.500, 300.000, null), GameTestHelper.createTerrainSlopeCorner(69.500, 298.000, null), GameTestHelper.createTerrainSlopeCorner(40.500, 254.000, null), GameTestHelper.createTerrainSlopeCorner(31.500, 193.000, null), GameTestHelper.createTerrainSlopeCorner(53.500, 139.000, null), GameTestHelper.createTerrainSlopeCorner(63.500, 102.000, null), GameTestHelper.createTerrainSlopeCorner(78.500, 74.000, null), GameTestHelper.createTerrainSlopeCorner(113.500, 112.000, null), GameTestHelper.createTerrainSlopeCorner(136.500, 134.000, null), GameTestHelper.createTerrainSlopeCorner(157.500, 89.000, null), GameTestHelper.createTerrainSlopeCorner(165.500, 49.000, null), GameTestHelper.createTerrainSlopeCorner(201.500, 34.000, null), GameTestHelper.createTerrainSlopeCorner(237.500, 44.000, null), GameTestHelper.createTerrainSlopeCorner(263.500, 65.000, null), GameTestHelper.createTerrainSlopeCorner(275.500, 100.000, null), GameTestHelper.createTerrainSlopeCorner(268.500, 131.000, null), GameTestHelper.createTerrainSlopeCorner(262.500, 177.000, null), GameTestHelper.createTerrainSlopeCorner(270.500, 196.000, null), GameTestHelper.createTerrainSlopeCorner(280.500, 218.000, null), GameTestHelper.createTerrainSlopeCorner(287.500, 257.000, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{

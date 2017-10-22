@@ -182,8 +182,16 @@ public class TerrainUiService {
             if (uiTerrainTile == null) {
                 throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(Collection<DecimalPosition>, BaseItemType) UiTerrainTile not loaded: " + terrainTile);
             }
-            if (!uiTerrainTile.isTerrainFree(terrainPosition/*, baseItemType*/)) { // TODO baseItemType
-                return false;
+
+            TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
+            if (terrainType.isAreaCheck()) {
+                if (!uiTerrainTile.isTerrainTypeInAreaAllowed(terrainType, terrainPosition, baseItemType.getPhysicalAreaConfig().getRadius())) {
+                    return false;
+                }
+            } else {
+                if (!uiTerrainTile.isTerrainTypeAllowed(terrainType, terrainPosition)) {
+                    return false;
+                }
             }
         }
         return true;

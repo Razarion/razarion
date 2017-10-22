@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -28,10 +29,10 @@ public class PathingAccessTest extends WeldTerrainServiceTestBase {
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
         slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(0, 0, 0.3),},
-                {createSlopeNode(2, 5, 1),},
-                {createSlopeNode(4, 10, 0.7),},
-                {createSlopeNode(7, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(0, 0, 0.3),},
+                {GameTestHelper.createSlopeNode(2, 5, 1),},
+                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
+                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
@@ -40,9 +41,9 @@ public class PathingAccessTest extends WeldTerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
-                createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
-                createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null)));
+        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{

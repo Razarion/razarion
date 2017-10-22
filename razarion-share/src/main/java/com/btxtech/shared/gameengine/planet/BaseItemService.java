@@ -31,6 +31,8 @@ import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainTypeNotAllowedException;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
@@ -71,6 +73,8 @@ public class BaseItemService {
     private InventoryTypeService inventoryTypeService;
     @Inject
     private BoxService boxService;
+    @Inject
+    private TerrainService terrainService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
@@ -203,6 +207,9 @@ public class BaseItemService {
     }
 
     public SyncBaseItem createSyncBaseItem4Builder(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
+            throw new TerrainTypeNotAllowedException("BaseItemService.createSyncBaseItem4Builder() " + toBeBuilt + " " + position);
+        }
         SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
 
         syncBaseItem.setSpawnProgress(1.0);
@@ -228,6 +235,9 @@ public class BaseItemService {
     }
 
     public SyncBaseItem spawnSyncBaseItem(BaseItemType baseItemType, DecimalPosition position, double zRotation, PlayerBaseFull base, boolean noSpawn) throws ItemLimitExceededException, HouseSpaceExceededException {
+        if (!terrainService.getPathingAccess().isTerrainTypeAllowed(baseItemType.getPhysicalAreaConfig().getTerrainType(), position, baseItemType.getPhysicalAreaConfig().getRadius())) {
+            throw new TerrainTypeNotAllowedException("BaseItemService.spawnSyncBaseItem() " + baseItemType + " " + position);
+        }
         SyncBaseItem syncBaseItem = createSyncBaseItem(baseItemType, position, zRotation, base);
         syncBaseItem.setBuildup(1.0);
 

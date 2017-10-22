@@ -211,9 +211,9 @@ public class BotItemContainer {
 
     private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
         if (placeConfig == null) {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getRadius(), realm);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), realm);
         } else if (placeConfig.getPolygon2D() != null) {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getRadius(), placeConfig);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), placeConfig);
         } else if (placeConfig.getPosition() != null) {
             return placeConfig.getPosition();
         } else {

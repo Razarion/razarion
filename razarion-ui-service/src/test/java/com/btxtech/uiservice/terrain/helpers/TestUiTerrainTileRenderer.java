@@ -21,12 +21,12 @@ public class TestUiTerrainTileRenderer extends AbstractUiTestGuiRenderer {
     protected void doRender() {
         for (double x = 0.5; x < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; x++) {
             for (double y = 0.5; y < TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH; y++) {
-                if (uiTerrainTile.isTerrainFree(new DecimalPosition(x, y))) {
-                    getGc().setFill(Color.GREEN);
-                } else {
-                    getGc().setFill(Color.RED);
-                }
-                getGc().fillRect(x - 0.5, y - 0.5, 1, 1);
+//                if (uiTerrainTile.isTerrainFree(new DecimalPosition(x, y))) {
+//                    getGc().setFill(Color.GREEN);
+//                } else {
+//                    getGc().setFill(Color.RED);
+//                }
+//                getGc().fillRect(x - 0.5, y - 0.5, 1, 1);
             }
         }
     }

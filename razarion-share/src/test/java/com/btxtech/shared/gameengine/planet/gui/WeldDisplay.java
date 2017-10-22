@@ -1,9 +1,5 @@
-package com.btxtech.shared.gameengine.planet.terrain.gui.weld;
+package com.btxtech.shared.gameengine.planet.gui;
 
-import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
-import com.btxtech.shared.gameengine.planet.pathing.AStar;
-import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

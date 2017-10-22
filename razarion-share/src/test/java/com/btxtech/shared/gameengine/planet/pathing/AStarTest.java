@@ -17,7 +17,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.gameengine.planet.terrain.gui.weld.WeldDisplay;
+import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,11 +36,11 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
         slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(25);
         SlopeNode[][] slopeNodeLand = new SlopeNode[][]{
-                {createSlopeNode(2, 5, 0),},
-                {createSlopeNode(4, 10, 0.7),},
-                {createSlopeNode(7, 15, 1),},
-                {createSlopeNode(9, 20, 0.7),},
-                {createSlopeNode(11, 25, 0),},
+                {GameTestHelper.createSlopeNode(2, 5, 0),},
+                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
+                {GameTestHelper.createSlopeNode(7, 15, 1),},
+                {GameTestHelper.createSlopeNode(9, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(11, 25, 0),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodeLand));
         slopeSkeletonConfigLand.setOuterLineTerrainType(2).setInnerLineTerrainType(9);
@@ -49,10 +49,10 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
         slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(12).setVerticalSpace(5).setHeight(-2);
         SlopeNode[][] slopeNodeWater = new SlopeNode[][]{
-                {createSlopeNode(2, 0, 1),},
-                {createSlopeNode(4, -1, 0.7),},
-                {createSlopeNode(8, -1.5, 0.7),},
-                {createSlopeNode(12, -2, 0.7),},
+                {GameTestHelper.createSlopeNode(2, 0, 1),},
+                {GameTestHelper.createSlopeNode(4, -1, 0.7),},
+                {GameTestHelper.createSlopeNode(8, -1.5, 0.7),},
+                {GameTestHelper.createSlopeNode(12, -2, 0.7),},
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodeWater));
         slopeSkeletonConfigWater.setOuterLineTerrainType(3).setCoastDelimiterLineTerrainType(6).setInnerLineTerrainType(10);
@@ -66,17 +66,17 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(100, 40, null),
-                createTerrainSlopeCorner(100, 60, 1), createTerrainSlopeCorner(100, 90, 1), // driveway
-                createTerrainSlopeCorner(100, 110, null), createTerrainSlopeCorner(50, 110, null)));
+        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
         // Water slope
         TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
         terrainSlopePositionWater.setId(2);
         terrainSlopePositionWater.setSlopeConfigId(2);
-        terrainSlopePositionWater.setPolygon(Arrays.asList(createTerrainSlopeCorner(64, 200, null), createTerrainSlopeCorner(231, 200, null),
-                createTerrainSlopeCorner(231, 256, null), createTerrainSlopeCorner(151, 257, null), // driveway
-                createTerrainSlopeCorner(239, 359, null), createTerrainSlopeCorner(49, 360, null)));
+        terrainSlopePositionWater.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(64, 200, null), GameTestHelper.createTerrainSlopeCorner(231, 200, null),
+                GameTestHelper.createTerrainSlopeCorner(231, 256, null), GameTestHelper.createTerrainSlopeCorner(151, 257, null), // driveway
+                GameTestHelper.createTerrainSlopeCorner(239, 359, null), GameTestHelper.createTerrainSlopeCorner(49, 360, null)));
         terrainSlopePositions.add(terrainSlopePositionWater);
 
         double[][] heights = new double[][]{
@@ -317,10 +317,6 @@ public class AStarTest extends WeldTerrainServiceTestBase {
     private void assertSimplePath(SimplePath actual, double expectedTotalRanges, DecimalPosition... expectedPosition) {
         Assert.assertEquals("totalRange", expectedTotalRanges, actual.getTotalRange(), 0.001);
         TestHelper.assertDecimalPositions(Arrays.asList(expectedPosition), actual.getWayPositions());
-    }
-
-    private void showDisplay(Object... userObject) {
-        getWeldBean(WeldDisplay.class).show(userObject);
     }
 
     private void printSimplePath(SimplePath simplePath) {

@@ -1,6 +1,7 @@
-package com.btxtech.shared.gameengine.planet.terrain.gui.weld;
+package com.btxtech.shared.gameengine.planet.gui;
 
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
 import javafx.scene.paint.Color;
 
@@ -20,15 +21,22 @@ public class UserDataRenderer {
     }
 
     public void render() {
-        Arrays.stream(userObjects).forEach(this::render);
+        Arrays.stream(userObjects).forEach(this::renderUserObject);
     }
 
-    private void render(Object userObject) {
+    private void renderUserObject(Object userObject) {
         if (userObject instanceof SimplePath) {
             render((SimplePath) userObject);
+        } else if (userObject instanceof PositionMarker) {
+            render((PositionMarker) userObject);
         } else {
             throw new IllegalArgumentException("Unknown userObject: " + userObject);
         }
+    }
+
+    private void render(PositionMarker positionMarker) {
+        positionMarker.getCircles().forEach(circle -> weldTestRenderer.strokeCircle(circle, AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.RED));
+        weldTestRenderer.drawPositions(positionMarker.getPositions(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.RED);
     }
 
     private void render(SimplePath simplePath) {

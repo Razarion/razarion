@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
@@ -20,9 +21,9 @@ import java.util.List;
 public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testEdge() {
-        Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 40, null), createTerrainSlopeCorner(103, 40, null),
-                createTerrainSlopeCorner(103, 60, 1), createTerrainSlopeCorner(103, 90, 1), // driveway
-                createTerrainSlopeCorner(103, 110, null), createTerrainSlopeCorner(50, 110, null));
+        Collection<TerrainTile> terrainTiles = setup(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(103, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(103, 60, 1), GameTestHelper.createTerrainSlopeCorner(103, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(103, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
         TerrainTileTestDisplay.show(terrainTiles);
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayEdge1.json");
@@ -31,9 +32,9 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
     @Test
     public void testCorner() {
-        Collection<TerrainTile> terrainTiles = setup(createTerrainSlopeCorner(50, 150, null),
-                createTerrainSlopeCorner(70, 150, 1), createTerrainSlopeCorner(90, 150, 1), createTerrainSlopeCorner(100, 150, 1), createTerrainSlopeCorner(100, 160, 1), createTerrainSlopeCorner(100, 180, 1),// driveway
-                createTerrainSlopeCorner(100, 210, null), createTerrainSlopeCorner(50, 210, null));
+        Collection<TerrainTile> terrainTiles = setup(GameTestHelper.createTerrainSlopeCorner(50, 150, null),
+                GameTestHelper.createTerrainSlopeCorner(70, 150, 1), GameTestHelper.createTerrainSlopeCorner(90, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 160, 1), GameTestHelper.createTerrainSlopeCorner(100, 180, 1),// driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 210, null), GameTestHelper.createTerrainSlopeCorner(50, 210, null));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
         TerrainTileTestDisplay.show(terrainTiles);
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayCorner1.json");
@@ -46,11 +47,11 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
         slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {createSlopeNode(2, 5, 1),},
-                {createSlopeNode(4, 10, 0.7),},
-                {createSlopeNode(7, 20, 0.7),},
-                {createSlopeNode(10, 20, 0.7),},
-                {createSlopeNode(11, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(2, 5, 1),},
+                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
+                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(10, 20, 0.7),},
+                {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setOuterLineTerrainType(3).setInnerLineTerrainType(7);
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));

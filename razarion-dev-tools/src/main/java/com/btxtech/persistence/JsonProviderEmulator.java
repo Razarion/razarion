@@ -78,6 +78,16 @@ public class JsonProviderEmulator {
         }
     }
 
+    public List<VertexContainerBuffer> readVertexContainerBuffersFromServer() {
+        try {
+            String string =ClientBuilder.newClient().target(URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME).request(MediaType.APPLICATION_JSON).get(String.class);
+            return new ObjectMapper().readValue(string, new TypeReference<List<VertexContainerBuffer>>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public StaticGameConfig readGameEngineConfigFromFile(String filename) {
         try {
             String string = new String(Files.readAllBytes(new File(filename).toPath()));
@@ -254,7 +264,7 @@ public class JsonProviderEmulator {
 
     public static void main(String[] args) {
         try {
-            dumpSlope(2, new DecimalPosition(360, 96));
+            dumpSlope(2, new DecimalPosition(92, 81));
         } catch (IOException e) {
             e.printStackTrace();
         }

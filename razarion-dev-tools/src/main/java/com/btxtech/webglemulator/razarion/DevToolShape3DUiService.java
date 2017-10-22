@@ -32,7 +32,7 @@ public class DevToolShape3DUiService extends Shape3DUiService {
 
     public void loadBuffer() {
         buffer.clear();
-        for (VertexContainerBuffer vertexContainerBuffer : jsonProviderEmulator.readVertexContainerBuffersFromFile()) {
+        for (VertexContainerBuffer vertexContainerBuffer : jsonProviderEmulator.readVertexContainerBuffersFromServer()) {
             buffer.put(vertexContainerBuffer.getKey(), vertexContainerBuffer);
         }
     }
