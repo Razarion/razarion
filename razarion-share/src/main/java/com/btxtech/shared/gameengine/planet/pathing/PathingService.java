@@ -33,7 +33,6 @@ public class PathingService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
-    private SuccessorNodeCache successorNodeCache = new SuccessorNodeCache();
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, syncItem.getSyncPhysicalArea().getTerrainType(), destination, 0);
@@ -62,23 +61,23 @@ public class PathingService {
         if (!destinationNode.isFree(targetTerrainType)) {
             throw new PathFindingNotFreeException("Destination start tile is not free: " + destination);
         }
-        DecimalPosition correctedDestination = destination;
-        if (syncItem.getSyncPhysicalArea().getTerrainType() != targetTerrainType) {
-            DifferentTerrainTypeDestinationFinder differentTerrainTypeDestinationFinder = new DifferentTerrainTypeDestinationFinder(syncItem.getSyncPhysicalArea().getTerrainType(), destination, totalRange, terrainService.getPathingAccess());
-            correctedDestination = differentTerrainTypeDestinationFinder.find();
-            destinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(correctedDestination);
-        }
         // long time = System.currentTimeMillis();
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        DestinationFinder destinationFinder = new DestinationFinder(destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope, terrainService.getPathingAccess());
-        PathingNodeWrapper correctedDestinationNode = destinationFinder.find();
-        AStar aStar = new AStar(startNode, correctedDestinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope, successorNodeCache);
+        PathingNodeWrapper correctedDestinationNode = destinationNode;
+        if(syncItem.getSyncPhysicalArea().getTerrainType() == targetTerrainType) {
+            DestinationFinder destinationFinder = new DestinationFinder(destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope, terrainService.getPathingAccess());
+            correctedDestinationNode = destinationFinder.find();
+        }
+
+        AStarContext aStarContext = new AStarContext(destination, totalRange, syncItem.getSyncPhysicalArea().getTerrainType(), TerrainType.getSkippableTerrainType(syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType), subNodeIndexScope);
+        AStar aStar = new AStar(startNode, correctedDestinationNode, aStarContext);
         aStar.expandAllNodes();
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {
             positions.add(pathingNodeWrapper.getCenter());
         }
         // logger.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
-        positions.add(correctedDestination);
+        positions = aStarContext.stripSkippable(positions, terrainService.getPathingAccess());
+        positions.add(destination);
         path.setWayPositions(positions);
         path.setTotalRange(totalRange);
         return path;

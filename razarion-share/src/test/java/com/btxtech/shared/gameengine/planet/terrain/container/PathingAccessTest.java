@@ -75,21 +75,21 @@ public class PathingAccessTest extends WeldTerrainServiceTestBase {
         // WeldDisplay.show(getTerrainShape(), null, null);
     }
 
-    @Test
-    public void testSuccessorNode() {
-        setup();
-
-        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
-        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(70, 20));
-        pathingNodeWrapper.provideNorthSuccessors(TerrainType.LAND, subNodeIndexScope, actual -> {
-            Assert.assertEquals(new Index(8, 3), actual.getNodeIndex());
-            Assert.assertNull(actual.getSubNodePosition());
-            nodeHandlerHelper.increaseActualCount();
-        });
-        nodeHandlerHelper.assertCount(1);
-        nodeHandlerHelper.assertExpectedPosition();
-    }
+//    @Test
+//    public void testSuccessorNode() {
+//        setup();
+//
+//        NodeHandlerHelper nodeHandlerHelper = new NodeHandlerHelper();
+//        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+//        PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(70, 20));
+//        pathingNodeWrapper.provideNorthSuccessors(TerrainType.LAND, subNodeIndexScope, actual -> {
+//            Assert.assertEquals(new Index(8, 3), actual.getNodeIndex());
+//            Assert.assertNull(actual.getSubNodePosition());
+//            nodeHandlerHelper.increaseActualCount();
+//        });
+//        nodeHandlerHelper.assertCount(1);
+//        nodeHandlerHelper.assertExpectedPosition();
+//    }
 
 //    @Test
 //    public void testSuccessorSubNode1() {
@@ -182,12 +182,12 @@ public class PathingAccessTest extends WeldTerrainServiceTestBase {
 //        nodeHandlerHelper.assertExpectedPosition();
 //    }
 
-    @Test
-    public void testSuccessorSubNode6() {
-        setup();
-
-        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(59.5, 32.5));
-        pathingNodeWrapper.provideNorthSuccessors(TerrainType.LAND, subNodeIndexScope, actual -> Assert.fail());
-    }
+//    @Test
+//    public void testSuccessorSubNode6() {
+//        setup();
+//
+//        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+//        PathingNodeWrapper pathingNodeWrapper = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(59.5, 32.5));
+//        pathingNodeWrapper.provideNorthSuccessors(TerrainType.LAND, subNodeIndexScope, actual -> Assert.fail());
+//    }
 }

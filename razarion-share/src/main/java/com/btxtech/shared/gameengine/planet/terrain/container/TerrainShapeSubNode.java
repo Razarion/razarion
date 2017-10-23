@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeSubNode;
 
@@ -194,50 +195,50 @@ public class TerrainShapeSubNode {
         throw new IllegalArgumentException("TerrainShapeSubNode.numberToSubNodeIndex(): " + number);
     }
 
-    public void outerDirectionCallback(TerrainType terrainType, Index outerDirection, DecimalPosition subNodePosition, TerrainShapeNode.DirectionConsumer directionConsumer) {
+    public void outerDirectionCallback(AStarContext aStarContext, Index outerDirection, DecimalPosition subNodePosition, TerrainShapeNode.DirectionConsumer directionConsumer) {
         if (terrainShapeSubNodes == null) {
-            if (TerrainType.isAllowed(terrainType, this.terrainType)) {
+            if (aStarContext.isAllowed(terrainType, subNodePosition.add(TerrainUtil.subNodeCenter(depth)))) {
                 directionConsumer.onTerrainShapeSubNode(this, subNodePosition);
             }
         } else if (outerDirection.getX() > 0) {
             // Access from west
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[0].outerDirectionCallback(terrainType, outerDirection, subNodePosition, directionConsumer);
-            terrainShapeSubNodes[3].outerDirectionCallback(terrainType, outerDirection, subNodePosition.add(0, length), directionConsumer);
+            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, outerDirection, subNodePosition, directionConsumer);
+            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(0, length), directionConsumer);
         } else if (outerDirection.getX() < 0) {
             // Access from east
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[1].outerDirectionCallback(terrainType, outerDirection, subNodePosition.add(length, 0), directionConsumer);
-            terrainShapeSubNodes[2].outerDirectionCallback(terrainType, outerDirection, subNodePosition.add(length, length), directionConsumer);
+            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, 0), directionConsumer);
+            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, length), directionConsumer);
         } else if (outerDirection.getY() > 0) {
             // Access from south
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[0].outerDirectionCallback(terrainType, outerDirection, subNodePosition, directionConsumer);
-            terrainShapeSubNodes[1].outerDirectionCallback(terrainType, outerDirection, subNodePosition.add(length, 0), directionConsumer);
+            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, outerDirection, subNodePosition, directionConsumer);
+            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, 0), directionConsumer);
         } else if (outerDirection.getY() < 0) {
             // Access from north
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[2].outerDirectionCallback(terrainType, outerDirection, subNodePosition.add(length, length), directionConsumer);
-            terrainShapeSubNodes[3].outerDirectionCallback(terrainType, outerDirection, subNodePosition.add(0, length), directionConsumer);
+            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, length), directionConsumer);
+            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(0, length), directionConsumer);
         } else {
             throw new IllegalArgumentException("TerrainShapeNode.outerDirectionCallback() outerDirection: " + outerDirection);
         }
     }
 
-    public void outerDirectionCallback(TerrainType terrainType, DecimalPosition subNodeRelative, DecimalPosition subNodeAbsolute, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
+    public void outerDirectionCallback(AStarContext aStarContext, DecimalPosition subNodeRelative, DecimalPosition subNodeAbsolute, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
         if (destinationDepth >= depth) {
-            outerDirectionCallback(terrainType, direction, subNodeAbsolute, directionConsumer);
+            outerDirectionCallback(aStarContext, direction, subNodeAbsolute, directionConsumer);
             return;
         }
         double length = TerrainUtil.calculateSubNodeLength(this.depth);
         if (subNodeRelative.getX() < length && subNodeRelative.getY() < length) {
-            terrainShapeSubNodes[0].outerDirectionCallback(terrainType, subNodeRelative, subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, subNodeRelative, subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else if (subNodeRelative.getX() >= length && subNodeRelative.getY() < length) {
-            terrainShapeSubNodes[1].outerDirectionCallback(terrainType, subNodeRelative.sub(length, 0), subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, subNodeRelative.sub(length, 0), subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else if (subNodeRelative.getX() >= length && subNodeRelative.getY() >= length) {
-            terrainShapeSubNodes[2].outerDirectionCallback(terrainType, subNodeRelative.sub(length, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, subNodeRelative.sub(length, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else if (subNodeRelative.getX() < length && subNodeRelative.getY() >= length) {
-            terrainShapeSubNodes[3].outerDirectionCallback(terrainType, subNodeRelative.sub(0, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, subNodeRelative.sub(0, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else {
             throw new IllegalArgumentException("TerrainShapeSubNode.outerDirectionCallback()");
         }

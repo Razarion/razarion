@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -19,24 +20,6 @@ import java.util.List;
  * on 19.06.2017.
  */
 public class PathingAccess {
-    private class IterationControl implements TerrainRegionImpactCallback.Control {
-        private boolean notLane;
-
-        @Override
-        public void doStop() {
-            notLane = true;
-        }
-
-        @Override
-        public boolean isStop() {
-            return notLane;
-        }
-
-        public boolean isNotLane() {
-            return notLane;
-        }
-    }
-
     private TerrainShape terrainShape;
 
     public PathingAccess(TerrainShape terrainShape) {
@@ -190,7 +173,7 @@ public class PathingAccess {
         return terrainShape;
     }
 
-    public void outerDirectionCallback(TerrainType terrainType, DecimalPosition subNodePosition, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
+    public void outerDirectionCallback(AStarContext aStarContext, DecimalPosition subNodePosition, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
         Index nodeIndex = TerrainUtil.toNode(subNodePosition);
         TerrainShapeNode terrainShapeNode = getTerrainShapeNode(nodeIndex);
 
@@ -198,13 +181,13 @@ public class PathingAccess {
         DecimalPosition nodeRelative = subNodePosition.sub(TerrainUtil.toNodeAbsolute(nodeIndex));
         TerrainShapeSubNode[] terrainShapeSubNodes = terrainShapeNode.getTerrainShapeSubNodes();
         if (nodeRelative.getX() < length && nodeRelative.getY() < length) {
-            terrainShapeSubNodes[0].outerDirectionCallback(terrainType, nodeRelative, subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, nodeRelative, subNodePosition, destinationDepth, direction, directionConsumer);
         } else if (nodeRelative.getX() >= length && nodeRelative.getY() < length) {
-            terrainShapeSubNodes[1].outerDirectionCallback(terrainType, nodeRelative.sub(length, 0), subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, nodeRelative.sub(length, 0), subNodePosition, destinationDepth, direction, directionConsumer);
         } else if (nodeRelative.getX() >= length && nodeRelative.getY() >= length) {
-            terrainShapeSubNodes[2].outerDirectionCallback(terrainType, nodeRelative.sub(length, length), subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, nodeRelative.sub(length, length), subNodePosition, destinationDepth, direction, directionConsumer);
         } else if (nodeRelative.getX() < length && nodeRelative.getY() >= length) {
-            terrainShapeSubNodes[3].outerDirectionCallback(terrainType, nodeRelative.sub(0, length), subNodePosition, destinationDepth, direction, directionConsumer);
+            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, nodeRelative.sub(0, length), subNodePosition, destinationDepth, direction, directionConsumer);
         } else {
             throw new IllegalArgumentException("PathingAccess.outerDirectionCallback()");
         }

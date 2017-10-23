@@ -2,6 +2,8 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.utils.CollectionUtils;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -15,9 +17,10 @@ public enum TerrainType {
     WATER_COAST(false),
     BLOCKED(false);
 
+    private static final Set<TerrainType> LAND_WATER_COAST = new HashSet<>(Arrays.asList(LAND_COAST, WATER_COAST));
     private boolean areaCheck;
 
-    TerrainType(boolean areaCheck)  {
+    TerrainType(boolean areaCheck) {
         this.areaCheck = areaCheck;
     }
 
@@ -39,5 +42,19 @@ public enum TerrainType {
             }
         }
         return false;
+    }
+
+    public static Set<TerrainType> getSkippableTerrainType(TerrainType terrainType, TerrainType targetTerrainType) {
+        if (terrainType == targetTerrainType) {
+            return null;
+        }
+        if (terrainType == LAND && targetTerrainType == WATER_COAST) {
+            return LAND_WATER_COAST;
+        }
+        throw new IllegalArgumentException("TerrainType.getSkippableTerrainType() terrainType: " + terrainType + " targetTerrainType: " + targetTerrainType);
+    }
+
+    public static TerrainType getNullTerrainType() {
+        return LAND;
     }
 }

@@ -1,8 +1,6 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,20 +19,16 @@ public class AStar {
     private AStarOpenList openList = new AStarOpenList();
     private PathingNodeWrapper startNode;
     private AStarNode destinationNode;
+    private AStarContext aStarContext;
     private boolean pathFound;
     private List<PathingNodeWrapper> tilePath;
     private double smallestHeuristic = Double.MAX_VALUE;
     private AStarNode bestFitNode;
-    private TerrainType terrainType;
-    private List<Index> subNodeIndexScope;
-    private SuccessorNodeCache successorNodeCache;
 
-    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode, TerrainType terrainType, List<Index> subNodeIndexScope, SuccessorNodeCache successorNodeCache) {
+    public AStar(PathingNodeWrapper startNode, PathingNodeWrapper destinationNode, AStarContext aStarContext) {
         this.startNode = startNode;
         this.destinationNode = new AStarNode(destinationNode);
-        this.terrainType = terrainType;
-        this.subNodeIndexScope = subNodeIndexScope;
-        this.successorNodeCache = successorNodeCache;
+        this.aStarContext = aStarContext;
         openList.add(new AStarNode(startNode));
     }
 
@@ -63,33 +57,33 @@ public class AStar {
     }
 
     private void handleAllSuccessorNodes(AStarNode current) {
-        Collection<PathingNodeWrapper> cached = successorNodeCache.get(current.getPathingNodeWrapper());
+        Collection<PathingNodeWrapper> cached = aStarContext.getFromCache(current.getPathingNodeWrapper());
         if (cached != null) {
             cached.forEach(successor -> handleSuccessorNode(current, successor));
             return;
         }
         Collection<PathingNodeWrapper> toBeCached = new ArrayList<>();
         // North
-        current.getPathingNodeWrapper().provideNorthSuccessors(terrainType, subNodeIndexScope, northSuccessor -> {
+        current.getPathingNodeWrapper().provideNorthSuccessors(aStarContext, northSuccessor -> {
             toBeCached.add(northSuccessor);
             handleSuccessorNode(current, northSuccessor);
         });
         // East
-        current.getPathingNodeWrapper().provideEastSuccessors(terrainType, subNodeIndexScope, eastSuccessor -> {
+        current.getPathingNodeWrapper().provideEastSuccessors(aStarContext, eastSuccessor -> {
             toBeCached.add(eastSuccessor);
             handleSuccessorNode(current, eastSuccessor);
         });
         // South
-        current.getPathingNodeWrapper().provideSouthSuccessors(terrainType, subNodeIndexScope, southSuccessor -> {
+        current.getPathingNodeWrapper().provideSouthSuccessors(aStarContext, southSuccessor -> {
             toBeCached.add(southSuccessor);
             handleSuccessorNode(current, southSuccessor);
         });
         // West
-        current.getPathingNodeWrapper().provideWestSuccessors(terrainType, subNodeIndexScope, westSuccessor -> {
+        current.getPathingNodeWrapper().provideWestSuccessors(aStarContext, westSuccessor -> {
             toBeCached.add(westSuccessor);
             handleSuccessorNode(current, westSuccessor);
         });
-        successorNodeCache.put(current.getPathingNodeWrapper(), toBeCached);
+        aStarContext.putToCache(current.getPathingNodeWrapper(), toBeCached);
     }
 
     private void handleSuccessorNode(AStarNode current, PathingNodeWrapper successorTilePosition) {

@@ -20,6 +20,7 @@ public class DestinationFinder {
     private List<Index> subNodeIndexScope;
     private PathingAccess pathingAccess;
     private PathingNodeWrapper found;
+    private AStarContext aStarContext;
     private Set<PathingNodeWrapper> openList = new HashSet<>();
     private Set<PathingNodeWrapper> closeList = new HashSet<>();
 
@@ -28,6 +29,7 @@ public class DestinationFinder {
         this.terrainType = terrainType;
         this.subNodeIndexScope = subNodeIndexScope;
         this.pathingAccess = pathingAccess;
+        aStarContext = new AStarContext(null, 0, terrainType, null, null);
     }
 
     public PathingNodeWrapper find() {
@@ -51,10 +53,10 @@ public class DestinationFinder {
         PathingNodeWrapper pathingNodeWrapper = CollectionUtils.getFirst(openList);
         openList.remove(pathingNodeWrapper);
         closeList.add(pathingNodeWrapper);
-        pathingNodeWrapper.provideNorthSuccessors(terrainType, null, this::handleSuccessor);
-        pathingNodeWrapper.provideEastSuccessors(terrainType, null, this::handleSuccessor);
-        pathingNodeWrapper.provideSouthSuccessors(terrainType, null, this::handleSuccessor);
-        pathingNodeWrapper.provideWestSuccessors(terrainType, null, this::handleSuccessor);
+        pathingNodeWrapper.provideNorthSuccessors(aStarContext, this::handleSuccessor);
+        pathingNodeWrapper.provideEastSuccessors(aStarContext, this::handleSuccessor);
+        pathingNodeWrapper.provideSouthSuccessors(aStarContext, this::handleSuccessor);
+        pathingNodeWrapper.provideWestSuccessors(aStarContext, this::handleSuccessor);
     }
 
     private void handleSuccessor(PathingNodeWrapper successor) {
