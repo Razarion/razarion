@@ -173,7 +173,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     CommonRenderComposite<AbstractDemolitionVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
                     compositeRenderer.setRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(baseItemType.getDemolitionImageId());
-                    compositeRenderer.setDepthBufferRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class);
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractDemolitionVertexContainerRenderUnit.class).setAdditionalData(baseItemType.getDemolitionImageId());
                     compositeRenderer.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {

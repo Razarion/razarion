@@ -251,8 +251,8 @@ public class WebGlEmulatorController implements Initializable {
             AnchorPane root = loader.load();
             stage.setTitle("Shadow");
             stage.setScene(new Scene(root));
-            stage.setX(-1288);
-            stage.setY(168);
+//            stage.setX(-1288);
+//            stage.setY(168);
             stage.setOnCloseRequest(we -> shadowController.setActive(false));
             stage.show();
         } catch (IOException e) {
