@@ -7,8 +7,8 @@ import java.util.Map;
  * on 31.08.2017.
  */
 public class BackupPlayerBaseInfo extends PlayerBaseInfo {
-    private int level;
-    private Map<Integer, Integer> unlockedItemLimit;
+    private int level; // TODO Bad, should be in UserEntity
+    private Map<Integer, Integer> unlockedItemLimit; // TODO Bad, should be in UserEntity
 
     public int getLevel() {
         return level;

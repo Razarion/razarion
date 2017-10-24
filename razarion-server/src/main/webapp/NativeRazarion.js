@@ -647,6 +647,7 @@ com = {
                     this.getTerrainType = function () {
                         return this.terrainType;
                     };
+
                     this.setTerrainType = function (terrainType) {
                         this.terrainType = terrainType;
                     };
@@ -726,6 +727,7 @@ com = {
                     this.getTerrainType = function () {
                         return this.terrainType;
                     };
+
                     this.setTerrainType = function (terrainType) {
                         this.terrainType = terrainType;
                     };
