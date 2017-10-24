@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewService;
@@ -30,11 +30,11 @@ public class BaseItemPlacer {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private TerrainService terrainService;
-    @Inject
     private ViewService viewService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Vertex position;
     private BaseItemType baseItemType;
     private String errorText;
@@ -55,9 +55,13 @@ public class BaseItemPlacer {
     }
 
     void onMove(Vertex position) {
-        baseItemPlacerChecker.check(position.toXY());
-        setupErrorText();
-        this.position = position;
+        try {
+            baseItemPlacerChecker.check(position.toXY());
+            setupErrorText();
+            this.position = position;
+        } catch (Exception e) {
+            exceptionHandler.handleException("BaseItemPlacer.onMove() " + position, e);
+        }
     }
 
     public boolean isPositionValid() {

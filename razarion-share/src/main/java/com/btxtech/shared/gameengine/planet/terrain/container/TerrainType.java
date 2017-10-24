@@ -29,7 +29,10 @@ public enum TerrainType {
     }
 
     public static boolean isAllowed(TerrainType expected, TerrainType actual) {
-        return actual == null && expected == LAND || expected == actual;
+        if (actual == null) {
+            return expected == getNullTerrainType();
+        }
+        return expected == actual;
     }
 
     public static boolean isAtLeaseOneAllowedOrdinal(Set<TerrainType> expected, Integer actualOrdinal) {
@@ -71,6 +74,7 @@ public enum TerrainType {
         }
         return values()[terrainTypeOrdinal];
     }
+
     /**
      * GWT has problem turn an Integer ordinal to a enum
      * Integer is not working here because Integer.intValue() is not defined (from JSON object)
