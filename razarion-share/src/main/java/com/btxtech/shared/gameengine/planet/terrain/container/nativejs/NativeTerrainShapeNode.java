@@ -18,5 +18,5 @@ public class NativeTerrainShapeNode {
     public Boolean doNotRenderGround;
     public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes;
     public Boolean drivewayBreakingLine;
-    public Integer terrainTypeOrdinal;
+    public int terrainTypeOrdinal; // Integer is not working here because Integer.intValue() is not defined
 }

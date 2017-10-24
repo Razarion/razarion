@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTer
  * on 20.06.2017.
  */
 public class TerrainShapeSubNode {
+    // private Logger logger = Logger.getLogger(TerrainShapeSubNode.class.getName());
     private TerrainType terrainType;
     private Double height;
     private int depth;
@@ -26,9 +27,7 @@ public class TerrainShapeSubNode {
     public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
         this.parent = parent;
         this.depth = depth;
-        if (nativeTerrainShapeSubNode.terrainTypeOrdinal != null) {
-            terrainType = TerrainType.values()[nativeTerrainShapeSubNode.terrainTypeOrdinal];
-        }
+        terrainType = TerrainType.fromOrdinal(nativeTerrainShapeSubNode.terrainTypeOrdinal);
         height = nativeTerrainShapeSubNode.height;
         terrainShapeSubNodes = fromNativeTerrainShapeSubNode(this, depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
     }
@@ -90,7 +89,7 @@ public class TerrainShapeSubNode {
 
     public NativeTerrainShapeSubNode toNativeTerrainShapeSubNode() {
         NativeTerrainShapeSubNode nativeTerrainShapeSubNode = new NativeTerrainShapeSubNode();
-        nativeTerrainShapeSubNode.terrainTypeOrdinal = terrainType != null ? terrainType.ordinal() : null;
+        nativeTerrainShapeSubNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeSubNode.height = height;
         nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes = toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         return nativeTerrainShapeSubNode;

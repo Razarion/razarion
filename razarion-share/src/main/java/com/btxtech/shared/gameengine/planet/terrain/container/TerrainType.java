@@ -57,4 +57,31 @@ public enum TerrainType {
     public static TerrainType getNullTerrainType() {
         return LAND;
     }
+
+    /**
+     * GWT has problem turn an Integer ordinal to a enum
+     * Integer is not working here because Integer.intValue() is not defined (from JSON object)
+     *
+     * @param terrainTypeOrdinal ordinal or < 0 if none
+     * @return TerrainType
+     */
+    public static TerrainType fromOrdinal(int terrainTypeOrdinal) {
+        if (terrainTypeOrdinal < 0) {
+            return null;
+        }
+        return values()[terrainTypeOrdinal];
+    }
+    /**
+     * GWT has problem turn an Integer ordinal to a enum
+     * Integer is not working here because Integer.intValue() is not defined (from JSON object)
+     *
+     * @param terrainType ordinal or < 0 if none
+     * @return ordinal or < 0 if terrainType is null
+     */
+    public static int toOrdinal(TerrainType terrainType) {
+        if (terrainType == null) {
+            return -1;
+        }
+        return terrainType.ordinal();
+    }
 }
