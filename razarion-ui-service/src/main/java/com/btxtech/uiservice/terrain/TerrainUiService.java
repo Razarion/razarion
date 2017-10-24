@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -243,5 +244,11 @@ public class TerrainUiService {
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {
         terrainTileConsumers.remove(new Index(terrainTile.getIndexX(), terrainTile.getIndexY())).accept(terrainTile);
+    }
+
+    public void enableEditMode(GroundSkeletonConfig groundSkeletonConfig) {
+        terrainTypeService.setGroundSkeletonConfig(groundSkeletonConfig);
+        displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundSkeletonConfig));
+        cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundSkeletonConfig));
     }
 }

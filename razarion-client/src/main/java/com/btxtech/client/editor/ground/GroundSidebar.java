@@ -110,18 +110,15 @@ public class GroundSidebar extends LeftSideBarContent {
 
     @PostConstruct
     public void init() {
-        terrainEditorService.call(new RemoteCallback<GroundConfig>() {
-            @Override
-            public void callback(GroundConfig groundConfig) {
-                groundConfigDataBinder.setModel(groundConfig);
-                lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
-                topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId));
-                topBmId.setImageId(groundConfig.getGroundSkeletonConfig().getTopBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopBmId(imageId));
-                bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId));
-                bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId));
-                splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> groundConfig.getGroundSkeletonConfig().setSplattingId(imageId));
-                // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
-            }
+        terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
+            groundConfigDataBinder.setModel(groundConfig);
+            lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
+            topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId));
+            topBmId.setImageId(groundConfig.getGroundSkeletonConfig().getTopBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopBmId(imageId));
+            bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId));
+            bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId));
+            splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> groundConfig.getGroundSkeletonConfig().setSplattingId(imageId));
+            terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "loadGroundConfig failed: " + message, throwable);
             return false;

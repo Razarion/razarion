@@ -145,6 +145,10 @@ public class UiTerrainTile {
         return groundSkeletonConfig.getBottomBmDepth();
     }
 
+    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
+        this.groundSkeletonConfig = groundSkeletonConfig;
+    }
+
     public void dispose() {
         if (modelRenderer != null) {
             groundRenderTask.remove(modelRenderer);

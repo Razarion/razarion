@@ -68,6 +68,10 @@ public class TerrainTypeService {
         return groundSkeletonConfig;
     }
 
+    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
+        this.groundSkeletonConfig = groundSkeletonConfig;
+    }
+
     public SlopeSkeletonConfig getSlopeSkeleton(int id) {
         SlopeSkeletonConfig slopeSkeletonConfig = slopeSkeletonConfigs.get(id);
         if (slopeSkeletonConfig == null) {
