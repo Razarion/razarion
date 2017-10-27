@@ -226,7 +226,7 @@ public class JsonProviderEmulator {
             System.out.print("{");
             for (int y = 0; y < slopeSkeletonConfig.getRows(); y++) {
                 SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(x, y);
-                System.out.print("createSlopeNode(" + slopeNode.getPosition().getX() + ", " + slopeNode.getPosition().getZ() + ", " + slopeNode.getSlopeFactor() + ")");
+                System.out.print("GameTestHelper.createSlopeNode(" + slopeNode.getPosition().getX() + ", " + slopeNode.getPosition().getZ() + ", " + slopeNode.getSlopeFactor() + ")");
                 if (y + 1 < slopeSkeletonConfig.getRows()) {
                     System.out.print(", ");
                 }
@@ -247,7 +247,7 @@ public class JsonProviderEmulator {
         List<TerrainSlopeCorner> polygon = terrainSlopePosition.getPolygon();
         for (int i = 0; i < polygon.size(); i++) {
             TerrainSlopeCorner terrainSlopeCorner = polygon.get(i);
-            System.out.print("createTerrainSlopeCorner(" + terrainSlopeCorner.getPosition().getX() + ", " + terrainSlopeCorner.getPosition().getY() + ", " + terrainSlopeCorner.getSlopeDrivewayId() + ")");
+            System.out.print("GameTestHelper.createTerrainSlopeCorner(" + terrainSlopeCorner.getPosition().getX() + ", " + terrainSlopeCorner.getPosition().getY() + ", " + terrainSlopeCorner.getSlopeDrivewayId() + ")");
             if (i + 1 < polygon.size()) {
                 System.out.print(", ");
             }
@@ -264,7 +264,7 @@ public class JsonProviderEmulator {
 
     public static void main(String[] args) {
         try {
-            dumpSlope(2, new DecimalPosition(92, 81));
+            dumpSlope(2, new DecimalPosition(348, 206));
         } catch (IOException e) {
             e.printStackTrace();
         }
