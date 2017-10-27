@@ -24,8 +24,8 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
-import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestRenderer;
 import com.btxtech.shared.utils.MathHelper;
 import javafx.scene.paint.Color;
 
@@ -161,7 +161,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         // displayObstacles(terrainShapeNode);
         displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
         if (terrainShapeNode.getTerrainType() != null) {
-            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainShapeNode.getTerrainType()));
+            getGc().setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
             getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
     }
@@ -224,7 +224,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         getGc().strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
         displaySubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
         if (terrainShapeSubNode.getTerrainType() != null) {
-            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainShapeSubNode.getTerrainType()));
+            getGc().setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
             getGc().fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
         }
     }
@@ -362,6 +362,23 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     public void drawPositions(Collection<DecimalPosition> positions, double radius, Color color) {
         for (DecimalPosition position : positions) {
             drawPosition(position, radius, color);
+        }
+    }
+
+    public static Color color4TerrainType(TerrainType terrainType) {
+        switch (terrainType) {
+            case LAND:
+                return Color.GREEN;
+            case WATER:
+                return Color.BLUE;
+            case LAND_COAST:
+                return Color.LIGHTGREEN;
+            case WATER_COAST:
+                return Color.SANDYBROWN;
+            case BLOCKED:
+                return Color.RED;
+            default:
+                throw new IllegalArgumentException("Unknown terrainType: " + terrainType);
         }
     }
 

@@ -10,7 +10,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
-import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestRenderer;
 import javafx.scene.paint.Color;
 
 import java.util.Collection;
@@ -186,7 +185,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     private void drawNode(TerrainNode terrainNode, DecimalPosition absoluteNodePosition) {
         TerrainType terrainType = TerrainType.fromOrdinal(terrainNode.getTerrainType());
         if (terrainType != null) {
-            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
+            // getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
             getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
 
@@ -217,7 +216,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
         TerrainType terrainType = TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
         if (terrainType != null) {
-            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
+            // getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
             getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
         }
 

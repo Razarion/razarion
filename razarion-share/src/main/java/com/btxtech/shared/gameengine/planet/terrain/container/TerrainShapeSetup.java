@@ -165,6 +165,7 @@ public class TerrainShapeSetup {
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
                 Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
 
+                // Add ground connection
                 if (innerPiercings == null && fractalDriveway != null) {
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
@@ -199,6 +200,7 @@ public class TerrainShapeSetup {
                     }
                 }
 
+                // Completely under slope
                 if (innerPiercings == null && outerPiercings == null) {
                     Rectangle2D shrunken = terrainRect.shrink(0.01);
                     if (outerPolygon.checkInside(shrunken) == InsideCheckResult.INSIDE && slope.getInnerPolygonSlope().checkInside(shrunken) == InsideCheckResult.OUTSIDE) {
@@ -206,6 +208,12 @@ public class TerrainShapeSetup {
                     }
                 }
 
+                // Set height
+                if(outerPolygon.checkInside(terrainRect) == InsideCheckResult.INSIDE) {
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setUniformGroundHeight(slope.getGroundHeight() + slope.getHeight());
+                } else {
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setUniformGroundHeight(slope.getGroundHeight());
+                }
             }
         }
         if (slope.getChildren() != null) {
@@ -264,14 +272,14 @@ public class TerrainShapeSetup {
         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
         dirtyTerrainShapeNodes.putIfAbsent(nodeIndex, terrainShapeNode);
         if (innerTerrainType != null && outerTerrainType != null) {
-            // terrainShapeNode.setTerrainType(null);
+            terrainShapeNode.setTerrainType(null);
             terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, outerTerrainType, drivewayTerrainTypeHandler);
         } else if (innerTerrainType != null) {
             terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, terrainShapeNode.getTerrainType(), drivewayTerrainTypeHandler);
-            // terrainShapeNode.setTerrainType(null);
+            terrainShapeNode.setTerrainType(null);
         } else if (outerTerrainType != null) {
             terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, terrainShapeNode.getTerrainType(), outerTerrainType, drivewayTerrainTypeHandler);
-            // terrainShapeNode.setTerrainType(null);
+            terrainShapeNode.setTerrainType(null);
         } else {
             throw new IllegalArgumentException("TerrainShapeSetup.setupTerrainType() innerTerrainType == null && outerTerrainType == null");
         }

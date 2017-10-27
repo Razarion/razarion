@@ -10,7 +10,6 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
-import com.btxtech.shared.gameengine.planet.terrain.gui.terrainshape.TerrainShapeTestDisplay;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -178,7 +177,7 @@ public class TerrainShapeRealGameTest extends WeldTerrainServiceTestBase {
 //        }
 
         TerrainShape terrainShape = setup(slopeSkeletonConfigs, terrainSlopePositions);
-        TerrainShapeTestDisplay.show(terrainShape);
+        showDisplay();
     }
 
 }
