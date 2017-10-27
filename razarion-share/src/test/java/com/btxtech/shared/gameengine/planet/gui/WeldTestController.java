@@ -6,9 +6,14 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestController;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * Created by Beat
@@ -20,12 +25,23 @@ public class WeldTestController extends AbstractTerrainTestController {
     private WeldTestRenderer weldTestRenderer;
     @Inject
     private TerrainService terrainService;
+    @FXML
+    private TextField zMinField;
+    @FXML
+    private TextField zMaxField;
     private Object[] userObjects;
 
     @Override
     protected AbstractTerrainTestRenderer setupRenderer() {
         weldTestRenderer.setupFields(userObjects);
         return weldTestRenderer;
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        super.initialize(url, resourceBundle);
+        zMinField.setText(Double.toString(weldTestRenderer.getZMin()));
+        zMaxField.setText(Double.toString(weldTestRenderer.getZMax()));
     }
 
     public void setUserObjects(Object[] userObjects) {
@@ -35,12 +51,22 @@ public class WeldTestController extends AbstractTerrainTestController {
     protected void onMousePressedTerrain(DecimalPosition position) {
         System.out.println("-----------------------------------------------");
         TerrainShapeNode terrainShapeNode = terrainService.getPathingAccess().getTerrainShapeNode(TerrainUtil.toNode(position));
-        if(terrainShapeNode == null) {
+        if (terrainShapeNode == null) {
             System.out.println("No terrain shape node at: " + position);
             return;
         }
         System.out.println("Terrain shape node at: " + position);
         System.out.println("Height: " + terrainShapeNode.getUniformGroundHeight());
 
+    }
+
+    public void onMinZChanged(ActionEvent inputMethodEvent) {
+        weldTestRenderer.setZMin(Double.parseDouble(zMinField.getText()));
+        getAbstractTerrainTestRenderer().render();
+    }
+
+    public void onMaxZChanged(ActionEvent inputMethodEvent) {
+        weldTestRenderer.setZMax(Double.parseDouble(zMaxField.getText()));
+        getAbstractTerrainTestRenderer().render();
     }
 }

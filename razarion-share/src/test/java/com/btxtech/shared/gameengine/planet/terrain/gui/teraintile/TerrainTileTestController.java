@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
  * Created by Beat
  * 09.04.2017.
  */
+@Deprecated
 public class TerrainTileTestController extends AbstractTerrainTestController {
     private final Collection<TerrainTile> expected;
     private final Collection<TerrainTile> actual;

@@ -27,10 +27,10 @@ public class WeldDisplay extends Application {
 
     @Override
     public void start(final Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TerrainTestApplication.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/WeldDisplay.fxml"));
         loader.setControllerFactory(param -> uglyFxHackThis.gameEngineMonitorController);
         Parent root = loader.load();
-        stage.setTitle("AStar Gui");
+        stage.setTitle("Test Weld Display");
         stage.setScene(new Scene(root));
 //        stage.setX(-1279);
 //        stage.setY(182);

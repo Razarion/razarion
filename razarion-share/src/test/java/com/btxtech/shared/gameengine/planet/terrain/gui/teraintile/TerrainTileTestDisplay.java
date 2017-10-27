@@ -14,6 +14,7 @@ import java.util.Collections;
  * Created by Beat
  * 24.01.2016.
  */
+@Deprecated // Use WeldDisplay
 public class TerrainTileTestDisplay extends Application {
     private static Collection<TerrainTile> expected;
     private static Collection<TerrainTile> actual;

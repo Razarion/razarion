@@ -18,6 +18,7 @@ import java.util.Collection;
  * Created by Beat
  * 25.06.2016.
  */
+@Deprecated
 public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     private final Collection<TerrainTile> expectedTiles;
     private final Collection<TerrainTile> actualTiles;

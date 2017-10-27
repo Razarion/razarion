@@ -94,4 +94,7 @@ public abstract class AbstractTerrainTestController implements Initializable {
         System.out.println("onMousePressedTerrain: " + position);
     }
 
+    protected AbstractTerrainTestRenderer getAbstractTerrainTestRenderer() {
+        return abstractTerrainTestRenderer;
+    }
 }

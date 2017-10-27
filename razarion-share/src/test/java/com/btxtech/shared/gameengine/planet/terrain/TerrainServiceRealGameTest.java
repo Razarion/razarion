@@ -26,7 +26,7 @@ public class TerrainServiceRealGameTest extends WeldTerrainServiceTestBase {
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 10, 0, 0},
+                {0, 0, 0, 0},
                 {0, 0, 0, 0}
         };
         double[][] splattings = new double[][]{
