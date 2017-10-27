@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.InsideCheckResult;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -156,8 +157,8 @@ public class Driveway {
         return innerPolygon.isInside(positions);
     }
 
-    public boolean isOneCornerInside(Collection<DecimalPosition> positions) {
-        return innerPolygon.isOneCornerInside(positions);
+    public boolean isInsideOrTouching(Rectangle2D rectangle2D) {
+        return innerPolygon.checkInside(rectangle2D) != InsideCheckResult.OUTSIDE;
     }
 
     public boolean isInside(DecimalPosition position) {

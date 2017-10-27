@@ -326,11 +326,11 @@ public class Slope {
         return driveways.stream().filter(driveway -> driveway.isInside(positions)).findFirst().orElse(null);
     }
 
-    public Driveway getDrivewayIfOneCornerInside(Collection<DecimalPosition> positions) {
+    public Driveway getDrivewayIfInsideOrTouching(Rectangle2D rectangle2D) {
         if (driveways == null || driveways.isEmpty()) {
             return null;
         }
-        return driveways.stream().filter(driveway -> driveway.isOneCornerInside(positions)).findFirst().orElse(null);
+        return driveways.stream().filter(driveway -> driveway.isInsideOrTouching(rectangle2D)).findFirst().orElse(null);
     }
 
     public Collection<Driveway> getDriveways() {

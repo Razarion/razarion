@@ -163,7 +163,7 @@ public class TerrainShapeSetup {
                 List<DecimalPosition> corners = terrainRect.toCorners();
                 List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
-                Driveway fractalDriveway = slope.getDrivewayIfOneCornerInside(corners);
+                Driveway fractalDriveway = slope.getDrivewayIfInsideOrTouching(terrainRect);
 
                 // Add ground connection
                 if (innerPiercings == null && fractalDriveway != null) {
@@ -216,7 +216,7 @@ public class TerrainShapeSetup {
                 }
 
                 // Set height
-                if(outerPolygon.checkInside(terrainRect) == InsideCheckResult.INSIDE) {
+                if (outerPolygon.checkInside(terrainRect) == InsideCheckResult.INSIDE) {
                     terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setUniformGroundHeight(slope.getGroundHeight() + slope.getHeight());
                 } else {
                     terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setUniformGroundHeight(slope.getGroundHeight());
