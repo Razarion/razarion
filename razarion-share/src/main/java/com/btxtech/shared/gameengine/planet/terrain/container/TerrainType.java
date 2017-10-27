@@ -35,12 +35,14 @@ public enum TerrainType {
         return expected == actual;
     }
 
-    public static boolean isAtLeaseOneAllowedOrdinal(Set<TerrainType> expected, Integer actualOrdinal) {
-        if (actualOrdinal == null) {
+    public static boolean isAtLeaseOneAllowedOrdinal(Set<TerrainType> expected, int actualOrdinal) {
+        TerrainType terrainType = TerrainType.fromOrdinal(actualOrdinal);
+
+        if (terrainType == null) {
             return expected.size() == 1 && CollectionUtils.getFirst(expected) == LAND;
         }
         for (TerrainType expectedTerrainType : expected) {
-            if (actualOrdinal == expectedTerrainType.ordinal()) {
+            if (terrainType == expectedTerrainType) {
                 return true;
             }
         }

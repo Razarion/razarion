@@ -2,10 +2,13 @@ package com.btxtech.client.editor.fractal;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.uiservice.utils.FractalField;
+import com.btxtech.client.guielements.CommaDoubleBox;
+import com.btxtech.client.utils.CanvasUtil;
+import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.shared.dto.FractalFieldConfig;
+import com.btxtech.shared.utils.InterpolationUtils;
+import com.btxtech.uiservice.utils.FractalFieldGenerator;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -20,6 +23,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -27,6 +31,7 @@ import javax.inject.Inject;
  */
 @Templated("FractalDialog.html#fractal-dialog")
 public class FractalDialog extends Composite implements ModalDialogContent<FractalFieldConfig> {
+    private Logger logger = Logger.getLogger(FractalDialog.class.getName());
     @Inject
     @AutoBound
     private DataBinder<FractalFieldConfig> fractalConfigDataBinder;
@@ -41,21 +46,23 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
     @Inject
     @Bound
     @DataField
-    private DoubleBox fractalMin;
+    private CommaDoubleBox fractalMin;
     @Inject
     @Bound
     @DataField
-    private DoubleBox fractalMax;
+    private CommaDoubleBox fractalMax;
     @Inject
     @Bound
     @DataField
-    private DoubleBox fractalRoughness;
+    private CommaDoubleBox fractalRoughness;
     @Inject
+    @Bound
     @DataField
-    private DoubleBox clampMin;
+    private CommaDoubleBox clampMin;
     @Inject
+    @Bound
     @DataField
-    private DoubleBox clampMax;
+    private CommaDoubleBox clampMax;
     @Inject
     @DataField
     private DoubleBox fillValue;
@@ -65,18 +72,27 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
     @Inject
     @DataField
     private Button generateButton;
+    @Inject
+    @DataField
+    private Button loadImageButton;
+    @Inject
+    @DataField
+    private CommaDoubleBox loadedMin;
+    @Inject
+    @DataField
+    private CommaDoubleBox loadedMax;
     @DataField
     private Element canvasElement = (Element) Browser.getDocument().createCanvasElement();
     private FractalDisplay fractalDisplay;
 
     @Override
     public void init(FractalFieldConfig fractalFieldConfig) {
-        clampMin.setValue(fractalFieldConfig.getClampMin());
-        clampMax.setValue(fractalFieldConfig.getClampMax());
         fractalConfigDataBinder.setModel(fractalFieldConfig);
         fractalDisplay = new FractalDisplay(canvasElement);
         fractalDisplay.display(fractalFieldConfig);
-        fillValue.setValue((fractalFieldConfig.getFractalMax() + fractalFieldConfig.getFractalMin()) / 2.0);
+        fillValue.setValue(0.0);
+        loadedMin.setValue(-1.0);
+        loadedMax.setValue(1.0);
     }
 
     @Override
@@ -87,37 +103,42 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
     @EventHandler("fillButton")
     private void fillButtonClick(ClickEvent event) {
         FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
-        FractalField.createFlatField(fractalFieldConfig, fillValue.getValue());
-        fractalFieldConfig.clamp();
+        FractalFieldGenerator.createFlatField(fractalFieldConfig, fillValue.getValue());
         fractalDisplay.display(fractalFieldConfig);
     }
 
     @EventHandler("generateButton")
     private void generateButtonClick(ClickEvent event) {
         FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
-        FractalField.createSaveFractalField(fractalFieldConfig);
-        fractalFieldConfig.clamp();
+        FractalFieldGenerator.createSaveFractalField(fractalFieldConfig);
+        fractalFieldConfig.clampGeneration();
         fractalDisplay.display(fractalFieldConfig);
     }
 
-    @EventHandler("clampMin")
-    public void clampMinChanged(ChangeEvent e) {
-        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
-        fractalFieldConfig.setClampMin(clampMin.getValue());
-        clamp();
-    }
+    @EventHandler("loadImageButton")
+    private void loadImageButtonClick(ClickEvent event) {
+        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> {
+            logger.severe("*** loadImageButtonClick: " + dataUrl); // TODO is not always called
+            CanvasUtil.getImageData(dataUrl, imageData -> {
+                logger.severe("*** getImageData: w: " + imageData.getHeight() + " h:" + imageData.getHeight());
+                FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
+                double[][] fractalField = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
+                for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
+                    for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
+                        if (x < imageData.getWidth() && y < imageData.getHeight()) {
+                            int red = imageData.getData().intAt(4 * (x + y * imageData.getWidth()));
+                            double factor = (double) red / 255.0;
+                            fractalField[x][y] = InterpolationUtils.mix(loadedMin.getValue(), loadedMax.getValue(), factor);
 
-    @EventHandler("clampMax")
-    public void clampMaxChanged(ChangeEvent e) {
-        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
-        fractalFieldConfig.setClampMax(clampMax.getValue());
-        clamp();
-    }
-
-    private void clamp() {
-        FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
-        fractalFieldConfig.clamp();
-        fractalDisplay.display(fractalFieldConfig);
+                        } else {
+                            fractalField[x][y] = 0;
+                        }
+                    }
+                }
+                fractalFieldConfig.setFractalField(fractalField);
+                fractalDisplay.display(fractalFieldConfig);
+            });
+        });
     }
 
     @Override

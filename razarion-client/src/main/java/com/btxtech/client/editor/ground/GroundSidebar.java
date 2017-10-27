@@ -5,13 +5,12 @@ import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
-import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.DialogButton;
-import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -40,15 +39,13 @@ public class GroundSidebar extends LeftSideBarContent {
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
-    private TerrainTypeService terrainTypeService;
-    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
-    @Inject
-    private ClientRenderServiceImpl renderService;
     @Inject
     private Caller<TerrainElementEditorProvider> terrainEditorService;
     @Inject
-    private GroundRenderTask groundRenderTask;
+    private GameUiControl gameUiControl;
+    @Inject
+    private Caller<PlanetEditorProvider> planetEditorServiceCaller;
     @Inject
     @AutoBound
     private DataBinder<GroundConfig> groundConfigDataBinder;
@@ -106,7 +103,7 @@ public class GroundSidebar extends LeftSideBarContent {
     private Button fractalHeight;
     @Inject
     @DataField
-    private Button sculptButton;
+    private Button restartPlanetButton;
 
     @PostConstruct
     public void init() {
@@ -141,19 +138,20 @@ public class GroundSidebar extends LeftSideBarContent {
         enableSaveButton(true);
     }
 
-    @EventHandler("sculptButton")
-    private void sculptButtonClick(ClickEvent event) {
-        // TODO GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        // TODO terrainUiService.setGroundSkeleton(groundConfig.getGroundSkeletonConfig());
-        // TODO terrainUiService.setup();
-        // groundRenderTask.onChanged();
-        throw new UnsupportedOperationException("This has changed since TerrainTile introduction");
+    @EventHandler("restartPlanetButton")
+    private void restartPlanetButtonClicked(ClickEvent event) {
+        modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanetWarm() failed: " + message, throwable);
+            return false;
+        }).restartPlanetCold(gameUiControl.getPlanetConfig().getPlanetId()), () -> {
+        });
     }
 
     @EventHandler("fractalSplatting")
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        final FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
+        FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
         modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
             if (button == DialogButton.Button.APPLY) {
                 GroundConfig groundConfig1 = groundConfigDataBinder.getModel();

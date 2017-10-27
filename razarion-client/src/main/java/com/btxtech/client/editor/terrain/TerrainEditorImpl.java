@@ -299,9 +299,9 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     public void restartPlanetButton() {
         modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanet() failed: " + message, throwable);
+            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanetWarm() failed: " + message, throwable);
             return false;
-        }).restartPlanet(getPlanetId()), () -> {
+        }).restartPlanetWarm(getPlanetId()), () -> {
         });
     }
 

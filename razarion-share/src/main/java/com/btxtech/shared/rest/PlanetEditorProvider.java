@@ -35,8 +35,12 @@ public interface PlanetEditorProvider {
     void updateTerrain(@PathParam("planetId") int planetId, TerrainEditorUpdate terrainEditorUpdate);
 
     @PUT
-    @Path("restartPlanet/{planetId}")
-    void restartPlanet(@PathParam("planetId") int planetId);
+    @Path("restartPlanetWarm/{planetId}")
+    void restartPlanetWarm(@PathParam("planetId") int planetId);
+
+    @PUT
+    @Path("restartPlanetCold/{planetId}")
+    void restartPlanetCold(@PathParam("planetId") int planetId);
 
     @PUT
     @Path("updatePlanetVisualConfig/{planetId}")

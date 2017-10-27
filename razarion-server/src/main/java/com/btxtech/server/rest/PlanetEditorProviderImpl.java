@@ -76,12 +76,21 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     }
 
     @Override
-    public void restartPlanet(int planetId) {
+    public void restartPlanetWarm(int planetId) {
+        restartPlanet(planetId, LifecyclePacket.Type.RESTART_WARM);
+    }
+
+    @Override
+    public void restartPlanetCold(int planetId) {
+        restartPlanet(planetId, LifecyclePacket.Type.RESTART_COLD);
+    }
+
+    private void restartPlanet(int planetId, LifecyclePacket.Type type) {
         try {
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
             terrainShapeService.setupTerrainShape(planetPersistence.loadPlanetConfig(planetId));
             serverGameEngineControl.restartPlanet();
-            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.RESTART_WARM));
+            systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

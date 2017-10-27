@@ -184,8 +184,9 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawNode(TerrainNode terrainNode, DecimalPosition absoluteNodePosition) {
-        if (terrainNode.getTerrainType() != null) {
-            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(TerrainType.values()[terrainNode.getTerrainType()]));
+        TerrainType terrainType = TerrainType.fromOrdinal(terrainNode.getTerrainType());
+        if (terrainType != null) {
+            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
             getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
 
@@ -214,8 +215,9 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
-        if (terrainSubNode.getTerrainType() != null) {
-            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(TerrainType.values()[terrainSubNode.getTerrainType()]));
+        TerrainType terrainType = TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
+        if (terrainType != null) {
+            getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
             getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
         }
 

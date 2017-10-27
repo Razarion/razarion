@@ -8,7 +8,7 @@ import com.btxtech.shared.utils.MathHelper;
  * 20.05.2016.
  */
 public class FractalFieldConfig {
-    // private Logger logger = Logger.getLogger(FractalFieldConfig.class.getName());
+    // private static Logger logger = Logger.getLogger(FractalFieldConfig.class.getName());
     private int xCount;
     private int yCount;
     private double fractalMin;
@@ -77,6 +77,7 @@ public class FractalFieldConfig {
 
     public void setFractalField(double[][] fractalField) {
         this.fractalField = fractalField;
+        clampedFractalField = null;
     }
 
     public double[][] getClampedFractalField() {
@@ -87,7 +88,7 @@ public class FractalFieldConfig {
         }
     }
 
-    public void clamp() {
+    public void clampGeneration() {
         if (this.clampMax < 1.0 || this.clampMin > 0.0) {
             double minEdge = InterpolationUtils.mix(fractalMin, fractalMax, clampMin);
             double maxEdge = InterpolationUtils.mix(fractalMin, fractalMax, clampMax);

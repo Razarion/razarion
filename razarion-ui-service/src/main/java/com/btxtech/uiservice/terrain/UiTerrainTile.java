@@ -243,18 +243,12 @@ public class UiTerrainTile {
 
             @Override
             public TerrainType onTerrainNode(TerrainNode terrainNode) {
-                if (terrainNode.getTerrainType() == null) {
-                    return null;
-                }
-                return TerrainType.values()[terrainNode.getTerrainType()];
+                return TerrainType.fromOrdinal(terrainNode.getTerrainType());
             }
 
             @Override
             public TerrainType onTerrainSubNode(TerrainSubNode terrainSubNode) {
-                if (terrainSubNode.getTerrainType() == null) {
-                    return null;
-                }
-                return TerrainType.values()[terrainSubNode.getTerrainType()];
+                return TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
             }
         });
     }

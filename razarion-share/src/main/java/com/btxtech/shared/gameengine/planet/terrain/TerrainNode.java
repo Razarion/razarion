@@ -23,7 +23,7 @@ public abstract class TerrainNode {
 
     public native void setHeight(double height);
 
-    public native Integer getTerrainType();
+    public native int getTerrainType(); // Integer is not working here because Integer.intValue() is not defined
 
-    public native void setTerrainType(Integer terrainType);
+    public native void setTerrainType(int terrainType); // Integer is not working here because Integer.intValue() is not defined
 }

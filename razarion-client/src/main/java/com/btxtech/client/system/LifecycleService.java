@@ -27,6 +27,7 @@ import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import elemental.client.Browser;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -127,9 +128,8 @@ public class LifecycleService {
                 startWarm();
                 break;
             case RESTART_COLD:
-                // Browser.getWindow().getLocation().reload();
-                // break;
-                throw new UnsupportedOperationException("LifecycleService.onLifecyclePacket() RESTART_COLD not implemented");
+                Browser.getWindow().getLocation().reload();
+                break;
             default:
                 throw new IllegalArgumentException("LifecycleService.onLifecyclePacket() Unknown type: " + lifecyclePacket.getType());
         }

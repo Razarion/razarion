@@ -27,6 +27,17 @@ public class FractalDisplay {
             return;
         }
 
+        // find min & max
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
+            for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
+                double f = fractalFieldConfig.getClampedFractalField()[x][y];
+                min = Math.min(min, f);
+                max = Math.max(max, f);
+            }
+        }
+
         ctx.save();
         int pixelCount = Math.max(fractalFieldConfig.getXCount(), fractalFieldConfig.getYCount());
         int dimension = Math.max(canvasElement.getWidth(), canvasElement.getHeight());
@@ -36,7 +47,7 @@ public class FractalDisplay {
         for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
             for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
                 double f = fractalFieldConfig.getClampedFractalField()[x][y];
-                int c = (int) InterpolationUtils.interpolate(0, 255, fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax(), f);
+                int c = (int) InterpolationUtils.interpolate(0, 255, min, max, f);
                 if (c < 0 || c > 255) {
                     throw new IllegalArgumentException("f=" + f + " c=" + c);
                 }

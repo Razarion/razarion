@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -100,6 +101,9 @@ public class TerrainTileFactory {
         Vertex vertexTR = terrainTileContext.setupVertexWithGroundSkeletonHeight(rightXNode, topYNode, groundHeight);
         Vertex vertexTL = terrainTileContext.setupVertexWithGroundSkeletonHeight(xNode, topYNode, groundHeight);
 
+//        Vertex norm1 = vertexBL.cross(vertexBR, vertexTL);
+//        Vertex norm2 = vertexTR.cross(vertexTL, vertexBR);
+
         Vertex normBL = terrainTileContext.setupNorm(xNode, yNode);
         Vertex normBR = terrainTileContext.setupNorm(rightXNode, yNode);
         Vertex normTR = terrainTileContext.setupNorm(rightXNode, topYNode);
@@ -123,6 +127,14 @@ public class TerrainTileFactory {
         terrainTileContext.insertTriangleCorner(vertexBR, normBR, tangentBR, splattingBR);
         terrainTileContext.insertTriangleCorner(vertexTR, normTR, tangentTR, splattingTR);
         terrainTileContext.insertTriangleCorner(vertexTL, normTL, tangentTL, splattingTL);
+        // Triangle 1
+//        terrainTileContext.insertTriangleCorner(vertexBL, norm1, tangentBL, splattingBL);
+//        terrainTileContext.insertTriangleCorner(vertexBR, norm1, tangentBR, splattingBR);
+//        terrainTileContext.insertTriangleCorner(vertexTL, norm1, tangentTL, splattingTL);
+//        // Triangle 2
+//        terrainTileContext.insertTriangleCorner(vertexBR, norm2, tangentBR, splattingBR);
+//        terrainTileContext.insertTriangleCorner(vertexTR, norm2, tangentTR, splattingTR);
+//        terrainTileContext.insertTriangleCorner(vertexTL, norm2, tangentTL, splattingTL);
     }
 
     private void insertDrivewayTerrainRectangle(Index absoluteNodeIndex, TerrainShapeNode terrainShapeNode, TerrainTileContext terrainTileContext) {
@@ -271,9 +283,7 @@ public class TerrainTileFactory {
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode != null) {
                 TerrainNode terrainNode = jsInteropObjectFactory.generateTerrainNode();
-                if (terrainShapeNode.getTerrainType() != null) {
-                    terrainNode.setTerrainType(terrainShapeNode.getTerrainType().ordinal());
-                }
+                terrainNode.setTerrainType(TerrainType.toOrdinal(terrainShapeNode.getTerrainType()));
                 if (terrainShapeNode.isFullLand()) {
                     terrainNode.setLand(true);
                 }

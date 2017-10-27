@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.utils;
 
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.shared.dto.FractalFieldConfig;
+import com.btxtech.shared.utils.MathHelper;
 
 /**
  * Created by Beat
@@ -10,8 +10,8 @@ import com.btxtech.shared.dto.FractalFieldConfig;
  * <p/>
  * Diamond-square algorithm
  */
-public class FractalField {
-    // private final static Logger logger = Logger.getLogger(FractalField.class.getName());
+public class FractalFieldGenerator {
+    // private final static Logger logger = Logger.getLogger(FractalFieldGenerator.class.getName());
     private int verticesPerEdge;
     private final double minValue;
     private final double maxValue;
@@ -20,7 +20,7 @@ public class FractalField {
     private double[][] values;
     private double roughness;
 
-    private FractalField(int verticesPerEdge, double roughness, double minValue, double maxValue) {
+    private FractalFieldGenerator(int verticesPerEdge, double roughness, double minValue, double maxValue) {
         this.verticesPerEdge = verticesPerEdge;
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -137,18 +137,19 @@ public class FractalField {
 
     public static void createSaveFractalField(FractalFieldConfig fractalFieldConfig) {
         // long time = System.currentTimeMillis();
-        FractalField fractalField = new FractalField(nearestPossibleNumber(fractalFieldConfig.getXCount(), fractalFieldConfig.getYCount()), fractalFieldConfig.getFractalRoughness(), fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax());
+        FractalFieldGenerator fractalFieldGenerator = new FractalFieldGenerator(nearestPossibleNumber(fractalFieldConfig.getXCount(), fractalFieldConfig.getYCount()), fractalFieldConfig.getFractalRoughness(), fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax());
         // time = System.currentTimeMillis();
-        fractalField.process();
+        fractalFieldGenerator.process();
         double[][] values = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
         for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
             for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
-                values[x][y] = fractalField.getValue(x, y);
+                values[x][y] = fractalFieldGenerator.getValue(x, y);
             }
         }
 
         fractalFieldConfig.setFractalField(values);
     }
+
     public static void createFlatField(FractalFieldConfig fractalFieldConfig, double value) {
         double[][] values = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
         for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {

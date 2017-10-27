@@ -11,7 +11,7 @@ public class TestTerrainNode extends TerrainNode {
     private TestTerrainSubNode[][] terrainSubNodes;
     private boolean land;
     private double height;
-    private Integer terrainTypeOrdinal;
+    private int terrainTypeOrdinal;
 
     @Override
     public void initTerrainSubNodeField(int terrainSubNodeEdgeCount) {
@@ -49,12 +49,12 @@ public class TestTerrainNode extends TerrainNode {
     }
 
     @Override
-    public Integer getTerrainType() {
+    public int getTerrainType() {
         return terrainTypeOrdinal;
     }
 
     @Override
-    public void setTerrainType(Integer terrainTypeOrdinal) {
+    public void setTerrainType(int terrainTypeOrdinal) {
         this.terrainTypeOrdinal = terrainTypeOrdinal;
     }
 }
