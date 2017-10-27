@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayTerrainTypeHandler;
+import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayRegionHandler;
 
 import java.util.Collection;
 
@@ -16,12 +16,12 @@ import java.util.Collection;
  */
 public class TerrainShapeSubNodeFactory {
 
-    public void fillSlopeTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler) {
+    public void fillSlopeTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayRegionHandler drivewayRegionHandler) {
         for (int y = 0; y < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; y += TerrainUtil.MIN_SUB_NODE_LENGTH) {
             for (int x = 0; x < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; x += TerrainUtil.MIN_SUB_NODE_LENGTH) {
                 DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(new Index(x, y)).add(terrainRect.getStart());
                 TerrainType terrainType;
-                if (drivewayTerrainTypeHandler != null && drivewayTerrainTypeHandler.isInside(scanPosition)) {
+                if (drivewayRegionHandler != null && drivewayRegionHandler.isInsideTerrainType(scanPosition)) {
                     terrainType = TerrainType.LAND;
                 } else {
                     terrainType = terrainTypeRegion.isInside(scanPosition) ? innerTerrainType : outerTerrainType;

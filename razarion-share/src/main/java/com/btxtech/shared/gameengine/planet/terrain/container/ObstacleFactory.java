@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayTerrainTypeHandler;
+import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayRegionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 
@@ -16,7 +16,7 @@ import java.util.List;
  * on 14.10.2017.
  */
 public class ObstacleFactory {
-    public static void addObstacles(TerrainShape terrainShape, List<DecimalPosition> polygon, DrivewayTerrainTypeHandler drivewayTerrainTypeHandler, boolean isOuter) {
+    public static void addObstacles(TerrainShape terrainShape, List<DecimalPosition> polygon, DrivewayRegionHandler drivewayRegionHandler, boolean isOuter) {
         DecimalPosition last = polygon.get(0);
         boolean inDriveway = false;
         for (int i = 0; i < polygon.size(); i++) {
@@ -24,11 +24,11 @@ public class ObstacleFactory {
             if (last.equals(next)) {
                 continue;
             }
-            if (drivewayTerrainTypeHandler.onDrivewayLine(next, isOuter)) {
+            if (drivewayRegionHandler.onTerrainTypeLine(next, isOuter)) {
                 if (!inDriveway) {
                     if (isOuter) {
                         // Termination
-                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(next, drivewayTerrainTypeHandler.getInner4Outer(next))));
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(next, drivewayRegionHandler.getInner4OuterTerrainType(next))));
                     }
                     addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));
                 }
@@ -37,7 +37,7 @@ public class ObstacleFactory {
                 if (inDriveway) {
                     if (isOuter) {
                         // Termination
-                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, drivewayTerrainTypeHandler.getInner4Outer(last))));
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, drivewayRegionHandler.getInner4OuterTerrainType(last))));
                     }
                     addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));
                 } else {

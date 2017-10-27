@@ -33,7 +33,7 @@ public class Slope {
     private Polygon2D coastDelimiterPolygonTerrainType;
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
-    private DrivewayTerrainTypeHandler drivewayTerrainTypeHandler = new DrivewayTerrainTypeHandler();
+    private DrivewayRegionHandler drivewayRegionHandler = new DrivewayRegionHandler();
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
@@ -186,40 +186,42 @@ public class Slope {
         DecimalPosition lastOuterTerrainType = null;
         DecimalPosition lastCoastDelimiterTerrainType = null;
 
-        List<DecimalPosition> passableDrivewayInner = null;
-        List<DecimalPosition> passableDrivewayOuter = null;
+        List<DecimalPosition> drivewayInnerTerrainType = null;
+        List<DecimalPosition> drivewayOuterTerrainType = null;
         for (VerticalSegment verticalSegment : verticalSegments) {
-            DecimalPosition innerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLineTerrainType(), verticalSegment.getInner(), true);
-            DecimalPosition outerTerrainType = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getOuterLineTerrainType(), verticalSegment.getInner(), true);
+            DecimalPosition outerSlope = verticalSegment.getOuter();
+            double slopeSkeletonWidth = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1).getPosition().getX();
+            DecimalPosition innerSlope = outerSlope.getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true);
+            DecimalPosition innerTerrainType = outerSlope.getPointWithDistance(slopeSkeletonConfig.getInnerLineTerrainType(), verticalSegment.getInner(), true);
+            DecimalPosition outerTerrainType = outerSlope.getPointWithDistance(slopeSkeletonConfig.getOuterLineTerrainType(), verticalSegment.getInner(), true);
             if (verticalSegment.getDrivewayHeightFactor() <= 0) {
-                if (passableDrivewayInner == null) {
-                    passableDrivewayInner = new ArrayList<>();
-                    passableDrivewayOuter = new ArrayList<>();
+                if (drivewayInnerTerrainType == null) {
+                    drivewayInnerTerrainType = new ArrayList<>();
+                    drivewayOuterTerrainType = new ArrayList<>();
                 }
-                drivewayTerrainTypeHandler.addInnerDriveway(innerTerrainType);
-                drivewayTerrainTypeHandler.putOuterInnerConnection(outerTerrainType, innerTerrainType);
-                if (!passableDrivewayInner.contains(innerTerrainType)) {
-                    passableDrivewayInner.add(innerTerrainType);
+                drivewayRegionHandler.addInnerTerrainTypeLine(innerTerrainType);
+                drivewayRegionHandler.putOuterInnerTerrainTypeConnection(outerTerrainType, innerTerrainType);
+                if (!drivewayInnerTerrainType.contains(innerTerrainType)) {
+                    drivewayInnerTerrainType.add(innerTerrainType);
                 }
-                if (!passableDrivewayOuter.contains(outerTerrainType)) {
-                    passableDrivewayOuter.add(outerTerrainType);
+                if (!drivewayOuterTerrainType.contains(outerTerrainType)) {
+                    drivewayOuterTerrainType.add(outerTerrainType);
                 }
-            } else if (passableDrivewayInner != null) {
-                Collections.reverse(passableDrivewayOuter);
-                passableDrivewayInner.addAll(passableDrivewayOuter);
-                drivewayTerrainTypeHandler.addDrivewayPolygon(passableDrivewayInner);
-                passableDrivewayInner = null;
-                passableDrivewayOuter = null;
+            } else if (drivewayInnerTerrainType != null) {
+                Collections.reverse(drivewayOuterTerrainType);
+                drivewayInnerTerrainType.addAll(drivewayOuterTerrainType);
+                drivewayRegionHandler.addInnerTerrainTypePolygon(drivewayInnerTerrainType);
+                drivewayInnerTerrainType = null;
+                drivewayOuterTerrainType = null;
             }
 
-            lastOuterSlope = addCorrectedMinimalDelta(verticalSegment.getOuter(), lastOuterSlope, outerLineSlope);
-            double slopeSkeletonWidth = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1).getPosition().getX();
-            lastInnerSlope = addCorrectedMinimalDelta(verticalSegment.getOuter().getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true), lastInnerSlope, innerLineSlope);
+            lastOuterSlope = addCorrectedMinimalDelta(outerSlope, lastOuterSlope, outerLineSlope);
+            lastInnerSlope = addCorrectedMinimalDelta(innerSlope, lastInnerSlope, innerLineSlope);
 
             lastInnerTerrainType = addCorrectedMinimalDelta(innerTerrainType, lastInnerTerrainType, innerLineTerrainType);
             lastOuterTerrainType = addCorrectedMinimalDelta(outerTerrainType, lastOuterTerrainType, outerLineTerrainType);
             if (hasWater()) {
-                DecimalPosition coastDelimiter = verticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineTerrainType(), verticalSegment.getInner(), true);
+                DecimalPosition coastDelimiter = outerSlope.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineTerrainType(), verticalSegment.getInner(), true);
                 lastCoastDelimiterTerrainType = addCorrectedMinimalDelta(coastDelimiter, lastCoastDelimiterTerrainType, coastDelimiterLineTerrainType);
             }
         }
@@ -335,8 +337,8 @@ public class Slope {
         return driveways;
     }
 
-    public DrivewayTerrainTypeHandler getDrivewayTerrainTypeHandler() {
-        return drivewayTerrainTypeHandler;
+    public DrivewayRegionHandler getDrivewayRegionHandler() {
+        return drivewayRegionHandler;
     }
 
     public int getNearestInnerSlopePolygon(DecimalPosition position) {
