@@ -25,7 +25,7 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 GameTestHelper.createTerrainSlopeCorner(103, 60, 1), GameTestHelper.createTerrainSlopeCorner(103, 90, 1), // driveway
                 GameTestHelper.createTerrainSlopeCorner(103, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayEdge1.json");
-        TerrainTileTestDisplay.show(terrainTiles);
+        showDisplay();
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayEdge1.json");
         assertTerrainTile.assertEquals(terrainTiles);
     }
@@ -36,7 +36,7 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 GameTestHelper.createTerrainSlopeCorner(70, 150, 1), GameTestHelper.createTerrainSlopeCorner(90, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 160, 1), GameTestHelper.createTerrainSlopeCorner(100, 180, 1),// driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 210, null), GameTestHelper.createTerrainSlopeCorner(50, 210, null));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
-        TerrainTileTestDisplay.show(terrainTiles);
+        showDisplay();
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayCorner1.json");
         assertTerrainTile.assertEquals(terrainTiles);
     }

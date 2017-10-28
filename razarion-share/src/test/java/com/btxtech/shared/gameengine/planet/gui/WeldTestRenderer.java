@@ -127,39 +127,12 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
-
             strokeZTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
-
-
-//            getGc().setStroke(Color.LIGHTGREEN);
-//
-//            double[] vertices = terrainTile.getGroundVertices();
-//            // Line 1
-//            getGc().setStroke(new LinearGradient(vertices[vertexScalarIndex], vertices[vertexScalarIndex + 1], vertices[vertexScalarIndex + 3], vertices[vertexScalarIndex + 4], false, CycleMethod.NO_CYCLE, new Stop(0, colorForZ()), new Stop(1, Color.GREEN)));
-//            getGc().strokeLine(vertices[vertexScalarIndex], vertices[vertexScalarIndex + 1], vertices[vertexScalarIndex + 3], vertices[vertexScalarIndex + 4]);
-//            // Line 2
-//            getGc().setStroke(Color.LIGHTGREEN);
-//            getGc().strokeLine(terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 6], terrainTile.getGroundVertices()[vertexScalarIndex + 7]);
-//            // Line 3
-//            getGc().setStroke(Color.LIGHTGREEN);
-//            getGc().strokeLine(terrainTile.getGroundVertices()[vertexScalarIndex + 6], terrainTile.getGroundVertices()[vertexScalarIndex + 7], terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 1]);
-
-//            double[] xCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex], terrainTile.getGroundVertices()[vertexScalarIndex + 3], terrainTile.getGroundVertices()[vertexScalarIndex + 6]};
-//            double[] yCorners = new double[]{terrainTile.getGroundVertices()[vertexScalarIndex + 1], terrainTile.getGroundVertices()[vertexScalarIndex + 4], terrainTile.getGroundVertices()[vertexScalarIndex + 7]};
-//            getGc().setStroke(Color.LIGHTGREEN);
-//            getGc().strokePolygon(xCorners, yCorners, 3);
-//
-//            for (int i = vertexScalarIndex; i < vertexScalarIndex + 3; i++) {
-//                terrainTile.getGroundVertices()
-//                getGc().fillOval(xCorners - LINE_WIDTH * 2, yCorners - LINE_WIDTH * 2, 3);
-//            }
-
-
         }
 
         if (terrainTile.getTerrainSlopeTiles() != null) {
             for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-                // drawTerrainSlopeTile(terrainSlopeTile);
+                 drawTerrainSlopeTile(terrainSlopeTile);
             }
         }
     }
@@ -171,7 +144,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void strokeZLine(double[] vertices, int index1, int index2) {
-        getGc().setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, colorForZ(vertices[index1 + 2])), new Stop(1, colorForZ(vertices[index1 + 5]))));
+        getGc().setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, colorForZ(vertices[index1 + 2])), new Stop(1, colorForZ(vertices[index2 + 2]))));
         getGc().strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
     }
 
@@ -186,11 +159,12 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         getGc().setLineWidth(LINE_WIDTH);
         for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
+            strokeZTriangle(terrainSlopeTile.getVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
 
-            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
-            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
-            getGc().setStroke(Color.GRAY);
-            getGc().strokePolygon(xCorners, yCorners, 3);
+//            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
+//            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
+//            getGc().setStroke(Color.GRAY);
+//            getGc().strokePolygon(xCorners, yCorners, 3);
             // getGc().setFill(Color.color(1, 0, 0, 0.3));
             // getGc().fillPolygon(xCorners, yCorners, 3);
         }
