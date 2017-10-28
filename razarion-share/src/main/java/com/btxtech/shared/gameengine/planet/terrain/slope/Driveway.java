@@ -100,15 +100,15 @@ public class Driveway {
     private void calculateAdditionalStart(List<TerrainSlopeCorner> input) {
         DecimalPosition last = CollectionUtils.getCorrectedElement(startSlopeIndex - 1, input).getPosition();
         DecimalPosition next = CollectionUtils.getCorrectedElement(startSlopeIndex + 1, input).getPosition();
-        double angle = last.angle(next, startSlopePosition);
-        additionalStart = Math.tan(angle) * slope.getSlopeSkeletonConfig().getWidth();
+        double angle = last.angle(startSlopePosition, next);
+        additionalStart = slope.getSlopeSkeletonConfig().getWidth() / Math.tan((MathHelper.QUARTER_RADIANT + angle) / 2.0);
     }
 
     private void calculateAdditionalEnd(List<TerrainSlopeCorner> input) {
         DecimalPosition last = CollectionUtils.getCorrectedElement(endSlopeIndex - 1, input).getPosition();
         DecimalPosition next = CollectionUtils.getCorrectedElement(endSlopeIndex + 1, input).getPosition();
         double angle = next.angle(last, endSlopePosition);
-        additionalEnd = -Math.tan(angle) * slope.getSlopeSkeletonConfig().getWidth();
+        additionalEnd = slope.getSlopeSkeletonConfig().getWidth() / Math.tan((MathHelper.QUARTER_RADIANT + angle) / 2.0);
     }
 
     private void computeAndFillDrivewayPositions(List<TerrainSlopeCorner> input, List<Slope.Corner> output, List<Edge> edges, double length) {
@@ -139,12 +139,12 @@ public class Driveway {
             Edge next = CollectionUtils.getCorrectedElement(i + 1, edges);
             Line breakingLine = new Line(current.getDrivewayBreaking(), next.getDrivewayBreaking());
             double currentBreakingLineDistance = breakingLine.getNearestPointOnLine(position).getDistance(position);
-            if(breakingLineDistance > currentBreakingLineDistance) {
+            if (breakingLineDistance > currentBreakingLineDistance) {
                 breakingLineDistance = currentBreakingLineDistance;
             }
             Line outerLine = new Line(current.getDrivewayOuter(), next.getDrivewayOuter());
             double currentOuterLineDistance = outerLine.getNearestPointOnLine(position).getDistance(position);
-            if(outerLineDistance > currentOuterLineDistance) {
+            if (outerLineDistance > currentOuterLineDistance) {
                 outerLineDistance = currentOuterLineDistance;
             }
         }
@@ -270,7 +270,7 @@ public class Driveway {
         public Edge(Slope slope, DecimalPosition original, DecimalPosition drivewayPosition, double additional) {
             drivewayInner = original;
             drivewayOuter = drivewayPosition;
-            drivewayBreaking = drivewayInner.getPointWithDistance(slope.getSlopeSkeletonConfig().getWidth() + additional, drivewayOuter, false);
+            drivewayBreaking = drivewayInner.getPointWithDistance(additional, drivewayOuter, false);
             drivewayOuterSlope = drivewayOuter.getPointWithDistance(-slope.getSlopeSkeletonConfig().getWidth(), original, true);
         }
 

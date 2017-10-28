@@ -87,7 +87,7 @@ public class Slope {
             for (int i = 0; i < terrainSlopeCorners.size(); i++) {
                 TerrainSlopeCorner current = terrainSlopeCorners.get(i);
                 if (current.getSlopeDrivewayId() != null) {
-                    Driveway driveway = new Driveway(this, current.getPosition(), i, terrainTypeService.getDrivewayConfig(current.getSlopeDrivewayId()));
+                    Driveway driveway = new Driveway(this, current.getPosition(),  i, terrainTypeService.getDrivewayConfig(current.getSlopeDrivewayId()));
 
                     for (; CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getSlopeDrivewayId() != null; i++) {
                         driveway.analyze(CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getPosition(), i + 1);
