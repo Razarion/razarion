@@ -104,11 +104,18 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     protected void doRender() {
         doRenderTile();
         // doRenderShape();
+
+        renderItemTypes();
+        if (userDataRenderer != null) {
+            userDataRenderer.render();
+        }
     }
 
     private void doRenderTile() {
-        Index from = TerrainUtil.toTile(new DecimalPosition(265, 18));
-        Index to = TerrainUtil.toTile(new DecimalPosition(441, 200));
+        // Index from = TerrainUtil.toTile(new DecimalPosition(265, 18));
+        // Index to = TerrainUtil.toTile(new DecimalPosition(441, 200));
+        Index from = new Index(0, 0);
+        Index to = new Index(6, 2);
 
         for (int tileX = from.getX(); tileX <= to.getX(); tileX++) {
             for (int tileY = from.getY(); tileY <= to.getY(); tileY++) {
@@ -350,11 +357,6 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 //        }
 
 
-        renderItemTypes();
-
-        if (userDataRenderer != null) {
-            userDataRenderer.render();
-        }
     }
 
     private void renderItemTypes() {

@@ -1,11 +1,13 @@
 package com.btxtech.shared.gameengine.planet.gui;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -37,9 +39,16 @@ public class UserDataRenderer {
     private void render(PositionMarker positionMarker) {
         positionMarker.getCircles().forEach(circle -> weldTestRenderer.strokeCircle(circle, AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.RED));
         weldTestRenderer.drawPositions(positionMarker.getPositions(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.RED);
+        if (positionMarker.getLine() != null) {
+            weldTestRenderer.strokeLine(positionMarker.getLine(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.BLUE, true);
+        }
     }
 
     private void render(SimplePath simplePath) {
         weldTestRenderer.strokeLine(simplePath.getWayPositions(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.DEEPPINK, true);
+    }
+
+    private void render(List<DecimalPosition> userObject) {
+        weldTestRenderer.strokeLine(userObject, AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.DEEPPINK, true);
     }
 }

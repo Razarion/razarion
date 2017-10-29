@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -13,13 +14,16 @@ import java.util.Collection;
 public class PositionMarker {
     private Collection<DecimalPosition> positions = new ArrayList<>();
     private Collection<Circle2D> circles = new ArrayList<>();
+    private List<DecimalPosition> line;
 
-    public void addPosition(DecimalPosition positions) {
+    public PositionMarker addPosition(DecimalPosition positions) {
         positions.add(positions);
+        return this;
     }
 
-    public void addCircle(Circle2D circle) {
+    public PositionMarker addCircle(Circle2D circle) {
         circles.add(circle);
+        return this;
     }
 
     public Collection<DecimalPosition> getPositions() {
@@ -28,5 +32,14 @@ public class PositionMarker {
 
     public Collection<Circle2D> getCircles() {
         return circles;
+    }
+
+    public List<DecimalPosition> getLine() {
+        return line;
+    }
+
+    public PositionMarker setLine(List<DecimalPosition> line) {
+        this.line = line;
+        return this;
     }
 }

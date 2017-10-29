@@ -31,13 +31,24 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     }
 
     @Test
-    public void testCorner() {
+    public void testCorner1() {
         Collection<TerrainTile> terrainTiles = setup(GameTestHelper.createTerrainSlopeCorner(50, 150, null),
                 GameTestHelper.createTerrainSlopeCorner(70, 150, 1), GameTestHelper.createTerrainSlopeCorner(90, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 160, 1), GameTestHelper.createTerrainSlopeCorner(100, 180, 1),// driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 210, null), GameTestHelper.createTerrainSlopeCorner(50, 210, null));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
         showDisplay();
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayCorner1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+    }
+
+    @Test
+    public void testCorner2() {
+        Collection<TerrainTile> terrainTiles = setup(GameTestHelper.createTerrainSlopeCorner(50, 150, null),
+                GameTestHelper.createTerrainSlopeCorner(70, 150, 1), GameTestHelper.createTerrainSlopeCorner(90, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 150, 1), GameTestHelper.createTerrainSlopeCorner(100, 160, 1), GameTestHelper.createTerrainSlopeCorner(150, 180, 1),// driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 210, null), GameTestHelper.createTerrainSlopeCorner(50, 210, null));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testDrivewayCorner1.json");
+        showDisplay();
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testDrivewayCorner2.json");
         assertTerrainTile.assertEquals(terrainTiles);
     }
 
@@ -65,11 +76,11 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{
-                {5, 5, 5, 5},
-                {5, 5, 5, 5},
-                {5, 5, 5, 5},
-                {5, 5, 5, 5},
-                {5, 5, 5, 5}
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
         };
         double[][] splattings = new double[][]{
                 {0.7, 0.8, 0.9},
