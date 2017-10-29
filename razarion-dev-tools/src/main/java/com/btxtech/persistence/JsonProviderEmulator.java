@@ -264,7 +264,7 @@ public class JsonProviderEmulator {
 
     public static void main(String[] args) {
         try {
-            dumpSlope(2, new DecimalPosition(348, 206));
+            dumpSlope(2, new DecimalPosition(893, 319));
         } catch (IOException e) {
             e.printStackTrace();
         }

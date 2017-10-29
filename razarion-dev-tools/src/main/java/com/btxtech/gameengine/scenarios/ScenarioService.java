@@ -204,7 +204,7 @@ public class ScenarioService implements QuestListener {
     public void startNextScenario() {
         Scenario newScenario = getScenarioSuite(currentScenario).getNext(currentScenario);
         if (newScenario == null) {
-            ScenarioSuite scenarioSuite = CollectionUtils.safeListAccess(scenarioSuites, getScenarioSuitIndex(currentScenario) + 1);
+            ScenarioSuite scenarioSuite = CollectionUtils.getCorrectedElement(getScenarioSuitIndex(currentScenario) + 1, scenarioSuites);
             newScenario = scenarioSuite.getFirst();
         }
         init(newScenario);
@@ -213,7 +213,7 @@ public class ScenarioService implements QuestListener {
     public void startPreviousScenario() {
         Scenario newScenario = getScenarioSuite(currentScenario).getPrevious(currentScenario);
         if (newScenario == null) {
-            ScenarioSuite scenarioSuite = CollectionUtils.safeListAccess(scenarioSuites, getScenarioSuitIndex(currentScenario) - 1);
+            ScenarioSuite scenarioSuite = CollectionUtils.getCorrectedElement(getScenarioSuitIndex(currentScenario) - 1, scenarioSuites);
             newScenario = scenarioSuite.getLast();
         }
         init(newScenario);
