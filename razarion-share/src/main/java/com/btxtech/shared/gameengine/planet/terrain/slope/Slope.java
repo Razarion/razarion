@@ -82,27 +82,42 @@ public class Slope {
         // Setup driveways
         List<Corner> corners = new ArrayList<>();
         while (true) {
+            // Find offset with no slope
+            int offset = -1;
+            for (int i = 0; i < terrainSlopeCorners.size(); i++) {
+                TerrainSlopeCorner current = terrainSlopeCorners.get(i);
+                if (current.getSlopeDrivewayId() == null) {
+                    offset = i;
+                    break;
+                }
+            }
+            if (offset < 0) {
+                throw new IllegalArgumentException("Slope.setupSlopingBorder(): Can not find start position with no driveway. slopeId:" + slopeId);
+            }
+
             driveways = null;
             corners.clear();
             for (int i = 0; i < terrainSlopeCorners.size(); i++) {
-                TerrainSlopeCorner current = terrainSlopeCorners.get(i);
+                int index = CollectionUtils.getCorrectedIndex(i + offset, terrainSlopeCorners.size());
+                TerrainSlopeCorner current = terrainSlopeCorners.get(index);
                 if (current.getSlopeDrivewayId() != null) {
-                    Driveway driveway = new Driveway(this, current.getPosition(),  i, terrainTypeService.getDrivewayConfig(current.getSlopeDrivewayId()));
+                    Driveway driveway = new Driveway(this, current.getPosition(), index, terrainTypeService.getDrivewayConfig(current.getSlopeDrivewayId()));
 
-                    for (; CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getSlopeDrivewayId() != null; i++) {
-                        driveway.analyze(CollectionUtils.getCorrectedElement(i + 1, terrainSlopeCorners).getPosition(), i + 1);
+                    while (CollectionUtils.getCorrectedElement(i + 1 + offset, terrainSlopeCorners).getSlopeDrivewayId() != null) {
+                        i++;
                     }
-                    if (driveway.computeVerify(terrainSlopeCorners)) {
+                    index = CollectionUtils.getCorrectedIndex(i + offset, terrainSlopeCorners.size());
+                    if (driveway.computeVerify(CollectionUtils.getCorrectedElement(index, terrainSlopeCorners).getPosition(), index)) {
                         driveway.computeAndFillDrivewayPositions(terrainSlopeCorners, corners);
                         if (driveways == null) {
                             driveways = new ArrayList<>();
                         }
                         driveways.add(driveway);
                     } else {
-                        corners.add(new Corner(current.getPosition(), 1.0, i));
+                        corners.add(new Corner(current.getPosition(), 1.0, index));
                     }
                 } else {
-                    corners.add(new Corner(current.getPosition(), 1.0, i));
+                    corners.add(new Corner(current.getPosition(), 1.0, index));
                 }
             }
             // Correct the borders. Outer corners can not be too close to other corners. It needs some safety distance

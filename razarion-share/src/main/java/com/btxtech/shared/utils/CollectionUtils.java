@@ -12,10 +12,6 @@ import java.util.List;
  */
 public class CollectionUtils {
 
-    public static <T> T safeListAccess(List<T> list, int index) {
-        return list.get(getCorrectedIndex(index, list));
-    }
-
     public static int getCorrectedIndex(int index, int listSize) {
         int correctedIndex = index % listSize;
         if (correctedIndex < 0) {
@@ -34,6 +30,16 @@ public class CollectionUtils {
 
     public static <T> T getCorrectedElement(int index, List<T> list) {
         return list.get(getCorrectedIndex(index, list.size()));
+    }
+
+    public static int getCorrectedDelta(int startIndex, int endIndex, int listSize) {
+        int correctedStartIndex = getCorrectedIndex(startIndex, listSize);
+        int correctedEndIndex = getCorrectedIndex(endIndex, listSize);
+        if(correctedEndIndex >= correctedStartIndex) {
+            return correctedEndIndex - correctedStartIndex;
+        } else {
+            return listSize - correctedEndIndex - correctedStartIndex;
+        }
     }
 
     public static double[][] to2dArray(List<List<Double>> list) {
