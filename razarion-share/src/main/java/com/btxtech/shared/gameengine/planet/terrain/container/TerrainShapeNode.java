@@ -25,44 +25,36 @@ import java.util.logging.Logger;
  * on 18.06.2017.
  */
 public class TerrainShapeNode {
-    public interface TerrainShapeSubNodeConsumer {
-        /**
-         * Iterates through all sub nodes
-         *
-         * @param terrainShapeSubNode sub node
-         * @param relativeOffset      absolute offset from the node bottom left
-         * @param depth               depth 0 is the top most
-         */
-        void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition relativeOffset, int depth);
-    }
-
-    public interface DirectionConsumer {
-        void onTerrainShapeNode(TerrainShapeNode terrainShapeNode);
-
-        void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition subNodePosition);
-    }
-
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());
-    private double[] fullDrivewayHeights; // bl, br, tr, tl
     private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
-    private Double uniformGroundHeight;
+    // Game engine
+    private TerrainType terrainType;
+    private Collection<Obstacle> obstacles;
+    private Double gameEngineHeight;
+    private Boolean fullGameEngineDriveway;
+    // Render engine
     private List<List<Vertex>> groundSlopeConnections;
     private List<List<Vertex>> waterSegments;
-    private Double fullWaterLevel;
-    private Collection<Obstacle> obstacles;
     private Boolean doNotRenderGround;
+    private Double renderEngineHeight;
+    private Boolean fullRenderEngineDriveway;
+    // Game and render engine
+    private double[] drivewayHeights; // bl, br, tr, tl
+    private Double fullWaterLevel;
     private Boolean drivewayBreakingLine;
-    private TerrainType terrainType;
 
     public TerrainShapeNode() {
     }
 
     public TerrainShapeNode(NativeTerrainShapeNode nativeTerrainShapeNode) {
-        fullDrivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
-        uniformGroundHeight = nativeTerrainShapeNode.uniformGroundHeight;
+        drivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
+        gameEngineHeight = nativeTerrainShapeNode.gameEngineHeight;
+        renderEngineHeight = nativeTerrainShapeNode.renderEngineHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
         doNotRenderGround = nativeTerrainShapeNode.doNotRenderGround;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
+        fullGameEngineDriveway = nativeTerrainShapeNode.fullGameEngineDriveway;
+        fullRenderEngineDriveway = nativeTerrainShapeNode.fullRenderEngineDriveway;
         terrainType = TerrainType.fromOrdinal(nativeTerrainShapeNode.terrainTypeOrdinal);
         if (nativeTerrainShapeNode.obstacles != null) {
             Collection<Obstacle> obstacles = new ArrayList<>();
@@ -111,12 +103,16 @@ public class TerrainShapeNode {
         this.fullWaterLevel = fullWaterLevel;
     }
 
-    public void setFullDrivewayHeights(double[] fullDrivewayHeights) {
-        this.fullDrivewayHeights = fullDrivewayHeights;
+    public void setDrivewayHeights(double[] drivewayHeights) {
+        this.drivewayHeights = drivewayHeights;
     }
 
-    public void setUniformGroundHeight(Double uniformGroundHeight) {
-        this.uniformGroundHeight = uniformGroundHeight;
+    public void setRenderEngineHeight(Double renderEngineHeight) {
+        this.renderEngineHeight = renderEngineHeight;
+    }
+
+    public void setGameEngineHeight(Double gameEngineHeight) {
+        this.gameEngineHeight = gameEngineHeight;
     }
 
     public void setDoNotRenderGround() {
@@ -143,18 +139,32 @@ public class TerrainShapeNode {
         waterSegments.add(waterSegment);
     }
 
-    @Deprecated // use getTerrainType()
-    public boolean isFullLand() {
-        return groundSlopeConnections == null && waterSegments == null && !isFullDriveway() && !isFullWater() && !getDoNotRenderGround();
-    }
-
     public boolean isRenderGround() {
         return groundSlopeConnections == null && waterSegments == null && !getDoNotRenderGround();
     }
 
-    @Deprecated // use getTerrainType()
-    public boolean isFullDriveway() {
-        return fullDrivewayHeights != null;
+    public boolean isFullRenderEngineDriveway() {
+        if (fullRenderEngineDriveway != null) {
+            return fullRenderEngineDriveway;
+        } else {
+            return false;
+        }
+    }
+
+    public void setFullRenderEngineDriveway(boolean fullRenderEngineDriveway) {
+        this.fullRenderEngineDriveway = fullRenderEngineDriveway;
+    }
+
+    public boolean isFullGameEngineDriveway() {
+        if (fullGameEngineDriveway != null) {
+            return fullGameEngineDriveway;
+        } else {
+            return false;
+        }
+    }
+
+    public void setFullGameEngineDriveway(Boolean fullGameEngineDriveway) {
+        this.fullGameEngineDriveway = fullGameEngineDriveway;
     }
 
     public TerrainType getTerrainType() {
@@ -185,16 +195,6 @@ public class TerrainShapeNode {
         this.terrainShapeSubNodes = terrainShapeSubNodes;
     }
 
-    public void mergeTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
-        if (this.terrainShapeSubNodes == null) {
-            this.terrainShapeSubNodes = terrainShapeSubNodes;
-            return;
-        }
-        for (int i = 0; i < this.terrainShapeSubNodes.length; i++) {
-            this.terrainShapeSubNodes[i].merge(terrainShapeSubNodes[i]);
-        }
-    }
-
     public void iterateOverTerrainSubNodes(TerrainShapeSubNodeConsumer terrainShapeSubNodeConsumer) {
         double subNodeLength = TerrainUtil.calculateSubNodeLength(0);
         for (int i = 0; i < terrainShapeSubNodes.length; i++) {
@@ -212,9 +212,17 @@ public class TerrainShapeNode {
         return doNotRenderGround != null && doNotRenderGround;
     }
 
-    public double getUniformGroundHeight() {
-        if (uniformGroundHeight != null) {
-            return uniformGroundHeight;
+    public double getGameEngineHeight() {
+        if (gameEngineHeight != null) {
+            return gameEngineHeight;
+        } else {
+            return 0;
+        }
+    }
+
+    public double getRenderEngineHeight() {
+        if (renderEngineHeight != null) {
+            return renderEngineHeight;
         } else {
             return 0;
         }
@@ -237,38 +245,41 @@ public class TerrainShapeNode {
     }
 
     public double getDrivewayHeightBL() {
-        if (fullDrivewayHeights == null) {
-            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightBL() fullDrivewayHeights == null");
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightBL() drivewayHeights == null");
         }
-        return fullDrivewayHeights[0];
+        return drivewayHeights[0];
     }
 
     public double getDrivewayHeightBR() {
-        if (fullDrivewayHeights == null) {
-            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightBR() fullDrivewayHeights == null");
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightBR() drivewayHeights == null");
         }
-        return fullDrivewayHeights[1];
+        return drivewayHeights[1];
     }
 
     public double getDrivewayHeightTR() {
-        if (fullDrivewayHeights == null) {
-            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightTR() fullDrivewayHeights == null");
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightTR() drivewayHeights == null");
         }
-        return fullDrivewayHeights[2];
+        return drivewayHeights[2];
     }
 
     public double getDrivewayHeightTL() {
-        if (fullDrivewayHeights == null) {
-            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightTL() fullDrivewayHeights == null");
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeNode.getDrivewayHeightTL() drivewayHeights == null");
         }
-        return fullDrivewayHeights[3];
+        return drivewayHeights[3];
     }
 
     public NativeTerrainShapeNode toNativeTerrainShapeNode() {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
-        nativeTerrainShapeNode.fullDrivewayHeights = fullDrivewayHeights;
-        nativeTerrainShapeNode.uniformGroundHeight = uniformGroundHeight;
+        nativeTerrainShapeNode.fullDrivewayHeights = drivewayHeights;
+        nativeTerrainShapeNode.gameEngineHeight = gameEngineHeight;
+        nativeTerrainShapeNode.renderEngineHeight = renderEngineHeight;
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
+        nativeTerrainShapeNode.fullGameEngineDriveway = fullGameEngineDriveway;
+        nativeTerrainShapeNode.fullRenderEngineDriveway = fullRenderEngineDriveway;
         if (groundSlopeConnections != null) {
             nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
             for (int i = 0; i < groundSlopeConnections.size(); i++) {
@@ -329,5 +340,22 @@ public class TerrainShapeNode {
         } else {
             throw new IllegalArgumentException("TerrainShapeNode.outerDirectionCallback() outerDirection: " + outerDirection);
         }
+    }
+
+    public interface TerrainShapeSubNodeConsumer {
+        /**
+         * Iterates through all sub nodes
+         *
+         * @param terrainShapeSubNode sub node
+         * @param relativeOffset      absolute offset from the node bottom left
+         * @param depth               depth 0 is the top most
+         */
+        void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition relativeOffset, int depth);
+    }
+
+    public interface DirectionConsumer {
+        void onTerrainShapeNode(TerrainShapeNode terrainShapeNode);
+
+        void onTerrainShapeSubNode(TerrainShapeSubNode terrainShapeSubNode, DecimalPosition subNodePosition);
     }
 }

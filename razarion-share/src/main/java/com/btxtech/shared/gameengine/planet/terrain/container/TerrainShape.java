@@ -77,7 +77,7 @@ public class TerrainShape {
                         if (nativeTerrainShapeTile != null) {
                             TerrainShapeTile terrainShapeTile = new TerrainShapeTile();
                             terrainShapeTiles[x][y] = terrainShapeTile;
-                            terrainShapeTile.setFullWaterLevel(nativeTerrainShapeTile.fullWaterLevel);
+                            terrainShapeTile.setRenderFullWaterLevel(nativeTerrainShapeTile.fullWaterLevel);
                             terrainShapeTile.setUniformGroundHeight(nativeTerrainShapeTile.uniformGroundHeight);
                             if (nativeTerrainShapeTile.fractionalSlopes != null) {
                                 for (NativeFractionalSlope nativeFractionalSlope : nativeTerrainShapeTile.fractionalSlopes) {

@@ -9,14 +9,16 @@ import jsinterop.annotations.JsType;
 @JsType(name = "NativeTerrainShapeNode", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeTerrainShapeNode {
     public double[] fullDrivewayHeights; // bl, br, tr, tl
-    //public TerrainShapeSubNode[][] terrainShapeSubNodes;
-    public Double uniformGroundHeight;
+    public Double gameEngineHeight;
+    public Double renderEngineHeight;
     public NativeVertex[][] groundSlopeConnections;
     public NativeVertex[][] waterSegments;
     public Double fullWaterLevel;
     public NativeObstacle[] obstacles;
     public Boolean doNotRenderGround;
-    public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes;
+    public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes; // bl, br, tr, tl
     public Boolean drivewayBreakingLine;
     public int terrainTypeOrdinal; // Integer is not working here because Integer.intValue() is not defined
+    public Boolean fullGameEngineDriveway;
+    public Boolean fullRenderEngineDriveway;
 }

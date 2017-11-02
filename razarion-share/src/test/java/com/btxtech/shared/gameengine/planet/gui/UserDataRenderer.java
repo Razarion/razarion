@@ -42,6 +42,7 @@ public class UserDataRenderer {
         if (positionMarker.getLine() != null) {
             weldTestRenderer.strokeLine(positionMarker.getLine(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.BLUE, true);
         }
+        positionMarker.getPolygon2Ds().forEach(polygon2D -> weldTestRenderer.strokePolygon(polygon2D.getCorners(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.RED, true));
     }
 
     private void render(SimplePath simplePath) {

@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
-import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayRegionHandler;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -118,19 +117,19 @@ public class TerrainShapeSetup {
 
     private void processSlope(Slope slope, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes) {
         prepareVerticalSegments(slope);
-        ObstacleFactory.addObstacles(terrainShape, slope.getInnerPolygonTerrainType().getCorners(), slope.getDrivewayRegionHandler(), false);
-        ObstacleFactory.addObstacles(terrainShape, slope.getOuterPolygonTerrainType().getCorners(), slope.getDrivewayRegionHandler(), true);
+        ObstacleFactory.addObstacles(terrainShape, slope.getInnerGameEnginePolygon().getCorners(), slope.getDrivewayGameEngineHandler(), false);
+        ObstacleFactory.addObstacles(terrainShape, slope.getOuterGameEnginePolygon().getCorners(), slope.getDrivewayGameEngineHandler(), true);
         SlopeContext slopeContext = new SlopeContext(slope);
-        SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getInnerPolygonSlope().getCorners(), false, slopeContext);
-        SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getOuterPolygonSlope().getCorners(), true, slopeContext);
+        SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getInnerRenderEnginePolygon().getCorners(), false, slopeContext);
+        SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getOuterRenderEnginePolygon().getCorners(), true, slopeContext);
         if (slope.hasWater()) {
-            // Setup TerrainType
-            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, TerrainType.LAND_COAST, null);
-            setupTerrainType(slope.getOuterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, TerrainType.LAND, null);
-            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, null, null);
-            setupTerrainType(slope.getInnerPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER, null, null);
-            // Setup slope ground connection
-            Polygon2D outerPolygon = slope.getOuterPolygonSlope();
+            // Setup TerrainType (game engine)
+            // setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, TerrainType.LAND_COAST, null);
+            setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getGroundHeight(), TerrainType.LAND, slope.getGroundHeight(), null);
+            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getGroundHeight(), null, 0, null);
+            setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER, terrainTypeService.getWaterConfig().getWaterLevel() + slope.getGroundHeight(), null, 0, null);
+            // Setup slope ground connection (render engine)
+            Polygon2D outerPolygon = slope.getOuterRenderEnginePolygon();
             Rectangle2D aabb = outerPolygon.toAabb();
             for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
                 Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
@@ -152,10 +151,12 @@ public class TerrainShapeSetup {
             }
         } else {
             // Setup TerrainType
-            setupTerrainType(slope.getOuterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.BLOCKED, TerrainType.LAND, slope.getDrivewayRegionHandler());
-            setupTerrainType(slope.getInnerPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND, null, null);
+            DrivewayContext drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.FLAT_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
+            setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.BLOCKED, slope.getGroundHeight(), TerrainType.LAND, slope.getGroundHeight(), drivewayContext);
+            drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.SLOPE_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
+            setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() + slope.getHeight(), null, 0, drivewayContext);
             // Setup slope ground connection
-            Polygon2D outerPolygon = slope.getOuterPolygonSlope();
+            Polygon2D outerPolygon = slope.getOuterRenderEnginePolygon();
             Rectangle2D aabb = outerPolygon.toAabb();
 
             for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
@@ -203,7 +204,7 @@ public class TerrainShapeSetup {
                 // Completely under slope
                 if (innerPiercings == null && outerPiercings == null) {
                     Rectangle2D shrunken = terrainRect.shrink(0.01);
-                    if (outerPolygon.checkInside(shrunken) == InsideCheckResult.INSIDE && slope.getInnerPolygonSlope().checkInside(shrunken) == InsideCheckResult.OUTSIDE) {
+                    if (outerPolygon.checkInside(shrunken) == InsideCheckResult.INSIDE && slope.getInnerRenderEnginePolygon().checkInside(shrunken) == InsideCheckResult.OUTSIDE) {
                         terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setDoNotRenderGround();
                     }
                 }
@@ -211,15 +212,17 @@ public class TerrainShapeSetup {
                 // TerrainNode completely in driveway
                 Driveway driveway = slope.getDriveway(corners);
                 if (driveway != null) {
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setFullDrivewayHeights(driveway.generateDrivewayHeights(corners));
+                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    terrainShapeNode.setDrivewayHeights(driveway.generateDrivewayHeights(corners));
+                    terrainShapeNode.setFullRenderEngineDriveway(true);
                     continue;
                 }
 
                 // Set height
                 if (outerPolygon.checkInside(terrainRect) == InsideCheckResult.INSIDE) {
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setUniformGroundHeight(slope.getGroundHeight() + slope.getHeight());
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getGroundHeight() + slope.getHeight());
                 } else {
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setUniformGroundHeight(slope.getGroundHeight());
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getGroundHeight());
                 }
             }
         }
@@ -230,19 +233,26 @@ public class TerrainShapeSetup {
         }
     }
 
-    private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayRegionHandler drivewayRegionHandler) {
+    // Rename setup game engine / render engine
+    private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, TerrainType outerTerrainType, double outerHeight, DrivewayContext drivewayContext) {
         Rectangle2D aabb = terrainRegion.toAabb();
         for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-            if (drivewayRegionHandler != null) {
-                switch (drivewayRegionHandler.checkInsideTerrainType(terrainRect)) {
+//            if (terrainRect.startX() == 96 && terrainRect.startY() == 128) {
+//                System.out.println("+++++++++++++++++ terrainRect: " + terrainRect);
+//            }
+
+            if (drivewayContext != null) {
+                switch (drivewayContext.checkInside(terrainRect)) {
                     case INSIDE:
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                        terrainShapeNode.setTerrainType(TerrainType.LAND);
-                        // terrainShapeNode.setTerrainShapeSubNodes(null);
+                        terrainShapeNode.setTerrainType(drivewayContext.getInnerTerrainType());
+                        terrainShapeNode.setGameEngineHeight(drivewayContext.getHeight());
+                        terrainShapeNode.setDrivewayHeights(drivewayContext.getDrivewayHeights(terrainRect));
+                        terrainShapeNode.setFullGameEngineDriveway(true);
                         continue;
                     case PARTLY:
-                        handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, outerTerrainType, drivewayRegionHandler, nodeIndex, terrainRect);
+                        handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
                         continue;
                 }
             }
@@ -252,12 +262,13 @@ public class TerrainShapeSetup {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         if (!terrainShapeNode.hasSubNodes()) {
                             terrainShapeNode.setTerrainType(innerTerrainType);
+                            terrainShapeNode.setGameEngineHeight(innerHeight);
                         }
                     }
                     break;
                 }
                 case PARTLY: {
-                    handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, outerTerrainType, drivewayRegionHandler, nodeIndex, terrainRect);
+                    handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
                     break;
                 }
                 case OUTSIDE: {
@@ -265,6 +276,7 @@ public class TerrainShapeSetup {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         if (!terrainShapeNode.hasSubNodes()) {
                             terrainShapeNode.setTerrainType(outerTerrainType);
+                            terrainShapeNode.setGameEngineHeight(outerHeight);
                         }
                     }
                     break;
@@ -275,17 +287,17 @@ public class TerrainShapeSetup {
         }
     }
 
-    private void handleParty(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayRegionHandler drivewayRegionHandler, Index nodeIndex, Rectangle2D terrainRect) {
+    private void handleParty(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, TerrainType outerTerrainType, double outerHeight, DrivewayContext drivewayContext, Index nodeIndex, Rectangle2D terrainRect) {
         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
         dirtyTerrainShapeNodes.putIfAbsent(nodeIndex, terrainShapeNode);
         if (innerTerrainType != null && outerTerrainType != null) {
             terrainShapeNode.setTerrainType(null);
-            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, outerTerrainType, drivewayRegionHandler);
+            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext);
         } else if (innerTerrainType != null) {
-            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, terrainShapeNode.getTerrainType(), drivewayRegionHandler);
+            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, innerHeight, terrainShapeNode.getTerrainType(), terrainShapeNode.getGameEngineHeight(), drivewayContext);
             terrainShapeNode.setTerrainType(null);
         } else if (outerTerrainType != null) {
-            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, terrainShapeNode.getTerrainType(), outerTerrainType, drivewayRegionHandler);
+            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, terrainShapeNode.getTerrainType(), terrainShapeNode.getGameEngineHeight(), outerTerrainType, outerHeight, drivewayContext);
             terrainShapeNode.setTerrainType(null);
         } else {
             throw new IllegalArgumentException("TerrainShapeSetup.setupTerrainType() innerTerrainType == null && outerTerrainType == null");

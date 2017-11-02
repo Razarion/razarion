@@ -17,9 +17,9 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private int rows;
     private double width;
     private double height;
-    private double outerLineTerrainType;
-    private double innerLineTerrainType;
-    private double coastDelimiterLineTerrainType;
+    private double outerLineGameEngine;
+    private double innerLineGameEngine;
+    private double coastDelimiterLineGameEngine;
     private double verticalSpace;
     private Type type;
     private SlopeNode[][] slopeNodes;
@@ -99,30 +99,30 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public double getOuterLineTerrainType() {
-        return outerLineTerrainType;
+    public double getOuterLineGameEngine() {
+        return outerLineGameEngine;
     }
 
-    public SlopeSkeletonConfig setOuterLineTerrainType(double outerLineTerrainType) {
-        this.outerLineTerrainType = outerLineTerrainType;
+    public SlopeSkeletonConfig setOuterLineGameEngine(double outerLineGameEngine) {
+        this.outerLineGameEngine = outerLineGameEngine;
         return this;
     }
 
-    public double getInnerLineTerrainType() {
-        return innerLineTerrainType;
+    public double getInnerLineGameEngine() {
+        return innerLineGameEngine;
     }
 
-    public SlopeSkeletonConfig setInnerLineTerrainType(double innerLineTerrainType) {
-        this.innerLineTerrainType = innerLineTerrainType;
+    public SlopeSkeletonConfig setInnerLineGameEngine(double innerLineGameEngine) {
+        this.innerLineGameEngine = innerLineGameEngine;
         return this;
     }
 
-    public double getCoastDelimiterLineTerrainType() {
-        return coastDelimiterLineTerrainType;
+    public double getCoastDelimiterLineGameEngine() {
+        return coastDelimiterLineGameEngine;
     }
 
-    public SlopeSkeletonConfig setCoastDelimiterLineTerrainType(double coastDelimiterLineTerrainType) {
-        this.coastDelimiterLineTerrainType = coastDelimiterLineTerrainType;
+    public SlopeSkeletonConfig setCoastDelimiterLineGameEngine(double coastDelimiterLineGameEngine) {
+        this.coastDelimiterLineGameEngine = coastDelimiterLineGameEngine;
         return this;
     }
 

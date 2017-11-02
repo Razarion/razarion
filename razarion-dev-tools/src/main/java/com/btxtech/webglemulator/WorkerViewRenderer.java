@@ -21,7 +21,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
-import com.btxtech.shared.utils.InterpolationUtils;
 import javafx.scene.paint.Color;
 
 import javax.annotation.PostConstruct;
@@ -113,19 +112,19 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
             for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
-                boolean free = terrainService.getPathingAccess().isTerrainFree(samplePosition);
-                double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
-                if (v < 0) {
-                    v = 0;
-                }
-                egc.getGc().setFill(new Color(v, v, v, 1));
-                egc.getGc().fillRect(x, y, 1, 1);
-                if (free) {
-                    egc.getGc().setFill(Color.GREEN);
-                } else {
-                    egc.getGc().setFill(Color.RED);
-                }
-                egc.getGc().fillRect(x, y, 0.6, 0.6);
+                // boolean free = terrainService.getPathingAccess().isTerrainFree(samplePosition);
+//                double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
+//                if (v < 0) {
+//                    v = 0;
+//                }
+//                egc.getGc().setFill(new Color(v, v, v, 1));
+//                egc.getGc().fillRect(x, y, 1, 1);
+//                if (free) {
+//                    egc.getGc().setFill(Color.GREEN);
+//                } else {
+//                    egc.getGc().setFill(Color.RED);
+//                }
+//                egc.getGc().fillRect(x, y, 0.6, 0.6);
             }
         }
     }
@@ -265,8 +264,8 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
             List<DecimalPosition> polygon = terrainSlopePosition.getPolygon().stream().map(TerrainSlopeCorner::getPosition).collect(Collectors.toList());
             Slope slope = new Slope(terrainSlopePosition.getId(), terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId()), terrainSlopePosition.getPolygon(), 0.0, terrainTypeService);
             egc.strokePolygon(polygon, 0.1, Color.GREEN, true);
-            egc.strokePolygon(slope.getInnerPolygonSlope(), 0.1, Color.RED, true);
-            egc.strokePolygon(slope.getOuterPolygonSlope(), 0.1, Color.RED, true);
+            egc.strokePolygon(slope.getInnerRenderEnginePolygon(), 0.1, Color.RED, true);
+            egc.strokePolygon(slope.getOuterRenderEnginePolygon(), 0.1, Color.RED, true);
         }
     }
 

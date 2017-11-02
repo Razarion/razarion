@@ -114,6 +114,15 @@ public class Driveway {
         return innerPolygon.isInside(position);
     }
 
+    public Polygon2D setupInnerPolygon(double sideGrowth) {
+        DecimalPosition growthStartBreakingLine = startBreakingLine.getPointWithDistance(-sideGrowth, endBreakingLine, true);
+        DecimalPosition growthEndBreakingLine = endBreakingLine.getPointWithDistance(-sideGrowth, startBreakingLine, true);
+        DecimalPosition growthStartOuterPosition = startOuterPosition.getPointWithDistance(-sideGrowth, endOuterPosition, true);
+        DecimalPosition growthEndOuterPosition = endOuterPosition.getPointWithDistance(-sideGrowth, startOuterPosition, true);
+
+        return new Polygon2D(Arrays.asList(growthStartBreakingLine, growthEndBreakingLine, growthEndOuterPosition, growthStartOuterPosition));
+    }
+
     public List<DecimalPosition> setupPiercingLine(Rectangle2D terrainRect, boolean ground) {
         if (terrainRect.contains(startBreakingLine) && terrainRect.contains(endBreakingLine)) {
             logger.warning("Driveway.setupPiercingLine() driveway too small, start and end are in the same node");
@@ -173,4 +182,7 @@ public class Driveway {
         return drivewayHeights;
     }
 
+    public DecimalPosition findSimilarInnerCorner(DecimalPosition position, double delta) {
+        return innerPolygon.findSimilarCorner(position, delta);
+    }
 }

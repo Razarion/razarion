@@ -21,9 +21,9 @@
                 <TextField fx:id="scaleField" editable="false" prefWidth="50.0"/>
                 <TextField fx:id="mouseLabel" prefHeight="25.0" prefWidth="90.0"/>
                 <Separator orientation="VERTICAL"/>
-                <Label text="Z min (green)"/>
+                <Label text="Z min"/>
                 <TextField fx:id="zMinField" onAction="#onMinZChanged" prefWidth="50.0"/>
-                <Label text="Z max (red)"/>
+                <Label text="Z max"/>
                 <TextField fx:id="zMaxField" onAction="#onMaxZChanged" prefWidth="50.0"/>
             </items>
         </ToolBar>

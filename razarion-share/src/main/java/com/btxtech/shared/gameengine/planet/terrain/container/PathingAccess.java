@@ -54,31 +54,6 @@ public class PathingAccess {
         return TerrainType.isAllowed(terrainType, getTerrainType(position));
     }
 
-    @Deprecated // Use isTerrainTypeAllowed
-    public boolean isTerrainFree(DecimalPosition position) {
-        return terrainShape.terrainImpactCallback(position, new TerrainImpactCallback<Boolean>() {
-            @Override
-            public Boolean landNoTile(Index tileIndex) {
-                return true;
-            }
-
-            @Override
-            public Boolean inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                return terrainShapeTile.isLand();
-            }
-
-            @Override
-            public Boolean inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return !terrainShapeNode.isFullWater() && !terrainShapeNode.getDoNotRenderGround();
-            }
-
-            @Override
-            public Boolean inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return terrainShapeSubNode.isLand();
-            }
-        });
-    }
-
     public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition terrainPosition, double radius) {
         if(terrainType == null) {
             throw new NullPointerException("PathingAccess.isTerrainTypeAllowed() terrainType==null");
@@ -136,7 +111,7 @@ public class PathingAccess {
 
             @Override
             public PathingNodeWrapper inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                if (terrainShapeTile.isLand()) {
+                if (terrainShapeTile.getTerrainType() == TerrainType.LAND) {
                     return new PathingNodeWrapper(PathingAccess.this, TerrainUtil.toNode(terrainPosition));
                 } else {
                     return null;

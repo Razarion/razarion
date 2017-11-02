@@ -15,7 +15,6 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
@@ -46,7 +45,7 @@ public class DestinationFinderTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(7, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigLand.setOuterLineTerrainType(1).setCoastDelimiterLineTerrainType(3).setInnerLineTerrainType(6);
+        slopeSkeletonConfigLand.setOuterLineGameEngine(1).setCoastDelimiterLineGameEngine(3).setInnerLineGameEngine(6);
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

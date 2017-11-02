@@ -84,14 +84,13 @@ public class UiTerrainTileTest {
         testToolTerrainTile.initTerrainNodeField(TerrainUtil.TERRAIN_TILE_NODES_COUNT);
         // Node
         TestTerrainNode testTerrainNode = new TestTerrainNode();
-        testTerrainNode.setLand(false);
         testToolTerrainTile.insertTerrainNode(0, 0, testTerrainNode);
         // Sub node depth = 1
         testTerrainNode = new TestTerrainNode();
         testToolTerrainTile.insertTerrainNode(3, 4, testTerrainNode);
         testTerrainNode.initTerrainSubNodeField(2);
         TestTerrainSubNode terrainSubNode1 = new TestTerrainSubNode();
-        terrainSubNode1.setLand(true);
+        // terrainSubNode1.setLand(true);
         testTerrainNode.insertTerrainSubNode(0, 0, terrainSubNode1);
         // Sub node depth = 2
         testTerrainNode = new TestTerrainNode();
@@ -101,7 +100,7 @@ public class UiTerrainTileTest {
         testTerrainNode.insertTerrainSubNode(0, 0, terrainSubNode1);
         terrainSubNode1.initTerrainSubNodeField(2);
         TestTerrainSubNode terrainSubNode2 = new TestTerrainSubNode();
-        terrainSubNode2.setLand(true);
+        // terrainSubNode2.setLand(true);
         terrainSubNode1.insertTerrainSubNode(0, 1, terrainSubNode2);
         // Sub node depth = 3
         testTerrainNode = new TestTerrainNode();
@@ -114,7 +113,7 @@ public class UiTerrainTileTest {
         terrainSubNode1.insertTerrainSubNode(1, 1, terrainSubNode2);
         terrainSubNode2.initTerrainSubNodeField(2);
         TestTerrainSubNode terrainSubNode3 = new TestTerrainSubNode();
-        terrainSubNode3.setLand(true);
+        // terrainSubNode3.setLand(true);
         terrainSubNode2.insertTerrainSubNode(1, 0, terrainSubNode3);
 
         UiTerrainTile uiTerrainTile = setup(testToolTerrainTile);

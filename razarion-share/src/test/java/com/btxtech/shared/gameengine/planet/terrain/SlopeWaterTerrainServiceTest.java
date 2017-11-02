@@ -32,7 +32,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(9, -2, 1),}
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigWater.setOuterLineTerrainType(3).setCoastDelimiterLineTerrainType(5).setInnerLineTerrainType(7);
+        slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -78,7 +78,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(9, -2, 1),}
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigWater.setOuterLineTerrainType(3).setCoastDelimiterLineTerrainType(5).setInnerLineTerrainType(7);
+        slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

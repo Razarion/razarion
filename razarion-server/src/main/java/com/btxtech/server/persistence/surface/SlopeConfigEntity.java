@@ -49,9 +49,9 @@ public class SlopeConfigEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SlopeSkeletonConfig.Type type;
-    private double outerLineTerrainType;
-    private double innerLineTerrainType;
-    private double coastDelimiterLineTerrainType;
+    private double outerLineGameEngine;
+    private double innerLineGameEngine;
+    private double coastDelimiterLineGameEngine;
     private double fractalMin;
     private double fractalMax;
     private double fractalClampMin;
@@ -82,9 +82,9 @@ public class SlopeConfigEntity {
         slopeSkeletonConfig.setId(id);
         slopeSkeletonConfig.setInternalName(internalName);
         slopeSkeletonConfig.setSegments(segments);
-        slopeSkeletonConfig.setInnerLineTerrainType(innerLineTerrainType);
-        slopeSkeletonConfig.setCoastDelimiterLineTerrainType(coastDelimiterLineTerrainType);
-        slopeSkeletonConfig.setOuterLineTerrainType(outerLineTerrainType);
+        slopeSkeletonConfig.setInnerLineGameEngine(innerLineGameEngine);
+        slopeSkeletonConfig.setCoastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
+        slopeSkeletonConfig.setOuterLineGameEngine(outerLineGameEngine);
         Shape shape = new Shape(toSlopeShapes());
         slopeSkeletonConfig.setLightConfig(lightConfigEmbeddable.toLightConfig());
         slopeSkeletonConfig.setRows(shape.getVertexCount());
@@ -135,9 +135,9 @@ public class SlopeConfigEntity {
         fractalClampMax = slopeConfig.getFractalClampMax();
         fractalRoughness = slopeConfig.getFractalRoughness();
         type = slopeConfig.getSlopeSkeletonConfig().getType();
-        innerLineTerrainType = slopeConfig.getSlopeSkeletonConfig().getInnerLineTerrainType();
-        coastDelimiterLineTerrainType = slopeConfig.getSlopeSkeletonConfig().getCoastDelimiterLineTerrainType();
-        outerLineTerrainType = slopeConfig.getSlopeSkeletonConfig().getOuterLineTerrainType();
+        innerLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getInnerLineGameEngine();
+        coastDelimiterLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getCoastDelimiterLineGameEngine();
+        outerLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getOuterLineGameEngine();
         texture = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getTextureId());
         textureScale = slopeConfig.getSlopeSkeletonConfig().getTextureScale();
         bm = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getBmId());

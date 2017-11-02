@@ -41,7 +41,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(11, 25, 0),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodeLand));
-        slopeSkeletonConfigLand.setOuterLineTerrainType(2).setInnerLineTerrainType(9);
+        slopeSkeletonConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(9);
         // Water slope config
         SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
         slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
@@ -53,7 +53,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(12, -2, 0.7),},
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodeWater));
-        slopeSkeletonConfigWater.setOuterLineTerrainType(3).setCoastDelimiterLineTerrainType(6).setInnerLineTerrainType(10);
+        slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(6).setInnerLineGameEngine(10);
 
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);

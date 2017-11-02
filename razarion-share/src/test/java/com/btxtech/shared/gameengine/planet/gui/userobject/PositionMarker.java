@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.gui.userobject;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +16,7 @@ public class PositionMarker {
     private Collection<DecimalPosition> positions = new ArrayList<>();
     private Collection<Circle2D> circles = new ArrayList<>();
     private List<DecimalPosition> line;
+    private List<Polygon2D> polygon2Ds = new ArrayList<>();
 
     public PositionMarker addPosition(DecimalPosition positions) {
         positions.add(positions);
@@ -41,5 +43,14 @@ public class PositionMarker {
     public PositionMarker setLine(List<DecimalPosition> line) {
         this.line = line;
         return this;
+    }
+
+    public PositionMarker addPolygon2D(Polygon2D polygon) {
+        polygon2Ds.add(polygon);
+        return this;
+    }
+
+    public List<Polygon2D> getPolygon2Ds() {
+        return polygon2Ds;
     }
 }

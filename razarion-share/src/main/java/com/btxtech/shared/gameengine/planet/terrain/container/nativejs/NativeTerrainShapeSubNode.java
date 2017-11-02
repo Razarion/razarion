@@ -12,4 +12,5 @@ public class NativeTerrainShapeSubNode {
     public int terrainTypeOrdinal; // Integer is not working here because Integer.intValue() is not defined
     public Double height;
     public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes;
+    public double[] drivewayHeights; // bl, br, tr, tl
 }

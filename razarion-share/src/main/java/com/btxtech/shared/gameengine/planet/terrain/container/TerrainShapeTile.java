@@ -39,21 +39,20 @@ public class TerrainShapeTile {
     }
 
     private TerrainShapeNode[][] terrainShapeNodes;
-    private Double fullWaterLevel;
+    private Double renderFullWaterLevel;
     private Double uniformGroundHeight;
     private List<FractionalSlope> fractionalSlopes;
 
-    @Deprecated // User getTerrainType
-    public boolean isLand() {
-        return fullWaterLevel == null;
+    public boolean isRenderLand() {
+        return renderFullWaterLevel == null;
     }
 
     public TerrainType getTerrainType() {
-        return fullWaterLevel == null ? TerrainType.LAND : TerrainType.WATER;
+        return renderFullWaterLevel == null ? TerrainType.LAND : TerrainType.WATER;
     }
 
-    public void setFullWaterLevel(Double fullWaterLevel) {
-        this.fullWaterLevel = fullWaterLevel;
+    public void setRenderFullWaterLevel(Double renderFullWaterLevel) {
+        this.renderFullWaterLevel = renderFullWaterLevel;
     }
 
     public boolean hasNodes() {
@@ -151,7 +150,7 @@ public class TerrainShapeTile {
 
     public NativeTerrainShapeTile toNativeTerrainShapeTile() {
         NativeTerrainShapeTile nativeTerrainShapeTile = new NativeTerrainShapeTile();
-        nativeTerrainShapeTile.fullWaterLevel = fullWaterLevel;
+        nativeTerrainShapeTile.fullWaterLevel = renderFullWaterLevel;
         if (fractionalSlopes != null) {
             nativeTerrainShapeTile.fractionalSlopes = fractionalSlopes.stream().map(FractionalSlope::toNativeFractionalSlope).toArray(NativeFractionalSlope[]::new);
         }

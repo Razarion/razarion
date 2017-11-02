@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
  */
 public class TestTerrainSubNode extends TerrainSubNode {
     private TerrainSubNode[][] terrainSubNodes;
-    private Boolean land;
+    // TODO TerrainType etc
     private Double height;
 
     @Override
@@ -29,16 +29,6 @@ public class TestTerrainSubNode extends TerrainSubNode {
     @Override
     public void setHeight(double height) {
         this.height = height;
-    }
-
-    @Override
-    public Boolean isLand() {
-        return land;
-    }
-
-    @Override
-    public void setLand(Boolean land) {
-        this.land = land;
     }
 
     @Override

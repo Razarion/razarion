@@ -66,8 +66,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private TerrainShape actual;
     private TerrainShapeTile[][] terrainShapeTiles;
     private UserDataRenderer userDataRenderer;
-    private double zMin = -5;
-    private double zMax = 50;
+    private double zMin = 0;
+    private double zMax = 20;
 
     public void setupFields(Object[] userObjects) {
         if (userObjects != null && userObjects.length > 0) {
@@ -102,12 +102,31 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
     @Override
     protected void doRender() {
-        doRenderTile();
         // doRenderShape();
-
+        doRenderTile();
+        renderTerrainPathingSurfaceAccess();
         renderItemTypes();
         if (userDataRenderer != null) {
             userDataRenderer.render();
+        }
+    }
+
+    private void renderTerrainPathingSurfaceAccess() {
+        DecimalPosition from = new DecimalPosition(0, 0);
+        double length = 300;
+
+        for (double x = from.getX(); x < from.getX() + length; x++) {
+            for (double y = from.getY(); y < from.getY() + length; y++) {
+                DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
+                // Z
+                double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
+                getGc().setFill(color4Z(z));
+                getGc().fillRect(x, y, 0.5, 0.5);
+                // TerrainType
+                TerrainType terrainType = terrainService.getPathingAccess().getTerrainType(samplePosition);
+                getGc().setFill(color4TerrainType(terrainType));
+                getGc().fillRect(x + 0.5, y + 0.5, 0.5, 0.5);
+            }
         }
     }
 
@@ -115,7 +134,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         // Index from = TerrainUtil.toTile(new DecimalPosition(265, 18));
         // Index to = TerrainUtil.toTile(new DecimalPosition(441, 200));
         Index from = new Index(0, 0);
-        Index to = new Index(6, 2);
+        Index to = new Index(2, 2);
 
         for (int tileX = from.getX(); tileX <= to.getX(); tileX++) {
             for (int tileY = from.getY(); tileY <= to.getY(); tileY++) {
@@ -131,7 +150,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
             drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
         }
 
-        drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
+        // drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
             strokeZTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
@@ -139,7 +158,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
         if (terrainTile.getTerrainSlopeTiles() != null) {
             for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-                 drawTerrainSlopeTile(terrainSlopeTile);
+                drawTerrainSlopeTile(terrainSlopeTile);
             }
         }
     }
@@ -151,14 +170,14 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void strokeZLine(double[] vertices, int index1, int index2) {
-        getGc().setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, colorForZ(vertices[index1 + 2])), new Stop(1, colorForZ(vertices[index2 + 2]))));
+        getGc().setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, color4Z(vertices[index1 + 2])), new Stop(1, color4Z(vertices[index2 + 2]))));
         getGc().strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
     }
 
-    private Color colorForZ(double z) {
-        double red = InterpolationUtils.interpolate(0, 1, zMin, zMax, z);
-        red = MathHelper.clamp(red, 0,1);
-        return Color.color(red, 1.0 - red, 0);
+    private Color color4Z(double z) {
+        double value = InterpolationUtils.interpolate(0, 1, zMin, zMax, z);
+        value = MathHelper.clamp(value, 0, 1);
+        return Color.color(value, 0, value);
     }
 
 
@@ -283,13 +302,13 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private void drawNode(TerrainNode terrainNode, DecimalPosition absoluteNodePosition) {
         TerrainType terrainType = TerrainType.fromOrdinal(terrainNode.getTerrainType());
         if (terrainType != null) {
-            // getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
-            // getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+            getGc().setFill(color4TerrainType(terrainType));
+            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
 
 //        getGc().setFill(new Color(0.5, 0.5, 0.5, 0.5));
 //        getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-//        if (!terrainNode.isLand()) {
+//        if (!terrainNode.isRenderLand()) {
 //            getGc().setFill(new Color(1, 0, 0, 0.5));
 //            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //        }
@@ -314,8 +333,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
         TerrainType terrainType = TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
         if (terrainType != null) {
-            // getGc().setFill(TerrainShapeTestRenderer.color4TerrainType(terrainType));
-            // getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
+            getGc().setFill(color4TerrainType(terrainType));
+            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
         }
 
 //        getGc().setStroke(new Color(0, 0, 1, 1));
@@ -622,6 +641,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     public static Color color4TerrainType(TerrainType terrainType) {
+        if (terrainType == null) {
+            terrainType = TerrainType.getNullTerrainType();
+        }
         switch (terrainType) {
             case LAND:
                 return Color.GREEN;

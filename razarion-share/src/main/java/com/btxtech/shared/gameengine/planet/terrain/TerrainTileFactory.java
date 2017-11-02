@@ -68,13 +68,13 @@ public class TerrainTileFactory {
 
         if (terrainShapeTile != null) {
             terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-                if (terrainShapeTile.isLand() && terrainShapeNode == null) {
+                if (terrainShapeTile.isRenderLand() && terrainShapeNode == null) {
                     insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), terrainTileContext);
                 } else if (terrainShapeNode != null) {
-                    if (terrainShapeNode.isFullDriveway()) {
+                    if (terrainShapeNode.isFullRenderEngineDriveway()) {
                         insertDrivewayTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode, terrainTileContext);
                     } else if (terrainShapeNode.isRenderGround()) {
-                        insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getUniformGroundHeight(), terrainTileContext);
+                        insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getRenderEngineHeight(), terrainTileContext);
                     }
                 }
             });
@@ -247,7 +247,7 @@ public class TerrainTileFactory {
             terrainTileContext.setLandWaterProportion(1);
             return;
         }
-        if (!terrainShapeTile.isLand()) {
+        if (!terrainShapeTile.isRenderLand()) {
             // TODO fill water part
             terrainTileContext.setLandWaterProportion(0);
         }
@@ -256,7 +256,7 @@ public class TerrainTileFactory {
         terrainWaterTileContext.init(terrainTileContext);
 
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-            if (terrainShapeNode == null && !terrainShapeTile.isLand()) {
+            if (terrainShapeNode == null && !terrainShapeTile.isRenderLand()) {
                 terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight());
             } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
                 terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel());
@@ -284,16 +284,7 @@ public class TerrainTileFactory {
             if (terrainShapeNode != null) {
                 TerrainNode terrainNode = jsInteropObjectFactory.generateTerrainNode();
                 terrainNode.setTerrainType(TerrainType.toOrdinal(terrainShapeNode.getTerrainType()));
-                if (terrainShapeNode.isFullLand()) {
-                    terrainNode.setLand(true);
-                }
-                if (terrainShapeNode.istDrivewayBreakingLine()) {
-                    terrainNode.setLand(true);
-                }
-                if (terrainShapeNode.isFullDriveway()) {
-                    terrainNode.setLand(true);
-                }
-                terrainNode.setHeight(terrainShapeNode.getUniformGroundHeight());
+                terrainNode.setHeight(terrainShapeNode.getGameEngineHeight());
                 if (terrainShapeNode.hasSubNodes()) {
                     terrainNode.initTerrainSubNodeField((int) Math.sqrt(terrainShapeNode.getTerrainShapeSubNodes().length));
                     DecimalPosition nodePosition = TerrainUtil.toNodeAbsolute(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex));
@@ -328,23 +319,11 @@ public class TerrainTileFactory {
 
     private TerrainSubNode createTerrainSubNode(DecimalPosition nodePosition, DecimalPosition subNodePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode terrainShapeSubNode) {
         TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
-        if (terrainShapeSubNode.isLand()) {
-            terrainSubNode.setLand(true);
-        }
         if (terrainShapeSubNode.getTerrainType() != null) {
             terrainSubNode.setTerrainType(terrainShapeSubNode.getTerrainType().ordinal());
         }
         if (terrainShapeSubNode.getHeight() != null) {
             terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
-        } else {
-            if (terrainShapeNode.getDoNotRenderGround()) {
-                terrainSubNode.setHeight(terrainShapeNode.getUniformGroundHeight());
-            } else if (terrainShapeNode.isFullDriveway()) {
-                DecimalPosition normalizedOffset = subNodePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-                terrainSubNode.setHeight(InterpolationUtils.rectangleInterpolate(normalizedOffset, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL()));
-            } else {
-                terrainSubNode.setHeight(terrainShapeNode.getUniformGroundHeight() + TerrainHelper.interpolateHeightFromGroundSkeletonConfig(nodePosition.add(subNodePosition), terrainTypeService.getGroundSkeletonConfig()));
-            }
         }
         if (terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
             terrainSubNode.initTerrainSubNodeField(2);

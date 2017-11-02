@@ -88,16 +88,16 @@ public class JavaFxGameEngineRenderer extends Abstract2dRenderer {
             for (double y = FROM.getY(); y < FROM.getY() + LENGTH; y++) {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 // double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
-                boolean free = terrainService.getPathingAccess().isTerrainFree(samplePosition);
+                // boolean free = terrainService.getPathingAccess().isTerrainFree(samplePosition);
                 // double v = InterpolationUtils.interpolate(0.0, 1.0, min, max, z);
                 // egc.getGc().setFill(new Color(v, v, v, 1));
                 // egc.getGc().fillRect(x, y, 1, 1);
-                if (free) {
-                    egc.getGc().setFill(Color.GREEN);
-                } else {
-                    egc.getGc().setFill(Color.RED);
-                }
-                egc.getGc().fillRect(x, y, 0.6, 0.6);
+//                if (free) {
+//                    egc.getGc().setFill(Color.GREEN);
+//                } else {
+//                    egc.getGc().setFill(Color.RED);
+//                }
+//                egc.getGc().fillRect(x, y, 0.6, 0.6);
             }
         }
     }

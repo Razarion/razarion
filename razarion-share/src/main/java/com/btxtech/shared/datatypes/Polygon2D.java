@@ -162,6 +162,15 @@ public class Polygon2D {
         return false;
     }
 
+    public DecimalPosition findSimilarCorner(DecimalPosition position, double delta) {
+        for (DecimalPosition corner : getCorners()) {
+            if (corner.equalsDelta(position, delta)) {
+                return corner;
+            }
+        }
+        return null;
+    }
+
     public List<Line> getLines() {
         return lines;
     }

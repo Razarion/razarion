@@ -240,7 +240,7 @@ public class JsonProviderEmulator {
         }
         System.out.println("};");
         System.out.println("skeletonConfig.setSlopeNodes(slopeNodes);");
-        System.out.println("skeletonConfig.setInnerLineTerrainType(" + slopeSkeletonConfig.getInnerLineTerrainType() + ").setCoastDelimiterLineTerrainType(" + slopeSkeletonConfig.getCoastDelimiterLineTerrainType() + ").setOuterLineTerrainType(" + slopeSkeletonConfig.getOuterLineTerrainType() + ");");
+        System.out.println("skeletonConfig.setInnerLineGameEngine(" + slopeSkeletonConfig.getInnerLineGameEngine() + ").setCoastDelimiterLineGameEngine(" + slopeSkeletonConfig.getCoastDelimiterLineGameEngine() + ").setOuterLineGameEngine(" + slopeSkeletonConfig.getOuterLineGameEngine() + ");");
         System.out.println("slopeSkeletonConfigs.add(skeletonConfig);");
         System.out.println("// ---------------------------Slope corners---------------------------");
         System.out.print("TerrainSlopeCorner[] terrainSlopeCorners = {");

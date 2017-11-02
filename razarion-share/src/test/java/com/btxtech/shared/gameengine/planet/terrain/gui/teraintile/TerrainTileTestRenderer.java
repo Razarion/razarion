@@ -192,7 +192,7 @@ public class TerrainTileTestRenderer extends AbstractTerrainTestRenderer {
 
 //        getGc().setFill(new Color(0.5, 0.5, 0.5, 0.5));
 //        getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-//        if (!terrainNode.isLand()) {
+//        if (!terrainNode.isRenderLand()) {
 //            getGc().setFill(new Color(1, 0, 0, 0.5));
 //            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
 //        }

@@ -15,10 +15,6 @@ public abstract class TerrainSubNode {
 
     public native void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode);
 
-    public native Boolean isLand();
-
-    public native void setLand(Boolean land);
-
     public native double getHeight();
 
     public native void setHeight(double height);

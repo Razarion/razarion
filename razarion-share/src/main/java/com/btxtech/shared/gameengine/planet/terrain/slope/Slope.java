@@ -26,14 +26,14 @@ public class Slope {
     private final TerrainTypeService terrainTypeService;
     private List<AbstractBorder> borders = new ArrayList<>();
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
-    private Polygon2D innerPolygonSlope; // Ground water renderer border
-    private Polygon2D outerPolygonSlope; // Ground water renderer border
-    private Polygon2D innerPolygonTerrainType;
-    private Polygon2D outerPolygonTerrainType;
+    private Polygon2D innerRenderEnginePolygon; // Ground water renderer border
+    private Polygon2D outerRenderEnginePolygon; // Ground water renderer border
+    private Polygon2D innerGameEnginePolygon;
+    private Polygon2D outerGameEnginePolygon;
     private Polygon2D coastDelimiterPolygonTerrainType;
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
-    private DrivewayRegionHandler drivewayRegionHandler = new DrivewayRegionHandler();
+    private DrivewayGameEngineHandler drivewayGameEngineHandler = new DrivewayGameEngineHandler();
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
@@ -189,74 +189,115 @@ public class Slope {
     }
 
     private void setupLimitationPolygon() {
-        List<DecimalPosition> innerLineSlope = new ArrayList<>();
-        List<DecimalPosition> outerLineSlope = new ArrayList<>();
-        List<DecimalPosition> innerLineTerrainType = new ArrayList<>();
-        List<DecimalPosition> outerLineTerrainType = new ArrayList<>();
+        List<DecimalPosition> innerRenderEngine = new ArrayList<>();
+        List<DecimalPosition> outerRenderEngine = new ArrayList<>();
+        List<DecimalPosition> drivewaySlopeInnerGameEngine = null;
+        List<DecimalPosition> drivewayFlatInnerGameEngine = null;
+        List<DecimalPosition> drivewayFlatOuterGameEngine = null;
+        List<DecimalPosition> innerGameEngine = new ArrayList<>();
+        List<DecimalPosition> outerGameEngine = new ArrayList<>();
         List<DecimalPosition> coastDelimiterLineTerrainType = new ArrayList<>();
 
-        DecimalPosition lastInnerSlope = null;
-        DecimalPosition lastOuterSlope = null;
-        DecimalPosition lastInnerTerrainType = null;
-        DecimalPosition lastOuterTerrainType = null;
-        DecimalPosition lastCoastDelimiterTerrainType = null;
+        DecimalPosition lastInnerRenderEngine = null;
+        DecimalPosition lastOuterRenderEngine = null;
+        DecimalPosition lastInnerGameEngine = null;
+        DecimalPosition lastOuterGameEngine = null;
+        DecimalPosition lastCoastDelimiterGameEngine = null;
 
-        List<DecimalPosition> drivewayInnerTerrainType = null;
-        List<DecimalPosition> drivewayOuterTerrainType = null;
-        for (VerticalSegment verticalSegment : verticalSegments) {
-            DecimalPosition outerSlope = verticalSegment.getOuter();
+        // Find driveway free start
+        // Find offset with no slope
+        int offset = -1;
+        for (int i = 0; i < verticalSegments.size(); i++) {
+            if (verticalSegments.get(i).getDrivewayHeightFactor() >= 1.0) {
+                offset = i;
+                break;
+            }
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("Slope.setupLimitationPolygon(): Can not find start position with DrivewayHeightFactor 1.0. slopeId:" + slopeId);
+        }
+
+        for (int i = 0; i < verticalSegments.size(); i++) {
+            int index = CollectionUtils.getCorrectedIndex(i + offset, verticalSegments);
+            VerticalSegment verticalSegment = verticalSegments.get(index);
+            DecimalPosition outerSlopeRenderEngine = verticalSegment.getOuter();
             double slopeSkeletonWidth = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1).getPosition().getX();
-            DecimalPosition innerSlope = outerSlope.getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true);
-            DecimalPosition innerTerrainType = outerSlope.getPointWithDistance(slopeSkeletonConfig.getInnerLineTerrainType(), verticalSegment.getInner(), true);
-            DecimalPosition outerTerrainType = outerSlope.getPointWithDistance(slopeSkeletonConfig.getOuterLineTerrainType(), verticalSegment.getInner(), true);
+            DecimalPosition innerSlopeRenderEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true);
+            DecimalPosition innerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), verticalSegment.getInner(), true);
+            DecimalPosition outerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), verticalSegment.getInner(), true);
+            // Driveway slope
+            if(verticalSegment.getDrivewayHeightFactor() < 1.0) {
+                if(drivewaySlopeInnerGameEngine == null) {
+                    VerticalSegment startVerticalSegment = CollectionUtils.getCorrectedElement(index -1, verticalSegments);
+                    Driveway driveway = getDriveway(startVerticalSegment.getInner());
+                    Polygon2D innerSlopePolygon = driveway.setupInnerPolygon(slopeSkeletonWidth - slopeSkeletonConfig.getInnerLineGameEngine());
+                    drivewayGameEngineHandler.addInnerSlopePolygon(innerSlopePolygon, driveway);
+                    // -----------------------------------------------------------
+                    drivewaySlopeInnerGameEngine = new ArrayList<>();
+                    // VerticalSegment startVerticalSegment = CollectionUtils.getCorrectedElement(index -1, verticalSegments);
+                    drivewaySlopeInnerGameEngine.add(startVerticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), startVerticalSegment.getInner(), true));
+                }
+                if(!drivewaySlopeInnerGameEngine.contains(innerSlopeGameEngine)) {
+                    drivewaySlopeInnerGameEngine.add(innerSlopeGameEngine);
+                }
+            } else {
+                if(drivewaySlopeInnerGameEngine != null) {
+                    if(!drivewaySlopeInnerGameEngine.contains(innerSlopeGameEngine)) {
+                        drivewaySlopeInnerGameEngine.add(innerSlopeGameEngine);
+                    }
+                    drivewayGameEngineHandler.addInnerSlopePolygon(drivewaySlopeInnerGameEngine, getDriveway(innerSlopeRenderEngine));
+                    drivewaySlopeInnerGameEngine = null;
+                }
+            }
+            // Driveway flat
             if (verticalSegment.getDrivewayHeightFactor() <= 0) {
-                if (drivewayInnerTerrainType == null) {
-                    drivewayInnerTerrainType = new ArrayList<>();
-                    drivewayOuterTerrainType = new ArrayList<>();
+                if (drivewayFlatInnerGameEngine == null) {
+                    drivewayFlatInnerGameEngine = new ArrayList<>();
+                    drivewayFlatOuterGameEngine = new ArrayList<>();
                 }
-                drivewayRegionHandler.addInnerTerrainTypeLine(innerTerrainType);
-                drivewayRegionHandler.putOuterInnerTerrainTypeConnection(outerTerrainType, innerTerrainType);
-                if (!drivewayInnerTerrainType.contains(innerTerrainType)) {
-                    drivewayInnerTerrainType.add(innerTerrainType);
+                drivewayGameEngineHandler.addInnerFlatLine(innerSlopeGameEngine);
+                drivewayGameEngineHandler.putOuterInnerFlatLineConnection(outerSlopeGameEngine, innerSlopeGameEngine);
+                if (!drivewayFlatInnerGameEngine.contains(verticalSegment.getInner())) {
+                    drivewayFlatInnerGameEngine.add(verticalSegment.getInner());
                 }
-                if (!drivewayOuterTerrainType.contains(outerTerrainType)) {
-                    drivewayOuterTerrainType.add(outerTerrainType);
+                if (!drivewayFlatOuterGameEngine.contains(outerSlopeRenderEngine)) {
+                    drivewayFlatOuterGameEngine.add(outerSlopeRenderEngine);
                 }
-            } else if (drivewayInnerTerrainType != null) {
-                Collections.reverse(drivewayOuterTerrainType);
-                drivewayInnerTerrainType.addAll(drivewayOuterTerrainType);
-                drivewayRegionHandler.addInnerTerrainTypePolygon(drivewayInnerTerrainType);
-                drivewayInnerTerrainType = null;
-                drivewayOuterTerrainType = null;
+            } else if (drivewayFlatInnerGameEngine != null) {
+                Collections.reverse(drivewayFlatOuterGameEngine);
+                drivewayFlatInnerGameEngine.addAll(drivewayFlatOuterGameEngine);
+                drivewayGameEngineHandler.addFlatPolygon(drivewayFlatInnerGameEngine);
+                drivewayFlatInnerGameEngine = null;
+                drivewayFlatOuterGameEngine = null;
             }
 
-            lastOuterSlope = addCorrectedMinimalDelta(outerSlope, lastOuterSlope, outerLineSlope);
-            lastInnerSlope = addCorrectedMinimalDelta(innerSlope, lastInnerSlope, innerLineSlope);
+            lastOuterRenderEngine = addCorrectedMinimalDelta(outerSlopeRenderEngine, lastOuterRenderEngine, outerRenderEngine);
+            lastInnerRenderEngine = addCorrectedMinimalDelta(innerSlopeRenderEngine, lastInnerRenderEngine, innerRenderEngine);
 
-            lastInnerTerrainType = addCorrectedMinimalDelta(innerTerrainType, lastInnerTerrainType, innerLineTerrainType);
-            lastOuterTerrainType = addCorrectedMinimalDelta(outerTerrainType, lastOuterTerrainType, outerLineTerrainType);
+            lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeGameEngine, lastInnerGameEngine, innerGameEngine);
+            lastOuterGameEngine = addCorrectedMinimalDelta(outerSlopeGameEngine, lastOuterGameEngine, outerGameEngine);
             if (hasWater()) {
-                DecimalPosition coastDelimiter = outerSlope.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineTerrainType(), verticalSegment.getInner(), true);
-                lastCoastDelimiterTerrainType = addCorrectedMinimalDelta(coastDelimiter, lastCoastDelimiterTerrainType, coastDelimiterLineTerrainType);
+                DecimalPosition coastDelimiter = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), verticalSegment.getInner(), true);
+                lastCoastDelimiterGameEngine = addCorrectedMinimalDelta(coastDelimiter, lastCoastDelimiterGameEngine, coastDelimiterLineTerrainType);
             }
         }
 
-        if (innerLineSlope.get(0).equalsDelta(innerLineSlope.get(innerLineSlope.size() - 1))) {
-            innerLineSlope.remove(0);
+        if (innerRenderEngine.get(0).equalsDelta(innerRenderEngine.get(innerRenderEngine.size() - 1))) {
+            innerRenderEngine.remove(0);
         }
-        if (outerLineSlope.get(0).equalsDelta(outerLineSlope.get(outerLineSlope.size() - 1))) {
-            outerLineSlope.remove(0);
+        if (outerRenderEngine.get(0).equalsDelta(outerRenderEngine.get(outerRenderEngine.size() - 1))) {
+            outerRenderEngine.remove(0);
         }
-        if (innerLineTerrainType.get(0).equalsDelta(innerLineTerrainType.get(innerLineTerrainType.size() - 1))) {
-            innerLineTerrainType.remove(0);
+        if (innerGameEngine.get(0).equalsDelta(innerGameEngine.get(innerGameEngine.size() - 1))) {
+            innerGameEngine.remove(0);
         }
-        if (outerLineTerrainType.get(0).equalsDelta(outerLineTerrainType.get(outerLineTerrainType.size() - 1))) {
-            outerLineTerrainType.remove(0);
+        if (outerGameEngine.get(0).equalsDelta(outerGameEngine.get(outerGameEngine.size() - 1))) {
+            outerGameEngine.remove(0);
         }
-        innerPolygonSlope = new Polygon2D(innerLineSlope);
-        outerPolygonSlope = new Polygon2D(outerLineSlope);
-        innerPolygonTerrainType = new Polygon2D(innerLineTerrainType);
-        outerPolygonTerrainType = new Polygon2D(outerLineTerrainType);
+        innerRenderEnginePolygon = new Polygon2D(innerRenderEngine);
+        outerRenderEnginePolygon = new Polygon2D(outerRenderEngine);
+        innerGameEnginePolygon = new Polygon2D(innerGameEngine);
+        outerGameEnginePolygon = new Polygon2D(outerGameEngine);
         if (hasWater()) {
             if (coastDelimiterLineTerrainType.get(0).equalsDelta(coastDelimiterLineTerrainType.get(coastDelimiterLineTerrainType.size() - 1))) {
                 coastDelimiterLineTerrainType.remove(0);
@@ -287,20 +328,20 @@ public class Slope {
         return slopeSkeletonConfig;
     }
 
-    public Polygon2D getInnerPolygonSlope() {
-        return innerPolygonSlope;
+    public Polygon2D getInnerRenderEnginePolygon() {
+        return innerRenderEnginePolygon;
     }
 
-    public Polygon2D getOuterPolygonSlope() {
-        return outerPolygonSlope;
+    public Polygon2D getOuterRenderEnginePolygon() {
+        return outerRenderEnginePolygon;
     }
 
-    public Polygon2D getOuterPolygonTerrainType() {
-        return outerPolygonTerrainType;
+    public Polygon2D getOuterGameEnginePolygon() {
+        return outerGameEnginePolygon;
     }
 
-    public Polygon2D getInnerPolygonTerrainType() {
-        return innerPolygonTerrainType;
+    public Polygon2D getInnerGameEnginePolygon() {
+        return innerGameEnginePolygon;
     }
 
     public Polygon2D getCoastDelimiterPolygonTerrainType() {
@@ -334,6 +375,18 @@ public class Slope {
         return slopeId;
     }
 
+    public Driveway getDriveway(DecimalPosition positionOnInnerPolygon) {
+        if (driveways == null || driveways.isEmpty()) {
+            return null;
+        }
+        for (Driveway driveway : driveways) {
+            if(driveway.findSimilarInnerCorner(positionOnInnerPolygon, 0.5) != null) {
+                return driveway;
+            }
+        }
+        return null;
+    }
+
     public Driveway getDriveway(Collection<DecimalPosition> positions) {
         if (driveways == null || driveways.isEmpty()) {
             return null;
@@ -352,14 +405,14 @@ public class Slope {
         return driveways;
     }
 
-    public DrivewayRegionHandler getDrivewayRegionHandler() {
-        return drivewayRegionHandler;
+    public DrivewayGameEngineHandler getDrivewayGameEngineHandler() {
+        return drivewayGameEngineHandler;
     }
 
     public int getNearestInnerSlopePolygon(DecimalPosition position) {
         double mindDistance = Double.MAX_VALUE;
         Integer index = null;
-        List<DecimalPosition> corners = innerPolygonSlope.getCorners();
+        List<DecimalPosition> corners = innerRenderEnginePolygon.getCorners();
         for (int i = 0; i < corners.size(); i++) {
             DecimalPosition inner = corners.get(i);
             double distance = inner.getDistance(position);
@@ -376,8 +429,8 @@ public class Slope {
 
     public List<DecimalPosition> getFirstOutOfRectCounterClock(int startIndex, Rectangle2D terrainRect) {
         List<DecimalPosition> result = new ArrayList<>();
-        for (int i = 0; i < innerPolygonSlope.size(); i++) {
-            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(i + startIndex, innerPolygonSlope.getCorners());
+        for (int i = 0; i < innerRenderEnginePolygon.size(); i++) {
+            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(i + startIndex, innerRenderEnginePolygon.getCorners());
             result.add(decimalPosition);
             if (!terrainRect.contains(decimalPosition)) {
                 return result;
@@ -388,8 +441,8 @@ public class Slope {
 
     public List<DecimalPosition> getFirstOutOfRectClockWise(int startIndex, Rectangle2D terrainRect) {
         List<DecimalPosition> result = new ArrayList<>();
-        for (int i = 0; i < innerPolygonSlope.size(); i++) {
-            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(startIndex - i, innerPolygonSlope.getCorners());
+        for (int i = 0; i < innerRenderEnginePolygon.size(); i++) {
+            DecimalPosition decimalPosition = CollectionUtils.getCorrectedElement(startIndex - i, innerRenderEnginePolygon.getCorners());
             result.add(decimalPosition);
             if (!terrainRect.contains(decimalPosition)) {
                 return result;

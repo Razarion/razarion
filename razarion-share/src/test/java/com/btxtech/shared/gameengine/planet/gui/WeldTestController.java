@@ -56,7 +56,14 @@ public class WeldTestController extends AbstractTerrainTestController {
             return;
         }
         System.out.println("Terrain shape node at: " + position);
-        System.out.println("Height: " + terrainShapeNode.getUniformGroundHeight());
+        System.out.println("RenderEngineHeight: " + terrainShapeNode.getRenderEngineHeight());
+        System.out.println("GameEngineHeight: " + terrainShapeNode.getGameEngineHeight());
+//        if (terrainShapeNode.isFullDriveway()) {
+//            System.out.println("getDrivewayHeightBL: " + terrainShapeNode.getDrivewayHeightBL());
+//            System.out.println("getDrivewayHeightBR: " + terrainShapeNode.getDrivewayHeightBR());
+//            System.out.println("getDrivewayHeightTR: " + terrainShapeNode.getDrivewayHeightTR());
+//            System.out.println("getDrivewayHeightTL: " + terrainShapeNode.getDrivewayHeightTL());
+//        }
 
     }
 

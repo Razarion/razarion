@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayRegionHandler;
 
 import java.util.Collection;
 
@@ -16,20 +15,48 @@ import java.util.Collection;
  */
 public class TerrainShapeSubNodeFactory {
 
-    public void fillSlopeTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, TerrainType outerTerrainType, DrivewayRegionHandler drivewayRegionHandler) {
+    public void fillSlopeTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, Double innerHeight, TerrainType outerTerrainType, Double outerHeight, DrivewayContext drivewayContext) {
+//        if (terrainRect.startX() == 40 && terrainRect.startY() == 184) {
+//            System.out.println("+++++++++++++++++ terrainRect: " + terrainRect);
+//        }
+//        if (terrainRect.startX() == 112 && terrainRect.startY() == 112) {
+//            System.out.println("+++++++++++++++++ terrainRect: " + terrainRect);
+//        }
         for (int y = 0; y < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; y += TerrainUtil.MIN_SUB_NODE_LENGTH) {
             for (int x = 0; x < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; x += TerrainUtil.MIN_SUB_NODE_LENGTH) {
                 DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(new Index(x, y)).add(terrainRect.getStart());
+                if (scanPosition.getX() == 47.5 && scanPosition.getY() == 184.5) {
+                    System.out.println("+++++++++++++++++ scanPosition: " + scanPosition);
+                }
+                if (drivewayContext != null) {
+                    if (drivewayContext.isInside(scanPosition)) {
+                        TerrainShapeSubNode terrainShapeSubNode = getOrCreateDeepestTerrainShapeSubNode(terrainShapeNode, y, x);
+                        terrainShapeSubNode.setTerrainType(drivewayContext.getInnerTerrainType());
+                        DecimalPosition absoluteSubNodeStart = TerrainUtil.smallestSubNodeAbsolute(new Index(x, y)).add(terrainRect.getStart());
+                        Rectangle2D subTerrainRect = new Rectangle2D(absoluteSubNodeStart.getX(), absoluteSubNodeStart.getY(), TerrainUtil.MIN_SUB_NODE_LENGTH, TerrainUtil.MIN_SUB_NODE_LENGTH);
+                        if (drivewayContext.getType() == DrivewayContext.Type.SLOPE_DRIVEWAY) {
+                            terrainShapeSubNode.setDrivewayHeights(drivewayContext.getDrivewayHeights(subTerrainRect));
+                        }
+                        terrainShapeSubNode.setHeight(drivewayContext.getHeight());
+                        continue;
+                    }
+                }
                 TerrainType terrainType;
-                if (drivewayRegionHandler != null && drivewayRegionHandler.isInsideTerrainType(scanPosition)) {
-                    terrainType = TerrainType.LAND;
+                Double height;
+                if (terrainTypeRegion.isInside(scanPosition)) {
+                    terrainType = innerTerrainType;
+                    height = innerHeight;
                 } else {
-                    terrainType = terrainTypeRegion.isInside(scanPosition) ? innerTerrainType : outerTerrainType;
+                    terrainType = outerTerrainType;
+                    height = outerHeight;
                 }
-                if (terrainType == null) {
-                    continue;
+                TerrainShapeSubNode terrainShapeSubNode = getOrCreateDeepestTerrainShapeSubNode(terrainShapeNode, y, x);
+                if (terrainType != null) {
+                    terrainShapeSubNode.setTerrainType(terrainType);
                 }
-                getOrCreateDeepestTerrainShapeSubNode(terrainShapeNode, y, x).setTerrainType(terrainType);
+                if (height != null) {
+                    terrainShapeSubNode.setHeight(height);
+                }
             }
         }
     }
@@ -53,7 +80,7 @@ public class TerrainShapeSubNodeFactory {
     }
 
     public void concentrate(Collection<TerrainShapeNode> terrainShapeNodes) {
-        terrainShapeNodes.forEach(this::concentrate);
+        // TODO terrainShapeNodes.forEach(this::concentrate);
     }
 
     private void concentrate(TerrainShapeNode terrainShapeNode) {

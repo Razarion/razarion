@@ -33,7 +33,7 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(4, 10, 0.7),},
                 {GameTestHelper.createSlopeNode(10, 20, 0.7),},
         };
-        slopeSkeletonConfigLand.setInnerLineTerrainType(8).setOuterLineTerrainType(2);
+        slopeSkeletonConfigLand.setInnerLineGameEngine(8).setOuterLineGameEngine(2);
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodeLand));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
@@ -46,7 +46,7 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(15, -1, 0.7),},
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodeWater));
-        slopeSkeletonConfigWater.setInnerLineTerrainType(13).setCoastDelimiterLineTerrainType(8).setOuterLineTerrainType(2);
+        slopeSkeletonConfigWater.setInnerLineGameEngine(13).setCoastDelimiterLineGameEngine(8).setOuterLineGameEngine(2);
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
@@ -66,7 +66,7 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 10, 0, 0},
+                {0, 0, 0, 0},
                 {0, 0, 0, 0}
         };
         double[][] splattings = new double[][]{
@@ -114,6 +114,16 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
         // AssertTerrainShape.saveTerrainShape( terrainShape, "testSlopeDrivewayShape1.json");
         showDisplay();
         AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSlopeDrivewayShape1.json", terrainShape);
+    }
+
+    @Test
+    public void testSlope2DrivewaysShape() {
+        TerrainShape terrainShape = setup(1, null, null, GameTestHelper.createTerrainSlopeCorner(30, 40, null), GameTestHelper.createTerrainSlopeCorner(160, 40, null),
+                GameTestHelper.createTerrainSlopeCorner(160, 60, 1), GameTestHelper.createTerrainSlopeCorner(160, 90, 1), // driveway
+                GameTestHelper.createTerrainSlopeCorner(160, 120, null),GameTestHelper.createTerrainSlopeCorner(110, 120, 1),GameTestHelper.createTerrainSlopeCorner(70, 120, 1), GameTestHelper.createTerrainSlopeCorner(30, 120, null));
+        // AssertTerrainShape.saveTerrainShape( terrainShape, "testSlopeDrivewayShape1.json");
+        showDisplay();
+        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSlope2DrivewaysShape1.json", terrainShape);
     }
 
     @Test

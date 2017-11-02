@@ -30,7 +30,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(4, 10, 0.7),},
                 {GameTestHelper.createSlopeNode(7, 20, 0.7),},
         };
-        slopeSkeletonConfigLand.setOuterLineTerrainType(1).setInnerLineTerrainType(6);
+        slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
@@ -76,7 +76,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(7, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigLand.setOuterLineTerrainType(2).setInnerLineTerrainType(5);
+        slopeSkeletonConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(5);
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

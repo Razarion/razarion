@@ -18,6 +18,7 @@ public class TerrainShapeSubNode {
     private int depth;
     private TerrainShapeSubNode parent;
     private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
+    private double[] drivewayHeights; // bl, br, tr, tl
 
     public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth) {
         this.parent = parent;
@@ -30,6 +31,7 @@ public class TerrainShapeSubNode {
         terrainType = TerrainType.fromOrdinal(nativeTerrainShapeSubNode.terrainTypeOrdinal);
         height = nativeTerrainShapeSubNode.height;
         terrainShapeSubNodes = fromNativeTerrainShapeSubNode(this, depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
+        drivewayHeights = nativeTerrainShapeSubNode.drivewayHeights;
     }
 
     public void setHeight(double height) {
@@ -37,43 +39,16 @@ public class TerrainShapeSubNode {
     }
 
     public Double getHeight() {
-        return getHeightRecursively();
-    }
-
-    @Deprecated // too complex
-    private Double getHeightRecursively() {
-        if (height != null) {
-            return height;
-        }
-        if (parent != null) {
-            return parent.getHeightRecursively();
-        }
-        return null;
+        return height;
     }
 
     public Vertex getNorm() {
         return Vertex.Z_NORM; // TODO
     }
 
-    @Deprecated // use getTerrainType()
-    public boolean isLand() {
-        return terrainType == TerrainType.LAND;
-    }
-
     public TerrainType getTerrainType() {
         return terrainType;
     }
-
-//    @Deprecated // too complex
-//     private Boolean isNotLandRecursively() {
-//        if(notLand != null && notLand) {
-//            return true;
-//        }
-//        if(parent != null) {
-//            return parent.isNotLandRecursively();
-//        }
-//        return null;
-//    }
 
     public void setTerrainType(TerrainType terrainType) {
         this.terrainType = terrainType;
@@ -92,6 +67,7 @@ public class TerrainShapeSubNode {
         nativeTerrainShapeSubNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeSubNode.height = height;
         nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes = toNativeTerrainShapeSubNode(terrainShapeSubNodes);
+        nativeTerrainShapeSubNode.drivewayHeights = drivewayHeights;
         return nativeTerrainShapeSubNode;
     }
 
@@ -241,44 +217,41 @@ public class TerrainShapeSubNode {
         } else {
             throw new IllegalArgumentException("TerrainShapeSubNode.outerDirectionCallback()");
         }
-
     }
 
-    public void merge(TerrainShapeSubNode terrainShapeSubNode) {
-        System.out.println(" FIX ME com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode at 246 ********************* " + terrainShapeSubNode);
-//        Boolean notLand = isNotLandRecursively();
-//        Boolean otherNotLand = terrainShapeSubNode.isNotLandRecursively();
-//        if (notLand == null && otherNotLand != null) {
-//            if (otherNotLand) {
-//                this.notLand = true;
-//            }
-//        } else if (notLand != null && otherNotLand != null) {
-//            if (notLand || otherNotLand) {
-//                this.notLand = true;
-//            } else {
-//                this.notLand = null;
-//            }
-//        } else if (notLand != null) {
-//            if (notLand) {
-//                this.notLand = true;
-//            } else {
-//                this.notLand = null;
-//            }
-//        }
-//
-//        if (height == null && terrainShapeSubNode.height != null) {
-//            height = terrainShapeSubNode.height;
-//        }
-//
-//        if (terrainShapeSubNodes == null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
-//            terrainShapeSubNodes = terrainShapeSubNode.getTerrainShapeSubNodes();
-//            for (TerrainShapeSubNode shapeSubNode : terrainShapeSubNodes) {
-//                shapeSubNode.parent = this;
-//            }
-//        } else if (terrainShapeSubNodes != null && terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
-//            for (int i = 0; i < terrainShapeSubNodes.length; i++) {
-//                terrainShapeSubNodes[i].merge(terrainShapeSubNode.getTerrainShapeSubNodes()[i]);
-//            }
-//        }
+    public void setDrivewayHeights(double[] drivewayHeights) {
+        this.drivewayHeights = drivewayHeights;
+    }
+
+    public boolean isDriveway() {
+        return drivewayHeights != null;
+    }
+
+    public double getDrivewayHeightBL() {
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getDrivewayHeightBL() drivewayHeights == null");
+        }
+        return drivewayHeights[0];
+    }
+
+    public double getDrivewayHeightBR() {
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getDrivewayHeightBR() drivewayHeights == null");
+        }
+        return drivewayHeights[1];
+    }
+
+    public double getDrivewayHeightTR() {
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getDrivewayHeightTR() drivewayHeights == null");
+        }
+        return drivewayHeights[2];
+    }
+
+    public double getDrivewayHeightTL() {
+        if (drivewayHeights == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getDrivewayHeightTL() drivewayHeights == null");
+        }
+        return drivewayHeights[3];
     }
 }
