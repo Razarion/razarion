@@ -117,10 +117,18 @@ public class Driveway {
     public Polygon2D setupInnerPolygon(double sideGrowth) {
         DecimalPosition growthStartBreakingLine = startBreakingLine.getPointWithDistance(-sideGrowth, endBreakingLine, true);
         DecimalPosition growthEndBreakingLine = endBreakingLine.getPointWithDistance(-sideGrowth, startBreakingLine, true);
-        DecimalPosition growthStartOuterPosition = startOuterPosition.getPointWithDistance(-sideGrowth, endOuterPosition, true);
-        DecimalPosition growthEndOuterPosition = endOuterPosition.getPointWithDistance(-sideGrowth, startOuterPosition, true);
+        DecimalPosition growthStartFlatPosition = setupInnerStartFlatGrowthPosition(sideGrowth);
+        DecimalPosition growthEndFlatPosition = setupInnerEndFlatGrowthPosition(sideGrowth);
 
-        return new Polygon2D(Arrays.asList(growthStartBreakingLine, growthEndBreakingLine, growthEndOuterPosition, growthStartOuterPosition));
+        return new Polygon2D(Arrays.asList(growthStartBreakingLine, growthEndBreakingLine, growthEndFlatPosition, growthStartFlatPosition));
+    }
+
+    public DecimalPosition setupInnerStartFlatGrowthPosition(double sideGrowth) {
+        return startOuterPosition.getPointWithDistance(-sideGrowth, endOuterPosition, true);
+    }
+
+    public DecimalPosition setupInnerEndFlatGrowthPosition(double sideGrowth) {
+        return endOuterPosition.getPointWithDistance(-sideGrowth, startOuterPosition, true);
     }
 
     public List<DecimalPosition> setupPiercingLine(Rectangle2D terrainRect, boolean ground) {

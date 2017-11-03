@@ -5,7 +5,8 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.slope.DrivewayGameEngineHandler;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
+import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 
@@ -16,11 +17,11 @@ import java.util.List;
  * on 14.10.2017.
  */
 public class ObstacleFactory {
-    public static void addObstacles(TerrainShape terrainShape, List<DecimalPosition> polygon, DrivewayGameEngineHandler drivewayGameEngineHandler, boolean isOuter) {
+    public static void addObstacles(TerrainShape terrainShape, List<DecimalPosition> polygon, Slope slope, boolean isOuter) {
         // Find offset with no driveway
         int offset = -1;
         for (int i = 0; i < polygon.size(); i++) {
-            if (!drivewayGameEngineHandler.onFlatLine(polygon.get(i), isOuter)) {
+            if (!slope.getDrivewayGameEngineHandler().onFlatLine(polygon.get(i), isOuter)) {
                 offset = i;
                 break;
             }
@@ -36,22 +37,38 @@ public class ObstacleFactory {
             if (last.equals(next)) {
                 continue;
             }
-            if (drivewayGameEngineHandler.onFlatLine(next, isOuter)) {
+            if (slope.getDrivewayGameEngineHandler().onFlatLine(next, isOuter)) {
                 if (!inDriveway) {
                     if (isOuter) {
                         // Termination
-                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(next, drivewayGameEngineHandler.getInner4OuterFlatLine(next))));
+                        Driveway driveway = slope.getDriveway(slope.getDrivewayGameEngineHandler().getInner4OuterFlatLine(next));
+                        DecimalPosition terminationPosition = driveway.setupInnerStartFlatGrowthPosition(slope.getSlopeSkeletonConfig().getInnerLineGameEngine() - slope.getSlopeSkeletonConfig().getOuterLineGameEngine());
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(next, terminationPosition)));
                     }
-                    addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));
+                    if (isOuter) {
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));
+                    } else {
+                        Driveway driveway = slope.getDriveway(next);
+                        DecimalPosition terminationPosition = driveway.setupInnerStartFlatGrowthPosition(slope.getSlopeSkeletonConfig().getInnerLineGameEngine() - slope.getSlopeSkeletonConfig().getOuterLineGameEngine());
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, terminationPosition)));
+                    }
                 }
                 inDriveway = true;
             } else {
                 if (inDriveway) {
                     if (isOuter) {
                         // Termination
-                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, drivewayGameEngineHandler.getInner4OuterFlatLine(last))));
+                        Driveway driveway = slope.getDriveway(slope.getDrivewayGameEngineHandler().getInner4OuterFlatLine(last));
+                        DecimalPosition terminationPosition = driveway.setupInnerEndFlatGrowthPosition(slope.getSlopeSkeletonConfig().getInnerLineGameEngine() - slope.getSlopeSkeletonConfig().getOuterLineGameEngine());
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, terminationPosition)));
                     }
-                    addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));
+                    if (isOuter) {
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));
+                    } else {
+                        Driveway driveway = slope.getDriveway(last);
+                        DecimalPosition terminationPosition = driveway.setupInnerEndFlatGrowthPosition(slope.getSlopeSkeletonConfig().getInnerLineGameEngine() - slope.getSlopeSkeletonConfig().getOuterLineGameEngine());
+                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(terminationPosition, next)));
+                    }
                 } else {
                     addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));
                 }
