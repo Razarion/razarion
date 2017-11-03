@@ -228,6 +228,7 @@ public class Slope {
             DecimalPosition innerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), verticalSegment.getInner(), true);
             DecimalPosition innerSlopeCorrectedGameEngine;
             DecimalPosition innerGameEngineEndCorner = null;
+            DecimalPosition outerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), verticalSegment.getInner(), true);
             if (verticalSegment.getDrivewayHeightFactor() > 0) {
                 lastWasInnerStart = true;
                 innerSlopeCorrectedGameEngine = innerSlopeGameEngine;
@@ -236,15 +237,16 @@ public class Slope {
                 if(lastWasInnerStart) {
                     lastWasInnerStart = false;
                     lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeGameEngine, lastInnerGameEngine, innerGameEngine);
+                    drivewayGameEngineHandler.putInner4OuterTermination(outerSlopeGameEngine, innerSlopeGameEngine);
                 }
                 innerSlopeCorrectedGameEngine = verticalSegment.getInner();
                 // Add end corner
                 if(verticalSegments.get(index + 1).getDrivewayHeightFactor() > 0) {
                     innerGameEngineEndCorner = innerSlopeGameEngine;
+                    drivewayGameEngineHandler.putInner4OuterTermination(outerSlopeGameEngine, innerSlopeGameEngine);
                 }
             }
 
-            DecimalPosition outerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), verticalSegment.getInner(), true);
             // Driveway slope
             if (verticalSegment.getDrivewayHeightFactor() < 1.0) {
                 if (drivewaySlopeInnerGameEngine == null) {
@@ -276,7 +278,7 @@ public class Slope {
                     drivewayFlatOuterGameEngine = new ArrayList<>();
                 }
                 drivewayGameEngineHandler.addInnerFlatLine(innerSlopeCorrectedGameEngine);
-                drivewayGameEngineHandler.putOuterInnerFlatLineConnection(outerSlopeGameEngine, innerSlopeCorrectedGameEngine);
+                drivewayGameEngineHandler.addOuterFlatLine(outerSlopeGameEngine);
                 if (!drivewayFlatInnerGameEngine.contains(verticalSegment.getInner())) {
                     drivewayFlatInnerGameEngine.add(verticalSegment.getInner());
                 }

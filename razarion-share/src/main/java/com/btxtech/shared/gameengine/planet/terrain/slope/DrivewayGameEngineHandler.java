@@ -22,30 +22,23 @@ public class DrivewayGameEngineHandler {
     private Collection<SlopeDrivewayHolder> slopeDrivewayHolders = new ArrayList<>();
     private Collection<Polygon2D> flatPolygon = new ArrayList<>();
     private Set<DecimalPosition> innerFlatLine = new HashSet<>();
-    private Map<DecimalPosition, DecimalPosition> outerInnerFlatLineConnection = new HashMap<>();
-
-    @Deprecated
-    public void addInnerSlopePolygon(List<DecimalPosition> slopePolygon, Driveway driveway) {
-        // slopeDrivewayHolders.add(new SlopeDrivewayHolder(new Polygon2D(slopePolygon), driveway));
-        // System.out.println("slopePolygon: " + new Polygon2D(slopePolygon).testString());
-    }
+    private Set<DecimalPosition> outerFlatLine = new HashSet<>();
+    private Map<DecimalPosition, DecimalPosition> inner4OuterTermination = new HashMap<>();
 
     public void addInnerSlopePolygon(Polygon2D slopePolygon, Driveway driveway) {
         slopeDrivewayHolders.add(new SlopeDrivewayHolder(slopePolygon, driveway));
-        // System.out.println("slopePolygon growth: " + slopePolygon.testString());
     }
 
     public void addInnerFlatLine(DecimalPosition inner) {
         innerFlatLine.add(inner);
     }
 
-    public void addFlatPolygon(List<DecimalPosition> flatPolygon) {
-        this.flatPolygon.add(new Polygon2D(flatPolygon));
-        // System.out.println("flatPolygon growth: " + new Polygon2D(flatPolygon).testString());
+    public void addOuterFlatLine(DecimalPosition outer) {
+        outerFlatLine.add(outer);
     }
 
-    public void putOuterInnerFlatLineConnection(DecimalPosition outer, DecimalPosition inner) {
-        outerInnerFlatLineConnection.put(outer, inner);
+    public void addFlatPolygon(List<DecimalPosition> flatPolygon) {
+        this.flatPolygon.add(new Polygon2D(flatPolygon));
     }
 
     public InsideCheckResult checkInsideSlopePolygon(Rectangle2D rect) {
@@ -90,14 +83,18 @@ public class DrivewayGameEngineHandler {
 
     public boolean onFlatLine(DecimalPosition position, boolean isOuter) {
         if (isOuter) {
-            return outerInnerFlatLineConnection.keySet().contains(position);
+            return outerFlatLine.contains(position);
         } else {
             return innerFlatLine.contains(position);
         }
     }
 
-    public DecimalPosition getInner4OuterFlatLine(DecimalPosition outer) {
-        return outerInnerFlatLineConnection.get(outer);
+    public void putInner4OuterTermination(DecimalPosition outer, DecimalPosition inner) {
+        inner4OuterTermination.put(outer, inner);
+    }
+
+    public DecimalPosition getInner4OuterTermination(DecimalPosition outer) {
+        return inner4OuterTermination.get(outer);
     }
 
     public double[] generateDrivewayHeights(Rectangle2D rectangle) {
