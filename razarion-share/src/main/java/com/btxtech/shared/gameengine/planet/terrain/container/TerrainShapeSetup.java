@@ -248,8 +248,10 @@ public class TerrainShapeSetup {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setTerrainType(drivewayContext.getInnerTerrainType());
                         terrainShapeNode.setGameEngineHeight(drivewayContext.getHeight());
-                        terrainShapeNode.setDrivewayHeights(drivewayContext.getDrivewayHeights(terrainRect));
-                        terrainShapeNode.setFullGameEngineDriveway(true);
+                        if (drivewayContext.getType() == DrivewayContext.Type.SLOPE_DRIVEWAY) {
+                            terrainShapeNode.setDrivewayHeights(drivewayContext.getDrivewayHeights(terrainRect));
+                            terrainShapeNode.setFullGameEngineDriveway(true);
+                        }
                         continue;
                     case PARTLY:
                         handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);

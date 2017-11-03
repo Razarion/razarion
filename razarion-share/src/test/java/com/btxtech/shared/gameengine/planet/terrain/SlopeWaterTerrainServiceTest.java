@@ -43,11 +43,11 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{
-                {0.5, 0, 0},
-                {0, -0.3, 0},
                 {0, 0, 0},
-                {-0.8, 0, 0.2},
-                {0, 0.3, 0}
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0}
         };
         double[][] splattings = new double[][]{
                 {0.7, 0.8, 0.9, 0.5},
@@ -59,7 +59,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
-        TerrainTileTestDisplay.show(terrainTile);
+        showDisplay();
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testTerrainSlopeWaterTileGeneration.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeWaterTileGeneration.json");
         assertTerrainTile.assertEquals(terrainTile);
@@ -89,11 +89,11 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(terrainSlopePositionLand);
 
         double[][] heights = new double[][]{
-                {0.5, 0, 0},
-                {0, -0.3, 0},
                 {0, 0, 0},
-                {-0.8, 0, 0.2},
-                {0, 0.3, 0}
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0}
         };
         double[][] splattings = new double[][]{
                 {0.7, 0.8, 0.9, 0.5},
@@ -109,7 +109,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 0)));
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 1)));
 
-        TerrainTileTestDisplay.show(terrainTiles);
+        showDisplay();
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testTerrainSlopeWaterTileGeneration4Tiles.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeWaterTileGeneration4Tiles.json");
         assertTerrainTile.assertEquals(terrainTiles);

@@ -37,6 +37,8 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
         Collection<TerrainTile> terrainTiles = setup(parent);
 
+        showDisplay();
+
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSingleChild1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSingleChild1.json");
         assertTerrainTile.assertEquals(terrainTiles);

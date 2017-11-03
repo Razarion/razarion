@@ -50,7 +50,7 @@ public class ObstacleFactory {
                     } else {
                         Driveway driveway = slope.getDriveway(next);
                         DecimalPosition terminationPosition = driveway.setupInnerStartFlatGrowthPosition(slope.getSlopeSkeletonConfig().getInnerLineGameEngine() - slope.getSlopeSkeletonConfig().getOuterLineGameEngine());
-                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, terminationPosition)));
+                        // addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, terminationPosition)));
                     }
                 }
                 inDriveway = true;
@@ -67,7 +67,7 @@ public class ObstacleFactory {
                     } else {
                         Driveway driveway = slope.getDriveway(last);
                         DecimalPosition terminationPosition = driveway.setupInnerEndFlatGrowthPosition(slope.getSlopeSkeletonConfig().getInnerLineGameEngine() - slope.getSlopeSkeletonConfig().getOuterLineGameEngine());
-                        addObstacleSlope(terrainShape, new ObstacleSlope(new Line(terminationPosition, next)));
+                        //addObstacleSlope(terrainShape, new ObstacleSlope(new Line(terminationPosition, next)));
                     }
                 } else {
                     addObstacleSlope(terrainShape, new ObstacleSlope(new Line(last, next)));

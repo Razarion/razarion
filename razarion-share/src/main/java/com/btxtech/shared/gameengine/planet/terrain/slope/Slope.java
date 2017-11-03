@@ -217,6 +217,7 @@ public class Slope {
             throw new IllegalArgumentException("Slope.setupLimitationPolygon(): Can not find start position with DrivewayHeightFactor 1.0. slopeId:" + slopeId);
         }
 
+        boolean lastWasInnerStart = false;
         for (int i = 0; i < verticalSegments.size(); i++) {
             int index = CollectionUtils.getCorrectedIndex(i + offset, verticalSegments);
             VerticalSegment verticalSegment = verticalSegments.get(index);
@@ -226,10 +227,21 @@ public class Slope {
 
             DecimalPosition innerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), verticalSegment.getInner(), true);
             DecimalPosition innerSlopeCorrectedGameEngine;
+            DecimalPosition innerGameEngineEndCorner = null;
             if (verticalSegment.getDrivewayHeightFactor() > 0) {
+                lastWasInnerStart = true;
                 innerSlopeCorrectedGameEngine = innerSlopeGameEngine;
             } else {
+                // Add start corner
+                if(lastWasInnerStart) {
+                    lastWasInnerStart = false;
+                    lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeGameEngine, lastInnerGameEngine, innerGameEngine);
+                }
                 innerSlopeCorrectedGameEngine = verticalSegment.getInner();
+                // Add end corner
+                if(verticalSegments.get(index + 1).getDrivewayHeightFactor() > 0) {
+                    innerGameEngineEndCorner = innerSlopeGameEngine;
+                }
             }
 
             DecimalPosition outerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), verticalSegment.getInner(), true);
@@ -283,6 +295,10 @@ public class Slope {
             lastInnerRenderEngine = addCorrectedMinimalDelta(innerSlopeRenderEngine, lastInnerRenderEngine, innerRenderEngine);
 
             lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeCorrectedGameEngine, lastInnerGameEngine, innerGameEngine);
+            if(innerGameEngineEndCorner != null) {
+                lastInnerGameEngine = addCorrectedMinimalDelta(innerGameEngineEndCorner, lastInnerGameEngine, innerGameEngine);
+            }
+
             lastOuterGameEngine = addCorrectedMinimalDelta(outerSlopeGameEngine, lastOuterGameEngine, outerGameEngine);
             if (hasWater()) {
                 DecimalPosition coastDelimiter = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), verticalSegment.getInner(), true);

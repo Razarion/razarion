@@ -112,7 +112,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void renderTerrainPathingSurfaceAccess() {
-        DecimalPosition from = new DecimalPosition(0, 0);
+        DecimalPosition from = new DecimalPosition(740, 220);
         double length = 300;
 
         for (double x = from.getX(); x < from.getX() + length; x++) {
