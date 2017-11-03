@@ -17,10 +17,22 @@ import java.util.List;
  */
 public class ObstacleFactory {
     public static void addObstacles(TerrainShape terrainShape, List<DecimalPosition> polygon, DrivewayGameEngineHandler drivewayGameEngineHandler, boolean isOuter) {
-        DecimalPosition last = polygon.get(0);
+        // Find offset with no driveway
+        int offset = -1;
+        for (int i = 0; i < polygon.size(); i++) {
+            if (!drivewayGameEngineHandler.onFlatLine(polygon.get(i), isOuter)) {
+                offset = i;
+                break;
+            }
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("ObstacleFactory.addObstacles(): Can not find start position with no driveway");
+        }
+
+        DecimalPosition last = polygon.get(offset);
         boolean inDriveway = false;
         for (int i = 0; i < polygon.size(); i++) {
-            DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, polygon);
+            DecimalPosition next = CollectionUtils.getCorrectedElement(i + offset + 1, polygon);
             if (last.equals(next)) {
                 continue;
             }

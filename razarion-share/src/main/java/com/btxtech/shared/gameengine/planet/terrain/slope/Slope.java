@@ -82,7 +82,7 @@ public class Slope {
         // Setup driveways
         List<Corner> corners = new ArrayList<>();
         while (true) {
-            // Find offset with no slope
+            // Find offset with no driveway
             int offset = -1;
             for (int i = 0; i < terrainSlopeCorners.size(); i++) {
                 TerrainSlopeCorner current = terrainSlopeCorners.get(i);
@@ -205,7 +205,7 @@ public class Slope {
         DecimalPosition lastCoastDelimiterGameEngine = null;
 
         // Find driveway free start
-        // Find offset with no slope
+        // Find offset with no driveway
         int offset = -1;
         for (int i = 0; i < verticalSegments.size(); i++) {
             if (verticalSegments.get(i).getDrivewayHeightFactor() >= 1.0) {
@@ -223,12 +223,20 @@ public class Slope {
             DecimalPosition outerSlopeRenderEngine = verticalSegment.getOuter();
             double slopeSkeletonWidth = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1).getPosition().getX();
             DecimalPosition innerSlopeRenderEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true);
+
             DecimalPosition innerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), verticalSegment.getInner(), true);
+            DecimalPosition innerSlopeCorrectedGameEngine;
+            if (verticalSegment.getDrivewayHeightFactor() > 0) {
+                innerSlopeCorrectedGameEngine = innerSlopeGameEngine;
+            } else {
+                innerSlopeCorrectedGameEngine = verticalSegment.getInner();
+            }
+
             DecimalPosition outerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), verticalSegment.getInner(), true);
             // Driveway slope
-            if(verticalSegment.getDrivewayHeightFactor() < 1.0) {
-                if(drivewaySlopeInnerGameEngine == null) {
-                    VerticalSegment startVerticalSegment = CollectionUtils.getCorrectedElement(index -1, verticalSegments);
+            if (verticalSegment.getDrivewayHeightFactor() < 1.0) {
+                if (drivewaySlopeInnerGameEngine == null) {
+                    VerticalSegment startVerticalSegment = CollectionUtils.getCorrectedElement(index - 1, verticalSegments);
                     Driveway driveway = getDriveway(startVerticalSegment.getInner());
                     Polygon2D innerSlopePolygon = driveway.setupInnerPolygon(slopeSkeletonWidth - slopeSkeletonConfig.getInnerLineGameEngine());
                     drivewayGameEngineHandler.addInnerSlopePolygon(innerSlopePolygon, driveway);
@@ -237,15 +245,15 @@ public class Slope {
                     // VerticalSegment startVerticalSegment = CollectionUtils.getCorrectedElement(index -1, verticalSegments);
                     drivewaySlopeInnerGameEngine.add(startVerticalSegment.getOuter().getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), startVerticalSegment.getInner(), true));
                 }
-                if(!drivewaySlopeInnerGameEngine.contains(innerSlopeGameEngine)) {
-                    drivewaySlopeInnerGameEngine.add(innerSlopeGameEngine);
+                if (!drivewaySlopeInnerGameEngine.contains(innerSlopeCorrectedGameEngine)) {
+                    drivewaySlopeInnerGameEngine.add(innerSlopeCorrectedGameEngine);
                 }
             } else {
-                if(drivewaySlopeInnerGameEngine != null) {
-                    if(!drivewaySlopeInnerGameEngine.contains(innerSlopeGameEngine)) {
-                        drivewaySlopeInnerGameEngine.add(innerSlopeGameEngine);
+                if (drivewaySlopeInnerGameEngine != null) {
+                    if (!drivewaySlopeInnerGameEngine.contains(innerSlopeCorrectedGameEngine)) {
+                        drivewaySlopeInnerGameEngine.add(innerSlopeCorrectedGameEngine);
                     }
-                    drivewayGameEngineHandler.addInnerSlopePolygon(drivewaySlopeInnerGameEngine, getDriveway(innerSlopeRenderEngine));
+                    //drivewayGameEngineHandler.addInnerSlopePolygon(drivewaySlopeInnerGameEngine, getDriveway(innerSlopeRenderEngine));
                     drivewaySlopeInnerGameEngine = null;
                 }
             }
@@ -255,8 +263,8 @@ public class Slope {
                     drivewayFlatInnerGameEngine = new ArrayList<>();
                     drivewayFlatOuterGameEngine = new ArrayList<>();
                 }
-                drivewayGameEngineHandler.addInnerFlatLine(innerSlopeGameEngine);
-                drivewayGameEngineHandler.putOuterInnerFlatLineConnection(outerSlopeGameEngine, innerSlopeGameEngine);
+                drivewayGameEngineHandler.addInnerFlatLine(innerSlopeCorrectedGameEngine);
+                drivewayGameEngineHandler.putOuterInnerFlatLineConnection(outerSlopeGameEngine, innerSlopeCorrectedGameEngine);
                 if (!drivewayFlatInnerGameEngine.contains(verticalSegment.getInner())) {
                     drivewayFlatInnerGameEngine.add(verticalSegment.getInner());
                 }
@@ -274,7 +282,7 @@ public class Slope {
             lastOuterRenderEngine = addCorrectedMinimalDelta(outerSlopeRenderEngine, lastOuterRenderEngine, outerRenderEngine);
             lastInnerRenderEngine = addCorrectedMinimalDelta(innerSlopeRenderEngine, lastInnerRenderEngine, innerRenderEngine);
 
-            lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeGameEngine, lastInnerGameEngine, innerGameEngine);
+            lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeCorrectedGameEngine, lastInnerGameEngine, innerGameEngine);
             lastOuterGameEngine = addCorrectedMinimalDelta(outerSlopeGameEngine, lastOuterGameEngine, outerGameEngine);
             if (hasWater()) {
                 DecimalPosition coastDelimiter = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), verticalSegment.getInner(), true);
@@ -380,7 +388,7 @@ public class Slope {
             return null;
         }
         for (Driveway driveway : driveways) {
-            if(driveway.findSimilarInnerCorner(positionOnInnerPolygon, 0.5) != null) {
+            if (driveway.findSimilarInnerCorner(positionOnInnerPolygon, 0.5) != null) {
                 return driveway;
             }
         }

@@ -50,12 +50,13 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     protected void onMousePressedTerrain(DecimalPosition position) {
         System.out.println("-----------------------------------------------");
+        System.out.println("position: " + position);
         TerrainShapeNode terrainShapeNode = terrainService.getPathingAccess().getTerrainShapeNode(TerrainUtil.toNode(position));
+        System.out.println("InterpolatedZ: " + terrainService.getSurfaceAccess().getInterpolatedZ(position));
         if (terrainShapeNode == null) {
             System.out.println("No terrain shape node at: " + position);
             return;
         }
-        System.out.println("Terrain shape node at: " + position);
         System.out.println("RenderEngineHeight: " + terrainShapeNode.getRenderEngineHeight());
         System.out.println("GameEngineHeight: " + terrainShapeNode.getGameEngineHeight());
 //        if (terrainShapeNode.isFullDriveway()) {

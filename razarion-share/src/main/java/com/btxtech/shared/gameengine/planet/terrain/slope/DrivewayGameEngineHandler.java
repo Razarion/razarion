@@ -21,7 +21,7 @@ import java.util.Set;
 public class DrivewayGameEngineHandler {
     private Collection<SlopeDrivewayHolder> slopeDrivewayHolders = new ArrayList<>();
     private Collection<Polygon2D> flatPolygon = new ArrayList<>();
-    private Set<DecimalPosition> flatLine = new HashSet<>();
+    private Set<DecimalPosition> innerFlatLine = new HashSet<>();
     private Map<DecimalPosition, DecimalPosition> outerInnerFlatLineConnection = new HashMap<>();
 
     @Deprecated
@@ -36,7 +36,7 @@ public class DrivewayGameEngineHandler {
     }
 
     public void addInnerFlatLine(DecimalPosition inner) {
-        flatLine.add(inner);
+        innerFlatLine.add(inner);
     }
 
     public void addFlatPolygon(List<DecimalPosition> flatPolygon) {
@@ -92,7 +92,7 @@ public class DrivewayGameEngineHandler {
         if (isOuter) {
             return outerInnerFlatLineConnection.keySet().contains(position);
         } else {
-            return flatLine.contains(position);
+            return innerFlatLine.contains(position);
         }
     }
 
