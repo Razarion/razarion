@@ -89,7 +89,7 @@ public class TerrainShapeNode {
                 waterSegments.add(waterSegment);
             }
         }
-        terrainShapeSubNodes = TerrainShapeSubNode.fromNativeTerrainShapeSubNode(null, 0, nativeTerrainShapeNode.nativeTerrainShapeSubNodes);
+        terrainShapeSubNodes = TerrainShapeSubNode.fromNativeTerrainShapeSubNode(0, nativeTerrainShapeNode.nativeTerrainShapeSubNodes);
     }
 
     public void addObstacle(Obstacle obstacle) {

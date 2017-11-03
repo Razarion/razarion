@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeSubNode;
@@ -16,21 +15,18 @@ public class TerrainShapeSubNode {
     private TerrainType terrainType;
     private Double height;
     private int depth;
-    private TerrainShapeSubNode parent;
     private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
     private double[] drivewayHeights; // bl, br, tr, tl
 
-    public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth) {
-        this.parent = parent;
+    public TerrainShapeSubNode(int depth) {
         this.depth = depth;
     }
 
-    public TerrainShapeSubNode(TerrainShapeSubNode parent, int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
-        this.parent = parent;
+    public TerrainShapeSubNode(int depth, NativeTerrainShapeSubNode nativeTerrainShapeSubNode) {
         this.depth = depth;
         terrainType = TerrainType.fromOrdinal(nativeTerrainShapeSubNode.terrainTypeOrdinal);
         height = nativeTerrainShapeSubNode.height;
-        terrainShapeSubNodes = fromNativeTerrainShapeSubNode(this, depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
+        terrainShapeSubNodes = fromNativeTerrainShapeSubNode(depth + 1, nativeTerrainShapeSubNode.nativeTerrainShapeSubNodes);
         drivewayHeights = nativeTerrainShapeSubNode.drivewayHeights;
     }
 
@@ -40,10 +36,6 @@ public class TerrainShapeSubNode {
 
     public Double getHeight() {
         return height;
-    }
-
-    public Vertex getNorm() {
-        return Vertex.Z_NORM; // TODO
     }
 
     public TerrainType getTerrainType() {
@@ -107,7 +99,7 @@ public class TerrainShapeSubNode {
         return nativeTerrainShapeSubNodes;
     }
 
-    public static TerrainShapeSubNode[] fromNativeTerrainShapeSubNode(TerrainShapeSubNode parent, int depth, NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes) {
+    public static TerrainShapeSubNode[] fromNativeTerrainShapeSubNode(int depth, NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes) {
         if (nativeTerrainShapeSubNodes == null) {
             return null;
         }
@@ -115,7 +107,7 @@ public class TerrainShapeSubNode {
         for (int i = 0; i < nativeTerrainShapeSubNodes.length; i++) {
             NativeTerrainShapeSubNode nativeTerrainShapeSubNode = nativeTerrainShapeSubNodes[i];
             if (nativeTerrainShapeSubNode != null) {
-                terrainShapeSubNodes[i] = new TerrainShapeSubNode(parent, depth, nativeTerrainShapeSubNode);
+                terrainShapeSubNodes[i] = new TerrainShapeSubNode(depth, nativeTerrainShapeSubNode);
             }
         }
         return terrainShapeSubNodes;

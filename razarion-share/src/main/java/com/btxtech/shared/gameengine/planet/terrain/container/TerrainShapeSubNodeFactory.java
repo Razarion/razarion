@@ -119,10 +119,10 @@ public class TerrainShapeSubNodeFactory {
         TerrainShapeSubNode[] terrainShapeSubNodes0 = terrainShapeNode.getTerrainShapeSubNodes();
         if (terrainShapeSubNodes0 == null) {
             terrainShapeSubNodes0 = new TerrainShapeSubNode[4];
-            terrainShapeSubNodes0[0] = new TerrainShapeSubNode(null, 0);
-            terrainShapeSubNodes0[1] = new TerrainShapeSubNode(null, 0);
-            terrainShapeSubNodes0[2] = new TerrainShapeSubNode(null, 0);
-            terrainShapeSubNodes0[3] = new TerrainShapeSubNode(null, 0);
+            terrainShapeSubNodes0[0] = new TerrainShapeSubNode(0);
+            terrainShapeSubNodes0[1] = new TerrainShapeSubNode(0);
+            terrainShapeSubNodes0[2] = new TerrainShapeSubNode(0);
+            terrainShapeSubNodes0[3] = new TerrainShapeSubNode(0);
             terrainShapeNode.setTerrainShapeSubNodes(terrainShapeSubNodes0);
         }
         TerrainShapeSubNode terrainShapeSubNode0 = terrainShapeSubNodes0[depth0Index];
@@ -148,10 +148,10 @@ public class TerrainShapeSubNodeFactory {
         TerrainShapeSubNode[] children = parent.getTerrainShapeSubNodes();
         if (children == null) {
             children = new TerrainShapeSubNode[4];
-            children[0] = new TerrainShapeSubNode(parent, depth);
-            children[1] = new TerrainShapeSubNode(parent, depth);
-            children[2] = new TerrainShapeSubNode(parent, depth);
-            children[3] = new TerrainShapeSubNode(parent, depth);
+            children[0] = new TerrainShapeSubNode(depth);
+            children[1] = new TerrainShapeSubNode(depth);
+            children[2] = new TerrainShapeSubNode(depth);
+            children[3] = new TerrainShapeSubNode(depth);
             parent.setTerrainShapeSubNodes(children);
         }
         return children[arrayIndex];

@@ -122,6 +122,15 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
                 double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
                 getGc().setFill(color4Z(z));
                 getGc().fillRect(x, y, 0.5, 0.5);
+                // Norm
+                Vertex norm = terrainService.getSurfaceAccess().getInterpolatedNorm(samplePosition);
+                if (MathHelper.compareWithPrecision(norm.magnitude(), 1.0)) {
+                    Vertex colorNorm = norm.multiply(0.5).add(0.5, 0.5, 0.5);
+                    getGc().setFill(Color.color(colorNorm.getX(), colorNorm.getY(), colorNorm.getZ()));
+                } else {
+                    getGc().setFill(Color.BLACK);
+                }
+                getGc().fillRect(x + 0.5, y, 0.5, 0.5);
                 // TerrainType
                 TerrainType terrainType = terrainService.getPathingAccess().getTerrainType(samplePosition);
                 getGc().setFill(color4TerrainType(terrainType));

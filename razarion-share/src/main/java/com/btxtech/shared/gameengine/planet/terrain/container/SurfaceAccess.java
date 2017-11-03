@@ -106,58 +106,58 @@ public class SurfaceAccess {
 
             @Override
             public Vertex inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                if (terrainShapeTile.isRenderLand()) {
-                    return interpolateNormFromGroundSkeletonConfig(absolutePosition);
-                } else {
-                    return Vertex.Z_NORM;
-                }
+                return interpolateNormFromGroundSkeletonConfig(absolutePosition);
             }
 
             @Override
             public Vertex inNode(TerrainShapeNode terrainShapeNode, Index nodeIndex, DecimalPosition tileRelative, Index tileIndex) {
-//                if (!terrainShapeNode.isFullWater() && !terrainShapeNode.isFullDriveway()) {
-//                    return interpolateNormFromGroundSkeletonConfig(absolutePosition);
-//                } else if (terrainShapeNode.isFullWater()) {
-//                    return Vertex.Z_NORM;
-//                } else if (terrainShapeNode.isFullDriveway()) {
-//                    return interpolateNormFromGroundSkeletonConfig(absolutePosition.sub(TerrainUtil.toTileAbsolute(nodeIndex)), terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
-//                } else {
-                    throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() unknown state");
-//                }
+                if (terrainShapeNode.isFullGameEngineDriveway()) {
+                    DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(nodeIndex)).sub(tileRelative);
+                    return interpolateNormFromGroundSkeletonConfig(relative, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
+                } else {
+                    return interpolateNormFromGroundSkeletonConfig(absolutePosition);
+                }
             }
 
             @Override
             public Vertex inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                return terrainShapeSubNode.getNorm();
+                if (terrainShapeSubNode.isDriveway()) {
+                    DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(nodeRelativeIndex)).sub(tileRelative).sub(nodeRelative);
+                    return interpolateNormFromGroundSkeletonConfig(relative, TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth()), terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL());
+                } else {
+                    return interpolateNormFromGroundSkeletonConfig(absolutePosition);
+                }
             }
         });
     }
 
     private Vertex interpolateNormFromGroundSkeletonConfig(DecimalPosition absolutePosition) {
-        return interpolateNormFromGroundSkeletonConfig(absolutePosition, 0, 0, 0, 0);
+        // Ground skeleton is not respected
+        // return interpolateNormFromGroundSkeletonConfig(absolutePosition, 0, 0, 0, 0);
+        return Vertex.Z_NORM;
     }
 
-    private Vertex interpolateNormFromGroundSkeletonConfig(DecimalPosition absolutePosition, double additionZBL, double additionZBR, double additionZTR, double additionZTL) {
-        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
-
-        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-        double zBR = heightFromGroundSkeletonConfig(bottomLeft.add(1, 0)) + additionZBR;
-        double zTL = heightFromGroundSkeletonConfig(bottomLeft.add(0, 1)) + additionZTL;
-        if (triangle1.isInside(offset)) {
-            double zBL = heightFromGroundSkeletonConfig(bottomLeft) + additionZBL;
-            return new Vertex(zBL - zBR, zBL - zTL, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+    /**
+     * @param relative position with 0..1, 0..1
+     * @param length   the length of the quadratic side
+     * @param zBL      z bottom left
+     * @param zBR      z bottom right
+     * @param zTR      z top right
+     * @param zTL      z tol left
+     * @return the norm vector
+     */
+    private Vertex interpolateNormFromGroundSkeletonConfig(DecimalPosition relative, double length, double zBL, double zBR, double zTR, double zTL) {
+        // Ground skeleton is not respected
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(length, 0), new DecimalPosition(0, length));
+        if (triangle1.isInside(relative)) {
+            return new Vertex(zBL - zBR, zBL - zTL, length).normalize(1.0);
         } else {
-            double zTR = heightFromGroundSkeletonConfig(bottomLeft.add(1, 1)) + additionZTR;
-            return new Vertex(zBR - zTR, zTL - zTR, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).normalize(1.0);
+            return new Vertex(zBR - zTR, zTL - zTR, length).normalize(1.0);
         }
     }
 
     private double interpolateHeightFromGroundSkeletonConfig(DecimalPosition absolutePosition) {
-        return TerrainHelper.interpolateHeightFromGroundSkeletonConfig(absolutePosition, terrainShape.getGroundSkeletonConfig());
+        return 0;
     }
 
-    private double heightFromGroundSkeletonConfig(Index nodeIndex) {
-        return terrainShape.getGroundSkeletonConfig().getHeight(nodeIndex.getX(), nodeIndex.getY());
-    }
 }
