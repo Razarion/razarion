@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("JUnit Test", new JUnitTestScenario());
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Draw Polygon", new DrawPolygonScenario());
         register("Free Random Position", new FreeRandomPositionScenario());
@@ -50,7 +51,6 @@ public abstract class Scenario {
         register("Bresenhams Test", new FillCircleScenario());
         register("Rectangle 2D", new Rectangle2DScenario());
         register("Triangle2D", new Triangle2DScenario());
-        register("JUnit Test", new JUnitTestScenario());
         register("Polygon2I Test", new TestPolygon2IScenario());
     }
 

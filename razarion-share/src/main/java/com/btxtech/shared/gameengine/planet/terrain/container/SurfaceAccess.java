@@ -76,7 +76,7 @@ public class SurfaceAccess {
                 switch (terrainShapeSubNode.getTerrainType()) {
                     case LAND:
                         if (terrainShapeSubNode.isDriveway()) {
-                            DecimalPosition relative = absolutePosition.sub(tileRelative.add(TerrainUtil.toTileAbsolute(tileIndex)));
+                            DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(tileIndex)).sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex)).sub(TerrainUtil.toSubNodeAbsolute(nodeRelative, terrainShapeSubNode.getDepth()));
                             DecimalPosition normalizedRelative = relative.divide(TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth()));
                             return InterpolationUtils.rectangleInterpolate(normalizedRelative, terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL());
                         } else {
