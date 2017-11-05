@@ -202,6 +202,10 @@ public class Vertex {
         return new DecimalPosition(x, z);
     }
 
+    public DecimalPosition toYZ() {
+        return new DecimalPosition(y, z);
+    }
+
     public boolean equalsDelta(Vertex other, double delta) {
         return MathHelper.compareWithPrecision(x, other.x, delta) && MathHelper.compareWithPrecision(y, other.y, delta) && MathHelper.compareWithPrecision(z, other.z, delta);
     }

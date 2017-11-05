@@ -1,8 +1,7 @@
-package com.btxtech.client.math3d;
+package com.btxtech.shared.datatypes;
 
 
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.TestHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -635,16 +634,64 @@ public class TestMatrix4 {
         Vertex vector2 = new Vertex(0, 1, 0);
         Vertex vector3 = new Vertex(1, 0, 0);
         // Rotation
-        TestVertex.assertVertex(0, -1, 0, Matrix4.createXRotation(Math.toRadians(90)).normTransformation().multiply(vector1, 0));
+        TestHelper.assertVertex(0, -1, 0, Matrix4.createXRotation(Math.toRadians(90)).normTransformation().multiply(vector1, 0));
         // Translation
-        TestVertex.assertVertex(0, 0, 1, Matrix4.createTranslation(-1, 4, 16).normTransformation().multiply(vector1, 0));
+        TestHelper.assertVertex(0, 0, 1, Matrix4.createTranslation(-1, 4, 16).normTransformation().multiply(vector1, 0));
         // Scale negative scale does not work
-        TestVertex.assertVertex(vector1, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector1, 0).normalize(1.0));
-        TestVertex.assertVertex(vector2, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector2, 0).normalize(1.0));
-        TestVertex.assertVertex(vector3, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector3, 0).normalize(1.0));
-        TestVertex.assertVertex(vector3, Matrix4.createScale(13, 0.5, 27).normTransformation().multiply(vector3, 0).normalize(1.0));
+        TestHelper.assertVertex(vector1, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector1, 0).normalize(1.0));
+        TestHelper.assertVertex(vector2, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector2, 0).normalize(1.0));
+        TestHelper.assertVertex(vector3, Matrix4.createScale(0.5, 0.5, 0.5).normTransformation().multiply(vector3, 0).normalize(1.0));
+        TestHelper.assertVertex(vector3, Matrix4.createScale(13, 0.5, 27).normTransformation().multiply(vector3, 0).normalize(1.0));
         // Scale rotation and translation together
-        TestVertex.assertVertex(0, -1, 0, Matrix4.createScale(13, 0.5, 27).multiply(Matrix4.createXRotation(Math.toRadians(90))).multiply(Matrix4.createTranslation(-1, 4, 16)).normTransformation().multiply(vector1, 0).normalize(1.0));
+        TestHelper.assertVertex(0, -1, 0, Matrix4.createScale(13, 0.5, 27).multiply(Matrix4.createXRotation(Math.toRadians(90))).multiply(Matrix4.createTranslation(-1, 4, 16)).normTransformation().multiply(vector1, 0).normalize(1.0));
+    }
+
+    @Test
+    public void createFromNorm() {
+        // Assert.assertNull(Matrix4.createFromNormAndYaw(new Vertex(0, 0, 1), 0));
+
+        Vertex norm = new Vertex(1, 1, 1);
+        Matrix4 matrix = Matrix4.createFromNormAndYaw(norm, 0);
+        Assert.assertNotNull(matrix);
+//        TestHelper.assertVertex(new Vertex(-1, 0, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
+//        TestHelper.assertVertex(new Vertex(-1, 0, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, -1, 0), matrix.multiply(new Vertex(0, 1, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 0, 1), matrix.multiply(new Vertex(0, 0, 1), 1));
+
+//        norm = new Vertex(1, 0, 0);
+//        matrix = Matrix4.createFromNormAndYaw(norm, 0);
+//        Assert.assertNotNull(matrix);
+//        TestHelper.assertVertex(new Vertex(0, 0, -1), matrix.multiply(new Vertex(1, 0, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 1, 0), matrix.multiply(new Vertex(0, 1, 0), 1));
+//        TestHelper.assertVertex(new Vertex(1, 0, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
+
+//        norm = new Vertex(-1, 0, 0);
+//        matrix = Matrix4.createFromNormAndYaw(norm, 0);
+//        Assert.assertNotNull(matrix);
+//        TestHelper.assertVertex(new Vertex(0, 0, 1), matrix.multiply(new Vertex(1, 0, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 1, 0), matrix.multiply(new Vertex(0, 1, 0), 1));
+//        TestHelper.assertVertex(new Vertex(-1, 0, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
+
+//        norm = new Vertex(0, 1, 0);
+//        matrix = Matrix4.createFromNormAndYaw(norm, 0);
+//        Assert.assertNotNull(matrix);
+//        TestHelper.assertVertex(new Vertex(1, 0, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 0, -1), matrix.multiply(new Vertex(0, 1, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 1, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
+//
+//        norm = new Vertex(0, -1, 0);
+//        matrix = Matrix4.createFromNormAndYaw(norm, 0);
+//        Assert.assertNotNull(matrix);
+//        TestHelper.assertVertex(new Vertex(1, 0, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 0, 1), matrix.multiply(new Vertex(0, 1, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, -1, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
+//
+//        norm = new Vertex(1, 1, 1).normalize(1.0);
+//        matrix = Matrix4.createFromNormAndYaw(norm, 0);
+//        Assert.assertNotNull(matrix);
+//        TestHelper.assertVertex(new Vertex(0.70710, -0.5, -0.5), matrix.multiply(new Vertex(1, 0, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 0, -1), matrix.multiply(new Vertex(0, 1, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 1, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
     }
 
     public static void assertMatrix(Matrix4 expected, Matrix4 received) {

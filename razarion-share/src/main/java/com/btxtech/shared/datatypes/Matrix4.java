@@ -250,6 +250,18 @@ public class Matrix4 {
         return Matrix4.createTranslation(position).multiply(Matrix4.createZRotation(zRotation));
     }
 
+    public static Matrix4 createFromNormAndYaw(Vertex norm, double yaw) {
+        Vertex direction = new Vertex(Math.cos(yaw), Math.sin(yaw), 0);
+        Vertex y = direction.cross(norm);
+        Vertex x = norm.cross(y).normalize(1.0);
+        double[][] numbers = {
+                       {x.getX(), y.getX(), norm.getX(), 0},
+                       {x.getY(), y.getY(), norm.getY(), 0},
+                       {x.getZ(), y.getZ(), norm.getZ(), 0},
+                       {0, 0, 0, 1}};
+        return new Matrix4(numbers);
+    }
+
     @Override
     public String toString() {
         return "Matrix4{["

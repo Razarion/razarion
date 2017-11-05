@@ -10,7 +10,6 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -109,10 +108,7 @@ public class SyncPhysicalArea {
 
     public Matrix4 getModelMatrices() {
         if (modelMatrices == null) {
-            Vertex direction = new Vertex(DecimalPosition.createVector(angle, 1.0), 0);
-            double yRotation = direction.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
-            Matrix4 rotation = Matrix4.createZRotation(angle).multiply(Matrix4.createYRotation(-yRotation));
-            modelMatrices = Matrix4.createTranslation(getPosition3d()).multiply(rotation);
+            modelMatrices = Matrix4.createTranslation(getPosition3d()).multiply(Matrix4.createFromNormAndYaw(getNorm(), angle));
         }
         return modelMatrices;
     }

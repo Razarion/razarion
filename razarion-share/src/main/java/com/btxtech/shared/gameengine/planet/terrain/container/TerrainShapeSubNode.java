@@ -38,6 +38,14 @@ public class TerrainShapeSubNode {
         return height;
     }
 
+    public double getHeightSafe() {
+        if(height!=null) {
+            return height;
+        } else {
+            return 0;
+        }
+    }
+
     public TerrainType getTerrainType() {
         return terrainType;
     }

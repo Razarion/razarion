@@ -71,7 +71,7 @@ public class SurfaceAccess {
             @Override
             public Double inSubNode(TerrainShapeSubNode terrainShapeSubNode, TerrainShapeNode terrainShapeNode, DecimalPosition nodeRelative, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
                 if (terrainShapeSubNode.getTerrainType() == null) {
-                    return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeight();
+                    return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                 }
                 switch (terrainShapeSubNode.getTerrainType()) {
                     case LAND:
@@ -80,17 +80,16 @@ public class SurfaceAccess {
                             DecimalPosition normalizedRelative = relative.divide(TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth()));
                             return InterpolationUtils.rectangleInterpolate(normalizedRelative, terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL());
                         } else {
-                            double height = terrainShapeSubNode.getHeight() != null ? terrainShapeSubNode.getHeight() : 0;
-                            return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + height;
+                            return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                         }
                     case WATER:
-                        return terrainShapeSubNode.getHeight();
+                        return terrainShapeSubNode.getHeightSafe();
                     case LAND_COAST:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeight();
+                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                     case WATER_COAST:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeight();
+                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                     case BLOCKED:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeight();
+                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                 }
                 throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() TerrainShapeSubNode at: " + absolutePosition + " TerrainType: " + terrainShapeNode.getTerrainType());
             }
@@ -110,9 +109,9 @@ public class SurfaceAccess {
             }
 
             @Override
-            public Vertex inNode(TerrainShapeNode terrainShapeNode, Index nodeIndex, DecimalPosition tileRelative, Index tileIndex) {
+            public Vertex inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
                 if (terrainShapeNode.isFullGameEngineDriveway()) {
-                    DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(nodeIndex)).sub(tileRelative);
+                    DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(tileIndex)).sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex));
                     return interpolateNormFromGroundSkeletonConfig(relative, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL());
                 } else {
                     return interpolateNormFromGroundSkeletonConfig(absolutePosition);
@@ -152,7 +151,7 @@ public class SurfaceAccess {
         if (triangle1.isInside(relative)) {
             return new Vertex(zBL - zBR, zBL - zTL, length).normalize(1.0);
         } else {
-            return new Vertex(zBR - zTR, zTL - zTR, length).normalize(1.0);
+            return new Vertex(zTL - zTR, zBR - zTR, length).normalize(1.0);
         }
     }
 
