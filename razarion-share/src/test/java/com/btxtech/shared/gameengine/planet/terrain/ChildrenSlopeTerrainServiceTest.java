@@ -59,6 +59,7 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigLand.setOuterLineGameEngine(2).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(9);
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

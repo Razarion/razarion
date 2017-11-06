@@ -74,6 +74,7 @@ public class SurfaceAccess {
                     return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                 }
                 switch (terrainShapeSubNode.getTerrainType()) {
+                    case BLOCKED:
                     case LAND:
                         if (terrainShapeSubNode.isDriveway()) {
                             DecimalPosition relative = absolutePosition.sub(TerrainUtil.toTileAbsolute(tileIndex)).sub(TerrainUtil.toNodeAbsolute(nodeRelativeIndex)).sub(TerrainUtil.toSubNodeAbsolute(nodeRelative, terrainShapeSubNode.getDepth()));
@@ -87,8 +88,6 @@ public class SurfaceAccess {
                     case LAND_COAST:
                         return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                     case WATER_COAST:
-                        return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
-                    case BLOCKED:
                         return interpolateHeightFromGroundSkeletonConfig(absolutePosition) + terrainShapeSubNode.getHeightSafe();
                 }
                 throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() TerrainShapeSubNode at: " + absolutePosition + " TerrainType: " + terrainShapeNode.getTerrainType());

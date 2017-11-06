@@ -30,8 +30,19 @@ public class TerrainShapeSubNode {
         drivewayHeights = nativeTerrainShapeSubNode.drivewayHeights;
     }
 
-    public void setHeight(double height) {
+    public void setHeight(Double height) {
         this.height = height;
+    }
+
+    public void setDefaultHeightIfNull(Double renderEngineHeight) {
+        if (height != null) {
+            return;
+        }
+        if (renderEngineHeight != null) {
+            height = renderEngineHeight;
+        } else {
+            height = TerrainShapeNode.DEFAULT_HEIGHT;
+        }
     }
 
     public Double getHeight() {
@@ -39,7 +50,7 @@ public class TerrainShapeSubNode {
     }
 
     public double getHeightSafe() {
-        if(height!=null) {
+        if (height != null) {
             return height;
         } else {
             return 0;
@@ -56,6 +67,34 @@ public class TerrainShapeSubNode {
 
     public TerrainShapeSubNode[] getTerrainShapeSubNodes() {
         return terrainShapeSubNodes;
+    }
+
+    public TerrainShapeSubNode getChildSubNodeBL() {
+        if (terrainShapeSubNodes == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getChildSubNodeBL() terrainShapeSubNodes == null");
+        }
+        return terrainShapeSubNodes[0];
+    }
+
+    public TerrainShapeSubNode getChildSubNodeBR() {
+        if (terrainShapeSubNodes == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getChildSubNodeBR() terrainShapeSubNodes == null");
+        }
+        return terrainShapeSubNodes[1];
+    }
+
+    public TerrainShapeSubNode getChildSubNodeTR() {
+        if (terrainShapeSubNodes == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getChildSubNodeTR() terrainShapeSubNodes == null");
+        }
+        return terrainShapeSubNodes[2];
+    }
+
+    public TerrainShapeSubNode getChildSubNodeTL() {
+        if (terrainShapeSubNodes == null) {
+            throw new IllegalStateException("TerrainShapeSubNode.getChildSubNodeTL() terrainShapeSubNodes == null");
+        }
+        return terrainShapeSubNodes[3];
     }
 
     public void setTerrainShapeSubNodes(TerrainShapeSubNode[] terrainShapeSubNodes) {
@@ -178,23 +217,23 @@ public class TerrainShapeSubNode {
         } else if (outerDirection.getX() > 0) {
             // Access from west
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, outerDirection, subNodePosition, directionConsumer);
-            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(0, length), directionConsumer);
+            getChildSubNodeBL().outerDirectionCallback(aStarContext, outerDirection, subNodePosition, directionConsumer);
+            getChildSubNodeTL().outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(0, length), directionConsumer);
         } else if (outerDirection.getX() < 0) {
             // Access from east
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, 0), directionConsumer);
-            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, length), directionConsumer);
+            getChildSubNodeBR().outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, 0), directionConsumer);
+            getChildSubNodeTR().outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, length), directionConsumer);
         } else if (outerDirection.getY() > 0) {
             // Access from south
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, outerDirection, subNodePosition, directionConsumer);
-            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, 0), directionConsumer);
+            getChildSubNodeBL().outerDirectionCallback(aStarContext, outerDirection, subNodePosition, directionConsumer);
+            getChildSubNodeBR().outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, 0), directionConsumer);
         } else if (outerDirection.getY() < 0) {
             // Access from north
             double length = TerrainUtil.calculateSubNodeLength(depth + 1);
-            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, length), directionConsumer);
-            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(0, length), directionConsumer);
+            getChildSubNodeTR().outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(length, length), directionConsumer);
+            getChildSubNodeTL().outerDirectionCallback(aStarContext, outerDirection, subNodePosition.add(0, length), directionConsumer);
         } else {
             throw new IllegalArgumentException("TerrainShapeNode.outerDirectionCallback() outerDirection: " + outerDirection);
         }
@@ -207,13 +246,13 @@ public class TerrainShapeSubNode {
         }
         double length = TerrainUtil.calculateSubNodeLength(this.depth);
         if (subNodeRelative.getX() < length && subNodeRelative.getY() < length) {
-            terrainShapeSubNodes[0].outerDirectionCallback(aStarContext, subNodeRelative, subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            getChildSubNodeBL().outerDirectionCallback(aStarContext, subNodeRelative, subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else if (subNodeRelative.getX() >= length && subNodeRelative.getY() < length) {
-            terrainShapeSubNodes[1].outerDirectionCallback(aStarContext, subNodeRelative.sub(length, 0), subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            getChildSubNodeBR().outerDirectionCallback(aStarContext, subNodeRelative.sub(length, 0), subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else if (subNodeRelative.getX() >= length && subNodeRelative.getY() >= length) {
-            terrainShapeSubNodes[2].outerDirectionCallback(aStarContext, subNodeRelative.sub(length, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            getChildSubNodeTR().outerDirectionCallback(aStarContext, subNodeRelative.sub(length, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else if (subNodeRelative.getX() < length && subNodeRelative.getY() >= length) {
-            terrainShapeSubNodes[3].outerDirectionCallback(aStarContext, subNodeRelative.sub(0, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
+            getChildSubNodeTL().outerDirectionCallback(aStarContext, subNodeRelative.sub(0, length), subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else {
             throw new IllegalArgumentException("TerrainShapeSubNode.outerDirectionCallback()");
         }
@@ -221,6 +260,10 @@ public class TerrainShapeSubNode {
 
     public void setDrivewayHeights(double[] drivewayHeights) {
         this.drivewayHeights = drivewayHeights;
+    }
+
+    public double[] getDrivewayHeights() {
+        return drivewayHeights;
     }
 
     public boolean isDriveway() {

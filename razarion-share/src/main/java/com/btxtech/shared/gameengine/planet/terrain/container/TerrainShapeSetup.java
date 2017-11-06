@@ -94,7 +94,7 @@ public class TerrainShapeSetup {
     }
 
     public void finish() {
-        terrainShapeSubNodeFactory.concentrate(dirtyTerrainShapeNodes.values());
+        terrainShapeSubNodeFactory.concentrate(dirtyTerrainShapeNodes);
     }
 
     private Slope setupSlope(TerrainSlopePosition terrainSlopePosition, double groundHeight) {
