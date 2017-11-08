@@ -101,7 +101,7 @@ public class ModifiedSlope {
     }
 
     public boolean touches(Polygon2D cursor) {
-        return polygon != null && (polygon.isLineCrossing(cursor) || cursor.isOneCornerInside(polygon.getCorners()));
+        return polygon != null && polygon.touches(cursor);
     }
 
     public void increaseDriveway(Polygon2D cursor, DrivewayConfig drivewayConfig) {

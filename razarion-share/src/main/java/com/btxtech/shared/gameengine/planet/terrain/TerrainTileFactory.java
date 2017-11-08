@@ -230,6 +230,18 @@ public class TerrainTileFactory {
         }
         terrainShapeTile.iterateOverTerrainNodes((nodeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode != null && terrainShapeNode.getGroundSlopeConnections() != null) {
+//                if (terrainShapeNode.getGroundSlopeConnections().size() > 1) {
+//                    System.out.print("size: " + terrainShapeNode.getGroundSlopeConnections().size() + " at:" + TerrainUtil.toNodeAbsolute(terrainTileContext.toAbsoluteNodeIndex(nodeIndex)));
+//                    List<Polygon2D> checkForTouch = terrainShapeNode.getGroundSlopeConnections().stream().map(vertices -> new Polygon2D(Vertex.toXY(vertices))).collect(Collectors.toList());
+//                    Polygon2D polygon2 = checkForTouch.remove(0);
+//                    for (Polygon2D other : checkForTouch) {
+//                        if (polygon2.touches(other)) {
+//                            System.out.print(" ! ||" + polygon2.getCorners() + "||" + other.getCorners());
+//                        }
+//                    }
+//                    System.out.println();
+//                }
+
                 terrainShapeNode.getGroundSlopeConnections().forEach(connections -> {
                     try {
                         Triangulator.calculate(connections, IGNORE_SMALLER_TRIANGLE, terrainTileContext::insertTriangleGroundSlopeConnection);
