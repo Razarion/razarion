@@ -3,6 +3,7 @@ package com.btxtech.client.editor.widgets.marker;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTileFactory;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -31,7 +32,7 @@ public class TerrainMarkerEditorRenderTask extends AbstractRenderTask<List<Verte
     public void showPolygon(List<Vertex> polygon) {
         List<Vertex> triangles = new ArrayList<>();
 
-        Triangulator.calculate(polygon, (vertex1, vertex2, vertex3) -> {
+        Triangulator.calculate(polygon, TerrainTileFactory.IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> {
             triangles.add(vertex1);
             triangles.add(vertex2);
             triangles.add(vertex3);

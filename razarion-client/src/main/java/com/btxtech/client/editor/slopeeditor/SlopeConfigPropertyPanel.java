@@ -13,6 +13,8 @@ import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
+import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 import com.btxtech.uiservice.terrain.TerrainUiService;
@@ -23,6 +25,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import elemental.client.Browser;
+import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -33,6 +36,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -40,7 +45,7 @@ import javax.inject.Inject;
  */
 @Templated("SlopeConfigPropertyPanel.html#slope")
 public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig> implements SelectedCornerListener {
-    // private Logger logger = Logger.getLogger(SlopeConfigPropertyPanel.class.getName());
+    private Logger logger = Logger.getLogger(SlopeConfigPropertyPanel.class.getName());
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
@@ -51,6 +56,10 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private SlopeRenderTask slopeRenderTask;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private Caller<PlanetEditorProvider> planetEditorServiceCaller;
+    @Inject
+    private GameUiControl gameUiControl;
     @Inject
     @AutoBound
     private DataBinder<SlopeConfig> slopeConfigDataBinder;
@@ -120,14 +129,29 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @DataField
     private Button deleteSelected;
     @Inject
+    @Bound(property = "slopeSkeletonConfig.outerLineGameEngine")
+    @DataField
+    private NumberInput outerLineGameEngine;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.coastDelimiterLineGameEngine")
+    @DataField
+    private NumberInput coastDelimiterLineGameEngine;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.innerLineGameEngine")
+    @DataField
+    private NumberInput innerLineGameEngine;
+    @Inject
     @DataField
     private Button sculpt;
+    @Inject
+    @DataField
+    private Button restartPlanetButton;
     private FractalFieldConfig fractalFieldConfig;
 
     @Override
     public void init(SlopeConfig slopeConfig) {
         slopeConfigDataBinder.setModel(slopeConfig);
-        // TODO terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
+        terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
         textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId));
         bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setBmId(imageId));
         lightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
@@ -206,14 +230,22 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
 
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
-        // TODO This method has not been touched for a long time
         SlopeConfig slopeConfig = getConfigObject();
         FractalFieldConfig fractalFieldConfig = this.fractalFieldConfig;
         if (fractalFieldConfig == null) {
             fractalFieldConfig = slopeConfig.toFractalFiledConfig();
         }
         SlopeModeler.sculpt(slopeConfig, fractalFieldConfig);
-        terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
-        renderService.fillBuffers();
+        renderService.fillBuffers();  // May not working
+    }
+
+    @EventHandler("restartPlanetButton")
+    private void restartPlanetButtonClicked(ClickEvent event) {
+        modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
+        }, (message, throwable) -> {
+            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanetWarm() failed: " + message, throwable);
+            return false;
+        }).restartPlanetCold(gameUiControl.getPlanetConfig().getPlanetId()), () -> {
+        });
     }
 }

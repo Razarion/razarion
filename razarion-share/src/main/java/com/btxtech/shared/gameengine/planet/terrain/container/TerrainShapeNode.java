@@ -305,6 +305,10 @@ public class TerrainShapeNode {
         return drivewayHeights[3];
     }
 
+    public double[] getDrivewayHeights() {
+        return drivewayHeights;
+    }
+
     public NativeTerrainShapeNode toNativeTerrainShapeNode() {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
         nativeTerrainShapeNode.fullDrivewayHeights = drivewayHeights;

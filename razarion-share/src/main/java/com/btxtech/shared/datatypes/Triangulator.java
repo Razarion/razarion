@@ -19,17 +19,17 @@ public class Triangulator {
         void onTriangle(T vertex1, T vertex2, T vertex3);
     }
 
-    public static <T extends Vertex> void calculate(List<T> vertexPolygon, Listener<T> listener) {
-        extractTriangle(vertexPolygon, listener);
+    public static <T extends Vertex> void calculate(List<T> vertexPolygon, Double minLength, Listener<T> listener) {
+        extractTriangle(vertexPolygon, minLength, listener);
     }
 
-    private static <T extends Vertex> void extractTriangle(List<T> vertexPolygon, Listener<T> listener) {
+    private static <T extends Vertex> void extractTriangle(List<T> vertexPolygon, Double minLength, Listener<T> listener) {
         if (vertexPolygon.size() < 3) {
             throw new IllegalArgumentException("A polygon must have at least 3 corners");
         }
 
         if (vertexPolygon.size() == 3) {
-            listener.onTriangle(vertexPolygon.get(0), vertexPolygon.get(1), vertexPolygon.get(2));
+            checkAndCallListener(vertexPolygon.get(0), vertexPolygon.get(1), vertexPolygon.get(2), listener, minLength);
             return;
         }
 
@@ -84,11 +84,33 @@ public class Triangulator {
         T previousCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex - 1));
         T nextCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex + 1));
 
-        listener.onTriangle(corner, previousCorner, nextCorner);
+        checkAndCallListener(previousCorner, corner, nextCorner, listener, minLength);
 
         List<T> newVertexPolygon = new ArrayList<>(vertexPolygon);
         newVertexPolygon.remove(earIndex);
-        extractTriangle(newVertexPolygon, listener);
+        extractTriangle(newVertexPolygon, minLength, listener);
+    }
+
+    private static <T extends Vertex> void checkAndCallListener(T vertex1, T vertex2, T vertex3, Listener<T> listener, Double minLength) {
+        if (minLength != null) {
+//            // Valid triangle
+            if (vertex1.cross(vertex2, vertex3).equalsDelta(Vertex.ZERO, minLength)) {
+                // System.out.println("checkAndCallListener. vertex1: " + vertex1 + " vertex2: " + vertex2 + " vertex3: " + vertex3);
+                return;
+            }
+
+            // Min distance
+            if (vertex1.distance(vertex2) < minLength) {
+                return;
+            }
+            if (vertex2.distance(vertex3) < minLength) {
+                return;
+            }
+            if (vertex3.distance(vertex1) < minLength) {
+                return;
+            }
+        }
+        listener.onTriangle(vertex1, vertex2, vertex3);
     }
 
 }

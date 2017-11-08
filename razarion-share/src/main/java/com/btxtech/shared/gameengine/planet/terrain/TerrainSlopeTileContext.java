@@ -55,8 +55,8 @@ public class TerrainSlopeTileContext {
 
                 Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY());
                 Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY());
-                Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY());
-                Vertex tangentTL = setupTangent(x, y + 1, vertexTL.toXY());
+                Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY(), normBR);
+                Vertex tangentTL = setupTangent(x, y + 1, vertexTL.toXY(), normTL);
                 double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
                 double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
                 double splattingBR = mesh[x + 1][y].getSplatting();
@@ -66,7 +66,7 @@ public class TerrainSlopeTileContext {
                     int triangleCornerIndex = triangleIndex * 3;
 
                     Vertex normBL = setupNorm(x, y, vertexBL.toXY());
-                    Vertex tangentBL = setupTangent(x, y, vertexBL.toXY());
+                    Vertex tangentBL = setupTangent(x, y, vertexBL.toXY(), normBL);
                     double slopeFactorBL = mesh[x][y].getSlopeFactor();
                     double splattingBL = mesh[x][y].getSplatting();
 
@@ -80,7 +80,7 @@ public class TerrainSlopeTileContext {
                     int triangleCornerIndex = triangleIndex * 3;
 
                     Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY());
-                    Vertex tangentTR = setupTangent(x + 1, y + 1, vertexTR.toXY());
+                    Vertex tangentTR = setupTangent(x + 1, y + 1, vertexTR.toXY(), normTR);
                     double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
                     double splattingTR = mesh[x + 1][y + 1].getSplatting();
 
@@ -95,35 +95,50 @@ public class TerrainSlopeTileContext {
     }
 
     private Vertex setupNorm(int x, int y, DecimalPosition absolutePosition) {
+        Vertex vertical;
         if (y == 0) {
+            // Ground skeleton no respected
             // Outer take norm from ground
-            return terrainTileContext.interpolateNorm(absolutePosition);
+            // return terrainTileContext.interpolateNorm(absolutePosition, Vertex.Z_NORM);
+            vertical = mesh[x][y + 1].getVertex().sub(mesh[x][0].getVertex());
         } else if (y == yCount - 1) {
+            // Ground skeleton no respected
             // Inner take norm from ground
-            return terrainTileContext.interpolateNorm(absolutePosition);
+            // return terrainTileContext.interpolateNorm(absolutePosition, Vertex.Z_NORM);
+            vertical = mesh[x][y].getVertex().sub(mesh[x][y - 1].getVertex());
+        } else {
+            vertical = mesh[x][y + 1].getVertex().sub(mesh[x][y - 1].getVertex());
         }
-        Vertex vertical = mesh[x][y + 1].getVertex().sub(mesh[x][y - 1].getVertex());
 
         Vertex east = mesh[x + 1][y].getVertex();
         Vertex west = mesh[x - 1][y].getVertex();
-        Vertex horizontal = east.sub(west).normalize(1);
+        Vertex horizontalUnnormed = east.sub(west);
+        if (horizontalUnnormed.magnitude() == 0.0) {
+            return Vertex.Z_NORM;
+        }
+        Vertex horizontal = horizontalUnnormed.normalize(1);
         return horizontal.cross(vertical).normalize(1.0);
     }
 
-    private Vertex setupTangent(int x, int y, DecimalPosition absolutePosition) {
+    private Vertex setupTangent(int x, int y, DecimalPosition absolutePosition, Vertex norm) {
         try {
-            if (y == 0) {
-                // Outer take tangent from ground
-                return terrainTileContext.interpolateTangent(absolutePosition);
-            } else if (y == yCount - 1) {
-                // Inner take tangent from ground
-                return terrainTileContext.interpolateTangent(absolutePosition);
-            }
+//            if (y == 0) {
+//                // Outer take tangent from ground
+//                return terrainTileContext.interpolateTangent(absolutePosition, norm);
+//            } else if (y == yCount - 1) {
+//                // Inner take tangent from ground
+//                return terrainTileContext.interpolateTangent(absolutePosition, norm);
+//            }
 
-            Vertex current = mesh[x][y].getVertex();
-            Vertex east = mesh[x + 1][y].getVertex();
-            Vertex west = mesh[x - 1][y].getVertex();
-            return east.sub(west).normalize(1);
+//            Vertex current = mesh[x][y].getVertex();
+//            Vertex east = mesh[x + 1][y].getVertex();
+//            Vertex west = mesh[x - 1][y].getVertex();
+//            return east.sub(west).normalize(1);
+            Vertex biTangent = Vertex.X_NORM.cross(norm);
+            if (norm.cross(biTangent).magnitude() == 0) {
+                return Vertex.X_NORM;
+            }
+            return norm.cross(biTangent).normalize(1.0);
         } catch (Throwable t) {
             logger.log(Level.SEVERE, "FIX ME 2", t);
             return Vertex.Z_NORM;

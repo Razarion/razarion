@@ -26,7 +26,7 @@ public class Shape {
     }
 
     public boolean isShiftableEntry(int index) {
-        return index > 0 && index < entries.size() - 1;
+        return index < entries.size() - 1;
     }
 
     public Vertex getVertex(int index) {
@@ -38,9 +38,18 @@ public class Shape {
     }
 
     public Vertex getNormShiftedVertex(int row, double distance) {
-        DecimalPosition previous = entries.get(row - 1).getPosition();
-        DecimalPosition current = entries.get(row).getPosition();
-        DecimalPosition next = entries.get(row + 1).getPosition();
+        DecimalPosition previous;
+        DecimalPosition current;
+        DecimalPosition next;
+        if (row > 0) {
+            previous = entries.get(row - 1).getPosition();
+            current = entries.get(row).getPosition();
+            next = entries.get(row + 1).getPosition();
+        } else {
+            previous = new DecimalPosition(0, 0);
+            current = entries.get(row).getPosition();
+            next = entries.get(row + 1).getPosition();
+        }
 
         double deltaAngle = current.angle(next, previous) / 2.0;
         double angle = current.getAngle(next) + deltaAngle;

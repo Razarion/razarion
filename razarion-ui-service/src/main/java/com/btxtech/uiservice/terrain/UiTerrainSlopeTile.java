@@ -56,6 +56,12 @@ public class UiTerrainSlopeTile {
         return slopeSkeletonConfig;
     }
 
+    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
+        if (slopeSkeletonConfig.getId() == this.slopeSkeletonConfig.getId()) {
+            this.slopeSkeletonConfig = slopeSkeletonConfig;
+        }
+    }
+
     public int getSlopeVertexCount() {
         return terrainSlopeTile.getSlopeVertexCount();
     }

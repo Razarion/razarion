@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -250,5 +251,11 @@ public class TerrainUiService {
         terrainTypeService.setGroundSkeletonConfig(groundSkeletonConfig);
         displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundSkeletonConfig));
         cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundSkeletonConfig));
+    }
+
+    public void enableEditMode(SlopeSkeletonConfig slopeSkeletonConfig) {
+        terrainTypeService.overrideSlopeSkeletonConfig(slopeSkeletonConfig);
+        displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeSkeletonConfig));
+        cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeSkeletonConfig));
     }
 }

@@ -154,22 +154,11 @@ void main(void) {
         // Slope
         if(uHasWater) {
             float z = vVertexPositionCoord.z;
-            if(z > uWaterLevel + SLOPE_WATER_STRIPE_FADEOUT) {
+            if(z > uWaterLevel) {
                 // Over water level: render normal slope
                 textureColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
                 correctedNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
                 specular = setupSpecularLight(correctedLightSlope, correctedNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
-            } else if(z >= uWaterLevel) {
-                // Water slope stripe:
-                float slopeFadeoutFactor = 1.0 - ((z - uWaterLevel) / SLOPE_WATER_STRIPE_FADEOUT); // 1.0 water .. 0.0 beach
-                float colorSlopeFadeoutFactor = mix(1.0, 0.5, slopeFadeoutFactor);
-                vec4 slopeColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
-                vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth * (1.0 - slopeFadeoutFactor), uSlopeBmScale, uSlopeBmOnePixel);
-                vec4 ambient = vec4(uLightAmbientSlope, 1.0) * slopeColor /* * colorSlopeFadeoutFactor*/;
-                vec4 diffuse = vec4(max(dot(normalize(slopeNorm), normalize(-correctedLightSlope)), 0.0) * uLightDiffuseSlope * slopeColor.rgb, 1.0);
-                vec4 specular = setupSpecularLight(correctedLightSlope, slopeNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
-                gl_FragColor = ambient + diffuse * shadowFactor + specular * shadowFactor;
-                return;
             } else {
                 // Under water level: render slope fadeout
                 float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);

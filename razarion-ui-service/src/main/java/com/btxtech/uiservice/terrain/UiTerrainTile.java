@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
@@ -147,6 +148,12 @@ public class UiTerrainTile {
 
     public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
         this.groundSkeletonConfig = groundSkeletonConfig;
+}
+
+    public void setSlopeSkeletonConfig(SlopeSkeletonConfig skeletonConfig) {
+        if (uiTerrainSlopeTiles != null) {
+            uiTerrainSlopeTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.overrideSlopeSkeletonConfig(skeletonConfig));
+        }
     }
 
     public void dispose() {
@@ -198,7 +205,7 @@ public class UiTerrainTile {
         List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         for (Index subNodeIndex : subNodeIndices) {
             DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(position);
-            if(!isTerrainTypeAllowed(terrainType, scanPosition)) {
+            if (!isTerrainTypeAllowed(terrainType, scanPosition)) {
                 return false;
             }
         }

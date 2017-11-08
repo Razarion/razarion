@@ -41,7 +41,6 @@ public class SlopeConfigCrud extends AbstractCrudeEditor<SlopeConfig> {
         provider.call(new RemoteCallback<SlopeConfig>() {
             @Override
             public void callback(SlopeConfig slopeConfig) {
-                terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
                 fire();
                 fireSelection(slopeConfig.createObjectNameId());
             }

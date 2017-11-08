@@ -103,7 +103,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     @Override
     protected void doRender() {
         doRenderTile();
-        renderTerrainPathingSurfaceAccess();
+        // renderTerrainPathingSurfaceAccess();
         // doRenderShape();
         renderItemTypes();
         if (userDataRenderer != null) {
@@ -125,8 +125,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
                 // Norm
                 Vertex norm = terrainService.getSurfaceAccess().getInterpolatedNorm(samplePosition);
                 if (MathHelper.compareWithPrecision(norm.magnitude(), 1.0)) {
-                    Vertex colorNorm = norm.multiply(0.5).add(0.5, 0.5, 0.5);
-                    getGc().setFill(Color.color(colorNorm.getX(), colorNorm.getY(), colorNorm.getZ()));
+                    getGc().setFill(color4Norm(norm));
                 } else {
                     getGc().setFill(Color.BLACK);
                 }
@@ -162,6 +161,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         // drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
+            fillTriangle(terrainTile.getGroundVertices(), terrainTile.getGroundNorms(), terrainTile.getGroundTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
             strokeZTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
         }
 
@@ -170,6 +170,15 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
                 drawTerrainSlopeTile(terrainSlopeTile);
             }
         }
+    }
+
+    private void fillTriangle(double[] groundVertices, double[] groundNorms, double[] groundTangents, int index1, int index2, int index3) {
+        int fillIndex = index2;
+        double[] fillVertices = groundNorms;
+        getGc().setFill(color4Norm(new Vertex(fillVertices[fillIndex], fillVertices[fillIndex + 1], fillVertices[fillIndex + 2])));
+        double[] xCorners = new double[]{groundVertices[index1], groundVertices[index2], groundVertices[index3]};
+        double[] yCorners = new double[]{groundVertices[index1 + 1], groundVertices[index2 + 1], groundVertices[index3 + 1]};
+        getGc().fillPolygon(xCorners, yCorners, 3);
     }
 
     private void strokeZTriangle(double[] vertices, int index1, int index2, int index3) {
@@ -194,6 +203,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         getGc().setLineWidth(LINE_WIDTH);
         for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
+            fillTriangle(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms(), terrainSlopeTile.getTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
             strokeZTriangle(terrainSlopeTile.getVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
 
 //            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
@@ -656,4 +666,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
+    public static Color color4Norm(Vertex norm) {
+        Vertex colorNorm = norm.multiply(0.5).add(0.5, 0.5, 0.5);
+        return Color.color(colorNorm.getX(), colorNorm.getY(), colorNorm.getZ());
+    }
 }

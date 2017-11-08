@@ -11,7 +11,6 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
@@ -33,6 +32,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class TerrainTileFactory {
+    public static final double IGNORE_SMALLER_TRIANGLE = 0.01;
     // private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
     @Inject
     private Instance<TerrainTileContext> terrainTileContextInstance;
@@ -104,15 +104,15 @@ public class TerrainTileFactory {
 //        Vertex norm1 = vertexBL.cross(vertexBR, vertexTL);
 //        Vertex norm2 = vertexTR.cross(vertexTL, vertexBR);
 
-        Vertex normBL = terrainTileContext.setupNorm(xNode, yNode);
-        Vertex normBR = terrainTileContext.setupNorm(rightXNode, yNode);
-        Vertex normTR = terrainTileContext.setupNorm(rightXNode, topYNode);
-        Vertex normTL = terrainTileContext.setupNorm(xNode, topYNode);
+        Vertex normBL = terrainTileContext.addGroundSkeletonNorm(xNode, yNode, null);
+        Vertex normBR = terrainTileContext.addGroundSkeletonNorm(rightXNode, yNode, null);
+        Vertex normTR = terrainTileContext.addGroundSkeletonNorm(rightXNode, topYNode, null);
+        Vertex normTL = terrainTileContext.addGroundSkeletonNorm(xNode, topYNode, null);
 
-        Vertex tangentBL = terrainTileContext.setupTangent(xNode, yNode);
-        Vertex tangentBR = terrainTileContext.setupTangent(rightXNode, yNode);
-        Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode);
-        Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode);
+        Vertex tangentBL = terrainTileContext.setupTangent(xNode, yNode, null);
+        Vertex tangentBR = terrainTileContext.setupTangent(rightXNode, yNode, null);
+        Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode, null);
+        Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode, null);
 
         double splattingBL = terrainTileContext.getSplatting(xNode, yNode);
         double splattingBR = terrainTileContext.getSplatting(rightXNode, yNode);
@@ -153,15 +153,15 @@ public class TerrainTileFactory {
         Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, drivewayHeightTR);
         Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, drivewayHeightTL);
 
-        Vertex normBL = terrainTileContext.setupNorm(xNode, yNode); // TODO add height
-        Vertex normBR = terrainTileContext.setupNorm(rightXNode, yNode); // TODO add height
-        Vertex normTR = terrainTileContext.setupNorm(rightXNode, topYNode); // TODO add height
-        Vertex normTL = terrainTileContext.setupNorm(xNode, topYNode); // TODO add height
+        Vertex normBL = terrainTileContext.addGroundSkeletonNorm(xNode, yNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(0, 0)));
+        Vertex normBR = terrainTileContext.addGroundSkeletonNorm(rightXNode, yNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(1, 0)));
+        Vertex normTR = terrainTileContext.addGroundSkeletonNorm(rightXNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(1, 1)));
+        Vertex normTL = terrainTileContext.addGroundSkeletonNorm(xNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(0, 1)));
 
-        Vertex tangentBL = terrainTileContext.setupTangent(xNode, yNode); // TODO add height
-        Vertex tangentBR = terrainTileContext.setupTangent(rightXNode, yNode); // TODO add height
-        Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode); // TODO add height
-        Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode);
+        Vertex tangentBL = terrainTileContext.setupTangent(xNode, yNode, normBL);
+        Vertex tangentBR = terrainTileContext.setupTangent(rightXNode, yNode, normBR);
+        Vertex tangentTR = terrainTileContext.setupTangent(rightXNode, topYNode, normTR);
+        Vertex tangentTL = terrainTileContext.setupTangent(xNode, topYNode, normTL);
 
         double splattingBL = terrainTileContext.getSplatting(xNode, yNode);
         double splattingBR = terrainTileContext.getSplatting(rightXNode, yNode);
@@ -232,7 +232,7 @@ public class TerrainTileFactory {
             if (terrainShapeNode != null && terrainShapeNode.getGroundSlopeConnections() != null) {
                 terrainShapeNode.getGroundSlopeConnections().forEach(connections -> {
                     try {
-                        Triangulator.calculate(connections, terrainTileContext::insertTriangleGroundSlopeConnection);
+                        Triangulator.calculate(connections, IGNORE_SMALLER_TRIANGLE, terrainTileContext::insertTriangleGroundSlopeConnection);
                     } catch (Exception e) {
                         Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeIndex));
                         exceptionHandler.handleException("TerrainTileFactory.insertSlopeGroundConnectionPart(); Triangulator.calculate() failed. terrainRect: " + terrainRect, e);
@@ -261,7 +261,7 @@ public class TerrainTileFactory {
             } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
                 terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel());
             } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
-                terrainShapeNode.getWaterSegments().forEach(segment -> Triangulator.calculate(segment, terrainWaterTileContext::insertWaterRim));
+                terrainShapeNode.getWaterSegments().forEach(segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE, terrainWaterTileContext::insertWaterRim));
             }
         });
 
@@ -330,6 +330,14 @@ public class TerrainTileFactory {
             createTerrainSubNodes(nodePosition, subNodePosition, terrainShapeNode, terrainShapeSubNode.getTerrainShapeSubNodes(), terrainSubNode::insertTerrainSubNode);
         }
         return terrainSubNode;
+    }
+
+    private Vertex setupDrivewayGroundNorm(TerrainShapeNode terrainShapeNode, DecimalPosition relativePosition) {
+        if (!terrainShapeNode.isFullRenderEngineDriveway()) {
+            return null;
+        }
+
+        return InterpolationUtils.interpolateNormFromRectangle(relativePosition, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, terrainShapeNode.getDrivewayHeights());
     }
 
     private interface SubNodeFeeder {

@@ -45,7 +45,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
-                {0, 10, 0, 0},
+                {0, 0, 0, 0},
                 {0, 0, 0, 0}
         };
         double[][] splattings = new double[][]{
@@ -56,12 +56,13 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
 
-        TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
-        TerrainTileTestDisplay.show(terrainTile);
+        // TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
+
+        showDisplay();
 
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testTerrainSlopeTileGeneration.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeTileGeneration.json");
-        assertTerrainTile.assertEquals(terrainTile);
+        // AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeTileGeneration.json");
+        // assertTerrainTile.assertEquals(terrainTile);
     }
 
     @Test

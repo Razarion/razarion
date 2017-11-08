@@ -155,6 +155,7 @@ public class SurfaceAccess {
     }
 
     private double interpolateHeightFromGroundSkeletonConfig(DecimalPosition absolutePosition) {
+        // Ground skeleton is not respected
         return 0;
     }
 

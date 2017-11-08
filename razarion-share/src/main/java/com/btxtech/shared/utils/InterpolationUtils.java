@@ -1,10 +1,8 @@
 package com.btxtech.shared.utils;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
 import java.util.List;
 
@@ -56,10 +54,10 @@ public class InterpolationUtils {
      * Assumption: rectangle with bl, br, tr, tl
      *
      * @param offset 0:0 bl, 1:1 tr
-     * @param bl bottom left
-     * @param br bottom right
-     * @param tr top right
-     * @param tl top left
+     * @param bl     bottom left
+     * @param br     bottom right
+     * @param tr     top right
+     * @param tl     top left
      * @return interpolation
      */
     public static double rectangleInterpolate(DecimalPosition offset, double bl, double br, double tr, double tl) {
@@ -73,4 +71,23 @@ public class InterpolationUtils {
             return weight.getX() * br + weight.getY() * tr + weight.getZ() * tl;
         }
     }
+
+    /**
+     * Assumption: rectangle with bl, br, tr, tl
+     *
+     * @param relative position with 0..1, 0..1
+     * @param length   the length of the quadratic side
+     * @param heights  z of the 4 corners [bl, br, tr, tl]
+     * @return the norm vector
+     */
+    public static Vertex interpolateNormFromRectangle(DecimalPosition relative, double length, double[] heights) {
+        // Ground skeleton is not respected
+        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(length, 0), new DecimalPosition(0, length));
+        if (triangle1.isInside(relative)) {
+            return new Vertex(heights[0] - heights[1], heights[0] - heights[3], length).normalize(1.0);
+        } else {
+            return new Vertex(heights[3] - heights[2], heights[1] - heights[2], length).normalize(1.0);
+        }
+    }
+
 }

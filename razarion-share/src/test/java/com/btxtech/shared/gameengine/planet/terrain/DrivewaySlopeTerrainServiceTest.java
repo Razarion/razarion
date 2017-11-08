@@ -88,10 +88,10 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
         slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 4, 1),},
+                {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 8, 0.7),},
                 {GameTestHelper.createSlopeNode(7, 12, 0.7),},
-                {GameTestHelper.createSlopeNode(10, 16, 0.7),},
+                {GameTestHelper.createSlopeNode(10, 20, 0.7),},
                 {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         };
         slopeSkeletonConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
