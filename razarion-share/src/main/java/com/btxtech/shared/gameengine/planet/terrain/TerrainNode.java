@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jsinterop.annotations.JsType;
 
 /**

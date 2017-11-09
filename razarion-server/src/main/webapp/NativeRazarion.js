@@ -402,14 +402,6 @@ com = {
                         return this.landWaterProportion;
                     };
 
-                    this.isFullWater = function () {
-                        return this.fullWater;
-                    };
-
-                    this.setFullWater = function (fullWater) {
-                        this.fullWater = fullWater;
-                    };
-
                     this.setHeight = function (height) {
                         this.height = height;
                     };
@@ -459,7 +451,7 @@ com = {
                             }
                         }
 
-                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray, terrainWaterTile, this.landWaterProportion, this.fullWater, this.height, terrainNodesField];
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray, terrainWaterTile, this.landWaterProportion, this.height, terrainNodesField];
                     };
 
                     this.fromArray = function (array) {
@@ -485,9 +477,8 @@ com = {
                         }
                         this.landWaterProportion = array[9];
 
-                        this.fullWater = array[10];
-                        this.height = array[11];
-                        var terrainNodesField = array[12];
+                        this.height = array[10];
+                        var terrainNodesField = array[10];
                         if (typeof terrainNodesField !== 'undefined' && terrainNodesField.length > 0) {
                             this.terrainNodes = new Array(terrainNodesField.length);
                             for (var x = 0; x < terrainNodesField.length; x++) {

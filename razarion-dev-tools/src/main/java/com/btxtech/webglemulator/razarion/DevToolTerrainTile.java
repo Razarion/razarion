@@ -24,7 +24,6 @@ public class DevToolTerrainTile extends TerrainTile {
     private TerrainWaterTile terrainWaterTile;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
-    private Boolean fullWater;
     private double height;
 
     @Override
@@ -155,16 +154,6 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public int fromArray(Object object) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Boolean isFullWater() {
-        return fullWater;
-    }
-
-    @Override
-    public void setFullWater(Boolean fullWater) {
-        this.fullWater = fullWater;
     }
 
     @Override

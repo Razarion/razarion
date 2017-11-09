@@ -331,9 +331,7 @@ public class TerrainTileFactory {
 
     private TerrainSubNode createTerrainSubNode(DecimalPosition nodePosition, DecimalPosition subNodePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode terrainShapeSubNode) {
         TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
-        if (terrainShapeSubNode.getTerrainType() != null) {
-            terrainSubNode.setTerrainType(terrainShapeSubNode.getTerrainType().ordinal());
-        }
+        terrainSubNode.setTerrainType(TerrainType.toOrdinal(terrainShapeSubNode.getTerrainType()));
         if (terrainShapeSubNode.getHeight() != null) {
             terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
         }
