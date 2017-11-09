@@ -14,6 +14,6 @@ public class TestProducers {
 
     @Produces
     public NativeMatrixFactory getNativeMatrixFactory() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 }

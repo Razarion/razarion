@@ -24,7 +24,8 @@ import java.util.function.Consumer;
  * Created by Beat
  * on 03.07.2017.
  */
-public class UiTerrainTileTest {
+@Deprecated // Use WeldUiBaseTest
+public class UiTerrainTileTestOld {
 
     protected UiTerrainTile setup(TerrainTile terrainTile) {
         double[][] heights = new double[][]{
