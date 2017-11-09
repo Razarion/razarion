@@ -76,18 +76,18 @@ public class SelectionHandler {
 
     public void selectRectangle(Rectangle2D rectangle) {
         Collection<SyncBaseItemSimpleDto> selectedBaseItems = baseItemUiService.findItemsInRect(rectangle);
-        if (selectedBaseItems != null) {
+        if (!selectedBaseItems.isEmpty()) {
             onBaseItemsSelected(selectedBaseItems);
             return;
         }
         Collection<SyncBoxItemSimpleDto> selectedBoxItems = boxUiService.findItemsInRect(rectangle);
-        if (selectedBoxItems != null) {
+        if (!selectedBoxItems.isEmpty()) {
             setOtherItemSelected(CollectionUtils.getFirst(selectedBoxItems));
             return;
         }
 
         Collection<SyncResourceItemSimpleDto> selectedResourceItems = resourceUiService.findItemsInRect(rectangle);
-        if (selectedResourceItems != null) {
+        if (!selectedResourceItems.isEmpty()) {
             setOtherItemSelected(CollectionUtils.getFirst(selectedResourceItems));
             return;
         }
