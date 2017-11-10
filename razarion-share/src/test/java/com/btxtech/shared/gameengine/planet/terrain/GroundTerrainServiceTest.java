@@ -26,7 +26,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {1.0, 0.0, 0.0},
                 {0.0, 0.0, 1.0},
                 {0.0, 0.0, 0.0},
-        }, null, null, null, null);
+        }, null, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
@@ -57,7 +57,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.0, 0.5, 0.8},
                 {0.0, 0.1, 0.0},
                 {0.0, 0.0, 0.3},
-        }, null, null, null, null);
+        }, null, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
         // showDisplay();
@@ -87,7 +87,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.0, 0.5, 0.8},
                 {0.0, 0.1, 0.0},
                 {0.0, 0.0, 0.3},
-        }, null, null, null, null);
+        }, null, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(8, 16));
 
@@ -116,7 +116,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.0, 0.5, 0.8},
                 {0.0, 0.1, 0.0},
                 {0.0, 0.0, 0.3},
-        }, null, null, null, null);
+        }, null, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(-1, -2));
 
