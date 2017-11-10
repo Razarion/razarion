@@ -83,15 +83,6 @@ public class TerrainShapeTest extends WeldTerrainServiceTestBase {
     }
 
     @Test
-    public void testSimpleSlope() {
-        TerrainShape terrainShape = setup(1, null, null, GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null));
-        AssertTerrainShape.saveTerrainShape( terrainShape, "testSimpleSlopeShape1.json");
-        showDisplay();
-        // TerrainShapeTestDisplay.show(terrainShape);
-        AssertTerrainShape.assertTerrainShape(TerrainShapeTest.class, "testSimpleSlopeShape1.json", terrainShape);
-    }
-
-    @Test
     public void testChildSlope() {
         List<TerrainSlopePosition> childTerrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition childTerrainSlopePositionLand = new TerrainSlopePosition();

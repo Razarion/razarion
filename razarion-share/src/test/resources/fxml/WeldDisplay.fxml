@@ -45,11 +45,21 @@
             <panes>
                 <TitledPane alignment="TOP_LEFT" animated="false" text="Terrain">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="339.0" prefWidth="250.0">
                             <children>
                                 <CheckBox fx:id="terrainSplattingCheck" mnemonicParsing="false" prefHeight="17.0"
                                           prefWidth="76.0" text="Splatting"/>
-                                <CheckBox fx:id="shapeAccessCheck" layoutX="2.0" layoutY="26.0" mnemonicParsing="false" text="Shape access"/>
+                                <CheckBox fx:id="shapeAccessCheck" layoutX="2.0" layoutY="25.0" mnemonicParsing="false"
+                                          text="Shape access"/>
+                                <CheckBox fx:id="shapeTerrainTypeCheck" layoutX="2.0" layoutY="52.0"
+                                          mnemonicParsing="false" text="Shape terrain type"/>
+                                <CheckBox fx:id="shapeFractionalSlopeCheck" layoutX="2.0" layoutY="80.0"
+                                          mnemonicParsing="false" text="Shape fractional slope"/>
+                                <CheckBox fx:id="shapeObstaclesCheck" layoutX="2.0" layoutY="109.0"
+                                          mnemonicParsing="false" text="Shape obstacles"/>
+                                <CheckBox fx:id="groundSlopeConnectionsCheck" layoutX="2.0" layoutY="136.0"
+                                          mnemonicParsing="false" prefHeight="17.0" prefWidth="195.0"
+                                          text="Shape ground slope connections"/>
                             </children>
                         </AnchorPane>
                     </content>

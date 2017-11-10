@@ -1,15 +1,13 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.SimpleTestEnvironment;
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -20,7 +18,10 @@ import com.btxtech.shared.gameengine.planet.WeldBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -85,5 +86,9 @@ public class WeldTerrainServiceTestBase extends WeldBaseTest {
         MasterPlanetConfig masterPlanetConfig = new MasterPlanetConfig();
         masterPlanetConfig.setResourceRegionConfigs(new ArrayList<>());
         return masterPlanetConfig;
+    }
+
+    protected Collection<TerrainTile> generateTerrainTiles(Index... indices) {
+        return Arrays.stream(indices).map(index -> getTerrainService().generateTerrainTile(index)).collect(Collectors.toList());
     }
 }

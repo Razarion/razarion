@@ -34,6 +34,14 @@ public class WeldTestController extends AbstractTerrainTestController {
     private CheckBox terrainSplattingCheck;
     @FXML
     private CheckBox shapeAccessCheck;
+    @FXML
+    private CheckBox shapeTerrainTypeCheck;
+    @FXML
+    private CheckBox shapeFractionalSlopeCheck;
+    @FXML
+    private CheckBox shapeObstaclesCheck;
+    @FXML
+    private CheckBox groundSlopeConnectionsCheck;
     private Object[] userObjects;
 
     @Override
@@ -47,6 +55,17 @@ public class WeldTestController extends AbstractTerrainTestController {
         super.initialize(url, resourceBundle);
         zMinField.setText(Double.toString(weldTestRenderer.getZMin()));
         zMaxField.setText(Double.toString(weldTestRenderer.getZMax()));
+
+        addRenderListener(terrainSplattingCheck);
+        addRenderListener(shapeAccessCheck);
+        addRenderListener(shapeTerrainTypeCheck);
+        addRenderListener(shapeFractionalSlopeCheck);
+        addRenderListener(shapeObstaclesCheck);
+        addRenderListener(groundSlopeConnectionsCheck);
+    }
+
+    private void addRenderListener(CheckBox checkBox) {
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> getAbstractTerrainTestRenderer().render());
     }
 
     public void setUserObjects(Object[] userObjects) {
@@ -90,5 +109,21 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     public boolean renderShapeAccess() {
         return shapeAccessCheck.isSelected();
+    }
+
+    public boolean renderShapeTerrainType() {
+        return shapeTerrainTypeCheck.isSelected();
+    }
+
+    public boolean renderShapeFractionalSlope() {
+        return shapeFractionalSlopeCheck.isSelected();
+    }
+
+    public boolean renderShapeObstacles() {
+        return shapeObstaclesCheck.isSelected();
+    }
+
+    public boolean renderGroundSlopeConnections() {
+        return groundSlopeConnectionsCheck.isSelected();
     }
 }

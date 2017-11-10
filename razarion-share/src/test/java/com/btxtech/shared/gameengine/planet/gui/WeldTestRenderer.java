@@ -116,7 +116,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
 
         // renderTerrainPathingSurfaceAccess();
-        // doRenderShape();
+        if (weldTestController.renderShapeTerrainType() || weldTestController.renderShapeFractionalSlope() || weldTestController.renderShapeObstacles() || weldTestController.renderGroundSlopeConnections()) {
+            doRenderShape();
+        }
         renderItemTypes();
         if (userDataRenderer != null) {
             userDataRenderer.render();
@@ -463,7 +465,10 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
         displayNodes(absolute, terrainShapeTile);
-        // displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
+
+        if (weldTestController.renderShapeFractionalSlope()) {
+            displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
+        }
     }
 
     private void displayNodes(DecimalPosition absoluteTile, TerrainShapeTile terrainShapeTile) {
@@ -485,9 +490,13 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         getGc().setStroke(Color.BLACK);
         getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
-        displayObstacles(terrainShapeNode);
-//        displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
-        if (terrainShapeNode.getTerrainType() != null) {
+        if (weldTestController.renderShapeObstacles()) {
+            displayObstacles(terrainShapeNode);
+        }
+        if (weldTestController.renderGroundSlopeConnections()) {
+            displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
+        }
+        if (weldTestController.renderShapeTerrainType() && terrainShapeNode.getTerrainType() != null) {
             getGc().setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
             getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
@@ -550,7 +559,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         getGc().setLineWidth(LINE_WIDTH);
         getGc().strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
         displaySubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
-        if (terrainShapeSubNode.getTerrainType() != null) {
+        if (weldTestController.renderShapeTerrainType() && terrainShapeSubNode.getTerrainType() != null) {
             getGc().setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
             getGc().fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
         }
