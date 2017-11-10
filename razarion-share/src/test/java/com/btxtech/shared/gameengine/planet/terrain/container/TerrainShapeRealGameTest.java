@@ -39,7 +39,7 @@ public class TerrainShapeRealGameTest extends WeldTerrainServiceTestBase {
         PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 1000, 1000));
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 6, 6));
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, planetConfig, terrainSlopePositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, planetConfig, terrainSlopePositions, null);
         return getTerrainShape();
     }
 
