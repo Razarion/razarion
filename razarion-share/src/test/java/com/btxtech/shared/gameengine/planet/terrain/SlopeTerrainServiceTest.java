@@ -24,6 +24,56 @@ import java.util.List;
  * 03.04.2017.
  */
 public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
+    @Test
+    public void testSlope() {
+        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
+        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
+        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
+        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        SlopeNode[][] slopeNodes = new SlopeNode[][]{
+                {GameTestHelper.createSlopeNode(2, 5, 1),},
+                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
+                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
+        };
+        slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
+        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
+
+        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
+        terrainSlopePositionLand.setId(1);
+        terrainSlopePositionLand.setSlopeConfigId(1);
+        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
+        terrainSlopePositions.add(terrainSlopePositionLand);
+
+        double[][] heights = new double[][]{
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0}
+        };
+        double[][] splattings = new double[][]{
+                {0.7, 0.8, 0.9},
+                {0.4, 0.5, 0.6},
+                {0.1, 0.2, 0.3}
+        };
+
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
+
+        // showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSlopeTile1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSlopeTile1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), "testSlopeShapeHNT1.json");
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testSlopeShapeHNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSlopeShape1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testSlopeShape1.json", getTerrainShape());
+    }
 
     @Test
     public void testWidthSlope() {
@@ -71,61 +121,15 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         // showDisplay();
 
         Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        AssertTerrainTile.saveTerrainTiles(terrainTiles, "testWidthSlopeTile1.json");
+        //AssertTerrainTile.saveTerrainTiles(terrainTiles, "testWidthSlopeTile1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testWidthSlopeTile1.json");
         assertTerrainTile.assertEquals(terrainTiles);
 
-        AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), "testWidthSlopeShapeHNT1.json");
+        //AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), "testWidthSlopeShapeHNT1.json");
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testWidthSlopeShapeHNT1.json");
 
-        AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testWidthSlopeShape1.json");
+        //AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testWidthSlopeShape1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testWidthSlopeShape1.json", getTerrainShape());
-    }
-
-    @Test
-    public void testTerrainSlopeTileGeneration() {
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
-        SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 5, 1),},
-                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
-                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
-        };
-        slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
-
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
-
-        double[][] heights = new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0}
-        };
-        double[][] splattings = new double[][]{
-                {0.7, 0.8, 0.9},
-                {0.4, 0.5, 0.6},
-                {0.1, 0.2, 0.3}
-        };
-
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
-
-        // TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
-
-        showDisplay();
-
-        // AssertTerrainTile.saveTerrainTile(terrainTile, "testTerrainSlopeTileGeneration.json");
-        // AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeTileGeneration.json");
-        // assertTerrainTile.assertEquals(terrainTile);
     }
 
     @Test
