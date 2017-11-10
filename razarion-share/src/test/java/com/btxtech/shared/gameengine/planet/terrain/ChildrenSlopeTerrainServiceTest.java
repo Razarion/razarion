@@ -49,9 +49,8 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(SKELETON_CONFIG_ID_1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(6).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(0, 0, 0.3),},
                 {GameTestHelper.createSlopeNode(2, 5, 1),},
                 {GameTestHelper.createSlopeNode(4, 10, 0.7),},
                 {GameTestHelper.createSlopeNode(7, 20, 0.7),},

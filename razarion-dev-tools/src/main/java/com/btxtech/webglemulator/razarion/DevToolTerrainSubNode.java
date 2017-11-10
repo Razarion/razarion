@@ -32,7 +32,7 @@ public class DevToolTerrainSubNode extends TerrainSubNode {
     }
 
     @Override
-    public double getHeight() {
+    public Double getHeight() {
         return height;
     }
 

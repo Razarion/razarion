@@ -296,7 +296,11 @@ public class TerrainTileFactory {
             if (terrainShapeNode != null) {
                 TerrainNode terrainNode = jsInteropObjectFactory.generateTerrainNode();
                 terrainNode.setTerrainType(TerrainType.toOrdinal(terrainShapeNode.getTerrainType()));
-                terrainNode.setHeight(terrainShapeNode.getGameEngineHeight());
+                if (terrainShapeNode.isFullGameEngineDriveway()) {
+                    terrainNode.setHeight(terrainShapeNode.getGameEngineHeight() + InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL()));
+                } else {
+                    terrainNode.setHeight(terrainShapeNode.getGameEngineHeight());
+                }
                 if (terrainShapeNode.hasSubNodes()) {
                     terrainNode.initTerrainSubNodeField((int) Math.sqrt(terrainShapeNode.getTerrainShapeSubNodes().length));
                     DecimalPosition nodePosition = TerrainUtil.toNodeAbsolute(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex));
@@ -310,29 +314,31 @@ public class TerrainTileFactory {
     private void createTerrainSubNodes(DecimalPosition parentPosition, DecimalPosition relativePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode[] children, SubNodeFeeder subNodeFeeder) {
         TerrainShapeSubNode bottomLeftShape = children[0];
         if (bottomLeftShape != null) {
-            subNodeFeeder.insertNode(0, 0, createTerrainSubNode(parentPosition, relativePosition, terrainShapeNode, bottomLeftShape));
+            subNodeFeeder.insertSubNode(0, 0, createTerrainSubNode(parentPosition, relativePosition, terrainShapeNode, bottomLeftShape));
         }
         TerrainShapeSubNode bottomRightShape = children[1];
         if (bottomRightShape != null) {
             double nodeLength = TerrainUtil.calculateSubNodeLength(bottomRightShape.getDepth());
-            subNodeFeeder.insertNode(1, 0, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, 0), terrainShapeNode, bottomRightShape));
+            subNodeFeeder.insertSubNode(1, 0, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, 0), terrainShapeNode, bottomRightShape));
         }
         TerrainShapeSubNode topRightShape = children[2];
         if (topRightShape != null) {
             double nodeLength = TerrainUtil.calculateSubNodeLength(topRightShape.getDepth());
-            subNodeFeeder.insertNode(1, 1, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, nodeLength), terrainShapeNode, topRightShape));
+            subNodeFeeder.insertSubNode(1, 1, createTerrainSubNode(parentPosition, relativePosition.add(nodeLength, nodeLength), terrainShapeNode, topRightShape));
         }
         TerrainShapeSubNode topLeftShape = children[3];
         if (topLeftShape != null) {
             double nodeLength = TerrainUtil.calculateSubNodeLength(topLeftShape.getDepth());
-            subNodeFeeder.insertNode(0, 1, createTerrainSubNode(parentPosition, relativePosition.add(0, nodeLength), terrainShapeNode, topLeftShape));
+            subNodeFeeder.insertSubNode(0, 1, createTerrainSubNode(parentPosition, relativePosition.add(0, nodeLength), terrainShapeNode, topLeftShape));
         }
     }
 
     private TerrainSubNode createTerrainSubNode(DecimalPosition nodePosition, DecimalPosition subNodePosition, TerrainShapeNode terrainShapeNode, TerrainShapeSubNode terrainShapeSubNode) {
         TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
         terrainSubNode.setTerrainType(TerrainType.toOrdinal(terrainShapeSubNode.getTerrainType()));
-        if (terrainShapeSubNode.getHeight() != null) {
+        if (terrainShapeSubNode.isDriveway()) {
+            terrainSubNode.setHeight(terrainShapeSubNode.getHeight() + InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL()));
+        } else if (terrainShapeSubNode.getHeight() != null) {
             terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
         }
         if (terrainShapeSubNode.getTerrainShapeSubNodes() != null) {
@@ -351,7 +357,7 @@ public class TerrainTileFactory {
     }
 
     private interface SubNodeFeeder {
-        void insertNode(int x, int y, TerrainSubNode terrainSubNode);
+        void insertSubNode(int x, int y, TerrainSubNode terrainSubNode);
     }
 
 }

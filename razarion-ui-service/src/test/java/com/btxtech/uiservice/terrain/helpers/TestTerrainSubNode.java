@@ -32,7 +32,7 @@ public class TestTerrainSubNode extends TerrainSubNode {
     }
 
     @Override
-    public double getHeight() {
+    public Double getHeight() {
         return height;
     }
 }

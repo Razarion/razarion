@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import jsinterop.annotations.JsType;
 
 /**
@@ -15,7 +14,7 @@ public abstract class TerrainSubNode {
 
     public native void insertTerrainSubNode(int x, int y, TerrainSubNode terrainSubNode);
 
-    public native double getHeight();
+    public native Double getHeight();
 
     public native void setHeight(double height);
 

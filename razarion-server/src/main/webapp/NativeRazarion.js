@@ -478,7 +478,7 @@ com = {
                         this.landWaterProportion = array[9];
 
                         this.height = array[10];
-                        var terrainNodesField = array[10];
+                        var terrainNodesField = array[11];
                         if (typeof terrainNodesField !== 'undefined' && terrainNodesField.length > 0) {
                             this.terrainNodes = new Array(terrainNodesField.length);
                             for (var x = 0; x < terrainNodesField.length; x++) {

@@ -5,7 +5,6 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -107,8 +106,10 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 1)));
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 0)));
         terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 1)));
-        TerrainTileTestDisplay.show(terrainTiles);
+        // TerrainTileTestDisplay.show(terrainTiles);
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testTerrainSlopeTileGeneration4Tiles.json");
+        showDisplay();
+
 
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testTerrainSlopeTileGeneration4Tiles.json");
         assertTerrainTile.assertEquals(terrainTiles);
