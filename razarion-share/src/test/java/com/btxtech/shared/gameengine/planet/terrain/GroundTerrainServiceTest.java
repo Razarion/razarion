@@ -14,20 +14,20 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         // Run test
         setupTerrainTypeService(new double[][]{
                 {0, 0, 0, 0},
-                {0, 16, 0, 0},
-                {0, 0, 16, 0},
                 {0, 0, 0, 0},
-                {16, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
         }, new double[][]{
                 {0.0, 0.0, 0.0},
-                {0.0, 0.0, 0.0},
-                {0.0, 0.0, 0.0},
+                {1.0, 0.0, 0.0},
+                {0.0, 0.0, 1.0},
                 {0.0, 0.0, 0.0},
         }, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
-        // TerrainTileTestDisplay.show(terrainTile);
+        // showDisplay();
 
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration1.json");
@@ -38,11 +38,11 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
     public void testGroundTileGeneration2() {
         // Run test
         setupTerrainTypeService(new double[][]{
-                {4, 0, 0, 0},
-                {0, 1, 0, 0},
                 {0, 0, 0, 0},
-                {0, -1.6, 0, 0},
-                {0, 0, 0, 8},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
         }, new double[][]{
                 {0.0, 0.0, 0.0},
                 {0.0, 0.5, 0.8},
@@ -52,7 +52,6 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
-        TerrainTileTestDisplay.show(terrainTile);
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration2.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration2.json");
         assertTerrainTile.assertEquals(terrainTile);

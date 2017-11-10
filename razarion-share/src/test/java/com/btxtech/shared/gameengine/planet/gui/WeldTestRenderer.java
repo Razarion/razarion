@@ -68,8 +68,10 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private UserDataRenderer userDataRenderer;
     private double zMin = 0;
     private double zMax = 20;
+    private WeldTestController weldTestController;
 
-    public void setupFields(Object[] userObjects) {
+    public void setup(WeldTestController weldTestController, Object[] userObjects) {
+        this.weldTestController = weldTestController;
         if (userObjects != null && userObjects.length > 0) {
             userDataRenderer = new UserDataRenderer(this, userObjects);
         }
@@ -102,7 +104,13 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
     @Override
     protected void doRender() {
-        doRenderTile();
+        Index fromTileIndex = new Index(0, 0);
+        Index toTileIndex = new Index(2, 2);
+
+        if (weldTestController.renderTerrainSplattings()) {
+            renderGroundSplatting(fromTileIndex, toTileIndex);
+        }
+
         // renderTerrainPathingSurfaceAccess();
         // doRenderShape();
         renderItemTypes();
@@ -182,13 +190,23 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void strokeZTriangle(double[] vertices, int index1, int index2, int index3) {
-        strokeZLine(vertices, index1, index2);
-        strokeZLine(vertices, index2, index3);
-        strokeZLine(vertices, index3, index1);
+        strokeGradientLine(vertices, index1, index2, color4Z(vertices[index1 + 2]), color4Z(vertices[index2 + 2]));
+        strokeGradientLine(vertices, index2, index3, color4Z(vertices[index2 + 2]), color4Z(vertices[index3 + 2]));
+        strokeGradientLine(vertices, index3, index1, color4Z(vertices[index3 + 2]), color4Z(vertices[index1 + 2]));
     }
 
     private void strokeZLine(double[] vertices, int index1, int index2) {
-        getGc().setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, color4Z(vertices[index1 + 2])), new Stop(1, color4Z(vertices[index2 + 2]))));
+        strokeGradientLine(vertices, index1, index2, color4Z(vertices[index1 + 2]), color4Z(vertices[index2 + 2]));
+    }
+
+    private void strokeGradientTriangle(double[] vertices, int index1, int index2, int index3, Color color1, Color color2, Color color3) {
+        strokeGradientLine(vertices, index1, index2, color1, color2);
+        strokeGradientLine(vertices, index2, index3, color2, color3);
+        strokeGradientLine(vertices, index3, index1, color3, color1);
+    }
+
+    private void strokeGradientLine(double[] vertices, int index1, int index2, Color color1, Color color2) {
+        getGc().setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, color1), new Stop(1, color2)));
         getGc().strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
     }
 
@@ -197,7 +215,6 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         value = MathHelper.clamp(value, 0, 1);
         return Color.color(value, 0, value);
     }
-
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
         getGc().setLineWidth(LINE_WIDTH);
@@ -270,21 +287,46 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 //            double radius = 1;
 //            getGc().fillOval(xCorner - radius, yCorner - radius, radius * 2.0, radius * 2.0);
 //        }
-//        // Splattings
-//        getGc().setStroke(Color.GREEN);
-//        getGc().setLineWidth(0.3);
-//        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
-//            int vertexScalarIndex = vertexIndex * 3;
-//
-//            double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
-//            double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
-//
-//            double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
-//
-//            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
-//            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-//            getGc().strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
-//        }
+    }
+
+    private void renderGroundSplatting(Index fromTileIndex, Index toTileIndex) {
+        getGc().setStroke(Color.GREEN);
+        getGc().setLineWidth(FAT_LINE_WIDTH);
+
+        for (int tileX = fromTileIndex.getX(); tileX <= toTileIndex.getX(); tileX++) {
+            for (int tileY = fromTileIndex.getY(); tileY <= toTileIndex.getY(); tileY++) {
+                TerrainTile terrainTile = terrainService.generateTerrainTile(new Index(tileX, tileY));
+                if (terrainTile == null) {
+                    continue;
+                }
+
+                for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+                    int vertexScalarIndex = vertexIndex * 3;
+                    Color color1 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex], 0);
+                    Color color2 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 1], 0);
+                    Color color3 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 2], 0);
+                    strokeGradientTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6, color1, color2, color3);
+                }
+
+                if (terrainTile.getTerrainSlopeTiles() != null) {
+                    for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+                        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
+                            int vertexScalarIndex = vertexIndex * 3;
+
+                            double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
+                            double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
+
+                            double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
+
+                            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
+                            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
+                            getGc().strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
+                        }
+                    }
+                }
+            }
+        }
+
 
     }
 

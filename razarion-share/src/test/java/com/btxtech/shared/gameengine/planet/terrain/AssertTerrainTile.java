@@ -69,10 +69,6 @@ public class AssertTerrainTile {
     }
 
     public void assertEquals(TerrainTile actual) {
-        if (SHOW_GUI) {
-            TerrainTileTestDisplay.show(expected, Collections.singletonList(actual));
-        }
-
         if (expected.size() != 1) {
             Assert.fail("Expected size does not match one single TerrainTile. Expected size: " + expected.size());
         }
@@ -88,6 +84,8 @@ public class AssertTerrainTile {
         Assert.assertArrayEquals("Ground Tangents", expected.getGroundTangents(), actual.getGroundTangents(), 0.001);
         Assert.assertArrayEquals("Ground Splattings", expected.getGroundSplattings(), actual.getGroundSplattings(), 0.001);
         Assert.assertEquals("Ground Vertex Count", expected.getGroundVertexCount(), actual.getGroundVertexCount());
+        Assert.assertEquals("Height", expected.getHeight(), actual.getHeight(), 0.001);
+        Assert.assertEquals("LandWaterProportion", expected.getLandWaterProportion(), actual.getLandWaterProportion(), 0.001);
         // Slope
         int expectedSlopeTileCount = 0;
         if (expected.getTerrainSlopeTiles() != null) {
@@ -111,10 +109,18 @@ public class AssertTerrainTile {
                 Assert.fail("TerrainWaterTile is invalid. Expected: " + expected.getTerrainWaterTile() + " Actual: " + actual.getTerrainWaterTile());
             }
         }
-        // Display heights
-        // TODO Assert.assertArrayEquals("Display Heights", expected.getDisplayHeights(), actual.getDisplayHeights(), 0.001);
-        // Land Water Proportion
-        // TODO Assert.assertEquals("Display Heights", expected.getLandWaterProportion(), actual.getLandWaterProportion(), 0.001);
+        // Terrain nodes
+        if (expected.getTerrainNodes() != null && actual.getTerrainNodes() != null) {
+            for (int x = 0; x < TerrainUtil.TERRAIN_TILE_NODES_COUNT; x++) {
+                for (int y = 0; y < TerrainUtil.TERRAIN_TILE_NODES_COUNT; y++) {
+                    compare(expected.getTerrainNodes()[x][y], actual.getTerrainNodes()[x][y]);
+                }
+            }
+        } else if (expected.getTerrainNodes() != null) {
+            Assert.fail("TerrainWaterTile expected.getTerrainNodes() != null && actual.getTerrainNodes() == null");
+        } else if (actual.getTerrainNodes() != null) {
+            Assert.fail("TerrainWaterTile expected.getTerrainNodes() == null && actual.getTerrainNodes() != null");
+        }
     }
 
     private void compare(TerrainSlopeTile expected, TerrainSlopeTile actual) {
@@ -130,6 +136,52 @@ public class AssertTerrainTile {
     private void compare(TerrainWaterTile expected, TerrainWaterTile actual) {
         Assert.assertArrayEquals("Water Vertices", expected.getVertices(), actual.getVertices(), 0.001);
         Assert.assertEquals("Water Vertex Count", expected.getVertexCount(), actual.getVertexCount());
+    }
+
+    private void compare(TerrainNode expected, TerrainNode actual) {
+        if (expected == null && actual == null) {
+            return;
+        }
+        if (expected != null && actual == null) {
+            Assert.fail("TerrainNode expected != null && TerrainNode actual == null");
+        }
+        if (expected == null) {
+            Assert.fail("TerrainNode expected == null && TerrainNode actual != null");
+        }
+        Assert.assertEquals("TerrainNode TerrainType", expected.getTerrainType(), actual.getTerrainType());
+        Assert.assertEquals("TerrainNode Height", expected.getHeight(), actual.getHeight(), 0.001);
+
+        compare(expected.getTerrainSubNodes(), actual.getTerrainSubNodes());
+    }
+
+    private void compare(TerrainSubNode[][] expected, TerrainSubNode[][] actual) {
+        if (expected == null && actual == null) {
+            return;
+        }
+        if (expected != null && actual == null) {
+            Assert.fail("TerrainSubNode[][] expected != null && TerrainSubNode[][] actual == null");
+        }
+        if (expected == null) {
+            Assert.fail("TerrainSubNode[][] expected == null && TerrainSubNode[][] actual != null");
+        }
+        compare(expected[0][0], expected[0][0]);
+    }
+
+    private void compare(TerrainSubNode expected, TerrainSubNode actual) {
+        if (expected == null && actual == null) {
+            return;
+        }
+        if (expected != null && actual == null) {
+            Assert.fail("TerrainSubNode expected != null && TerrainSubNode actual == null");
+        }
+        if (expected == null) {
+            Assert.fail("TerrainSubNode expected == null && TerrainSubNode actual != null");
+        }
+
+        Assert.assertEquals("TerrainNode TerrainType", expected.getTerrainType(), actual.getTerrainType());
+        Assert.assertEquals("TerrainNode Height", expected.getHeight(), actual.getHeight(), 0.001);
+
+        compare(expected.getTerrainSubNodes(), actual.getTerrainSubNodes());
     }
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {

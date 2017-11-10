@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestContr
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 
 import javax.inject.Inject;
@@ -29,11 +30,13 @@ public class WeldTestController extends AbstractTerrainTestController {
     private TextField zMinField;
     @FXML
     private TextField zMaxField;
+    @FXML
+    private CheckBox terrainSplattingCheck;
     private Object[] userObjects;
 
     @Override
     protected AbstractTerrainTestRenderer setupRenderer() {
-        weldTestRenderer.setupFields(userObjects);
+        weldTestRenderer.setup(this, userObjects);
         return weldTestRenderer;
     }
 
@@ -77,5 +80,9 @@ public class WeldTestController extends AbstractTerrainTestController {
     public void onMaxZChanged(ActionEvent inputMethodEvent) {
         weldTestRenderer.setZMax(Double.parseDouble(zMaxField.getText()));
         getAbstractTerrainTestRenderer().render();
+    }
+
+    public boolean renderTerrainSplattings() {
+        return terrainSplattingCheck.isSelected();
     }
 }
