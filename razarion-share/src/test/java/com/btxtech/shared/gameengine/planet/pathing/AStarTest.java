@@ -112,7 +112,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(223, 290))));
         planetConfig.setTerrainObjectPositions(terrainObjectPositions);
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, null);
     }
 
     protected PathingService getPathingService() {

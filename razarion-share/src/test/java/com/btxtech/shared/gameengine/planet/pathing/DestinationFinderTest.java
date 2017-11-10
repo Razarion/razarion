@@ -86,7 +86,7 @@ public class DestinationFinderTest extends WeldTerrainServiceTestBase {
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(132, 131))));
         planetConfig.setTerrainObjectPositions(terrainObjectPositions);
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions);
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, null);
     }
 
     @Test
