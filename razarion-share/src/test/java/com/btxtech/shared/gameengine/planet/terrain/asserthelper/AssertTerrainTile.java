@@ -1,8 +1,14 @@
-package com.btxtech.shared.gameengine.planet.terrain;
+package com.btxtech.shared.gameengine.planet.terrain.asserthelper;
 
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -22,8 +28,8 @@ import java.util.List;
  * 09.04.2017.
  */
 public class AssertTerrainTile {
+    public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private static final boolean SHOW_GUI = false;
-    private static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private Collection<TerrainTile> expected;
 
     public AssertTerrainTile(Class theClass, String resourceName) {

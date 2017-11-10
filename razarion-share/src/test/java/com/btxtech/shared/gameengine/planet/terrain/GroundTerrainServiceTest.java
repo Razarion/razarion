@@ -1,7 +1,9 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import org.junit.Test;
 
 /**
@@ -32,6 +34,9 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration1.json");
         assertTerrainTile.assertEquals(terrainTile);
+
+        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(160, 160),"testGroundShapeHNT1.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeHNT1.json");
     }
 
     @Test
@@ -55,6 +60,9 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration2.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration2.json");
         assertTerrainTile.assertEquals(terrainTile);
+
+        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(160, 160),"testGroundShapeHNT2.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeHNT2.json");
     }
 
     @Test
@@ -78,6 +86,9 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGenerationOffset.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGenerationOffset.json");
         assertTerrainTile.assertEquals(terrainTile);
+
+        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(960,1920), new DecimalPosition(1080, 2040),"testGroundShapeOffsetHNT1.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(960, 1920), new DecimalPosition(1080, 2040), getClass(), "testGroundShapeOffsetHNT1.json");
     }
 
     @Test
@@ -101,5 +112,8 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGenerationOffsetNeg.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGenerationOffsetNeg.json");
         assertTerrainTile.assertEquals(terrainTile);
+
+        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(160, 160),"testGroundShapeOffsetNeg1.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeOffsetNeg1.json");
     }
 }

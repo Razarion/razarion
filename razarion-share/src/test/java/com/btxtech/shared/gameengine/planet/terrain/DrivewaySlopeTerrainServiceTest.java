@@ -1,14 +1,13 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import org.junit.Test;
 
 import java.util.ArrayList;

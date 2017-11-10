@@ -5,7 +5,7 @@ import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import org.junit.Test;
 
 import java.util.ArrayList;
