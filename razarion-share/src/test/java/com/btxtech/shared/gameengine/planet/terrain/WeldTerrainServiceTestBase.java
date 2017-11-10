@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
  */
 public class WeldTerrainServiceTestBase extends WeldBaseTest {
 
-    protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions) {
+    protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
@@ -48,6 +49,7 @@ public class WeldTerrainServiceTestBase extends WeldBaseTest {
         if (planetConfig == null) {
             planetConfig = GameTestContent.setupPlanetConfig();
         }
+        planetConfig.setTerrainObjectPositions(terrainObjectPositions);
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getTestNativeTerrainShapeAccess().setTerrainSlopePositions(terrainSlopePositions);
