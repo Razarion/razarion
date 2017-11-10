@@ -1,10 +1,13 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import org.junit.Test;
 
@@ -36,17 +39,22 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         parent.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 40, null), GameTestHelper.createTerrainSlopeCorner(220, 200, null), GameTestHelper.createTerrainSlopeCorner(50, 200, null)));
         parent.setChildren(children);
 
-        Collection<TerrainTile> terrainTiles = setup(parent);
+        setup(parent);
+        // showDisplay();
 
-        showDisplay();
-
-        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSingleChild1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSingleChild1.json");
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSingleChildTile1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSingleChildTile1.json");
         assertTerrainTile.assertEquals(terrainTiles);
 
+        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(240, 240), "testSingleChildShapeHNT1.json");
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(240, 240), getClass(), "testSingleChildShapeHNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSingleChildShape1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testSingleChildShape1.json", getTerrainShape());
     }
 
-    private Collection<TerrainTile> setup(TerrainSlopePosition terrainSlopePosition) {
+    private void setup(TerrainSlopePosition terrainSlopePosition) {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(SKELETON_CONFIG_ID_1).setType(SlopeSkeletonConfig.Type.LAND);
@@ -78,19 +86,6 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions);
-
-        Collection<TerrainTile> terrainTiles = new ArrayList<>();
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 0)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 1)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(0, 2)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 0)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 1)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(1, 2)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 0)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 1)));
-        terrainTiles.add(getTerrainService().generateTerrainTile(new Index(2, 2)));
-
-        return terrainTiles;
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions, null);
     }
 }
