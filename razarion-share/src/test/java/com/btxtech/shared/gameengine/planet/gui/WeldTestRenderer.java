@@ -111,6 +111,10 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
             renderGroundSplatting(fromTileIndex, toTileIndex);
         }
 
+        if (weldTestController.renderShapeAccess()) {
+            renderTerrainShapeAccess();
+        }
+
         // renderTerrainPathingSurfaceAccess();
         // doRenderShape();
         renderItemTypes();
@@ -119,7 +123,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-    private void renderTerrainPathingSurfaceAccess() {
+    private void renderTerrainShapeAccess() {
         DecimalPosition from = new DecimalPosition(0, 0);
         double length = 300;
 

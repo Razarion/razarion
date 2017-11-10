@@ -32,6 +32,8 @@ public class WeldTestController extends AbstractTerrainTestController {
     private TextField zMaxField;
     @FXML
     private CheckBox terrainSplattingCheck;
+    @FXML
+    private CheckBox shapeAccessCheck;
     private Object[] userObjects;
 
     @Override
@@ -84,5 +86,9 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     public boolean renderTerrainSplattings() {
         return terrainSplattingCheck.isSelected();
+    }
+
+    public boolean renderShapeAccess() {
+        return shapeAccessCheck.isSelected();
     }
 }

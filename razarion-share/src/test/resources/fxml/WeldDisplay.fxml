@@ -47,8 +47,9 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <CheckBox fx:id="terrainSplattingCheck" mnemonicParsing="false" prefHeight="17.0" prefWidth="76.0"
-                                          text="Splatting"/>
+                                <CheckBox fx:id="terrainSplattingCheck" mnemonicParsing="false" prefHeight="17.0"
+                                          prefWidth="76.0" text="Splatting"/>
+                                <CheckBox fx:id="shapeAccessCheck" layoutX="2.0" layoutY="26.0" mnemonicParsing="false" text="Shape access"/>
                             </children>
                         </AnchorPane>
                     </content>
