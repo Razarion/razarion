@@ -41,9 +41,9 @@ public class InstanceStringGenerator {
         return builder.toString();
     }
 
-    public static String generateDecimalPositionList(List<DecimalPosition> positions) {
+    public static String generateSimpleDecimalPositionList(List<DecimalPosition> positions) {
         StringBuilder builder = new StringBuilder();
-        builder.append("List<DecimalPosition> positions = Arrays.asList(");
+        builder.append("Arrays.asList(");
         for (int i = 0; i < positions.size(); i++) {
             DecimalPosition decimalPosition = positions.get(i);
             builder.append(generate(decimalPosition));
@@ -51,8 +51,12 @@ public class InstanceStringGenerator {
                 builder.append(", ");
             }
         }
-        builder.append(");");
+        builder.append(")");
         return builder.toString();
+    }
+
+    public static String generateDecimalPositionList(List<DecimalPosition> positions) {
+        return ("List<DecimalPosition> positions = " + generateSimpleDecimalPositionList(positions)) + ");";
     }
 
     public static String generate(DecimalPosition decimalPosition) {
