@@ -428,7 +428,10 @@ public class TerrainShapeSetup {
             // This is a left out node
             Line crossLine = new Line(piercingLine.get(0), piercingLine.get(1));
             Collection<DecimalPosition> crossPoints = absoluteRect.getCrossPointsLine(crossLine);
-            if (crossPoints.size() != 2) {
+            if (crossPoints.size() == 1) {
+                // Goes exactly through the corner -> return. This is may wrong
+                return null;
+            } else if (crossPoints.size() != 2) {
                 throw new IllegalStateException("Exactly two cross points expected: " + crossPoints.size());
             }
             DecimalPosition start = DecimalPosition.getNearestPoint(piercingLine.get(0), crossPoints);
