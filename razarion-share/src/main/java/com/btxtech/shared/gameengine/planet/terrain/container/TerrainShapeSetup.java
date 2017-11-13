@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.DoubleHolder;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.InsideCheckResult;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Polygon2DRasterizer;
@@ -133,25 +132,22 @@ public class TerrainShapeSetup {
             setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getGroundHeight(), null, 0, null);
             setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER, terrainTypeService.getWaterConfig().getWaterLevel() + slope.getGroundHeight(), null, 0, null);
             // Setup slope ground connection (render engine)
-            Polygon2D outerPolygon = slope.getOuterRenderEnginePolygon();
-            Rectangle2D aabb = outerPolygon.toAabb();
-            for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
-                Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                InsideCheckResult inside = outerPolygon.checkInside(terrainRect);
-                if (inside == InsideCheckResult.PARTLY) {
-                    List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
-                    if (outerPiercings != null) {
-                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                        for (List<DecimalPosition> outerPiercing : outerPiercings) {
-                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
-                        }
-                    }
-                } else if (inside == InsideCheckResult.INSIDE) {
+            Polygon2DRasterizer outerRasterizer = Polygon2DRasterizer.create(slope.getOuterRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+            for (Index nodeIndex : outerRasterizer.getPiercedTiles()) {
+                List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
+                if (outerPiercings != null) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                    terrainShapeNode.setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
-                    terrainShapeNode.setDoNotRenderGround();
+                    for (List<DecimalPosition> outerPiercing : outerPiercings) {
+                        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                        terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
+                    }
                 }
+            }
+            for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
+                TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                terrainShapeNode.setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
+                terrainShapeNode.setDoNotRenderGround();
             }
         } else {
             // Setup TerrainType
