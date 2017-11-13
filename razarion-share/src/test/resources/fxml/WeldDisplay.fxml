@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
@@ -12,31 +16,27 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.btxtech.shared.gameengine.planet.gui.WeldTestController">
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.shared.gameengine.planet.gui.WeldTestController">
     <center>
         <AnchorPane fx:id="anchorPanel" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
-                <Canvas fx:id="canvas" height="200.0" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved"
-                        onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll"
-                        width="200.0"/>
+                <Canvas fx:id="canvas" height="200.0" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" onScroll="#onScroll" width="200.0" />
             </children>
         </AnchorPane>
     </center>
     <top>
         <ToolBar prefWidth="600.0" BorderPane.alignment="CENTER">
             <items>
-                <Slider fx:id="zoomSlider" majorTickUnit="10.0" max="30.0" min="-10.0" minorTickCount="1"
-                        prefHeight="14.0" prefWidth="79.0" showTickLabels="true" showTickMarks="true"/>
-                <Button mnemonicParsing="false" onAction="#onZoomResetButton" text="1:1"/>
-                <TextField fx:id="scaleField" editable="false" prefWidth="50.0"/>
-                <TextField fx:id="mouseLabel" prefHeight="25.0" prefWidth="90.0"/>
-                <Separator orientation="VERTICAL"/>
-                <Label text="Z min"/>
-                <TextField fx:id="zMinField" onAction="#onMinZChanged" prefWidth="50.0"/>
-                <Label text="Z max"/>
-                <TextField fx:id="zMaxField" onAction="#onMaxZChanged" prefWidth="50.0"/>
+                <Slider fx:id="zoomSlider" majorTickUnit="10.0" max="30.0" min="-10.0" minorTickCount="1" prefHeight="14.0" prefWidth="79.0" showTickLabels="true" showTickMarks="true" />
+                <Button mnemonicParsing="false" onAction="#onZoomResetButton" text="1:1" />
+                <TextField fx:id="scaleField" editable="false" prefWidth="50.0" />
+                <TextField fx:id="mouseLabel" prefHeight="25.0" prefWidth="90.0" />
+                <Separator orientation="VERTICAL" />
+                <Label text="Z min" />
+                <TextField fx:id="zMinField" onAction="#onMinZChanged" prefWidth="50.0" />
+                <Label text="Z max" />
+                <TextField fx:id="zMaxField" onAction="#onMaxZChanged" prefWidth="50.0" />
             </items>
         </ToolBar>
     </top>
@@ -47,19 +47,18 @@
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="339.0" prefWidth="250.0">
                             <children>
-                                <CheckBox fx:id="terrainSplattingCheck" mnemonicParsing="false" prefHeight="17.0"
-                                          prefWidth="76.0" text="Splatting"/>
-                                <CheckBox fx:id="shapeAccessCheck" layoutX="2.0" layoutY="25.0" mnemonicParsing="false"
-                                          text="Shape access"/>
-                                <CheckBox fx:id="shapeTerrainTypeCheck" layoutX="2.0" layoutY="52.0"
-                                          mnemonicParsing="false" text="Shape terrain type"/>
-                                <CheckBox fx:id="shapeFractionalSlopeCheck" layoutX="2.0" layoutY="80.0"
-                                          mnemonicParsing="false" text="Shape fractional slope"/>
-                                <CheckBox fx:id="shapeObstaclesCheck" layoutX="2.0" layoutY="109.0"
-                                          mnemonicParsing="false" text="Shape obstacles"/>
-                                <CheckBox fx:id="groundSlopeConnectionsCheck" layoutX="2.0" layoutY="136.0"
-                                          mnemonicParsing="false" prefHeight="17.0" prefWidth="195.0"
-                                          text="Shape ground slope connections"/>
+                                <CheckBox fx:id="terrainTileSplattingCheck" layoutX="1.0" layoutY="-1.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Tile Splatting" />
+                                <CheckBox fx:id="terrainTileWaterCheck" layoutX="1.0" layoutY="16.0" mnemonicParsing="false" text="Tile Water" />
+                                <CheckBox fx:id="terrainTileGroundCheck" layoutX="1.0" layoutY="33.0" mnemonicParsing="false" text="Tile Ground" />
+                                <CheckBox fx:id="terrainTileSlopeCheck" layoutX="1.0" layoutY="50.0" mnemonicParsing="false" text="Tile Slope" />
+                                <CheckBox fx:id="terrainTileHeightCheck" layoutX="1.0" layoutY="67.0" mnemonicParsing="false" text="Tile Height" />
+                                <CheckBox fx:id="terrainTileTerrainTypeCheck" layoutX="1.0" layoutY="84.0" mnemonicParsing="false" text="Tile Terrain Type" />
+                                <CheckBox fx:id="shapeAccessCheck" layoutX="1.0" layoutY="101.0" mnemonicParsing="false" text="Shape access" />
+                                <CheckBox fx:id="shapeTerrainTypeCheck" layoutX="1.0" layoutY="118.0" mnemonicParsing="false" text="Shape terrain type" />
+                                <CheckBox fx:id="shapeFractionalSlopeCheck" layoutX="1.0" layoutY="135.0" mnemonicParsing="false" text="Shape fractional slope" />
+                                <CheckBox fx:id="shapeObstaclesCheck" layoutX="1.0" layoutY="152.0" mnemonicParsing="false" text="Shape obstacles" />
+                                <CheckBox fx:id="groundSlopeConnectionsCheck" layoutX="1.0" layoutY="169.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="195.0" text="Shape ground slope connections" />
+                        <CheckBox fx:id="shapeWaterCheck" layoutX="1.0" layoutY="186.0" mnemonicParsing="false" text="Shape water" />
                             </children>
                         </AnchorPane>
                     </content>

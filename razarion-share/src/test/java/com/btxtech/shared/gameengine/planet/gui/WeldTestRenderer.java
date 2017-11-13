@@ -107,8 +107,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         Index fromTileIndex = new Index(0, 0);
         Index toTileIndex = new Index(2, 2);
 
-        if (weldTestController.renderTerrainSplattings()) {
-            renderGroundSplatting(fromTileIndex, toTileIndex);
+        if (weldTestController.renderTerrainTileSplattings() || weldTestController.renderTerrainTileWater() || weldTestController.renderTerrainTileGround() || weldTestController.renderTerrainTileSlope() || weldTestController.renderTerrainTileHeight() || weldTestController.renderTerrainTileTerrainType()) {
+            doRenderTile(fromTileIndex, toTileIndex);
         }
 
         if (weldTestController.renderShapeAccess()) {
@@ -116,7 +116,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
 
         // renderTerrainPathingSurfaceAccess();
-        if (weldTestController.renderShapeTerrainType() || weldTestController.renderShapeFractionalSlope() || weldTestController.renderShapeObstacles() || weldTestController.renderGroundSlopeConnections()) {
+        if (weldTestController.renderShapeTerrainType() || weldTestController.renderShapeFractionalSlope() || weldTestController.renderShapeObstacles() || weldTestController.renderGroundSlopeConnections() || weldTestController.renderShapeWater()) {
             doRenderShape();
         }
         renderItemTypes();
@@ -152,36 +152,47 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-    private void doRenderTile() {
-        // Index from = TerrainUtil.toTile(new DecimalPosition(265, 18));
-        // Index to = TerrainUtil.toTile(new DecimalPosition(441, 200));
-        Index from = new Index(0, 0);
-        Index to = new Index(2, 2);
-
+    private void doRenderTile(Index from, Index to) {
         for (int tileX = from.getX(); tileX <= to.getX(); tileX++) {
             for (int tileY = from.getY(); tileY <= to.getY(); tileY++) {
                 TerrainTile terrainTile = terrainService.generateTerrainTile(new Index(tileX, tileY));
-                drawTerrainTile(terrainTile);
+                if (terrainTile != null) {
+                    drawTerrainTile(terrainTile);
+                }
             }
         }
     }
 
     public void drawTerrainTile(TerrainTile terrainTile) {
-        getGc().setLineWidth(LINE_WIDTH);
-        if (terrainTile.getTerrainWaterTile() != null) {
-            drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
+        if (weldTestController.renderTerrainTileSplattings()) {
+            renderTileSplatting(terrainTile);
         }
 
-        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
-            int vertexScalarIndex = vertexIndex * 3;
-            // fillTriangle(terrainTile.getGroundVertices(), terrainTile.getGroundNorms(), terrainTile.getGroundTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
-            strokeZTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
+        if (weldTestController.renderTerrainTileWater()) {
+            getGc().setLineWidth(LINE_WIDTH);
+            if (terrainTile.getTerrainWaterTile() != null) {
+                drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
+            }
+        }
+        if (weldTestController.renderTerrainTileGround()) {
+            getGc().setLineWidth(LINE_WIDTH);
+            for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+                int vertexScalarIndex = vertexIndex * 3;
+                fillTriangle(terrainTile.getGroundVertices(), terrainTile.getGroundNorms(), terrainTile.getGroundTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
+                strokeZTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
+            }
         }
 
-        drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
-        if (terrainTile.getTerrainSlopeTiles() != null) {
-            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-                drawTerrainSlopeTile(terrainSlopeTile);
+        if (weldTestController.renderTerrainTileTerrainType() || weldTestController.renderTerrainTileHeight()) {
+            drawNodes(terrainTile.getTerrainNodes(), terrainTile.getIndexX(), terrainTile.getIndexY());
+        }
+
+        if (weldTestController.renderTerrainTileSlope()) {
+            getGc().setLineWidth(LINE_WIDTH);
+            if (terrainTile.getTerrainSlopeTiles() != null) {
+                for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+                    drawTerrainSlopeTile(terrainSlopeTile);
+                }
             }
         }
     }
@@ -295,45 +306,33 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 //        }
     }
 
-    private void renderGroundSplatting(Index fromTileIndex, Index toTileIndex) {
-        getGc().setStroke(Color.GREEN);
+    private void renderTileSplatting(TerrainTile terrainTile) {
         getGc().setLineWidth(FAT_LINE_WIDTH);
 
-        for (int tileX = fromTileIndex.getX(); tileX <= toTileIndex.getX(); tileX++) {
-            for (int tileY = fromTileIndex.getY(); tileY <= toTileIndex.getY(); tileY++) {
-                TerrainTile terrainTile = terrainService.generateTerrainTile(new Index(tileX, tileY));
-                if (terrainTile == null) {
-                    continue;
-                }
+        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+            int vertexScalarIndex = vertexIndex * 3;
+            Color color1 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex], 0);
+            Color color2 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 1], 0);
+            Color color3 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 2], 0);
+            strokeGradientTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6, color1, color2, color3);
+        }
 
-                for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+        if (terrainTile.getTerrainSlopeTiles() != null) {
+            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+                for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
                     int vertexScalarIndex = vertexIndex * 3;
-                    Color color1 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex], 0);
-                    Color color2 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 1], 0);
-                    Color color3 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 2], 0);
-                    strokeGradientTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6, color1, color2, color3);
-                }
 
-                if (terrainTile.getTerrainSlopeTiles() != null) {
-                    for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-                        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
-                            int vertexScalarIndex = vertexIndex * 3;
+                    double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
+                    double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
 
-                            double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
-                            double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
+                    double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
 
-                            double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
-
-                            DecimalPosition position = new DecimalPosition(xCorner, yCorner);
-                            DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-                            getGc().strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
-                        }
-                    }
+                    DecimalPosition position = new DecimalPosition(xCorner, yCorner);
+                    DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
+                    getGc().strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
                 }
             }
         }
-
-
     }
 
     private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
@@ -345,8 +344,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
             double[] xCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex], terrainWaterTile.getVertices()[vertexScalarIndex + 3], terrainWaterTile.getVertices()[vertexScalarIndex + 6]};
             double[] yCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex + 1], terrainWaterTile.getVertices()[vertexScalarIndex + 4], terrainWaterTile.getVertices()[vertexScalarIndex + 7]};
             getGc().strokePolygon(xCorners, yCorners, 3);
-            // getGc().setFill(Color.color(1, 0, 0, 0.3));
-            // getGc().fillPolygon(xCorners, yCorners, 3);
+            //getGc().setFill(Color.color(1, 0, 0, 0.3));
+            //getGc().fillPolygon(xCorners, yCorners, 3);
         }
     }
 
@@ -367,14 +366,17 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawNode(TerrainNode terrainNode, DecimalPosition absoluteNodePosition) {
-        TerrainType terrainType = TerrainType.fromOrdinal(terrainNode.getTerrainType());
-        if (terrainType != null) {
-            getGc().setFill(color4TerrainType(terrainType));
+        if (weldTestController.renderTerrainTileTerrainType()) {
+            TerrainType terrainType = TerrainType.fromOrdinal(terrainNode.getTerrainType());
+            if (terrainType != null) {
+                getGc().setFill(color4TerrainType(terrainType));
+                getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+            }
+        }
+        if (weldTestController.renderTerrainTileHeight()) {
+            getGc().setFill(color4Z(terrainNode.getHeight()));
             getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
-        getGc().setFill(color4Z(terrainNode.getHeight()));
-        getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
-
         drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
     }
 
@@ -394,14 +396,18 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawSubNode(TerrainSubNode terrainSubNode, DecimalPosition absolutePosition, double subNodeLength, int depth) {
-        TerrainType terrainType = TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
-        if (terrainType != null) {
-            getGc().setFill(color4TerrainType(terrainType));
-            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
+        if (weldTestController.renderTerrainTileTerrainType()) {
+            TerrainType terrainType = TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
+            if (terrainType != null) {
+                getGc().setFill(color4TerrainType(terrainType));
+                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
+            }
         }
-        if (terrainSubNode.getHeight() != null) {
-            getGc().setFill(color4Z(terrainSubNode.getHeight()));
-            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
+        if (weldTestController.renderTerrainTileHeight()) {
+            if (terrainSubNode.getHeight() != null) {
+                getGc().setFill(color4Z(terrainSubNode.getHeight()));
+                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
+            }
         }
 
 //        getGc().setStroke(new Color(0, 0, 1, 1));
@@ -496,6 +502,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         if (weldTestController.renderGroundSlopeConnections()) {
             displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
         }
+        if (weldTestController.renderShapeWater()) {
+            displayShapeWater(terrainShapeNode.getWaterSegments());
+        }
         if (weldTestController.renderShapeTerrainType() && terrainShapeNode.getTerrainType() != null) {
             getGc().setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
             getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
@@ -508,6 +517,15 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
         for (List<Vertex> groundSlopeConnection : groundSlopeConnections) {
             strokeVertexPolygon(groundSlopeConnection, LINE_WIDTH, Color.GREEN, true);
+        }
+    }
+
+    private void displayShapeWater(List<List<Vertex>> waterSegments) {
+        if (waterSegments == null) {
+            return;
+        }
+        for (List<Vertex> waterSegment : waterSegments) {
+            strokeVertexPolygon(waterSegment, LINE_WIDTH, Color.BLUE, true);
         }
     }
 

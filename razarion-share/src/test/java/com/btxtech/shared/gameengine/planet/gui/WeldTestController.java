@@ -31,7 +31,17 @@ public class WeldTestController extends AbstractTerrainTestController {
     @FXML
     private TextField zMaxField;
     @FXML
-    private CheckBox terrainSplattingCheck;
+    private CheckBox terrainTileSplattingCheck;
+    @FXML
+    private CheckBox terrainTileWaterCheck;
+    @FXML
+    private CheckBox terrainTileGroundCheck;
+    @FXML
+    private CheckBox terrainTileSlopeCheck;
+    @FXML
+    private CheckBox terrainTileHeightCheck;
+    @FXML
+    private CheckBox terrainTileTerrainTypeCheck;
     @FXML
     private CheckBox shapeAccessCheck;
     @FXML
@@ -42,6 +52,8 @@ public class WeldTestController extends AbstractTerrainTestController {
     private CheckBox shapeObstaclesCheck;
     @FXML
     private CheckBox groundSlopeConnectionsCheck;
+    @FXML
+    private CheckBox shapeWaterCheck;
     private Object[] userObjects;
 
     @Override
@@ -56,12 +68,18 @@ public class WeldTestController extends AbstractTerrainTestController {
         zMinField.setText(Double.toString(weldTestRenderer.getZMin()));
         zMaxField.setText(Double.toString(weldTestRenderer.getZMax()));
 
-        addRenderListener(terrainSplattingCheck);
+        addRenderListener(terrainTileSplattingCheck);
+        addRenderListener(terrainTileWaterCheck);
+        addRenderListener(terrainTileGroundCheck);
+        addRenderListener(terrainTileSlopeCheck);
+        addRenderListener(terrainTileHeightCheck);
+        addRenderListener(terrainTileTerrainTypeCheck);
         addRenderListener(shapeAccessCheck);
         addRenderListener(shapeTerrainTypeCheck);
         addRenderListener(shapeFractionalSlopeCheck);
         addRenderListener(shapeObstaclesCheck);
         addRenderListener(groundSlopeConnectionsCheck);
+        addRenderListener(shapeWaterCheck);
     }
 
     private void addRenderListener(CheckBox checkBox) {
@@ -103,8 +121,28 @@ public class WeldTestController extends AbstractTerrainTestController {
         getAbstractTerrainTestRenderer().render();
     }
 
-    public boolean renderTerrainSplattings() {
-        return terrainSplattingCheck.isSelected();
+    public boolean renderTerrainTileSplattings() {
+        return terrainTileSplattingCheck.isSelected();
+    }
+
+    public boolean renderTerrainTileWater() {
+        return terrainTileWaterCheck.isSelected();
+    }
+
+    public boolean renderTerrainTileGround() {
+        return terrainTileGroundCheck.isSelected();
+    }
+
+    public boolean renderTerrainTileSlope() {
+        return terrainTileSlopeCheck.isSelected();
+    }
+
+    public boolean renderTerrainTileHeight() {
+        return terrainTileHeightCheck.isSelected();
+    }
+
+    public boolean renderTerrainTileTerrainType() {
+        return terrainTileTerrainTypeCheck.isSelected();
     }
 
     public boolean renderShapeAccess() {
@@ -125,5 +163,9 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     public boolean renderGroundSlopeConnections() {
         return groundSlopeConnectionsCheck.isSelected();
+    }
+
+    public boolean renderShapeWater() {
+        return shapeWaterCheck.isSelected();
     }
 }

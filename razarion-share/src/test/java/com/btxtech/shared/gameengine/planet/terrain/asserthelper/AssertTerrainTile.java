@@ -2,6 +2,8 @@ package com.btxtech.shared.gameengine.planet.terrain.asserthelper;
 
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.TestTerrainTile;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
@@ -9,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -119,7 +122,7 @@ public class AssertTerrainTile {
         if (expected.getTerrainNodes() != null && actual.getTerrainNodes() != null) {
             for (int x = 0; x < TerrainUtil.TERRAIN_TILE_NODES_COUNT; x++) {
                 for (int y = 0; y < TerrainUtil.TERRAIN_TILE_NODES_COUNT; y++) {
-                    compare(expected.getTerrainNodes()[x][y], actual.getTerrainNodes()[x][y]);
+                    compare(expected.getTerrainNodes()[x][y], actual.getTerrainNodes()[x][y], TerrainUtil.toNodeAbsolute(TerrainUtil.tileToNode(new Index(expected.getIndexX(), expected.getIndexY()))));
                 }
             }
         } else if (expected.getTerrainNodes() != null) {
@@ -144,50 +147,53 @@ public class AssertTerrainTile {
         Assert.assertEquals("Water Vertex Count", expected.getVertexCount(), actual.getVertexCount());
     }
 
-    private void compare(TerrainNode expected, TerrainNode actual) {
+    private void compare(TerrainNode expected, TerrainNode actual, DecimalPosition absoluteStart) {
         if (expected == null && actual == null) {
             return;
         }
         if (expected != null && actual == null) {
-            Assert.fail("TerrainNode expected != null && TerrainNode actual == null");
+            Assert.fail("TerrainNode expected != null && TerrainNode actual == null. At: " + absoluteStart);
         }
         if (expected == null) {
-            Assert.fail("TerrainNode expected == null && TerrainNode actual != null");
+            Assert.fail("TerrainNode expected == null && TerrainNode actual != null. At: " + absoluteStart);
         }
-        Assert.assertEquals("TerrainNode TerrainType", expected.getTerrainType(), actual.getTerrainType());
-        Assert.assertEquals("TerrainNode Height", expected.getHeight(), actual.getHeight(), 0.001);
+        assertTerrainType("TerrainNode TerrainType. At: " + absoluteStart, expected.getTerrainType(), actual.getTerrainType());
+        Assert.assertEquals("TerrainNode Height: " + absoluteStart, expected.getHeight(), actual.getHeight(), 0.001);
 
-        compare(expected.getTerrainSubNodes(), actual.getTerrainSubNodes());
+        compare(expected.getTerrainSubNodes(), actual.getTerrainSubNodes(), absoluteStart);
     }
 
-    private void compare(TerrainSubNode[][] expected, TerrainSubNode[][] actual) {
+    private void compare(TerrainSubNode[][] expected, TerrainSubNode[][] actual, DecimalPosition absoluteStart) {
         if (expected == null && actual == null) {
             return;
         }
         if (expected != null && actual == null) {
-            Assert.fail("TerrainSubNode[][] expected != null && TerrainSubNode[][] actual == null");
+            Assert.fail("TerrainSubNode[][] expected != null && TerrainSubNode[][] actual == null. At: " + absoluteStart);
         }
         if (expected == null) {
-            Assert.fail("TerrainSubNode[][] expected == null && TerrainSubNode[][] actual != null");
+            Assert.fail("TerrainSubNode[][] expected == null && TerrainSubNode[][] actual != null. At: " + absoluteStart);
         }
-        compare(expected[0][0], expected[0][0]);
+        compare(expected[0][0], expected[0][0], absoluteStart);
+        compare(expected[0][1], expected[0][1], absoluteStart);
+        compare(expected[1][0], expected[1][0], absoluteStart);
+        compare(expected[1][1], expected[1][1], absoluteStart);
     }
 
-    private void compare(TerrainSubNode expected, TerrainSubNode actual) {
+    private void compare(TerrainSubNode expected, TerrainSubNode actual, DecimalPosition absoluteStart) {
         if (expected == null && actual == null) {
             return;
         }
         if (expected != null && actual == null) {
-            Assert.fail("TerrainSubNode expected != null && TerrainSubNode actual == null");
+            Assert.fail("TerrainSubNode expected != null && TerrainSubNode actual == null. At: " + absoluteStart);
         }
         if (expected == null) {
-            Assert.fail("TerrainSubNode expected == null && TerrainSubNode actual != null");
+            Assert.fail("TerrainSubNode expected == null && TerrainSubNode actual != null. At: " + absoluteStart);
         }
 
-        Assert.assertEquals("TerrainNode TerrainType", expected.getTerrainType(), actual.getTerrainType());
-        Assert.assertEquals("TerrainNode Height", expected.getHeight(), actual.getHeight(), 0.001);
+        assertTerrainType("TerrainNode TerrainType. At: " + absoluteStart, expected.getTerrainType(), actual.getTerrainType());
+        Assert.assertEquals("TerrainNode Height. At: " + absoluteStart, expected.getHeight(), actual.getHeight(), 0.001);
 
-        compare(expected.getTerrainSubNodes(), actual.getTerrainSubNodes());
+        compare(expected.getTerrainSubNodes(), actual.getTerrainSubNodes(), absoluteStart);
     }
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {
@@ -208,5 +214,12 @@ public class AssertTerrainTile {
             Vertex tangent = TestHelper.createVertex(tangents, i / 3);
             Assert.assertTrue("dot too big at: " + i + " dot:" + norm.dot(tangent), Math.abs(norm.dot(tangent)) < 0.00001);
         }
+    }
+
+    private static void assertTerrainType(String message, int expected, int actual) {
+        if ((expected == 0 || expected == -1) && (actual == 0 || actual == -1)) {
+            return;
+        }
+        Assert.assertEquals(message, expected, actual);
     }
 }

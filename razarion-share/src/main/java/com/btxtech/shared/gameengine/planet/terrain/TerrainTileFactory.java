@@ -68,6 +68,12 @@ public class TerrainTileFactory {
 
         if (terrainShapeTile != null) {
             terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
+                //////////////////////
+//                DecimalPosition absolute = TerrainUtil.toNodeAbsolute(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex));
+//                if(absolute.getX() == 120 && absolute.getY() == 144) {
+//                    System.out.println("***********************************");
+//                }
+                //////////////////////
                 if (terrainShapeTile.isRenderLand() && terrainShapeNode == null) {
                     insertTerrainRectangle(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), terrainTileContext);
                 } else if (terrainShapeNode != null) {

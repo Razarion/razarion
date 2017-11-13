@@ -63,14 +63,14 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         // showDisplay();
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
-        //AssertTerrainTile.saveTerrainTile(terrainTile, "testWaterTile1.json");
+        // AssertTerrainTile.saveTerrainTile(terrainTile, "testWaterTile1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testWaterTile1.json");
         assertTerrainTile.assertEquals(terrainTile);
 
-        //AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), "testWaterShapeHNT1.json");
+        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), "testWaterShapeHNT1.json");
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testWaterShapeHNT1.json");
 
-        //AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testWaterShape1.json");
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testWaterShape1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testWaterShape1.json", getTerrainShape());
     }
 

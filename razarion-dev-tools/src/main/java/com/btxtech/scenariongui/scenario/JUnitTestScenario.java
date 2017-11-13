@@ -1,29 +1,55 @@
 package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.scenariongui.InstanceStringGenerator;
-import com.btxtech.shared.datatypes.Polygon2I;
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Polygon2DRasterizer;
+import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import javafx.scene.paint.Color;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * 19.03.2016.
  */
 public class JUnitTestScenario extends Scenario {
+    private List<DecimalPosition> corners = new ArrayList<>();
+    private List<Rectangle2D> absolutePiercedTiles = new ArrayList<>();
+    private List<Rectangle2D> absoluteInnerTiles = new ArrayList<>();
+
     @Override
     public void render(ExtendedGraphicsContext context) {
+        context.strokePolygon(corners, 0.2, Color.RED, true);
+        absolutePiercedTiles.forEach(rectangle2D -> context.strokeRectangle(rectangle2D, 0.2, Color.DARKGREEN));
+        absoluteInnerTiles.forEach(rectangle2D -> context.strokeRectangle(rectangle2D, 0.2, Color.YELLOW));
+    }
 
-        Polygon2I polygon1 = new Polygon2I(Arrays.asList(new Index(-79, 7), new Index(-25, -74), new Index(50, -72), new Index(82, -42), new Index(46, 83), new Index(-73, 83)));
-        context.strokeCurveIndex(polygon1.getCorners(), 1.0, Color.BLUE, true);
-        Polygon2I polygon2 = new Polygon2I(Arrays.asList(new Index(116, 127), new Index(31, 40), new Index(103, -11), new Index(202, -14), new Index(231, 53), new Index(200, 129)));
-        context.strokeCurveIndex(polygon2.getCorners(), 1.0, Color.GREEN, true);
+    @Override
+    public boolean onMouseDown(DecimalPosition position) {
+        corners.add(position);
+        if (corners.size() >= 3) {
+            absolutePiercedTiles.clear();
+            Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(new Polygon2D(corners), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+            absolutePiercedTiles = polygon2DRasterizer.getPiercedTiles().stream().map(TerrainUtil::toAbsoluteNodeRectangle).collect(Collectors.toList());
+            absoluteInnerTiles= polygon2DRasterizer.getInnerTiles().stream().map(TerrainUtil::toAbsoluteNodeRectangle).collect(Collectors.toList());
 
-        context.strokeCurveIndex(polygon2.remove(polygon1).getCorners(), 1.0, Color.RED, true);
+        }
+        return true;
+    }
 
-        System.out.println(InstanceStringGenerator.generateIndexList(polygon2.remove(polygon1).getCorners()));
-
+    @Override
+    public void onGenerate() {
+        System.out.println("------------------------------------------------------------");
+        System.out.println("    @Test");
+        System.out.println("    public void test() throws Exception {");
+        System.out.println("        Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(new Polygon2D(" + InstanceStringGenerator.generateSimpleDecimalPositionList(corners) + "), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);");
+//        System.out.println("        " + InstanceStringGenerator.generateIndexList(expected));
+//        System.out.println("        GeometricUtilTest.assertIndices(positions, actual);");
+        System.out.println("    }");
     }
 }

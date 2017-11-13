@@ -50,7 +50,7 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(240, 240), "testSingleChildShapeHNT1.json");
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(240, 240), getClass(), "testSingleChildShapeHNT1.json");
 
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSingleChildShape1.json");
+        AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSingleChildShape1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testSingleChildShape1.json", getTerrainShape());
     }
 

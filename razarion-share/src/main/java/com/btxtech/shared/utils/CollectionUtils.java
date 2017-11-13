@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Vertex;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class CollectionUtils {
     public static int getCorrectedDelta(int startIndex, int endIndex, int listSize) {
         int correctedStartIndex = getCorrectedIndex(startIndex, listSize);
         int correctedEndIndex = getCorrectedIndex(endIndex, listSize);
-        if(correctedEndIndex >= correctedStartIndex) {
+        if (correctedEndIndex >= correctedStartIndex) {
             return correctedEndIndex - correctedStartIndex;
         } else {
             return listSize - correctedEndIndex - correctedStartIndex;
@@ -87,6 +88,13 @@ public class CollectionUtils {
 
     public static <T> T getFirst(Iterable<T> iterable) {
         return iterable.iterator().next();
+    }
+
+    public static <T> T removeFirst(Iterable<T> iterable) {
+        Iterator<T> iterator = iterable.iterator();
+        T t = iterator.next();
+        iterator.remove();
+        return t;
     }
 
     public static <T> T getNth(Collection<T> collection, int index) {

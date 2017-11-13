@@ -56,6 +56,9 @@ public class ShapeAccessTypeContainer {
     }
 
     public void assertTerrainType(TerrainType terrainType) {
-        Assert.assertEquals("TerrainType", terrainType, this.terrainType);
+        if ((terrainType == null || terrainType == TerrainType.LAND) && (this.terrainType == null || this.terrainType == TerrainType.LAND)) {
+            return;
+        }
+        Assert.assertEquals("TerrainType. At: " + samplePosition, terrainType, this.terrainType);
     }
 }

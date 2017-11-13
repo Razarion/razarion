@@ -323,9 +323,9 @@ public class Index {
         }
         if (x == other.x) {
             if (other.y > y) {
-                return Direction.S;
-            } else {
                 return Direction.N;
+            } else {
+                return Direction.S;
             }
         }
         if (y == other.y) {
@@ -337,15 +337,15 @@ public class Index {
         }
         if (other.y > y) {
             if (other.x > x) {
-                return Direction.SE;
-            } else {
-                return Direction.SW;
-            }
-        } else {
-            if (other.x > x) {
                 return Direction.NE;
             } else {
                 return Direction.NW;
+            }
+        } else {
+            if (other.x > x) {
+                return Direction.SE;
+            } else {
+                return Direction.SW;
             }
         }
     }

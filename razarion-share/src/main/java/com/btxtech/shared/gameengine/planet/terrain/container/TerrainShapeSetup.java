@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.InsideCheckResult;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Polygon2DRasterizer;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -166,6 +168,10 @@ public class TerrainShapeSetup {
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
                 Driveway fractalDriveway = slope.getDrivewayIfInsideOrTouching(terrainRect);
 
+//                if(terrainRect.startX() == 120 && terrainRect.startY() == 144) {
+//                    System.out.println("***********************************");
+//                }
+
                 // Add ground connection
                 if (innerPiercings == null && fractalDriveway != null) {
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
@@ -175,7 +181,7 @@ public class TerrainShapeSetup {
                         terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getHeight() + slope.getGroundHeight(), false, null));
                         terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getHeight() + slope.getGroundHeight(), false, fractalDriveway));
                     }
-                } else if (innerPiercings != null || outerPiercings != null) {
+                } else if (innerPiercings != null) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     if (fractalDriveway != null) {
                         List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
@@ -188,16 +194,14 @@ public class TerrainShapeSetup {
                             }
                         }
                     } else {
-                        if (innerPiercings != null) {
-                            for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                                terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getHeight() + slope.getGroundHeight(), false, null));
-                            }
+                        for (List<DecimalPosition> innerPiercing : innerPiercings) {
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getHeight() + slope.getGroundHeight(), false, null));
                         }
                     }
-                    if (outerPiercings != null) {
-                        for (List<DecimalPosition> outerPiercing : outerPiercings) {
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
-                        }
+                }
+                if (outerPiercings != null) {
+                    for (List<DecimalPosition> outerPiercing : outerPiercings) {
+                        terrainShape.getOrCreateTerrainShapeNode(nodeIndex).addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
                     }
                 }
 
@@ -210,7 +214,7 @@ public class TerrainShapeSetup {
                 }
 
                 // TerrainNode completely in driveway
-                Driveway driveway = slope.getDriveway(corners);
+                Driveway driveway = slope.getDriveway(terrainRect.shrink(0.01).toCorners());
                 if (driveway != null) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setDrivewayHeights(driveway.generateDrivewayHeights(corners));
@@ -235,56 +239,52 @@ public class TerrainShapeSetup {
 
     // Rename setup game engine / render engine
     private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, TerrainType outerTerrainType, double outerHeight, DrivewayContext drivewayContext) {
-        Rectangle2D aabb = terrainRegion.toAabb();
-        for (Index nodeIndex : GeometricUtil.rasterizeRectangleInclusive(aabb, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH)) {
-            Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-//            if (terrainRect.startX() == 96 && terrainRect.startY() == 128) {
-//                System.out.println("+++++++++++++++++ terrainRect: " + terrainRect);
-//            }
+        Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(terrainRegion, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+        if (innerTerrainType != null) {
+            for (Index nodeIndex : polygon2DRasterizer.getInnerTiles()) {
+                if (drivewayContext != null) {
+                    Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                    switch (drivewayContext.checkInside(terrainRect)) {
+                        case INSIDE:
+                            TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                            terrainShapeNode.setTerrainType(drivewayContext.getInnerTerrainType());
+                            terrainShapeNode.setGameEngineHeight(drivewayContext.getHeight());
+                            if (drivewayContext.getType() == DrivewayContext.Type.SLOPE_DRIVEWAY) {
+                                terrainShapeNode.setDrivewayHeights(drivewayContext.getDrivewayHeights(terrainRect));
+                                terrainShapeNode.setFullGameEngineDriveway(true);
+                            }
+                            continue;
+                        case PARTLY:
+                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
+                            continue;
+                    }
+                }
 
-            if (drivewayContext != null) {
-                switch (drivewayContext.checkInside(terrainRect)) {
-                    case INSIDE:
-                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                        terrainShapeNode.setTerrainType(drivewayContext.getInnerTerrainType());
-                        terrainShapeNode.setGameEngineHeight(drivewayContext.getHeight());
-                        if (drivewayContext.getType() == DrivewayContext.Type.SLOPE_DRIVEWAY) {
-                            terrainShapeNode.setDrivewayHeights(drivewayContext.getDrivewayHeights(terrainRect));
-                            terrainShapeNode.setFullGameEngineDriveway(true);
-                        }
-                        continue;
-                    case PARTLY:
-                        handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
-                        continue;
+                TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                if (!terrainShapeNode.hasSubNodes()) {
+                    terrainShapeNode.setTerrainType(innerTerrainType);
+                    terrainShapeNode.setGameEngineHeight(innerHeight);
                 }
             }
-            switch (terrainRegion.checkInside(terrainRect)) {
-                case INSIDE: {
-                    if (innerTerrainType != null) {
-                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                        if (!terrainShapeNode.hasSubNodes()) {
-                            terrainShapeNode.setTerrainType(innerTerrainType);
-                            terrainShapeNode.setGameEngineHeight(innerHeight);
-                        }
+            for (Index nodeIndex : polygon2DRasterizer.getPiercedTiles()) {
+                Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                if (drivewayContext != null) {
+                    switch (drivewayContext.checkInside(terrainRect)) {
+                        case INSIDE:
+                            TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                            terrainShapeNode.setTerrainType(drivewayContext.getInnerTerrainType());
+                            terrainShapeNode.setGameEngineHeight(drivewayContext.getHeight());
+                            if (drivewayContext.getType() == DrivewayContext.Type.SLOPE_DRIVEWAY) {
+                                terrainShapeNode.setDrivewayHeights(drivewayContext.getDrivewayHeights(terrainRect));
+                                terrainShapeNode.setFullGameEngineDriveway(true);
+                            }
+                            continue;
+                        case PARTLY:
+                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
+                            continue;
                     }
-                    break;
                 }
-                case PARTLY: {
-                    handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
-                    break;
-                }
-                case OUTSIDE: {
-                    if (outerTerrainType != null) {
-                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                        if (!terrainShapeNode.hasSubNodes()) {
-                            terrainShapeNode.setTerrainType(outerTerrainType);
-                            terrainShapeNode.setGameEngineHeight(outerHeight);
-                        }
-                    }
-                    break;
-                }
-                default:
-                    throw new IllegalArgumentException("TerrainShapeSetup.processSlope() unknown Polygon2D.Inside: " + terrainRegion.checkInside(terrainRect));
+                handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
             }
         }
     }
@@ -350,7 +350,12 @@ public class TerrainShapeSetup {
         // find start
         double totalDistance = start.getInner().getDistance(predecessor.getInner());
         Collection<DecimalPosition> crossPoints = absoluteTerrainTileRect.getCrossPointsLine(new Line(start.getInner(), predecessor.getInner()));
-        if (crossPoints.size() != 1) {
+        if (crossPoints.size() == 2) {
+            Iterator<DecimalPosition> iterator = crossPoints.iterator();
+            if (!iterator.next().equalsDelta(iterator.next(), 0.001)) {
+                throw new IllegalStateException("Exactly one cross point expected in end. Delta too big: " + crossPoints.size());
+            }
+        } else if (crossPoints.size() != 1) {
             throw new IllegalStateException("Exactly one cross point expected in start finding: " + crossPoints.size());
         }
         double innerDistance = CollectionUtils.getFirst(crossPoints).getDistance(start.getInner());
@@ -373,7 +378,12 @@ public class TerrainShapeSetup {
             if (!TerrainUtil.toTile(current.getInner()).equals(TerrainUtil.toTile(successor.getInner()))) {
                 totalDistance = current.getInner().getDistance(successor.getInner());
                 crossPoints = absoluteTerrainTileRect.getCrossPointsLine(new Line(current.getInner(), successor.getInner()));
-                if (crossPoints.size() != 1) {
+                if (crossPoints.size() == 2) {
+                    Iterator<DecimalPosition> iterator = crossPoints.iterator();
+                    if (!iterator.next().equalsDelta(iterator.next(), 0.001)) {
+                        throw new IllegalStateException("Exactly one cross point expected in end. Delta too big: " + crossPoints.size());
+                    }
+                } else if (crossPoints.size() != 1) {
                     throw new IllegalStateException("Exactly one cross point expected in end: " + crossPoints.size());
                 }
                 innerDistance = CollectionUtils.getFirst(crossPoints).getDistance(current.getInner());
