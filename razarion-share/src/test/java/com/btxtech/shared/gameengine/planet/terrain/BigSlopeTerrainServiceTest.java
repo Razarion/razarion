@@ -66,6 +66,6 @@ public class BigSlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testBigSkewAreaSlope() {
-        // setup(GameTestHelper.createTerrainSlopeCorner(100, 4000, null), GameTestHelper.createTerrainSlopeCorner(4000, 100, null), GameTestHelper.createTerrainSlopeCorner(4800, 800, null), GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
+        setup(GameTestHelper.createTerrainSlopeCorner(100, 4000, null), GameTestHelper.createTerrainSlopeCorner(4000, 100, null), GameTestHelper.createTerrainSlopeCorner(4800, 800, null), GameTestHelper.createTerrainSlopeCorner(800, 4800, null));
     }
 }
