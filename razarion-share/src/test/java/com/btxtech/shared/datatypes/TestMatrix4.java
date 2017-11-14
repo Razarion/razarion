@@ -648,15 +648,35 @@ public class TestMatrix4 {
 
     @Test
     public void createFromNorm() {
-        // Assert.assertNull(Matrix4.createFromNormAndYaw(new Vertex(0, 0, 1), 0));
-
-        Vertex norm = new Vertex(1, 1, 1);
-        Matrix4 matrix = Matrix4.createFromNormAndYaw(norm, 0);
+        Matrix4 matrix = Matrix4.createFromNormAndYaw(new Vertex(0, 0, 1), 0);
         Assert.assertNotNull(matrix);
-//        TestHelper.assertVertex(new Vertex(-1, 0, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
-//        TestHelper.assertVertex(new Vertex(-1, 0, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
-//        TestHelper.assertVertex(new Vertex(0, -1, 0), matrix.multiply(new Vertex(0, 1, 0), 1));
-//        TestHelper.assertVertex(new Vertex(0, 0, 1), matrix.multiply(new Vertex(0, 0, 1), 1));
+        TestHelper.assertVertex(new Vertex(1, 0, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
+        TestHelper.assertVertex(new Vertex(0, 1, 0), matrix.multiply(new Vertex(0, 1, 0), 1));
+        TestHelper.assertVertex(new Vertex(0, 0, 1), matrix.multiply(new Vertex(0, 0, 1), 1));
+
+        matrix = Matrix4.createFromNormAndYaw(new Vertex(0, 0, 1), Math.toRadians(90));
+        Assert.assertNotNull(matrix);
+        TestHelper.assertVertex(new Vertex(0, 1, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
+        TestHelper.assertVertex(new Vertex(-1, 0, 0), matrix.multiply(new Vertex(0, 1, 0), 1));
+        TestHelper.assertVertex(new Vertex(0, 0, 1), matrix.multiply(new Vertex(0, 0, 1), 1));
+
+        matrix = Matrix4.createFromNormAndYaw(new Vertex(0, 0, 1), Math.toRadians(-90));
+        Assert.assertNotNull(matrix);
+        TestHelper.assertVertex(new Vertex(0, -1, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
+        TestHelper.assertVertex(new Vertex(1, 0, 0), matrix.multiply(new Vertex(0, 1, 0), 1));
+        TestHelper.assertVertex(new Vertex(0, 0, 1), matrix.multiply(new Vertex(0, 0, 1), 1));
+
+        matrix = Matrix4.createFromNormAndYaw(new Vertex(0, 1, 1).normalize(1.0), 0);
+        Assert.assertNotNull(matrix);
+        TestHelper.assertVertex(new Vertex(1, 0, 0), matrix.multiply(new Vertex(1, 0, 0), 1));
+        TestHelper.assertVertex(new Vertex(0, 0.70710, -0.70710), matrix.multiply(new Vertex(0, 1, 0), 1));
+        TestHelper.assertVertex(new Vertex(0, 0.70710, 0.70710), matrix.multiply(new Vertex(0, 0, 1), 1));
+
+//        matrix = Matrix4.createFromNormAndYaw(new Vertex(0, 1, 1).normalize(1.0), Math.toRadians(90));
+//        Assert.assertNotNull(matrix);
+//        TestHelper.assertVertex(new Vertex(0, 0.70710, -0.70710), matrix.multiply(new Vertex(1, 0, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 0.70710, -0.70710), matrix.multiply(new Vertex(0, 1, 0), 1));
+//        TestHelper.assertVertex(new Vertex(0, 0.70710, 0.70710), matrix.multiply(new Vertex(0, 0, 1), 1));
 
 //        norm = new Vertex(1, 0, 0);
 //        matrix = Matrix4.createFromNormAndYaw(norm, 0);

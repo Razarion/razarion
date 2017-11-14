@@ -252,8 +252,8 @@ public class Matrix4 {
 
     public static Matrix4 createFromNormAndYaw(Vertex norm, double yaw) {
         Vertex direction = new Vertex(Math.cos(yaw), Math.sin(yaw), 0);
-        Vertex y = direction.cross(norm);
-        Vertex x = norm.cross(y).normalize(1.0);
+        Vertex y = norm.cross(direction);
+        Vertex x = y.cross(norm).normalize(1.0);
         double[][] numbers = {
                        {x.getX(), y.getX(), norm.getX(), 0},
                        {x.getY(), y.getY(), norm.getY(), 0},
