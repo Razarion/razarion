@@ -23,6 +23,10 @@ public class ControlUtils {
     public static void openSingleFileDataUrlUpload(final BiConsumer<String, File> dataUrlConsumer) {
         final InputElement fileSelector = Browser.getDocument().createInputElement();
         fileSelector.setAttribute("type", "file");
+        fileSelector.addEventListener(Event.CLICK, evt -> {
+            fileSelector.setValue(null);
+        });
+
         fileSelector.addEventListener(Event.CHANGE, evt -> {
             FileList fileList = fileSelector.getFiles();
 
@@ -43,6 +47,9 @@ public class ControlUtils {
     public static void openSingleFileTextUpload(BiConsumer<String, File> textConsumer) {
         final InputElement fileSelector = Browser.getDocument().createInputElement();
         fileSelector.setAttribute("type", "file");
+        fileSelector.addEventListener(Event.CLICK, evt -> {
+            fileSelector.setValue(null);
+        });
         fileSelector.addEventListener(Event.CHANGE, evt -> {
             FileList fileList = fileSelector.getFiles();
             File file = fileList.item(0);
