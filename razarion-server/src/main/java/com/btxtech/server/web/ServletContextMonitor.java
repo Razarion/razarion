@@ -30,6 +30,6 @@ public class ServletContextMonitor implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        gameEngineService.stop();
+        gameEngineService.shutdown();
     }
 }

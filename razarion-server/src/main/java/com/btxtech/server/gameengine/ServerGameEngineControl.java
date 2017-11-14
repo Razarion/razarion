@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -79,6 +80,8 @@ public class ServerGameEngineControl implements GameLogicListener {
     private PlanetBackupMongoDb planetBackupMongoDb;
     @Inject
     private ServerInventoryService serverInventoryService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private final Object reloadLook = new Object();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -194,6 +197,15 @@ public class ServerGameEngineControl implements GameLogicListener {
     public void stop() {
         planetService.stop();
         botService.killAllBots();
+    }
+
+    public void shutdown() {
+        try {
+            planetBackupMongoDb.saveBackup(planetService.backup(false));
+        } catch (JsonProcessingException e) {
+            exceptionHandler.handleException(e);
+        }
+        stop();
     }
 
     public void onLevelChanged(HumanPlayerId humanPlayerId, int levelId) {
