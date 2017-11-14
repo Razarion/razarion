@@ -154,7 +154,7 @@ public class GameCanvas {
                 return;
             }
             WheelEvent wheelEvent = (WheelEvent) evt;
-            terrainMouseHandler.onMouseWheel(wheelEvent.getWheelDeltaY());
+            terrainMouseHandler.onMouseWheel(GwtUtils.getDeltaYFromWheelEvent(wheelEvent));
             wheelEvent.preventDefault();
         }, true);
         GwtUtils.preventContextMenu(canvas);

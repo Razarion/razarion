@@ -46,6 +46,7 @@ public class SyncBaseItemInfo {
     private DecimalPosition unloadPos;
     private Index targetPosition;
     private double spawnProgress;
+    private Integer syncBoxItemId;
 
     public int getId() {
         return id;
@@ -215,6 +216,15 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo setTargetPosition(Index targetPosition) {
         this.targetPosition = Index.saveCopy(targetPosition);
+        return this;
+    }
+
+    public Integer getSyncBoxItemId() {
+        return syncBoxItemId;
+    }
+
+    public SyncBaseItemInfo setSyncBoxItemId(Integer syncBoxItemId) {
+        this.syncBoxItemId = syncBoxItemId;
         return this;
     }
 

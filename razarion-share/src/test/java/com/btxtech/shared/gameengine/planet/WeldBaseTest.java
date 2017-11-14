@@ -4,6 +4,7 @@ import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.cdimock.TestNativeTerrainShapeAccess;
 import com.btxtech.shared.cdimock.TestSimpleExecutorService;
 import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.InventoryTypeService;
@@ -165,6 +166,26 @@ public class WeldBaseTest {
             throw new IllegalArgumentException("More then one SyncBaseItem found for id: " + baseItemTypeId);
         }
         return found.get(0);
+    }
+
+    public SyncBaseItem findSyncBaseItemHighestId(PlayerBaseFull playerBaseFull, int baseItemTypeId) {
+        SyncBaseItem found = null;
+
+        for (SyncBaseItem syncBaseItem : playerBaseFull.getItems()) {
+            if (syncBaseItem.getBaseItemType().getId() != baseItemTypeId) {
+                continue;
+            }
+            if (found == null) {
+                found = syncBaseItem;
+            } else if (syncBaseItem.getId() > found.getId()) {
+                found = syncBaseItem;
+            }
+        }
+
+        if (found == null) {
+            throw new IllegalArgumentException("No SyncBaseItem found for id: " + baseItemTypeId);
+        }
+        return found;
     }
 
     public SyncBoxItem findSyncBoxItem(int boxItemTypeId, SyncBoxItem... exclusion) {

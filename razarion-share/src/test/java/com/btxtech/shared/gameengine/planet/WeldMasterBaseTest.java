@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,5 +69,13 @@ public class WeldMasterBaseTest extends WeldBaseTest {
         return createLevel1UserContext(null);
     }
 
+    public SyncBaseItem fabricateAndMove(SyncBaseItem factory, int baseItemTypeId, DecimalPosition position, PlayerBaseFull playerBaseFull) {
+        getCommandService().fabricate(factory, getBaseItemType(baseItemTypeId));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem syncBaseItem = findSyncBaseItemHighestId(playerBaseFull, baseItemTypeId);
+        getCommandService().move(syncBaseItem, position);
+        tickPlanetServiceBaseServiceActive();
+        return syncBaseItem;
+    }
 
 }

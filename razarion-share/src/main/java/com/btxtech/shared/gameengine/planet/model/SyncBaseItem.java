@@ -162,6 +162,12 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         containedIn = syncBaseItemInfo.getContainedIn();
         getSyncPhysicalArea().synchronize(syncBaseItemInfo.getSyncPhysicalAreaInfo());
 
+        if (syncBaseItemInfo.getSyncBoxItemId() != null) {
+            syncBoxItemToPick = boxService.getSyncBoxItem(syncBaseItemInfo.getSyncBoxItemId());
+        } else {
+            syncBoxItemToPick = null;
+        }
+
         if (syncWeapon != null) {
             syncWeapon.synchronize(syncBaseItemInfo);
         }
@@ -201,6 +207,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         syncBaseItemInfo.setBuildup(buildup);
         syncBaseItemInfo.setContainedIn(containedIn);
         syncBaseItemInfo.setSpawnProgress(spawnProgress);
+
+        if (syncBoxItemToPick != null) {
+            syncBaseItemInfo.setSyncBoxItemId(syncBoxItemToPick.getId());
+        }
 
         if (syncWeapon != null) {
             syncWeapon.fillSyncItemInfo(syncBaseItemInfo);

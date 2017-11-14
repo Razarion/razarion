@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.Widget;
 import elemental.dom.Element;
 import elemental.events.Event;
 import elemental.events.MouseEvent;
+import elemental.events.WheelEvent;
 import elemental.html.ImageElement;
 import org.jboss.errai.common.client.dom.Node;
 
@@ -75,4 +76,9 @@ public class GwtUtils {
             }
         }
     }-*/;
+
+    public static native double getDeltaYFromWheelEvent(WheelEvent wheelEvent) /*-{
+        return wheelEvent.deltaY;
+    }-*/;
+
 }

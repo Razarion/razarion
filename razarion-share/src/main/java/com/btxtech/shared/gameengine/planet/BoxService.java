@@ -146,6 +146,7 @@ public class BoxService {
     private void createSyncBoxItemSlave(SyncBoxItemInfo syncBoxItemInfo) {
         BoxItemType boxItemType = itemTypeService.getBoxItemType(syncBoxItemInfo.getBoxItemTypeId());
         SyncBoxItem syncBoxItem = syncItemContainerService.createSyncBoxItemSlave(boxItemType, syncBoxItemInfo.getId(), syncBoxItemInfo.getSyncPhysicalAreaInfo().getPosition(), syncBoxItemInfo.getSyncPhysicalAreaInfo().getAngle());
+        syncBoxItem.setup(Integer.MAX_VALUE);
         synchronized (boxes) {
             boxes.put(syncBoxItem.getId(), syncBoxItem);
         }

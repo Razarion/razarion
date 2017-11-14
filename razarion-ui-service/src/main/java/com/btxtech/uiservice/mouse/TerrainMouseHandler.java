@@ -7,10 +7,10 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.GroupSelectionFrame;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class TerrainMouseHandler {
-    private static final int MOUSE_WHEEL_DIVIDER = 60;
+    private static final double FOV_Y_STEP = Math.toRadians(4);
     private Logger logger = Logger.getLogger(TerrainMouseHandler.class.getName());
     @Inject
     private ProjectionTransformation projectionTransformation;
@@ -246,9 +246,16 @@ public class TerrainMouseHandler {
         }
     }
 
-    public void onMouseWheel(double deltaY) {
+    public void onMouseWheel(double wheelDeltaY) {
         try {
-            projectionTransformation.setFovYSave(projectionTransformation.getFovY() - Math.toRadians(deltaY) / MOUSE_WHEEL_DIVIDER);
+            // Chrome and Firefox do have different deltas
+            double fovYStep;
+            if (wheelDeltaY < 0) {
+                fovYStep = FOV_Y_STEP;
+            } else {
+                fovYStep = -FOV_Y_STEP;
+            }
+            projectionTransformation.setFovYSave(projectionTransformation.getFovY() - fovYStep);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

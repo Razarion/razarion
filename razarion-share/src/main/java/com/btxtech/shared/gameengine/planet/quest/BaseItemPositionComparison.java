@@ -45,12 +45,12 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
     private final Collection<SyncBaseItem> fulfilledItems = new HashSet<>();
     private Long fulfilledTimeStamp;
 
-    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer time, boolean addExistingItems, HumanPlayerId humanPlayerId) {
+    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer time, Boolean addExistingItems, HumanPlayerId humanPlayerId) {
         this.itemTypes = itemTypes;
         this.placeConfig = placeConfig;
         this.time = time;
         this.humanPlayerId = humanPlayerId;
-        if (addExistingItems) {
+        if (addExistingItems != null && addExistingItems) {
             addInitial();
             checkFulfilled();
         }
