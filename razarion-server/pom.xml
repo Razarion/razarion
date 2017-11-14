@@ -150,7 +150,7 @@
                     <workingDirectory>${project.basedir}/src/main/angular</workingDirectory>
                     <arguments>
                         <argument>build</argument>
-                        <argument>--prod</argument>
+                        <argument>--env=prod</argument>
                         <argument>--output-path=${project.build.directory}/ROOT/backend</argument>
                         <argument>--base-href=/backend/</argument>
                     </arguments>
