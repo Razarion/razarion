@@ -24,23 +24,29 @@ public class ControlUtils {
         final InputElement fileSelector = Browser.getDocument().createInputElement();
         fileSelector.setAttribute("type", "file");
         fileSelector.addEventListener(Event.CLICK, evt -> {
-            fileSelector.setValue(null);
+            fileSelector.setValue(null); // Prevents from suppressing loading
         });
 
         fileSelector.addEventListener(Event.CHANGE, evt -> {
-            FileList fileList = fileSelector.getFiles();
+            try {
+                FileList fileList = fileSelector.getFiles();
 
-            final File file = fileList.item(0);
-            final FileReader fileReader = Browser.getWindow().newFileReader();
-            fileReader.setOnload(evt1 -> {
-                try {
-                    dataUrlConsumer.accept((String) fileReader.getResult(), file);
-                } catch (Throwable t) {
-                    LOGGER.log(Level.SEVERE, "Reading file failed", t);
-                }
-            });
-            fileReader.readAsDataURL(file);
+                final File file = fileList.item(0);
+                final FileReader fileReader = Browser.getWindow().newFileReader();
+                fileReader.setOnload(evt1 -> {
+                    try {
+                        dataUrlConsumer.accept((String) fileReader.getResult(), file);
+                    } catch (Throwable t) {
+                        LOGGER.log(Level.SEVERE, "Reading file failed", t);
+                    }
+                });
+                fileReader.readAsDataURL(file);
+                fileSelector.setValue(null); // Prevents from suppressing loading
+            } catch (Throwable t) {
+                LOGGER.log(Level.SEVERE, "Start reading file failed", t);
+            }
         }, false);
+        fileSelector.setValue(null); // Prevents from suppressing loading
         fileSelector.click();
     }
 
@@ -48,13 +54,15 @@ public class ControlUtils {
         final InputElement fileSelector = Browser.getDocument().createInputElement();
         fileSelector.setAttribute("type", "file");
         fileSelector.addEventListener(Event.CLICK, evt -> {
-            fileSelector.setValue(null);
+            fileSelector.setValue(null); // May not needed... use google
         });
         fileSelector.addEventListener(Event.CHANGE, evt -> {
             FileList fileList = fileSelector.getFiles();
             File file = fileList.item(0);
             readFileText(file, text -> textConsumer.accept(text, file));
+            fileSelector.setValue(null); // Prevents from suppressing loading
         }, false);
+        fileSelector.setValue(null); // Prevents from suppressing loading
         fileSelector.click();
     }
 
