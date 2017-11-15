@@ -88,7 +88,7 @@ public class TerrainMouseHandler {
                 return;
             }
             if (editorMouseListener != null) {
-                editorMouseListener.onMouseMove(terrainPosition);
+                editorMouseListener.onMouseMove(terrainPosition, primaryButtonDown);
                 return;
             }
 

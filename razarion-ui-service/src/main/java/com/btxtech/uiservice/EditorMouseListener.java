@@ -7,7 +7,7 @@ import com.btxtech.shared.datatypes.Vertex;
  * on 30.07.2017.
  */
 public interface EditorMouseListener {
-    void onMouseMove(Vertex terrainPosition);
+    void onMouseMove(Vertex terrainPosition, boolean primaryButtonDown);
 
     void onMouseDown(Vertex terrainPosition);
 

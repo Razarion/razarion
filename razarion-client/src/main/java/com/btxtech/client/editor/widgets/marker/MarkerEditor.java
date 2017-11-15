@@ -113,7 +113,7 @@ public class MarkerEditor implements EditorMouseListener {
     }
 
     @Override
-    public void onMouseMove(Vertex terrainPosition) {
+    public void onMouseMove(Vertex terrainPosition, boolean primaryButtonDown) {
 
     }
 

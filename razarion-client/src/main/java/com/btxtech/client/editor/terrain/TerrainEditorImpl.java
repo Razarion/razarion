@@ -93,7 +93,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private ModalDialogPanel saveDialog;
 
     @Override
-    public void onMouseMove(Vertex terrainPosition) {
+    public void onMouseMove(Vertex terrainPosition, boolean primaryButtonDown) {
         // Cursor
         cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
         this.terrainPosition = terrainPosition;
@@ -127,6 +127,10 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                     }
                 }
             }
+
+            if(hoverSlope != null && primaryButtonDown) {
+                editSlope(terrainPosition);
+            }
         }
     }
 
@@ -142,27 +146,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 modifyingTerrainObject = hoverTerrainObject;
             }
         } else if (hoverSlope != null) {
-            Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
-            if (deletePressed) {
-                if (drivewayMode) {
-                    hoverSlope.decreaseDriveway(movedCursor);
-                    terrainEditorRenderTask.updateSlope(hoverSlope);
-                } else {
-                    Polygon2D newPolygon = hoverSlope.remove(movedCursor);
-                    if (newPolygon != null) {
-                        terrainEditorRenderTask.updateSlope(hoverSlope);
-                    } else {
-                        terrainEditorRenderTask.removeSlope(hoverSlope);
-                    }
-                }
-            } else {
-                if (drivewayMode) {
-                    hoverSlope.increaseDriveway(movedCursor, terrainTypeService.getDrivewayConfig(driveway4New.getId()));
-                } else {
-                    hoverSlope.combine(movedCursor);
-                }
-                terrainEditorRenderTask.updateSlope(hoverSlope);
-            }
+            editSlope(terrainPosition);
         } else {
             if (!deletePressed) {
                 if (newSlopeMode) {
@@ -183,6 +167,30 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                     terrainObjectModelMatrices = setupModelMatrices();
                 }
             }
+        }
+    }
+
+    private void editSlope(Vertex terrainPosition) {
+        Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
+        if (deletePressed) {
+            if (drivewayMode) {
+                hoverSlope.decreaseDriveway(movedCursor);
+                terrainEditorRenderTask.updateSlope(hoverSlope);
+            } else {
+                Polygon2D newPolygon = hoverSlope.remove(movedCursor);
+                if (newPolygon != null) {
+                    terrainEditorRenderTask.updateSlope(hoverSlope);
+                } else {
+                    terrainEditorRenderTask.removeSlope(hoverSlope);
+                }
+            }
+        } else {
+            if (drivewayMode) {
+                hoverSlope.increaseDriveway(movedCursor, terrainTypeService.getDrivewayConfig(driveway4New.getId()));
+            } else {
+                hoverSlope.combine(movedCursor);
+            }
+            terrainEditorRenderTask.updateSlope(hoverSlope);
         }
     }
 
