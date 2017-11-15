@@ -86,8 +86,8 @@ public interface GameTestContent {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setPlanetId(PLANET_ID);
         planetConfig.setItemTypeLimitation(setupPlanetItemTypeLimitations());
-        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 1000, 1000));
-        planetConfig.setPlayGround(new Rectangle2D(0, 0, 6, 6));
+        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 6, 6));
+        planetConfig.setPlayGround(new Rectangle2D(0, 0, 1000, 1000));
         planetConfig.setStartBaseItemTypeId(BUILDER_ITEM_TYPE_ID);
         return planetConfig;
     }

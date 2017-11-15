@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -37,8 +38,9 @@ public class TerrainTileContext {
     private List<Vertex> groundSlopeConnectionTangents = new ArrayList<>();
     private List<Double> groundSlopeConnectionSplattings = new ArrayList<>();
     private int triangleCornerIndex;
+    private Rectangle2D playGround;
 
-    public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, GroundSkeletonConfig groundSkeletonConfig) {
+    public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, GroundSkeletonConfig groundSkeletonConfig, Rectangle2D playGround) {
         this.terrainTileIndex = terrainTileIndex;
         this.groundSkeletonConfig = groundSkeletonConfig;
         this.terrainTile = jsInteropObjectFactory.generateTerrainTile();
@@ -49,6 +51,11 @@ public class TerrainTileContext {
             terrainTile.setHeight(terrainShapeTile.getUniformGroundHeight());
         } else {
             terrainTile.setHeight(0);
+        }
+        if (playGround.containsAll(TerrainUtil.toAbsoluteTileRectangle(terrainTileIndex).toCorners())) {
+            this.playGround = null;
+        } else {
+            this.playGround = playGround;
         }
     }
 
@@ -145,6 +152,10 @@ public class TerrainTileContext {
     }
 
     public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+        if(!checkPlayGround(vertexA, vertexB, vertexC)) {
+            return;
+        }
+
         DecimalPosition positionA = vertexA.toXY();
         DecimalPosition positionB = vertexB.toXY();
         DecimalPosition positionC = vertexC.toXY();
@@ -245,4 +256,18 @@ public class TerrainTileContext {
     public void setTerrainNode(int x, int y, TerrainNode terrainNode) {
         terrainTile.insertTerrainNode(x, y, terrainNode);
     }
+
+    public boolean checkPlayGround(Vertex ... positions) {
+        if(playGround == null) {
+            return true;
+        }
+        for (Vertex position : positions) {
+            if(!playGround.contains(position.toXY())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }

@@ -52,7 +52,7 @@ public class TerrainTileFactory {
         long time = System.currentTimeMillis();
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
-        terrainTileContext.init(terrainTileIndex, terrainShapeTile, terrainTypeService.getGroundSkeletonConfig());
+        terrainTileContext.init(terrainTileIndex, terrainShapeTile, terrainTypeService.getGroundSkeletonConfig(), terrainShape.getPlayGround());
         insertSlopeGroundConnectionPart(terrainTileContext, terrainShapeTile);
         insertGroundPart(terrainTileContext, terrainShapeTile);
         insertSlopePart(terrainTileContext, terrainShapeTile);
@@ -107,6 +107,10 @@ public class TerrainTileFactory {
         Vertex vertexTR = terrainTileContext.setupVertexWithGroundSkeletonHeight(rightXNode, topYNode, groundHeight);
         Vertex vertexTL = terrainTileContext.setupVertexWithGroundSkeletonHeight(xNode, topYNode, groundHeight);
 
+        if(!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+            return;
+        }
+
 //        Vertex norm1 = vertexBL.cross(vertexBR, vertexTL);
 //        Vertex norm2 = vertexTR.cross(vertexTL, vertexBR);
 
@@ -158,6 +162,10 @@ public class TerrainTileFactory {
         Vertex vertexBR = terrainTileContext.setupVertex(rightXNode, yNode, drivewayHeightBR);
         Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, drivewayHeightTR);
         Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, drivewayHeightTL);
+
+        if(!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+            return;
+        }
 
         Vertex normBL = terrainTileContext.addGroundSkeletonNorm(xNode, yNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(0, 0)));
         Vertex normBR = terrainTileContext.addGroundSkeletonNorm(rightXNode, yNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(1, 0)));

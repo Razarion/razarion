@@ -2,6 +2,10 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
@@ -75,7 +79,10 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testGroundTileGenerationOffset() {
-        // Run test
+        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
+        planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 20, 20));
+        planetConfig.setPlayGround(new Rectangle2D(0, 0, 3200, 3200));
+
         setupTerrainTypeService(new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
@@ -87,7 +94,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.0, 0.5, 0.8},
                 {0.0, 0.1, 0.0},
                 {0.0, 0.0, 0.3},
-        }, null, null, null, null, null);
+        }, null, null, planetConfig, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(8, 16));
 
@@ -104,6 +111,10 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testGroundTileGenerationOffsetNeg() {
+        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
+        planetConfig.setTerrainTileDimension(new Rectangle(-2, -2, 4, 4));
+        planetConfig.setPlayGround(new Rectangle2D(-320, -320, 640, 640));
+
         // Run test
         setupTerrainTypeService(new double[][]{
                 {4, 0, 0, 0},
@@ -116,7 +127,9 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.0, 0.5, 0.8},
                 {0.0, 0.1, 0.0},
                 {0.0, 0.0, 0.3},
-        }, null, null, null, null, null);
+        }, null, null, planetConfig, null, null);
+
+        // showDisplay();
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(-1, -2));
 
@@ -127,7 +140,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(160, 160),"testGroundShapeOffsetNeg1.json" );
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(160, 160), getClass(), "testGroundShapeOffsetNeg1.json");
 
-        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testGroundShapeGenerationOffsetNeg.json");
+        AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testGroundShapeGenerationOffsetNeg.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testGroundShapeGenerationOffsetNeg.json", getTerrainShape());
     }
 }

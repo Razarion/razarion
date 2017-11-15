@@ -28,18 +28,32 @@ public class TerrainWaterTileContext {
 
     public void insertNode(Index nodeIndex, double waterLevel) {
         Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+
+
+        Vertex bottomLeft = new Vertex(rect.cornerBottomLeft(), waterLevel);
+        Vertex bottomRight = new Vertex(rect.cornerBottomRight(), waterLevel);
+        Vertex topRight = new Vertex(rect.cornerTopRight(), waterLevel);
+        Vertex topLeft = new Vertex(rect.cornerTopLeft(), waterLevel);
+
+        if (!terrainTileContext.checkPlayGround(bottomLeft, bottomRight, topRight, topLeft)) {
+            return;
+        }
+
         // Triangle 1
-        triangleCorners.add(new Vertex(rect.cornerBottomLeft(), waterLevel));
-        triangleCorners.add(new Vertex(rect.cornerBottomRight(), waterLevel));
-        triangleCorners.add(new Vertex(rect.cornerTopLeft(), waterLevel));
+        triangleCorners.add(bottomLeft);
+        triangleCorners.add(bottomRight);
+        triangleCorners.add(topLeft);
         // Triangle 2
-        triangleCorners.add(new Vertex(rect.cornerBottomRight(), waterLevel));
-        triangleCorners.add(new Vertex(rect.cornerTopRight(), waterLevel));
-        triangleCorners.add(new Vertex(rect.cornerTopLeft(), waterLevel));
+        triangleCorners.add(bottomRight);
+        triangleCorners.add(topRight);
+        triangleCorners.add(topLeft);
         waterNodeCount++;
     }
 
     public void insertWaterRim(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+        if (!terrainTileContext.checkPlayGround(vertexA, vertexB, vertexC)) {
+            return;
+        }
         triangleCorners.add(vertexA);
         triangleCorners.add(vertexB);
         triangleCorners.add(vertexC);

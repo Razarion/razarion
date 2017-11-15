@@ -137,7 +137,7 @@ public class Rectangle2D {
      * Returns true if one of the given positions is in the rectangle
      *
      * @param positions to check
-     * @return true if adjoins or contains position
+     * @return true if one is inside
      */
     public boolean contains(Collection<DecimalPosition> positions) {
         for (DecimalPosition position : positions) {
@@ -146,6 +146,21 @@ public class Rectangle2D {
             }
         }
         return false;
+    }
+
+    /**
+     * Returns true if all of the given positions are in the rectangle
+     *
+     * @param positions to check
+     * @return true if all are inside
+     */
+    public boolean containsAll(Collection<DecimalPosition> positions) {
+        for (DecimalPosition position : positions) {
+            if (!contains(position)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

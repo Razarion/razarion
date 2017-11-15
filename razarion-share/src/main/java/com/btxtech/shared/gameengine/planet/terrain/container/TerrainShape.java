@@ -40,6 +40,7 @@ public class TerrainShape {
     private Index tileOffset;
     private int tileXCount;
     private int tileYCount;
+    private Rectangle2D playGround;
 
     public TerrainShape() {
     }
@@ -52,6 +53,7 @@ public class TerrainShape {
         tileOffset = planetConfig.getTerrainTileDimension().getStart();
         tileXCount = planetConfig.getTerrainTileDimension().width();
         tileYCount = planetConfig.getTerrainTileDimension().height();
+        playGround = planetConfig.getPlayGround();
         terrainShapeTiles = new TerrainShapeTile[tileXCount][tileYCount];
         TerrainShapeSetup terrainShapeSetup = new TerrainShapeSetup(this, terrainTypeService);
         terrainShapeSetup.processSlopes(terrainSlopePositions);
@@ -64,6 +66,7 @@ public class TerrainShape {
         this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
+        playGround = planetConfig.getPlayGround();
         nativeTerrainShapeAccess.load(planetConfig.getPlanetId(), nativeTerrainShape -> {
             try {
                 // long time = System.currentTimeMillis();
@@ -324,6 +327,10 @@ public class TerrainShape {
             }
         }
         return false;
+    }
+
+    public Rectangle2D getPlayGround() {
+        return playGround;
     }
 
     private static class SimpleControl implements TerrainRegionImpactCallback.Control {

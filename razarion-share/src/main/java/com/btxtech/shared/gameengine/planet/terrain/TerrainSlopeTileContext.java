@@ -53,6 +53,10 @@ public class TerrainSlopeTileContext {
                 Vertex vertexTR = mesh[x + 1][y + 1].getVertex();
                 Vertex vertexTL = mesh[x][y + 1].getVertex();
 
+                if(!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+                    continue;
+                }
+
                 Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY());
                 Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY());
                 Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY(), normBR);
