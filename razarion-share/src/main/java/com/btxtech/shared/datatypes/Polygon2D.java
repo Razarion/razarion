@@ -30,7 +30,7 @@ public class Polygon2D {
         this.corners = new ArrayList<>(corners);
         for (int i = 0; i < corners.size(); i++) {
             DecimalPosition start = corners.get(i);
-            DecimalPosition end = corners.get(i + 1 < corners.size() ? i + 1 : i - corners.size() + 1);
+            DecimalPosition end = CollectionUtils.getCorrectedElement(i + 1, corners);
             Line line = new Line(start, end);
             line.setNorm(end.rotateCounterClock(start, MathHelper.QUARTER_RADIANT).normalize());
             lines.add(line);
