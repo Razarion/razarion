@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeNode;
@@ -10,10 +12,14 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,7 +29,7 @@ import java.util.List;
 public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
-    public void test() {
+    public void testPlayGround4Corners() {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition bottomLeftLandSlope = new TerrainSlopePosition();
         bottomLeftLandSlope.setId(1);
@@ -37,9 +43,22 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         bottomRightWaterSlope.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(200, 40, null), GameTestHelper.createTerrainSlopeCorner(280, 40, null), GameTestHelper.createTerrainSlopeCorner(280, 100, null), GameTestHelper.createTerrainSlopeCorner(200, 100, null)));
         terrainSlopePositions.add(bottomRightWaterSlope);
 
+        // topRigt and topLeft missing
 
         setup(null, terrainSlopePositions);
         // showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testPlayGround4CornersTile1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testPlayGround4CornersTile1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), "testPlayGround4CornersShape1HNT1.json");
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), getClass(), "testPlayGround4CornersShape1HNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testPlayGround4CornersShape1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testPlayGround4CornersShape1.json", getTerrainShape());
+
     }
 
     private void setup(List<TerrainObjectPosition> terrainObjectPositions, List<TerrainSlopePosition> terrainSlopePositions) {
