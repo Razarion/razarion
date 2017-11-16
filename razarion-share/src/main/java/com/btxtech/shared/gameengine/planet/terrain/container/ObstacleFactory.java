@@ -18,16 +18,7 @@ import java.util.List;
 public class ObstacleFactory {
     public static void addObstacles(TerrainShape terrainShape, List<DecimalPosition> polygon, Slope slope, boolean isOuter) {
         // Find offset with no driveway
-        int offset = -1;
-        for (int i = 0; i < polygon.size(); i++) {
-            if (!slope.getDrivewayGameEngineHandler().onFlatLine(polygon.get(i), isOuter)) {
-                offset = i;
-                break;
-            }
-        }
-        if (offset < 0) {
-            throw new IllegalArgumentException("ObstacleFactory.addObstacles(): Can not find start position with no driveway");
-        }
+        int offset = CollectionUtils.findStart(polygon, position -> !slope.getDrivewayGameEngineHandler().onFlatLine(position, isOuter));
 
         DecimalPosition last = polygon.get(offset);
         boolean inDriveway = false;

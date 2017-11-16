@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNod
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
+import com.btxtech.shared.system.debugtool.DebugStaticStorage;
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
 import javafx.scene.paint.Color;
@@ -122,6 +123,12 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         renderItemTypes();
         if (userDataRenderer != null) {
             userDataRenderer.render();
+        }
+        if(DebugStaticStorage.getPolygon() != null) {
+            strokePolygon(DebugStaticStorage.getPolygon(), FAT_LINE_WIDTH, Color.BLUE, true);
+        }
+        if(DebugStaticStorage.getPositions() != null) {
+            drawPositions(DebugStaticStorage.getPositions(), FAT_LINE_WIDTH, Color.RED);
         }
     }
 

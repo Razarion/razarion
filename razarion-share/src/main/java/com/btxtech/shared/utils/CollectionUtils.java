@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by Beat
@@ -151,5 +152,20 @@ public class CollectionUtils {
             sum += number;
         }
         return sum;
+    }
+
+    public static <T> int findStart(List<T> list, Predicate<T> predicate) {
+        int offset = -1;
+        for (int i = 0; i < list.size(); i++) {
+            T current = list.get(i);
+            if (predicate.test(current)) {
+                offset = i;
+                break;
+            }
+        }
+        if (offset < 0) {
+            throw new IllegalArgumentException("CollectionUtils.findStart(): Can not find valid position in list");
+        }
+        return offset;
     }
 }

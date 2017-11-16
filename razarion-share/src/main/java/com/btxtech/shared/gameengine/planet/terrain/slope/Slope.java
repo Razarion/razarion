@@ -83,17 +83,7 @@ public class Slope {
         List<Corner> corners = new ArrayList<>();
         while (true) {
             // Find offset with no driveway
-            int offset = -1;
-            for (int i = 0; i < terrainSlopeCorners.size(); i++) {
-                TerrainSlopeCorner current = terrainSlopeCorners.get(i);
-                if (current.getSlopeDrivewayId() == null) {
-                    offset = i;
-                    break;
-                }
-            }
-            if (offset < 0) {
-                throw new IllegalArgumentException("Slope.setupSlopingBorder(): Can not find start position with no driveway. slopeId:" + slopeId);
-            }
+            int offset = CollectionUtils.findStart(terrainSlopeCorners, terrainSlopeCorner -> terrainSlopeCorner.getSlopeDrivewayId() == null);
 
             driveways = null;
             corners.clear();
@@ -156,32 +146,29 @@ public class Slope {
             DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, corners).getPosition();
             DecimalPosition afterNext = CollectionUtils.getCorrectedElement(i + 2, corners).getPosition();
             if (!isSafetyDistanceValid(previous, current, next, afterNext)) {
-                return i;
+                return CollectionUtils.getCorrectedIndex(i + 1, corners);
             }
         }
         return -1;
     }
 
     private boolean isSafetyDistanceValid(DecimalPosition previous, DecimalPosition current, DecimalPosition next, DecimalPosition afterNext) {
-        double innerAngle = current.angle(next, previous);
-        if (innerAngle > MathHelper.HALF_RADIANT) {
-            double safetyDistance = calculateSafetyDistance(innerAngle);
-            if (current.getDistance(previous) < safetyDistance) {
-                return false;
-            }
-            if (current.getDistance(next) < safetyDistance) {
-                return false;
-            }
+        double innerAngleCurrent = current.angle(next, previous);
+        double innerAngleNext = next.angle(afterNext, current);
 
-            double innerAngleNext = next.angle(afterNext, current);
-            if (innerAngleNext > MathHelper.HALF_RADIANT) {
-                double safetyDistanceNext = calculateSafetyDistance(innerAngleNext);
-                if (current.getDistance(next) < safetyDistance + safetyDistanceNext) {
-                    return false;
-                }
-            }
+        if (innerAngleCurrent <= MathHelper.HALF_RADIANT && innerAngleNext <= MathHelper.HALF_RADIANT) {
+            return true;
         }
-        return true;
+
+        double safetyDistance = 0;
+        if (innerAngleCurrent > MathHelper.HALF_RADIANT) {
+            safetyDistance += calculateSafetyDistance(innerAngleCurrent);
+        }
+
+        if (innerAngleNext > MathHelper.HALF_RADIANT) {
+            safetyDistance += calculateSafetyDistance(innerAngleNext);
+        }
+        return current.getDistance(next) > safetyDistance;
     }
 
     private double calculateSafetyDistance(double innerAngle) {
@@ -205,17 +192,7 @@ public class Slope {
         DecimalPosition lastCoastDelimiterGameEngine = null;
 
         // Find driveway free start
-        // Find offset with no driveway
-        int offset = -1;
-        for (int i = 0; i < verticalSegments.size(); i++) {
-            if (verticalSegments.get(i).getDrivewayHeightFactor() >= 1.0) {
-                offset = i;
-                break;
-            }
-        }
-        if (offset < 0) {
-            throw new IllegalArgumentException("Slope.setupLimitationPolygon(): Can not find start position with DrivewayHeightFactor 1.0. slopeId:" + slopeId);
-        }
+        int offset = CollectionUtils.findStart(verticalSegments, verticalSegment -> verticalSegment.getDrivewayHeightFactor() >= 1.0);
 
         boolean lastWasInnerStart = false;
         for (int i = 0; i < verticalSegments.size(); i++) {
@@ -234,14 +211,14 @@ public class Slope {
                 innerSlopeCorrectedGameEngine = innerSlopeGameEngine;
             } else {
                 // Add start corner
-                if(lastWasInnerStart) {
+                if (lastWasInnerStart) {
                     lastWasInnerStart = false;
                     lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeGameEngine, lastInnerGameEngine, innerGameEngine);
                     drivewayGameEngineHandler.putInner4OuterTermination(outerSlopeGameEngine, innerSlopeGameEngine);
                 }
                 innerSlopeCorrectedGameEngine = verticalSegment.getInner();
                 // Add end corner
-                if(verticalSegments.get(index + 1).getDrivewayHeightFactor() > 0) {
+                if (verticalSegments.get(index + 1).getDrivewayHeightFactor() > 0) {
                     innerGameEngineEndCorner = innerSlopeGameEngine;
                     drivewayGameEngineHandler.putInner4OuterTermination(outerSlopeGameEngine, innerSlopeGameEngine);
                 }
@@ -297,7 +274,7 @@ public class Slope {
             lastInnerRenderEngine = addCorrectedMinimalDelta(innerSlopeRenderEngine, lastInnerRenderEngine, innerRenderEngine);
 
             lastInnerGameEngine = addCorrectedMinimalDelta(innerSlopeCorrectedGameEngine, lastInnerGameEngine, innerGameEngine);
-            if(innerGameEngineEndCorner != null) {
+            if (innerGameEngineEndCorner != null) {
                 lastInnerGameEngine = addCorrectedMinimalDelta(innerGameEngineEndCorner, lastInnerGameEngine, innerGameEngine);
             }
 
