@@ -24,6 +24,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
@@ -39,7 +40,8 @@ import javax.inject.Inject;
  * Time: 21:38:19
  */
 public class SyncFactory extends SyncBaseAbility {
-    private static final int GIVE_UP_RELAY_POINT = 100000;
+    private static final double GIVE_UP_RELAY_MIN = Math.toRadians(5);
+    private static final double RELAY_POINT_DISTANCE = 10;
     // private Logger log = Logger.getLogger(SyncFactory.class.getName());
     @Inject
     private GameLogicService gameLogicService;
@@ -49,9 +51,12 @@ public class SyncFactory extends SyncBaseAbility {
     private ItemTypeService itemTypeService;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private CommandService commandService;
     private FactoryType factoryType;
     private BaseItemType toBeBuiltType;
     private double buildup;
+    private DecimalPosition spawnPoint;
     private DecimalPosition rallyPoint;
 
     public void init(FactoryType factoryType, SyncBaseItem syncBaseItem) throws NoSuchItemTypeException {
@@ -92,8 +97,9 @@ public class SyncFactory extends SyncBaseAbility {
                     gameLogicService.onFactoryHouseSpaceExceeded();
                     return true;
                 }
-                baseItemService.createSyncBaseItem4Factory(toBeBuiltType, rallyPoint, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
+                SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, spawnPoint, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
                 stop();
+                commandService.move(createItem, rallyPoint);
             }
             return false;
         }
@@ -108,6 +114,7 @@ public class SyncFactory extends SyncBaseAbility {
             toBeBuiltType = null;
         }
         buildup = syncBaseItemInfo.getFactoryBuildupProgress();
+        spawnPoint = syncBaseItemInfo.getSpawnPoint();
         rallyPoint = syncBaseItemInfo.getRallyPoint();
     }
 
@@ -117,6 +124,7 @@ public class SyncFactory extends SyncBaseAbility {
             syncBaseItemInfo.setToBeBuiltTypeId(toBeBuiltType.getId());
         }
         syncBaseItemInfo.setFactoryBuildupProgress(buildup);
+        syncBaseItemInfo.setSpawnPoint(spawnPoint);
         syncBaseItemInfo.setRallyPoint(rallyPoint);
     }
 
@@ -142,28 +150,40 @@ public class SyncFactory extends SyncBaseAbility {
     }
 
     private void setupRallyPoint() {
-        double maxToBeBuiltItemRadius = Double.MIN_VALUE;
-        TerrainType toBeBuiltItemTerrainType = TerrainType.LAND;
-        for (int ableToBuildId : factoryType.getAbleToBuildIds()) {
-            BaseItemType toBeBuilt = itemTypeService.getBaseItemType(ableToBuildId);
-            maxToBeBuiltItemRadius = Math.max(maxToBeBuiltItemRadius, toBeBuilt.getPhysicalAreaConfig().getRadius());
-            toBeBuiltItemTerrainType = toBeBuilt.getPhysicalAreaConfig().getTerrainType();
-        }
-        double totalRadius = maxToBeBuiltItemRadius + getSyncBaseItem().getSyncPhysicalArea().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
+        if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+            double maxToBeBuiltItemRadius = Double.MIN_VALUE;
+            TerrainType toBeBuiltItemTerrainType = TerrainType.LAND;
+            for (int ableToBuildId : factoryType.getAbleToBuildIds()) {
+                BaseItemType toBeBuilt = itemTypeService.getBaseItemType(ableToBuildId);
+                maxToBeBuiltItemRadius = Math.max(maxToBeBuiltItemRadius, toBeBuilt.getPhysicalAreaConfig().getRadius());
+                toBeBuiltItemTerrainType = toBeBuilt.getPhysicalAreaConfig().getTerrainType();
+            }
+            double totalRadius = maxToBeBuiltItemRadius + getSyncBaseItem().getSyncPhysicalArea().getRadius() + 2.0 * PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE;
 
-        double distance = MathHelper.QUARTER_RADIANT;
-        for (int giveUp = 0; giveUp < GIVE_UP_RELAY_POINT; giveUp++) {
-            for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += distance) {
+            spawnPoint = findFreePosition(getSyncBaseItem().getSyncPhysicalArea().getPosition2d(), maxToBeBuiltItemRadius, toBeBuiltItemTerrainType, totalRadius, false);
+
+            rallyPoint = findFreePosition(spawnPoint, maxToBeBuiltItemRadius, toBeBuiltItemTerrainType, RELAY_POINT_DISTANCE, true);
+        }
+    }
+
+    private DecimalPosition findFreePosition(DecimalPosition start, double radius, TerrainType terrainType, double distance, boolean checkInsight) {
+        double delta = MathHelper.QUARTER_RADIANT;
+        while (delta > GIVE_UP_RELAY_MIN) {
+            for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
                 double correctedAngle = MathHelper.normaliseAngle(angle + MathHelper.HALF_RADIANT);
-                DecimalPosition decimalPosition = getSyncBaseItem().getSyncPhysicalArea().getPosition2d().getPointWithDistance(correctedAngle, totalRadius);
-                if(terrainService.getPathingAccess().isTerrainTypeAllowed(toBeBuiltItemTerrainType, decimalPosition, maxToBeBuiltItemRadius)) {
-                    rallyPoint = decimalPosition;
-                    return;
+                DecimalPosition decimalPosition = start.getPointWithDistance(correctedAngle, distance);
+                if (terrainService.getPathingAccess().isTerrainTypeAllowed(terrainType, decimalPosition, radius)) {
+                    if (checkInsight) {
+                        if (terrainService.getPathingAccess().isInSight(start, decimalPosition)) {
+                            return decimalPosition;
+                        }
+                    } else {
+                        return decimalPosition;
+                    }
                 }
             }
-            distance /= 2.0;
+            delta /= 2.0;
         }
-
-        throw new IllegalStateException("SyncFactory.setupRallyPoint() can not find relay point for factory");
+        throw new IllegalStateException("SyncFactory.findFreePosition() can not find position: " + getSyncBaseItem());
     }
 }

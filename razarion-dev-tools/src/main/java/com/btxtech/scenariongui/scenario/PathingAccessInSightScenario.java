@@ -45,7 +45,7 @@ public class PathingAccessInSightScenario extends AbstractTerrainScenario {
         if (start != null) {
             destination = position;
             SyncPhysicalArea syncPhysicalArea = DevToolHelper.generateSyncPhysicalArea(start, RADIUS);
-            isInSight = getTerrainService().getPathingAccess().isInSight(syncPhysicalArea, position);
+            isInSight = getTerrainService().getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), position);
         }
         return true;
     }

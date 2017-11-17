@@ -39,6 +39,7 @@ public class SyncBaseItemInfo {
     private double buildup;
     private Boolean followTarget;
     private double reloadProgress;
+    private DecimalPosition spawnPoint;
     private DecimalPosition rallyPoint;
     private List<Integer> containedItems;
     private Integer targetContainer;
@@ -153,6 +154,15 @@ public class SyncBaseItemInfo {
 
     public SyncBaseItemInfo setReloadProgress(double reloadProgress) {
         this.reloadProgress = reloadProgress;
+        return this;
+    }
+
+    public DecimalPosition getSpawnPoint() {
+        return spawnPoint;
+    }
+
+    public SyncBaseItemInfo setSpawnPoint(DecimalPosition spawnPoint) {
+        this.spawnPoint = spawnPoint;
         return this;
     }
 

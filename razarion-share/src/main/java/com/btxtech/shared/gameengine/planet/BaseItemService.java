@@ -649,13 +649,17 @@ public class BaseItemService {
         });
         Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
         for (SyncBaseItemInfo syncBaseItemInfo : backupPlanetInfo.getSyncBaseItemInfos()) {
-            SyncBaseItem syncBaseItem = createSyncBaseItemRestore(syncBaseItemInfo, (PlayerBaseFull) getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
-            tmp.put(syncBaseItem, syncBaseItemInfo);
+            try {
+                SyncBaseItem syncBaseItem = createSyncBaseItemRestore(syncBaseItemInfo, (PlayerBaseFull) getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
+                tmp.put(syncBaseItem, syncBaseItemInfo);
+            } catch (Exception e) {
+                exceptionHandler.handleException("BaseItemService.restore()", e);
+            }
         }
         for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
             try {
                 synchronizeActivateSlave(entry.getKey(), entry.getValue());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 exceptionHandler.handleException("BaseItemService.restore()", e);
             }
         }

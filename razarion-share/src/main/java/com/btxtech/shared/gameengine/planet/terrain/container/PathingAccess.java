@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
+import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
@@ -87,15 +88,15 @@ public class PathingAccess {
         return getObstacles(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius());
     }
 
-    public boolean isInSight(SyncPhysicalArea syncPhysicalArea, DecimalPosition target) {
-        if (syncPhysicalArea.getPosition2d().equals(target)) {
+    public boolean isInSight(DecimalPosition start, DecimalPosition target) {
+        if (start.equals(target)) {
             return true;
         }
-        double angel = syncPhysicalArea.getPosition2d().getAngle(target);
+        double angel = start.getAngle(target);
         // double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
         // double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
 
-        Line line = new Line(syncPhysicalArea.getPosition2d(), target);
+        Line line = new Line(start, target);
         // Line line1 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel1, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel1, syncPhysicalArea.getRadius()));
         // Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
 
