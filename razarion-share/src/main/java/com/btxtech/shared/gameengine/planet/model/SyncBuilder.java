@@ -16,7 +16,6 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.UnlockService;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
@@ -53,8 +52,6 @@ public class SyncBuilder extends SyncBaseAbility {
     private BaseItemService baseItemService;
     @Inject
     private TerrainService terrainService;
-    @Inject
-    private UnlockService unlockService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     private BuilderType builderType;
@@ -208,9 +205,6 @@ public class SyncBuilder extends SyncBaseAbility {
             throw new IllegalArgumentException(this + " can not build: " + builderCommand.getToBeBuiltId());
         }
         BaseItemType tmpToBeBuiltType = itemTypeService.getBaseItemType(builderCommand.getToBeBuiltId());
-        if (unlockService.isItemLocked(tmpToBeBuiltType, getSyncBaseItem().getBase())) {
-            throw new IllegalArgumentException(this + " item is locked: " + builderCommand.getToBeBuiltId());
-        }
         if (!terrainService.getPathingAccess().isTerrainTypeAllowed(tmpToBeBuiltType.getPhysicalAreaConfig().getTerrainType(), builderCommand.getPositionToBeBuilt(), tmpToBeBuiltType.getPhysicalAreaConfig().getRadius())) {
             throw new PositionTakenException(builderCommand.getPositionToBeBuilt(), builderCommand.getToBeBuiltId());
         }

@@ -145,6 +145,10 @@ public class WeldBaseTest {
         }
     }
 
+    public void tickPlanetServiceSeconds(int seconds) {
+        tickPlanetService(PlanetService.TICKS_PER_SECONDS * seconds);
+    }
+
     public SyncBaseItem findSyncBaseItem(PlayerBaseFull playerBaseFull, int baseItemTypeId, SyncBaseItem... exclusion) {
         List<SyncBaseItem> exclusionList = Arrays.asList(exclusion);
         List<SyncBaseItem> found = new ArrayList<>();

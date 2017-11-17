@@ -35,6 +35,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public interface GameTestContent {
     int CONSUMER_ITEM_TYPE_ID = 5;
     int HARVESTER_ITEM_TYPE_ID = 6;
     int HARBOUR_ITEM_TYPE_ID = 7;
+    int SHIP_ATTACKER_ITEM_TYPE_ID = 8;
     int RESOURCE_ITEM_TYPE_ID = 101;
     int BOX_ITEM_TYPE_ID = 501;
     int BOX_ITEM_TYPE_LONG_ID = 502;
@@ -102,6 +104,7 @@ public interface GameTestContent {
         setupBuilder(baseItemTypes);
         setupFactory(baseItemTypes);
         setupAttacker(baseItemTypes);
+        setupShipAttacker(baseItemTypes);
         setupGenerator(baseItemTypes);
         setupConsumer(baseItemTypes);
         setupHarvester(baseItemTypes);
@@ -113,7 +116,7 @@ public interface GameTestContent {
         BaseItemType bulldozer = new BaseItemType();
         bulldozer.setHealth(40).setBoxPickupRange(1).setId(BUILDER_ITEM_TYPE_ID).setInternalName("Builder test");
         bulldozer.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(2).setSpeed(20.0));
-        bulldozer.setBuilderType(new BuilderType().setAbleToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID, HARBOUR_ITEM_TYPE_ID)).setAnimationOrigin(new Vertex(3, 5, 17)).setProgress(5).setRange(2.7));
+        bulldozer.setBuilderType(new BuilderType().setAbleToBuildIds(Arrays.asList(FACTORY_ITEM_TYPE_ID, GENERATOR_ITEM_TYPE_ID, CONSUMER_ITEM_TYPE_ID, HARBOUR_ITEM_TYPE_ID)).setAnimationOrigin(new Vertex(3, 5, 17)).setProgress(5).setRange(10));
         baseItemTypes.add(bulldozer);
     }
 
@@ -121,7 +124,7 @@ public interface GameTestContent {
         BaseItemType factory = new BaseItemType();
         factory.setHealth(30).setId(FACTORY_ITEM_TYPE_ID).setInternalName("Factory test");
         factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setRadius(5));
-        factory.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE_ID, ATTACKER_ITEM_TYPE_ID, HARVESTER_ITEM_TYPE_ID)).setProgress(2.9));
+        factory.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE_ID, ATTACKER_ITEM_TYPE_ID, HARVESTER_ITEM_TYPE_ID)).setProgress(2));
         baseItemTypes.add(factory);
     }
 
@@ -129,15 +132,23 @@ public interface GameTestContent {
         BaseItemType harbour = new BaseItemType();
         harbour.setHealth(40).setId(HARBOUR_ITEM_TYPE_ID).setInternalName("Harbour test");
         harbour.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER_COAST).setRadius(4.5));
-        // TODO harbour.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE_ID, ATTACKER_ITEM_TYPE_ID, HARVESTER_ITEM_TYPE_ID)).setProgress(2.9));
+        harbour.setFactoryType(new FactoryType().setAbleToBuildIds(Collections.singletonList(SHIP_ATTACKER_ITEM_TYPE_ID)).setProgress(3));
         baseItemTypes.add(harbour);
     }
 
     static void setupAttacker(List<BaseItemType> baseItemTypes) {
         BaseItemType attacker = new BaseItemType();
-        attacker.setHealth(20).setId(ATTACKER_ITEM_TYPE_ID).setInternalName("Attacker test");
+        attacker.setHealth(20).setBuildup(8).setId(ATTACKER_ITEM_TYPE_ID).setInternalName("Attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(3).setSpeed(20.0));
         attacker.setWeaponType(new WeaponType().setDamage(5).setRange(10).setProjectileSpeed(20.0).setReloadTime(2).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTorrentCenter(new Vertex(0, 0, 1))));
+        baseItemTypes.add(attacker);
+    }
+
+    static void setupShipAttacker(List<BaseItemType> baseItemTypes) {
+        BaseItemType attacker = new BaseItemType();
+        attacker.setHealth(30).setBuildup(12).setId(SHIP_ATTACKER_ITEM_TYPE_ID).setInternalName("Ship attacker test");
+        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER).setAcceleration(0.5).setAngularVelocity(Math.toRadians(30)).setRadius(3).setSpeed(10.0));
+        attacker.setWeaponType(new WeaponType().setDamage(5).setRange(15).setProjectileSpeed(20.0).setReloadTime(2).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTorrentCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
     }
 
@@ -220,6 +231,7 @@ public interface GameTestContent {
         level1Limitation.put(BUILDER_ITEM_TYPE_ID, 1);
         level1Limitation.put(FACTORY_ITEM_TYPE_ID, 2);
         level1Limitation.put(ATTACKER_ITEM_TYPE_ID, 10);
+        level1Limitation.put(SHIP_ATTACKER_ITEM_TYPE_ID, 10);
         level1Limitation.put(GENERATOR_ITEM_TYPE_ID, 6);
         level1Limitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         level1Limitation.put(HARVESTER_ITEM_TYPE_ID, 3);
@@ -233,6 +245,7 @@ public interface GameTestContent {
         levelLimitation.put(BUILDER_ITEM_TYPE_ID, 2);
         levelLimitation.put(FACTORY_ITEM_TYPE_ID, 3);
         levelLimitation.put(ATTACKER_ITEM_TYPE_ID, 10);
+        levelLimitation.put(SHIP_ATTACKER_ITEM_TYPE_ID, 10);
         levelLimitation.put(GENERATOR_ITEM_TYPE_ID, 6);
         levelLimitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         levelLimitation.put(HARVESTER_ITEM_TYPE_ID, 3);
