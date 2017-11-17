@@ -1,12 +1,10 @@
 package com.btxtech.shared.gameengine.planet.basic;
 
 import com.btxtech.shared.TestHelper;
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
-import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +13,7 @@ import org.junit.Test;
  * Created by Beat
  * on 20.10.2017.
  */
-public class BuildTest extends BaseBasic {
+public class BuildTest extends BaseBasicTest {
 
     @Test
     public void land() {

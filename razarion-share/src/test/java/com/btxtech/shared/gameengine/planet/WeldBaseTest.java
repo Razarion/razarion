@@ -4,9 +4,9 @@ import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.cdimock.TestNativeTerrainShapeAccess;
 import com.btxtech.shared.cdimock.TestSimpleExecutorService;
 import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -270,4 +270,29 @@ public class WeldBaseTest {
     public void showDisplay(Object... userObject) {
         getWeldBean(WeldDisplay.class).show(userObject);
     }
+
+    protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
+        int xCount = rowColumn[0].length;
+        int yCount = rowColumn.length;
+        SlopeNode[][] columnRow = new SlopeNode[xCount][yCount];
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                columnRow[x][y] = rowColumn[y][x];
+            }
+        }
+        return columnRow;
+    }
+
+    protected double[][] toColumnRow(double[][] rowColumn) {
+        int xCount = rowColumn[0].length;
+        int yCount = rowColumn.length;
+        double[][] columnRow = new double[xCount][yCount];
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                columnRow[x][y] = rowColumn[y][x];
+            }
+        }
+        return columnRow;
+    }
+
 }

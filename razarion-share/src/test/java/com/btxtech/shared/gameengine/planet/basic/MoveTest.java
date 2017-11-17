@@ -12,7 +12,7 @@ import org.junit.Test;
  * Created by Beat
  * on 21.10.2017.
  */
-public class MoveTest extends BaseBasic {
+public class MoveTest extends BaseBasicTest {
     @Test
     public void land() {
         setup();

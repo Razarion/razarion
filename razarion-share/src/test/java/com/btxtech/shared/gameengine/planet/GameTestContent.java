@@ -70,7 +70,7 @@ public interface GameTestContent {
 
     static StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setId(GROUND_SKELETON_ID).setHeights(new double[][]{{0.0}}).setHeightXCount(1).setHeightYCount(1));
+        staticGameConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setId(GROUND_SKELETON_ID).setHeights(new double[][]{{0.0}}).setHeightXCount(1).setHeightYCount(1).setSplattings(new double[][]{{0.0}}).setSplattingXCount(1).setSplattingYCount(1));
         staticGameConfig.setLevelConfigs(setupLevelConfigs());
         staticGameConfig.setBaseItemTypes(setupBaseItemType());
         staticGameConfig.setResourceItemTypes(setupResourceItemType());

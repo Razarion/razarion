@@ -56,30 +56,6 @@ public class WeldTerrainServiceTestBase extends WeldBaseTest {
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
     }
 
-    protected double[][] toColumnRow(double[][] rowColumn) {
-        int xCount = rowColumn[0].length;
-        int yCount = rowColumn.length;
-        double[][] columnRow = new double[xCount][yCount];
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                columnRow[x][y] = rowColumn[y][x];
-            }
-        }
-        return columnRow;
-    }
-
-    protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
-        int xCount = rowColumn[0].length;
-        int yCount = rowColumn.length;
-        SlopeNode[][] columnRow = new SlopeNode[xCount][yCount];
-        for (int x = 0; x < xCount; x++) {
-            for (int y = 0; y < yCount; y++) {
-                columnRow[x][y] = rowColumn[y][x];
-            }
-        }
-        return columnRow;
-    }
-
     protected TerrainShape getTerrainShape() {
         return (TerrainShape) SimpleTestEnvironment.readField("terrainShape", getTerrainService());
     }
