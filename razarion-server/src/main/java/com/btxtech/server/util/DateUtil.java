@@ -187,7 +187,7 @@ public class DateUtil {
         }
     }
 
-    public static String tpoJsonTimeString(Date date) {
+    public static String toJsonTimeString(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(JSON_FORMAT_STRING);
         return simpleDateFormat.format(date);
     }

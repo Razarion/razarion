@@ -9,11 +9,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,6 +66,19 @@ public class ServerGameEngineMgmt {
     public void doRestore(BackupPlanetOverview backupPlanetOverview) {
         try {
             serverGameEngineControl.restorePlanet(backupPlanetOverview);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("deletebackup/{planetId}/{date}")
+    public List<BackupPlanetOverview> deleteBackup(@PathParam("planetId") int planetId, @PathParam("date") long date) {
+        try {
+            planetBackupMongoDb.deleteBackup(new BackupPlanetOverview().setPlanetId(planetId).setDate(new Date(date)));
+            return planetBackupMongoDb.loadAllBackupBaseOverviews();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

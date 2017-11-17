@@ -28,9 +28,17 @@ export class BackupRestoreComponent implements OnInit {
   }
 
   onRestore(backupBaseOverview: BackupPlanetOverview) {
-     if(confirm("Restore to '" + new DatePipe("en-US").transform(backupBaseOverview.date, 'dd.MM.yyyy HH:mm:ss') + "'? Current bases/units will be overridden.")) {
-       this.backupRestoreService.restore(backupBaseOverview);
-     }
+    if(confirm("Restore to '" + new DatePipe("en-US").transform(backupBaseOverview.date, 'dd.MM.yyyy HH:mm:ss') + "'? Current bases/units will be overridden.")) {
+      this.backupRestoreService.restore(backupBaseOverview);
+    }
+  }
+
+  onDelete(backupBaseOverview: BackupPlanetOverview) {
+    if(confirm("Delete backup '" + new DatePipe("en-US").transform(backupBaseOverview.date, 'dd.MM.yyyy HH:mm:ss'))) {
+      this.backupRestoreService.doDelete(backupBaseOverview).then(backupBaseOverviews => {
+        this.setBackupBaseOverviews(backupBaseOverviews);
+      });
+    }
   }
 
   private setBackupBaseOverviews(backupBaseOverviews: BackupPlanetOverview[]): void {

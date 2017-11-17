@@ -27,4 +27,10 @@ export class BackupRestoreService {
   restore(backupBaseOverview: BackupPlanetOverview) {
     this.http.post(URL_PLANET_MGMT + '/dorestore', JSON.stringify(backupBaseOverview), {headers: new Headers({'Content-Type': 'application/json'})}).toPromise().catch(Common.handleError);
   }
+
+  doDelete(backupBaseOverview: BackupPlanetOverview): Promise<BackupPlanetOverview[]> {
+    return this.http.delete(URL_PLANET_MGMT + '/deletebackup/' + backupBaseOverview.planetId + "/" + JSON.stringify(backupBaseOverview.date), {headers: new Headers({'Content-Type': 'application/json'})}).toPromise().then(response => {
+      return response.json();
+    }).catch(Common.handleError);
+  }
 }
