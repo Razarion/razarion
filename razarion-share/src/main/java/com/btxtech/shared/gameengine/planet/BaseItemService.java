@@ -650,7 +650,11 @@ public class BaseItemService {
             tmp.put(syncBaseItem, syncBaseItemInfo);
         }
         for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
-            synchronizeActivateSlave(entry.getKey(), entry.getValue());
+            try {
+                synchronizeActivateSlave(entry.getKey(), entry.getValue());
+            } catch(Exception e) {
+                exceptionHandler.handleException("BaseItemService.restore()", e);
+            }
         }
     }
 

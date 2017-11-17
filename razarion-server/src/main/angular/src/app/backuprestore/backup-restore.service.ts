@@ -25,7 +25,6 @@ export class BackupRestoreService {
   }
 
   restore(backupBaseOverview: BackupPlanetOverview) {
-    this.http.post(URL_PLANET_MGMT + '/dorestore', JSON.stringify(backupBaseOverview), {headers: new Headers({'Content-Type': 'application/json'})})
-      .catch(Common.handleError);
+    this.http.post(URL_PLANET_MGMT + '/dorestore', JSON.stringify(backupBaseOverview), {headers: new Headers({'Content-Type': 'application/json'})}).toPromise().catch(Common.handleError);
   }
 }
