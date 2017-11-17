@@ -63,7 +63,7 @@ public class FactoryTest extends BaseBasicTest {
         Assert.assertEquals(0, ship.getBuildup(), 1);
         Assert.assertEquals(30, ship.getHealth(), 1);
 
-        showDisplay();
+        // showDisplay();
     }
 
     @Test
@@ -84,6 +84,6 @@ public class FactoryTest extends BaseBasicTest {
         }
         assertSyncItemCount(12, 0, 0);
 
-        showDisplay();
+        // showDisplay();
     }
 }
