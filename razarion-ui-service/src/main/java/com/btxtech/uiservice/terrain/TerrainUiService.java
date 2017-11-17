@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
@@ -179,24 +180,31 @@ public class TerrainUiService {
 
     public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
         for (DecimalPosition terrainPosition : terrainPositions) {
-            Index terrainTile = TerrainUtil.toTile(terrainPosition);
-            UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
-            if (uiTerrainTile == null) {
-                throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(Collection<DecimalPosition>, BaseItemType) UiTerrainTile not loaded: " + terrainTile);
-            }
-
             TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
             if (terrainType.isAreaCheck()) {
-                if (!uiTerrainTile.isTerrainTypeInAreaAllowed(terrainType, terrainPosition, baseItemType.getPhysicalAreaConfig().getRadius())) {
-                    return false;
+                List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, baseItemType.getPhysicalAreaConfig().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+                for (Index subNodeIndex : subNodeIndices) {
+                    DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(terrainPosition);
+                    if (!isTerrainFreeInDisplay(scanPosition, terrainType)) {
+                        return false;
+                    }
                 }
             } else {
-                if (!uiTerrainTile.isTerrainTypeAllowed(terrainType, terrainPosition)) {
+                if (!isTerrainFreeInDisplay(terrainPosition, terrainType)) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    private boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition, TerrainType terrainType) {
+        Index terrainTile = TerrainUtil.toTile(terrainPosition);
+        UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
+        if (uiTerrainTile == null) {
+            throw new IllegalStateException("TerrainUiService.isTerrainFreeInDisplay(Collection<DecimalPosition>, BaseItemType) UiTerrainTile not loaded: " + terrainTile);
+        }
+        return uiTerrainTile.isTerrainTypeAllowed(terrainType, terrainPosition);
     }
 
     public Vertex calculateMousePositionGroundMesh(Line3d worldPickRay) {

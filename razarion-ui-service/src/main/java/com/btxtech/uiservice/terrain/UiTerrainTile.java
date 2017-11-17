@@ -201,17 +201,6 @@ public class UiTerrainTile {
         return TerrainType.isAllowed(terrainType, getTerrainType(position));
     }
 
-    public boolean isTerrainTypeInAreaAllowed(TerrainType terrainType, DecimalPosition position, double radius) {
-        List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        for (Index subNodeIndex : subNodeIndices) {
-            DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(position);
-            if (!isTerrainTypeAllowed(terrainType, scanPosition)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public boolean isAtLeaseOneTerrainFree(DecimalPosition terrainPosition, Set<TerrainType> terrainTypes) {
         return findNode(terrainPosition, new TerrainTileAccess<Boolean>() {
             @Override
