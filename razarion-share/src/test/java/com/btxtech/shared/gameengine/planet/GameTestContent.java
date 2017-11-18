@@ -35,7 +35,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +54,7 @@ public interface GameTestContent {
     int HARVESTER_ITEM_TYPE_ID = 6;
     int HARBOUR_ITEM_TYPE_ID = 7;
     int SHIP_ATTACKER_ITEM_TYPE_ID = 8;
+    int SHIP_HARVESTER_ITEM_TYPE_ID = 9;
     int RESOURCE_ITEM_TYPE_ID = 101;
     int BOX_ITEM_TYPE_ID = 501;
     int BOX_ITEM_TYPE_LONG_ID = 502;
@@ -108,6 +108,7 @@ public interface GameTestContent {
         setupGenerator(baseItemTypes);
         setupConsumer(baseItemTypes);
         setupHarvester(baseItemTypes);
+        setupShipHarvester(baseItemTypes);
         setupHarbour(baseItemTypes);
         return baseItemTypes;
     }
@@ -132,7 +133,7 @@ public interface GameTestContent {
         BaseItemType harbour = new BaseItemType();
         harbour.setHealth(40).setId(HARBOUR_ITEM_TYPE_ID).setInternalName("Harbour test");
         harbour.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER_COAST).setRadius(4.5));
-        harbour.setFactoryType(new FactoryType().setAbleToBuildIds(Collections.singletonList(SHIP_ATTACKER_ITEM_TYPE_ID)).setProgress(3));
+        harbour.setFactoryType(new FactoryType().setAbleToBuildIds(Arrays.asList(SHIP_ATTACKER_ITEM_TYPE_ID, SHIP_HARVESTER_ITEM_TYPE_ID)).setProgress(3));
         baseItemTypes.add(harbour);
     }
 
@@ -174,6 +175,14 @@ public interface GameTestContent {
         harvester.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(1.5).setAngularVelocity(Math.toRadians(40)).setRadius(2).setSpeed(15.0));
         harvester.setHarvesterType(new HarvesterType().setProgress(2.0).setRange(2));
         baseItemTypes.add(harvester);
+    }
+
+    static void setupShipHarvester(List<BaseItemType> baseItemTypes) {
+        BaseItemType attacker = new BaseItemType();
+        attacker.setHealth(10).setBuildup(5).setId(SHIP_HARVESTER_ITEM_TYPE_ID).setInternalName("Ship harvester test");
+        attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER).setAcceleration(1.5).setAngularVelocity(Math.toRadians(20)).setRadius(2.5).setSpeed(15.0));
+        attacker.setHarvesterType(new HarvesterType().setRange(10).setProgress(2.0).setAnimationOrigin(new Vertex(1, 0, 0)).setAnimationShape3dId(1));
+        baseItemTypes.add(attacker);
     }
 
     static List<ResourceItemType> setupResourceItemType() {
@@ -235,6 +244,7 @@ public interface GameTestContent {
         level1Limitation.put(GENERATOR_ITEM_TYPE_ID, 6);
         level1Limitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         level1Limitation.put(HARVESTER_ITEM_TYPE_ID, 3);
+        level1Limitation.put(SHIP_HARVESTER_ITEM_TYPE_ID, 2);
         level1Limitation.put(HARBOUR_ITEM_TYPE_ID, 1);
         levelConfigs.add(new LevelConfig().setLevelId(LEVEL_ID_1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
         return levelConfigs;
@@ -249,6 +259,7 @@ public interface GameTestContent {
         levelLimitation.put(GENERATOR_ITEM_TYPE_ID, 6);
         levelLimitation.put(CONSUMER_ITEM_TYPE_ID, 6);
         levelLimitation.put(HARVESTER_ITEM_TYPE_ID, 3);
+        levelLimitation.put(SHIP_HARVESTER_ITEM_TYPE_ID, 2);
         levelLimitation.put(HARBOUR_ITEM_TYPE_ID, 3);
         return levelLimitation;
     }

@@ -7,8 +7,10 @@ import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
@@ -39,6 +41,17 @@ public class WeldMasterBaseTest extends WeldBaseTest {
 
     protected BotService getBotService() {
         return getWeldBean(BotService.class);
+    }
+
+    protected PlayerBase getBotBase(String botName) {
+        for (PlayerBaseInfo playerBaseInfo : getBaseItemService().getPlayerBaseInfos()) {
+            if (playerBaseInfo.getCharacter().isBot()) {
+                if (playerBaseInfo.getName().equalsIgnoreCase(botName)) {
+                    return getBaseItemService().getPlayerBase4BaseId(playerBaseInfo.getBaseId());
+                }
+            }
+        }
+        throw new IllegalArgumentException("No botbase found for: " + botName);
     }
 
     protected MasterPlanetConfig setupMasterPlanetConfig() {

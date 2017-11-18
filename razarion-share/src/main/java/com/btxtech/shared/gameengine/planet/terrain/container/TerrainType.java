@@ -18,6 +18,8 @@ public enum TerrainType {
     BLOCKED(false);
 
     private static final Set<TerrainType> LAND_WATER_COAST = new HashSet<>(Arrays.asList(LAND_COAST, WATER_COAST));
+    private static final Set<TerrainType> WATER_LAND = new HashSet<>(Arrays.asList(LAND, LAND_COAST, WATER_COAST));
+    private static final Set<TerrainType> LAND_WATER = new HashSet<>(Arrays.asList(WATER, LAND_COAST, WATER_COAST));
     private boolean areaCheck;
 
     TerrainType(boolean areaCheck) {
@@ -53,8 +55,14 @@ public enum TerrainType {
         if (terrainType == targetTerrainType) {
             return null;
         }
-        if (terrainType == LAND && targetTerrainType == WATER_COAST) {
+        if (terrainType == LAND && targetTerrainType == WATER_COAST) { // TODO not a solution
             return LAND_WATER_COAST;
+        }
+        if (terrainType == WATER && targetTerrainType == LAND) {// TODO not a solution
+            return WATER_LAND;
+        }
+        if (terrainType == LAND && targetTerrainType == WATER) {// TODO not a solution
+            return LAND_WATER;
         }
         throw new IllegalArgumentException("TerrainType.getSkippableTerrainType() terrainType: " + terrainType + " targetTerrainType: " + targetTerrainType);
     }
