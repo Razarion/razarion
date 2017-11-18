@@ -97,7 +97,7 @@ public class SyncFactory extends SyncBaseAbility {
                     gameLogicService.onFactoryHouseSpaceExceeded();
                     return true;
                 }
-                SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, spawnPoint, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
+                SyncBaseItem createItem = baseItemService.createSyncBaseItem4Factory(toBeBuiltType, spawnPoint, spawnPoint.getAngle(rallyPoint), (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
                 stop();
                 commandService.move(createItem, rallyPoint);
             }
@@ -170,7 +170,7 @@ public class SyncFactory extends SyncBaseAbility {
         double delta = MathHelper.QUARTER_RADIANT;
         while (delta > GIVE_UP_RELAY_MIN) {
             for (double angle = 0; angle <= MathHelper.ONE_RADIANT; angle += delta) {
-                double correctedAngle = MathHelper.normaliseAngle(angle + MathHelper.HALF_RADIANT);
+                double correctedAngle = MathHelper.normaliseAngle(angle + MathHelper.THREE_QUARTER_RADIANT);
                 DecimalPosition decimalPosition = start.getPointWithDistance(correctedAngle, distance);
                 if (terrainService.getPathingAccess().isTerrainTypeAllowed(terrainType, decimalPosition, radius)) {
                     if (checkInsight) {

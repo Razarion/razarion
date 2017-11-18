@@ -198,11 +198,11 @@ public class BaseItemService {
     }
 
 
-    public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
+    public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, double angle, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         if (!terrainService.getPathingAccess().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
             throw new TerrainTypeNotAllowedException("BaseItemService.createSyncBaseItem4Factory() " + toBeBuilt + " " + position);
         }
-        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, 0, base);
+        SyncBaseItem syncBaseItem = createSyncBaseItem(toBeBuilt, position, angle, base);
         syncBaseItem.setSpawnProgress(1.0);
         syncBaseItem.setBuildup(1.0);
         gameLogicService.onFactorySyncItem(syncBaseItem, createdBy);
