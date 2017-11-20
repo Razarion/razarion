@@ -80,7 +80,9 @@ public class LevelEntity {
             this.levelUnlockEntities = new ArrayList<>();
         }
         this.levelUnlockEntities.clear();
-        this.levelUnlockEntities.addAll(levelUnlockEntities);
+        if (levelUnlockEntities != null) {
+            this.levelUnlockEntities.addAll(levelUnlockEntities);
+        }
     }
 
     public int getNumber() {

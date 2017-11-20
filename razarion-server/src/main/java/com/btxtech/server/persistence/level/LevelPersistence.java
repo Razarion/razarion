@@ -2,7 +2,6 @@ package com.btxtech.server.persistence.level;
 
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
-import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
@@ -178,8 +177,12 @@ public class LevelPersistence {
     }
 
     @Transactional
-    public int readLevelUnlockEntityCrystals(int levelId, int levelUnlockEntityId) {
-        return getLevel4Id(levelId).getLevelUnlockEntity(levelUnlockEntityId).getCrystalCost();
+    public int readLevelUnlockEntityCrystals(int levelUnlockEntityId) {
+        return readLevelUnlockEntity(levelUnlockEntityId).getCrystalCost();
+    }
+
+    public LevelUnlockEntity readLevelUnlockEntity(int levelUnlockEntityId) {
+        return entityManager.find(LevelUnlockEntity.class, levelUnlockEntityId);
     }
 
     @Transactional
@@ -211,7 +214,7 @@ public class LevelPersistence {
 
     @Transactional
     public UnlockedBackendInfo findUnlockedBackendInfo(int levelUnlockId) {
-        LevelUnlockEntity levelUnlockEntity =  entityManager.find(LevelUnlockEntity.class,levelUnlockId);
+        LevelUnlockEntity levelUnlockEntity = entityManager.find(LevelUnlockEntity.class, levelUnlockId);
         return new UnlockedBackendInfo().setId(levelUnlockEntity.getId()).setInternalName(levelUnlockEntity.getInternalName());
     }
 }

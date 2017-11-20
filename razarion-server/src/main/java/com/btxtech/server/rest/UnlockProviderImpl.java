@@ -30,7 +30,7 @@ public class UnlockProviderImpl implements UnlockProvider {
     public UnlockResultInfo unlockViaCrystals(int levelUnlockConfigId) {
         try {
             int crystals = serverInventoryService.loadCrystals(sessionHolder.getPlayerSession());
-            if (crystals < levelPersistence.readLevelUnlockEntityCrystals(sessionHolder.getPlayerSession().getUserContext().getLevelId(), levelUnlockConfigId)) {
+            if (crystals < levelPersistence.readLevelUnlockEntityCrystals(levelUnlockConfigId)) {
                 return new UnlockResultInfo().setNotEnoughCrystals(true);
             }
             serverUnlockService.unlockViaCrystals(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), levelUnlockConfigId);

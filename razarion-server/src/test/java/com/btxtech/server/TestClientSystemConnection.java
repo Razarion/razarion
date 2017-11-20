@@ -2,7 +2,7 @@ package com.btxtech.server;
 
 import com.btxtech.server.connection.ClientSystemConnection;
 import com.btxtech.server.user.PlayerSession;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.unitils.reflectionassert.ReflectionAssert;
@@ -69,9 +69,8 @@ public class TestClientSystemConnection extends ClientSystemConnection {
     }
 
     public <T> void assertMessageSent(int index, String packetString, Map<Integer, Integer> expected) throws IOException {
-        Map<Integer, Integer> actual = new ObjectMapper().readValue(assertAndExtractBody(index, packetString), new TypeReference<Map<Integer, Integer>>() {
-        });
-        ReflectionAssert.assertReflectionEquals(expected, actual);
+        UnlockedItemPacket actual = new ObjectMapper().readValue(assertAndExtractBody(index, packetString), UnlockedItemPacket.class);
+        ReflectionAssert.assertReflectionEquals(new UnlockedItemPacket().setUnlockedItemLimit(expected), actual);
     }
 
     public <T> void assertMessageSent(int index, String packetString, Class<T> expectedClass, T expected) throws IOException {

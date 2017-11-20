@@ -205,7 +205,7 @@ public class UserService {
     @Transactional
     public void persistUnlockViaCrystals(int userId, int levelUnlockEntityId) {
         UserEntity userEntity = getUserEntity(userId);
-        LevelUnlockEntity levelUnlockEntity = userEntity.getLevel().getLevelUnlockEntity(levelUnlockEntityId);
+        LevelUnlockEntity levelUnlockEntity = levelPersistence.readLevelUnlockEntity(levelUnlockEntityId);
         if (levelUnlockEntity.getCrystalCost() > userEntity.getCrystals()) {
             throw new IllegalArgumentException("User does not have enough crystals to unlock LevelUnlockEntity. User id: " + userEntity.getId() + " LevelUnlockEntity id: " + levelUnlockEntity.getId());
         }

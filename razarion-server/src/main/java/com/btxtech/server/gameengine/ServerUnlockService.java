@@ -52,7 +52,7 @@ public class ServerUnlockService {
             PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
             if (playerSession != null && playerSession.getUnregisteredUser() != null) {
                 UnregisteredUser unregisteredUser = playerSession.getUnregisteredUser();
-                int crystals = levelPersistence.readLevelUnlockEntityCrystals(playerSession.getUserContext().getLevelId(), levelUnlockEntityId);
+                int crystals = levelPersistence.readLevelUnlockEntityCrystals(levelUnlockEntityId);
                 if (crystals > unregisteredUser.getCrystals()) {
                     throw new IllegalArgumentException("Unregistered user does not have enough crystals to unlock LevelUnlockEntity. LevelUnlockEntity id: " + levelUnlockEntityId);
                 }
