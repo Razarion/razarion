@@ -98,6 +98,7 @@ public class ServerGameEngineControl implements GameLogicListener {
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
             botService.startBots(serverGameEnginePersistence.readBotConfigs());
+            //planetService.enableTracking(true);
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
         if (activateQuests) {
             activateQuests(finaBackupPlanetInfo);

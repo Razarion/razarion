@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionException;
@@ -102,16 +103,22 @@ public class SyncWeapon extends SyncBaseAbility {
                     throw new IllegalStateException("SyncWeapon out of range from Target and getSyncPhysicalArea can not move");
                 }
                 if (!getSyncPhysicalMovable().hasDestination()) {
-                    getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
+                    if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+                        getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
+                    } else {
+                        return true;
+                    }
                 }
 
                 // Check if target has moved away
-                if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
-                    if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
-                        targetPosition = target.getSyncPhysicalArea().getPosition2d();
-                        getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
+                if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
+                    if (targetPositionLastCheck + CHECK_DELTA < System.currentTimeMillis()) {
+                        if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
+                            targetPosition = target.getSyncPhysicalArea().getPosition2d();
+                            getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
+                        }
+                        targetPositionLastCheck = System.currentTimeMillis();
                     }
-                    targetPositionLastCheck = System.currentTimeMillis();
                 }
                 return true;
             }
