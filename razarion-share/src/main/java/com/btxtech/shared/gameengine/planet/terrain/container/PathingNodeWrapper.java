@@ -191,10 +191,10 @@ public class PathingNodeWrapper {
         return pathingNodeWrapper -> {
             if (aStarContext.hasSubNodeIndexScope()) {
                 if (pathingNodeWrapper.getTerrainShapeSubNode() != null) {
-                    if (aStarContext.isSkippable(pathingNodeWrapper.getTerrainShapeSubNode().getTerrainType(), pathingNodeWrapper.getCenter())) {
-                        northNodeHandler.accept(pathingNodeWrapper);
-                        return;
-                    }
+//                    if (aStarContext.isSkippable(pathingNodeWrapper.getTerrainShapeSubNode().getTerrainType(), pathingNodeWrapper.getCenter())) {
+//                        northNodeHandler.accept(pathingNodeWrapper);
+//                        return;
+//                    }
                     for (Index index : aStarContext.getSubNodeIndexScope()) {
                         DecimalPosition scanPosition = pathingNodeWrapper.getSubNodePosition().add(TerrainUtil.smallestSubNodeCenter(index));
                         if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanPosition), scanPosition)) {

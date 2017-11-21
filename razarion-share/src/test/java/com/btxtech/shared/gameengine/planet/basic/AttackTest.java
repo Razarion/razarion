@@ -83,10 +83,11 @@ public class AttackTest extends BaseBasicTest {
         botAttackCommandConfig.setActorItemTypeId(GameTestContent.SHIP_ATTACKER_ITEM_TYPE_ID);
         getBotService().executeCommands(Collections.singletonList(botAttackCommandConfig));
 
+        // showDisplay();
+
         tickPlanetServiceBaseServiceActive();
         assertSyncItemCount(3, 0, 0);
 
-        // showDisplay();
     }
 
     @Test
@@ -112,25 +113,11 @@ public class AttackTest extends BaseBasicTest {
 
         // Attack
         getCommandService().attack(attacker, botItem, true);
-        // tickPlanetServiceBaseServiceActive();
-        tickPlanetService(10000);
+        tickPlanetServiceBaseServiceActive();
+        // tickPlanetService(10000);
 
         assertSyncItemCount(3, 0, 0);
 
-        showDisplay();
+        // showDisplay();
     }
-
-    private SyncBaseItem setupBot(String botName, int itemTypeId, DecimalPosition position, int auxiliaryId) {
-        List<BotConfig> botConfigs = new ArrayList<>();
-        List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(itemTypeId).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(position)).setNoRebuild(true));
-        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
-        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
-        botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false).setAuxiliaryId(auxiliaryId));
-        getBotService().startBots(botConfigs);
-        tickPlanetServiceBaseServiceActive();
-        PlayerBase botBase = getBotBase(botName);
-        return findSyncBaseItem((PlayerBaseFull) botBase, itemTypeId);
-    }
-
 }

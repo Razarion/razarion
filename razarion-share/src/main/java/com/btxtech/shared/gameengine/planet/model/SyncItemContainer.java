@@ -105,18 +105,18 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     private void unload() throws ItemDoesNotExistException {
-        if (PlanetService.MODE != PlanetMode.MASTER) {
-            return;
-        }
-        for (Iterator<Integer> iterator = containedItems.iterator(); iterator.hasNext(); ) {
-            Integer containedItem = iterator.next();
-            if (allowedUnload(unloadPos, containedItem)) {
-                SyncBaseItem syncItem = (SyncBaseItem) baseItemService.getItem(containedItem);
-                syncItem.clearContained(unloadPos);
-                iterator.remove();
-            }
-        }
-        gameLogicService.onSyncItemUnloaded(getSyncBaseItem());
+//        if (PlanetService.MODE != PlanetMode.MASTER) {
+//            return;
+//        }
+//        for (Iterator<Integer> iterator = containedItems.iterator(); iterator.hasNext(); ) {
+//            Integer containedItem = iterator.next();
+//            if (allowedUnload(unloadPos, containedItem)) {
+//                SyncBaseItem syncItem = (SyncBaseItem) baseItemService.getItem(containedItem);
+//                syncItem.clearContained(unloadPos);
+//                iterator.remove();
+//            }
+//        }
+//        gameLogicService.onSyncItemUnloaded(getSyncBaseItem());
     }
 
     public void stop() {

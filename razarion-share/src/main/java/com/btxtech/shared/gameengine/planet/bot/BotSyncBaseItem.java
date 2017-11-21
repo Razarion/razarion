@@ -22,6 +22,8 @@ import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.pathing.TerrainDestinationFinder;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.Dependent;
@@ -35,7 +37,6 @@ import javax.inject.Inject;
 @Dependent
 public class BotSyncBaseItem {
     // private Logger logger = Logger.getLogger(BotSyncBaseItem.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -44,6 +45,8 @@ public class BotSyncBaseItem {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private CommandService commandService;
+    @Inject
+    private TerrainService terrainService;
     private SyncBaseItem syncBaseItem;
     private BotItemConfig botItemConfig;
     private boolean idle;
@@ -77,7 +80,11 @@ public class BotSyncBaseItem {
     }
 
     public boolean isAbleToAttack(SyncBaseItem target) {
-        return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target);
+        return syncBaseItem.getSyncWeapon() != null && syncBaseItem.getSyncPhysicalArea().canMove() && !syncBaseItem.getSyncWeapon().isItemTypeDisallowed(target)
+                && TerrainDestinationFinder.isAllowed(terrainService.getPathingAccess(),
+                syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius() + syncBaseItem.getSyncWeapon().getWeaponType().getRange() + target.getBaseItemType().getPhysicalAreaConfig().getRadius(),
+                target.getSyncPhysicalArea().getPosition2d(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(),
+                target.getBaseItemType().getPhysicalAreaConfig().getTerrainType());
     }
 
     public boolean isAbleToHarvest() {

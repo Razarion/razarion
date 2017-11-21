@@ -1,12 +1,20 @@
 package com.btxtech.shared.gameengine.planet.basic;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,5 +76,19 @@ public class BaseBasicTest extends WeldMasterBaseTest {
 
         setupMasterEnvironment(staticGameConfig, terrainSlopePositions);
     }
+
+    protected SyncBaseItem setupBot(String botName, int itemTypeId, DecimalPosition position, int auxiliaryId) {
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(itemTypeId).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(position)).setNoRebuild(true));
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false).setAuxiliaryId(auxiliaryId));
+        getBotService().startBots(botConfigs);
+        tickPlanetServiceBaseServiceActive();
+        PlayerBase botBase = getBotBase(botName);
+        return findSyncBaseItem((PlayerBaseFull) botBase, itemTypeId);
+    }
+
 
 }

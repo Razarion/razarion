@@ -63,13 +63,21 @@ public class PathingService {
         }
         // long time = System.currentTimeMillis();
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-        PathingNodeWrapper correctedDestinationNode = destinationNode;
-        if(syncItem.getSyncPhysicalArea().getTerrainType() == targetTerrainType) {
+        PathingNodeWrapper correctedDestinationNode;
+        AStarContext aStarContext;
+        if (TerrainDestinationFinder.differentTerrain(syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType)) {
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(syncItem.getSyncPhysicalArea().getPosition2d(), destination, totalRange, syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getTerrainType(), terrainService.getPathingAccess());
+            terrainDestinationFinder.find();
+            destination = terrainDestinationFinder.getReachableDestination();
+            correctedDestinationNode = terrainDestinationFinder.getReachableNode();
+            totalRange = 0;
+            aStarContext = new AStarContext(destination, 0, syncItem.getSyncPhysicalArea().getTerrainType(), TerrainType.getSkippableTerrainType(syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType), subNodeIndexScope);
+        } else {
             DestinationFinder destinationFinder = new DestinationFinder(destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope, terrainService.getPathingAccess());
             correctedDestinationNode = destinationFinder.find();
+            aStarContext = new AStarContext(destination, totalRange, syncItem.getSyncPhysicalArea().getTerrainType(), TerrainType.getSkippableTerrainType(syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType), subNodeIndexScope);
         }
 
-        AStarContext aStarContext = new AStarContext(destination, totalRange, syncItem.getSyncPhysicalArea().getTerrainType(), TerrainType.getSkippableTerrainType(syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType), subNodeIndexScope);
         AStar aStar = new AStar(startNode, correctedDestinationNode, aStarContext);
         aStar.expandAllNodes();
         for (PathingNodeWrapper pathingNodeWrapper : aStar.convertPath()) {

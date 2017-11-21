@@ -64,8 +64,6 @@ public class BaseItemService {
     @Inject
     private LevelService levelService;
     @Inject
-    private Instance<CommandService> commandService;
-    @Inject
     private ItemTypeService itemTypeService;
     @Inject
     private EnergyService energyService;
@@ -75,11 +73,12 @@ public class BaseItemService {
     private BoxService boxService;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private GuardingItemService guardingItemService;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
-    private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
 
@@ -87,7 +86,7 @@ public class BaseItemService {
         activeItems.clear();
         activeItemQueue.clear();
         bases.clear();
-        guardingItems.clear();
+        guardingItemService.clear();
         lastBaseItId = 1;
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
             gameEngineMode = planetActivationEvent.getGameEngineMode();
@@ -402,31 +401,6 @@ public class BaseItemService {
         return bases.containsKey(base.getBaseId());
     }
 
-    public Collection<SyncBaseItem> findEnemyItems(final PlayerBase playerBase, PlaceConfig region) {
-        Collection<SyncBaseItem> enemyItems = new ArrayList<>();
-        syncItemContainerService.iterateOverItems(false, false, null, (ItemIteratorHandler<Void>) syncItem -> {
-            if (syncItem instanceof SyncBaseItem && ((SyncBaseItem) syncItem).isEnemy(playerBase) && (region == null || region.checkInside(syncItem))) {
-                enemyItems.add((SyncBaseItem) syncItem);
-            }
-            return null;
-        });
-        return enemyItems;
-    }
-
-    private SyncBaseItem findNearestEnemy(SyncBaseItem guardingItem) {
-        Collection<SyncBaseItem> enemyItems = findEnemyItems(guardingItem.getBase(), new PlaceConfig().setPosition(guardingItem.getSyncPhysicalArea().getPosition2d()).setRadius(guardingItem.getBaseItemType().getWeaponType().getRange() + guardingItem.getSyncPhysicalArea().getRadius()));
-        double distance = Double.MAX_VALUE;
-        SyncBaseItem nearest = null;
-        for (SyncBaseItem enemyItem : enemyItems) {
-            double tmpDistance = enemyItem.getSyncPhysicalArea().getDistance(guardingItem);
-            if (distance > tmpDistance) {
-                distance = tmpDistance;
-                nearest = enemyItem;
-            }
-        }
-        return nearest;
-    }
-
     public int getLimitation4ItemType(int itemTypeId, int levelId, Map<Integer, Integer> unlockedItemLimitation) {
         int unlockedCount = unlockedItemLimitation.getOrDefault(itemTypeId, 0);
         int levelCount = levelService.getLevel(levelId).limitation4ItemType(itemTypeId);
@@ -495,7 +469,7 @@ public class BaseItemService {
                 }
                 if (activeItem.isIdle()) {
                     iterator.remove();
-                    if (!addGuardingBaseItem(activeItem)) {
+                    if (!guardingItemService.add(activeItem)) {
                         gameLogicService.onSyncBaseItemIdle(activeItem);
                     }
                     continue;
@@ -505,7 +479,7 @@ public class BaseItemService {
                         try {
                             activeItem.stop();
                             iterator.remove();
-                            if (!addGuardingBaseItem(activeItem)) {
+                            if (!guardingItemService.add(activeItem)) {
                                 gameLogicService.onSyncBaseItemIdle(activeItem);
                             }
                         } catch (Throwable t) {
@@ -520,9 +494,7 @@ public class BaseItemService {
                 }
             }
         }
-        synchronized (guardingItems) {
-            guardingItems.removeIf(this::handleGuardingItemHasEnemiesInRange);
-        }
+        guardingItemService.tick();
     }
 
     public void addToActiveItemQueue(SyncBaseItem activeItem) {
@@ -530,43 +502,6 @@ public class BaseItemService {
             if (!activeItems.contains(activeItem) && !activeItemQueue.contains(activeItem)) {
                 activeItemQueue.add(activeItem);
             }
-        }
-    }
-
-    private boolean addGuardingBaseItem(SyncBaseItem syncBaseItem) {
-        try {
-            if (PlanetService.MODE != PlanetMode.MASTER) {
-                return false;
-            }
-
-            if (syncBaseItem.getSyncWeapon() == null || !syncBaseItem.isAlive()) {
-                return false;
-            }
-
-            if (!syncBaseItem.isAlive()) {
-                return false;
-            }
-
-            if (handleGuardingItemHasEnemiesInRange(syncBaseItem)) {
-                return true;
-            }
-
-            synchronized (guardingItems) {
-                guardingItems.add(syncBaseItem);
-            }
-        } catch (Exception e) {
-            exceptionHandler.handleException(e);
-        }
-        return false;
-    }
-
-    private boolean handleGuardingItemHasEnemiesInRange(SyncBaseItem guardingItem) {
-        SyncBaseItem target = findNearestEnemy(guardingItem);
-        if (target != null) {
-            commandService.get().defend(guardingItem, target);
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -663,12 +598,5 @@ public class BaseItemService {
                 exceptionHandler.handleException("BaseItemService.restore()", e);
             }
         }
-    }
-
-    // --------------------------------------------------------------------------
-
-    @Deprecated // Use syncBaseItemContainerService.getSyncItem
-    public SyncBaseItem getItem(int id) throws ItemDoesNotExistException {
-        throw new UnsupportedOperationException();
     }
 }

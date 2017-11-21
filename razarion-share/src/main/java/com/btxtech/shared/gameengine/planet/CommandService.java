@@ -18,7 +18,6 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -49,7 +48,7 @@ public class CommandService { // Is part of the Base service
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private TerrainService terrainService;
+    private GuardingItemService guardingItemService;
 
     public void move(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
         for (int syncBaseItemId : syncBaseItemIds) {
@@ -200,6 +199,7 @@ public class CommandService { // Is part of the Base service
             syncBaseItem.stop();
             syncBaseItem.executeCommand(baseCommand);
             baseItemService.addToActiveItemQueue(syncBaseItem);
+            guardingItemService.remove(syncBaseItem);
             gameLogicService.onCommandSent(syncBaseItem, baseCommand);
         } catch (ItemDoesNotExistException e) {
             gameLogicService.onItemDoesNotExistException(e);

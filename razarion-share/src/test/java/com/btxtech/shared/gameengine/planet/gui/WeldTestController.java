@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
@@ -24,6 +25,8 @@ import java.util.ResourceBundle;
 public class WeldTestController extends AbstractTerrainTestController {
     @Inject
     private WeldTestRenderer weldTestRenderer;
+    @Inject
+    private PlanetService planetService;
     @Inject
     private TerrainService terrainService;
     @FXML
@@ -167,5 +170,10 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     public boolean renderShapeWater() {
         return shapeWaterCheck.isSelected();
+    }
+
+    public void onTickButton(ActionEvent actionEvent) {
+        planetService.run();
+        getAbstractTerrainTestRenderer().render();
     }
 }

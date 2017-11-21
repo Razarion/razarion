@@ -63,6 +63,15 @@
                         </AnchorPane>
                     </content>
                 </TitledPane>
+            <TitledPane animated="false" text="Game engin">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button layoutX="2.0" layoutY="2.0" mnemonicParsing="false" onAction="#onTickButton" text="Tick" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </TitledPane>
             </panes>
         </Accordion>
     </right>

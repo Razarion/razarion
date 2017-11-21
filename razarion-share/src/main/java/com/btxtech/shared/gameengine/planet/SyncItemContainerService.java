@@ -52,6 +52,8 @@ public class SyncItemContainerService {
     private Instance<SyncPhysicalMovable> syncPhysicalMovableInstance;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private Instance<GuardingItemService> guardingItemServiceInstanceInstance;
 
     public void clear() {
         items.clear();
@@ -263,6 +265,9 @@ public class SyncItemContainerService {
                 logger.severe("Item did not belong to SyncItemContainerService: " + syncItem);
             }
         }
+        if(syncItem instanceof SyncBaseItem) {
+            guardingItemServiceInstanceInstance.get().remove((SyncBaseItem) syncItem);
+        }
     }
 
     public SyncItem getSyncItem(int id) {
@@ -293,6 +298,18 @@ public class SyncItemContainerService {
     private boolean hasItemsInRange(DecimalPosition position, double radius) {
         return iterateOverItems(false, false, false, syncItem -> syncItem.getSyncPhysicalArea().overlap(position, radius));
     }
+
+    public Collection<SyncBaseItem> findEnemyItems(final PlayerBase playerBase, PlaceConfig region) {
+        Collection<SyncBaseItem> enemyItems = new ArrayList<>();
+        iterateOverItems(false, false, null, (ItemIteratorHandler<Void>) syncItem -> {
+            if (syncItem instanceof SyncBaseItem && ((SyncBaseItem) syncItem).isEnemy(playerBase) && (region == null || region.checkInside(syncItem))) {
+                enemyItems.add((SyncBaseItem) syncItem);
+            }
+            return null;
+        });
+        return enemyItems;
+    }
+
 
     public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
         for (DecimalPosition position : positions) {
