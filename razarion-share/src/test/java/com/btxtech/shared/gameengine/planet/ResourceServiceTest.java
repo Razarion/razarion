@@ -27,6 +27,7 @@ public class ResourceServiceTest extends WeldMasterBaseTest {
     @Test
     public void test() {
         setupMasterEnvironment();
+        getResourceService().startResourceRegions();
         Assert.assertEquals(5, getTestGameLogicListener().getResourceCreated().size());
         Assert.assertEquals(0, getTestGameLogicListener().getResourceDeleted().size());
         getTestGameLogicListener().clearAll();

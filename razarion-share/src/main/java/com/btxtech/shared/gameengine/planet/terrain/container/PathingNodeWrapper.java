@@ -84,7 +84,7 @@ public class PathingNodeWrapper {
             }
             TerrainShapeNode neighborNode = pathingAccess.getTerrainShapeNode(neighborNodeIndex);
             if (neighborNode == null) {
-                if (aStarContext.isNullTerrainTypeAllowed(TerrainUtil.toAbsoluteNodeCenter(neighborNodeIndex))) {
+                if (aStarContext.isNullTerrainTypeAllowed()) {
                     northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, neighborNodeIndex));
                 }
             } else {
@@ -120,7 +120,7 @@ public class PathingNodeWrapper {
             pathingAccess.getTerrainShape().terrainImpactCallback(neighborSubNodePosition, new TerrainImpactCallback<Void>() {
                 @Override
                 public Void landNoTile(Index tileIndex) {
-                    if (aStarContext.isNullTerrainTypeAllowed(TerrainUtil.toTileAbsoluteCenter(tileIndex))) {
+                    if (aStarContext.isNullTerrainTypeAllowed()) {
                         northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toNode(neighborSubNodePosition)));
                     }
                     return null;
@@ -128,7 +128,7 @@ public class PathingNodeWrapper {
 
                 @Override
                 public Void inTile(TerrainShapeTile terrainShapeTile, Index tileIndex) {
-                    if (aStarContext.isAllowed(terrainShapeTile.getTerrainType(), TerrainUtil.toTileAbsoluteCenter(tileIndex))) {
+                    if (aStarContext.isAllowed(terrainShapeTile.getTerrainType())) {
                         northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toNode(neighborSubNodePosition)));
                     }
                     return null;
@@ -136,7 +136,7 @@ public class PathingNodeWrapper {
 
                 @Override
                 public Void inNode(TerrainShapeNode terrainShapeNode, Index nodeRelativeIndex, DecimalPosition tileRelative, Index tileIndex) {
-                    if (aStarContext.isAllowed(terrainShapeNode.getTerrainType(), TerrainUtil.toAbsoluteNodeCenter(TerrainUtil.tileToNode(tileIndex).add(nodeRelativeIndex)))) {
+                    if (aStarContext.isAllowed(terrainShapeNode.getTerrainType())) {
                         northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.tileToNode(tileIndex).add(nodeRelativeIndex), terrainShapeNode));
                     }
                     return null;
@@ -159,7 +159,7 @@ public class PathingNodeWrapper {
                             }
                         });
                     } else {
-                        if (aStarContext.isAllowed(terrainShapeSubNode.getTerrainType(), TerrainUtil.toSubNodeAbsoluteCenter(neighborSubNodePosition, terrainShapeSubNode.getDepth()))) {
+                        if (aStarContext.isAllowed(terrainShapeSubNode.getTerrainType())) {
                             northNodeHandler.accept(new PathingNodeWrapper(pathingAccess, TerrainUtil.toSubNodeAbsolute(neighborSubNodePosition, terrainShapeSubNode.getDepth()), terrainShapeSubNode));
                         }
                     }
@@ -197,7 +197,7 @@ public class PathingNodeWrapper {
 //                    }
                     for (Index index : aStarContext.getSubNodeIndexScope()) {
                         DecimalPosition scanPosition = pathingNodeWrapper.getSubNodePosition().add(TerrainUtil.smallestSubNodeCenter(index));
-                        if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanPosition), scanPosition)) {
+                        if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanPosition))) {
                             return;
                         }
                     }

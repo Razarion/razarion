@@ -29,7 +29,7 @@ public class DestinationFinder {
         this.terrainType = terrainType;
         this.subNodeIndexScope = subNodeIndexScope;
         this.pathingAccess = pathingAccess;
-        aStarContext = new AStarContext(null, 0, terrainType, null, null);
+        aStarContext = new AStarContext(terrainType, null);
     }
 
     public PathingNodeWrapper find() {

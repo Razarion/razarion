@@ -137,7 +137,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         SyncBaseItem attacker1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, boxPicker1);
         assertSyncAttackerBaseItem(attacker1, attacker1Restore);
         SyncBaseItem boxPickerRestore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1);
-        assertSyncAttackerBaseItem(boxPicker1, boxPickerRestore);
+        assertSyncBoxPickBaseItem(boxPicker1, boxPickerRestore);
         // Verify base 2
         PlayerBaseFull playerBaseFull2Restore = (PlayerBaseFull) getBaseItemService().getPlayerBase4BaseId(playerBaseFull2.getBaseId());
         assertPlayerBaseFull(playerBaseFull2, playerBaseFull2Restore);
@@ -214,7 +214,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         SyncBaseItem attacker1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, boxPicker1);
         assertSyncAttackerBaseItem(attacker1, attacker1Restore);
         SyncBaseItem boxPicker1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1);
-        assertSyncAttackerBaseItem(boxPicker1, boxPicker1Restore);
+        assertSyncBoxPickBaseItem(boxPicker1, boxPicker1Restore);
 
         // Check energy restore 1
         assertEnergy(0, 0, playerBaseFull1Restore);
@@ -289,6 +289,13 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         Assert.assertNotEquals(System.identityHashCode(expected), System.identityHashCode(actual));
         SyncBaseItemInfo syncBaseItemInfo = expected.getSyncInfo();
         syncBaseItemInfo.setTarget(null);
+        ReflectionAssert.assertReflectionEquals(syncBaseItemInfo, actual.getSyncInfo());
+    }
+
+    private void assertSyncBoxPickBaseItem(SyncBaseItem expected, SyncBaseItem actual) {
+        Assert.assertNotEquals(System.identityHashCode(expected), System.identityHashCode(actual));
+        SyncBaseItemInfo syncBaseItemInfo = expected.getSyncInfo();
+        syncBaseItemInfo.setSyncBoxItemId(null);
         ReflectionAssert.assertReflectionEquals(syncBaseItemInfo, actual.getSyncInfo());
     }
 

@@ -71,11 +71,11 @@ public class PathingService {
             destination = terrainDestinationFinder.getReachableDestination();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
             totalRange = 0;
-            aStarContext = new AStarContext(destination, 0, syncItem.getSyncPhysicalArea().getTerrainType(), TerrainType.getSkippableTerrainType(syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType), subNodeIndexScope);
+            aStarContext = new AStarContext(syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope);
         } else {
             DestinationFinder destinationFinder = new DestinationFinder(destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope, terrainService.getPathingAccess());
             correctedDestinationNode = destinationFinder.find();
-            aStarContext = new AStarContext(destination, totalRange, syncItem.getSyncPhysicalArea().getTerrainType(), TerrainType.getSkippableTerrainType(syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType), subNodeIndexScope);
+            aStarContext = new AStarContext(syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope);
         }
 
         AStar aStar = new AStar(startNode, correctedDestinationNode, aStarContext);
@@ -84,7 +84,6 @@ public class PathingService {
             positions.add(pathingNodeWrapper.getCenter());
         }
         // logger.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
-        positions = aStarContext.stripSkippable(positions, terrainService.getPathingAccess());
         positions.add(destination);
         path.setWayPositions(positions);
         path.setTotalRange(totalRange);

@@ -351,7 +351,7 @@ public class TerrainShapeNode {
 
     public void outerDirectionCallback(AStarContext aStarContext, Index outerDirection, DecimalPosition nodePosition, DirectionConsumer directionConsumer) {
         if (!hasSubNodes()) {
-            if (aStarContext.isAllowed(terrainType, nodePosition.add(TerrainUtil.toAbsoluteNodeCenter()))) {
+            if (aStarContext.isAllowed(terrainType)) {
                 directionConsumer.onTerrainShapeNode(this);
             }
         } else if (outerDirection.getX() > 0) {

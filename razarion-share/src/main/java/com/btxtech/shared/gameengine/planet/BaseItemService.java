@@ -561,6 +561,7 @@ public class BaseItemService {
                     syncBaseItemInfo.setTarget(null);
                 }
             }
+            syncBaseItemInfo.setSyncBoxItemId(null);
             return false;
         });
         backupPlanetInfo.setSyncBaseItemInfos(syncBaseItemInfos);

@@ -125,24 +125,17 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(3, TerrainType.LAND, new DecimalPosition(62, 11));
         SimplePath simplePath = getPathingService().setupPathToDestination(syncBaseItem, new DecimalPosition(64, 48));
         // showDisplay(simplePath);
-        // printSimplePath(simplePath);
-        assertSimplePath(simplePath, 0.0, new DecimalPosition(60.0, 20.0), new DecimalPosition(58.0, 26.0), new DecimalPosition(54.0, 26.0),
-                new DecimalPosition(50.0, 26.0), new DecimalPosition(44.0, 28.0), new DecimalPosition(36.0, 28.0), new DecimalPosition(36.0, 36.0),
-                new DecimalPosition(36.0, 44.0), new DecimalPosition(36.0, 52.0), new DecimalPosition(36.0, 60.0), new DecimalPosition(36.0, 68.0),
-                new DecimalPosition(36.0, 76.0), new DecimalPosition(36.0, 84.0), new DecimalPosition(36.0, 92.0), new DecimalPosition(36.0, 100.0),
-                new DecimalPosition(36.0, 108.0), new DecimalPosition(34.0, 114.0), new DecimalPosition(34.0, 118.0), new DecimalPosition(34.0, 122.0),
-                new DecimalPosition(34.0, 126.0), new DecimalPosition(34.0, 130.0), new DecimalPosition(34.0, 134.0), new DecimalPosition(36.0, 140.0),
-                new DecimalPosition(44.0, 140.0), new DecimalPosition(52.0, 140.0), new DecimalPosition(60.0, 140.0), new DecimalPosition(62.0, 134.0),
-                new DecimalPosition(68.0, 132.0), new DecimalPosition(68.0, 124.0), new DecimalPosition(76.0, 124.0), new DecimalPosition(84.0, 124.0),
-                new DecimalPosition(92.0, 124.0), new DecimalPosition(100.0, 124.0), new DecimalPosition(108.0, 124.0), new DecimalPosition(116.0, 124.0),
-                new DecimalPosition(122.0, 122.0), new DecimalPosition(124.0, 116.0), new DecimalPosition(124.0, 108.0), new DecimalPosition(132.0, 108.0),
-                new DecimalPosition(140.0, 108.0), new DecimalPosition(148.0, 108.0), new DecimalPosition(156.0, 108.0), new DecimalPosition(164.0, 108.0),
-                new DecimalPosition(164.0, 100.0), new DecimalPosition(164.0, 92.0), new DecimalPosition(158.0, 90.0), new DecimalPosition(154.0, 90.0),
-                new DecimalPosition(150.0, 90.0), new DecimalPosition(146.0, 90.0), new DecimalPosition(142.0, 90.0), new DecimalPosition(138.0, 90.0),
-                new DecimalPosition(134.0, 90.0), new DecimalPosition(130.0, 90.0), new DecimalPosition(126.0, 90.0), new DecimalPosition(122.0, 90.0),
-                new DecimalPosition(118.0, 90.0), new DecimalPosition(116.0, 84.0), new DecimalPosition(108.0, 84.0), new DecimalPosition(108.0, 76.0),
-                new DecimalPosition(108.0, 68.0), new DecimalPosition(106.0, 62.0), new DecimalPosition(100.0, 60.0), new DecimalPosition(98.0, 54.0),
-                new DecimalPosition(92.0, 52.0), new DecimalPosition(84.0, 52.0), new DecimalPosition(76.0, 52.0), new DecimalPosition(64.0, 48.0));
+        printSimplePath(simplePath);
+        assertSimplePath(simplePath, 0.0, new DecimalPosition(60.0, 20.0), new DecimalPosition(62.0, 26.0), new DecimalPosition(66.0, 26.0), new DecimalPosition(70.0, 26.0),
+                new DecimalPosition(74.0, 26.0), new DecimalPosition(78.0, 26.0), new DecimalPosition(82.0, 26.0), new DecimalPosition(86.0, 26.0), new DecimalPosition(90.0, 26.0),
+                new DecimalPosition(94.0, 26.0), new DecimalPosition(98.0, 26.0), new DecimalPosition(102.0, 26.0), new DecimalPosition(108.0, 28.0), new DecimalPosition(116.0, 28.0),
+                new DecimalPosition(116.0, 36.0), new DecimalPosition(116.0, 44.0), new DecimalPosition(124.0, 44.0), new DecimalPosition(132.0, 44.0), new DecimalPosition(140.0, 44.0),
+                new DecimalPosition(148.0, 44.0), new DecimalPosition(156.0, 44.0), new DecimalPosition(164.0, 44.0), new DecimalPosition(172.0, 44.0), new DecimalPosition(180.0, 44.0),
+                new DecimalPosition(188.0, 44.0), new DecimalPosition(188.0, 52.0), new DecimalPosition(188.0, 60.0), new DecimalPosition(188.0, 68.0), new DecimalPosition(182.0, 66.0),
+                new DecimalPosition(178.0, 66.0), new DecimalPosition(172.0, 68.0), new DecimalPosition(164.0, 68.0), new DecimalPosition(156.0, 68.0), new DecimalPosition(148.0, 68.0),
+                new DecimalPosition(140.0, 68.0), new DecimalPosition(132.0, 68.0), new DecimalPosition(124.0, 68.0), new DecimalPosition(116.0, 68.0), new DecimalPosition(111.5, 64.5),
+                new DecimalPosition(110.5, 64.5), new DecimalPosition(110.5, 63.5), new DecimalPosition(109.0, 63.0), new DecimalPosition(106.0, 62.0), new DecimalPosition(100.0, 60.0),
+                new DecimalPosition(98.0, 54.0), new DecimalPosition(92.0, 52.0), new DecimalPosition(84.0, 52.0), new DecimalPosition(76.0, 52.0), new DecimalPosition(64.0, 48.0));
     }
 
     @Test
@@ -176,7 +169,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         setup();
         SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(4, TerrainType.LAND, new DecimalPosition(170, 151));
         try {
-            getPathingService().setupPathToDestination(syncBaseItem, new DecimalPosition(50, 120));
+            getPathingService().setupPathToDestination(syncBaseItem, new DecimalPosition(70, 117));
             Assert.fail("Fail expected. Destination is not free");
         } catch (PathFindingNotFreeException e) {
             // Expected
@@ -218,10 +211,9 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         SimplePath simplePath = getPathingService().setupPathToDestination(builder, 10, TerrainType.WATER_COAST, new DecimalPosition(96, 197), 5);
         // printSimplePath(simplePath);
         // showDisplay(simplePath);
-        assertSimplePath(simplePath, 19.0, new DecimalPosition(132.0, 164.0), new DecimalPosition(124.0, 164.0), new DecimalPosition(124.0, 172.0),
-                new DecimalPosition(116.0, 172.0), new DecimalPosition(116.0, 180.0), new DecimalPosition(114.0, 186.0), new DecimalPosition(110.0, 186.0),
-                new DecimalPosition(109.0, 189.0), new DecimalPosition(107.0, 189.0), new DecimalPosition(105.0, 189.0), new DecimalPosition(103.0, 189.0),
-                new DecimalPosition(96.0, 197.0));
+        assertSimplePath(simplePath, 0.0, new DecimalPosition(132.0, 164.0), new DecimalPosition(124.0, 164.0), new DecimalPosition(116.0, 164.0), new DecimalPosition(108.0, 164.0),
+                new DecimalPosition(100.0, 164.0), new DecimalPosition(100.0, 172.0), new DecimalPosition(92.0, 172.0), new DecimalPosition(92.0, 180.0), new DecimalPosition(90.0, 186.0),
+                new DecimalPosition(86.0, 186.0), new DecimalPosition(81.0, 187.0));
     }
 
     private void assertSimplePath(SimplePath actual, double expectedTotalRanges, DecimalPosition... expectedPosition) {

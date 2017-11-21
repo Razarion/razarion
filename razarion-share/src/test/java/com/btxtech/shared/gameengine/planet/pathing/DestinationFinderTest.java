@@ -97,14 +97,14 @@ public class DestinationFinderTest extends WeldTerrainServiceTestBase {
 
         PositionMarker positionMarker = new PositionMarker();
         positionMarker.addPosition(new DecimalPosition(60, 41));
-        // showDisplay();
+        // showDisplay(positionMarker);
 
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), 3), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper destinationNode = getTerrainService().getPathingAccess().getPathingNodeWrapper(new DecimalPosition(60, 41));
         DestinationFinder destinationFinder = new DestinationFinder(destinationNode, TerrainType.LAND, subNodeIndexScope, getTerrainService().getPathingAccess());
         PathingNodeWrapper correctedDestinationNode = destinationFinder.find();
 
-        Assert.assertNull(correctedDestinationNode.getNodeIndex());
-        TestHelper.assertDecimalPosition(null, new DecimalPosition(60, 44), correctedDestinationNode.getSubNodePosition());
+        Assert.assertEquals(7, correctedDestinationNode.getNodeIndex().getX());
+        Assert.assertEquals(5, correctedDestinationNode.getNodeIndex().getY());
     }
 }
