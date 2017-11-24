@@ -50,6 +50,8 @@ public class WeldTestController extends AbstractTerrainTestController {
     @FXML
     private CheckBox shapeTerrainTypeCheck;
     @FXML
+    private CheckBox shapeTerrainHeightCheck;
+    @FXML
     private CheckBox shapeFractionalSlopeCheck;
     @FXML
     private CheckBox shapeObstaclesCheck;
@@ -79,6 +81,7 @@ public class WeldTestController extends AbstractTerrainTestController {
         addRenderListener(terrainTileTerrainTypeCheck);
         addRenderListener(shapeAccessCheck);
         addRenderListener(shapeTerrainTypeCheck);
+        addRenderListener(shapeTerrainHeightCheck);
         addRenderListener(shapeFractionalSlopeCheck);
         addRenderListener(shapeObstaclesCheck);
         addRenderListener(groundSlopeConnectionsCheck);
@@ -97,7 +100,7 @@ public class WeldTestController extends AbstractTerrainTestController {
         System.out.println("-----------------------------------------------");
         System.out.println("position: " + position);
         TerrainShapeNode terrainShapeNode = terrainService.getPathingAccess().getTerrainShapeNode(TerrainUtil.toNode(position));
-        System.out.println("Interpolated Z: " + terrainService.getSurfaceAccess().getInterpolatedZ(position));
+        System.out.println("SurfaceAccess: interpolated Z: " + terrainService.getSurfaceAccess().getInterpolatedZ(position));
         System.out.println("Interpolated norm: " + terrainService.getSurfaceAccess().getInterpolatedNorm(position));
         if (terrainShapeNode == null) {
             System.out.println("No terrain shape node at: " + position);
@@ -154,6 +157,10 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     public boolean renderShapeTerrainType() {
         return shapeTerrainTypeCheck.isSelected();
+    }
+
+    public boolean renderShapeTerrainHeight() {
+        return shapeTerrainHeightCheck.isSelected();
     }
 
     public boolean renderShapeFractionalSlope() {

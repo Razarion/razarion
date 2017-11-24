@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.InterpolationUtils;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 public class TerrainShapeSubNodeFactory {
     private static Logger logger = Logger.getLogger(TerrainShape.class.getName());
 
-    public void fillSlopeTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, Double innerHeight, TerrainType outerTerrainType, Double outerHeight, DrivewayContext drivewayContext) {
+    public void fillSlopeTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, Rectangle2D terrainRect, Polygon2D terrainTypeRegion, TerrainType innerTerrainType, Double innerHeight, DrivewayContext drivewayContext) {
         for (int y = 0; y < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; y += TerrainUtil.MIN_SUB_NODE_LENGTH) {
             for (int x = 0; x < TerrainUtil.TOTAL_MIN_SUB_NODE_COUNT; x += TerrainUtil.MIN_SUB_NODE_LENGTH) {
                 DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(new Index(x, y)).add(terrainRect.getStart());
@@ -36,21 +37,10 @@ public class TerrainShapeSubNodeFactory {
                         continue;
                     }
                 }
-                TerrainType terrainType;
-                Double height;
                 if (terrainTypeRegion.isInside(scanPosition)) {
-                    terrainType = innerTerrainType;
-                    height = innerHeight;
-                } else {
-                    terrainType = outerTerrainType;
-                    height = outerHeight;
-                }
-                TerrainShapeSubNode terrainShapeSubNode = getOrCreateDeepestTerrainShapeSubNode(terrainShapeNode, y, x);
-                if (terrainType != null) {
-                    terrainShapeSubNode.setTerrainType(terrainType);
-                }
-                if (height != null) {
-                    terrainShapeSubNode.setHeight(height);
+                    TerrainShapeSubNode terrainShapeSubNode = getOrCreateDeepestTerrainShapeSubNode(terrainShapeNode, y, x);
+                    terrainShapeSubNode.setTerrainType(innerTerrainType);
+                    terrainShapeSubNode.setHeight(innerHeight);
                 }
             }
         }
@@ -105,8 +95,10 @@ public class TerrainShapeSubNodeFactory {
         if (terrainShapeSubNodes == null) {
             return;
         }
+        setDefault(terrainShapeSubNodes, terrainShapeNode.getTerrainType(), terrainShapeNode.getGameEngineHeightOrNull());
+
         TerrainType lastTerrainType = null;
-        double lastHeight = Double.MIN_VALUE;
+        Double lastHeight = null;
         boolean lastDriveway = false;
         boolean mixed = false;
         for (TerrainShapeSubNode terrainShapeSubNode : terrainShapeSubNodes) {
@@ -121,7 +113,7 @@ public class TerrainShapeSubNodeFactory {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
-            } else if (lastTerrainType != concentrateResult.getTerrainType() || lastHeight != concentrateResult.getHeight() || lastDriveway != concentrateResult.isDriveway()) {
+            } else if (lastTerrainType != concentrateResult.getTerrainType() || Double.compare(lastHeight, concentrateResult.getHeight()) != 0 || lastDriveway != concentrateResult.isDriveway()) {
                 mixed = true;
             }
         }
@@ -150,6 +142,22 @@ public class TerrainShapeSubNodeFactory {
             }
             terrainShapeNode.setTerrainShapeSubNodes(null);
         }
+    }
+
+    private void setDefault(TerrainShapeSubNode[] terrainShapeSubNodes, TerrainType defaultTerrainType, Double defaultHeight) {
+        Arrays.stream(terrainShapeSubNodes).forEach(terrainShapeSubNode -> {
+            TerrainShapeSubNode[] children = terrainShapeSubNode.getTerrainShapeSubNodes();
+            if (children != null) {
+                setDefault(children, defaultTerrainType, defaultHeight);
+            } else {
+                if (terrainShapeSubNode.getTerrainType() == null) {
+                    terrainShapeSubNode.setTerrainType(defaultTerrainType);
+                }
+                if (terrainShapeSubNode.getHeight() == null) {
+                    terrainShapeSubNode.setHeight(defaultHeight);
+                }
+            }
+        });
     }
 
     private TerrainShapeSubNode getOrCreateDeepestTerrainShapeSubNode(TerrainShapeNode terrainShapeNode, int y, int x) {
@@ -202,7 +210,7 @@ public class TerrainShapeSubNodeFactory {
             return new ConcentrateResult().setTerrainType(terrainShapeSubNode.getTerrainType()).setHeight(terrainShapeSubNode.getHeight()).setDrivewayHeights(terrainShapeSubNode.getDrivewayHeights());
         }
         TerrainType lastTerrainType = null;
-        double lastHeight = Double.MIN_VALUE;
+        Double lastHeight = null;
         boolean lastDriveway = false;
         boolean mixed = false;
         for (TerrainShapeSubNode child : terrainShapeSubNode.getTerrainShapeSubNodes()) {
@@ -217,7 +225,7 @@ public class TerrainShapeSubNodeFactory {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
-            } else if (lastTerrainType != concentrateResult.getTerrainType() || lastHeight != concentrateResult.getHeight() || lastDriveway != concentrateResult.isDriveway()) {
+            } else if (lastTerrainType != concentrateResult.getTerrainType() || Double.compare(lastHeight, concentrateResult.getHeight()) != 0 || lastDriveway != concentrateResult.isDriveway()) {
                 mixed = true;
             }
         }
@@ -245,7 +253,7 @@ public class TerrainShapeSubNodeFactory {
     private static class ConcentrateResult {
         private boolean mixed;
         private TerrainType terrainType;
-        private double height;
+        private Double height;
         private double[] drivewayHeights; // bl, br, tr, tl
 
         public boolean isMixed() {
@@ -266,7 +274,7 @@ public class TerrainShapeSubNodeFactory {
             return this;
         }
 
-        public double getHeight() {
+        public Double getHeight() {
             return height;
         }
 

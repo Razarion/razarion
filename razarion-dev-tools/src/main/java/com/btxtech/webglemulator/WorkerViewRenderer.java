@@ -258,15 +258,4 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
             egc.strokeCurveDecimalPosition(outer, LINE_WIDTH, Color.AQUA, true);
         }
     }
-
-    private void renderSlopes(ExtendedGraphicsContext egc) {
-        for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-            List<DecimalPosition> polygon = terrainSlopePosition.getPolygon().stream().map(TerrainSlopeCorner::getPosition).collect(Collectors.toList());
-            Slope slope = new Slope(terrainSlopePosition.getId(), terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId()), terrainSlopePosition.getPolygon(), 0.0, terrainTypeService);
-            egc.strokePolygon(polygon, 0.1, Color.GREEN, true);
-            egc.strokePolygon(slope.getInnerRenderEnginePolygon(), 0.1, Color.RED, true);
-            egc.strokePolygon(slope.getOuterRenderEnginePolygon(), 0.1, Color.RED, true);
-        }
-    }
-
 }

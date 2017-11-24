@@ -22,6 +22,7 @@ public class Slope {
     // private Logger logger = Logger.getLogger(Slope.class.getName());
     private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
+    private final boolean inverted;
     private final double groundHeight;
     private final TerrainTypeService terrainTypeService;
     private List<AbstractBorder> borders = new ArrayList<>();
@@ -35,17 +36,17 @@ public class Slope {
     private Collection<Slope> children;
     private DrivewayGameEngineHandler drivewayGameEngineHandler = new DrivewayGameEngineHandler();
 
-    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
+    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, boolean inverted, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
         this.slopeSkeletonConfig = slopeSkeletonConfig;
+        this.inverted = inverted;
         this.groundHeight = groundHeight;
         this.terrainTypeService = terrainTypeService;
-        List<TerrainSlopeCorner> corners1 = new ArrayList<>(corners);
 
-        if (slopeSkeletonConfig.getWidth() > 0.0) {
-            setupSlopingBorder(corners1);
+        if (slopeSkeletonConfig.getWidth() <= 0.0) {
+            throw new IllegalArgumentException("Slope <constructor> slopeSkeletonConfig.getWidth() <= 0.0 for slopeId: " + slopeId + " with slopeSkeletonConfig id: " + slopeSkeletonConfig.getId());
         } else {
-            setupStraightBorder(corners1);
+            setupSlopingBorder(new ArrayList<>(corners));
         }
 
         // Setup vertical segments
@@ -67,15 +68,6 @@ public class Slope {
 
     public void setChildren(Collection<Slope> children) {
         this.children = children;
-    }
-
-    private void setupStraightBorder(List<TerrainSlopeCorner> corners) {
-//        for (int i = 0; i < corners.size(); i++) {
-//            DecimalPosition current = corners.get(i);
-//            DecimalPosition next = corners.get(CollectionUtils.getCorrectedIndex(i + 1, corners.size()));
-//            borders.add(new LineBorder(current, next));
-//        }
-        throw new UnsupportedOperationException("!!!! TODO: driveway not coded here !!!!");
     }
 
     private void setupSlopingBorder(List<TerrainSlopeCorner> terrainSlopeCorners) {
@@ -202,10 +194,18 @@ public class Slope {
             double slopeSkeletonWidth = slopeSkeletonConfig.getSlopeNode(verticalSegment.getIndex(), slopeSkeletonConfig.getRows() - 1).getPosition().getX();
             DecimalPosition innerSlopeRenderEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonWidth, verticalSegment.getInner(), true);
 
-            DecimalPosition innerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), verticalSegment.getInner(), true);
+            DecimalPosition innerSlopeGameEngine;
+            DecimalPosition outerSlopeGameEngine;
+            if (!inverted) {
+                innerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), verticalSegment.getInner(), true);
+                outerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), verticalSegment.getInner(), true);
+            } else {
+                innerSlopeGameEngine = verticalSegment.getInner().getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), outerSlopeRenderEngine, true);
+                outerSlopeGameEngine = verticalSegment.getInner().getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), outerSlopeRenderEngine, true);
+            }
+
             DecimalPosition innerSlopeCorrectedGameEngine;
             DecimalPosition innerGameEngineEndCorner = null;
-            DecimalPosition outerSlopeGameEngine = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getOuterLineGameEngine(), verticalSegment.getInner(), true);
             if (verticalSegment.getDrivewayHeightFactor() > 0) {
                 lastWasInnerStart = true;
                 innerSlopeCorrectedGameEngine = innerSlopeGameEngine;
@@ -279,8 +279,13 @@ public class Slope {
             }
 
             lastOuterGameEngine = addCorrectedMinimalDelta(outerSlopeGameEngine, lastOuterGameEngine, outerGameEngine);
+            DecimalPosition coastDelimiter;
             if (hasWater()) {
-                DecimalPosition coastDelimiter = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), verticalSegment.getInner(), true);
+                if(!inverted) {
+                    coastDelimiter = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), verticalSegment.getInner(), true);
+                } else {
+                    coastDelimiter = verticalSegment.getInner().getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), outerSlopeRenderEngine, true);
+                }
                 lastCoastDelimiterGameEngine = addCorrectedMinimalDelta(coastDelimiter, lastCoastDelimiterGameEngine, coastDelimiterLineTerrainType);
             }
         }
@@ -404,10 +409,6 @@ public class Slope {
         return driveways.stream().filter(driveway -> driveway.isInsideOrTouching(rectangle2D)).findFirst().orElse(null);
     }
 
-    public Collection<Driveway> getDriveways() {
-        return driveways;
-    }
-
     public DrivewayGameEngineHandler getDrivewayGameEngineHandler() {
         return drivewayGameEngineHandler;
     }
@@ -452,6 +453,10 @@ public class Slope {
             }
         }
         throw new IllegalStateException("Slope.getFirstOutOfRectClockWise()");
+    }
+
+    public boolean isInverted() {
+        return inverted;
     }
 
     public static class Corner {

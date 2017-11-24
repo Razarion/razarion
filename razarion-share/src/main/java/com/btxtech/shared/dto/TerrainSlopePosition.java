@@ -9,6 +9,7 @@ import java.util.List;
 public class TerrainSlopePosition {
     private Integer id;
     private int slopeConfigId;
+    private boolean inverted;
     private List<TerrainSlopeCorner> polygon;
     private List<TerrainSlopePosition> children;
 
@@ -27,6 +28,15 @@ public class TerrainSlopePosition {
 
     public TerrainSlopePosition setSlopeConfigId(int slopeConfigId) {
         this.slopeConfigId = slopeConfigId;
+        return this;
+    }
+
+    public boolean isInverted() {
+        return inverted;
+    }
+
+    public TerrainSlopePosition setInverted(boolean inverted) {
+        this.inverted = inverted;
         return this;
     }
 

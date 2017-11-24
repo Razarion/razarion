@@ -102,8 +102,14 @@ public class TerrainShapeSetup {
 
     private Slope setupSlope(TerrainSlopePosition terrainSlopePosition, double groundHeight) {
         SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
-        Slope slope = new Slope(terrainSlopePosition.getId(), slopeSkeletonConfig, terrainSlopePosition.getPolygon(), groundHeight, terrainTypeService);
-        setupSlopeChildren(slope, terrainSlopePosition.getChildren(), groundHeight + slope.getHeight());
+        Slope slope = new Slope(terrainSlopePosition.getId(), slopeSkeletonConfig, terrainSlopePosition.isInverted(), terrainSlopePosition.getPolygon(), groundHeight, terrainTypeService);
+        double childGroundHeight;
+        if (slope.hasWater()) {
+            childGroundHeight = groundHeight;
+        } else {
+            childGroundHeight = groundHeight + slope.getHeight();
+        }
+        setupSlopeChildren(slope, terrainSlopePosition.getChildren(), childGroundHeight);
         return slope;
     }
 
@@ -127,10 +133,15 @@ public class TerrainShapeSetup {
         SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getOuterRenderEnginePolygon().getCorners(), true, slopeContext);
         if (slope.hasWater()) {
             // Setup TerrainType (game engine)
-            // setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, TerrainType.LAND_COAST, null);
-            setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getGroundHeight(), TerrainType.LAND, slope.getGroundHeight(), null);
-            setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getGroundHeight(), null, 0, null);
-            setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER, terrainTypeService.getWaterConfig().getWaterLevel() + slope.getGroundHeight(), null, 0, null);
+            if (!slope.isInverted()) {
+                setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getGroundHeight(), null);
+                setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
+                setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER, slope.getGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
+            } else {
+                setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
+                setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getGroundHeight(), null);
+                setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight(), null);
+            }
             // Setup slope ground connection (render engine)
             Polygon2DRasterizer outerRasterizer = Polygon2DRasterizer.create(slope.getOuterRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
             for (Index nodeIndex : outerRasterizer.getPiercedTiles()) {
@@ -152,9 +163,9 @@ public class TerrainShapeSetup {
         } else {
             // Setup TerrainType
             DrivewayContext drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.FLAT_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
-            setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.BLOCKED, slope.getGroundHeight(), TerrainType.LAND, slope.getGroundHeight(), drivewayContext);
+            setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.BLOCKED, slope.getGroundHeight(), drivewayContext);
             drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.SLOPE_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
-            setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() + slope.getHeight(), null, 0, drivewayContext);
+            setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() + slope.getHeight(), drivewayContext);
 
             Polygon2DRasterizer outerRasterizer = Polygon2DRasterizer.create(slope.getOuterRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
             Set<Index> completeUnderSlope = new HashSet<>(outerRasterizer.getInnerTiles());
@@ -243,7 +254,7 @@ public class TerrainShapeSetup {
     }
 
     // Rename setup game engine / render engine
-    private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, TerrainType outerTerrainType, double outerHeight, DrivewayContext drivewayContext) {
+    private void setupTerrainType(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, DrivewayContext drivewayContext) {
         Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(terrainRegion, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         if (innerTerrainType != null) {
             for (Index nodeIndex : polygon2DRasterizer.getInnerTiles()) {
@@ -260,7 +271,7 @@ public class TerrainShapeSetup {
                             }
                             continue;
                         case PARTLY:
-                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
+                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
                             continue;
                     }
                 }
@@ -285,30 +296,19 @@ public class TerrainShapeSetup {
                             }
                             continue;
                         case PARTLY:
-                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
+                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
                             continue;
                     }
                 }
-                handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext, nodeIndex, terrainRect);
+                handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
             }
         }
     }
 
-    private void handleParty(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, TerrainType outerTerrainType, double outerHeight, DrivewayContext drivewayContext, Index nodeIndex, Rectangle2D terrainRect) {
+    private void handleParty(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, DrivewayContext drivewayContext, Index nodeIndex, Rectangle2D terrainRect) {
         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
         dirtyTerrainShapeNodes.putIfAbsent(nodeIndex, terrainShapeNode);
-        if (innerTerrainType != null && outerTerrainType != null) {
-            terrainShapeNode.setTerrainType(null);
-            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, innerHeight, outerTerrainType, outerHeight, drivewayContext);
-        } else if (innerTerrainType != null) {
-            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, innerHeight, terrainShapeNode.getTerrainType(), terrainShapeNode.getGameEngineHeight(), drivewayContext);
-            terrainShapeNode.setTerrainType(null);
-        } else if (outerTerrainType != null) {
-            terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, terrainShapeNode.getTerrainType(), terrainShapeNode.getGameEngineHeight(), outerTerrainType, outerHeight, drivewayContext);
-            terrainShapeNode.setTerrainType(null);
-        } else {
-            throw new IllegalArgumentException("TerrainShapeSetup.setupTerrainType() innerTerrainType == null && outerTerrainType == null");
-        }
+        terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, innerHeight, drivewayContext);
     }
 
     private void prepareVerticalSegments(Slope slope) {

@@ -55,10 +55,11 @@
                                 <CheckBox fx:id="terrainTileTerrainTypeCheck" layoutX="1.0" layoutY="84.0" mnemonicParsing="false" text="Tile Terrain Type" />
                                 <CheckBox fx:id="shapeAccessCheck" layoutX="1.0" layoutY="101.0" mnemonicParsing="false" text="Shape access" />
                                 <CheckBox fx:id="shapeTerrainTypeCheck" layoutX="1.0" layoutY="118.0" mnemonicParsing="false" text="Shape terrain type" />
-                                <CheckBox fx:id="shapeFractionalSlopeCheck" layoutX="1.0" layoutY="135.0" mnemonicParsing="false" text="Shape fractional slope" />
-                                <CheckBox fx:id="shapeObstaclesCheck" layoutX="1.0" layoutY="152.0" mnemonicParsing="false" text="Shape obstacles" />
-                                <CheckBox fx:id="groundSlopeConnectionsCheck" layoutX="1.0" layoutY="169.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="195.0" text="Shape ground slope connections" />
-                        <CheckBox fx:id="shapeWaterCheck" layoutX="1.0" layoutY="186.0" mnemonicParsing="false" text="Shape water" />
+                                <CheckBox fx:id="shapeFractionalSlopeCheck" layoutX="1.0" layoutY="152.0" mnemonicParsing="false" text="Shape fractional slope" />
+                                <CheckBox fx:id="shapeObstaclesCheck" layoutX="1.0" layoutY="169.0" mnemonicParsing="false" text="Shape obstacles" />
+                                <CheckBox fx:id="groundSlopeConnectionsCheck" layoutX="1.0" layoutY="186.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="195.0" text="Shape ground slope connections" />
+                        <CheckBox fx:id="shapeWaterCheck" layoutX="1.0" layoutY="203.0" mnemonicParsing="false" text="Shape water" />
+                        <CheckBox fx:id="shapeTerrainHeightCheck" layoutX="1.0" layoutY="135.0" mnemonicParsing="false" text="Shape terrain height (Game engine)" />
                             </children>
                         </AnchorPane>
                     </content>
