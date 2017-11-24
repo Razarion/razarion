@@ -118,7 +118,7 @@ public class TerrainShapeSubNodeFactory {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
-            } else if (lastTerrainType != concentrateResult.getTerrainType() || !Objects.equals(lastHeight, concentrateResult.getHeight()) || lastDriveway != concentrateResult.isDriveway()) {
+            } else if (!TerrainType.equals(lastTerrainType, concentrateResult.getTerrainType()) || !equalsHeight(lastHeight, concentrateResult.getHeight()) || lastDriveway != concentrateResult.isDriveway()) {
                 mixed = true;
             }
         }
@@ -147,6 +147,10 @@ public class TerrainShapeSubNodeFactory {
             }
             terrainShapeNode.setTerrainShapeSubNodes(null);
         }
+    }
+
+    private boolean equalsHeight(Double h1, Double h2) {
+        return Objects.equals(h1, h2) || h1 == null && h2 == 0.0 || h1 == 0.0 && h2 == null;
     }
 
     private void setDefault(TerrainShapeSubNode[] terrainShapeSubNodes, TerrainType defaultTerrainType, Double defaultHeight) {
@@ -232,7 +236,7 @@ public class TerrainShapeSubNodeFactory {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
-            } else if (lastTerrainType != concentrateResult.getTerrainType() || !Objects.equals(lastHeight, concentrateResult.getHeight()) || lastDriveway != concentrateResult.isDriveway()) {
+            } else if (!TerrainType.equals(lastTerrainType, concentrateResult.getTerrainType()) || !equalsHeight(lastHeight, concentrateResult.getHeight()) || lastDriveway != concentrateResult.isDriveway()) {
                 mixed = true;
             }
         }

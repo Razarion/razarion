@@ -50,6 +50,10 @@ public enum TerrainType {
         return LAND;
     }
 
+    public static boolean equals(TerrainType t1, TerrainType t2) {
+        return t1 == t2 || t1 == getNullTerrainType() && t2 == null || t2 == getNullTerrainType() && t1 == null;
+    }
+
     /**
      * GWT has problem turn an Integer ordinal to a enum
      * Integer is not working here because Integer.intValue() is not defined (from JSON object)

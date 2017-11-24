@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -122,7 +121,7 @@ public class AssertTerrainTile {
         if (expected.getTerrainNodes() != null && actual.getTerrainNodes() != null) {
             for (int x = 0; x < TerrainUtil.TERRAIN_TILE_NODES_COUNT; x++) {
                 for (int y = 0; y < TerrainUtil.TERRAIN_TILE_NODES_COUNT; y++) {
-                    compare(expected.getTerrainNodes()[x][y], actual.getTerrainNodes()[x][y], TerrainUtil.toNodeAbsolute(TerrainUtil.tileToNode(new Index(expected.getIndexX(), expected.getIndexY()))));
+                    compare(expected.getTerrainNodes()[x][y], actual.getTerrainNodes()[x][y], TerrainUtil.toNodeAbsolute(TerrainUtil.tileToNode(new Index(expected.getIndexX(), expected.getIndexY())).add(x, y)));
                 }
             }
         } else if (expected.getTerrainNodes() != null) {
