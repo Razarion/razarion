@@ -10,6 +10,7 @@ import com.btxtech.shared.utils.InterpolationUtils;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -117,7 +118,7 @@ public class TerrainShapeSubNodeFactory {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
-            } else if (lastTerrainType != concentrateResult.getTerrainType() || Double.compare(lastHeight, concentrateResult.getHeight()) != 0 || lastDriveway != concentrateResult.isDriveway()) {
+            } else if (lastTerrainType != concentrateResult.getTerrainType() || !Objects.equals(lastHeight, concentrateResult.getHeight()) || lastDriveway != concentrateResult.isDriveway()) {
                 mixed = true;
             }
         }
@@ -231,7 +232,7 @@ public class TerrainShapeSubNodeFactory {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
-            } else if (lastTerrainType != concentrateResult.getTerrainType() || Double.compare(lastHeight, concentrateResult.getHeight()) != 0 || lastDriveway != concentrateResult.isDriveway()) {
+            } else if (lastTerrainType != concentrateResult.getTerrainType() || !Objects.equals(lastHeight, concentrateResult.getHeight()) || lastDriveway != concentrateResult.isDriveway()) {
                 mixed = true;
             }
         }

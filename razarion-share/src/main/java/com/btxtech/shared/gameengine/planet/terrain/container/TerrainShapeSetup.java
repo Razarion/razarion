@@ -165,7 +165,11 @@ public class TerrainShapeSetup {
             DrivewayContext drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.FLAT_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
             setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.BLOCKED, slope.getGroundHeight(), drivewayContext);
             drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.SLOPE_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
-            setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() + slope.getHeight(), drivewayContext);
+            if(!slope.isInverted()) {
+                setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() + slope.getHeight(), drivewayContext);
+            } else {
+                setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() - slope.getHeight(), drivewayContext);
+            }
 
             Polygon2DRasterizer outerRasterizer = Polygon2DRasterizer.create(slope.getOuterRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
             Set<Index> completeUnderSlope = new HashSet<>(outerRasterizer.getInnerTiles());
