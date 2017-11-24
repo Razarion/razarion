@@ -34,7 +34,7 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 {GameTestHelper.createSlopeNode(10, 20, 0.7),},
                 {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         }));
-        slopeSkeletonConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
+        slopeSkeletonConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(7);
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
         SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();

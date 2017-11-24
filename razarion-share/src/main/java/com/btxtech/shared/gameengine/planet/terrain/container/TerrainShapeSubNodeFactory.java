@@ -83,6 +83,9 @@ public class TerrainShapeSubNodeFactory {
     public void concentrate(Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes) {
         dirtyTerrainShapeNodes.forEach((index, terrainShapeNode) -> {
             try {
+//                if(index.getX() == 5 && index.getY() == 3) {
+//                    System.out.println("++++++++++++++");
+//                }
                 concentrate(terrainShapeNode);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "TerrainShapeSubNodeFactory.concentrate() failed for node at absolute position: " + TerrainUtil.toNodeAbsolute(index), e);
@@ -101,7 +104,8 @@ public class TerrainShapeSubNodeFactory {
         Double lastHeight = null;
         boolean lastDriveway = false;
         boolean mixed = false;
-        for (TerrainShapeSubNode terrainShapeSubNode : terrainShapeSubNodes) {
+        for (int i = 0; i < terrainShapeSubNodes.length; i++) {
+            TerrainShapeSubNode terrainShapeSubNode = terrainShapeSubNodes[i];
             ConcentrateResult concentrateResult = concentrate(terrainShapeSubNode);
             if (concentrateResult.isMixed()) {
                 mixed = true;
@@ -109,7 +113,7 @@ public class TerrainShapeSubNodeFactory {
             if (mixed) {
                 continue;
             }
-            if (lastTerrainType == null) {
+            if (i == 0) {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
@@ -213,7 +217,9 @@ public class TerrainShapeSubNodeFactory {
         Double lastHeight = null;
         boolean lastDriveway = false;
         boolean mixed = false;
-        for (TerrainShapeSubNode child : terrainShapeSubNode.getTerrainShapeSubNodes()) {
+        TerrainShapeSubNode[] terrainShapeSubNodes = terrainShapeSubNode.getTerrainShapeSubNodes();
+        for (int i = 0; i < terrainShapeSubNodes.length; i++) {
+            TerrainShapeSubNode child = terrainShapeSubNodes[i];
             ConcentrateResult concentrateResult = concentrate(child);
             if (concentrateResult.isMixed()) {
                 mixed = true;
@@ -221,7 +227,7 @@ public class TerrainShapeSubNodeFactory {
             if (mixed) {
                 continue;
             }
-            if (lastTerrainType == null) {
+            if (i == 0) {
                 lastTerrainType = concentrateResult.getTerrainType();
                 lastHeight = concentrateResult.getHeight();
                 lastDriveway = concentrateResult.isDriveway();
