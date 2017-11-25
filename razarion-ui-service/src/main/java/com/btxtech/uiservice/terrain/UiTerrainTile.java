@@ -1,6 +1,5 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -15,7 +14,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
-import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
@@ -24,7 +22,6 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -148,7 +145,7 @@ public class UiTerrainTile {
 
     public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
         this.groundSkeletonConfig = groundSkeletonConfig;
-}
+    }
 
     public void setSlopeSkeletonConfig(SlopeSkeletonConfig skeletonConfig) {
         if (uiTerrainSlopeTiles != null) {
@@ -174,7 +171,7 @@ public class UiTerrainTile {
     }
 
     public double interpolateDisplayHeight(DecimalPosition terrainPosition) {
-        return findNode(terrainPosition, new TerrainTileAccess<Double>() {
+        Double height = findNode(terrainPosition, new TerrainTileAccess<Double>() {
             @Override
             public Double terrainTileNotLoaded() {
                 return 0.0;
@@ -195,6 +192,10 @@ public class UiTerrainTile {
                 return terrainSubNode.getHeight();
             }
         });
+        if (height != null) {
+            return height;
+        }
+        return 0;
     }
 
     public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition position) {
