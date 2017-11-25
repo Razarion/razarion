@@ -528,7 +528,12 @@ public class TerrainShapeSetup {
     }
 
     private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line, DecimalPosition reference) {
-        boolean ambiguous = rectangle.getCrossPointsLine(line).size() > 1;
+        int crossPoints = rectangle.getCrossPointsLine(line).size();
+        if(crossPoints == 0) {
+            throw new IllegalArgumentException("getRectanglePiercing should not happen 1");
+        }
+        boolean ambiguous = crossPoints > 1;
+
         double minDistance = Double.MAX_VALUE;
         DecimalPosition bestFitCrossPoint = null;
         Side bestFitSide = null;
@@ -586,7 +591,7 @@ public class TerrainShapeSetup {
         if (ambiguous) {
             return new RectanglePiercing(bestFitCrossPoint, bestFitSide);
         } else {
-            throw new IllegalArgumentException("getRectanglePiercing should not happen 1");
+            throw new IllegalArgumentException("getRectanglePiercing should not happen 2");
         }
     }
 

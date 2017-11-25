@@ -180,7 +180,7 @@ public class Line {
      * @return true if point is in the line
      */
     public boolean isPointInLineInclusive(DecimalPosition point) {
-        if (!Double.isInfinite(m)) {
+        if (!Double.isInfinite(m) && Math.abs(m) < 10000000000.0) {
             double y = calculateY(point.getX());
             if (Math.abs(y - point.getY()) > 0.000001) {
                 return false;
