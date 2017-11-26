@@ -69,6 +69,9 @@ public class KeyboardEventHandler {
                         if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
                             editorKeyboardListener.onSpaceKeyDown(true);
                         }
+                        if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.INSERT) {
+                            editorKeyboardListener.onInsertKeyDown(true);
+                        }
                     }
                 }
             } catch (Throwable t) {
@@ -107,6 +110,9 @@ public class KeyboardEventHandler {
                     }
                     if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
                         editorKeyboardListener.onSpaceKeyDown(false);
+                    }
+                    if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.INSERT) {
+                        editorKeyboardListener.onInsertKeyDown(false);
                     }
                 }
 

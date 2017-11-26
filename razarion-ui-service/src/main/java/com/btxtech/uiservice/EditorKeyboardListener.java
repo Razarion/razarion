@@ -9,4 +9,6 @@ public interface EditorKeyboardListener {
 
     void onSpaceKeyDown(boolean down);
 
+    void onInsertKeyDown(boolean down);
+
 }

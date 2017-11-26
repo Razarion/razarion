@@ -84,6 +84,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private Collection<ModifiedSlope> modifiedSlopes;
     private Collection<ModifiedTerrainObject> modifiedTerrainObjects;
     private boolean deletePressed;
+    private boolean insertPressed;
     private Matrix4 cursorModelMatrix = Matrix4.createIdentity();
     private Vertex terrainPosition;
     private List<ModelMatrices> terrainObjectModelMatrices;
@@ -128,7 +129,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 }
             }
 
-            if(hoverSlope != null && primaryButtonDown) {
+            if (hoverSlope != null && primaryButtonDown) {
                 editSlope(terrainPosition);
             }
         }
@@ -148,7 +149,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         } else if (hoverSlope != null) {
             editSlope(terrainPosition);
         } else {
-            if (!deletePressed) {
+            if (insertPressed) {
                 if (newSlopeMode) {
                     ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), cursor.translate(terrainPosition.toXY()));
                     modifiedSlopes.add(slopePosition);
@@ -209,11 +210,24 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         } else {
             if (hoverSlope != null) {
                 cursorType = CursorType.MODIFY;
-            } else {
-                cursorType = CursorType.CREATE;
             }
         }
     }
+
+    @Override
+    public void onInsertKeyDown(boolean down) {
+        insertPressed = down;
+        if (down) {
+            if (hoverSlope != null) {
+                cursorType = CursorType.CREATE;
+            }
+        } else {
+            if (hoverSlope != null) {
+                cursorType = CursorType.MODIFY;
+            }
+        }
+    }
+
 
     @Override
     public void onSpaceKeyDown(boolean down) {
@@ -445,23 +459,25 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
             return false;
         }
         if (newSlopeMode) {
-            return !deletePressed || hoverSlope != null;
+            if (insertPressed) {
+                return hoverSlope == null;
+            }
+            return hoverSlope != null;
         } else {
             return hoverSlope != null;
         }
     }
 
-    public void toggleCreationMode() {
-        newSlopeMode = !newSlopeMode;
+    public void setCreationMode(boolean newSlopeMode) {
+        if (this.newSlopeMode == newSlopeMode) {
+            return;
+        }
+        this.newSlopeMode = newSlopeMode;
         modifyingTerrainObject = null;
     }
 
-    public String getCreationModeText() {
-        if (newSlopeMode) {
-            return "Slope";
-        } else {
-            return "Terrain Object";
-        }
+    public boolean getCreationMode() {
+        return this.newSlopeMode;
     }
 
     public void setTerrainPositionListener(Consumer<Vertex> terrainPositionListener) {

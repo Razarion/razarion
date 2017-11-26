@@ -8,18 +8,11 @@
 
 <table id="terrainEditor" style="border-spacing: 0; border-collapse: separate; margin: 5px">
     <tr>
-        <td>Creation Mode</td>
-        <td>
-            <button id="creationModeButton"></button>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <hr>
-        </td>
-    </tr>
-    <tr>
         <td colspan="2">Slopes</td>
+    </tr>
+    <tr>
+        <td>Creation active</td>
+        <td><input id="slopeRadio" type="radio" name="createNew" value="slope">(press insert)</td>
     </tr>
     <tr>
         <td>Cursor Radius</td>
@@ -42,12 +35,16 @@
         <td><select id="drivewaySelection" style="text-align: center"></select></td>
     </tr>
     <tr>
+        <td colspan="2">Terrain Objects</td>
+    </tr>
+    <tr>
         <td colspan="2">
             <hr>
         </td>
     </tr>
     <tr>
-        <td colspan="2">Terrain Objects</td>
+        <td>Creation active</td>
+        <td><input id="terrainObjectRadio" type="radio" name="createNew" value="terrainObject"></td>
     </tr>
     <tr>
         <td>New Terrain Object</td>

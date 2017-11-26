@@ -25,6 +25,7 @@ import com.google.gwt.user.client.ui.ValueListBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.CheckboxInput;
+import org.jboss.errai.common.client.dom.RadioInput;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -89,7 +90,10 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private Button topViewButton;
     @Inject
     @DataField
-    private Button creationModeButton;
+    private RadioInput slopeRadio;
+    @Inject
+    @DataField
+    private RadioInput terrainObjectRadio;
     @Inject
     @DataField
     private DoubleBox cursorRadius;
@@ -131,47 +135,39 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
         terrainTiles.setTextContent(DisplayUtils.handleRectangle(terrainEditor.getPlanetConfig().getTerrainTileDimension()));
         terrainTileDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toTileAbsolute(terrainEditor.getPlanetConfig().getTerrainTileDimension())));
         playGround.setTextContent(DisplayUtils.handleRectangle2D(terrainEditor.getPlanetConfig().getPlayGround()));
-        creationModeButton.setText(terrainEditor.getCreationModeText());
+        slopeRadio.setChecked(terrainEditor.getCreationMode());
+        terrainObjectRadio.setChecked(!terrainEditor.getCreationMode());
         cursorRadius.setValue(terrainEditor.getCursorRadius());
         cursorCorners.setValue(terrainEditor.getCursorCorners());
         terrainObjectRandomZRotation.setValue(terrainEditor.getTerrainObjectRandomZRotation());
         terrainObjectRandomScale.setValue(terrainEditor.getTerrainObjectRandomScale());
         slopeSelection.addValueChangeHandler(event -> terrainEditor.setSlope4New(slopeSelection.getValue()));
-        elementEditorProvider.call(new RemoteCallback<Collection<ObjectNameId>>() {
-            @Override
-            public void callback(Collection<ObjectNameId> objectNameIds) {
-                ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
-                slopeSelection.setAcceptableValues(objectNameIds);
-                slopeSelection.setValue(objectNameId);
-                terrainEditor.setSlope4New(objectNameId);
-            }
+        elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+            ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
+            slopeSelection.setAcceptableValues(objectNameIds);
+            slopeSelection.setValue(objectNameId);
+            terrainEditor.setSlope4New(objectNameId);
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
             return false;
         }).getSlopeNameIds();
         drivewayMode.setChecked(terrainEditor.isDrivewayMode());
         drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
-        elementEditorProvider.call(new RemoteCallback<Collection<ObjectNameId>>() {
-            @Override
-            public void callback(Collection<ObjectNameId> objectNameIds) {
-                ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
-                drivewaySelection.setAcceptableValues(objectNameIds);
-                drivewaySelection.setValue(objectNameId);
-                terrainEditor.setDriveway4New(objectNameId);
-            }
+        elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+            ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
+            drivewaySelection.setAcceptableValues(objectNameIds);
+            drivewaySelection.setValue(objectNameId);
+            terrainEditor.setDriveway4New(objectNameId);
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "readDrivewayObjectNameIds failed: " + message, throwable);
             return false;
         }).readDrivewayObjectNameIds();
         terrainObjectSelection.addValueChangeHandler(event -> terrainEditor.setTerrainObject4New(terrainObjectSelection.getValue()));
-        elementEditorProvider.call(new RemoteCallback<Collection<ObjectNameId>>() {
-            @Override
-            public void callback(Collection<ObjectNameId> objectNameIds) {
-                ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
-                terrainObjectSelection.setAcceptableValues(objectNameIds);
-                terrainObjectSelection.setValue(objectNameId);
-                terrainEditor.setTerrainObject4New(objectNameId);
-            }
+        elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
+            ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
+            terrainObjectSelection.setAcceptableValues(objectNameIds);
+            terrainObjectSelection.setValue(objectNameId);
+            terrainEditor.setTerrainObject4New(objectNameId);
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "getTerrainObjectNameIds failed: " + message, throwable);
             return false;
@@ -181,10 +177,14 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
         radarPanel.show();
     }
 
-    @EventHandler("creationModeButton")
-    private void creationModeButtonClick(ClickEvent event) {
-        terrainEditor.toggleCreationMode();
-        creationModeButton.setText(terrainEditor.getCreationModeText());
+    @EventHandler("slopeRadio")
+    private void slopeRadioClick(ClickEvent event) {
+        terrainEditor.setCreationMode(true);
+    }
+
+    @EventHandler("terrainObjectRadio")
+    private void terrainObjectRadioClick(ClickEvent event) {
+        terrainEditor.setCreationMode(false);
     }
 
     @EventHandler("drivewayMode")
