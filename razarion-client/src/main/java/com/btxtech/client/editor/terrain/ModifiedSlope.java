@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 09.05.2016.
  */
-public class ModifiedSlope {
+public class ModifiedSlope{
     private Integer originalId;
     private int slopeId;
     private Polygon2D polygon;
@@ -98,10 +98,6 @@ public class ModifiedSlope {
 
     public int getOriginalId() {
         return originalId;
-    }
-
-    public boolean touches(Polygon2D cursor) {
-        return polygon != null && polygon.touches(cursor);
     }
 
     public void increaseDriveway(Polygon2D cursor, DrivewayConfig drivewayConfig) {

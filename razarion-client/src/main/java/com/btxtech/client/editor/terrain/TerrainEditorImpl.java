@@ -15,6 +15,7 @@ import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.EditorKeyboardListener;
@@ -81,7 +82,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private ModifiedTerrainObject hoverTerrainObject;
     private ModifiedTerrainObject modifyingTerrainObject;
     private CursorType cursorType = CursorType.CREATE;
-    private Collection<ModifiedSlope> modifiedSlopes;
+    private ModifiedSlopeContainer modifiedSlopeContainer;
     private Collection<ModifiedTerrainObject> modifiedTerrainObjects;
     private boolean deletePressed;
     private boolean insertPressed;
@@ -109,7 +110,8 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 hoverTerrainObject.setHover(true);
                 hoverSlope = null;
             } else {
-                hoverSlope = getSlopeAtTerrain(terrainPosition);
+                Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
+                hoverSlope = modifiedSlopeContainer.getPolygonAt(movedCursor);
                 if (hoverSlope != null) {
                     hoverSlope.setHover(true);
                 }
@@ -152,7 +154,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
             if (insertPressed) {
                 if (newSlopeMode) {
                     ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), cursor.translate(terrainPosition.toXY()));
-                    modifiedSlopes.add(slopePosition);
+                    modifiedSlopeContainer.add(slopePosition);
                     terrainEditorRenderTask.newSlope(slopePosition);
                 } else {
                     if (terrainObjectRandomScale < 1.0) {
@@ -181,8 +183,10 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 Polygon2D newPolygon = hoverSlope.remove(movedCursor);
                 if (newPolygon != null) {
                     terrainEditorRenderTask.updateSlope(hoverSlope);
+                    modifiedSlopeContainer.update(hoverSlope);
                 } else {
                     terrainEditorRenderTask.removeSlope(hoverSlope);
+                    modifiedSlopeContainer.remove(hoverSlope);
                 }
             }
         } else {
@@ -190,6 +194,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 hoverSlope.increaseDriveway(movedCursor, terrainTypeService.getDrivewayConfig(driveway4New.getId()));
             } else {
                 hoverSlope.combine(movedCursor);
+                modifiedSlopeContainer.update(hoverSlope);
             }
             terrainEditorRenderTask.updateSlope(hoverSlope);
         }
@@ -245,7 +250,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         renderService.addRenderTask(terrainEditorRenderTask, "Terrain Editor");
         terrainMouseHandler.setEditorMouseListener(this);
         keyboardEventHandler.setEditorKeyboardListener(this);
-        modifiedSlopes = new ArrayList<>();
+        modifiedSlopeContainer = new ModifiedSlopeContainer(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         modifiedTerrainObjects = new ArrayList<>();
         loadFromServer();
     }
@@ -255,10 +260,10 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
             hoverSlope = null;
             hoverTerrainObject = null;
             terrainEditorRenderTask.deactivate();
-            modifiedSlopes = terrainEditorLoad.getSlopes().stream().map(ModifiedSlope::new).collect(Collectors.toList());
+            modifiedSlopeContainer.setPolygons(terrainEditorLoad.getSlopes().stream().map(ModifiedSlope::new).collect(Collectors.toList()));
             modifiedTerrainObjects = terrainEditorLoad.getTerrainObjects().stream().map(terrainObjectPosition -> new ModifiedTerrainObject(terrainObjectPosition, terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()).getRadius())).collect(Collectors.toList());
             terrainObjectModelMatrices = setupModelMatrices();
-            terrainEditorRenderTask.activate(cursor, modifiedSlopes);
+            terrainEditorRenderTask.activate(cursor, modifiedSlopeContainer.getPolygons());
             if (saveDialog != null) {
                 saveDialog.close();
                 saveDialog = null;
@@ -275,7 +280,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         }
         active = false;
         cursor = null;
-        modifiedSlopes = null;
+        modifiedSlopeContainer = null;
         renderService.removeRenderTask(terrainEditorRenderTask);
         terrainMouseHandler.setEditorMouseListener(null);
         keyboardEventHandler.setEditorKeyboardListener(null);
@@ -350,7 +355,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         List<TerrainSlopePosition> createdSlopes = new ArrayList<>();
         List<TerrainSlopePosition> updatedSlopes = new ArrayList<>();
         List<Integer> deletedSlopeIds = new ArrayList<>();
-        for (ModifiedSlope modifiedSlope : modifiedSlopes) {
+        for (ModifiedSlope modifiedSlope : modifiedSlopeContainer.getPolygons()) {
             if (modifiedSlope.isCreated()) {
                 if (!modifiedSlope.isEmpty()) {
                     createdSlopes.add(modifiedSlope.createTerrainSlopePositionNoId());
@@ -419,18 +424,8 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         return null;
     }
 
-    private ModifiedSlope getSlopeAtTerrain(Vertex terrainPosition) {
-        Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
-        for (ModifiedSlope modifiedSlope : modifiedSlopes) {
-            if (modifiedSlope.touches(movedCursor)) {
-                return modifiedSlope;
-            }
-        }
-        return null;
-    }
-
     private void dehoverAll() {
-        modifiedSlopes.forEach(modifiedSlope -> modifiedSlope.setHover(false));
+        modifiedSlopeContainer.getPolygons().forEach(modifiedSlope -> modifiedSlope.setHover(false));
         modifiedTerrainObjects.forEach(modifiedTerrainObject -> modifiedTerrainObject.setHover(false));
     }
 
@@ -493,7 +488,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     }
 
     public List<TerrainSlopePosition> generateTerrainSlopePositions() {
-        return modifiedSlopes.stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
+        return modifiedSlopeContainer.getPolygons().stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
     }
 
     public List<TerrainObjectPosition> generateTerrainObjectPositions() {
