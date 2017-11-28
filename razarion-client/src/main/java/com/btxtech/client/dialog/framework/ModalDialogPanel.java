@@ -2,6 +2,7 @@ package com.btxtech.client.dialog.framework;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
@@ -26,16 +27,15 @@ public class ModalDialogPanel<T> extends Composite {
     @Inject
     private Instance<ModalDialogContent> contentInstance;
     @Inject
+    private ExceptionHandler exceptionHandler;
+    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label headerLabel;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private SimplePanel content;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Div buttonDiv;
@@ -50,13 +50,17 @@ public class ModalDialogPanel<T> extends Composite {
     }
 
     public void init(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, DialogButton.Button... dialogButtons) {
-        this.listener = listener;
-        modalDialogContent = contentInstance.select(contentClass).get();
-        modalDialogContent.init(t);
-        headerLabel.setText(title);
-        content.setWidget(modalDialogContent);
-        modalDialogContent.customize(this);
-        setupFooterButton(dialogButtons);
+        try {
+            this.listener = listener;
+            modalDialogContent = contentInstance.select(contentClass).get();
+            modalDialogContent.init(t);
+            headerLabel.setText(title);
+            content.setWidget(modalDialogContent);
+            modalDialogContent.customize(this);
+            setupFooterButton(dialogButtons);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException("ModalDialogPanel.init() title: " + title, throwable);
+        }
     }
 
     private void setupFooterButton(DialogButton.Button[] dialogButtons) {

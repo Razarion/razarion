@@ -488,20 +488,12 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         this.terrainPositionListener = terrainPositionListener;
     }
 
-    private int getPlanetId() {
+    public int getPlanetId() {
         return getPlanetConfig().getPlanetId();
     }
 
     public PlanetConfig getPlanetConfig() {
         return gameUiControl.getPlanetConfig();
-    }
-
-    public List<TerrainSlopePosition> generateTerrainSlopePositions() {
-        return modifiedSlopeContainer.getPolygons().stream().filter(modifiedSlope -> !modifiedSlope.isEmpty()).map(ModifiedSlope::createTerrainSlopePositionNoId).collect(Collectors.toList());
-    }
-
-    public List<TerrainObjectPosition> generateTerrainObjectPositions() {
-        return modifiedTerrainObjects.stream().filter(ModifiedTerrainObject::isNotDeleted).map(ModifiedTerrainObject::createTerrainObjectPositionNoId).collect(Collectors.toList());
     }
 
     public void setDrivewayModeChanged(boolean drivewayMode) {
