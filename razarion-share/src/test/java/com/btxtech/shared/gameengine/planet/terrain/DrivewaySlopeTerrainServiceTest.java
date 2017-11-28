@@ -135,7 +135,7 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), "testSlopeTerrainObjectShape1HNT1.json");
         AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(250, 220), getClass(), "testSlopeTerrainObjectShape1HNT1.json");
 
-        AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSlopeTerrainObjectShape.json");
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSlopeTerrainObjectShape.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testSlopeTerrainObjectShape.json", getTerrainShape());
 
     }
