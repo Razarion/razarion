@@ -48,7 +48,7 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     public void updateTerrain(int planetId, TerrainEditorUpdate terrainEditorUpdate) {
         try {
             // Check if terrain is valid
-            terrainShapeService.setupTerrainShapeDryRun(planetId, terrainEditorUpdate);
+            // this does not make any sense terrainShapeService.setupTerrainShapeDryRun(planetId, terrainEditorUpdate);
 
             if (terrainEditorUpdate.getCreatedSlopes() != null && !terrainEditorUpdate.getCreatedSlopes().isEmpty()) {
                 planetPersistence.createTerrainSlopePositions(planetId, terrainEditorUpdate.getCreatedSlopes());

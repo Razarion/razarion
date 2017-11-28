@@ -18,6 +18,9 @@ import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.GroundHeightEntity;
+import com.btxtech.server.persistence.surface.SlopeConfigEntity;
+import com.btxtech.server.persistence.surface.SlopeNodeEntity;
+import com.btxtech.server.persistence.surface.SlopeShapeEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.util.DateUtil;
@@ -123,6 +126,9 @@ public class ArquillianBaseTest {
     public static int LEVEL_UNLOCK_ID_L4_1;
     public static int LEVEL_UNLOCK_ID_L5_1;
     public static int LEVEL_UNLOCK_ID_L5_2;
+    // SlopeConfigEntity
+    public static int SLOPE_CONFIG_ENTITY_1;
+    public static int SLOPE_CONFIG_ENTITY_2;
     @PersistenceContext
     private EntityManager em;
     @Inject
@@ -436,6 +442,19 @@ public class ArquillianBaseTest {
         utx.commit();
     }
 
+    protected void setupSlopeConfigEntities() throws Exception {
+        runInTransaction(em -> {
+            SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
+            slopeConfigEntity1.setDefault();
+            em.persist(slopeConfigEntity1);
+            SLOPE_CONFIG_ENTITY_1 = slopeConfigEntity1.getId();
+            SlopeConfigEntity slopeConfigEntity2 = new SlopeConfigEntity();
+            slopeConfigEntity2.setDefault();
+            em.persist(slopeConfigEntity2);
+            SLOPE_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();
+        });
+    }
+
     private Map<BaseItemTypeEntity, Integer> setupPlanet2Limitation() {
         Map<BaseItemTypeEntity, Integer> limitation = new HashMap<>();
         limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID), 1);
@@ -469,6 +488,11 @@ public class ArquillianBaseTest {
         cleanTableNative("PLANET_LIMITATION");
         cleanTable(PlanetEntity.class);
         cleanLevels();
+    }
+
+    protected void cleanSlopeConfigEntities() throws Exception {
+        cleanTable(SlopeNodeEntity.class);
+        cleanTable(SlopeShapeEntity.class);
     }
 
     protected void cleanUsers() throws Exception {

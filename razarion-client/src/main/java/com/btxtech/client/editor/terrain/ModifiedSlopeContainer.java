@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class ModifiedSlopeContainer {
     private static final Logger logger = Logger.getLogger(ModifiedSlopeContainer.class.getName());
-    //     private MapCollection<Index, T> innerTiles = new MapCollection<>();
+    private MapCollection<Index, ModifiedSlope> innerTiles = new MapCollection<>();
     private MapCollection<Index, ModifiedSlope> piercedTiles = new MapCollection<>();
     private Collection<ModifiedSlope> polygon2Ds = new ArrayList<>();
     private int rasterSize;
@@ -27,7 +27,7 @@ public class ModifiedSlopeContainer {
     }
 
     public void setPolygons(Collection<ModifiedSlope> polygonProviders) {
-//         innerTiles.clear();
+        innerTiles.clear();
         piercedTiles.clear();
         polygon2Ds.clear();
         polygonProviders.forEach(this::add);
@@ -40,20 +40,26 @@ public class ModifiedSlopeContainer {
     public void add(ModifiedSlope modifiedSlope) {
         polygon2Ds.add(modifiedSlope);
         Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(modifiedSlope.getPolygon(), rasterSize);
-//        polygon2DRasterizer.getInnerTiles().forEach(index -> innerTiles.put(index, modifiedSlope));
+        polygon2DRasterizer.getInnerTiles().forEach(index -> innerTiles.put(index, modifiedSlope));
         polygon2DRasterizer.getPiercedTiles().forEach(index -> piercedTiles.put(index, modifiedSlope));
     }
 
     public void remove(ModifiedSlope modifiedSlope) {
         Collection<Index> indexToRemove = new ArrayList<>();
-        piercedTiles.iterate((index, storedModifiedSlope) -> {
+        addTiles(innerTiles, modifiedSlope, indexToRemove);
+        addTiles(piercedTiles, modifiedSlope, indexToRemove);
+        indexToRemove.forEach(index -> innerTiles.remove(index, modifiedSlope));
+        indexToRemove.forEach(index -> piercedTiles.remove(index, modifiedSlope));
+        polygon2Ds.remove(modifiedSlope);
+    }
+
+    private void addTiles(MapCollection<Index, ModifiedSlope> indices, ModifiedSlope modifiedSlope, Collection<Index> indexToRemove) {
+        indices.iterate((index, storedModifiedSlope) -> {
             if (storedModifiedSlope.equals(modifiedSlope)) {
                 indexToRemove.add(index);
             }
             return true;
         });
-        indexToRemove.forEach(index -> piercedTiles.remove(index, modifiedSlope));
-        polygon2Ds.remove(modifiedSlope);
     }
 
     public void update(ModifiedSlope modifiedSlope) {
@@ -61,16 +67,20 @@ public class ModifiedSlopeContainer {
         add(modifiedSlope);
     }
 
+    public ModifiedSlope getPolygonAt(DecimalPosition position) {
+        Collection<ModifiedSlope> inner = innerTiles.get(position.divide(rasterSize).toIndexFloor());
+        if (inner != null && !inner.isEmpty()) {
+            if (inner.size() == 1) {
+                return CollectionUtils.getFirst(inner);
+            } else {
+                logger.severe("ModifiedSlopeContainer.getPolygonAt() More then one polygon in inner found at: " + position);
+                return CollectionUtils.getFirst(inner);
+            }
+        }
+        return null;
+    }
+
     public ModifiedSlope getPolygonAt(Polygon2D area) {
-//        Collection<T> inner = innerTiles.get(position.divide(rasterSize).toIndexFloor());
-//        if (inner != null && !inner.isEmpty()) {
-//            if (inner.size() == 1) {
-//                return CollectionUtils.getFirst(inner);
-//            } else {
-//                logger.severe("ModifiedSlopeContainer.getPolygonAt() More then one polygon in inner found at: " + position);
-//                return CollectionUtils.getFirst(inner);
-//            }
-//        }
         for (DecimalPosition position : area.getCorners()) {
             Collection<ModifiedSlope> pierced = piercedTiles.get(position.divide(rasterSize).toIndexFloor());
             if (pierced != null && !pierced.isEmpty()) {

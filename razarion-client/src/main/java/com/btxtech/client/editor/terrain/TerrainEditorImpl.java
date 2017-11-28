@@ -76,6 +76,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private double cursorRadius = 10;
     private int cursorCorners = 20;
     private ObjectNameId slope4New;
+    private boolean invertedSlope;
     private ObjectNameId terrainObject4New;
     private ObjectNameId driveway4New;
     private ModifiedSlope hoverSlope;
@@ -153,7 +154,15 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         } else {
             if (insertPressed) {
                 if (newSlopeMode) {
-                    ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), cursor.translate(terrainPosition.toXY()));
+                    ModifiedSlope parentSlope = hoverSlope = modifiedSlopeContainer.getPolygonAt(terrainPosition.toXY());
+                    Integer editorParentId = null;
+                    if (parentSlope != null) {
+                        if (parentSlope.isCreated()) {
+                            throw new IllegalArgumentException("TerrainEditorImpl.onMouseDown() Can not create child slope while parent is not saved.");
+                        }
+                        editorParentId = parentSlope.getOriginalId();
+                    }
+                    ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), invertedSlope, editorParentId, cursor.translate(terrainPosition.toXY()));
                     modifiedSlopeContainer.add(slopePosition);
                     terrainEditorRenderTask.newSlope(slopePosition);
                 } else {
@@ -513,5 +522,13 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
             logger.log(Level.SEVERE, "updateMiniMapImage failed: " + message, throwable);
             return false;
         }).updateMiniMapImage(getPlanetId(), dataUrl);
+    }
+
+    public boolean isInvertedSlope() {
+        return invertedSlope;
+    }
+
+    public void setInvertedSlope(boolean invertedSlope) {
+        this.invertedSlope = invertedSlope;
     }
 }

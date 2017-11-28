@@ -43,7 +43,7 @@ public class PlanetEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "planet")
+    @JoinColumn(name = "planet")
     private List<TerrainSlopePositionEntity> terrainSlopePositionEntities;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "planet")

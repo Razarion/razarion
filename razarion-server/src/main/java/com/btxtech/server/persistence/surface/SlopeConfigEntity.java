@@ -159,6 +159,7 @@ public class SlopeConfigEntity {
     public void setDefault() {
         segments = 1;
         verticalSpace = 0.5;
+        type = SlopeSkeletonConfig.Type.LAND;
         shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(0, 0)).setSlopeFactor(1));
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(1, 1)).setSlopeFactor(1));

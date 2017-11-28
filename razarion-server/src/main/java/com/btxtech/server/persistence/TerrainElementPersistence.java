@@ -198,8 +198,17 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public SlopeConfigEntity getSlopeConfigEntity(int slopeId) {
-        return entityManager.find(SlopeConfigEntity.class, slopeId);
+    public SlopeConfigEntity getSlopeConfigEntity(Integer slopeId) {
+        if (slopeId == null) {
+            return null;
+        }
+        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, slopeId);
+        if (slopeConfigEntity == null) {
+            throw new IllegalArgumentException("No SlopeConfigEntity for id: " + slopeId);
+        }
+        return slopeConfigEntity;
+
+
     }
 
     @Transactional

@@ -27,6 +27,7 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.RadioInput;
 import org.jboss.errai.common.client.dom.Span;
+import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -105,6 +106,9 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     private ValueListBox<ObjectNameId> slopeSelection;
     @Inject
     @DataField
+    private CheckboxInput slopeInverted;
+    @Inject
+    @DataField
     private CheckboxInput drivewayMode;
     @Inject
     @DataField
@@ -138,6 +142,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
         slopeRadio.setChecked(terrainEditor.getCreationMode());
         terrainObjectRadio.setChecked(!terrainEditor.getCreationMode());
         cursorRadius.setValue(terrainEditor.getCursorRadius());
+        slopeInverted.setChecked(terrainEditor.isInvertedSlope());
         cursorCorners.setValue(terrainEditor.getCursorCorners());
         terrainObjectRandomZRotation.setValue(terrainEditor.getTerrainObjectRandomZRotation());
         terrainObjectRandomScale.setValue(terrainEditor.getTerrainObjectRandomScale());
@@ -206,6 +211,11 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
     @EventHandler("cursorCorners")
     public void cursorCornersChanged(ChangeEvent e) {
         terrainEditor.setCursorCorners(cursorCorners.getValue());
+    }
+
+    @EventHandler("slopeInverted")
+    public void slopeInvertedCheckboxChanged(ChangeEvent e) {
+        terrainEditor.setInvertedSlope(slopeInverted.getChecked());
     }
 
     @EventHandler("terrainObjectRandomZRotation")

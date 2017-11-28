@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
+import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
 import javax.persistence.CascadeType;
@@ -34,19 +35,29 @@ public class TerrainSlopePositionEntity {
     @JoinColumn(nullable = false, name = "terrainSlopePositionId")
     @OrderColumn(name = "orderColumn")
     private List<TerrainSlopeCornerEntity> polygon;
-
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "parentTerrainSlopePosition")
+    private List<TerrainSlopePositionEntity> children;
+    private boolean inverted;
 
     public Integer getId() {
         return id;
     }
 
     public TerrainSlopePosition toTerrainSlopePosition() {
-        TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition().setId(id).setSlopeConfigId(slopeConfigEntity.getId());
+        TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition().setId(id).setSlopeConfigId(slopeConfigEntity.getId()).setInverted(inverted);
+        if (children != null && !children.isEmpty()) {
+            terrainSlopePosition.setChildren(children.stream().map(TerrainSlopePositionEntity::toTerrainSlopePosition).collect(Collectors.toList()));
+        }
         return terrainSlopePosition.setPolygon(polygon.stream().map(TerrainSlopeCornerEntity::toTerrainSlopeCorner).collect(Collectors.toList()));
     }
 
     public void setSlopeConfigEntity(SlopeConfigEntity slopeConfigEntity) {
         this.slopeConfigEntity = slopeConfigEntity;
+    }
+
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
     }
 
     public void setPolygon(List<TerrainSlopeCornerEntity> polygon) {
@@ -59,6 +70,36 @@ public class TerrainSlopePositionEntity {
 
     public List<TerrainSlopeCornerEntity> getPolygon() {
         return polygon;
+    }
+
+    public void addChild(TerrainSlopePositionEntity child) {
+        if (children == null) {
+            children = new ArrayList<>();
+        }
+        children.add(child);
+    }
+
+    public void removeChild(TerrainSlopePositionEntity child) {
+        if (children == null) {
+            return;
+        }
+        children.remove(child);
+    }
+
+    public PlanetPersistence.TerrainSlopePositionEntityChain deepFirstSearchSlope(int id) {
+        if (children == null || children.isEmpty()) {
+            return null;
+        }
+        for (TerrainSlopePositionEntity child : children) {
+            if (child.getId() == id) {
+                return new PlanetPersistence.TerrainSlopePositionEntityChain(this, child);
+            }
+            PlanetPersistence.TerrainSlopePositionEntityChain grandson = child.deepFirstSearchSlope(id);
+            if (grandson != null) {
+                return grandson;
+            }
+        }
+        return null;
     }
 
     @Override

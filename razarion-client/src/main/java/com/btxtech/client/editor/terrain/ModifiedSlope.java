@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 public class ModifiedSlope{
     private Integer originalId;
     private int slopeId;
+    private boolean inverted;
+    private Integer editorParentId;
     private Polygon2D polygon;
     private boolean hover;
     private boolean dirty;
@@ -27,6 +29,7 @@ public class ModifiedSlope{
     public ModifiedSlope(TerrainSlopePosition original) {
         originalId = original.getId();
         slopeId = original.getSlopeConfigId();
+        inverted = original.isInverted();
         List<DecimalPosition> positions = new ArrayList<>();
         for (TerrainSlopeCorner terrainSlopeCorner : original.getPolygon()) {
             positions.add(terrainSlopeCorner.getPosition());
@@ -37,8 +40,10 @@ public class ModifiedSlope{
         polygon = new Polygon2D(positions);
     }
 
-    public ModifiedSlope(int slopeId, Polygon2D polygon) {
+    public ModifiedSlope(int slopeId, boolean inverted, Integer editorParentId, Polygon2D polygon) {
         this.slopeId = slopeId;
+        this.inverted = inverted;
+        this.editorParentId = editorParentId;
         this.polygon = polygon;
     }
 
@@ -47,11 +52,11 @@ public class ModifiedSlope{
     }
 
     public TerrainSlopePosition createTerrainSlopePositionNoId() {
-        return new TerrainSlopePosition().setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
+        return new TerrainSlopePosition().setSlopeConfigId(slopeId).setInverted(inverted).setEditorParentId(editorParentId).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
     }
 
     public TerrainSlopePosition createTerrainSlopePosition() {
-        return new TerrainSlopePosition().setId(originalId).setSlopeConfigId(slopeId).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
+        return new TerrainSlopePosition().setId(originalId).setSlopeConfigId(slopeId).setInverted(inverted).setPolygon(polygon.getCorners().stream().map(this::createTerrainSlopeCorner).collect(Collectors.toList()));
     }
 
     private TerrainSlopeCorner createTerrainSlopeCorner(DecimalPosition position) {
