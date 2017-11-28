@@ -137,35 +137,54 @@ public class TerrainShapeSetup {
                 setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getGroundHeight(), null);
                 setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
                 setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER, slope.getGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
+                // Setup slope ground connection (render engine)
+                Polygon2DRasterizer outerRasterizer = Polygon2DRasterizer.create(slope.getOuterRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+                for (Index nodeIndex : outerRasterizer.getPiercedTiles()) {
+                    List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
+                    if (outerPiercings != null) {
+                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                        for (List<DecimalPosition> outerPiercing : outerPiercings) {
+                            Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
+                        }
+                    }
+                }
+                for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
+                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    terrainShapeNode.setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
+                    terrainShapeNode.setDoNotRenderGround(true);
+                }
             } else {
                 setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
                 setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getGroundHeight(), null);
                 setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight(), null);
-            }
-            // Setup slope ground connection (render engine)
-            Polygon2DRasterizer outerRasterizer = Polygon2DRasterizer.create(slope.getOuterRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
-            for (Index nodeIndex : outerRasterizer.getPiercedTiles()) {
-                List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
-                if (outerPiercings != null) {
-                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                    for (List<DecimalPosition> outerPiercing : outerPiercings) {
-                        Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                        terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getGroundHeight(), false, null));
+                // Setup slope ground connection (render engine)
+                Polygon2DRasterizer innerRasterizer = Polygon2DRasterizer.create(slope.getInnerRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+                for (Index nodeIndex : innerRasterizer.getPiercedTiles()) {
+                    List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
+                    if (innerPiercings != null) {
+                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                        for (List<DecimalPosition> innerPiercing : innerPiercings) {
+                            Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, terrainTypeService.getWaterConfig().getWaterLevel(), true, null));
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getGroundHeight(), false, null));
+                        }
                     }
                 }
-            }
-            for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
-                TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
-                terrainShapeNode.setFullWaterLevel(terrainTypeService.getWaterConfig().getWaterLevel());
-                terrainShapeNode.setDoNotRenderGround();
+                for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
+                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    terrainShapeNode.setFullWaterLevel(null);
+                    terrainShapeNode.setRenderEngineHeight(slope.getGroundHeight());
+                    terrainShapeNode.setDoNotRenderGround(false);
+                }
             }
         } else {
             // Setup TerrainType
             DrivewayContext drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.FLAT_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
             setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.BLOCKED, slope.getGroundHeight(), drivewayContext);
             drivewayContext = new DrivewayContext(slope.getDrivewayGameEngineHandler(), DrivewayContext.Type.SLOPE_DRIVEWAY, TerrainType.LAND, slope.getGroundHeight());
-            if(!slope.isInverted()) {
+            if (!slope.isInverted()) {
                 setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() + slope.getHeight(), drivewayContext);
             } else {
                 setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getGroundHeight() - slope.getHeight(), drivewayContext);
@@ -246,7 +265,7 @@ public class TerrainShapeSetup {
 
             // Completely under slope
             for (Index nodeIndex : completeUnderSlope) {
-                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setDoNotRenderGround();
+                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setDoNotRenderGround(true);
                 terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getGroundHeight() + slope.getHeight());
             }
         }
@@ -529,7 +548,7 @@ public class TerrainShapeSetup {
 
     private RectanglePiercing getRectanglePiercing(Rectangle2D rectangle, Line line, DecimalPosition reference) {
         int crossPoints = rectangle.getCrossPointsLine(line).size();
-        if(crossPoints == 0) {
+        if (crossPoints == 0) {
             throw new IllegalArgumentException("getRectanglePiercing should not happen 1");
         }
         boolean ambiguous = crossPoints > 1;

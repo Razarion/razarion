@@ -116,8 +116,8 @@ public class TerrainShapeNode {
         this.gameEngineHeight = gameEngineHeight;
     }
 
-    public void setDoNotRenderGround() {
-        doNotRenderGround = true;
+    public void setDoNotRenderGround(boolean doNotRenderGround) {
+        this.doNotRenderGround = doNotRenderGround;
     }
 
     public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection) {
