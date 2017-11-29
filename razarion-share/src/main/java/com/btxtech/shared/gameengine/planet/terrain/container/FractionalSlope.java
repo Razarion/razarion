@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class FractionalSlope {
     private int slopeSkeletonConfigId;
     private double groundHeight;
+    private boolean inverted;
     private List<FractionalSlopeSegment> fractionalSlopeSegments;
 
     public FractionalSlope() {
@@ -23,6 +24,7 @@ public class FractionalSlope {
     public FractionalSlope(NativeFractionalSlope nativeFractionalSlope) {
         slopeSkeletonConfigId = nativeFractionalSlope.slopeSkeletonConfigId;
         groundHeight = nativeFractionalSlope.groundHeight;
+        inverted = nativeFractionalSlope.inverted;
         fractionalSlopeSegments = new ArrayList<>();
         for (NativeFractionalSlopeSegment fractionalSlopeSegment : nativeFractionalSlope.fractionalSlopeSegments) {
             FractionalSlopeSegment slopeSegment = new FractionalSlopeSegment(fractionalSlopeSegment);
@@ -36,6 +38,14 @@ public class FractionalSlope {
 
     public double getGroundHeight() {
         return groundHeight;
+    }
+
+    public boolean isInverted() {
+        return inverted;
+    }
+
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
     }
 
     public List<FractionalSlopeSegment> getFractionalSlopeSegments() {
@@ -58,6 +68,7 @@ public class FractionalSlope {
         NativeFractionalSlope nativeFractionalSlope = new NativeFractionalSlope();
         nativeFractionalSlope.slopeSkeletonConfigId = slopeSkeletonConfigId;
         nativeFractionalSlope.groundHeight = groundHeight;
+        nativeFractionalSlope.inverted = inverted;
         if(fractionalSlopeSegments != null) {
             nativeFractionalSlope.fractionalSlopeSegments = fractionalSlopeSegments.stream().map(FractionalSlopeSegment::toNativeFractionalSlopeSegment).toArray(NativeFractionalSlopeSegment[]::new);
         }

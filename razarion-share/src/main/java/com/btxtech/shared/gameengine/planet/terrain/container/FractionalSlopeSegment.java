@@ -59,12 +59,29 @@ public class FractionalSlopeSegment {
         return outer;
     }
 
-    public Matrix4 setupTransformation() {
+    public Matrix4 setupTransformation(boolean inverted) {
+        if (!inverted) {
+            return setupTransformationNormal();
+        } else {
+            return setupTransformationInverted();
+        }
+    }
+
+    private Matrix4 setupTransformationNormal() {
         Matrix4 translationMatrix = Matrix4.createTranslation(outer.getX(), outer.getY(), 0);
         if (inner.equals(outer)) {
             return translationMatrix;
         }
         Matrix4 rotationMatrix = Matrix4.createZRotation(outer.getAngle(inner));
+        return translationMatrix.multiply(rotationMatrix);
+    }
+
+    private Matrix4 setupTransformationInverted() {
+        Matrix4 translationMatrix = Matrix4.createTranslation(inner.getX(), inner.getY(), 0);
+        if (inner.equals(outer)) {
+            return translationMatrix;
+        }
+        Matrix4 rotationMatrix = Matrix4.createZRotation(inner.getAngle(outer));
         return translationMatrix.multiply(rotationMatrix);
     }
 

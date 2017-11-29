@@ -10,5 +10,6 @@ import jsinterop.annotations.JsType;
 public class NativeFractionalSlope {
     public int slopeSkeletonConfigId;
     public double groundHeight;
+    public boolean inverted;
     public NativeFractionalSlopeSegment[] fractionalSlopeSegments;
 }

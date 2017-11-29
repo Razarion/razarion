@@ -206,7 +206,7 @@ public class TerrainTileFactory {
         TerrainSlopeTileContext terrainSlopeTileContext = terrainTileContext.createTerrainSlopeTileContext(fractionalSlope.getSlopeSkeletonConfigId(), fractionalSlope.getFractionalSlopeSegments().size(), slopeSkeletonConfig.getRows() + 1);
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
-            Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation();
+            Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation(fractionalSlope.isInverted());
             for (int row = 0; row - 1 < slopeSkeletonConfig.getRows(); row++) {
                 SlopeNode slopeNode;
                 if (row == 0) {
@@ -224,7 +224,7 @@ public class TerrainTileFactory {
             }
             vertexColumn++;
         }
-        terrainSlopeTileContext.triangulation();
+        terrainSlopeTileContext.triangulation(fractionalSlope.isInverted());
     }
 
     private static double setupSlopeFactor(SlopeNode slopeNode, double drivewayHeightFactor) {

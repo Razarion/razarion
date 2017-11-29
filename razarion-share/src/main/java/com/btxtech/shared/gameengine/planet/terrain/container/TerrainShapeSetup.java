@@ -352,6 +352,7 @@ public class TerrainShapeSetup {
             FractionalSlope fractionalSlope = new FractionalSlope();
             fractionalSlope.setSlopeSkeletonConfigId(slope.getSlopeSkeletonConfig().getId());
             fractionalSlope.setGroundHeight(slope.getGroundHeight());
+            fractionalSlope.setInverted(slope.isInverted());
             List<FractionalSlopeSegment> fractionalSlopeSegments = new ArrayList<>();
             fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(CollectionUtils.getCorrectedElement(-1, slope.getVerticalSegments()))); // Norm tangent extra. Used in light calculation
             slope.getVerticalSegments().forEach(verticalSegment -> fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(verticalSegment)));
@@ -426,6 +427,7 @@ public class TerrainShapeSetup {
                 FractionalSlope fractionalSlope = new FractionalSlope();
                 fractionalSlope.setSlopeSkeletonConfigId(slope.getSlopeSkeletonConfig().getId());
                 fractionalSlope.setGroundHeight(slope.getGroundHeight());
+                fractionalSlope.setInverted(slope.isInverted());
                 fractionalSlope.setFractionalSlopeSegments(fractionalSlopeSegments);
                 return new DoubleHolder<>(fractionalSlope, i + startIndex);
             }

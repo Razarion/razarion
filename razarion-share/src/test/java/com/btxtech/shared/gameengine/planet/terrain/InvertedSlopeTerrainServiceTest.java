@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeNode;
@@ -9,10 +11,14 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -41,10 +47,10 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
         slopeSkeletonConfigWater.setRows(5).setSegments(1).setWidth(12).setVerticalSpace(5).setHeight(-2);
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 0, 1),},
+                {GameTestHelper.createSlopeNode(1, 0, 1),},
+                {GameTestHelper.createSlopeNode(2, 0, 0.7),},
                 {GameTestHelper.createSlopeNode(4, 0, 0.7),},
-                {GameTestHelper.createSlopeNode(8, 0, 0.7),},
-                {GameTestHelper.createSlopeNode(10, -3, 0.7),},
+                {GameTestHelper.createSlopeNode(8, -3, 0.7),},
                 {GameTestHelper.createSlopeNode(12, -10, 0.7),},
         }));
         slopeSkeletonConfigWater.setOuterLineGameEngine(4).setCoastDelimiterLineGameEngine(8).setInnerLineGameEngine(11);
@@ -92,7 +98,18 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
         setup(parent);
 
-        showDisplay();
+        // showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        AssertTerrainTile.saveTerrainTiles(terrainTiles, "testInvertedLandTileGeneration1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testInvertedLandTileGeneration1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(320, 320),"testInvertedLandShapeHNT1.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testInvertedLandShapeHNT1.json");
+
+        AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testInvertedLandShapeGeneration1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedLandShapeGeneration1.json", getTerrainShape());
     }
 
 

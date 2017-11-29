@@ -41,7 +41,7 @@ public class TerrainSlopeTileContext {
         return terrainSlopeTile;
     }
 
-    public void triangulation() {
+    public void triangulation(boolean invert) {
         terrainSlopeTile = jsInteropObjectFactory.generateTerrainSlopeTile();
         int verticesCount = (xCount - 1) * (yCount - 1) * 6;
         terrainSlopeTile.init(slopeSkeletonConfigId, verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
@@ -53,12 +53,12 @@ public class TerrainSlopeTileContext {
                 Vertex vertexTR = mesh[x + 1][y + 1].getVertex();
                 Vertex vertexTL = mesh[x][y + 1].getVertex();
 
-                if(!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+                if (!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
                     continue;
                 }
 
-                Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY());
-                Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY());
+                Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY(), invert);
+                Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY(), invert);
                 Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY(), normBR);
                 Vertex tangentTL = setupTangent(x, y + 1, vertexTL.toXY(), normTL);
                 double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
@@ -69,7 +69,7 @@ public class TerrainSlopeTileContext {
                 if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
                     int triangleCornerIndex = triangleIndex * 3;
 
-                    Vertex normBL = setupNorm(x, y, vertexBL.toXY());
+                    Vertex normBL = setupNorm(x, y, vertexBL.toXY(), invert);
                     Vertex tangentBL = setupTangent(x, y, vertexBL.toXY(), normBL);
                     double slopeFactorBL = mesh[x][y].getSlopeFactor();
                     double splattingBL = mesh[x][y].getSplatting();
@@ -83,7 +83,7 @@ public class TerrainSlopeTileContext {
                 if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
                     int triangleCornerIndex = triangleIndex * 3;
 
-                    Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY());
+                    Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY(), invert);
                     Vertex tangentTR = setupTangent(x + 1, y + 1, vertexTR.toXY(), normTR);
                     double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
                     double splattingTR = mesh[x + 1][y + 1].getSplatting();
@@ -98,7 +98,7 @@ public class TerrainSlopeTileContext {
         terrainSlopeTile.setSlopeVertexCount(triangleIndex * 3);
     }
 
-    private Vertex setupNorm(int x, int y, DecimalPosition absolutePosition) {
+    private Vertex setupNorm(int x, int y, DecimalPosition absolutePosition, boolean swap) {
         Vertex vertical;
         if (y == 0) {
             // Ground skeleton no respected
@@ -121,7 +121,11 @@ public class TerrainSlopeTileContext {
             return Vertex.Z_NORM;
         }
         Vertex horizontal = horizontalUnnormed.normalize(1);
-        return horizontal.cross(vertical).normalize(1.0);
+        if (swap) {
+            return vertical.cross(horizontal).normalize(1.0);
+        } else {
+            return horizontal.cross(vertical).normalize(1.0);
+        }
     }
 
     private Vertex setupTangent(int x, int y, DecimalPosition absolutePosition, Vertex norm) {
