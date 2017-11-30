@@ -101,15 +101,15 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         // showDisplay();
 
         Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        AssertTerrainTile.saveTerrainTiles(terrainTiles, "testInvertedLandTileGeneration1.json");
-        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testInvertedLandTileGeneration1.json");
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testInvertedWaterTileGeneration1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testInvertedWaterTileGeneration1.json");
         assertTerrainTile.assertEquals(terrainTiles);
 
-        AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(320, 320),"testInvertedLandShapeHNT1.json" );
-        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testInvertedLandShapeHNT1.json");
+        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(320, 320),"testInvertedWaterShapeHNT1.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testInvertedWaterShapeHNT1.json");
 
-        AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testInvertedLandShapeGeneration1.json");
-        AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedLandShapeGeneration1.json", getTerrainShape());
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testInvertedWaterShapeGeneration1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedWaterShapeGeneration1.json", getTerrainShape());
     }
 
 
@@ -122,7 +122,18 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
 
         setup(parent);
 
-        showDisplay();
+        // showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testInvertedLandTileGeneration1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testInvertedLandTileGeneration1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(320, 320),"testInvertedLandShapeHNT1.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testInvertedLandShapeHNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testInvertedLandShapeGeneration1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedLandShapeGeneration1.json", getTerrainShape());
     }
 
 

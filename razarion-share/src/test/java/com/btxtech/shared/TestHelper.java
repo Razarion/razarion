@@ -101,6 +101,33 @@ public class TestHelper {
         Assert.assertEquals("A value of color is not the same", expected.getA(), actual.getA(), 0.0001);
     }
 
+    public static void assertDouble(String message, Double expected, Double actual) {
+        if (expected == null && actual == null) {
+            return;
+        }
+        if (expected != null && actual == null) {
+            Assert.fail("expected != null && actual == null: " + message);
+        }
+        if (expected == null) {
+            Assert.fail("expected != null: " + message);
+        }
+        Assert.assertEquals(message, expected, actual, 0.001);
+    }
+
+
+    public static void assertDoubleArray(String message, double[] expected, double[] actual) {
+        if (expected == null && actual == null) {
+            return;
+        }
+        if (expected != null && actual == null) {
+            Assert.fail("expected != null && actual == null: " + message);
+        }
+        if (expected == null) {
+            Assert.fail("expected != null: " + message);
+        }
+        Assert.assertArrayEquals(message, expected, actual, 0.001);
+    }
+
     public static double[] vertices2DoubleArray(List<Vertex> vertices) {
         double[] doubleArray = new double[vertices.size() * 3];
         for (int i = 0; i < vertices.size(); i++) {
