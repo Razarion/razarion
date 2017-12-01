@@ -112,6 +112,26 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedWaterShapeGeneration1.json", getTerrainShape());
     }
 
+    @Test
+    public void testLandSimple() {
+        List<TerrainSlopePosition> slopes = setupSlope(1, true, null, GameTestHelper.createTerrainSlopeCorner(90, 100, null), GameTestHelper.createTerrainSlopeCorner(180, 100, null), GameTestHelper.createTerrainSlopeCorner(180, 170, null), GameTestHelper.createTerrainSlopeCorner(80, 180, null));
+
+        setup(slopes);
+
+        // showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testInvertedLandSimpleTileGeneration1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testInvertedLandSimpleTileGeneration1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        // AssertShapeAccess.saveShape(getTerrainService(),new DecimalPosition(0,0), new DecimalPosition(320, 320),"testInvertedLandSimpleShapeHNT1.json" );
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(320, 320), getClass(), "testInvertedLandSimpleShapeHNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testInvertedLandSimpleShapeGeneration1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedLandSimpleShapeGeneration1.json", getTerrainShape());
+    }
+
 
     @Test
     public void testLand() {

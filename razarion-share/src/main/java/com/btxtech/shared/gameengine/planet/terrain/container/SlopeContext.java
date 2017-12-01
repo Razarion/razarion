@@ -52,10 +52,18 @@ public class SlopeContext {
     }
 
     public List<List<DecimalPosition>> getInnerPiercings(Index nodeIndex) {
-        return innerPiercings.get(nodeIndex);
+        List<List<DecimalPosition>> result = innerPiercings.get(nodeIndex);
+        if (result != null) {
+            return result;
+        }
+        return Collections.emptyList();
     }
 
     public List<List<DecimalPosition>> getOuterPiercings(Index nodeIndex) {
-        return outerPiercings.get(nodeIndex);
+        List<List<DecimalPosition>> result = outerPiercings.get(nodeIndex);
+        if (result != null) {
+            return result;
+        }
+        return Collections.emptyList();
     }
 }

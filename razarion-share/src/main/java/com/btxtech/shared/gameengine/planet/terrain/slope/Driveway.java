@@ -183,10 +183,10 @@ public class Driveway {
 
     public double[] generateDrivewayHeights(List<DecimalPosition> corners) {
         double[] drivewayHeights = new double[4];
-        drivewayHeights[0] = getInterpolateDrivewayHeight(corners.get(0)) + slope.getGroundHeight();
-        drivewayHeights[1] = getInterpolateDrivewayHeight(corners.get(1)) + slope.getGroundHeight();
-        drivewayHeights[2] = getInterpolateDrivewayHeight(corners.get(2)) + slope.getGroundHeight();
-        drivewayHeights[3] = getInterpolateDrivewayHeight(corners.get(3)) + slope.getGroundHeight();
+        drivewayHeights[0] = getInterpolateDrivewayHeight(corners.get(0)) + slope.getOuterGroundHeight();
+        drivewayHeights[1] = getInterpolateDrivewayHeight(corners.get(1)) + slope.getOuterGroundHeight();
+        drivewayHeights[2] = getInterpolateDrivewayHeight(corners.get(2)) + slope.getOuterGroundHeight();
+        drivewayHeights[3] = getInterpolateDrivewayHeight(corners.get(3)) + slope.getOuterGroundHeight();
         return drivewayHeights;
     }
 

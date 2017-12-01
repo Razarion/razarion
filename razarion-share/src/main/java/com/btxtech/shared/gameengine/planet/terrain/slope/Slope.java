@@ -23,7 +23,8 @@ public class Slope {
     private int slopeId;
     private SlopeSkeletonConfig slopeSkeletonConfig;
     private final boolean inverted;
-    private final double groundHeight;
+    private final double outerGroundHeight;
+    private final double innerGroundHeight;
     private final TerrainTypeService terrainTypeService;
     private List<AbstractBorder> borders = new ArrayList<>();
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
@@ -36,13 +37,13 @@ public class Slope {
     private Collection<Slope> children;
     private DrivewayGameEngineHandler drivewayGameEngineHandler = new DrivewayGameEngineHandler();
 
-    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, boolean inverted, List<TerrainSlopeCorner> corners, double groundHeight, TerrainTypeService terrainTypeService) {
+    public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, boolean inverted, List<TerrainSlopeCorner> corners, double outerGroundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
         this.slopeSkeletonConfig = slopeSkeletonConfig;
+                this.terrainTypeService = terrainTypeService;
         this.inverted = inverted;
-        this.groundHeight = groundHeight;
-        this.terrainTypeService = terrainTypeService;
-
+        this.outerGroundHeight = outerGroundHeight;
+        this.innerGroundHeight = inverted ? outerGroundHeight - slopeSkeletonConfig.getHeight() : outerGroundHeight + slopeSkeletonConfig.getHeight();
         if (slopeSkeletonConfig.getWidth() <= 0.0) {
             throw new IllegalArgumentException("Slope <constructor> slopeSkeletonConfig.getWidth() <= 0.0 for slopeId: " + slopeId + " with slopeSkeletonConfig id: " + slopeSkeletonConfig.getId());
         } else {
@@ -58,8 +59,12 @@ public class Slope {
         setupLimitationPolygon();
     }
 
-    public double getGroundHeight() {
-        return groundHeight;
+    public double getOuterGroundHeight() {
+        return outerGroundHeight;
+    }
+
+    public double getInnerGroundHeight() {
+        return innerGroundHeight;
     }
 
     public Collection<Slope> getChildren() {
@@ -281,7 +286,7 @@ public class Slope {
             lastOuterGameEngine = addCorrectedMinimalDelta(outerSlopeGameEngine, lastOuterGameEngine, outerGameEngine);
             DecimalPosition coastDelimiter;
             if (hasWater()) {
-                if(!inverted) {
+                if (!inverted) {
                     coastDelimiter = outerSlopeRenderEngine.getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), verticalSegment.getInner(), true);
                 } else {
                     coastDelimiter = verticalSegment.getInner().getPointWithDistance(slopeSkeletonConfig.getCoastDelimiterLineGameEngine(), outerSlopeRenderEngine, true);

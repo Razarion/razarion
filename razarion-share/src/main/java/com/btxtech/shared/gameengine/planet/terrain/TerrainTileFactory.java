@@ -311,7 +311,7 @@ public class TerrainTileFactory {
                 TerrainNode terrainNode = jsInteropObjectFactory.generateTerrainNode();
                 terrainNode.setTerrainType(TerrainType.toOrdinal(terrainShapeNode.getTerrainType()));
                 if (terrainShapeNode.isFullGameEngineDriveway()) {
-                    terrainNode.setHeight(terrainShapeNode.getGameEngineHeight() + InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL()));
+                    terrainNode.setHeight(InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeNode.getDrivewayHeightBL(), terrainShapeNode.getDrivewayHeightBR(), terrainShapeNode.getDrivewayHeightTR(), terrainShapeNode.getDrivewayHeightTL()));
                 } else {
                     terrainNode.setHeight(terrainShapeNode.getGameEngineHeight());
                 }
@@ -351,7 +351,7 @@ public class TerrainTileFactory {
         TerrainSubNode terrainSubNode = jsInteropObjectFactory.generateTerrainSubNode();
         terrainSubNode.setTerrainType(TerrainType.toOrdinal(terrainShapeSubNode.getTerrainType()));
         if (terrainShapeSubNode.isDriveway()) {
-            terrainSubNode.setHeight(terrainShapeSubNode.getHeight() + InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL()));
+            terrainSubNode.setHeight(InterpolationUtils.rectangleInterpolate(new DecimalPosition(0.5, 0.5), terrainShapeSubNode.getDrivewayHeightBL(), terrainShapeSubNode.getDrivewayHeightBR(), terrainShapeSubNode.getDrivewayHeightTR(), terrainShapeSubNode.getDrivewayHeightTL()));
         } else if (terrainShapeSubNode.getHeight() != null) {
             terrainSubNode.setHeight(terrainShapeSubNode.getHeight());
         }
