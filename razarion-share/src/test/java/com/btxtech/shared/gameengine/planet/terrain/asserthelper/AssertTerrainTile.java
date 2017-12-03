@@ -31,6 +31,7 @@ import java.util.List;
  */
 public class AssertTerrainTile {
     public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
+    // public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion2\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private static final boolean SHOW_GUI = false;
     private Collection<TerrainTile> expected;
 

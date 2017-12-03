@@ -113,6 +113,30 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     }
 
     @Test
+    public void testWaterLand() {
+        List<TerrainSlopePosition> grandChildren = setupSlope(1, false, null, GameTestHelper.createTerrainSlopeCorner(140, 165, null), GameTestHelper.createTerrainSlopeCorner(180, 165, 1), GameTestHelper.createTerrainSlopeCorner(180, 260, 1), GameTestHelper.createTerrainSlopeCorner(140, 260, null));
+        List<TerrainSlopePosition> children = setupSlope(2, true, grandChildren, GameTestHelper.createTerrainSlopeCorner(90, 100, null), GameTestHelper.createTerrainSlopeCorner(300, 100, null), GameTestHelper.createTerrainSlopeCorner(300, 310, null), GameTestHelper.createTerrainSlopeCorner(80, 310, null));
+        List<TerrainSlopePosition> parent = setupSlope(2, false, children, GameTestHelper.createTerrainSlopeCorner(40, 40, null), GameTestHelper.createTerrainSlopeCorner(350, 40, null), GameTestHelper.createTerrainSlopeCorner(360, 370, null), GameTestHelper.createTerrainSlopeCorner(40, 350, null));
+
+        setup(parent);
+
+     //   showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(0, 2),
+                new Index(1, 0), new Index(1, 1), new Index(1, 2),
+                new Index(2, 0), new Index(2, 1), new Index(2, 2));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testInvertedWaterLandTileGeneration1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testInvertedWaterLandTileGeneration1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(400, 400), "testInvertedWaterLandShapeHNT1.json");
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(400, 400), getClass(), "testInvertedWaterLandShapeHNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testInvertedWaterLandShapeGeneration1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testInvertedWaterLandShapeGeneration1.json", getTerrainShape());
+    }
+
+    @Test
     public void testLandSimple() {
         List<TerrainSlopePosition> slopes = setupSlope(1, true, null, GameTestHelper.createTerrainSlopeCorner(90, 100, null), GameTestHelper.createTerrainSlopeCorner(180, 100, null), GameTestHelper.createTerrainSlopeCorner(180, 170, null), GameTestHelper.createTerrainSlopeCorner(80, 180, null));
 
