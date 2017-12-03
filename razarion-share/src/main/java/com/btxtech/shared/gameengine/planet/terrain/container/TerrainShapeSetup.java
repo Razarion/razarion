@@ -150,7 +150,7 @@ public class TerrainShapeSetup {
                     terrainShapeNode.setDoNotRenderGround(true);
                 }
             } else {
-                setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
+                setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getInnerGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
                 setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getInnerGroundHeight(), null);
                 setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getInnerGroundHeight(), null);
                 // Setup slope ground connection (render engine)
