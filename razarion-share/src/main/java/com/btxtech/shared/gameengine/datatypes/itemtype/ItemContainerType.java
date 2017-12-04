@@ -23,22 +23,8 @@ import java.util.Collection;
  */
 public class ItemContainerType {
     private Collection<Integer> ableToContain;
-    // private SurfaceType operationSurfaceType;
     private int maxCount;
     private double range;
-
-    /**
-     * Used by GWT
-     */
-    public ItemContainerType() {
-    }
-
-    public ItemContainerType(Collection<Integer> ableToContain, /*SurfaceType operationSurfaceType, */int maxCount, int range) {
-        this.ableToContain = ableToContain;
-        // this.operationSurfaceType = operationSurfaceType;
-        this.maxCount = maxCount;
-        this.range = range;
-    }
 
     public ItemContainerType setAbleToContain(Collection<Integer> ableToContain) {
         this.ableToContain = ableToContain;
@@ -63,20 +49,11 @@ public class ItemContainerType {
         return this;
     }
 
-    public boolean isAbleToContain(int itemTypeId) {
-        return ableToContain.contains(itemTypeId);
-    }
-
-    public boolean isAbleToContainAtLeastOne(Collection<Integer> ids) {
-        for (Integer id : ids) {
-            if (ableToContain.contains(id)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public double getRange() {
         return range;
+    }
+
+    public boolean isAbleToContain(int itemTypeId) {
+        return ableToContain.contains(itemTypeId);
     }
 }

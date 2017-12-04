@@ -96,10 +96,10 @@ public class SyncItemContainer extends SyncBaseAbility {
             return;
         }
         containedItems.removeIf(containedItemId -> {
-            SyncBaseItem containedItem = syncItemContainerService.getSyncBaseItemSave(containedItemId);
-            if (allowedUnload(unloadPos, containedItem)) {
-                containedItem.clearContained(unloadPos);
-                gameLogicService.onSyncItemUnloaded(containedItem);
+            SyncBaseItem contained = syncItemContainerService.getSyncBaseItemSave(containedItemId);
+            if (allowedUnload(unloadPos, contained)) {
+                contained.clearContained(unloadPos);
+                gameLogicService.onSyncItemUnloaded(contained);
                 return true;
             }
             return false;

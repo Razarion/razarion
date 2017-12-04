@@ -525,6 +525,28 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
+    @Override
+    public void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBaseItem(container);
+            workerTrackerHandler.onSyncBaseItem(contained);
+        }
+    }
+
+    @Override
+    public void onSyncItemContainerUnloaded(SyncBaseItem container) {
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBaseItem(container);
+        }
+    }
+
+    @Override
+    public void onSyncItemUnloaded(SyncBaseItem contained) {
+        if (workerTrackerHandler != null) {
+            workerTrackerHandler.onSyncBaseItem(contained);
+        }
+    }
+
     private void onPerfmonRequest() {
         sendToClient(GameEngineControlPackage.Command.PERFMON_RESPONSE, perfmonService.getPerfmonStatistics(-1));
     }

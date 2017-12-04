@@ -133,6 +133,22 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
+    public void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
+        testWebSocket.sendSyncBaseItem(container);
+        testWebSocket.sendSyncBaseItem(contained);
+    }
+
+    @Override
+    public void onSyncItemContainerUnloaded(SyncBaseItem container) {
+        testWebSocket.sendSyncBaseItem(container);
+    }
+
+    @Override
+    public void onSyncItemUnloaded(SyncBaseItem contained) {
+        testWebSocket.sendSyncBaseItem(contained);
+    }
+
+    @Override
     public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
         testWebSocket.sendSyncBaseItem(syncBaseItem);
         testWebSocket.sendSyncBaseItem(createdBy);

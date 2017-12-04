@@ -79,13 +79,16 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSynBuilderStopped(syncBaseItem, currentBuildup));
     }
 
-    public void onSyncItemContainerUnloaded(SyncBaseItem syncItem) {
+    public void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncItemLoaded(container, contained));
     }
 
-    public void onSyncItemUnloaded(SyncBaseItem syncBaseItem) {
+    public void onSyncItemContainerUnloaded(SyncBaseItem container) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncItemContainerUnloaded(container));
     }
 
-    public void onSyncItemLoaded(SyncBaseItem syncBaseItem, SyncBaseItem loadedSyncBaseItem) {
+    public void onSyncItemUnloaded(SyncBaseItem contained) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncItemUnloaded(contained));
     }
 
     public void onHealthIncreased(SyncBaseItem syncBaseItem) {

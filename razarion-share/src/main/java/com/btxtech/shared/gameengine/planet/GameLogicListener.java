@@ -78,4 +78,13 @@ public interface GameLogicListener {
 
     default void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
     }
+
+    default void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
+    }
+
+    default void onSyncItemContainerUnloaded(SyncBaseItem container) {
+    }
+
+    default void onSyncItemUnloaded(SyncBaseItem contained) {
+    }
 }

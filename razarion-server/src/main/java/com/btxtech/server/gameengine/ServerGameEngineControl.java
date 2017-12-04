@@ -303,6 +303,22 @@ public class ServerGameEngineControl implements GameLogicListener {
         clientGameConnectionService.sendResourcesBalanceChanged(playerBase, resources);
     }
 
+    @Override
+    public void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
+        clientGameConnectionService.sendSyncBaseItem(container);
+        clientGameConnectionService.sendSyncBaseItem(contained);
+    }
+
+    @Override
+    public void onSyncItemContainerUnloaded(SyncBaseItem container) {
+        clientGameConnectionService.sendSyncBaseItem(container);
+    }
+
+    @Override
+    public void onSyncItemUnloaded(SyncBaseItem contained) {
+        clientGameConnectionService.sendSyncBaseItem(contained);
+    }
+
     public PlanetConfig getPlanetConfig() {
         return planetService.getPlanetConfig();
     }

@@ -242,7 +242,9 @@ public class SyncItemContainerService {
             }
             lastItemId = Math.max(lastItemId + 1, syncItemId + 1);
         }
-        syncItem.getSyncPhysicalArea().setupPosition3d();
+        if (syncItem.getSyncPhysicalArea().hasPosition()) {
+            syncItem.getSyncPhysicalArea().setupPosition3d();
+        }
     }
 
     private SyncPhysicalArea createSyncPhysicalArea(SyncBaseItem syncBaseItem, BaseItemType baseItemType, DecimalPosition position2d, double zRotation) {
@@ -265,7 +267,7 @@ public class SyncItemContainerService {
                 logger.severe("Item did not belong to SyncItemContainerService: " + syncItem);
             }
         }
-        if(syncItem instanceof SyncBaseItem) {
+        if (syncItem instanceof SyncBaseItem) {
             guardingItemServiceInstanceInstance.get().remove((SyncBaseItem) syncItem);
         }
     }

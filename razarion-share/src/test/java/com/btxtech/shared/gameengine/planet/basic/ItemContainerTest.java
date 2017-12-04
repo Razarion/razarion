@@ -1,7 +1,10 @@
 package com.btxtech.shared.gameengine.planet.basic;
 
+import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
+import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,6 +20,8 @@ public class ItemContainerTest extends BaseBasicTest {
         setup();
 
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMater(createLevel1UserContext(), this);
         getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
@@ -25,6 +30,7 @@ public class ItemContainerTest extends BaseBasicTest {
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
+        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
         tickPlanetServiceBaseServiceActive();
@@ -34,6 +40,7 @@ public class ItemContainerTest extends BaseBasicTest {
         Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         assertNoCommand4Contained(humanBaseContext);
+        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
         // Load 2.
         getCommandService().loadContainer(humanBaseContext.getAttacker(), transporter);
         tickPlanetServiceBaseServiceActive();
@@ -46,6 +53,7 @@ public class ItemContainerTest extends BaseBasicTest {
         Assert.assertEquals(transporter, humanBaseContext.getAttacker().getContainedIn());
         Assert.assertNull(humanBaseContext.getAttacker().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getAttacker().getSyncPhysicalArea().hasPosition());
+        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
         // Move to unload position
         getCommandService().move(transporter, new DecimalPosition(63, 222));
         tickPlanetServiceBaseServiceActive();
@@ -60,6 +68,7 @@ public class ItemContainerTest extends BaseBasicTest {
         Assert.assertNull(humanBaseContext.getAttacker().getContainedIn());
         Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getAttacker().getSyncPhysicalArea().getPosition2d());
         Assert.assertTrue(humanBaseContext.getAttacker().getSyncPhysicalArea().hasPosition());
+        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
 
         // showDisplay();
     }
@@ -144,4 +153,29 @@ public class ItemContainerTest extends BaseBasicTest {
             Assert.assertTrue(ie.getMessage(), ie.getMessage().startsWith("CommandService.checkSyncBaseItem() Item is inside a item container:"));
         }
     }
+
+    private void assertAllSlaves(WeldSlaveEmulator permSlave, SyncBaseItem masterTransporter, SyncBaseItem... masterContainedIn) {
+        assertNewSlave(masterTransporter, masterContainedIn);
+        assertSlave(permSlave, masterTransporter, masterContainedIn);
+    }
+
+    private void assertNewSlave(SyncBaseItem masterTransporter, SyncBaseItem... masterContainedIns) {
+        UserContext tmpUserContext = createLevel1UserContext();
+        WeldSlaveEmulator tmpSalve = new WeldSlaveEmulator();
+        tmpSalve.connectToMater(tmpUserContext, this);
+        assertSlave(tmpSalve, masterTransporter, masterContainedIns);
+    }
+
+    private void assertSlave(WeldSlaveEmulator weldSlaveEmulator, SyncBaseItem masterTransporter, SyncBaseItem... masterContainedIns) {
+        SyncBaseItem slaveTransporter = weldSlaveEmulator.getSyncItemContainerService().getSyncBaseItemSave(masterTransporter.getId());
+        TestHelper.assertIds(masterTransporter.getSyncItemContainer().getContainedItems(), slaveTransporter.getSyncItemContainer().getContainedItems().toArray(new Integer[]{}));
+
+        for (SyncBaseItem masterContainedIn : masterContainedIns) {
+            SyncBaseItem slaveContainedIn = weldSlaveEmulator.getSyncItemContainerService().getSyncBaseItemSave(masterContainedIn.getId());
+            Assert.assertEquals("masterContainedIn: " + masterContainedIn + " slaveContainedIn: " + slaveContainedIn, masterContainedIn.getContainedIn(), slaveContainedIn.getContainedIn());
+            TestHelper.assertDecimalPosition("masterContainedIn: " + masterContainedIn + " slaveContainedIn: " + slaveContainedIn, masterContainedIn.getSyncPhysicalArea().getPosition2d(), slaveContainedIn.getSyncPhysicalArea().getPosition2d(), 1.0);
+            Assert.assertEquals("masterContainedIn: " + masterContainedIn + " slaveContainedIn: " + slaveContainedIn, masterContainedIn.getSyncPhysicalArea().hasPosition(), slaveContainedIn.getSyncPhysicalArea().hasPosition());
+        }
+    }
+
 }
