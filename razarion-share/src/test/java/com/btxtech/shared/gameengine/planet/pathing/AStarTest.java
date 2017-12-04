@@ -173,7 +173,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
             Assert.fail("Fail expected. Destination is not free");
         } catch (PathFindingNotFreeException e) {
             // Expected
-            Assert.assertTrue(e.getMessage().startsWith("Destination start tile is not free:"));
+            Assert.assertTrue(e.getMessage().startsWith("Destination tile is not free:"));
         }
     }
 
@@ -186,7 +186,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
             Assert.fail("Fail expected. Destination is not free");
         } catch (PathFindingNotFreeException e) {
             // Expected
-            Assert.assertTrue(e.getMessage().startsWith("Destination start tile is not free:"));
+            Assert.assertTrue(e.getMessage().startsWith("Destination tile is not free:"));
         }
     }
 
@@ -199,7 +199,7 @@ public class AStarTest extends WeldTerrainServiceTestBase {
             Assert.fail("Fail expected. Destination is not free");
         } catch (PathFindingNotFreeException e) {
             // Expected
-            Assert.assertTrue(e.getMessage().startsWith("Destination start tile is not free:"));
+            Assert.assertTrue(e.getMessage().startsWith("Destination tile is not free:"));
         }
     }
 
