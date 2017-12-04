@@ -59,7 +59,7 @@ public class PathingService {
             return path;
         }
         if (!destinationNode.isFree(targetTerrainType)) {
-            throw new PathFindingNotFreeException("Destination start tile is not free: " + destination);
+            throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
         }
         // long time = System.currentTimeMillis();
         List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(TerrainUtil.smallestSubNodeCenter(Index.ZERO), syncItem.getSyncPhysicalArea().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);

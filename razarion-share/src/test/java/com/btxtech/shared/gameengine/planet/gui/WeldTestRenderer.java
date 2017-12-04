@@ -617,6 +617,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     public void drawSyncItem(SyncItem syncItem) {
         SyncPhysicalArea syncPhysicalArea = syncItem.getSyncPhysicalArea();
         DecimalPosition position = syncPhysicalArea.getPosition2d();
+        if(position == null) {
+            return;
+        }
         if (syncItem instanceof SyncBaseItem) {
             getGc().setFill(BASE_ITEM_TYPE_COLOR);
         } else if (syncItem instanceof SyncResourceItem) {

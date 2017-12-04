@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.planet.energy.EnergyService;
 import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -260,6 +261,14 @@ public class WeldBaseTest {
         Assert.assertEquals("Base items", baseCount, (int) actualBaseCount.getO());
         Assert.assertEquals("Resource items", resourceCount, (int) actualResourceCount.getO());
         Assert.assertEquals("Box items", boxCount, (int) actualBoxCount.getO());
+    }
+
+    public void assertSyncItems(List<Integer> expected, SyncItem... actuals) {
+        List<Integer> expectedCopy = new ArrayList<>(expected);
+        for (SyncItem actual : actuals) {
+            Assert.assertTrue("Item does not exist: " + actual, expectedCopy.remove((Integer) actual.getId()));
+        }
+        Assert.assertTrue("There are remianing items: " + expectedCopy.size(), expectedCopy.isEmpty());
     }
 
     public void printAllSyncItems() {

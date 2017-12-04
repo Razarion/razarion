@@ -16,23 +16,19 @@ package com.btxtech.shared.gameengine.planet.model;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
-import com.btxtech.shared.gameengine.datatypes.exception.ItemContainerFullException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -43,9 +39,7 @@ import java.util.List;
 @Dependent
 public class SyncItemContainer extends SyncBaseAbility {
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private BaseItemService baseItemService;
+    private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
     @Inject
@@ -71,91 +65,65 @@ public class SyncItemContainer extends SyncBaseAbility {
         syncBaseItemInfo.setContainedItems(CollectionUtils.saveArrayListCopy(containedItems));
     }
 
-    public void load(SyncBaseItem syncBaseItem) throws ItemContainerFullException, WrongOperationSurfaceException {
+    public void load(SyncBaseItem syncBaseItem) {
         if (PlanetService.MODE != PlanetMode.MASTER) {
             return;
         }
 
-        isAbleToContainThrow(syncBaseItem);
-        isOnOperationSurfaceThrow();
-        containedItems.add(syncBaseItem.getId());
-        syncBaseItem.setContained(getSyncBaseItem().getId());
-        gameLogicService.onSyncItemLoaded(getSyncBaseItem(), syncBaseItem);
+        checkAbleToContainThrow(syncBaseItem);
+        if (containedItems.size() < itemContainerType.getMaxCount()) {
+            containedItems.add(syncBaseItem.getId());
+            syncBaseItem.setContained(getSyncBaseItem());
+            gameLogicService.onSyncItemLoaded(getSyncBaseItem(), syncBaseItem);
+        }
     }
 
     public void executeCommand(UnloadContainerCommand unloadContainerCommand) throws WrongOperationSurfaceException {
         if (containedItems.isEmpty()) {
             throw new IllegalStateException("No items in item container: " + getSyncBaseItem());
         }
-        isOnOperationSurfaceThrow();
         unloadPos = unloadContainerCommand.getUnloadPos();
     }
 
     public boolean tick() throws ItemDoesNotExistException {
-        if (!getSyncBaseItem().isAlive()) {
-            return false;
-        }
-        if (!isActive()) {
-            return false;
-        }
-
         unload();
         stop();
         return false;
     }
 
     private void unload() throws ItemDoesNotExistException {
-//        if (PlanetService.MODE != PlanetMode.MASTER) {
-//            return;
-//        }
-//        for (Iterator<Integer> iterator = containedItems.iterator(); iterator.hasNext(); ) {
-//            Integer containedItem = iterator.next();
-//            if (allowedUnload(unloadPos, containedItem)) {
-//                SyncBaseItem syncItem = (SyncBaseItem) baseItemService.getItem(containedItem);
-//                syncItem.clearContained(unloadPos);
-//                iterator.remove();
-//            }
-//        }
-//        gameLogicService.onSyncItemUnloaded(getSyncBaseItem());
+        if (PlanetService.MODE != PlanetMode.MASTER) {
+            return;
+        }
+        containedItems.removeIf(containedItemId -> {
+            SyncBaseItem containedItem = syncItemContainerService.getSyncBaseItemSave(containedItemId);
+            if (allowedUnload(unloadPos, containedItem)) {
+                containedItem.clearContained(unloadPos);
+                gameLogicService.onSyncItemUnloaded(containedItem);
+                return true;
+            }
+            return false;
+        });
+        gameLogicService.onSyncItemContainerUnloaded(getSyncBaseItem());
     }
 
     public void stop() {
-        throw new UnsupportedOperationException();
-//        unloadPos = null;
-//        if (getSyncBaseItem().hasSyncMovable()) {
-//            getSyncBaseItem().getSyncMovable().stop();
-//        }
-    }
-
-    public DecimalPosition getUnloadPos() {
-        return unloadPos;
-    }
-
-    public void setUnloadPos(DecimalPosition unloadPos) {
-        this.unloadPos = unloadPos;
+        unloadPos = null;
     }
 
     public boolean isActive() {
         return unloadPos != null;
     }
 
-    public int getRange() {
+    public double getRange() {
         return itemContainerType.getRange();
-    }
-
-    public ItemContainerType getItemContainerType() {
-        return itemContainerType;
     }
 
     public List<Integer> getContainedItems() {
         return containedItems;
     }
 
-    public void setContainedItems(List<Integer> containedItems) {
-        this.containedItems = containedItems;
-    }
-
-    private void isAbleToContainThrow(SyncBaseItem syncBaseItem) throws ItemContainerFullException {
+    private void checkAbleToContainThrow(SyncBaseItem syncBaseItem) {
         if (getSyncBaseItem().equals(syncBaseItem)) {
             throw new IllegalArgumentException("Can not contain oneself: " + this);
         }
@@ -163,68 +131,10 @@ public class SyncItemContainer extends SyncBaseAbility {
         if (!itemContainerType.isAbleToContain(syncBaseItem.getBaseItemType().getId())) {
             throw new IllegalArgumentException("Container " + getSyncBaseItem() + " is not able to contain: " + syncBaseItem);
         }
-
-        if (containedItems.size() >= itemContainerType.getMaxCount()) {
-            throw new ItemContainerFullException(this, containedItems.size());
-        }
     }
 
-    private void isOnOperationSurfaceThrow() throws WrongOperationSurfaceException {
-        throw new UnsupportedOperationException();
-//        SurfaceType operationSurfaceType = itemContainerType.getOperationSurfaceType();
-//        if (operationSurfaceType == null || operationSurfaceType == SurfaceType.NONE) {
-//            return;
-//        }
-//        if (!terrainService.hasSurfaceTypeInRegion(operationSurfaceType, getSyncItemArea().generateCoveringRectangle())) {
-//            throw new WrongOperationSurfaceException(getSyncBaseItem());
-//        }
-    }
-
-    public boolean isAbleToLoad(SyncBaseItem syncBaseItem) {
-        try {
-            isAbleToContainThrow(syncBaseItem);
-            isOnOperationSurfaceThrow();
-            return true;
-        } catch (IllegalArgumentException ignore) {
-            return false;
-        } catch (ItemContainerFullException ignore) {
-            return false;
-        } catch (WrongOperationSurfaceException e) {
-            return false;
-        }
-    }
-
-    public boolean atLeastOneAllowedToLoad(Collection<SyncBaseItem> syncBaseItems) {
-        for (SyncBaseItem syncBaseItem : syncBaseItems) {
-            if (isAbleToLoad(syncBaseItem)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean atLeastOneAllowedToUnload(DecimalPosition position) {
-        try {
-            isOnOperationSurfaceThrow();
-            for (Integer containedItem : containedItems) {
-                if (allowedUnload(position, containedItem)) {
-                    return true;
-                }
-            }
-        } catch (ItemDoesNotExistException e) {
-            exceptionHandler.handleException(e);
-        } catch (WrongOperationSurfaceException e) {
-            return false;
-        }
-        return false;
-    }
-
-    private boolean allowedUnload(DecimalPosition position, int containedItem) throws ItemDoesNotExistException {
-        throw new UnsupportedOperationException();
-    }
-
-    private boolean isInUnloadRange(DecimalPosition unloadPos) {
-        // return getSyncItemArea().isInRange(getRange(), unloadPos);
-        throw new UnsupportedOperationException();
+    private boolean allowedUnload(DecimalPosition position, SyncBaseItem containedItem) throws ItemDoesNotExistException {
+        return getSyncPhysicalArea().isInRange(getRange(), unloadPos)
+                && terrainService.getPathingAccess().isTerrainTypeAllowed(containedItem.getSyncPhysicalArea().getTerrainType(), position, containedItem.getSyncPhysicalArea().getRadius());
     }
 }

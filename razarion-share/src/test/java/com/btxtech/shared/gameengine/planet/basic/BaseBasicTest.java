@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.basic;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -90,5 +91,26 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         return findSyncBaseItem((PlayerBaseFull) botBase, itemTypeId);
     }
 
+    protected HumanBaseContext createHumanBaseBFA() {
+        HumanBaseContext humanBaseContext = new HumanBaseContext();
+        // Human base
+        UserContext userContext = createLevel1UserContext();
+        humanBaseContext.setUserContext(userContext);
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
+        humanBaseContext.setPlayerBaseFull(playerBaseFull);
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        humanBaseContext.setBuilder(builder);
+        getCommandService().build(builder, new DecimalPosition(104, 144), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        humanBaseContext.setFactory(factory);
+        getCommandService().fabricate(factory, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem attacker = findSyncBaseItem(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID);
+        humanBaseContext.setAttacker(attacker);
+
+        return humanBaseContext;
+    }
 
 }

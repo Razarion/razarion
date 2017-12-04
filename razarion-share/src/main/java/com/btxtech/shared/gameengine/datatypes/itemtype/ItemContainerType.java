@@ -25,7 +25,7 @@ public class ItemContainerType {
     private Collection<Integer> ableToContain;
     // private SurfaceType operationSurfaceType;
     private int maxCount;
-    private int range;
+    private double range;
 
     /**
      * Used by GWT
@@ -40,12 +40,27 @@ public class ItemContainerType {
         this.range = range;
     }
 
+    public ItemContainerType setAbleToContain(Collection<Integer> ableToContain) {
+        this.ableToContain = ableToContain;
+        return this;
+    }
+
     public Collection<Integer> getAbleToContain() {
         return ableToContain;
     }
 
     public int getMaxCount() {
         return maxCount;
+    }
+
+    public ItemContainerType setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+        return this;
+    }
+
+    public ItemContainerType setRange(int range) {
+        this.range = range;
+        return this;
     }
 
     public boolean isAbleToContain(int itemTypeId) {
@@ -61,14 +76,7 @@ public class ItemContainerType {
         return false;
     }
 
-    public void changeTo(ItemContainerType itemContainerType) {
-        ableToContain = itemContainerType.ableToContain;
-        // operationSurfaceType = itemContainerType.operationSurfaceType;
-        maxCount = itemContainerType.maxCount;
-        range = itemContainerType.range;
-    }
-
-    public int getRange() {
+    public double getRange() {
         return range;
     }
 }

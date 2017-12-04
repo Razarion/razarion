@@ -21,7 +21,7 @@ import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
  * Date: 05.05.2010
  * Time: 12:27:00
  */
-public class UnloadContainerCommand extends BaseCommand {
+public class UnloadContainerCommand extends /*PathToDestinationCommand*/ BaseCommand {
     private DecimalPosition unloadPos;
 
     public DecimalPosition getUnloadPos() {

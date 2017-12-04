@@ -57,6 +57,10 @@ public class GuardingItemService {
                 return false;
             }
 
+            if (syncBaseItem.isContainedIn()) {
+                return false;
+            }
+
             if (handleGuardingItemHasEnemiesInRange(syncBaseItem)) {
                 return true;
             }

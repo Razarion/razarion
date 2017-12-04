@@ -64,6 +64,7 @@ public class SyncPhysicalArea {
     void setPosition2d(DecimalPosition position2d) {
         this.position2d = position2d;
         position3d = null;
+        norm = null;
     }
 
     public void addToPosition2d(DecimalPosition deltaXY) {
@@ -135,6 +136,10 @@ public class SyncPhysicalArea {
 
     boolean isInRange(double range, DecimalPosition position, BaseItemType baseItemType) {
         return getDistance(position, baseItemType.getPhysicalAreaConfig().getRadius()) < range;
+    }
+
+    boolean isInRange(double range, DecimalPosition position) {
+        return getDistance(position, 0) < range;
     }
 
     public double getDistance(SyncPhysicalArea syncPhysicalArea) {

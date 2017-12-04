@@ -43,6 +43,7 @@ import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -69,6 +70,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private GameLogicService gameLogicService;
     @Inject
     private BoxService boxService;
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
     private PlayerBase base;
     private double buildup;
     private double health;
@@ -80,10 +83,12 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private SyncConsumer syncConsumer;
     private SyncItemContainer syncItemContainer;
     private SyncHouse syncHouse;
-    private Integer containedIn;
+    private SyncBaseItem containedIn;
     private boolean isRazarionEarningOrConsuming = false;
     private double spawnProgress;
     private SyncBoxItem syncBoxItemToPick;
+    private SyncBaseItem targetContainer;
+
 
     public void setup(PlayerBase base) throws NoSuchItemTypeException {
         this.base = base;
@@ -159,13 +164,24 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         health = syncBaseItemInfo.getHealth();
         spawnProgress = syncBaseItemInfo.getSpawnProgress();
         setBuildup(syncBaseItemInfo.getBuildup());
-        containedIn = syncBaseItemInfo.getContainedIn();
         getSyncPhysicalArea().synchronize(syncBaseItemInfo.getSyncPhysicalAreaInfo());
 
         if (syncBaseItemInfo.getSyncBoxItemId() != null) {
             syncBoxItemToPick = boxService.getSyncBoxItem(syncBaseItemInfo.getSyncBoxItemId());
         } else {
             syncBoxItemToPick = null;
+        }
+
+        if (syncBaseItemInfo.getTargetContainer() != null) {
+            targetContainer = syncItemContainerService.getSyncBaseItemSave(syncBaseItemInfo.getTargetContainer());
+        } else {
+            targetContainer = null;
+        }
+
+        if (syncBaseItemInfo.getContainedIn() != null) {
+            containedIn = syncItemContainerService.getSyncBaseItemSave(syncBaseItemInfo.getContainedIn());
+        } else {
+            containedIn = null;
         }
 
         if (syncWeapon != null) {
@@ -205,11 +221,18 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         syncBaseItemInfo.setBaseId(base.getBaseId());
         syncBaseItemInfo.setHealth(health);
         syncBaseItemInfo.setBuildup(buildup);
-        syncBaseItemInfo.setContainedIn(containedIn);
         syncBaseItemInfo.setSpawnProgress(spawnProgress);
 
         if (syncBoxItemToPick != null) {
             syncBaseItemInfo.setSyncBoxItemId(syncBoxItemToPick.getId());
+        }
+
+        if (targetContainer != null) {
+            syncBaseItemInfo.setTargetContainer(targetContainer.getId());
+        }
+
+        if (containedIn != null) {
+            syncBaseItemInfo.setContainedIn(containedIn.getId());
         }
 
         if (syncWeapon != null) {
@@ -244,14 +267,15 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     }
 
     public boolean isIdle() {
-        return isBuildup() && !isSpawning() && !getSyncPhysicalArea().hasDestination() && !isAbilityActive() && syncBoxItemToPick == null;
+        return isBuildup() && !isSpawning() && !getSyncPhysicalArea().hasDestination() && !isAbilityActive() && syncBoxItemToPick == null && targetContainer == null;
     }
 
     private boolean isAbilityActive() {
         return (syncWeapon != null && syncWeapon.isActive())
                 || (syncFactory != null && syncFactory.isActive())
                 || (syncBuilder != null && syncBuilder.isActive())
-                || (syncHarvester != null && syncHarvester.isActive());
+                || (syncHarvester != null && syncHarvester.isActive())
+                || (syncItemContainer != null && syncItemContainer.isActive());
     }
 
     @Override
@@ -269,6 +293,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
 
         if (syncBoxItemToPick != null) {
             return pickSyncBoxItem();
+        }
+
+        if (targetContainer != null) {
+            return putInContainer();
         }
 
         if (syncWeapon != null && syncWeapon.isActive()) {
@@ -358,9 +386,8 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
 
         if (baseCommand instanceof LoadContainerCommand) {
-            throw new UnsupportedOperationException();
-            //  getSyncMovable().executeCommand((LoadContainerCommand) baseCommand);
-            // return;
+            executeLoadContainerCommand((LoadContainerCommand) baseCommand);
+            return;
         }
 
         if (baseCommand instanceof UnloadContainerCommand) {
@@ -384,6 +411,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
+    private void executeLoadContainerCommand(LoadContainerCommand loadContainerCommand) {
+        if (loadContainerCommand.getId() == (loadContainerCommand.getItemContainer())) {
+            throw new IllegalArgumentException("Can not contain oneself: " + this);
+        }
+        targetContainer = syncItemContainerService.getSyncBaseItemSave(loadContainerCommand.getItemContainer());
+        ((SyncPhysicalMovable) getSyncPhysicalArea()).setPath(loadContainerCommand.getSimplePath());
+    }
 
     public SyncItem getTarget() {
         if (syncWeapon != null && syncWeapon.isActive()) {
@@ -401,7 +435,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (syncBoxItemToPick != null) {
             return syncBoxItemToPick;
         }
-        // TODO Move to container
+
+        if (targetContainer != null) {
+            return targetContainer;
+        }
 
         return null;
     }
@@ -527,19 +564,18 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return health;
     }
 
-    public void setContained(int itemContainer) {
+    public void setContained(SyncBaseItem itemContainer) {
         this.containedIn = itemContainer;
-        // getSyncItemArea().setPosition(null);
-        throw new UnsupportedOperationException();
+        getSyncPhysicalArea().setPosition2d(null);
     }
 
     public void clearContained(DecimalPosition position) {
         containedIn = null;
-        // getSyncItemArea().setPosition(position);
-        throw new UnsupportedOperationException();
+        getSyncPhysicalArea().setPosition2d(position);
+        getSyncPhysicalArea().setupPosition3d();
     }
 
-    public Integer getContainedIn() {
+    public SyncBaseItem getContainedIn() {
         return containedIn;
     }
 
@@ -565,6 +601,22 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         stop();
         return false;
     }
+
+
+    private boolean putInContainer() {
+        if (!targetContainer.isAlive()) {
+            stop();
+            return false;
+        }
+        if (getSyncPhysicalArea().isInRange(targetContainer.getSyncItemContainer().getRange(), targetContainer)) {
+            targetContainer.getSyncItemContainer().load(this);
+            stop();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     public boolean isRazarionEarningOrConsuming() {
         return isRazarionEarningOrConsuming;

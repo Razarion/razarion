@@ -8,9 +8,11 @@ import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
 import com.btxtech.shared.gameengine.datatypes.command.FactoryCommand;
 import com.btxtech.shared.gameengine.datatypes.command.HarvestCommand;
+import com.btxtech.shared.gameengine.datatypes.command.LoadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.command.MoveCommand;
 import com.btxtech.shared.gameengine.datatypes.command.PickupBoxCommand;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -18,11 +20,13 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.logging.Level;
 
 /**
  * Created by Beat
@@ -58,6 +62,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void move(SyncBaseItem syncBaseItem, DecimalPosition destination) {
+        checkSyncBaseItem(syncBaseItem);
         MoveCommand moveCommand = new MoveCommand();
         moveCommand.setId(syncBaseItem.getId());
         moveCommand.updateTimeStamp();
@@ -72,6 +77,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void build(SyncBaseItem builder, DecimalPosition positionToBeBuild, BaseItemType itemTypeToBuild) {
+        checkSyncBaseItem(builder);
         BuilderCommand builderCommand = new BuilderCommand();
         builderCommand.setId(builder.getId());
         builderCommand.updateTimeStamp();
@@ -86,6 +92,8 @@ public class CommandService { // Is part of the Base service
     }
 
     public void finalizeBuild(SyncBaseItem builder, SyncBaseItem building) {
+        checkSyncBaseItem(builder);
+        checkSyncBaseItem(building);
         BuilderFinalizeCommand builderFinalizeCommand = new BuilderFinalizeCommand();
         builderFinalizeCommand.setId(builder.getId());
         builderFinalizeCommand.updateTimeStamp();
@@ -115,6 +123,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void fabricate(SyncBaseItem factory, BaseItemType itemTypeToBuild) {
+        checkSyncBaseItem(factory);
         FactoryCommand factoryCommand = new FactoryCommand();
         factoryCommand.setId(factory.getId());
         factoryCommand.updateTimeStamp();
@@ -131,6 +140,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void harvest(SyncBaseItem harvester, SyncResourceItem resource) {
+        checkSyncBaseItem(harvester);
         HarvestCommand harvestCommand = new HarvestCommand();
         SimplePath path = pathingService.setupPathToDestination(harvester, harvester.getBaseItemType().getHarvesterType().getRange(), resource);
         if (moveIfPathTargetUnreachable(harvester, path)) {
@@ -152,6 +162,8 @@ public class CommandService { // Is part of the Base service
     }
 
     public void attack(SyncBaseItem syncBaseItem, SyncBaseItem target, boolean followTarget) {
+        checkSyncBaseItem(syncBaseItem);
+        checkSyncBaseItem(target);
         SimplePath path;
         AttackCommand attackCommand = new AttackCommand();
         if (followTarget) {
@@ -177,6 +189,7 @@ public class CommandService { // Is part of the Base service
     }
 
     public void pickupBox(SyncBaseItem picker, SyncBoxItem box) {
+        checkSyncBaseItem(picker);
         PickupBoxCommand pickupBoxCommand = new PickupBoxCommand();
         SimplePath path = pathingService.setupPathToDestination(picker, picker.getBaseItemType().getBoxPickupRange(), box);
         if (moveIfPathTargetUnreachable(picker, path)) {
@@ -189,8 +202,45 @@ public class CommandService { // Is part of the Base service
         executeCommand(pickupBoxCommand);
     }
 
+    public void loadContainer(SyncBaseItem item, SyncBaseItem container) {
+        checkSyncBaseItem(item);
+        checkSyncBaseItem(container);
+        LoadContainerCommand loadContainerCommand = new LoadContainerCommand();
+        SimplePath path = pathingService.setupPathToDestination(item, container.getSyncItemContainer().getRange(), container);
+        if (moveIfPathTargetUnreachable(item, path)) {
+            return;
+        }
+        loadContainerCommand.setSimplePath(path);
+        loadContainerCommand.setId(item.getId());
+        loadContainerCommand.setItemContainer(container.getId());
+        loadContainerCommand.updateTimeStamp();
+        executeCommand(loadContainerCommand);
+    }
+
+    public void unloadContainer(SyncBaseItem container, DecimalPosition unloadPos) {
+        checkSyncBaseItem(container);
+
+        UnloadContainerCommand unloadContainerCommand = new UnloadContainerCommand();
+//        SimplePath path = pathingService.setupPathToDestination(container, container.getSyncItemContainer().getRange(), TerrainType.LAND, unloadPos, 0);
+//        if (moveIfPathTargetUnreachable(container, path)) {
+//            return;
+//        }
+//        unloadContainerCommand.setSimplePath(path);
+        unloadContainerCommand.setId(container.getId());
+        unloadContainerCommand.updateTimeStamp();
+        unloadContainerCommand.setUnloadPos(unloadPos);
+        executeCommand(unloadContainerCommand);
+    }
+
+
     public void defend(SyncBaseItem attacker, SyncBaseItem target) {
         attack(attacker, target, false);
+    }
+
+    private void checkSyncBaseItem(SyncBaseItem syncBaseItem) {
+        if (syncBaseItem.isContainedIn()) {
+            throw new IllegalStateException("CommandService.checkSyncBaseItem() Item is inside a item container: " + syncBaseItem);
+        }
     }
 
     public void executeCommand(BaseCommand baseCommand) {

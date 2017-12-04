@@ -79,7 +79,10 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSynBuilderStopped(syncBaseItem, currentBuildup));
     }
 
-    public void onSyncItemUnloaded(SyncBaseItem syncItem) {
+    public void onSyncItemContainerUnloaded(SyncBaseItem syncItem) {
+    }
+
+    public void onSyncItemUnloaded(SyncBaseItem syncBaseItem) {
     }
 
     public void onSyncItemLoaded(SyncBaseItem syncBaseItem, SyncBaseItem loadedSyncBaseItem) {
