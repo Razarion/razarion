@@ -165,12 +165,12 @@ public abstract class GameEngineControl {
         gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.PICK_BOX).setSynBoxItemId(box.getId()));
     }
 
-    public void loadContainerCmd(Collection<SyncBaseItemSimpleDto> contained, SyncBoxItemSimpleDto container) {
+    public void loadContainerCmd(Collection<SyncBaseItemSimpleDto> contained, SyncBaseItemSimpleDto container) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_LOAD_CONTAINER, SyncItemSimpleDtoUtils.toIds(contained), container.getId());
         // gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.LOAD_CONTAINER).setSynBoxItemId(box.getId()));
     }
 
-    public void unloadContainerCmd(SyncBoxItemSimpleDto container, DecimalPosition unloadPosition) {
+    public void unloadContainerCmd(SyncBaseItemSimpleDto container, DecimalPosition unloadPosition) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_UNLOAD_CONTAINER, container.getId(), unloadPosition);
         // gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.UNLOAD_CONTAINER).setSynBoxItemId(box.getId()));
     }

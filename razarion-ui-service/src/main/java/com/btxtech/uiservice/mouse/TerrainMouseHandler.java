@@ -3,6 +3,8 @@ package com.btxtech.uiservice.mouse;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
@@ -30,6 +32,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -43,6 +46,8 @@ public class TerrainMouseHandler {
     private ProjectionTransformation projectionTransformation;
     @Inject
     private Camera camera;
+    @Inject
+    private ItemTypeService itemTypeService;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -172,7 +177,14 @@ public class TerrainMouseHandler {
                 SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBaseItem != null) {
                     if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
-                        if (!syncBaseItem.checkBuildup()) {
+                        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+                        if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null && selectionHandler.hasOwnSelection()) {
+                            Collection<SyncBaseItemSimpleDto> contained = selectionHandler.getOwnSelection().getItems().stream().filter(syncBaseItemSimpleDto -> baseItemType.getItemContainerType().isAbleToContain(syncBaseItemSimpleDto.getItemTypeId())).collect(Collectors.toList());
+                            if(!contained.isEmpty()) {
+                                 audioService.onCommandSent();
+                                 gameEngineControl.loadContainerCmd(contained, syncBaseItem);
+                             }
+                        } else if (!syncBaseItem.checkBuildup()) {
                             Collection<SyncBaseItemSimpleDto> builders = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
                             if (!builders.isEmpty()) {
                                 audioService.onCommandSent();

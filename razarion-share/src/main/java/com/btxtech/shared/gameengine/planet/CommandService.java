@@ -204,7 +204,7 @@ public class CommandService { // Is part of the Base service
         SyncBaseItem container = syncItemContainerService.getSyncBaseItemSave(containerId);
         for (int containedId : containedIds) {
             SyncBaseItem contained = syncItemContainerService.getSyncBaseItemSave(containedId);
-            loadContainer(container, contained);
+            loadContainer(contained, container);
         }
     }
 

@@ -676,28 +676,30 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         simpleDto.setId(getId());
         simpleDto.setItemTypeId(getBaseItemType().getId());
         simpleDto.setBaseId(base.getBaseId());
-        simpleDto.setModel(getSyncPhysicalArea().getModelMatrices());
-        if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
-            simpleDto.setWeaponTurret(syncWeapon.createTurretMatrix4Shape3D());
+        if (getSyncPhysicalArea().hasPosition()) {
+            simpleDto.setModel(getSyncPhysicalArea().getModelMatrices());
+            if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
+                simpleDto.setWeaponTurret(syncWeapon.createTurretMatrix4Shape3D());
+            }
+            simpleDto.setPosition2d(getSyncPhysicalArea().getPosition2d());
+            simpleDto.setPosition3d(getSyncPhysicalArea().getPosition3d());
+            if (syncHarvester != null && syncHarvester.isHarvesting()) {
+                simpleDto.setHarvestingResourcePosition(syncHarvester.getResource().getSyncPhysicalArea().getPosition3d());
+            }
+            if (syncBuilder != null && syncBuilder.isBuilding()) {
+                simpleDto.setBuildingPosition(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
+                simpleDto.setConstructing(syncBuilder.getCurrentBuildup().getBuildup());
+            }
+            if (syncFactory != null && syncFactory.isActive()) {
+                simpleDto.setConstructing(syncFactory.getBuildup());
+            }
+            if (getSyncPhysicalArea().canMove()) {
+                simpleDto.setInterpolatableVelocity(getSyncPhysicalMovable().setupInterpolatableVelocity());
+            }
         }
-        simpleDto.setPosition2d(getSyncPhysicalArea().getPosition2d());
-        simpleDto.setPosition3d(getSyncPhysicalArea().getPosition3d());
         simpleDto.setSpawning(spawnProgress);
         simpleDto.setBuildup(buildup);
         simpleDto.setHealth(getNormalizedHealth());
-        if (syncHarvester != null && syncHarvester.isHarvesting()) {
-            simpleDto.setHarvestingResourcePosition(syncHarvester.getResource().getSyncPhysicalArea().getPosition3d());
-        }
-        if (syncBuilder != null && syncBuilder.isBuilding()) {
-            simpleDto.setBuildingPosition(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
-            simpleDto.setConstructing(syncBuilder.getCurrentBuildup().getBuildup());
-        }
-        if (syncFactory != null && syncFactory.isActive()) {
-            simpleDto.setConstructing(syncFactory.getBuildup());
-        }
-        if (getSyncPhysicalArea().canMove()) {
-            simpleDto.setInterpolatableVelocity(getSyncPhysicalMovable().setupInterpolatableVelocity());
-        }
         return simpleDto;
     }
 
