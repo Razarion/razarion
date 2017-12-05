@@ -181,6 +181,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             case COMMAND_PICK_BOX:
                 commandService.pickupBox((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
+            case COMMAND_LOAD_CONTAINER:
+                commandService.loadContainer((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
+                break;
+            case COMMAND_UNLOAD_CONTAINER:
+                commandService.unloadContainer((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1));
+                break;
             case UPDATE_LEVEL:
                 updateLevel((int) controlPackage.getData(0));
                 break;

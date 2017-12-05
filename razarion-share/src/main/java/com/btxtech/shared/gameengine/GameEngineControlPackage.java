@@ -31,6 +31,8 @@ public class GameEngineControlPackage {
         COMMAND_HARVEST,
         COMMAND_MOVE,
         COMMAND_PICK_BOX,
+        COMMAND_LOAD_CONTAINER,
+        COMMAND_UNLOAD_CONTAINER,
         // Resources
         CREATE_RESOURCES,
         RESOURCE_CREATED,

@@ -20,13 +20,11 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Collection;
-import java.util.logging.Level;
 
 /**
  * Created by Beat
@@ -202,19 +200,31 @@ public class CommandService { // Is part of the Base service
         executeCommand(pickupBoxCommand);
     }
 
-    public void loadContainer(SyncBaseItem item, SyncBaseItem container) {
-        checkSyncBaseItem(item);
+    public void loadContainer(Collection<Integer> containedIds, int containerId) {
+        SyncBaseItem container = syncItemContainerService.getSyncBaseItemSave(containerId);
+        for (int containedId : containedIds) {
+            SyncBaseItem contained = syncItemContainerService.getSyncBaseItemSave(containedId);
+            loadContainer(container, contained);
+        }
+    }
+
+    public void loadContainer(SyncBaseItem contained, SyncBaseItem container) {
+        checkSyncBaseItem(contained);
         checkSyncBaseItem(container);
         LoadContainerCommand loadContainerCommand = new LoadContainerCommand();
-        SimplePath path = pathingService.setupPathToDestination(item, container.getSyncItemContainer().getRange(), container);
-        if (moveIfPathTargetUnreachable(item, path)) {
+        SimplePath path = pathingService.setupPathToDestination(contained, container.getSyncItemContainer().getRange(), container);
+        if (moveIfPathTargetUnreachable(contained, path)) {
             return;
         }
         loadContainerCommand.setSimplePath(path);
-        loadContainerCommand.setId(item.getId());
+        loadContainerCommand.setId(contained.getId());
         loadContainerCommand.setItemContainer(container.getId());
         loadContainerCommand.updateTimeStamp();
         executeCommand(loadContainerCommand);
+    }
+
+    public void unloadContainer(int container, DecimalPosition unloadPos) {
+        unloadContainer(syncItemContainerService.getSyncBaseItemSave(container), unloadPos);
     }
 
     public void unloadContainer(SyncBaseItem container, DecimalPosition unloadPos) {

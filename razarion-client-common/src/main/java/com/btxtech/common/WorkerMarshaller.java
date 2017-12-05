@@ -98,6 +98,8 @@ public class WorkerMarshaller {
             case COMMAND_HARVEST:
             case COMMAND_MOVE:
             case COMMAND_PICK_BOX:
+            case COMMAND_LOAD_CONTAINER:
+            case COMMAND_UNLOAD_CONTAINER:
             case BASE_CREATED:
             case BASE_DELETED:
             case PROJECTILE_DETONATION:
@@ -233,6 +235,14 @@ public class WorkerMarshaller {
             case COMMAND_PICK_BOX:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                break;
+            case COMMAND_LOAD_CONTAINER:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                break;
+            case COMMAND_UNLOAD_CONTAINER:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_1), DecimalPosition.class));
                 break;
             case RESOURCE_CREATED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), SyncResourceItemSimpleDto.class));

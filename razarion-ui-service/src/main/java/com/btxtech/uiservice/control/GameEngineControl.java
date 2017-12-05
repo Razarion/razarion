@@ -46,10 +46,8 @@ import com.btxtech.uiservice.tip.tiptask.CommandInfo;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -165,6 +163,16 @@ public abstract class GameEngineControl {
     public void pickBoxCmd(Collection<SyncBaseItemSimpleDto> pickers, SyncBoxItemSimpleDto box) {
         sendToWorker(GameEngineControlPackage.Command.COMMAND_PICK_BOX, SyncItemSimpleDtoUtils.toIds(pickers), box.getId());
         gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.PICK_BOX).setSynBoxItemId(box.getId()));
+    }
+
+    public void loadContainerCmd(Collection<SyncBaseItemSimpleDto> contained, SyncBoxItemSimpleDto container) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_LOAD_CONTAINER, SyncItemSimpleDtoUtils.toIds(contained), container.getId());
+        // gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.LOAD_CONTAINER).setSynBoxItemId(box.getId()));
+    }
+
+    public void unloadContainerCmd(SyncBoxItemSimpleDto container, DecimalPosition unloadPosition) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_UNLOAD_CONTAINER, container.getId(), unloadPosition);
+        // gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.UNLOAD_CONTAINER).setSynBoxItemId(box.getId()));
     }
 
     public void buildCmd(SyncBaseItemSimpleDto builder, DecimalPosition position, BaseItemType toBeBuild) {

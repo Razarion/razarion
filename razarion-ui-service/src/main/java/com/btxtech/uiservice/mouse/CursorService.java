@@ -3,6 +3,7 @@ package com.btxtech.uiservice.mouse;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.SelectionEvent;
@@ -61,12 +62,13 @@ public abstract class CursorService {
 
         if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD && baseItemType.getItemContainerType() != null) {
-                // TODO
-                setPointerCursor();
-//                SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
-//                boolean allowed = syncItemContainer.atLeastOneAllowedToLoad(selectionHandler.getOwnSelection().getItems());
-//                setCursor(CursorType.LOAD, allowed);
+            if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null && selectionHandler.hasOwnSelection()) {
+                setCursor(CursorType.LOAD, atLeastOneAllowedToLoad(baseItemType.getItemContainerType(), selectionHandler.getOwnSelection().getItems()));
+//            if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD && baseItemType.getItemContainerType() != null) {
+//                // TODO
+////                SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
+////                boolean allowed = syncItemContainer.atLeastOneAllowedToLoad(selectionHandler.getOwnSelection().getItems());
+////                setCursor(CursorType.LOAD, allowed);
             } else {
                 if (!syncBaseItem.checkBuildup()) {
                     Collection<SyncBaseItemSimpleDto> builder = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
@@ -137,6 +139,15 @@ public abstract class CursorService {
 
     public void handleItemPlaceActivated() {
         setDefaultCursor();
+    }
+
+    private boolean atLeastOneAllowedToLoad(ItemContainerType itemContainerType, Collection<SyncBaseItemSimpleDto> ownSelection) {
+        for (SyncBaseItemSimpleDto syncBaseItem : ownSelection) {
+            if (itemContainerType.isAbleToContain(syncBaseItem.getItemTypeId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean atLeastOnAllowedForUnload(DecimalPosition position) {

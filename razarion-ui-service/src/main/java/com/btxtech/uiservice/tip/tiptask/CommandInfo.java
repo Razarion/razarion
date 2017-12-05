@@ -12,7 +12,9 @@ public class CommandInfo {
         FABRICATE,
         HARVEST,
         MOVE,
-        PICK_BOX
+        PICK_BOX,
+        LOAD_CONTAINER,
+        UNLOAD_CONTAINER
     }
     private Type type;
     private Integer toBeFinalizedId;
