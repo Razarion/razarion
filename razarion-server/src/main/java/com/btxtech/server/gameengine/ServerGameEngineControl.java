@@ -138,7 +138,7 @@ public class ServerGameEngineControl implements GameLogicListener {
             currentPlanetConfig.setItemTypeLimitation(newPlanetConfig.getItemTypeLimitation());
             currentPlanetConfig.setHouseSpace(newPlanetConfig.getHouseSpace());
             currentPlanetConfig.setStartRazarion(newPlanetConfig.getStartRazarion());
-            currentPlanetConfig.setStartBaseItemTypeId(newPlanetConfig.getStartRazarion());
+            currentPlanetConfig.setStartBaseItemTypeId(newPlanetConfig.getStartBaseItemTypeId());
         }
     }
 
