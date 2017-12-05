@@ -10,10 +10,8 @@ import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
@@ -37,7 +35,6 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -136,8 +133,18 @@ public class BaseItemService {
 
     public PlayerBaseFull createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
         surrenderHumanBase(humanPlayerId);
-        PlayerBaseFull playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, unlockedItemLimit, humanPlayerId, name);
-        spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
+        PlayerBaseFull playerBase = null;
+        try {
+            playerBase = createHumanBase(planetConfig.getStartRazarion(), levelId, unlockedItemLimit, humanPlayerId, name);
+            spawnSyncBaseItem(itemTypeService.getBaseItemType(planetConfig.getStartBaseItemTypeId()), position, 0, playerBase, false);
+        } catch (Exception e) {
+            if (playerBase != null) {
+                // If something went wrong with the base create.
+                // Prevent user from having a base without any units.
+                deleteBaseSlave(playerBase.getBaseId());
+                throw e;
+            }
+        }
         return playerBase;
     }
 
@@ -532,7 +539,10 @@ public class BaseItemService {
                     continue;
                 }
             }
-            playerBaseInfos.add(((PlayerBaseFull) playerBase).getBackupPlayerBaseInfo());
+            PlayerBaseFull playerBaseFull = (PlayerBaseFull) playerBase;
+            if (playerBaseFull.getItemCount() > 0) {
+                playerBaseInfos.add(playerBaseFull.getBackupPlayerBaseInfo());
+            }
         }
         return playerBaseInfos;
     }
