@@ -264,7 +264,7 @@ public class BaseItemTypeEntity {
             if (itemContainerType == null) {
                 itemContainerType = new ItemContainerTypeEntity();
             }
-            itemContainerType.fromItemContainerType(baseItemType.getItemContainerType());
+            itemContainerType.fromItemContainerType(baseItemType.getItemContainerType(), itemTypePersistence);
         } else {
             itemContainerType = null;
         }

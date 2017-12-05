@@ -8,12 +8,14 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
+import org.unitils.reflectionassert.ReflectionComparatorMode;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -51,43 +53,81 @@ public class BaseItemTypePersistenceTest extends ArquillianBaseTest {
             em.createNativeQuery("INSERT INTO IMAGE_LIBRARY (id, size) VALUES(65, 0)").executeUpdate();
         });
 
-        // Setup BaseItemTypes
+        // Setup factory
         BaseItemType factoryExpected = itemTypePersistence.createBaseItemType();
-
+        // Setup builder
         BaseItemType builderExpected = itemTypePersistence.createBaseItemType();
         finalizeBuilder(builderExpected, factoryExpected.getId());
         itemTypePersistence.updateBaseItemType(builderExpected);
+        // Verify
         ReflectionAssert.assertReflectionEquals(builderExpected, getBaseItemType(builderExpected.getId()));
-
+        // Setup harvester
         BaseItemType harvesterExpected = itemTypePersistence.createBaseItemType();
         finalizeHarvester(harvesterExpected);
         itemTypePersistence.updateBaseItemType(harvesterExpected);
+        // Verify
         ReflectionAssert.assertReflectionEquals(harvesterExpected, getBaseItemType(harvesterExpected.getId()));
-
+        // Setup attacker
         BaseItemType attackerExpected = itemTypePersistence.createBaseItemType();
         finalizeAttacker(attackerExpected);
         itemTypePersistence.updateBaseItemType(attackerExpected);
+        // Verify
         ReflectionAssert.assertReflectionEquals(attackerExpected, getBaseItemType(attackerExpected.getId()));
-
+        // Setup tower
         BaseItemType towerExpected = itemTypePersistence.createBaseItemType();
         finalizeTower(towerExpected);
         itemTypePersistence.updateBaseItemType(towerExpected);
+        // Verify
         ReflectionAssert.assertReflectionEquals(towerExpected, getBaseItemType(towerExpected.getId()));
-
+        // Setup transporter
+        BaseItemType transporterExpected = itemTypePersistence.createBaseItemType();
+        finalizeTransporter(transporterExpected, attackerExpected.getId(), builderExpected.getId());
+        itemTypePersistence.updateBaseItemType(transporterExpected);
+        // Verify
+        ReflectionAssert.assertReflectionEquals(transporterExpected, getBaseItemType(transporterExpected.getId()), ReflectionComparatorMode.LENIENT_ORDER);
+        // Finalize
         finalizeFactory(factoryExpected, builderExpected.getId(), attackerExpected.getId(), harvesterExpected.getId());
         factoryExpected.getFactoryType().getAbleToBuildIds().sort(Integer::compareTo);
         itemTypePersistence.updateBaseItemType(factoryExpected);
+        // Verify
         assertFactory(factoryExpected);
-
+        Assert.assertEquals(6, itemTypePersistence.readBaseItemTypes().size());
         // Try to delete builder, but should fail
-        Assert.assertEquals(5, itemTypePersistence.readBaseItemTypes().size());
         try {
             itemTypePersistence.deleteBaseItemType(builderExpected.getId());
-            Assert.fail("Exception expected. Can not delete builder while factory refernces it (ableTo Build)");
+            Assert.fail("Exception expected. Can not delete builder while factory references it (ableToBuild)");
         } catch (Exception e) {
             // Expected
         }
+        // Try to delete attacker, but should fail
+        try {
+            itemTypePersistence.deleteBaseItemType(attackerExpected.getId());
+            Assert.fail("Exception expected. Can not delete builder while transporter references it (ableToContain)");
+        } catch (Exception e) {
+            // Expected
+        }
+        Assert.assertEquals(6, itemTypePersistence.readBaseItemTypes().size());
+        // Remove attacker from transporter
+        finalizeTransporter(transporterExpected, builderExpected.getId());
+        transporterExpected.getItemContainerType().setRange(20).setMaxCount(15);
+        itemTypePersistence.updateBaseItemType(transporterExpected);
+        // Verify
+        Assert.assertEquals(6, itemTypePersistence.readBaseItemTypes().size());
+        ReflectionAssert.assertReflectionEquals(transporterExpected, getBaseItemType(transporterExpected.getId()), ReflectionComparatorMode.LENIENT_ORDER);
+        ReflectionAssert.assertReflectionEquals(builderExpected, getBaseItemType(builderExpected.getId()));
+        ReflectionAssert.assertReflectionEquals(harvesterExpected, getBaseItemType(harvesterExpected.getId()));
+        ReflectionAssert.assertReflectionEquals(attackerExpected, getBaseItemType(attackerExpected.getId()));
+        ReflectionAssert.assertReflectionEquals(towerExpected, getBaseItemType(towerExpected.getId()));
+        assertFactory(factoryExpected);
+        // Delete transporter
+        itemTypePersistence.deleteBaseItemType(transporterExpected.getId());
+        // Verify
         Assert.assertEquals(5, itemTypePersistence.readBaseItemTypes().size());
+        ReflectionAssert.assertReflectionEquals(builderExpected, getBaseItemType(builderExpected.getId()));
+        ReflectionAssert.assertReflectionEquals(harvesterExpected, getBaseItemType(harvesterExpected.getId()));
+        ReflectionAssert.assertReflectionEquals(attackerExpected, getBaseItemType(attackerExpected.getId()));
+        ReflectionAssert.assertReflectionEquals(towerExpected, getBaseItemType(towerExpected.getId()));
+        assertFactory(factoryExpected);
         // Remove builder from factory
         finalizeFactory(factoryExpected, attackerExpected.getId(), harvesterExpected.getId());
         factoryExpected.getFactoryType().getAbleToBuildIds().sort(Integer::compareTo);
@@ -136,6 +176,8 @@ public class BaseItemTypePersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM HarvesterTypeEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM WeaponTypeEntity r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM TurretTypeEntity r").getSingleResult()).intValue());
+        assertEmptyCountNative("BASE_ITEM_ITEM_CONTAINER_TYPE_ABLE_TO_CONTAIN");
+        assertEmptyCount(ItemContainerTypeEntity.class);
         Assert.assertEquals(0, ((Number) getEntityManager().createQuery("SELECT COUNT(r) FROM I18N_BUNDLE r").getSingleResult()).intValue());
         Assert.assertEquals(0, ((Number) getEntityManager().createNativeQuery("SELECT COUNT(*) FROM I18N_BUNDLE_STRING").getSingleResult()).intValue());
     }
@@ -244,6 +286,23 @@ public class BaseItemTypePersistenceTest extends ArquillianBaseTest {
         demolitionStepEffects.add(new DemolitionStepEffect().setDemolitionParticleConfigs(demolitionShape3D3s));
         factory.setDemolitionStepEffects(demolitionStepEffects);
     }
+
+    private void finalizeTransporter(BaseItemType transporter, Integer... ableToBuild) {
+        transporter.setHealth(19).setSpawnDurationMillis(2000).setSpawnShape3DId(2).setSpawnAudioId(7).setBuildupTextureId(65).setDemolitionImageId(27).setThumbnail(46).setShape3DId(10);
+        transporter.setI18nName(i18nHelper("Transporter"));
+        transporter.setI18nDescription(i18nHelper("Transports units"));
+        transporter.setExplosionParticleConfigId(5).setBuildup(35);
+        transporter.getPhysicalAreaConfig().setRadius(4).setAcceleration(2.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(40));
+        transporter.setBoxPickupRange(4).setExplosionParticleConfigId(7).setBuildup(25);
+        transporter.setPrice(200).setWreckageShape3DId(16);
+        // Container
+        ItemContainerType itemContainerType = new ItemContainerType().setMaxCount(4).setRange(11.5);
+        if (ableToBuild.length > 0) {
+            itemContainerType.setAbleToContain(Arrays.asList(ableToBuild));
+        }
+        transporter.setItemContainerType(itemContainerType);
+    }
+
 
     private BaseItemType getBaseItemType(int id) {
         for (BaseItemType baseItemType : itemTypePersistence.readBaseItemTypes()) {

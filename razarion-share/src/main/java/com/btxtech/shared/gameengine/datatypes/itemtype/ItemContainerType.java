@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: beat
@@ -22,16 +23,16 @@ import java.util.Collection;
  * Time: 10:54:25
  */
 public class ItemContainerType {
-    private Collection<Integer> ableToContain;
+    private List<Integer> ableToContain;
     private int maxCount;
     private double range;
 
-    public ItemContainerType setAbleToContain(Collection<Integer> ableToContain) {
+    public ItemContainerType setAbleToContain(List<Integer> ableToContain) {
         this.ableToContain = ableToContain;
         return this;
     }
 
-    public Collection<Integer> getAbleToContain() {
+    public List<Integer> getAbleToContain() {
         return ableToContain;
     }
 
@@ -44,7 +45,7 @@ public class ItemContainerType {
         return this;
     }
 
-    public ItemContainerType setRange(int range) {
+    public ItemContainerType setRange(double range) {
         this.range = range;
         return this;
     }
@@ -54,6 +55,6 @@ public class ItemContainerType {
     }
 
     public boolean isAbleToContain(int itemTypeId) {
-        return ableToContain.contains(itemTypeId);
+        return ableToContain != null && ableToContain.contains(itemTypeId);
     }
 }
