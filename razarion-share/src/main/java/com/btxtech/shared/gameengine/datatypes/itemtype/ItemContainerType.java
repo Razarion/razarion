@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.datatypes.itemtype;
 
 
-import java.util.Collection;
 import java.util.List;
 
 /**

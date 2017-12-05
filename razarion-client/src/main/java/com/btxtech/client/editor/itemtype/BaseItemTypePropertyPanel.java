@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
 import com.btxtech.shared.gameengine.datatypes.itemtype.FactoryType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.GeneratorType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.HarvesterType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.SpecialType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -170,6 +171,9 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
     private ChildContainer<WeaponType> weaponTypeChildContainer;
     @Inject
     @DataField
+    private ChildContainer<ItemContainerType> itemContainerTypePanelChildTable;
+    @Inject
+    @DataField
     private ChildContainer<SpecialType> specialTypeChildContainer;
 
     @Override
@@ -201,6 +205,11 @@ public class BaseItemTypePropertyPanel extends AbstractPropertyPanel<BaseItemTyp
         factoryTypeChildContainer.init(baseItemType.getFactoryType(), baseItemType::setFactoryType, FactoryType::new, FactoryTypePanel.class);
         harvesterTypeChildContainer.init(baseItemType.getHarvesterType(), baseItemType::setHarvesterType, HarvesterType::new, HarvesterTypePanel.class);
         weaponTypeChildContainer.init(baseItemType.getWeaponType(), baseItemType::setWeaponType, WeaponType::new, WeaponTypePanel.class);
+
+
+        itemContainerTypePanelChildTable.init(baseItemType.getItemContainerType(), baseItemType::setItemContainerType, ItemContainerType::new, ItemContainerTypePanel.class);
+
+
         generatorTypeChildContainer.init(baseItemType.getGeneratorType(), baseItemType::setGeneratorType, GeneratorType::new, GeneratorTypePanel.class);
         consumerTypePanelChildTable.init(baseItemType.getConsumerType(), baseItemType::setConsumerType, ConsumerType::new, ConsumerTypePanel.class);
         specialTypeChildContainer.init(baseItemType.getSpecialType(), baseItemType::setSpecialType, SpecialType::new, SpecialTypePanel.class);
