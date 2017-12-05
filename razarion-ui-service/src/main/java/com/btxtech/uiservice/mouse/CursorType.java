@@ -12,7 +12,7 @@ public enum CursorType {
     GO("go", 15, 16, "CROSSHAIR", "nogo", 15, 16, "POINTER"),
     ATTACK("attack", 15, 16, "CROSSHAIR", "noattack", 15, 16, "POINTER"),
     COLLECT("collect", 15, 16, "CROSSHAIR", "nocollect", 15, 16, "POINTER"),
-    LOAD("load", 16, 30, "S_RESIZE", "noload", 16, 30, "POINTER"),
+    LOAD("load", 16, 30, "CROSSHAIR", "noload", 15, 16, "POINTER"), // S_RESIZE not working in chrome
     UNLOAD("unload", 15, 1, "N_RESIZE", "nounload", 15, 1, "POINTER"),
     FINALIZE_BUILD("finalizebuild", 15, 16, "POINTER", "nofinalizebuild", 15, 16, "DEFAULT"),
     PICKUP("pickup", 15, 16, "CROSSHAIR", "nopickup", 15, 16, "POINTER");

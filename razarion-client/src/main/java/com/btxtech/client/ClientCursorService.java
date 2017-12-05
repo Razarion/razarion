@@ -14,6 +14,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class ClientCursorService extends CursorService {
+    // private Logger logger = Logger.getLogger(ClientCursorService.class.getName());
     @Inject
     private GameCanvas gameCanvas;
 
@@ -29,6 +30,6 @@ public class ClientCursorService extends CursorService {
 
     @Override
     protected void setCursorInternal(CursorType cursorType, boolean allowed) {
-        gameCanvas.getCanvasElement().getStyle().setCursor("url(" + StaticResourcePath.getCursorPath(cursorType.getName(allowed)) + ") " + cursorType.getHotSpotX(allowed) + " " + cursorType.getHotSpotY(allowed) + ", " + cursorType.getAlternativeDefault(allowed));
+        gameCanvas.getCanvasElement().getStyle().setCursor("url('" + StaticResourcePath.getCursorPath(cursorType.getName(allowed)) + "') " + cursorType.getHotSpotX(allowed) + " " + cursorType.getHotSpotY(allowed) + ", " + cursorType.getAlternativeDefault(allowed));
     }
 }
