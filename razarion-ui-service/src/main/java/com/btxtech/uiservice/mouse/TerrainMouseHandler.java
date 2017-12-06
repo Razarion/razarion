@@ -5,9 +5,11 @@ import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.model.SyncItemContainer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.Group;
@@ -112,7 +114,7 @@ public class TerrainMouseHandler {
             } else {
                 SyncBaseItemSimpleDto syncBaseItem = baseItemUiService.findItemAtPosition(terrainPosition.toXY());
                 if (syncBaseItem != null) {
-                    cursorService.handleMouseOverBaseItem(syncBaseItem, terrainPosition.toXY());
+                    cursorService.handleMouseOverBaseItem(syncBaseItem);
                     itemMarkerService.onHover(syncBaseItem);
                     return;
                 }
@@ -180,10 +182,10 @@ public class TerrainMouseHandler {
                         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
                         if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null && selectionHandler.hasOwnSelection()) {
                             Collection<SyncBaseItemSimpleDto> contained = selectionHandler.getOwnSelection().getItems().stream().filter(syncBaseItemSimpleDto -> baseItemType.getItemContainerType().isAbleToContain(syncBaseItemSimpleDto.getItemTypeId())).collect(Collectors.toList());
-                            if(!contained.isEmpty()) {
-                                 audioService.onCommandSent();
-                                 gameEngineControl.loadContainerCmd(contained, syncBaseItem);
-                             }
+                            if (!contained.isEmpty()) {
+                                audioService.onCommandSent();
+                                gameEngineControl.loadContainerCmd(contained, syncBaseItem);
+                            }
                         } else if (!syncBaseItem.checkBuildup()) {
                             Collection<SyncBaseItemSimpleDto> builders = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
                             if (!builders.isEmpty()) {
@@ -220,11 +222,39 @@ public class TerrainMouseHandler {
                     }
                     return;
                 }
-                executeMoveCommand(terrainPosition.toXY());
+                // Terrain
+                Group selection = selectionHandler.getOwnSelection();
+                if (selection == null) {
+                    return;
+                }
+
+                SyncBaseItemSimpleDto container = findOneAllowedToUnload(selection.getItems(), terrainPosition.toXY());
+                if (container != null && cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {
+                    cockpitMode.clear();
+                    audioService.onCommandSent();
+                    gameEngineControl.unloadContainerCmd(container, terrainPosition.toXY());
+                } else {
+                    executeMoveCommand(selection, terrainPosition.toXY());
+                }
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
+    }
+
+    private SyncBaseItemSimpleDto findOneAllowedToUnload(Collection<SyncBaseItemSimpleDto> items, DecimalPosition unloadPosition) {
+        for (SyncBaseItemSimpleDto item : items) {
+            if (item.getContainingItemCount() > 0) {
+                BaseItemType baseItemType = itemTypeService.getBaseItemType(item.getItemTypeId());
+                ItemContainerType itemContainerType = baseItemType.getItemContainerType();
+                if (item.getPosition2d().getDistance(unloadPosition) - baseItemType.getPhysicalAreaConfig().getRadius() <= itemContainerType.getRange()) {
+                    if (terrainUiService.isTerrainFreeInDisplay(unloadPosition, item.getMaxContainingRadius(), SyncItemContainer.DEFAULT_UNLOAD_TERRAIN_TYPE)) {
+                        return item;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public void onMouseUp(int x, int y, int width, int height, boolean primaryButtonReleased) {
@@ -285,12 +315,7 @@ public class TerrainMouseHandler {
         return terrainUiService.calculateMousePositionGroundMesh(worldPickRay);
     }
 
-    private void executeMoveCommand(DecimalPosition position) {
-        Group selection = selectionHandler.getOwnSelection();
-        if (selection == null) {
-            return;
-        }
-
+    private void executeMoveCommand(Group selection, DecimalPosition position) {
         Collection<SyncBaseItemSimpleDto> movables = selection.getMovables();
         if (movables.isEmpty()) {
             return;

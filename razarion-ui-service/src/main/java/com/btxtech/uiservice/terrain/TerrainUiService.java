@@ -181,18 +181,25 @@ public class TerrainUiService {
     public boolean isTerrainFreeInDisplay(Collection<DecimalPosition> terrainPositions, BaseItemType baseItemType) {
         for (DecimalPosition terrainPosition : terrainPositions) {
             TerrainType terrainType = baseItemType.getPhysicalAreaConfig().getTerrainType();
-            if (terrainType.isAreaCheck()) {
-                List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, baseItemType.getPhysicalAreaConfig().getRadius()), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
-                for (Index subNodeIndex : subNodeIndices) {
-                    DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(terrainPosition);
-                    if (!isTerrainFreeInDisplay(scanPosition, terrainType)) {
-                        return false;
-                    }
-                }
-            } else {
-                if (!isTerrainFreeInDisplay(terrainPosition, terrainType)) {
+            if (!isTerrainFreeInDisplay(terrainPosition, baseItemType.getPhysicalAreaConfig().getRadius(), terrainType)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition, double radius, TerrainType terrainType) {
+        if (terrainType.isAreaCheck()) {
+            List<Index> subNodeIndices = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+            for (Index subNodeIndex : subNodeIndices) {
+                DecimalPosition scanPosition = TerrainUtil.smallestSubNodeCenter(subNodeIndex).add(terrainPosition);
+                if (!isTerrainFreeInDisplay(scanPosition, terrainType)) {
                     return false;
                 }
+            }
+        } else {
+            if (!isTerrainFreeInDisplay(terrainPosition, terrainType)) {
+                return false;
             }
         }
         return true;

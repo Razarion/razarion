@@ -26,6 +26,7 @@ public class ItemCockpitService {
     @Inject
     private ItemTypeService itemTypeService;
     private BuildupItemPanel buildupItemPanel;
+    private ItemContainerPanel itemContainerPanel;
     private boolean isActive = false;
 
     public boolean isActive() {
@@ -78,6 +79,7 @@ public class ItemCockpitService {
         ownInfoPanel.init(baseItemType, 1);
         itemCockpitPanel.setInfoPanel(ownInfoPanel);
         setupBuildupPanel(syncBaseItem, baseItemType);
+        setupItemContainerPanel(syncBaseItem, baseItemType);
     }
 
     private void setupBuildupPanel(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
@@ -89,6 +91,16 @@ public class ItemCockpitService {
             } else {
                 buildupItemPanel = null;
             }
+        }
+    }
+
+    private void setupItemContainerPanel(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
+        if (baseItemType.getItemContainerType() != null) {
+            itemContainerPanel = instance.select(ItemContainerPanel.class).get();
+            itemContainerPanel.display(syncBaseItem);
+            itemCockpitPanel.setItemContainerPanel(itemContainerPanel);
+        } else {
+            itemContainerPanel = null;
         }
     }
 

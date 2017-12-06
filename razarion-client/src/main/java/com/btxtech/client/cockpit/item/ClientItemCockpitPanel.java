@@ -4,6 +4,7 @@ import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
+import com.btxtech.uiservice.cockpit.item.ItemContainerPanel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -23,11 +24,9 @@ import javax.inject.Inject;
  */
 @Templated("ClientItemCockpitPanel.html#item-cockpit")
 public class ClientItemCockpitPanel extends Composite implements ItemCockpitPanel {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private SimplePanel infoPanel;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Div buildupItemPanel;
@@ -52,6 +51,11 @@ public class ClientItemCockpitPanel extends Composite implements ItemCockpitPane
     @Override
     public void setBuildupItemPanel(BuildupItemPanel buildupItemPanel) {
         this.buildupItemPanel.appendChild(((IsElement) buildupItemPanel).getElement());
+    }
+
+    @Override
+    public void setItemContainerPanel(ItemContainerPanel itemContainerPanel) {
+        // TODO
     }
 
     @Override

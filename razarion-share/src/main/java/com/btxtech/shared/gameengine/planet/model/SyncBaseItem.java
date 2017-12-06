@@ -697,6 +697,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
                 simpleDto.setInterpolatableVelocity(getSyncPhysicalMovable().setupInterpolatableVelocity());
             }
         }
+        if (syncItemContainer != null) {
+            simpleDto.setContainingItemCount(syncItemContainer.getContainedItems().size());
+            simpleDto.setMaxContainingRadius(syncItemContainer.getMaxContainingRadius());
+        }
         simpleDto.setSpawning(spawnProgress);
         simpleDto.setBuildup(buildup);
         simpleDto.setHealth(getNormalizedHealth());

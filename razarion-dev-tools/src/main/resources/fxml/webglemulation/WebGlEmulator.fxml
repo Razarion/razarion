@@ -190,7 +190,7 @@
                                 onMouseDragged="#onMouseDragged" onMouseExited="#onMouseOut"
                                 onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed"
                                 onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER"/>
-                        <Pane fx:id="itemCockpitPanel" layoutX="14.0" layoutY="744.0" prefHeight="200.0"
+                        <VBox fx:id="itemCockpitPanel" layoutX="14.0" layoutY="744.0" prefHeight="200.0"
                               prefWidth="200.0"/>
                     </children>
                 </AnchorPane>

@@ -25,6 +25,8 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
     private Vertex harvestingResourcePosition;
     private Vertex buildingPosition;
     private DecimalPosition interpolatableVelocity;
+    private int containingItemCount;
+    private double maxContainingRadius;
 
     public int getBaseId() {
         return baseId;
@@ -112,5 +114,21 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
 
     public void setInterpolatableVelocity(DecimalPosition interpolatableVelocity) {
         this.interpolatableVelocity = interpolatableVelocity;
+    }
+
+    public int getContainingItemCount() {
+        return containingItemCount;
+    }
+
+    public void setContainingItemCount(int containingItemCount) {
+        this.containingItemCount = containingItemCount;
+    }
+
+    public double getMaxContainingRadius() {
+        return maxContainingRadius;
+    }
+
+    public void setMaxContainingRadius(double maxContainingRadius) {
+        this.maxContainingRadius = maxContainingRadius;
     }
 }

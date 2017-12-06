@@ -2,6 +2,7 @@ package com.btxtech.webglemulator.razarion.cockpit.item;
 
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
+import com.btxtech.uiservice.cockpit.item.ItemContainerPanel;
 import com.btxtech.webglemulator.WebGlEmulatorController;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -47,6 +48,14 @@ public class DevToolItemCockpitPanel implements ItemCockpitPanel {
         DevToolBuildupItemPanel devToolBuildupItemPanel = (DevToolBuildupItemPanel) buildupItemPanel;
         Platform.runLater(() -> {
             webGlEmulatorController.getItemCockpitPanel().getChildren().add(devToolBuildupItemPanel.getHBox());
+        });
+    }
+
+    @Override
+    public void setItemContainerPanel(ItemContainerPanel itemContainerPanel) {
+        DevToolItemContainerPanel devToolItemContainerPanel = (DevToolItemContainerPanel) itemContainerPanel;
+        Platform.runLater(() -> {
+            webGlEmulatorController.getItemCockpitPanel().getChildren().add(devToolItemContainerPanel.getVBox());
         });
     }
 

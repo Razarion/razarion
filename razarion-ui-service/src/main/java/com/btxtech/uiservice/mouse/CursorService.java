@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.planet.model.SyncItemContainer;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
@@ -54,7 +55,7 @@ public abstract class CursorService {
     }
 
     // Need to be public due to the weld proxies for the dev-tools
-    public void handleMouseOverBaseItem(SyncBaseItemSimpleDto syncBaseItem, DecimalPosition terrainPosition) {
+    public void handleMouseOverBaseItem(SyncBaseItemSimpleDto syncBaseItem) {
         if (!selectionHandler.hasOwnSelection() || !isNotMyself(syncBaseItem)) {
             setPointerCursor();
             return;
@@ -64,11 +65,6 @@ public abstract class CursorService {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null && selectionHandler.hasOwnSelection()) {
                 setCursor(CursorType.LOAD, atLeastOneAllowedToLoad(baseItemType.getItemContainerType(), selectionHandler.getOwnSelection().getItems()));
-//            if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD && baseItemType.getItemContainerType() != null) {
-//                // TODO
-////                SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
-////                boolean allowed = syncItemContainer.atLeastOneAllowedToLoad(selectionHandler.getOwnSelection().getItems());
-////                setCursor(CursorType.LOAD, allowed);
             } else {
                 if (!syncBaseItem.checkBuildup()) {
                     Collection<SyncBaseItemSimpleDto> builder = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
@@ -151,15 +147,13 @@ public abstract class CursorService {
     }
 
     private boolean atLeastOnAllowedForUnload(DecimalPosition position) {
-        // TODO
-//        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
-//            if (syncBaseItem.getSyncItemContainer() != null) {
-//                SyncItemContainer syncItemContainer = syncBaseItem.getSyncItemContainer();
-//                if (syncItemContainer.atLeastOneAllowedToUnload(position)) {
-//                    return true;
-//                }
-//            }
-//        }
+        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
+            if (syncBaseItem.getContainingItemCount() > 0) {
+                if (terrainUiService.isTerrainFreeInDisplay(position, syncBaseItem.getMaxContainingRadius(), SyncItemContainer.DEFAULT_UNLOAD_TERRAIN_TYPE)) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 

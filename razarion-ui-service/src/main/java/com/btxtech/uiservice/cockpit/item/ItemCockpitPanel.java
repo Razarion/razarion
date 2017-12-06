@@ -11,6 +11,8 @@ public interface ItemCockpitPanel {
 
     void setBuildupItemPanel(BuildupItemPanel buildupItemPanel);
 
+    void setItemContainerPanel(ItemContainerPanel itemContainerPanel);
+
     void maximizeMinButton();
 
     void showPanel(boolean visible);

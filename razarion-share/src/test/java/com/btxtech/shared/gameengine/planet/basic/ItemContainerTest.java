@@ -30,22 +30,24 @@ public class ItemContainerTest extends BaseBasicTest {
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
-        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
         tickPlanetServiceBaseServiceActive();
         // Verify loaded
-        assertSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder());
+        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
         Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         assertNoCommand4Contained(humanBaseContext);
-        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(3, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 2.
         getCommandService().loadContainer(humanBaseContext.getAttacker(), transporter);
         tickPlanetServiceBaseServiceActive();
         // Verify loaded
-        assertSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
         Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
@@ -53,7 +55,8 @@ public class ItemContainerTest extends BaseBasicTest {
         Assert.assertEquals(transporter, humanBaseContext.getAttacker().getContainedIn());
         Assert.assertNull(humanBaseContext.getAttacker().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getAttacker().getSyncPhysicalArea().hasPosition());
-        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(3, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Move to unload position
         getCommandService().move(transporter, new DecimalPosition(63, 222));
         tickPlanetServiceBaseServiceActive();
@@ -61,14 +64,15 @@ public class ItemContainerTest extends BaseBasicTest {
         getCommandService().unloadContainer(transporter, new DecimalPosition(47, 222));
         tickPlanetServiceBaseServiceActive();
         // Verify unloaded
-        assertSyncItems(transporter.getSyncItemContainer().getContainedItems());
+        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems());
         Assert.assertNull(humanBaseContext.getBuilder().getContainedIn());
         Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertTrue(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         Assert.assertNull(humanBaseContext.getAttacker().getContainedIn());
         Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getAttacker().getSyncPhysicalArea().getPosition2d());
         Assert.assertTrue(humanBaseContext.getAttacker().getSyncPhysicalArea().hasPosition());
-        assertAllSlaves(permSlave, transporter, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
 
         // showDisplay();
     }
@@ -154,22 +158,22 @@ public class ItemContainerTest extends BaseBasicTest {
         }
     }
 
-    private void assertAllSlaves(WeldSlaveEmulator permSlave, SyncBaseItem masterTransporter, SyncBaseItem... masterContainedIn) {
-        assertNewSlave(masterTransporter, masterContainedIn);
-        assertSlave(permSlave, masterTransporter, masterContainedIn);
+    private void assertAllSlaves(WeldSlaveEmulator permSlave, SyncBaseItem masterTransporter, double maxContainingRadius, SyncBaseItem... masterContainedIn) {
+        assertNewSlave(masterTransporter, maxContainingRadius, masterContainedIn);
+        assertSlave(permSlave, masterTransporter, maxContainingRadius, masterContainedIn);
     }
 
-    private void assertNewSlave(SyncBaseItem masterTransporter, SyncBaseItem... masterContainedIns) {
+    private void assertNewSlave(SyncBaseItem masterTransporter, double maxContainingRadius, SyncBaseItem... masterContainedIns) {
         UserContext tmpUserContext = createLevel1UserContext();
         WeldSlaveEmulator tmpSalve = new WeldSlaveEmulator();
         tmpSalve.connectToMater(tmpUserContext, this);
-        assertSlave(tmpSalve, masterTransporter, masterContainedIns);
+        assertSlave(tmpSalve, masterTransporter, maxContainingRadius, masterContainedIns);
     }
 
-    private void assertSlave(WeldSlaveEmulator weldSlaveEmulator, SyncBaseItem masterTransporter, SyncBaseItem... masterContainedIns) {
+    private void assertSlave(WeldSlaveEmulator weldSlaveEmulator, SyncBaseItem masterTransporter, double maxContainingRadius, SyncBaseItem... masterContainedIns) {
         SyncBaseItem slaveTransporter = weldSlaveEmulator.getSyncItemContainerService().getSyncBaseItemSave(masterTransporter.getId());
-        TestHelper.assertIds(masterTransporter.getSyncItemContainer().getContainedItems(), slaveTransporter.getSyncItemContainer().getContainedItems().toArray(new Integer[]{}));
-
+        Assert.assertEquals(maxContainingRadius, slaveTransporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
+        assertContainingSyncItemIds(masterTransporter.getSyncItemContainer().getContainedItems(), slaveTransporter.getSyncItemContainer().getContainedItems().toArray(new SyncBaseItem[]{}));
         for (SyncBaseItem masterContainedIn : masterContainedIns) {
             SyncBaseItem slaveContainedIn = weldSlaveEmulator.getSyncItemContainerService().getSyncBaseItemSave(masterContainedIn.getId());
             Assert.assertEquals("masterContainedIn: " + masterContainedIn + " slaveContainedIn: " + slaveContainedIn, masterContainedIn.getContainedIn(), slaveContainedIn.getContainedIn());

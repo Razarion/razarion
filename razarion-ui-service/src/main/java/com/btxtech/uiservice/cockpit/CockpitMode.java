@@ -13,12 +13,7 @@
 
 package com.btxtech.uiservice.cockpit;
 
-import com.btxtech.uiservice.GroupSelectionFrame;
-import com.btxtech.uiservice.SelectionEvent;
-
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import java.util.logging.Logger;
 
 /**
  * User: beat
@@ -28,13 +23,21 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class CockpitMode {
     public enum Mode {
-        UNLOAD,
+        UNLOAD
     }
-    // private Logger logger = Logger.getLogger(CockpitMode.class.getName());
     private Mode mode;
+
+    public void setCockpitMode(Mode mode) {
+        this.mode = mode;
+    }
+
+    public void clear() {
+        mode = null;
+    }
 
     public Mode getMode() {
         return mode;
     }
+
 
 }

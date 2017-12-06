@@ -263,10 +263,10 @@ public class WeldBaseTest {
         Assert.assertEquals("Box items", boxCount, (int) actualBoxCount.getO());
     }
 
-    public void assertSyncItems(List<Integer> expected, SyncItem... actuals) {
-        List<Integer> expectedCopy = new ArrayList<>(expected);
-        for (SyncItem actual : actuals) {
-            Assert.assertTrue("Item does not exist: " + actual, expectedCopy.remove((Integer) actual.getId()));
+    public void assertContainingSyncItemIds(List<SyncBaseItem> expected, SyncBaseItem... actuals) {
+        List<SyncBaseItem> expectedCopy = new ArrayList<>(expected);
+        for (SyncBaseItem actual : actuals) {
+            Assert.assertTrue("Item does not exist: " + actual, expectedCopy.remove(actual));
         }
         Assert.assertTrue("There are remianing items: " + expectedCopy.size(), expectedCopy.isEmpty());
     }

@@ -39,6 +39,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import javax.enterprise.inject.Instance;
@@ -82,7 +83,7 @@ public class WebGlEmulatorController implements Initializable {
     @FXML
     private CheckBox showRenderTimeCheckBox;
     @FXML
-    private Pane itemCockpitPanel;
+    private VBox itemCockpitPanel;
     @FXML
     private Label resourceLabel;
     @FXML

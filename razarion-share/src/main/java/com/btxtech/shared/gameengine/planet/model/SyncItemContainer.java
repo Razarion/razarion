@@ -24,12 +24,14 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -38,6 +40,7 @@ import java.util.List;
  */
 @Dependent
 public class SyncItemContainer extends SyncBaseAbility {
+    public static final TerrainType DEFAULT_UNLOAD_TERRAIN_TYPE = TerrainType.LAND;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -45,8 +48,9 @@ public class SyncItemContainer extends SyncBaseAbility {
     @Inject
     private GameLogicService gameLogicService;
     private ItemContainerType itemContainerType;
-    private List<Integer> containedItems = new ArrayList<>();
+    private List<SyncBaseItem> containedItems = new ArrayList<>();
     private DecimalPosition unloadPos;
+    private double maxContainingRadius;
 
     public void init(ItemContainerType itemContainerType, SyncBaseItem syncBaseItem) {
         super.init(syncBaseItem);
@@ -56,13 +60,20 @@ public class SyncItemContainer extends SyncBaseAbility {
     @Override
     public void synchronize(SyncBaseItemInfo syncBaseItemInfo) throws ItemDoesNotExistException {
         unloadPos = syncBaseItemInfo.getUnloadPos();
-        containedItems = syncBaseItemInfo.getContainedItems();
+        if (syncBaseItemInfo.getContainedItems() != null && !syncBaseItemInfo.getContainedItems().isEmpty()) {
+            containedItems = syncBaseItemInfo.getContainedItems().stream().map(containedId -> syncItemContainerService.getSyncBaseItemSave(containedId)).collect(Collectors.toList());
+        } else {
+            containedItems = new ArrayList<>();
+        }
+        setupMaxContainingRadius();
     }
 
     @Override
     public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
         syncBaseItemInfo.setUnloadPos(unloadPos);
-        syncBaseItemInfo.setContainedItems(CollectionUtils.saveArrayListCopy(containedItems));
+        if (!containedItems.isEmpty()) {
+            syncBaseItemInfo.setContainedItems(containedItems.stream().map(SyncItem::getId).collect(Collectors.toList()));
+        }
     }
 
     public void load(SyncBaseItem syncBaseItem) {
@@ -72,7 +83,8 @@ public class SyncItemContainer extends SyncBaseAbility {
 
         checkAbleToContainThrow(syncBaseItem);
         if (containedItems.size() < itemContainerType.getMaxCount()) {
-            containedItems.add(syncBaseItem.getId());
+            containedItems.add(syncBaseItem);
+            setupMaxContainingRadius();
             syncBaseItem.setContained(getSyncBaseItem());
             gameLogicService.onSyncItemLoaded(getSyncBaseItem(), syncBaseItem);
         }
@@ -95,15 +107,15 @@ public class SyncItemContainer extends SyncBaseAbility {
         if (PlanetService.MODE != PlanetMode.MASTER) {
             return;
         }
-        containedItems.removeIf(containedItemId -> {
-            SyncBaseItem contained = syncItemContainerService.getSyncBaseItemSave(containedItemId);
-            if (allowedUnload(unloadPos, contained)) {
+        containedItems.removeIf(contained -> {
+            if (allowedUnload(unloadPos)) {
                 contained.clearContained(unloadPos);
                 gameLogicService.onSyncItemUnloaded(contained);
                 return true;
             }
             return false;
         });
+        setupMaxContainingRadius();
         gameLogicService.onSyncItemContainerUnloaded(getSyncBaseItem());
     }
 
@@ -119,7 +131,11 @@ public class SyncItemContainer extends SyncBaseAbility {
         return itemContainerType.getRange();
     }
 
-    public List<Integer> getContainedItems() {
+    public double getMaxContainingRadius() {
+        return maxContainingRadius;
+    }
+
+    public List<SyncBaseItem> getContainedItems() {
         return containedItems;
     }
 
@@ -128,13 +144,24 @@ public class SyncItemContainer extends SyncBaseAbility {
             throw new IllegalArgumentException("Can not contain oneself: " + this);
         }
 
+        if (syncBaseItem.getSyncPhysicalArea().getTerrainType() != DEFAULT_UNLOAD_TERRAIN_TYPE) {
+            throw new IllegalArgumentException("Container " + getSyncBaseItem() + " does only allow '" + DEFAULT_UNLOAD_TERRAIN_TYPE + "'. Given type:" + syncBaseItem.getSyncPhysicalArea().getTerrainType());
+        }
+
         if (!itemContainerType.isAbleToContain(syncBaseItem.getBaseItemType().getId())) {
             throw new IllegalArgumentException("Container " + getSyncBaseItem() + " is not able to contain: " + syncBaseItem);
         }
     }
 
-    private boolean allowedUnload(DecimalPosition position, SyncBaseItem containedItem) throws ItemDoesNotExistException {
-        return getSyncPhysicalArea().isInRange(getRange(), unloadPos)
-                && terrainService.getPathingAccess().isTerrainTypeAllowed(containedItem.getSyncPhysicalArea().getTerrainType(), position, containedItem.getSyncPhysicalArea().getRadius());
+    private boolean allowedUnload(DecimalPosition position) throws ItemDoesNotExistException {
+        return getSyncPhysicalArea().isInRange(getRange(), unloadPos) && terrainService.getPathingAccess().isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, position, maxContainingRadius);
+    }
+
+    private void setupMaxContainingRadius() {
+        if (containedItems != null && !containedItems.isEmpty()) {
+            maxContainingRadius = containedItems.stream().map(contained -> contained.getSyncPhysicalArea().getRadius()).max(Double::compare).orElse(0.0);
+        } else {
+            maxContainingRadius = 0;
+        }
     }
 }

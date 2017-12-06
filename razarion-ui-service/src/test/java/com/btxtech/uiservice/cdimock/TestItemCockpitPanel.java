@@ -2,6 +2,7 @@ package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.uiservice.cockpit.item.BuildupItemPanel;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitPanel;
+import com.btxtech.uiservice.cockpit.item.ItemContainerPanel;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -23,6 +24,11 @@ public class TestItemCockpitPanel implements ItemCockpitPanel {
 
     @Override
     public void setBuildupItemPanel(BuildupItemPanel buildupItemPanel) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setItemContainerPanel(ItemContainerPanel itemContainerPanel) {
         throw new UnsupportedOperationException();
     }
 
