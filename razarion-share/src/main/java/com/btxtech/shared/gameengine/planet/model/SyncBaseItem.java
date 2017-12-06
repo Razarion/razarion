@@ -83,11 +83,11 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     private SyncConsumer syncConsumer;
     private SyncItemContainer syncItemContainer;
     private SyncHouse syncHouse;
-    private SyncBaseItem containedIn;
     private boolean isRazarionEarningOrConsuming = false;
     private double spawnProgress;
     private SyncBoxItem syncBoxItemToPick;
     private SyncBaseItem targetContainer;
+    private SyncBaseItem containedIn;
 
 
     public void setup(PlayerBase base) throws NoSuchItemTypeException {
@@ -326,6 +326,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         getSyncPhysicalArea().stop();
 
         syncBoxItemToPick = null;
+        targetContainer = null;
 
         if (syncWeapon != null) {
             syncWeapon.stop();
