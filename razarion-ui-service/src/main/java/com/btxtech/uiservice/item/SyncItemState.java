@@ -2,7 +2,6 @@ package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 
 import java.util.ArrayList;
@@ -68,7 +67,16 @@ public class SyncItemState {
     }
 
     public void update(SyncItemSimpleDto syncItemSimpleDto, DecimalPosition interpolatableVelocity) {
-        if (!position2d.equals(syncItemSimpleDto.getPosition2d()) || !Objects.equals(this.interpolatableVelocity, interpolatableVelocity)) {
+        if (position2d == null && syncItemSimpleDto.getPosition2d() == null) {
+            return;
+        } else if (position2d != null && syncItemSimpleDto.getPosition2d() == null) {
+            position2d = null;
+            position3d = null;
+            this.interpolatableVelocity = null;
+            for (SyncItemMonitor monitor : monitors) {
+                monitor.onPositionChanged();
+            }
+        } else if (position2d == null && syncItemSimpleDto.getPosition2d() != null || !position2d.equals(syncItemSimpleDto.getPosition2d()) || !Objects.equals(this.interpolatableVelocity, interpolatableVelocity)) {
             position2d = syncItemSimpleDto.getPosition2d();
             position3d = syncItemSimpleDto.getPosition3d();
             this.interpolatableVelocity = interpolatableVelocity;

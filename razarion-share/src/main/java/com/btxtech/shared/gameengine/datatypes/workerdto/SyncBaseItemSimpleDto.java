@@ -27,6 +27,7 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
     private DecimalPosition interpolatableVelocity;
     private int containingItemCount;
     private double maxContainingRadius;
+    private boolean contained;
 
     public int getBaseId() {
         return baseId;
@@ -130,5 +131,13 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
 
     public void setMaxContainingRadius(double maxContainingRadius) {
         this.maxContainingRadius = maxContainingRadius;
+    }
+
+    public boolean isContained() {
+        return contained;
+    }
+
+    public void setContained(boolean contained) {
+        this.contained = contained;
     }
 }

@@ -26,6 +26,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,18 +44,26 @@ public class Group {
     private ItemTypeService itemTypeService;
     @Inject
     private BaseItemUiService baseItemUiService;
+    @Inject
+    private SelectionHandler selectionHandler;
     @Deprecated // Use syncBaseItemsMonitors
     private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
     private Collection<SyncBaseItemMonitor> syncBaseItemsMonitors = new ArrayList<>();
 
     void setItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
         this.syncBaseItems = syncBaseItems;
-        syncBaseItems.forEach(syncBaseItem -> syncBaseItemsMonitors.add(baseItemUiService.monitorSyncItem(syncBaseItem)));
+        syncBaseItems.forEach(this::addMonitor);
     }
 
     public void addItem(SyncBaseItemSimpleDto syncBaseItem) {
         syncBaseItems.add(syncBaseItem);
-        syncBaseItemsMonitors.add(baseItemUiService.monitorSyncItem(syncBaseItem));
+        addMonitor(syncBaseItem);
+    }
+
+    private void addMonitor(SyncBaseItemSimpleDto syncBaseItem) {
+        SyncBaseItemMonitor syncBaseItemMonitor = baseItemUiService.monitorSyncItem(syncBaseItem);
+        syncBaseItemsMonitors.add(syncBaseItemMonitor);
+        syncBaseItemMonitor.setContainedChangeListener(syncItemMonitor -> selectionHandler.baseItemRemoved(Collections.singletonList(syncBaseItem)));
     }
 
     public boolean onlyFactories() {
@@ -82,6 +91,7 @@ public class Group {
     }
 
     public boolean remove(SyncBaseItemSimpleDto syncBaseItem) {
+        removeMonitor(syncBaseItem);
         return syncBaseItems.remove(syncBaseItem);
     }
 
@@ -93,7 +103,8 @@ public class Group {
         return syncBaseItemsMonitors.size();
     }
 
-    @Deprecated // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getSyncBaseItemsMonitors().
+    @Deprecated
+    // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getSyncBaseItemsMonitors().
     public Collection<SyncBaseItemSimpleDto> getItems() {
         return syncBaseItems;
     }
@@ -102,7 +113,8 @@ public class Group {
         return syncBaseItemsMonitors;
     }
 
-    @Deprecated // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getSyncBaseItemsMonitors().
+    @Deprecated
+    // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getSyncBaseItemsMonitors().
     public SyncBaseItemSimpleDto getFirst() {
         return syncBaseItems.iterator().next();
     }
@@ -187,9 +199,21 @@ public class Group {
 
     void keepOnlyOwnOfType(BaseItemType baseItemType) {
         for (Iterator<SyncBaseItemSimpleDto> iterator = syncBaseItems.iterator(); iterator.hasNext(); ) {
-            BaseItemType currentBaseItemType = itemTypeService.getBaseItemType(iterator.next().getItemTypeId());
+            SyncBaseItemSimpleDto syncBaseItemSimpleDto = iterator.next();
+            BaseItemType currentBaseItemType = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId());
             if (!(baseItemType.equals(currentBaseItemType))) {
                 iterator.remove();
+                removeMonitor(syncBaseItemSimpleDto);
+            }
+        }
+    }
+
+    public void removeMonitor(SyncBaseItemSimpleDto syncBaseItem) {
+        for (Iterator<SyncBaseItemMonitor> iterator = syncBaseItemsMonitors.iterator(); iterator.hasNext(); ) {
+            SyncBaseItemMonitor syncBaseItemsMonitor = iterator.next();
+            if (syncBaseItemsMonitor.getSyncItemId() == syncBaseItem.getId()) {
+                iterator.remove();
+                syncBaseItemsMonitor.release();
             }
         }
     }

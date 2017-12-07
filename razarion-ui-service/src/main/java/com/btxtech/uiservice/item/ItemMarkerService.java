@@ -140,6 +140,9 @@ public class ItemMarkerService {
         final ModelMatrices healthModelMatricesFinal = healthModelMatrices;
         // Update listener
         syncItemMonitor.setPositionChangeListener(changedSyncItemMonitor -> {
+            if(changedSyncItemMonitor.getPosition2d() == null) {
+                return;
+            }
             selectionModelMatrices.updatePositionScale(changedSyncItemMonitor.getPosition3d(), changedSyncItemMonitor.getRadius() * FACTOR, changedSyncItemMonitor.getInterpolatableVelocity());
             if (healthModelMatricesFinal != null) {
                 healthModelMatricesFinal.updatePositionScaleX(setupHealthBarPosition(changedSyncItemMonitor), 2.0 * changedSyncItemMonitor.getRadius(), changedSyncItemMonitor.getInterpolatableVelocity());

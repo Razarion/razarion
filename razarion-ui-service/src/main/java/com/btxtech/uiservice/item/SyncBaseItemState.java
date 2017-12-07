@@ -13,12 +13,14 @@ import java.util.function.Consumer;
 public class SyncBaseItemState extends SyncItemState {
     private double health;
     private double constructing;
+    private boolean contained;
     private SyncBaseItemSimpleDto syncBaseItem;
 
     public SyncBaseItemState(SyncBaseItemSimpleDto syncBaseItem, DecimalPosition interpolatableVelocity, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
         super(syncBaseItem, interpolatableVelocity, radius, releaseMonitorCallback);
         health = syncBaseItem.getHealth();
         constructing = syncBaseItem.getConstructing();
+        contained = syncBaseItem.isContained();
         this.syncBaseItem = syncBaseItem;
     }
 
@@ -60,6 +62,13 @@ public class SyncBaseItemState extends SyncItemState {
             constructing = syncBaseItem.getConstructing();
             for (SyncItemMonitor monitor : getMonitors()) {
                 ((SyncBaseItemMonitor) monitor).onConstructingChanged();
+            }
+        }
+
+        if (contained != syncBaseItem.isContained()) {
+            contained = syncBaseItem.isContained();
+            for (SyncItemMonitor monitor : getMonitors()) {
+                ((SyncBaseItemMonitor) monitor).onContainedChanged();
             }
         }
 

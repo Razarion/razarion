@@ -160,6 +160,9 @@ public class BaseItemUiService {
                 }
             }
             updateSyncItemMonitor(syncBaseItem);
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
                 if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && isMyEnemy(syncBaseItem) && !syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup()) {
@@ -381,6 +384,9 @@ public class BaseItemUiService {
 
     private SyncBaseItemSimpleDto findMyItemOfType(int baseItemTypeId) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             if (!isMyOwnProperty(syncBaseItem)) {
                 continue;
             }
@@ -394,6 +400,9 @@ public class BaseItemUiService {
 
     private SyncBaseItemSimpleDto findMyEnemyItemWithPlace(PlaceConfig placeConfig) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             if (!isMyEnemy(syncBaseItem)) {
                 continue;
             }
@@ -412,6 +421,9 @@ public class BaseItemUiService {
 
     public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             double itemRadius = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId()).getPhysicalAreaConfig().getRadius();
             for (DecimalPosition position : positions) {
                 if (syncBaseItem.getPosition2d().getDistance(position) < radius + itemRadius) {
@@ -425,6 +437,9 @@ public class BaseItemUiService {
 
     public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (syncBaseItem.getPosition2d().getDistance(decimalPosition) <= baseItemType.getPhysicalAreaConfig().getRadius()) {
                 return syncBaseItem;
@@ -436,6 +451,9 @@ public class BaseItemUiService {
     public Collection<SyncBaseItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (rectangle.adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
                 result.add(syncBaseItem);
@@ -447,6 +465,9 @@ public class BaseItemUiService {
     public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             if (!isMyOwnProperty(syncBaseItem)) {
                 continue;
             }
@@ -461,6 +482,9 @@ public class BaseItemUiService {
     public Collection<SyncBaseItemSimpleDto> findMyItems() {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
+            if(syncBaseItem.isContained()) {
+                continue;
+            }
             if (isMyOwnProperty(syncBaseItem)) {
                 result.add(syncBaseItem);
             }

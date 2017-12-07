@@ -33,6 +33,9 @@ public class MiniItemView extends AbstractGameCoordinates {
         Rectangle2D rectangle2D = getVisibleField();
         double width = toCanvasPixel(1.0 * getZoom());
         for (SyncBaseItemSimpleDto syncBaseItemSimpleDto : baseItemUiService.getSyncBaseItems()) {
+            if (syncBaseItemSimpleDto.getPosition2d() == null) {
+                continue;
+            }
             if (!rectangle2D.contains(syncBaseItemSimpleDto.getPosition2d())) {
                 continue;
             }

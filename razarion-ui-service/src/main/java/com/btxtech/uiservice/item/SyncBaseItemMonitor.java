@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 public class SyncBaseItemMonitor extends SyncItemMonitor {
     private Consumer<SyncItemMonitor> healthChangeListener;
     private Consumer<SyncItemMonitor> constructingChangeListener;
+    private Consumer<SyncItemMonitor> containedChangeListener;
 
     public SyncBaseItemMonitor(SyncBaseItemState syncBaseItemState) {
         super(syncBaseItemState);
@@ -34,6 +35,10 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
         this.constructingChangeListener = constructingChangeListener;
     }
 
+    public void setContainedChangeListener(Consumer<SyncItemMonitor> containedChangeListener) {
+        this.containedChangeListener = containedChangeListener;
+    }
+
     public void onHealthChanged() {
         if (healthChangeListener != null) {
             healthChangeListener.accept(this);
@@ -43,6 +48,12 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
     public void onConstructingChanged() {
         if (constructingChangeListener != null) {
             constructingChangeListener.accept(this);
+        }
+    }
+
+    public void onContainedChanged() {
+        if (containedChangeListener != null) {
+            containedChangeListener.accept(this);
         }
     }
 
