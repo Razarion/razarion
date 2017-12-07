@@ -141,6 +141,9 @@ public class SelectionHandler {
 
     public void clearSelection(boolean suppressAudio) {
         selectedOtherSyncItem = null;
+        if(selectedGroup != null) {
+            selectedGroup.release();
+        }
         selectedGroup = null;
         selectionEventEventTrigger.fire(new SelectionEvent(suppressAudio));
     }

@@ -64,7 +64,7 @@ public class ItemMarkerService {
         hoverConstructingModelMatrices = null;
     }
 
-    public void onOwnSelectionChanged(@Observes SelectionEvent selectionEvent) {
+    public void onSelectionChanged(@Observes SelectionEvent selectionEvent) {
         clearSelection();
 
         if (selectionEvent.getType() == SelectionEvent.Type.OWN) {

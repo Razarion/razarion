@@ -18,6 +18,9 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.SyncBaseItemMonitor;
+import com.btxtech.uiservice.item.SyncItemMonitor;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -38,55 +41,21 @@ import java.util.Set;
 public class Group {
     @Inject
     private ItemTypeService itemTypeService;
+    @Inject
+    private BaseItemUiService baseItemUiService;
+    @Deprecated // Use syncBaseItemsMonitors
     private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
+    private Collection<SyncBaseItemMonitor> syncBaseItemsMonitors = new ArrayList<>();
 
     void setItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
         this.syncBaseItems = syncBaseItems;
+        syncBaseItems.forEach(syncBaseItem -> syncBaseItemsMonitors.add(baseItemUiService.monitorSyncItem(syncBaseItem)));
     }
 
     public void addItem(SyncBaseItemSimpleDto syncBaseItem) {
         syncBaseItems.add(syncBaseItem);
+        syncBaseItemsMonitors.add(baseItemUiService.monitorSyncItem(syncBaseItem));
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Collection<SyncBaseItemSimpleDto> otherSyncBaseItems = ((Group) o).syncBaseItems;
-
-        if (syncBaseItems == null) {
-            return otherSyncBaseItems == null;
-        } else if (otherSyncBaseItems == null) {
-            return false;
-        }
-        if (syncBaseItems.isEmpty() && otherSyncBaseItems.isEmpty()) {
-            return true;
-        }
-        if (syncBaseItems.size() != otherSyncBaseItems.size()) {
-            return false;
-        }
-        for (SyncBaseItemSimpleDto item1 : syncBaseItems) {
-            boolean found = false;
-            for (SyncBaseItemSimpleDto item2 : otherSyncBaseItems) {
-                if (item1.equals(item2)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    @Override
-    public int hashCode() {
-        return syncBaseItems != null ? syncBaseItems.hashCode() : 0;
-    }
-
 
     public boolean onlyFactories() {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
@@ -117,17 +86,23 @@ public class Group {
     }
 
     public boolean isEmpty() {
-        return syncBaseItems.isEmpty();
+        return syncBaseItemsMonitors.isEmpty();
     }
 
     public int getCount() {
-        return syncBaseItems.size();
+        return syncBaseItemsMonitors.size();
     }
 
+    @Deprecated // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getSyncBaseItemsMonitors().
     public Collection<SyncBaseItemSimpleDto> getItems() {
         return syncBaseItems;
     }
 
+    public Collection<SyncBaseItemMonitor> getSyncBaseItemsMonitors() {
+        return syncBaseItemsMonitors;
+    }
+
+    @Deprecated // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getSyncBaseItemsMonitors().
     public SyncBaseItemSimpleDto getFirst() {
         return syncBaseItems.iterator().next();
     }
@@ -217,5 +192,10 @@ public class Group {
                 iterator.remove();
             }
         }
+    }
+
+    public void release() {
+        syncBaseItemsMonitors.forEach(SyncItemMonitor::release);
+        syncBaseItemsMonitors.clear();
     }
 }

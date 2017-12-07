@@ -13,11 +13,13 @@ import java.util.function.Consumer;
 public class SyncBaseItemState extends SyncItemState {
     private double health;
     private double constructing;
+    private SyncBaseItemSimpleDto syncBaseItem;
 
     public SyncBaseItemState(SyncBaseItemSimpleDto syncBaseItem, DecimalPosition interpolatableVelocity, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
         super(syncBaseItem, interpolatableVelocity, radius, releaseMonitorCallback);
         health = syncBaseItem.getHealth();
         constructing = syncBaseItem.getConstructing();
+        this.syncBaseItem = syncBaseItem;
     }
 
     @Override
@@ -37,10 +39,15 @@ public class SyncBaseItemState extends SyncItemState {
         return constructing > 0.0;
     }
 
+    public SyncBaseItemSimpleDto getSyncBaseItem() {
+        return syncBaseItem;
+    }
+
     @Override
     public void update(SyncItemSimpleDto syncItemSimpleDto, DecimalPosition interpolatableVelocity) {
         super.update(syncItemSimpleDto, interpolatableVelocity);
         SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) syncItemSimpleDto;
+        this.syncBaseItem = syncBaseItem;
 
         if (health != syncBaseItem.getHealth()) {
             health = syncBaseItem.getHealth();
@@ -57,5 +64,4 @@ public class SyncBaseItemState extends SyncItemState {
         }
 
     }
-
 }

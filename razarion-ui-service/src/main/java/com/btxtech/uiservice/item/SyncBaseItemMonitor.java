@@ -46,4 +46,8 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
         }
     }
 
+    public SyncBaseItemState getSyncBaseItemState() {
+        return (SyncBaseItemState) getSyncItemState();
+    }
+
 }

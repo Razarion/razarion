@@ -11,6 +11,7 @@ import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.SyncBaseItemMonitor;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.event.Observes;
@@ -147,12 +148,13 @@ public abstract class CursorService {
     }
 
     private boolean atLeastOnAllowedForUnload(DecimalPosition unloadPosition) {
-        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
-            if (syncBaseItem.getContainingItemCount() > 0) {
-                BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+        for (SyncBaseItemMonitor syncBaseItemMonitor : selectionHandler.getOwnSelection().getSyncBaseItemsMonitors()) {
+            SyncBaseItemSimpleDto syncBaseItemSimpleDto = syncBaseItemMonitor.getSyncBaseItemState().getSyncBaseItem();
+            if (syncBaseItemSimpleDto.getContainingItemCount() > 0) {
+                BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId());
                 ItemContainerType itemContainerType = baseItemType.getItemContainerType();
-                if (syncBaseItem.getPosition2d().getDistance(unloadPosition) - baseItemType.getPhysicalAreaConfig().getRadius() <= itemContainerType.getRange()) {
-                    if (terrainUiService.isTerrainFreeInDisplay(unloadPosition, syncBaseItem.getMaxContainingRadius(), SyncItemContainer.DEFAULT_UNLOAD_TERRAIN_TYPE)) {
+                if (syncBaseItemMonitor.getPosition2d().getDistance(unloadPosition) - baseItemType.getPhysicalAreaConfig().getRadius() <= itemContainerType.getRange()) {
+                    if (terrainUiService.isTerrainFreeInDisplay(unloadPosition, baseItemType.getPhysicalAreaConfig().getRadius(), SyncItemContainer.DEFAULT_UNLOAD_TERRAIN_TYPE)) {
                         return true;
                     }
                 }
