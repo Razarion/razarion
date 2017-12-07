@@ -3,6 +3,10 @@ package com.btxtech.client;
 
 import com.btxtech.uiservice.EditorKeyboardListener;
 import com.btxtech.uiservice.SelectionHandler;
+import com.btxtech.uiservice.cockpit.CockpitMode;
+import com.btxtech.uiservice.cockpit.CockpitService;
+import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
+import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import elemental.client.Browser;
@@ -27,6 +31,10 @@ public class KeyboardEventHandler {
     private TerrainScrollHandler terrainScrollHandler;
     @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private BaseItemPlacerService baseItemPlacerService;
+    @Inject
+    private CockpitMode cockpitMode;
     private Set<Integer> keysDown = new HashSet<>();
     private EditorKeyboardListener editorKeyboardListener;
 
@@ -56,6 +64,14 @@ public class KeyboardEventHandler {
                         break;
                     }
                     case KeyCodes.KEY_ESCAPE: {
+                        if (baseItemPlacerService.isActive()) {
+                            baseItemPlacerService.deactivateFriendly();
+                            break;
+                        }
+                        if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {
+                            cockpitMode.clear();
+                            break;
+                        }
                         selectionHandler.clearSelection(false);
                         break;
                     }
@@ -116,11 +132,11 @@ public class KeyboardEventHandler {
                     }
                 }
 
-            } catch (Throwable t) {
-                logger.log(Level.SEVERE, "Handling key up events failed: " + evt, t);
-            }
-        }, true);
-    }
+        } catch (Throwable t) {
+            logger.log(Level.SEVERE, "Handling key up events failed: " + evt, t);
+        }
+    },true);
+}
 
     public void setEditorKeyboardListener(EditorKeyboardListener editorKeyboardListener) {
         this.editorKeyboardListener = editorKeyboardListener;

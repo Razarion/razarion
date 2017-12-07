@@ -86,7 +86,7 @@ public abstract class InventoryUiService {
                     baseItemPlacerConfig.setBaseItemTypeId(baseItemType.getId());
                     baseItemPlacerConfig.setBaseItemCount(inventoryItem.getBaseItemTypeCount());
                     baseItemPlacerConfig.setEnemyFreeRadius(inventoryItem.getBaseItemTypeFreeRange());
-                    baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
+                    baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
                         gameEngineControl.useInventoryItem(new UseInventoryItem().setInventoryId(inventoryItem.getId()).setPositions(new ArrayList<>(decimalPositions)));
                         if (gameUiControl.getGameEngineMode() == GameEngineMode.MASTER) {
                             inventoryItemIds.remove((Integer)inventoryItem.getId());

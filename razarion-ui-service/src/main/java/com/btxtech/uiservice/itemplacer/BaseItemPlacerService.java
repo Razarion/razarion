@@ -25,12 +25,14 @@ public class BaseItemPlacerService {
     private BaseItemPlacerRenderTask baseItemPlacerRenderTask;
     @Inject
     private CursorService cursorService;
+    private boolean canBeCanceled;
     private BaseItemPlacer baseItemPlacer;
     private Consumer<Collection<DecimalPosition>> executionCallback;
     private Collection<BaseItemPlacerListener> listeners = new ArrayList<>();
 
-    public void activate(BaseItemPlacerConfig baseItemPlacerConfig, Consumer<Collection<DecimalPosition>> executionCallback) {
+    public void activate(BaseItemPlacerConfig baseItemPlacerConfig, boolean canBeCanceled, Consumer<Collection<DecimalPosition>> executionCallback) {
         cursorService.handleItemPlaceActivated();
+        this.canBeCanceled = canBeCanceled;
         this.executionCallback = executionCallback;
         baseItemPlacer = instance.get().init(baseItemPlacerConfig);
         baseItemPlacerRenderTask.activate(baseItemPlacer);
@@ -39,6 +41,12 @@ public class BaseItemPlacerService {
 
     public void deactivate() {
         deactivateInternal(true);
+    }
+
+    public void deactivateFriendly() {
+        if (canBeCanceled) {
+            deactivateInternal(true);
+        }
     }
 
     public boolean isActive() {

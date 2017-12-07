@@ -91,7 +91,7 @@ public abstract class BuildupItemPanel {
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> {
                 BaseItemPlacerConfig baseItemPlacerConfig = new BaseItemPlacerConfig().setBaseItemCount(1).setBaseItemTypeId(itemTypeId);
-                baseItemPlacerService.activate(baseItemPlacerConfig, decimalPositions -> {
+                baseItemPlacerService.activate(baseItemPlacerConfig, true, decimalPositions -> {
                     audioService.onCommandSent();
                     gameEngineControl.buildCmd(constructionVehicles.getFirst(), CollectionUtils.getFirst(decimalPositions), itemType);
                 });

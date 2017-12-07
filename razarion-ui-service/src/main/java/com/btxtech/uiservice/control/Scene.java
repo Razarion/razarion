@@ -115,7 +115,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getStartPointPlacerConfig() != null) {
             sceneConfig.getStartPointPlacerConfig().setBaseItemCount(1);
             sceneConfig.getStartPointPlacerConfig().setBaseItemTypeId(gameUiControl.getPlanetConfig().getStartBaseItemTypeId());
-            baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), decimalPositions -> {
+            baseItemPlacerService.activate(sceneConfig.getStartPointPlacerConfig(), false, decimalPositions -> {
                 if (decimalPositions.size() != 1) {
                     throw new IllegalArgumentException("To create a new human base, only one base item is allowed. Given: " + decimalPositions.size());
                 }
