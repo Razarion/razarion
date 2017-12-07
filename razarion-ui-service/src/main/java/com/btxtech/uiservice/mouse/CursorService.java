@@ -146,11 +146,15 @@ public abstract class CursorService {
         return false;
     }
 
-    private boolean atLeastOnAllowedForUnload(DecimalPosition position) {
+    private boolean atLeastOnAllowedForUnload(DecimalPosition unloadPosition) {
         for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
             if (syncBaseItem.getContainingItemCount() > 0) {
-                if (terrainUiService.isTerrainFreeInDisplay(position, syncBaseItem.getMaxContainingRadius(), SyncItemContainer.DEFAULT_UNLOAD_TERRAIN_TYPE)) {
-                    return true;
+                BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+                ItemContainerType itemContainerType = baseItemType.getItemContainerType();
+                if (syncBaseItem.getPosition2d().getDistance(unloadPosition) - baseItemType.getPhysicalAreaConfig().getRadius() <= itemContainerType.getRange()) {
+                    if (terrainUiService.isTerrainFreeInDisplay(unloadPosition, syncBaseItem.getMaxContainingRadius(), SyncItemContainer.DEFAULT_UNLOAD_TERRAIN_TYPE)) {
+                        return true;
+                    }
                 }
             }
         }

@@ -228,11 +228,13 @@ public class TerrainMouseHandler {
                     return;
                 }
 
-                SyncBaseItemSimpleDto container = findOneAllowedToUnload(selection.getItems(), terrainPosition.toXY());
-                if (container != null && cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {
-                    cockpitMode.clear();
-                    audioService.onCommandSent();
-                    gameEngineControl.unloadContainerCmd(container, terrainPosition.toXY());
+                if (cockpitMode.getMode() == CockpitMode.Mode.UNLOAD) {
+                    SyncBaseItemSimpleDto container = findOneAllowedToUnload(selection.getItems(), terrainPosition.toXY());
+                    if(container != null) {
+                        cockpitMode.clear();
+                        audioService.onCommandSent();
+                        gameEngineControl.unloadContainerCmd(container, terrainPosition.toXY());
+                    }
                 } else {
                     executeMoveCommand(selection, terrainPosition.toXY());
                 }

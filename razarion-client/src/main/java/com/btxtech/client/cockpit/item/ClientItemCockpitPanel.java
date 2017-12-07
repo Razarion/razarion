@@ -30,6 +30,9 @@ public class ClientItemCockpitPanel extends Composite implements ItemCockpitPane
     @Inject
     @DataField
     private Div buildupItemPanel;
+    @Inject
+    @DataField
+    private Div itemContainerPanel;
 
     @PostConstruct
     public void postConstruct() {
@@ -40,6 +43,7 @@ public class ClientItemCockpitPanel extends Composite implements ItemCockpitPane
     public void cleanPanels() {
         infoPanel.clear();
         DOMUtil.removeAllChildren(buildupItemPanel);
+        DOMUtil.removeAllChildren(itemContainerPanel);
         getElement().getStyle().setZIndex(ZIndexConstants.ITEM_COCKPIT);
     }
 
@@ -55,7 +59,7 @@ public class ClientItemCockpitPanel extends Composite implements ItemCockpitPane
 
     @Override
     public void setItemContainerPanel(ItemContainerPanel itemContainerPanel) {
-        // TODO
+        this.itemContainerPanel.appendChild(((IsElement) itemContainerPanel).getElement());
     }
 
     @Override
