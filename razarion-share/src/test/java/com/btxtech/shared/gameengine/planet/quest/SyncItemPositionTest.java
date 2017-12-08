@@ -28,7 +28,7 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
         // Create 3 attacker
         for (int i = 0; i < 3; i++) {
-            fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40 + 10 * i, 40), playerBaseFull);
+            fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40 + 10 * i, 152), playerBaseFull);
         }
         // Start quest
         getQuestService().addQuestListener(createQuestListener());
@@ -40,10 +40,10 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         // Create 3 attacker
         for (int i = 0; i < 3; i++) {
-            fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40 + 10 * i, 60), playerBaseFull);
+            fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40 + 10 * i, 168), playerBaseFull);
             assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         }
-        fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 80), playerBaseFull);
+        fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 184), playerBaseFull);
         assertQuestPassed(playerBaseFull.getHumanPlayerId());
     }
 
@@ -64,20 +64,20 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
         // Create 3 attacker
-        SyncBaseItem attacker1 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 40), playerBaseFull);
-        SyncBaseItem attacker2 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(60, 40), playerBaseFull);
-        SyncBaseItem attacker3 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(80, 40), playerBaseFull);
+        SyncBaseItem attacker1 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 160), playerBaseFull);
+        SyncBaseItem attacker2 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(60, 160), playerBaseFull);
+        SyncBaseItem attacker3 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(80, 160), playerBaseFull);
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         // Move first to position not passed
-        getCommandService().move(attacker1, new DecimalPosition(110, 90));
+        getCommandService().move(attacker1, new DecimalPosition(150, 150));
         tickPlanetServiceBaseServiceActive();
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         // Move second to position not passed
-        getCommandService().move(attacker2, new DecimalPosition(110, 110));
+        getCommandService().move(attacker2, new DecimalPosition(170, 150));
         tickPlanetServiceBaseServiceActive();
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         // Move third to position passed
-        getCommandService().move(attacker3, new DecimalPosition(110, 110));
+        getCommandService().move(attacker3, new DecimalPosition(190, 150));
         tickPlanetServiceBaseServiceActive();
         assertQuestPassed(playerBaseFull.getHumanPlayerId());
     }
