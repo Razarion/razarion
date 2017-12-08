@@ -353,8 +353,6 @@ public interface I18nConstants {
     // Item cockpit
     String guildMembershipRequestItemCockpit();
 
-    String tooltipUnloadContainer();
-
     String tooltipLaunchMissile();
 
     String tooltipUpgrade();
@@ -384,6 +382,16 @@ public interface I18nConstants {
     String notPlaceHere();
 
     String notPlaceOver();
+
+    String containingNoUnits();
+
+    String containing1Unit();
+
+    String containingXUnits(int count);
+
+    String unloadButton();
+
+    String unloadButtonTooltip();
 
     // Highscore
     String findMe();
