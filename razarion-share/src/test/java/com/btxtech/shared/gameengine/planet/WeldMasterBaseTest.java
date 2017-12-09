@@ -43,6 +43,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
         return getWeldBean(BotService.class);
     }
 
+    @Deprecated // Use getBotBase(int botId)
     protected PlayerBase getBotBase(String botName) {
         for (PlayerBaseInfo playerBaseInfo : getBaseItemService().getPlayerBaseInfos()) {
             if (playerBaseInfo.getCharacter().isBot()) {
@@ -52,6 +53,15 @@ public class WeldMasterBaseTest extends WeldBaseTest {
             }
         }
         throw new IllegalArgumentException("No botbase found for: " + botName);
+    }
+
+    protected PlayerBase getBotBase(int botId) {
+        for (PlayerBaseInfo playerBaseInfo : getBaseItemService().getPlayerBaseInfos()) {
+            if (playerBaseInfo.getCharacter().isBot() && playerBaseInfo.getBotId() == botId) {
+                return getBaseItemService().getPlayerBase4BaseId(playerBaseInfo.getBaseId());
+            }
+        }
+        throw new IllegalArgumentException("No bot base found botId: " + botId);
     }
 
     protected MasterPlanetConfig setupMasterPlanetConfig() {

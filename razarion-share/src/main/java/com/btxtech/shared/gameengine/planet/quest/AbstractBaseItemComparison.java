@@ -16,6 +16,8 @@ package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
+import java.util.Set;
+
 /**
  * User: beat Date: 12.01.2011 Time: 12:05:40
  */
@@ -36,5 +38,18 @@ public abstract class AbstractBaseItemComparison extends AbstractUpdatingCompari
     @Override
     public void setAbstractConditionProgress(AbstractConditionProgress abstractConditionProgress) {
         this.abstractConditionTrigger = abstractConditionProgress;
+    }
+
+    protected boolean isBotIdAllowed(Set<Integer> botIds, SyncBaseItem syncBaseItem) {
+        if (botIds != null) {
+            Integer botId = syncBaseItem.getBase().getBotId();
+            if(botId == null) {
+                return false;
+            }
+            if (!botIds.contains(botId)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

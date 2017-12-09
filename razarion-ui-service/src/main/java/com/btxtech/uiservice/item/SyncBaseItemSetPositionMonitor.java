@@ -14,15 +14,19 @@ import java.util.Set;
  * on 13.09.2017.
  */
 public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionMonitor {
+    private BaseItemUiService baseItemUiService;
     private Set<Integer> itemTypeFilter;
+    private Set<Integer> botIdFilter;
     private List<Vertex> inViewVertices = new ArrayList<>();
     private DecimalPosition nearestOutOfViewPosition;
     private double minDistance;
     private DecimalPosition viewFieldCenter;
 
-    public SyncBaseItemSetPositionMonitor(Set<Integer> itemTypeFilter, Runnable releaseCallback) {
+    public SyncBaseItemSetPositionMonitor(BaseItemUiService baseItemUiService, Set<Integer> itemTypeFilter, Set<Integer> botIdFilter, Runnable releaseCallback) {
         super(releaseCallback);
+        this.baseItemUiService = baseItemUiService;
         this.itemTypeFilter = itemTypeFilter;
+        this.botIdFilter = botIdFilter;
     }
 
     @Override
@@ -48,14 +52,14 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
     }
 
     public void inViewAabb(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
-        if (!isAllowed(baseItemType)) {
+        if (!isAllowed(syncBaseItem, baseItemType)) {
             return;
         }
         inViewVertices.add(syncBaseItem.getPosition3d());
     }
 
     public void notInViewAabb(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
-        if (!isAllowed(baseItemType)) {
+        if (!isAllowed(syncBaseItem, baseItemType)) {
             return;
         }
         double distance = syncBaseItem.getPosition2d().getDistance(viewFieldCenter);
@@ -69,7 +73,21 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
         this.itemTypeFilter = itemTypeFilter;
     }
 
-    private boolean isAllowed(BaseItemType baseItemType) {
-        return itemTypeFilter == null || itemTypeFilter.contains(baseItemType.getId());
+    private boolean isAllowed(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
+        if (itemTypeFilter != null) {
+            if (!itemTypeFilter.contains(baseItemType.getId())) {
+                return false;
+            }
+        }
+        if (botIdFilter != null) {
+            Integer botId = baseItemUiService.getBase(syncBaseItem.getBaseId()).getBotId();
+            if (botId == null) {
+                return false;
+            }
+            if (!botIdFilter.contains(botId)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

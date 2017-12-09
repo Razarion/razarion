@@ -13,6 +13,7 @@ public class PlayerBaseInfo {
     private Character character;
     private double resources;
     private HumanPlayerId humanPlayerId;
+    private Integer botId;
 
     public int getBaseId() {
         return baseId;
@@ -56,6 +57,15 @@ public class PlayerBaseInfo {
 
     public PlayerBaseInfo setHumanPlayerId(HumanPlayerId humanPlayerId) {
         this.humanPlayerId = humanPlayerId;
+        return this;
+    }
+
+    public Integer getBotId() {
+        return botId;
+    }
+
+    public PlayerBaseInfo setBotId(Integer botId) {
+        this.botId = botId;
         return this;
     }
 }

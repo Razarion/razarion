@@ -11,7 +11,7 @@ import javax.inject.Inject;
  * Time: 11:31
  */
 public abstract class AbstractUpdatingComparison implements AbstractComparison {
-    private static final int MIN_SEND_DELAY = 1000;
+    static int MIN_SEND_DELAY = 1000; // Only updated in quests. This is no proper solution. Better e.g. bot action delay. But too expensive...
     @Inject
     private GameLogicService gameLogicService;
     private long lastProgressSendTime;

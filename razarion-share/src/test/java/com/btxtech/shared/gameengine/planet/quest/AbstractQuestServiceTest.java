@@ -1,18 +1,11 @@
 package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.datatypes.HumanPlayerId;
-import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
-import com.btxtech.shared.gameengine.planet.GameTestHelper;
-import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
+import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
+import com.btxtech.shared.gameengine.planet.basic.BaseBasicTest;
 import org.junit.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,59 +14,8 @@ import java.util.Map;
  * Created by Beat
  * 23.09.2016.
  */
-public abstract class AbstractQuestServiceTest extends WeldMasterBaseTest {
+public abstract class AbstractQuestServiceTest extends BaseBasicTest {
     private Map<HumanPlayerId, QuestConfig> passedQuests = new HashMap<>();
-
-    protected void setup() {
-        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 5, 1),},
-                {GameTestHelper.createSlopeNode(4, 10, 0.7),},
-                {GameTestHelper.createSlopeNode(7, 20, 0.7),},
-        }));
-        slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
-
-        SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-        slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setVerticalSpace(6).setHeight(-2);
-        slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(5, 0.5, 0.5),},
-                {GameTestHelper.createSlopeNode(10, -0.1, 1),},
-                {GameTestHelper.createSlopeNode(15, -0.8, 1),},
-                {GameTestHelper.createSlopeNode(20, -2, 1),}
-        }));
-        slopeSkeletonConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
-
-        // Land slope
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(100, 60, GameTestContent.DRIVEWAY_ID_ID), GameTestHelper.createTerrainSlopeCorner(100, 90, GameTestContent.DRIVEWAY_ID_ID), // driveway
-                GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
-        // Water slope
-        TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
-        terrainSlopePositionWater.setId(2);
-        terrainSlopePositionWater.setSlopeConfigId(2);
-        terrainSlopePositionWater.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(64, 200, null), GameTestHelper.createTerrainSlopeCorner(231, 200, null),
-                GameTestHelper.createTerrainSlopeCorner(231, 256, null), GameTestHelper.createTerrainSlopeCorner(151, 257, null), // driveway
-                GameTestHelper.createTerrainSlopeCorner(239, 359, null), GameTestHelper.createTerrainSlopeCorner(49, 360, null)));
-        terrainSlopePositions.add(terrainSlopePositionWater);
-
-
-        StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
-        staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
-
-        setupMasterEnvironment(staticGameConfig, terrainSlopePositions);
-    }
 
     protected QuestListener createQuestListener() {
         return (humanPlayerId, questConfig) -> {
@@ -87,6 +29,48 @@ public abstract class AbstractQuestServiceTest extends WeldMasterBaseTest {
 
     protected void assertQuestNotPassed(HumanPlayerId humanPlayerId) {
         Assert.assertFalse("Unexpected quest passed for '" + humanPlayerId + "'. Quest: " + passedQuests.get(humanPlayerId), passedQuests.containsKey(humanPlayerId));
+    }
+
+    protected void assetQuestProgressCountGameLogicListener(HumanPlayerId humanPlayerId, int expectedCount) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+        Assert.assertEquals(1, questProgressInfos.size());
+        assetQuestProgressCount(expectedCount, questProgressInfos.get(0));
+        getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId);
+    }
+
+    protected void assetQuestProgressCountDownload(HumanPlayerId humanPlayerId, int expectedCount) {
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(humanPlayerId);
+        Assert.assertNotNull(questProgressInfo);
+        assetQuestProgressCount(expectedCount, questProgressInfo);
+    }
+
+    protected void assetQuestProgressCount(int expectedCount, QuestProgressInfo actual) {
+        Assert.assertNull(actual.getTime());
+        Assert.assertNull(actual.getTypeCount());
+        Assert.assertEquals(expectedCount, (int) actual.getCount());
+    }
+
+    protected void assetQuestProgressTypeCountGameLogicListener(HumanPlayerId humanPlayerId, int... expected) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+        Assert.assertEquals(1, questProgressInfos.size());
+        assetQuestProgressTypeCount(questProgressInfos.get(0), expected);
+        getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId);
+    }
+
+    protected void assetQuestProgressTypeCountDownload(HumanPlayerId humanPlayerId, int... expected) {
+        QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(humanPlayerId);
+        Assert.assertNotNull(questProgressInfo);
+        assetQuestProgressTypeCount(questProgressInfo, expected);
+    }
+
+    protected void assetQuestProgressTypeCount(QuestProgressInfo actual, int... expected) {
+        Assert.assertEquals(expected.length / 2, actual.getTypeCount().size());
+        for (int i = 0; i < expected.length; i += 2) {
+            Assert.assertEquals(expected[i + 1], (int) actual.getTypeCount().get(expected[i]));
+        }
+        Assert.assertNull(actual.getTime());
+        Assert.assertNull(actual.getCount());
+
     }
 
 }

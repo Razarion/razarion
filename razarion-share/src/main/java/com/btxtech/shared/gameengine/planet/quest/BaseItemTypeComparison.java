@@ -20,8 +20,11 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: beat Date: 18.07.2010 Time: 21:06:41
@@ -32,14 +35,23 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
     private ItemTypeService itemTypeService;
     private Map<BaseItemType, Integer> remaining;
     private Map<BaseItemType, Integer> total;
+    private Set<Integer> botIds;
 
-    public void init(Map<BaseItemType, Integer> baseItemType) {
+    public void init(Map<BaseItemType, Integer> baseItemType, Collection<Integer> botIds) {
         remaining = new HashMap<>(baseItemType);
         total = new HashMap<>(baseItemType);
+        if (botIds != null) {
+            this.botIds = new HashSet<>(botIds);
+        } else {
+            this.botIds = null;
+        }
     }
 
     @Override
     protected void privateOnSyncBaseItem(SyncBaseItem syncBaseItem) {
+        if (!isBotIdAllowed(botIds, syncBaseItem)) {
+            return;
+        }
         Integer remainingCount = remaining.get(syncBaseItem.getBaseItemType());
         if (remainingCount == null) {
             return;

@@ -13,7 +13,9 @@
 
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: beat
@@ -26,6 +28,7 @@ public class ComparisonConfig {
     private Integer time;
     private Boolean addExisting;
     private PlaceConfig placeConfig;
+    private List<Integer> botIds;
 
     public Integer getCount() {
         return count;
@@ -69,6 +72,15 @@ public class ComparisonConfig {
 
     public ComparisonConfig setPlaceConfig(PlaceConfig placeConfig) {
         this.placeConfig = placeConfig;
+        return this;
+    }
+
+    public List<Integer> getBotIds() {
+        return botIds;
+    }
+
+    public ComparisonConfig setBotIds(List<Integer> botIds) {
+        this.botIds = botIds;
         return this;
     }
 }

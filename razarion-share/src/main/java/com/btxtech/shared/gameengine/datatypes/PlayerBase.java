@@ -28,14 +28,16 @@ public class PlayerBase {
     private String name;
     private Character character;
     private HumanPlayerId humanPlayerId;
+    private Integer botId;
     private boolean abandoned;
 
-    public PlayerBase(int baseId, String name, Character character, double resources, HumanPlayerId humanPlayerId) {
+    public PlayerBase(int baseId, String name, Character character, double resources, HumanPlayerId humanPlayerId, Integer botId) {
         this.baseId = baseId;
         this.name = name;
         this.character = character;
         this.resources = resources;
         this.humanPlayerId = humanPlayerId;
+        this.botId = botId;
     }
 
     public int getBaseId() {
@@ -60,6 +62,10 @@ public class PlayerBase {
 
     public HumanPlayerId getHumanPlayerId() {
         return humanPlayerId;
+    }
+
+    public Integer getBotId() {
+        return botId;
     }
 
     public double getResources() {
@@ -91,6 +97,7 @@ public class PlayerBase {
         playerBaseInfo.setCharacter(character);
         playerBaseInfo.setName(name);
         playerBaseInfo.setHumanPlayerId(humanPlayerId);
+        playerBaseInfo.setBotId(botId);
         playerBaseInfo.setResources(resources);
         return playerBaseInfo;
     }
@@ -125,6 +132,7 @@ public class PlayerBase {
                 ", character=" + character +
                 ", abandoned=" + abandoned +
                 ", humanPlayerId=" + humanPlayerId +
+                ", botId=" + botId +
                 '}';
     }
 }

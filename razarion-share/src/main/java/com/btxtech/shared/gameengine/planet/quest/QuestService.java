@@ -207,11 +207,11 @@ public class QuestService {
             case SYNC_ITEM_CREATED:
                 if (comparisonConfig.getTypeCount() != null) {
                     BaseItemTypeComparison syncItemTypeComparison = instance.select(BaseItemTypeComparison.class).get();
-                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()));
+                    syncItemTypeComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getBotIds());
                     return syncItemTypeComparison;
                 } else if (comparisonConfig.getCount() != null) {
                     BaseItemCountComparison baseItemCountComparison = instance.select(BaseItemCountComparison.class).get();
-                    baseItemCountComparison.init(comparisonConfig.getCount());
+                    baseItemCountComparison.init(comparisonConfig.getCount(), comparisonConfig.getBotIds());
                     return baseItemCountComparison;
                 } else {
                     throw new UnsupportedOperationException();

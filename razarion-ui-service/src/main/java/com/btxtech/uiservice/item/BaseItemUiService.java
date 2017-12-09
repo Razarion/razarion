@@ -160,7 +160,7 @@ public class BaseItemUiService {
                 }
             }
             updateSyncItemMonitor(syncBaseItem);
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
@@ -337,11 +337,11 @@ public class BaseItemUiService {
         }
     }
 
-    public SyncBaseItemSetPositionMonitor createSyncItemSetPositionMonitor(Set<Integer> itemTypeFilter) {
+    public SyncBaseItemSetPositionMonitor createSyncItemSetPositionMonitor(Set<Integer> itemTypeFilter, Set<Integer> botIdFilter) {
         if (syncBaseItemSetPositionMonitor != null) {
             throw new IllegalStateException("BaseItemUiService.createSyncItemSetPositionMonitor() syncBaseItemSetPositionMonitor != null");
         }
-        syncBaseItemSetPositionMonitor = new SyncBaseItemSetPositionMonitor(itemTypeFilter, () -> syncBaseItemSetPositionMonitor = null);
+        syncBaseItemSetPositionMonitor = new SyncBaseItemSetPositionMonitor(this, itemTypeFilter, botIdFilter, () -> syncBaseItemSetPositionMonitor = null);
         return syncBaseItemSetPositionMonitor;
     }
 
@@ -384,7 +384,7 @@ public class BaseItemUiService {
 
     private SyncBaseItemSimpleDto findMyItemOfType(int baseItemTypeId) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             if (!isMyOwnProperty(syncBaseItem)) {
@@ -400,7 +400,7 @@ public class BaseItemUiService {
 
     private SyncBaseItemSimpleDto findMyEnemyItemWithPlace(PlaceConfig placeConfig) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             if (!isMyEnemy(syncBaseItem)) {
@@ -421,7 +421,7 @@ public class BaseItemUiService {
 
     public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             double itemRadius = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId()).getPhysicalAreaConfig().getRadius();
@@ -437,7 +437,7 @@ public class BaseItemUiService {
 
     public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
@@ -451,7 +451,7 @@ public class BaseItemUiService {
     public Collection<SyncBaseItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
@@ -465,7 +465,7 @@ public class BaseItemUiService {
     public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             if (!isMyOwnProperty(syncBaseItem)) {
@@ -482,7 +482,7 @@ public class BaseItemUiService {
     public Collection<SyncBaseItemSimpleDto> findMyItems() {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if(syncBaseItem.isContained()) {
+            if (syncBaseItem.isContained()) {
                 continue;
             }
             if (isMyOwnProperty(syncBaseItem)) {

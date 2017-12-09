@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.basic;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -26,6 +27,7 @@ import java.util.List;
  * on 21.10.2017.
  */
 public class BaseBasicTest extends WeldMasterBaseTest {
+    private int lastBotId = 0;
 
     protected void setup() {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -113,4 +115,45 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         return humanBaseContext;
     }
 
+    protected PlayerBaseFull setupBuilderBot(int builderCount, Polygon2D botRegion) {
+        int botId = ++lastBotId;
+        String botName = "setupBuilderBot id:" + botId;
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.BUILDER_ITEM_TYPE_ID).setCount(builderCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
+        getBotService().startBots(botConfigs);
+        tickPlanetServiceBaseServiceActive();
+        return (PlayerBaseFull) getBotBase(botId);
+    }
+
+    protected PlayerBaseFull setupHarvesterBot(int harvesterCount, Polygon2D botRegion) {
+        int botId = ++lastBotId;
+        String botName = "TestTargetHarvesterBot id:" + botId;
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.HARVESTER_ITEM_TYPE_ID).setCount(harvesterCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
+        getBotService().startBots(botConfigs);
+        tickPlanetServiceBaseServiceActive();
+        return (PlayerBaseFull) getBotBase(botId);
+    }
+
+    protected PlayerBaseFull setupFactoryBot(int factoryCount, Polygon2D botRegion) {
+        int botId = ++lastBotId;
+        String botName = "setupFactoryBot id:" + botId;
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.FACTORY_ITEM_TYPE_ID).setCount(factoryCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
+        getBotService().startBots(botConfigs);
+        tickPlanetServiceBaseServiceActive();
+        return (PlayerBaseFull) getBotBase(botId);
+    }
 }

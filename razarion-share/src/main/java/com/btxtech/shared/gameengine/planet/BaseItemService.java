@@ -118,7 +118,7 @@ public class BaseItemService {
     }
 
     public PlayerBaseFull createHumanBase(int startRazarion, int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name) {
-        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, unlockedItemLimit, humanPlayerId);
+        return createBaseMaster(name, Character.HUMAN, startRazarion, levelId, unlockedItemLimit, humanPlayerId, null);
     }
 
     private void surrenderHumanBase(HumanPlayerId humanPlayerId) {
@@ -163,17 +163,17 @@ public class BaseItemService {
     }
 
     public PlayerBaseFull createBotBase(BotConfig botConfig) {
-        return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null, null);
+        return createBaseMaster(botConfig.getName(), botConfig.isNpc() ? Character.BOT_NCP : Character.BOT, 0, null, null, null, botConfig.getId());
     }
 
-    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId) {
+    private PlayerBaseFull createBaseMaster(String name, Character character, int startRazarion, Integer levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, Integer botId) {
         PlayerBaseFull playerBase;
         synchronized (bases) {
             lastBaseItId++;
             if (bases.containsKey(lastBaseItId)) {
                 throw new IllegalStateException("createBaseMaster: Base with Id already exits: " + lastBaseItId);
             }
-            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, unlockedItemLimit, humanPlayerId);
+            playerBase = new PlayerBaseFull(lastBaseItId, name, character, startRazarion, levelId, unlockedItemLimit, humanPlayerId, botId);
             bases.put(lastBaseItId, playerBase);
         }
         gameLogicService.onBaseCreated(playerBase);
@@ -185,7 +185,7 @@ public class BaseItemService {
             if (bases.containsKey(playerBaseInfo.getBaseId())) {
                 throw new IllegalStateException("createBaseSlave: Base with Id already exits: " + playerBaseInfo.getBaseId());
             }
-            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getHumanPlayerId());
+            PlayerBase playerBase = new PlayerBase(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getHumanPlayerId(), playerBaseInfo.getBotId());
             bases.put(playerBaseInfo.getBaseId(), playerBase);
             gameLogicService.onBaseSlaveCreated(playerBase);
         }
@@ -591,7 +591,7 @@ public class BaseItemService {
         lastBaseItId = 1;
         backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
             lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
-            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getUnlockedItemLimit(), playerBaseInfo.getHumanPlayerId()));
+            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getUnlockedItemLimit(), playerBaseInfo.getHumanPlayerId(), null));
         });
         Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
         for (SyncBaseItemInfo syncBaseItemInfo : backupPlanetInfo.getSyncBaseItemInfos()) {

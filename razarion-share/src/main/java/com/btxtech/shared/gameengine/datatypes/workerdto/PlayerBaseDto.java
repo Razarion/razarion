@@ -12,6 +12,7 @@ public class PlayerBaseDto {
     private String name;
     private Character character;
     private HumanPlayerId humanPlayerId;
+    private Integer botId;
 
     public int getBaseId() {
         return baseId;
@@ -43,5 +44,13 @@ public class PlayerBaseDto {
 
     public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
         this.humanPlayerId = humanPlayerId;
+    }
+
+    public Integer getBotId() {
+        return botId;
+    }
+
+    public void setBotId(Integer botId) {
+        this.botId = botId;
     }
 }
