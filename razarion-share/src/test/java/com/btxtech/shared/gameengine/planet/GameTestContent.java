@@ -355,6 +355,6 @@ public interface GameTestContent {
     static QuestConfig createPositionAddExistingQuest() {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(ATTACKER_ITEM_TYPE_ID, 3);
-        return new QuestConfig().setId(QUEST_CONFIG_5_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 80, 40, 80)))));
+        return new QuestConfig().setId(QUEST_CONFIG_5_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(130, 130, 100, 40)))));
     }
 }
