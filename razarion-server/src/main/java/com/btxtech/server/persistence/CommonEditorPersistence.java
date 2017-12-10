@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.I18nStringEditor;
@@ -41,5 +42,9 @@ public class CommonEditorPersistence {
             i18nBundleEntity.putString(Locale.GERMAN, i18nStringEditor.getDeString());
             entityManager.merge(i18nBundleEntity);
         }
+    }
+
+    public String getInternalNameBot(int botId) {
+        return entityManager.find(BotConfigEntity.class, botId).getInternalName();
     }
 }

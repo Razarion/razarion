@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.widgets.quest;
 
+import com.btxtech.client.editor.widgets.bot.selector.BotListWidget;
 import com.btxtech.client.editor.widgets.itemtype.basecount.BaseItemTypeCountWidget;
 import com.btxtech.client.editor.widgets.placeconfig.PlaceConfigWidget;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -59,6 +60,9 @@ public class ConditionConfigPropertyPanel extends Composite {
     private TableRow addExistingTr;
     @Inject
     @DataField
+    private TableRow botIdsTr;
+    @Inject
+    @DataField
     private BaseItemTypeCountWidget baseItemTypeCount;
     @Inject
     @DataField
@@ -67,6 +71,9 @@ public class ConditionConfigPropertyPanel extends Composite {
     @Bound
     @DataField
     private PlaceConfigWidget placeConfig;
+    @Inject
+    @DataField
+    private BotListWidget botIds;
     @Inject
     @DataField
     private TableRow placeConfigTr;
@@ -119,8 +126,10 @@ public class ConditionConfigPropertyPanel extends Composite {
             switch (conditionTrigger) {
                 case SYNC_ITEM_KILLED:
                     baseItemTypeCountTr.getStyle().setProperty("display", "table-row");
+                    botIdsTr.getStyle().setProperty("display", "table-row");
                     countTr.getStyle().setProperty("display", "table-row");
                     baseItemTypeCount.init(conditionConfig.getComparisonConfig().getTypeCount(), itemTypeCount -> conditionConfig.getComparisonConfig().setTypeCount(itemTypeCount));
+                    botIds.init(conditionConfig.getComparisonConfig().getBotIds(), botIds -> conditionConfig.getComparisonConfig().setBotIds(botIds));
                     break;
                 case HARVEST:
                     countTr.getStyle().setProperty("display", "table-row");
@@ -135,7 +144,9 @@ public class ConditionConfigPropertyPanel extends Composite {
                     break;
                 case SYNC_ITEM_POSITION:
                     baseItemTypeCountTr.getStyle().setProperty("display", "table-row");
+                    botIdsTr.getStyle().setProperty("display", "table-row");
                     baseItemTypeCount.init(conditionConfig.getComparisonConfig().getTypeCount(), itemTypeCount -> conditionConfig.getComparisonConfig().setTypeCount(itemTypeCount));
+                    botIds.init(conditionConfig.getComparisonConfig().getBotIds(), botIds -> conditionConfig.getComparisonConfig().setBotIds(botIds));
                     placeConfigTr.getStyle().setProperty("display", "table-row");
                     addExistingTr.getStyle().setProperty("display", "table-row");
                     addExisting.setChecked(conditionConfig.getComparisonConfig().getAddExisting() != null && conditionConfig.getComparisonConfig().getAddExisting());
@@ -157,6 +168,7 @@ public class ConditionConfigPropertyPanel extends Composite {
         timeTr.getStyle().setProperty("display", "none");
         addExistingTr.getStyle().setProperty("display", "none");
         baseItemTypeCountTr.getStyle().setProperty("display", "none");
+        botIdsTr.getStyle().setProperty("display", "none");
         placeConfigTr.getStyle().setProperty("display", "none");
     }
 }

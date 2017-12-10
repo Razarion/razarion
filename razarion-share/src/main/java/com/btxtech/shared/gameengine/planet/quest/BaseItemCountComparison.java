@@ -17,8 +17,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -32,13 +30,9 @@ public class BaseItemCountComparison extends AbstractBaseItemComparison {
     private double countTotal;
     private Set<Integer> botIds;
 
-    public void init(int count, Collection<Integer> botIds) {
+    public void init(int count, Set<Integer> botIds) {
         this.count = count;
-        if (botIds != null) {
-            this.botIds = new HashSet<>(botIds);
-        } else {
-            this.botIds = null;
-        }
+        this.botIds = botIds;
         countTotal = count;
     }
 

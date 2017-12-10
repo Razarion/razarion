@@ -30,12 +30,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ListJoin;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +42,7 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class ServerGameEnginePersistence {
-    private Logger logger = Logger.getLogger(ServerGameEnginePersistence.class.getName());
+    // private Logger logger = Logger.getLogger(ServerGameEnginePersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -231,7 +229,7 @@ public class ServerGameEnginePersistence {
         userSelect.where(criteriaBuilder.equal(root.join(ServerLevelQuestEntity_.questConfigs).get(QuestConfigEntity_.id), questId));
         LevelEntity questLevelEntity = entityManager.createQuery(userSelect).getSingleResult();
         LevelEntity userLevelEntity = levelPersistence.read(levelId);
-        if(userLevelEntity.getNumber() < questLevelEntity.getNumber()) {
+        if (userLevelEntity.getNumber() < questLevelEntity.getNumber()) {
             throw new IllegalArgumentException("The user is not allowed to activate a quest due to wrong level. questLevelEntity: " + questLevelEntity + " userLevelEntity: " + userLevelEntity);
         }
         return entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(locale);

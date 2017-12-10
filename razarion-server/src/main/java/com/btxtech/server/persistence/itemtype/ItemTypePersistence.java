@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.itemtype;
 import com.btxtech.server.persistence.AudioPersistence;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
+import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -185,5 +186,17 @@ public class ItemTypePersistence {
         boxItemTypeEntity.setShape3DId(shape3DPersistence.getColladaEntity(boxItemType.getShape3DId()));
         boxItemTypeEntity.setThumbnail(imagePersistence.getImageLibraryEntity(boxItemType.getThumbnail()));
         entityManager.merge(boxItemTypeEntity);
+    }
+
+    // This should not be here. But there is no BotPersistence...
+    public BotConfigEntity readBotConfigEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        BotConfigEntity botConfigEntity = entityManager.find(BotConfigEntity.class, id);
+        if (botConfigEntity == null) {
+            throw new IllegalArgumentException("No BotConfigEntity for id: " + id);
+        }
+        return botConfigEntity;
     }
 }

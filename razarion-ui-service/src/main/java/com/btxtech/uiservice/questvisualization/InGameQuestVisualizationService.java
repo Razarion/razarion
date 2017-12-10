@@ -110,7 +110,7 @@ public class InGameQuestVisualizationService {
                         itemTypeFilter = quest.getConditionConfig().getComparisonConfig().getTypeCount().keySet();
                     }
                 }
-                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getAttackColor(), baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter, quest.getConditionConfig().getComparisonConfig().getBotIds()));
+                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getAttackColor(), baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter, quest.getConditionConfig().getComparisonConfig().toBotIdSet()));
                 break;
             case HARVEST:
                 setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getHarvestColor(), resourceUiService.createSyncItemSetPositionMonitor());

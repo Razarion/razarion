@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.gameengine.datatypes.config;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -82,5 +83,13 @@ public class ComparisonConfig {
     public ComparisonConfig setBotIds(List<Integer> botIds) {
         this.botIds = botIds;
         return this;
+    }
+
+    public Set<Integer> toBotIdSet() {
+        if (botIds != null) {
+            return new HashSet<>(botIds);
+        } else {
+            return null;
+        }
     }
 }

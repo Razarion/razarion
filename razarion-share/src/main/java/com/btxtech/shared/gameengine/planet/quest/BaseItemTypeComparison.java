@@ -20,9 +20,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,14 +35,10 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
     private Map<BaseItemType, Integer> total;
     private Set<Integer> botIds;
 
-    public void init(Map<BaseItemType, Integer> baseItemType, Collection<Integer> botIds) {
+    public void init(Map<BaseItemType, Integer> baseItemType, Set<Integer> botIds) {
         remaining = new HashMap<>(baseItemType);
         total = new HashMap<>(baseItemType);
-        if (botIds != null) {
-            this.botIds = new HashSet<>(botIds);
-        } else {
-            this.botIds = null;
-        }
+        this.botIds = botIds;
     }
 
     @Override
