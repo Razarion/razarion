@@ -16,8 +16,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.MapKeyJoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -45,12 +45,11 @@ public class ComparisonConfigEntity {
     private Boolean addExisting;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity placeConfig;
-    @OneToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "QUEST_COMPARISON_BOT",
             joinColumns = @JoinColumn(name = "comparisonConfig"),
             inverseJoinColumns = @JoinColumn(name = "botConfig"))
     private List<BotConfigEntity> bots;
-
 
     public ComparisonConfig toComparisonConfig() {
         ComparisonConfig comparisonConfig = new ComparisonConfig().setCount(count).setTime(time).setAddExisting(addExisting);
