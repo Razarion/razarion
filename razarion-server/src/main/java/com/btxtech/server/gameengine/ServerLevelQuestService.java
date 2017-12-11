@@ -93,6 +93,7 @@ public class ServerLevelQuestService implements QuestListener {
                 historyPersistence.get().onQuest(userContext.getHumanPlayerId(), newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
                 questService.activateCondition(userContext.getHumanPlayerId(), newQuest);
                 clientSystemConnectionService.onQuestActivated(userContext.getHumanPlayerId(), newQuest);
+                clientSystemConnectionService.onQuestProgressInfo(userContext.getHumanPlayerId(), questService.getQuestProgressInfo(userContext.getHumanPlayerId()));
             }
         }
     }
@@ -158,6 +159,7 @@ public class ServerLevelQuestService implements QuestListener {
             historyPersistence.get().onQuest(humanPlayerId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
             questService.activateCondition(humanPlayerId, newQuest);
             clientSystemConnectionService.onQuestActivated(humanPlayerId, newQuest);
+            clientSystemConnectionService.onQuestProgressInfo(humanPlayerId, questService.getQuestProgressInfo(humanPlayerId));
         }
     }
 
@@ -212,5 +214,6 @@ public class ServerLevelQuestService implements QuestListener {
         historyPersistence.get().onQuest(humanPlayerId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
         questService.activateCondition(humanPlayerId, newQuest);
         clientSystemConnectionService.onQuestActivated(humanPlayerId, newQuest);
+        clientSystemConnectionService.onQuestProgressInfo(humanPlayerId, questService.getQuestProgressInfo(humanPlayerId));
     }
 }

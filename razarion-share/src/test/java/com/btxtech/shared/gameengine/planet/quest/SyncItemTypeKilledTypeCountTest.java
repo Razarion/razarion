@@ -12,7 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,27 +42,27 @@ public class SyncItemTypeKilledTypeCountTest extends AbstractQuestServiceTest {
         tickPlanetServiceBaseServiceActive();
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
         Assert.assertNull(getTestGameLogicListener().getQuestProgresses().get(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()));
-        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), null, GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
         // Kill but not in TypeCount
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botHarvester, GameTestContent.HARVESTER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
         Assert.assertNull(getTestGameLogicListener().getQuestProgresses().get(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()));
-        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), null, GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
         // Kill first
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botFactory, GameTestContent.FACTORY_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
-        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), null, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), null, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
         // Kill second
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBuilder, GameTestContent.BUILDER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 1);
+        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), null, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 1);
     }
 
     @Test
@@ -82,31 +81,32 @@ public class SyncItemTypeKilledTypeCountTest extends AbstractQuestServiceTest {
         QuestConfig questConfig = new QuestConfig().setId(9001).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setBotIds(Arrays.asList(botFactory.getBotId(), botBuilder.getBotId()))));
         getQuestService().addQuestListener(createQuestListener());
         getQuestService().activateCondition(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), questConfig);
+        String expectedBotBasesInformation = "setupFactoryBot id:" + botFactory.getBotId() + ", setupBuilderBot id:" + botBuilder.getBotId();
         // showDisplay();
         // Verify
         tickPlanetServiceBaseServiceActive();
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
         Assert.assertNull(getTestGameLogicListener().getQuestProgresses().get(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()));
-        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), expectedBotBasesInformation, GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
         // Kill but not in BotIds
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBuilderUnused, GameTestContent.BUILDER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
         Assert.assertNull(getTestGameLogicListener().getQuestProgresses().get(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()));
-        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), expectedBotBasesInformation, GameTestContent.FACTORY_ITEM_TYPE_ID, 0, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
         // Kill first
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botFactory, GameTestContent.FACTORY_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
-        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), expectedBotBasesInformation, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
+        assetQuestProgressTypeCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), expectedBotBasesInformation, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 0);
         // Kill second
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBuilder, GameTestContent.BUILDER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 1);
+        assetQuestProgressTypeCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), expectedBotBasesInformation, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.BUILDER_ITEM_TYPE_ID, 1);
     }
 }

@@ -106,7 +106,7 @@ public class BotRunner {
         }
     }
 
-    BotConfig getBotConfig() {
+    public BotConfig getBotConfig() {
         return botConfig;
     }
 

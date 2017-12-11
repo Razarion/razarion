@@ -68,6 +68,6 @@ public class BaseItemCountComparison extends AbstractBaseItemComparison {
 
     @Override
     public QuestProgressInfo generateQuestProgressInfo() {
-        return new QuestProgressInfo().setCount((int) (countTotal - count));
+        return new QuestProgressInfo().setCount((int) (countTotal - count)).setBotBasesInformation(setupBotBasesInformation(botIds));
     }
 }

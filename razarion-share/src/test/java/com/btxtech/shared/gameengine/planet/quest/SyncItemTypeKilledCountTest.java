@@ -38,27 +38,27 @@ public class SyncItemTypeKilledCountTest extends AbstractQuestServiceTest {
         tickPlanetServiceBaseServiceActive();
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
         Assert.assertNull(getTestGameLogicListener().getQuestProgresses().get(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()));
-        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 0);
+        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 0, null);
         // Kill first
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBase1, GameTestContent.HARVESTER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 1);
-        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 1);
+        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 1, null);
+        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 1, null);
         // Kill second
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBase2, GameTestContent.HARVESTER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 2);
-        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 2);
+        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 2, null);
+        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 2, null);
         // Kill third
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBase3, GameTestContent.HARVESTER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 3);
+        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 3, null);
     }
 
     @Test
@@ -74,6 +74,7 @@ public class SyncItemTypeKilledCountTest extends AbstractQuestServiceTest {
         QuestConfig questConfig = new QuestConfig().setId(9002).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1).setBotIds(Collections.singletonList(botBase3.getBotId()))));
         getQuestService().addQuestListener(createQuestListener());
         getQuestService().activateCondition(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), questConfig);
+        String expectedBotBasesInformation = "TestTargetHarvesterBot id:" + botBase3.getBotId();
         // showDisplay();
         // Verify
         tickPlanetServiceBaseServiceActive();
@@ -85,20 +86,20 @@ public class SyncItemTypeKilledCountTest extends AbstractQuestServiceTest {
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
         Assert.assertNull(getTestGameLogicListener().getQuestProgresses().get(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()));
-        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 0);
+        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 0, expectedBotBasesInformation);
         // Kill second
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBase2, GameTestContent.HARVESTER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestNotPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
         Assert.assertNull(getTestGameLogicListener().getQuestProgresses().get(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()));
-        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 0);
+        assetQuestProgressCountDownload(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 0, expectedBotBasesInformation);
         // Kill third
         getCommandService().attack(humanBaseContext.getAttacker(), findSyncBaseItem(botBase3, GameTestContent.HARVESTER_ITEM_TYPE_ID), true);
         tickPlanetServiceBaseServiceActive();
         // Verify
         assertQuestPassed(humanBaseContext.getPlayerBaseFull().getHumanPlayerId());
-        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 1);
+        assetQuestProgressCountGameLogicListener(humanBaseContext.getPlayerBaseFull().getHumanPlayerId(), 1, expectedBotBasesInformation);
 
     }
 }

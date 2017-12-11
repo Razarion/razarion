@@ -397,15 +397,19 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
 
         TestClientSystemConnection systemConnection = activateQuest(sessionId);
 
-        systemConnection.assertMessageSentCount(8);
-        systemConnection.assertMessageSent(0, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_1 + ",\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(1, "QUEST_ACTIVATED#null");
-        systemConnection.assertMessageSent(2, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_2 + ",\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(3, "QUEST_PASSED#{\"id\":" + SERVER_QUEST_ID_L4_2 + ",\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(4, "XP_CHANGED#200");
-        systemConnection.assertMessageSent(5, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_1 + ",\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
-        systemConnection.assertMessageSent(6, "QUEST_ACTIVATED#null");
-        systemConnection.assertMessageSent(7, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_1 + ",\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null}}}");
+        systemConnection.assertMessageSentCount(12);
+        systemConnection.assertMessageSent(0, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_1 + ",\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null,\"botIds\":null}}}");
+        systemConnection.assertMessageSent(1, "QUEST_PROGRESS_CHANGED#null");
+        systemConnection.assertMessageSent(2, "QUEST_ACTIVATED#null");
+        systemConnection.assertMessageSent(3, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_2 + ",\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null,\"botIds\":null}}}");
+        systemConnection.assertMessageSent(4, "QUEST_PROGRESS_CHANGED#null");
+        systemConnection.assertMessageSent(5, "QUEST_PASSED#{\"id\":" + SERVER_QUEST_ID_L4_2 + ",\"internalName\":\"Test Server Quest L4 2\",\"title\":null,\"description\":null,\"xp\":200,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_KILLED\",\"comparisonConfig\":{\"count\":2,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null,\"botIds\":null}}}");
+        systemConnection.assertMessageSent(6, "XP_CHANGED#200");
+        systemConnection.assertMessageSent(7, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_1 + ",\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null,\"botIds\":null}}}");
+        systemConnection.assertMessageSent(8, "QUEST_PROGRESS_CHANGED#null");
+        systemConnection.assertMessageSent(9, "QUEST_ACTIVATED#null");
+        systemConnection.assertMessageSent(10, "QUEST_ACTIVATED#{\"id\":" + SERVER_QUEST_ID_L4_1 + ",\"internalName\":\"Test Server Quest L4 1\",\"title\":null,\"description\":null,\"xp\":100,\"razarion\":0,\"crystal\":0,\"passedMessage\":null,\"hidePassedDialog\":false,\"conditionConfig\":{\"conditionTrigger\":\"SYNC_ITEM_CREATED\",\"comparisonConfig\":{\"count\":1,\"typeCount\":null,\"time\":null,\"addExisting\":null,\"placeConfig\":null,\"botIds\":null}}}");
+        systemConnection.assertMessageSent(11, "QUEST_PROGRESS_CHANGED#null");
 
         assertCount(7, QuestHistoryEntity.class);
         assertCount(2, LevelHistoryEntity.class);
@@ -418,12 +422,15 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         // Level up LEVEL_4_ID
         EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(false);
         questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+        EasyMock.expect(questServiceMock.getQuestProgressInfo(EasyMock.anyObject())).andReturn(null);
         // Activate quest SERVER_QUEST_ID_L4_2
         EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(true);
         questServiceMock.deactivateActorCondition(EasyMock.anyObject());
         questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+        EasyMock.expect(questServiceMock.getQuestProgressInfo(EasyMock.anyObject())).andReturn(null);
         // Pass Quest SERVER_QUEST_ID_L4_2
         questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+        EasyMock.expect(questServiceMock.getQuestProgressInfo(EasyMock.anyObject())).andReturn(null);
         // Activate quest wrong level
         EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(true);
         questServiceMock.deactivateActorCondition(EasyMock.anyObject());
@@ -432,6 +439,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         // Level up LEVEL_5_ID
         EasyMock.expect(questServiceMock.hasActiveQuest(EasyMock.anyObject())).andReturn(false);
         questServiceMock.activateCondition(EasyMock.anyObject(), EasyMock.anyObject());
+        EasyMock.expect(questServiceMock.getQuestProgressInfo(EasyMock.anyObject())).andReturn(null);
 
         EasyMock.replay(questServiceMock);
         SimpleTestEnvironment.Ejector ejector = SimpleTestEnvironment.injectService("questService", serverLevelQuestService, questServiceMock);

@@ -10,6 +10,7 @@ public class QuestProgressInfo {
     private Integer count;
     private Map<Integer, Integer> typeCount;
     private Integer time;
+    private String botBasesInformation;
 
     public Integer getCount() {
         return count;
@@ -35,6 +36,15 @@ public class QuestProgressInfo {
 
     public QuestProgressInfo setTime(Integer time) {
         this.time = time;
+        return this;
+    }
+
+    public String getBotBasesInformation() {
+        return botBasesInformation;
+    }
+
+    public QuestProgressInfo setBotBasesInformation(String botBasesInformation) {
+        this.botBasesInformation = botBasesInformation;
         return this;
     }
 }

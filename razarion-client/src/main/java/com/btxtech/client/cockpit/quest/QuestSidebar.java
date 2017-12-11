@@ -58,11 +58,17 @@ public class QuestSidebar extends Composite {
     private Label descriptionLabel;
     @Inject
     @DataField
+    private Div questBotBasesDiv;
+    @Inject
+    @DataField
+    private Div questBotBasesDescription;
+    @Inject
+    @DataField
     @ListContainer("tbody")
     private ListComponent<ProgressTableRowModel, ProgressTableRowWidget> progressTable;
     @Inject
     @DataField
-    private Div questDiv;
+    private Div questProgressDiv;
     @Inject
     @DataField
     private Button questDialogButton;
@@ -93,10 +99,10 @@ public class QuestSidebar extends Composite {
         if (descriptionConfig == null) {
             titleLabel.setText(I18nHelper.getConstants().noActiveQuest());
             descriptionLabel.setText("");
-            questDiv.getStyle().setProperty("display", "none");
+            questProgressDiv.getStyle().setProperty("display", "none");
             questDialogButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         } else {
-            questDiv.getStyle().setProperty("display", "block");
+            questProgressDiv.getStyle().setProperty("display", "block");
             titleLabel.setText(descriptionConfig.getTitle());
             descriptionLabel.setText(descriptionConfig.getDescription());
             if (descriptionConfig instanceof QuestConfig) {
@@ -105,6 +111,7 @@ public class QuestSidebar extends Composite {
             } else {
                 progressTable.setValue(new ArrayList<>());
             }
+            setupQuestBotBasesDescription(questProgressInfo);
             if (showQuestSelectionButton) {
                 questDialogButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
             } else {
@@ -114,7 +121,17 @@ public class QuestSidebar extends Composite {
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
+        setupQuestBotBasesDescription(questProgressInfo);
         setupProgressTableModels(questProgressInfo);
+    }
+
+    private void setupQuestBotBasesDescription(QuestProgressInfo questProgressInfo) {
+        if (questProgressInfo != null && questProgressInfo.getBotBasesInformation() != null) {
+            questBotBasesDiv.getStyle().setProperty("display", "block");
+            questBotBasesDescription.setTextContent(I18nHelper.getConstants().questBotBasesText(questProgressInfo.getBotBasesInformation()));
+        } else {
+            questBotBasesDiv.getStyle().setProperty("display", "none");
+        }
     }
 
     private void setupProgressTableModels(QuestProgressInfo questProgressInfo) {

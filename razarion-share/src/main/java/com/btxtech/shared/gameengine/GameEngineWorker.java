@@ -158,7 +158,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 boxService.dropBoxes((List<BoxItemPosition>) controlPackage.getSingleData());
                 break;
             case ACTIVATE_QUEST:
-                questService.activateCondition(userContext.getHumanPlayerId(), (QuestConfig) controlPackage.getData(0));
+                activateQuest(userContext.getHumanPlayerId(), (QuestConfig) controlPackage.getData(0));
                 break;
             case COMMAND_ATTACK:
                 commandService.attack((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
@@ -306,6 +306,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             exceptionHandler.handleException(throwable);
         }
         sendToClient(GameEngineControlPackage.Command.STOP_RESPONSE);
+    }
+
+    private void activateQuest(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
+        questService.activateCondition(humanPlayerId, questConfig);
+        onQuestProgressUpdate(humanPlayerId, questService.getQuestProgressInfo(humanPlayerId));
     }
 
     @Override

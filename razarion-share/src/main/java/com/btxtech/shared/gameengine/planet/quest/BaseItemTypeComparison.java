@@ -88,6 +88,6 @@ public class BaseItemTypeComparison extends AbstractBaseItemComparison {
             int count = entry.getValue() - remaining;
             typeCount.put(entry.getKey().getId(), count);
         }
-        return new QuestProgressInfo().setTypeCount(typeCount);
+        return new QuestProgressInfo().setTypeCount(typeCount).setBotBasesInformation(setupBotBasesInformation(botIds));
     }
 }

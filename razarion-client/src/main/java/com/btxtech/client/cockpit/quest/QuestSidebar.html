@@ -9,16 +9,25 @@
 
 <div data-field="questSidebar">
     <div class="quest-sidebar-container">
-        <div data-field="titleLabel" class="quest-sidebar-title"></div>
+        <div class="quest-sidebar-title">
+            <div data-field="titleLabel"></div>
+            <hr class="modal-dialog-hr">
+        </div>
     </div>
     <div class="quest-sidebar-container">
         <div data-field="descriptionLabel" class="quest-sidebar-center"></div>
     </div>
-    <div class="quest-sidebar-container" data-field="questDiv">
+    <div class="quest-sidebar-container" data-field="questBotBasesDiv">
+        <div class="quest-sidebar-center" style="padding-top: 3px">
+            <img src="images/Information.png" style="display: inline;vertical-align: middle;">
+            <div class="quest-sidebar-bot-bases-description" data-field="questBotBasesDescription"></div>
+        </div>
+    </div>
+    <div class="quest-sidebar-container" data-field="questProgressDiv" style="padding-top: 5px">
         <div class="quest-sidebar-center">
-            <table>
+            <table class="quest-sidebar-progress-table">
                 <tbody data-field="progressTable">
-                <tr data-field="progressTableRow" style="vertical-align:middle">
+                <tr data-field="progressTableRow" style="vertical-align:middle;">
                     <td>
                         <img src="" data-field="progressStatusImage">
                     </td>
@@ -38,10 +47,12 @@
     </div>
     <div class="quest-sidebar-container">
         <div class="quest-sidebar-footer">
+            <hr class="modal-dialog-hr">
             <label class="quest-sidebar-footer-text" data-field="questVisualizationLabel">Visualisation
-                <input data-field="questVisualizationCheckbox" type="checkbox" name="name" value="true">
+                <input data-field="questVisualizationCheckbox" type="checkbox" name="name" value="true"
+                       style="vertical-align: middle;">
             </label>
-            <button data-field="questDialogButton">Quests</button>
+            <button type="button" data-field="questDialogButton">Quests</button>
         </div>
     </div>
 </div>

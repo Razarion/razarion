@@ -319,8 +319,8 @@ a:active {
     display: table-cell;
     font-weight: bold;
     width: 100%;
-    height: 2em;
     color: #3289bd;
+    padding-bottom: 10px;
 }
 
 .quest-sidebar-center {
@@ -330,11 +330,22 @@ a:active {
     color: #d8d0d0;
 }
 
+.quest-sidebar-bot-bases-description {
+    display: inline;
+    vertical-align: middle;
+    font-size: 85%
+}
+
+.quest-sidebar-progress-table {
+    border: 1px solid #3289bd5c;
+    background-color: #025cff2e;
+}
+
 .quest-sidebar-footer {
     display: table-cell;
     width: 100%;
-    height: 20px;
     text-align: center;
+    padding-top: 10px;
 }
 
 .quest-sidebar-footer-text {

@@ -245,6 +245,8 @@ public interface I18nConstants {
     String multiplayer();
 
     // Quests
+    String questBotBasesText(String botBases);
+
     String quests();
 
     String nextPlanet();
