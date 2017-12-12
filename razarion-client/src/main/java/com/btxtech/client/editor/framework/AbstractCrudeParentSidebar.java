@@ -15,6 +15,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -97,7 +98,7 @@ public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider,
             selector.setValue(null);
             content.setWidget(null);
         }
-        selector.setAcceptableValues(objectNameIds);
+        selector.setAcceptableValues(objectNameIds.stream().sorted(ObjectNameId::compare).collect(Collectors.toList()));
     }
 
     public T getConfigObject() {
