@@ -622,18 +622,13 @@ a:active {
 
 .unlock-dialog-crystals {
     font-size: 90%;
+    margin-bottom: 10px;
 }
 
-.unlock-dialog-table {
-    border-collapse: collapse;
-}
-
-.unlock-dialog-table-row {
-    border: 1px solid #d8d0d0;
-    background-color: rgba(2, 48, 86, 0.38);
-}
-
-.unlock-dialog-cell {
+.unlock-dialog-item {
+    border: 1px solid #3289bd5c;
+    background-color: #025cff2e;
+    margin-bottom: 10px;
 }
 
 .unlock-dialog-tr-title {

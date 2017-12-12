@@ -51,18 +51,8 @@ public class UnlockDialog extends Composite implements ModalDialogContent<Void> 
     public void init(Void aVoid) {
         unlockDialogCrystals.setTextContent(I18nHelper.getConstants().availableCrystals("<" + I18nHelper.getConstants().loading() + ">"));
         DOMUtil.removeAllElementChildren(unlockTable.getElement()); // Remove placeholder table row from template.
-        if (unlockUiService.hasItems2Unlock()) {
-            unlockDialogText.setTextContent(I18nHelper.getConstants().unlockDialogText());
-            unlockDialogTable.getStyle().setProperty("display", "table");
-            unlockTable.setValue(unlockUiService.getLevelUnlockConfigs().stream().map(levelUnlockConfig -> new UnlockItemModel(levelUnlockConfig, this)).collect(Collectors.toList()));
-        } else {
-            unlockDialogText.setTextContent(I18nHelper.getConstants().nothingToUnlockDialogText());
-            unlockDialogTable.getStyle().setProperty("display", "none");
-        }
-        inventoryProvider.call((RemoteCallback<Integer>) crystals -> unlockDialogCrystals.setTextContent(I18nHelper.getConstants().availableCrystals(Integer.toString(crystals))), (message, throwable) -> {
-            logger.log(Level.SEVERE, "UnlockDialog: InventoryProvider.loadCrystals() failed: message: " + message, throwable);
-            return false;
-        }).loadCrystals();
+        display();
+        unlockUiService.setLevelUnlockListener(this::display);
     }
 
     @Override
@@ -76,6 +66,21 @@ public class UnlockDialog extends Composite implements ModalDialogContent<Void> 
 
     @Override
     public void onClose() {
+        unlockUiService.setLevelUnlockListener(null);
+    }
 
+    private void display() {
+        if (unlockUiService.hasItems2Unlock()) {
+            unlockDialogText.setTextContent(I18nHelper.getConstants().unlockDialogText());
+            unlockDialogTable.getStyle().setProperty("display", "table");
+            unlockTable.setValue(unlockUiService.getLevelUnlockConfigs().stream().map(levelUnlockConfig -> new UnlockItemModel(levelUnlockConfig, this)).collect(Collectors.toList()));
+        } else {
+            unlockDialogText.setTextContent(I18nHelper.getConstants().nothingToUnlockDialogText());
+            unlockDialogTable.getStyle().setProperty("display", "none");
+        }
+        inventoryProvider.call((RemoteCallback<Integer>) crystals -> unlockDialogCrystals.setTextContent(I18nHelper.getConstants().availableCrystals(Integer.toString(crystals))), (message, throwable) -> {
+            logger.log(Level.SEVERE, "UnlockDialog: InventoryProvider.loadCrystals() failed: message: " + message, throwable);
+            return false;
+        }).loadCrystals();
     }
 }

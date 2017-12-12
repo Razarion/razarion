@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 public abstract class UnlockUiService {
     private List<LevelUnlockConfig> levelUnlockConfigs;
     private Consumer<Boolean> blinkListener;
+    private Runnable levelUnlockListener;
 
     protected abstract void unlockViaCrystalCall(LevelUnlockConfig levelUnlockConfig, Consumer<UnlockResultInfo> callback);
 
@@ -20,6 +21,9 @@ public abstract class UnlockUiService {
         this.levelUnlockConfigs = levelUnlockConfigs;
         if (blinkListener != null) {
             blinkListener.accept(hasItems2Unlock());
+        }
+        if (levelUnlockListener != null) {
+            levelUnlockListener.run();
         }
     }
 
@@ -45,5 +49,9 @@ public abstract class UnlockUiService {
     public void setBlinkListener(Consumer<Boolean> blinkListener) {
         this.blinkListener = blinkListener;
         blinkListener.accept(hasItems2Unlock());
+    }
+
+    public void setLevelUnlockListener(Runnable levelUnlockListener) {
+        this.levelUnlockListener = levelUnlockListener;
     }
 }
