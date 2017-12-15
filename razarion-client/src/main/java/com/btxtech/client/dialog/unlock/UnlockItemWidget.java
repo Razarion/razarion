@@ -75,7 +75,11 @@ public class UnlockItemWidget implements TakesValue<UnlockItemModel>, IsElement 
     @EventHandler("unlockButton")
     private void onUnlockButtonClicked(ClickEvent event) {
         unlockUiService.unlockViaCrystal(unlockItemModel.getLevelUnlockConfig(), success -> {
-            if (!success) {
+            if (success) {
+                if(!unlockUiService.hasItems2Unlock()) {
+                    unlockItemModel.closeDialog();
+                }
+            } else {
                 modalDialogManager.showMessageDialog(I18nHelper.getConstants().unlockFailed(), I18nHelper.getConstants().unlockNotEnoughCrystals());
             }
         });
