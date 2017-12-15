@@ -100,6 +100,7 @@ public class QuestSidebar extends Composite {
             titleLabel.setText(I18nHelper.getConstants().noActiveQuest());
             descriptionLabel.setText("");
             questProgressDiv.getStyle().setProperty("display", "none");
+            setupQuestBotBasesDescription(null);
             questDialogButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         } else {
             questProgressDiv.getStyle().setProperty("display", "block");
