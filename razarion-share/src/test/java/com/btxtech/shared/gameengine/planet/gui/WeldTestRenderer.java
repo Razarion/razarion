@@ -67,6 +67,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private TerrainShape actual;
     private TerrainShapeTile[][] terrainShapeTiles;
     private UserDataRenderer userDataRenderer;
+    private UserDataRenderer moveUserDataRenderer;
     private double zMin = 0;
     private double zMax = 20;
     private WeldTestController weldTestController;
@@ -84,6 +85,14 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
             field.setAccessible(false);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void setMoveUserDataRenderer(Object[] userObjects) {
+        if (userObjects != null) {
+            moveUserDataRenderer = new UserDataRenderer(this, userObjects);
+        } else {
+            moveUserDataRenderer = null;
         }
     }
 
@@ -123,6 +132,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         renderItemTypes();
         if (userDataRenderer != null) {
             userDataRenderer.render();
+        }
+        if (moveUserDataRenderer != null) {
+            moveUserDataRenderer.render();
         }
         if (DebugStaticStorage.getPolygon() != null) {
             strokePolygon(DebugStaticStorage.getPolygon(), FAT_LINE_WIDTH, Color.BLUE, true);
@@ -616,7 +628,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
     public void drawSyncItem(SyncItem syncItem) {
         SyncPhysicalArea syncPhysicalArea = syncItem.getSyncPhysicalArea();
-        if(!syncPhysicalArea.hasPosition()) {
+        if (!syncPhysicalArea.hasPosition()) {
             return;
         }
         DecimalPosition position = syncPhysicalArea.getPosition2d();

@@ -82,6 +82,11 @@ public abstract class AbstractTerrainTestController implements Initializable {
     public void onMouseMoved(Event event) {
         DecimalPosition position = abstractTerrainTestRenderer.convertMouseToModel(event);
         mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
+        onMouseMoved(position);
+    }
+
+    // Override in subclass
+    protected void onMouseMoved(DecimalPosition position) {
     }
 
     public void onMousePressed(MouseEvent event) {

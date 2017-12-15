@@ -240,11 +240,11 @@ public class TerrainShapeSubNode {
     }
 
     public void outerDirectionCallback(AStarContext aStarContext, DecimalPosition subNodeRelative, DecimalPosition subNodeAbsolute, int destinationDepth, Index direction, TerrainShapeNode.DirectionConsumer directionConsumer) {
-        if (destinationDepth >= depth) {
+        if (destinationDepth <= depth) {
             outerDirectionCallback(aStarContext, direction, subNodeAbsolute, directionConsumer);
             return;
         }
-        double length = TerrainUtil.calculateSubNodeLength(this.depth);
+        double length = TerrainUtil.calculateSubNodeLength(destinationDepth);
         if (subNodeRelative.getX() < length && subNodeRelative.getY() < length) {
             getChildSubNodeBL().outerDirectionCallback(aStarContext, subNodeRelative, subNodeAbsolute, destinationDepth, direction, directionConsumer);
         } else if (subNodeRelative.getX() >= length && subNodeRelative.getY() < length) {

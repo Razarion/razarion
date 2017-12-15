@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
@@ -15,6 +16,8 @@ import javafx.scene.control.TextField;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -60,6 +63,7 @@ public class WeldTestController extends AbstractTerrainTestController {
     @FXML
     private CheckBox shapeWaterCheck;
     private Object[] userObjects;
+    private MouseMoveCallback mouseMoveCallback;
 
     @Override
     protected AbstractTerrainTestRenderer setupRenderer() {
@@ -93,7 +97,27 @@ public class WeldTestController extends AbstractTerrainTestController {
     }
 
     public void setUserObjects(Object[] userObjects) {
-        this.userObjects = userObjects;
+        List<Object> userObjectsCopy = new ArrayList<>();
+        for (Object userObject : userObjects) {
+            if (userObject instanceof MouseMoveCallback) {
+                mouseMoveCallback = (MouseMoveCallback) userObject;
+            } else {
+                userObjectsCopy.add(userObject);
+            }
+        }
+        this.userObjects = userObjectsCopy.toArray();
+    }
+
+    @Override
+    public void onMouseMoved(DecimalPosition position) {
+        if (mouseMoveCallback != null) {
+            Object[] userObject = mouseMoveCallback.onMouseMove(position);
+            if (userObject != null) {
+                ((WeldTestRenderer) getAbstractTerrainTestRenderer()).setMoveUserDataRenderer(userObject);
+                getAbstractTerrainTestRenderer().render();
+                ((WeldTestRenderer) getAbstractTerrainTestRenderer()).setMoveUserDataRenderer(null);
+            }
+        }
     }
 
     protected void onMousePressedTerrain(DecimalPosition position) {

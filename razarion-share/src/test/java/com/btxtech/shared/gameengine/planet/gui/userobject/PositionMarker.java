@@ -3,6 +3,8 @@ package com.btxtech.shared.gameengine.planet.gui.userobject;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Rectangle2D;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +19,7 @@ public class PositionMarker {
     private Collection<Circle2D> circles = new ArrayList<>();
     private List<DecimalPosition> line;
     private List<Polygon2D> polygon2Ds = new ArrayList<>();
+    private List<RectColor> rectangle2Ds = new ArrayList<>();
 
     public PositionMarker addPosition(DecimalPosition positions) {
         positions.add(positions);
@@ -52,5 +55,32 @@ public class PositionMarker {
 
     public List<Polygon2D> getPolygon2Ds() {
         return polygon2Ds;
+    }
+
+    public List<RectColor> getRectangle2Ds() {
+        return rectangle2Ds;
+    }
+
+    public PositionMarker addRectangle2Ds(Rectangle2D rectangle2D, Color color) {
+        rectangle2Ds.add(new RectColor(rectangle2D, color));
+        return this;
+    }
+
+    public static class RectColor {
+        private Rectangle2D rectangle2D;
+        private Color color;
+
+        public RectColor(Rectangle2D rectangle2D, Color color) {
+            this.rectangle2D = rectangle2D;
+            this.color = color;
+        }
+
+        public Rectangle2D getRectangle2D() {
+            return rectangle2D;
+        }
+
+        public Color getColor() {
+            return color;
+        }
     }
 }

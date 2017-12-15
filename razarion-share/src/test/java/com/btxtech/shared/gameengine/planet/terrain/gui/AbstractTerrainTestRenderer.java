@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
@@ -161,6 +162,11 @@ public abstract class AbstractTerrainTestRenderer {
                 gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
             }
         }
+    }
+
+    public void fillRectangle(Rectangle2D rectangle, Color color) {
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.8));
+        gc.fillRect(rectangle.getStart().getX(), rectangle.getStart().getY(), rectangle.width(), rectangle.height());
     }
 
     public void strokeVertexPolygon(List<Vertex> polygon, double strokeWidth, Color color, boolean showPoint) {
