@@ -636,6 +636,10 @@ a:active {
     font-weight: bold;
 }
 
+.unlock-dialog-tr {
+    width: 220px;
+}
+
 .unlock-dialog-tr-description {
     font-size: 90%;
 }
