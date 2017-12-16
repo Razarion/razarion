@@ -13,32 +13,39 @@
         <tbody data-field="questTable">
         <tr data-field="questSelectionTr">
             <td>
-                <img src="images/QuestIcon.jpg">
-            </td>
-            <td>
-                <table>
+                <table class="quest-dialog-item">
                     <tr>
                         <td>
-                            <div data-field="title" class="quest-selection-dialog-tr-title"></div>
+                            <img src="images/QuestIcon.jpg">
                         </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div data-field="description" class="quest-selection-dialog-tr-description"></div>
+                        <td class="quest-selection-dialog-description">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <div data-field="title" class="quest-selection-dialog-tr-title"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div data-field="description"
+                                             class="quest-selection-dialog-tr-description"></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div data-field="xp" class="quest-selection-dialog-tr-reward"></div>
+                                        <div data-field="razarion" class="quest-selection-dialog-tr-reward"></div>
+                                        <div data-field="crystal" class="quest-selection-dialog-tr-reward"></div>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
-                    </tr>
-                    <tr>
                         <td>
-                            <div data-field="xp" class="quest-selection-dialog-tr-reward"></div>
-                            <div data-field="razarion" class="quest-selection-dialog-tr-reward"></div>
-                            <div data-field="crystal" class="quest-selection-dialog-tr-reward"></div>
+                            <button type="button" data-field="activateButton">Activate</button>
                         </td>
                     </tr>
                 </table>
-            </td>
             <td>
-                <button type="button" data-field="activateButton">Activate</button>
-            </td>
         </tr>
         </tbody>
     </table>

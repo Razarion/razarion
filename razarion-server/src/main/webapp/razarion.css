@@ -353,6 +353,16 @@ a:active {
     color: #d8d0d0;
 }
 
+.quest-dialog-item {
+    border: 1px solid #3289bd5c;
+    background-color: #025cff2e;
+    margin-bottom: 10px;
+}
+
+.quest-selection-dialog-description {
+    width: 250px;
+}
+
 .quest-selection-dialog-tr-title {
     color: #3289bd;
     font-weight: bold;
