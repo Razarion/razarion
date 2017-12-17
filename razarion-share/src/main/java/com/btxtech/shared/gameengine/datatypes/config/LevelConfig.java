@@ -24,7 +24,7 @@ import java.util.Map;
  * Date: 17.05.2010
  * Time: 18:48:18
  */
-public class LevelConfig implements Serializable, ObjectNameIdProvider {
+public class LevelConfig implements ObjectNameIdProvider {
     private int levelId;
     private int number;
     private Map<Integer, Integer> itemTypeLimitation;
