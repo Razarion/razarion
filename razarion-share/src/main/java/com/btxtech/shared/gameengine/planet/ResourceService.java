@@ -22,6 +22,7 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistExcepti
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -48,6 +49,8 @@ public class ResourceService {
     private GameLogicService gameLogicService;
     @Inject
     private Instance<ResourceRegion> instance;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private final Map<Integer, SyncResourceItem> resources = new HashMap<>();
     private final Collection<ResourceRegion> resourceRegions = new ArrayList<>();
     private GameEngineMode gameEngineMode;
@@ -94,9 +97,13 @@ public class ResourceService {
     public void startResourceRegions() {
         synchronized (resourceRegions) {
             for (ResourceRegionConfig resourceRegionConfig : resourceRegionConfigs) {
-                ResourceRegion resourceRegion = instance.get();
-                resourceRegion.init(resourceRegionConfig);
-                resourceRegions.add(resourceRegion);
+                try {
+                    ResourceRegion resourceRegion = instance.get();
+                    resourceRegion.init(resourceRegionConfig);
+                    resourceRegions.add(resourceRegion);
+                } catch (Exception e) {
+                    exceptionHandler.handleException("ResourceService.startResourceRegions()", e);
+                }
             }
         }
     }

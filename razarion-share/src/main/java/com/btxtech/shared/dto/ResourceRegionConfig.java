@@ -21,7 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
  * Date: 08.05.2010
  * Time: 22:07:56
  */
-public class ResourceRegionConfig implements ObjectNameIdProvider{
+public class ResourceRegionConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
     private int count;
@@ -85,6 +85,6 @@ public class ResourceRegionConfig implements ObjectNameIdProvider{
 
     @Override
     public ObjectNameId createObjectNameId() {
-        return new ObjectNameId();
+        return new ObjectNameId(id, internalName);
     }
 }
