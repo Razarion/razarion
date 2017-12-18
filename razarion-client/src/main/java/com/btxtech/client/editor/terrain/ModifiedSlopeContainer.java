@@ -9,6 +9,8 @@ import com.btxtech.shared.utils.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -20,6 +22,7 @@ public class ModifiedSlopeContainer {
     private MapCollection<Index, ModifiedSlope> innerTiles = new MapCollection<>();
     private MapCollection<Index, ModifiedSlope> piercedTiles = new MapCollection<>();
     private Collection<ModifiedSlope> polygon2Ds = new ArrayList<>();
+    private List<Integer> deletedSlopeIds = new ArrayList<>();
     private int rasterSize;
 
     public ModifiedSlopeContainer(int rasterSize) {
@@ -38,13 +41,24 @@ public class ModifiedSlopeContainer {
     }
 
     public void add(ModifiedSlope modifiedSlope) {
-        polygon2Ds.add(modifiedSlope);
-        Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(modifiedSlope.getPolygon(), rasterSize);
-        polygon2DRasterizer.getInnerTiles().forEach(index -> innerTiles.put(index, modifiedSlope));
-        polygon2DRasterizer.getPiercedTiles().forEach(index -> piercedTiles.put(index, modifiedSlope));
+        try {
+            Polygon2DRasterizer polygon2DRasterizer = Polygon2DRasterizer.create(modifiedSlope.getPolygon(), rasterSize);
+            polygon2DRasterizer.getInnerTiles().forEach(index -> innerTiles.put(index, modifiedSlope));
+            polygon2DRasterizer.getPiercedTiles().forEach(index -> piercedTiles.put(index, modifiedSlope));
+            polygon2Ds.add(modifiedSlope);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "ModifiedSlopeContainer.add(). Original id:" + modifiedSlope.getOriginalId(), e);
+        }
     }
 
     public void remove(ModifiedSlope modifiedSlope) {
+        removeInternal(modifiedSlope);
+        if (!modifiedSlope.isCreated()) {
+            deletedSlopeIds.add(modifiedSlope.getOriginalId());
+        }
+    }
+
+    private void removeInternal(ModifiedSlope modifiedSlope) {
         Collection<Index> indexToRemove = new ArrayList<>();
         addTiles(innerTiles, modifiedSlope, indexToRemove);
         addTiles(piercedTiles, modifiedSlope, indexToRemove);
@@ -63,8 +77,14 @@ public class ModifiedSlopeContainer {
     }
 
     public void update(ModifiedSlope modifiedSlope) {
-        remove(modifiedSlope);
+        removeInternal(modifiedSlope);
         add(modifiedSlope);
+    }
+
+    public List<Integer> getAndClearDeletedSlopeIds() {
+        List<Integer> tmp = deletedSlopeIds;
+        deletedSlopeIds = new ArrayList<>();
+        return tmp;
     }
 
     public ModifiedSlope getPolygonAt(DecimalPosition position) {
@@ -73,8 +93,13 @@ public class ModifiedSlopeContainer {
             if (inner.size() == 1) {
                 return CollectionUtils.getFirst(inner);
             } else {
-                logger.severe("ModifiedSlopeContainer.getPolygonAt() More then one polygon in inner found at: " + position);
-                return CollectionUtils.getFirst(inner);
+                // 1 find parent
+                for (ModifiedSlope modifiedSlope : inner) {
+                    if (!modifiedSlope.isParent()) {
+                        return modifiedSlope;
+                    }
+                }
+                logger.severe("ModifiedSlopeContainer.getPolygonAt() can not find parent: " + position);
             }
         }
         return null;
@@ -85,9 +110,10 @@ public class ModifiedSlopeContainer {
             Collection<ModifiedSlope> pierced = piercedTiles.get(position.divide(rasterSize).toIndexFloor());
             if (pierced != null && !pierced.isEmpty()) {
                 if (pierced.size() == 1) {
-                    if (CollectionUtils.getFirst(pierced).getPolygon().isInside(position)) {
-                        return CollectionUtils.getFirst(pierced);
-                    }
+//                    if (CollectionUtils.getFirst(pierced).getPolygon().isInside(position)) {
+//                        return CollectionUtils.getFirst(pierced);
+//                    }
+                    return CollectionUtils.getFirst(pierced);
                 } else {
                     logger.severe("ModifiedSlopeContainer.getPolygonAt() More then one polygon in inner found at: " + position);
                     if (CollectionUtils.getFirst(pierced).getPolygon().isInside(position)) {

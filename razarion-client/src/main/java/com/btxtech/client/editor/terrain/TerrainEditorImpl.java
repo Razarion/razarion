@@ -378,23 +378,18 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private void setupChangedSlopes(TerrainEditorUpdate terrainEditorUpdate) {
         List<TerrainSlopePosition> createdSlopes = new ArrayList<>();
         List<TerrainSlopePosition> updatedSlopes = new ArrayList<>();
-        List<Integer> deletedSlopeIds = new ArrayList<>();
         for (ModifiedSlope modifiedSlope : modifiedSlopeContainer.getPolygons()) {
             if (modifiedSlope.isCreated()) {
                 if (!modifiedSlope.isEmpty()) {
                     createdSlopes.add(modifiedSlope.createTerrainSlopePositionNoId());
                 }
-            } else {
-                if (modifiedSlope.isEmpty()) {
-                    deletedSlopeIds.add(modifiedSlope.getOriginalId());
-                } else if (modifiedSlope.isDirty()) {
-                    updatedSlopes.add(modifiedSlope.createTerrainSlopePosition());
-                }
+            } else if (modifiedSlope.isDirty()) {
+                updatedSlopes.add(modifiedSlope.createTerrainSlopePosition());
             }
         }
         terrainEditorUpdate.setCreatedSlopes(createdSlopes);
         terrainEditorUpdate.setUpdatedSlopes(updatedSlopes);
-        terrainEditorUpdate.setDeletedSlopeIds(deletedSlopeIds);
+        terrainEditorUpdate.setDeletedSlopeIds(modifiedSlopeContainer.getAndClearDeletedSlopeIds());
     }
 
     private void setupChangedTerrainObjects(TerrainEditorUpdate terrainEditorUpdate) {

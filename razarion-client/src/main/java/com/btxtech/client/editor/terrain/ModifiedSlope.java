@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 09.05.2016.
  */
-public class ModifiedSlope{
+public class ModifiedSlope {
     private Integer originalId;
     private int slopeId;
     private boolean inverted;
@@ -24,6 +24,7 @@ public class ModifiedSlope{
     private Polygon2D polygon;
     private boolean hover;
     private boolean dirty;
+    private boolean isOriginalParent;
     private Map<DecimalPosition, Integer> drivewayPositions = new HashMap<>();
 
     public ModifiedSlope(TerrainSlopePosition original) {
@@ -37,6 +38,7 @@ public class ModifiedSlope{
                 drivewayPositions.put(terrainSlopeCorner.getPosition(), terrainSlopeCorner.getSlopeDrivewayId());
             }
         }
+        isOriginalParent = original.getChildren() != null && !original.getChildren().isEmpty();
         polygon = new Polygon2D(positions);
     }
 
@@ -140,5 +142,9 @@ public class ModifiedSlope{
 
     public boolean isPositionInDriveway(DecimalPosition position) {
         return drivewayPositions.containsKey(position);
+    }
+
+    public boolean isParent() {
+        return isOriginalParent;
     }
 }
