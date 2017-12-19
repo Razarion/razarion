@@ -1,12 +1,14 @@
 package com.btxtech.shared.utils;
 
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -167,5 +169,9 @@ public class CollectionUtils {
             throw new IllegalArgumentException("CollectionUtils.findStart(): Can not find valid position in list");
         }
         return offset;
+    }
+
+    public static List<BaseItemType> sortBaseItemTypeName(Collection<BaseItemType> baseItemTypes) {
+        return baseItemTypes.stream().sorted(BaseItemType::nameComparator).collect(Collectors.toList());
     }
 }

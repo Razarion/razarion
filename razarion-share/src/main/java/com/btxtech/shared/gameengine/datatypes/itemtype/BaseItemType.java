@@ -321,4 +321,17 @@ public class BaseItemType extends ItemType {
         this.buildupTextureId = buildupTextureId;
         return this;
     }
+
+    public static int nameComparator(BaseItemType b1, BaseItemType b2) {
+        if (b1.getInternalName() == null && b2.getInternalName() == null) {
+            return 0;
+        }
+        if (b1.getInternalName() == null && b2.getInternalName() != null) {
+            return 1;
+        }
+        if (b1.getInternalName() != null && b2.getInternalName() == null) {
+            return -1;
+        }
+        return b1.getInternalName().compareTo(b2.getInternalName());
+    }
 }

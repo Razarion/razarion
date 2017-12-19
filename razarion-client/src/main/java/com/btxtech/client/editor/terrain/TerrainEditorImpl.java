@@ -70,7 +70,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
     private boolean active;
-    private boolean newSlopeMode = true;
+    private boolean slopeMode = true;
     private boolean drivewayMode;
     private Polygon2D cursor;
     private double cursorRadius = 10;
@@ -98,86 +98,82 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     @Override
     public void onMouseMove(Vertex terrainPosition, boolean primaryButtonDown) {
         // Cursor
-        cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
         this.terrainPosition = terrainPosition;
 
-        if (modifyingTerrainObject != null) {
-            modifyingTerrainObject.setNewPosition(terrainPosition, nativeMatrixFactory);
-            terrainObjectModelMatrices = setupModelMatrices();
-        } else {
+        if (slopeMode) {
+            cursorModelMatrix = Matrix4.createTranslation(terrainPosition.getX(), terrainPosition.getY(), terrainPosition.getZ());
             dehoverAll();
-            hoverTerrainObject = getTerrainObjectAtTerrain(terrainPosition);
-            if (hoverTerrainObject != null) {
-                hoverTerrainObject.setHover(true);
-                hoverSlope = null;
-            } else {
-                Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
-                hoverSlope = modifiedSlopeContainer.getPolygonAt(movedCursor);
-                if (hoverSlope != null) {
-                    hoverSlope.setHover(true);
-                }
-            }
-
+            Polygon2D movedCursor = cursor.translate(terrainPosition.toXY());
+            hoverSlope = modifiedSlopeContainer.getPolygonAt(movedCursor);
             if (hoverSlope != null) {
+                hoverSlope.setHover(true);
                 if (deletePressed) {
                     cursorType = CursorType.REMOVE_MODE;
                 } else {
                     cursorType = CursorType.MODIFY;
                 }
-            } else if (hoverTerrainObject == null) {
-                if (newSlopeMode) {
-                    if (!deletePressed) {
-                        cursorType = CursorType.CREATE;
-                    }
+                if (primaryButtonDown) {
+                    editSlope(terrainPosition);
                 }
+            } else {
+                cursorType = CursorType.CREATE;
             }
+        } else {
+            if (modifyingTerrainObject != null) {
+                modifyingTerrainObject.setNewPosition(terrainPosition, nativeMatrixFactory);
+                terrainObjectModelMatrices = setupModelMatrices();
+            } else {
+                dehoverAll();
+                hoverTerrainObject = getTerrainObjectAtTerrain(terrainPosition);
+                if (hoverTerrainObject != null) {
+                    hoverTerrainObject.setHover(true);
+                    hoverSlope = null;
 
-            if (hoverSlope != null && primaryButtonDown) {
-                editSlope(terrainPosition);
+                }
             }
         }
     }
 
     @Override
     public void onMouseDown(Vertex terrainPosition) {
-        if (hoverTerrainObject != null) {
-            if (deletePressed) {
-                hoverTerrainObject.setDeleted();
-                hoverTerrainObject = null;
-                modifyingTerrainObject = null;
-                terrainObjectModelMatrices = setupModelMatrices();
-            } else {
-                modifyingTerrainObject = hoverTerrainObject;
-            }
-        } else if (hoverSlope != null) {
-            editSlope(terrainPosition);
-        } else {
-            if (insertPressed) {
-                if (newSlopeMode) {
-                    ModifiedSlope parentSlope = hoverSlope = modifiedSlopeContainer.getPolygonAt(terrainPosition.toXY());
-                    Integer editorParentId = null;
-                    if (parentSlope != null) {
-                        if (parentSlope.isCreated()) {
-                            throw new IllegalArgumentException("TerrainEditorImpl.onMouseDown() Can not create child slope while parent is not saved.");
-                        }
-                        editorParentId = parentSlope.getOriginalId();
+        if (slopeMode) {
+            if (hoverSlope != null) {
+                editSlope(terrainPosition);
+            }else if(insertPressed) {
+                ModifiedSlope parentSlope = hoverSlope = modifiedSlopeContainer.getPolygonAt(terrainPosition.toXY());
+                Integer editorParentId = null;
+                if (parentSlope != null) {
+                    if (parentSlope.isCreated()) {
+                        throw new IllegalArgumentException("TerrainEditorImpl.onMouseDown() Can not create child slope while parent is not saved.");
                     }
-                    ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), invertedSlope, editorParentId, cursor.translate(terrainPosition.toXY()));
-                    modifiedSlopeContainer.add(slopePosition);
-                    terrainEditorRenderTask.newSlope(slopePosition);
-                } else {
-                    if (terrainObjectRandomScale < 1.0) {
-                        throw new IllegalArgumentException("terrainObjectRandomScale < 1.0: " + terrainObjectRandomScale);
-                    }
-                    double scale = 1.0 / terrainObjectRandomScale + (terrainObjectRandomScale - 1.0 / terrainObjectRandomScale) * Math.random();
-                    double rotationZ = Math.toRadians(terrainObjectRandomZRotation) * (2.0 * Math.random() - 1.0);
-                    double radius = terrainTypeService.getTerrainObjectConfig(terrainObject4New.getId()).getRadius();
-                    ModifiedTerrainObject objectPosition = new ModifiedTerrainObject(terrainObject4New.getId(), terrainPosition.toXY(), scale, rotationZ, radius);
-                    modifyingTerrainObject = objectPosition;
-                    hoverTerrainObject = objectPosition;
-                    modifiedTerrainObjects.add(objectPosition);
-                    terrainObjectModelMatrices = setupModelMatrices();
+                    editorParentId = parentSlope.getOriginalId();
                 }
+                ModifiedSlope slopePosition = new ModifiedSlope(slope4New.getId(), invertedSlope, editorParentId, cursor.translate(terrainPosition.toXY()));
+                modifiedSlopeContainer.add(slopePosition);
+                terrainEditorRenderTask.newSlope(slopePosition);
+            }
+        } else {
+            if (hoverTerrainObject != null) {
+                if (deletePressed) {
+                    hoverTerrainObject.setDeleted();
+                    hoverTerrainObject = null;
+                    modifyingTerrainObject = null;
+                    terrainObjectModelMatrices = setupModelMatrices();
+                } else {
+                    modifyingTerrainObject = hoverTerrainObject;
+                }
+            } else {
+                if (terrainObjectRandomScale < 1.0) {
+                    throw new IllegalArgumentException("terrainObjectRandomScale < 1.0: " + terrainObjectRandomScale);
+                }
+                double scale = 1.0 / terrainObjectRandomScale + (terrainObjectRandomScale - 1.0 / terrainObjectRandomScale) * Math.random();
+                double rotationZ = Math.toRadians(terrainObjectRandomZRotation) * (2.0 * Math.random() - 1.0);
+                double radius = terrainTypeService.getTerrainObjectConfig(terrainObject4New.getId()).getRadius();
+                ModifiedTerrainObject objectPosition = new ModifiedTerrainObject(terrainObject4New.getId(), terrainPosition.toXY(), scale, rotationZ, radius);
+                modifyingTerrainObject = objectPosition;
+                hoverTerrainObject = objectPosition;
+                modifiedTerrainObjects.add(objectPosition);
+                terrainObjectModelMatrices = setupModelMatrices();
             }
         }
     }
@@ -472,7 +468,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         if (hoverTerrainObject != null) {
             return false;
         }
-        if (newSlopeMode) {
+        if (slopeMode) {
             if (insertPressed) {
                 return hoverSlope == null;
             }
@@ -482,16 +478,18 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         }
     }
 
-    public void setCreationMode(boolean newSlopeMode) {
-        if (this.newSlopeMode == newSlopeMode) {
+    public void setSlopeMode(boolean slopeMode) {
+        if (this.slopeMode == slopeMode) {
             return;
         }
-        this.newSlopeMode = newSlopeMode;
+        this.slopeMode = slopeMode;
+        hoverSlope = null;
         modifyingTerrainObject = null;
+        hoverTerrainObject = null;
     }
 
     public boolean getCreationMode() {
-        return this.newSlopeMode;
+        return this.slopeMode;
     }
 
     public void setTerrainPositionListener(Consumer<Vertex> terrainPositionListener) {

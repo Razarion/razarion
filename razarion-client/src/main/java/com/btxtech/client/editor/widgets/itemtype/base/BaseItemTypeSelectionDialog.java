@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.utils.CollectionUtils;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
@@ -41,7 +42,7 @@ public class BaseItemTypeSelectionDialog extends Composite implements ModalDialo
     public void init(Integer selectedId) {
         DOMUtil.removeAllElementChildren(baseItemTypes.getElement()); // Remove placeholder table row from template.
         baseItemTypes.addComponentCreationHandler(baseItemTypeSelectionEntry -> baseItemTypeSelectionEntry.setBaseItemTypeSelectionDialog(BaseItemTypeSelectionDialog.this));
-        binder.setModel(new ArrayList<>(itemTypeService.getBaseItemTypes()));
+        binder.setModel(CollectionUtils.sortBaseItemTypeName(itemTypeService.getBaseItemTypes()));
         baseItemTypes.setSelector(baseItemTypeSelectionEntry -> baseItemTypeSelectionEntry.setSelected(true));
         baseItemTypes.setDeselector(baseItemTypeSelectionEntry -> baseItemTypeSelectionEntry.setSelected(false));
         if (selectedId != null) {

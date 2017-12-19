@@ -27,7 +27,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.common.client.dom.CheckboxInput;
 import org.jboss.errai.common.client.dom.RadioInput;
 import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -184,12 +183,12 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
 
     @EventHandler("slopeRadio")
     private void slopeRadioClick(ClickEvent event) {
-        terrainEditor.setCreationMode(true);
+        terrainEditor.setSlopeMode(true);
     }
 
     @EventHandler("terrainObjectRadio")
     private void terrainObjectRadioClick(ClickEvent event) {
-        terrainEditor.setCreationMode(false);
+        terrainEditor.setSlopeMode(false);
     }
 
     @EventHandler("drivewayMode")
