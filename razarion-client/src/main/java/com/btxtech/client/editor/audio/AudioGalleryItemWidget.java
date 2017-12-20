@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.audio;
 
+import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.HumanReadableIntegerSizeConverter;
 import com.btxtech.shared.rest.RestUrl;
@@ -29,45 +30,42 @@ import javax.inject.Inject;
  */
 @Templated("AudioDialog.html#audioGalleryItemWidget")
 public class AudioGalleryItemWidget implements TakesValue<AudioGalleryItem>, IsElement {
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Table audioGalleryItemWidget;
     @Inject
     @AutoBound
     private DataBinder<AudioGalleryItem> dataBinder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @DataField
     private Element audio = (Element) Browser.getDocument().createAudioElement();
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound(converter = HumanReadableIntegerSizeConverter.class)
     @DataField
     private Label size;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound
     @Inject
     @DataField
     private Label id;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound
     @Inject
     @DataField
     private Label type;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Bound
     @Inject
     @DataField
     private TextBox internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button uploadButton;
+    private FileButton uploadButton;
 
     @Override
     public void setValue(AudioGalleryItem audioGalleryItem) {
         dataBinder.setModel(audioGalleryItem);
         ((AudioElement) audio).setSrc(RestUrl.getAudioServiceUrl(audioGalleryItem.getId()));
+        uploadButton.init("Upload", fileList -> ControlUtils.readFirstAsDataURL(fileList, (dataUrl, file) -> {
+            ((AudioElement) audio).setSrc(dataUrl);
+            dataBinder.getModel().setDataUrl(dataUrl);
+        }));
     }
 
     @Override
@@ -78,13 +76,5 @@ public class AudioGalleryItemWidget implements TakesValue<AudioGalleryItem>, IsE
     @Override
     public HTMLElement getElement() {
         return audioGalleryItemWidget;
-    }
-
-    @EventHandler("uploadButton")
-    private void uploadButtonClick(ClickEvent event) {
-        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> {
-            ((AudioElement) audio).setSrc(dataUrl);
-            dataBinder.getModel().setDataUrl(dataUrl);
-        });
     }
 }

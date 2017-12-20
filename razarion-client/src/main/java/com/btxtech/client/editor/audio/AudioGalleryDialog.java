@@ -2,6 +2,7 @@ package com.btxtech.client.editor.audio;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.shared.dto.AudioItemConfig;
 import com.btxtech.shared.rest.AudioProvider;
@@ -27,25 +28,26 @@ import java.util.logging.Logger;
 @Templated("AudioDialog.html#audio-gallery-dialog")
 public class AudioGalleryDialog extends Composite implements ModalDialogContent<Void> {
     private Logger logger = Logger.getLogger(AudioGalleryDialog.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<AudioProvider> audioService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @ListContainer("div")
     private ListComponent<AudioGalleryItem, AudioGalleryItemWidget> audioGallery;
+    @Inject
+    @DataField
+    private FileButton newButton;
 
     @Override
     public void init(Void ignore) {
         DOMUtil.removeAllElementChildren(audioGallery.getElement()); // Remove placeholder table row from template.
         load();
+        newButton.init("New", fileList -> ControlUtils.readFirstAsDataURL(fileList, (dataUrl, file) -> create(dataUrl)));
     }
 
     @Override
     public void customize(ModalDialogPanel<Void> modalDialogPanel) {
         modalDialogPanel.addNonClosableFooterButton("Reload", this::load);
-        modalDialogPanel.addNonClosableFooterButton("New", () -> ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> create(dataUrl)));
         modalDialogPanel.addNonClosableFooterButton("Save", this::save);
     }
 
@@ -57,15 +59,12 @@ public class AudioGalleryDialog extends Composite implements ModalDialogContent<
     }
 
     private void load() {
-        audioService.call(new RemoteCallback<List<AudioItemConfig>>() {
-            @Override
-            public void callback(List<AudioItemConfig> audioItemConfigs) {
-                List<AudioGalleryItem> audioGalleryItems = new ArrayList<>();
-                for (AudioItemConfig audioItemConfig : audioItemConfigs) {
-                    audioGalleryItems.add(new AudioGalleryItem().init(audioItemConfig));
-                }
-                audioGallery.setValue(audioGalleryItems);
+        audioService.call((RemoteCallback<List<AudioItemConfig>>) audioItemConfigs -> {
+            List<AudioGalleryItem> audioGalleryItems = new ArrayList<>();
+            for (AudioItemConfig audioItemConfig : audioItemConfigs) {
+                audioGalleryItems.add(new AudioGalleryItem().init(audioItemConfig));
             }
+            audioGallery.setValue(audioGalleryItems);
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "getAudioItemConfigs failed: " + message, throwable);
             return false;

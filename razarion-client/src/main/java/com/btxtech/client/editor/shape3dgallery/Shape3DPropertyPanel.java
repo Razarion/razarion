@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
+import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
@@ -34,36 +35,28 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
     private Shape3DCrud shape3DCrud;
     @Inject
     private Shape3DUiService shape3DUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @ListContainer("tbody")
     private ListComponent<VertexContainer, TexturePanel> textures;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label dbId;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
-    private Button selectFileButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private FileButton selectFileButton;
     @Inject
     @DataField
     private Button reloadFileButton;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label loadedTimestamp;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label fileTimestamp;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @ListContainer("tbody")
@@ -80,6 +73,13 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
         DOMUtil.removeAllElementChildren(textures.getElement()); // Remove placeholder table row from template.
         DOMUtil.removeAllElementChildren(animations.getElement()); // Remove placeholder table row from template.
         onChange(shape3D);
+        selectFileButton.init("Select", fileList -> ControlUtils.readFirstAsText(fileList, (colladaText, file) -> {
+            shape3DCrud.updateCollada(shape3D, colladaText);
+            this.file = file;
+            reloadFileButton.setEnabled(true);
+            loadedTimestamp.setText(DisplayUtils.formatDate(new Date()));
+            fileTimestamp.setText(DisplayUtils.formatDate(getLastModifiedDate(file)));
+        }));
     }
 
     @Override
@@ -92,22 +92,11 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
         this.shape3D = shape3D;
         internalName.setText(shape3D.getInternalName());
         textures.setValue(Shape3DUtils.getAllVertexContainer4DiffMaterials(shape3D));
-        if(shape3D.getModelMatrixAnimations() != null) {
+        if (shape3D.getModelMatrixAnimations() != null) {
             animations.setValue(shape3D.getModelMatrixAnimations());
         } else {
             animations.setValue(Collections.emptyList());
         }
-    }
-
-    @EventHandler("selectFileButton")
-    private void selectFileButtonClicked(ClickEvent event) {
-        ControlUtils.openSingleFileTextUpload((colladaText, file) -> {
-            shape3DCrud.updateCollada(shape3D, colladaText);
-            this.file = file;
-            reloadFileButton.setEnabled(true);
-            loadedTimestamp.setText(DisplayUtils.formatDate(new Date()));
-            fileTimestamp.setText(DisplayUtils.formatDate(getLastModifiedDate(file)));
-        });
     }
 
     @EventHandler("reloadFileButton")

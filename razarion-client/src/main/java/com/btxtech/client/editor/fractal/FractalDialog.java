@@ -2,6 +2,7 @@ package com.btxtech.client.editor.fractal;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.utils.CanvasUtil;
 import com.btxtech.client.utils.ControlUtils;
@@ -74,7 +75,7 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
     private Button generateButton;
     @Inject
     @DataField
-    private Button loadImageButton;
+    private FileButton loadImageButton;
     @Inject
     @DataField
     private CommaDoubleBox loadedMin;
@@ -93,6 +94,25 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
         fillValue.setValue(0.0);
         loadedMin.setValue(-1.0);
         loadedMax.setValue(1.0);
+        loadImageButton.init("Select", fileList -> ControlUtils.readFirstAsDataURL(fileList, (dataUrl, file) -> {
+            CanvasUtil.getImageData(dataUrl, imageData -> {
+                double[][] fractalField = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
+                for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
+                    for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
+                        if (x < imageData.getWidth() && y < imageData.getHeight()) {
+                            int red = imageData.getData().intAt(4 * (x + y * imageData.getWidth()));
+                            double factor = (double) red / 255.0;
+                            fractalField[x][y] = InterpolationUtils.mix(loadedMin.getValue(), loadedMax.getValue(), factor);
+
+                        } else {
+                            fractalField[x][y] = 0;
+                        }
+                    }
+                }
+                fractalFieldConfig.setFractalField(fractalField);
+                fractalDisplay.display(fractalFieldConfig);
+            });
+        }));
     }
 
     @Override
@@ -113,32 +133,6 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
         FractalFieldGenerator.createSaveFractalField(fractalFieldConfig);
         fractalFieldConfig.clampGeneration();
         fractalDisplay.display(fractalFieldConfig);
-    }
-
-    @EventHandler("loadImageButton")
-    private void loadImageButtonClick(ClickEvent event) {
-        ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> {
-            logger.severe("*** loadImageButtonClick: " + dataUrl); // TODO is not always called
-            CanvasUtil.getImageData(dataUrl, imageData -> {
-                logger.severe("*** getImageData: w: " + imageData.getHeight() + " h:" + imageData.getHeight());
-                FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
-                double[][] fractalField = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
-                for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
-                    for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
-                        if (x < imageData.getWidth() && y < imageData.getHeight()) {
-                            int red = imageData.getData().intAt(4 * (x + y * imageData.getWidth()));
-                            double factor = (double) red / 255.0;
-                            fractalField[x][y] = InterpolationUtils.mix(loadedMin.getValue(), loadedMax.getValue(), factor);
-
-                        } else {
-                            fractalField[x][y] = 0;
-                        }
-                    }
-                }
-                fractalFieldConfig.setFractalField(fractalField);
-                fractalDisplay.display(fractalFieldConfig);
-            });
-        });
     }
 
     @Override

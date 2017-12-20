@@ -2,6 +2,7 @@ package com.btxtech.client.editor.imagegallery;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
@@ -23,20 +24,22 @@ import java.util.List;
 @Templated("ImageGalleryDialog.html#image-gallery-dialog")
 public class ImageGalleryDialog extends Composite implements ModalDialogContent<Void> {
     // private Logger logger = Logger.getLogger(ImageGalleryDialog.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ImageUiService imageUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @ListContainer("div")
     private ListComponent<ImageGalleryItem, ImageGalleryItemWidget> imageGallery;
+    @Inject
+    @DataField
+    private FileButton newButton;
 
     @Override
     public void init(Void ignore) {
         DOMUtil.removeAllElementChildren(imageGallery.getElement()); // Remove placeholder table row from template.
         imageUiService.addChangeListener(this::onChanged);
         imageUiService.getImageGalleryItems(this::onLoaded);
+        newButton.init("New", fileList -> ControlUtils.readFirstAsDataURL(fileList, (dataUrl, file) -> imageUiService.create(dataUrl, this::onLoaded)));
     }
 
     private void onChanged(Collection<ImageGalleryItem> imageGalleryItems) {
@@ -48,7 +51,6 @@ public class ImageGalleryDialog extends Composite implements ModalDialogContent<
     @Override
     public void customize(ModalDialogPanel<Void> modalDialogPanel) {
         modalDialogPanel.addNonClosableFooterButton("Reload", () -> imageUiService.reload(this::onLoaded));
-        modalDialogPanel.addNonClosableFooterButton("New", () -> ControlUtils.openSingleFileDataUrlUpload((dataUrl, file) -> imageUiService.create(dataUrl, this::onLoaded)));
         modalDialogPanel.addNonClosableFooterButton("Save", () -> imageUiService.save(this::onLoaded));
     }
 
