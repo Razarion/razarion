@@ -16,7 +16,6 @@ import com.btxtech.uiservice.renderer.RenderUnitControl;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -24,7 +23,7 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class TrailRenderTask extends AbstractRenderTask<BaseItemType> {
-    private Logger logger = Logger.getLogger(TrailRenderTask.class.getName());
+    // private Logger logger = Logger.getLogger(TrailRenderTask.class.getName());
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -62,8 +61,6 @@ public class TrailRenderTask extends AbstractRenderTask<BaseItemType> {
                 }
             }
             add(modelRenderer);
-        } else {
-            logger.warning("TrailRenderTask: no wreckageShape3DId for BaseItemType: " + baseItemType);
         }
     }
 }
