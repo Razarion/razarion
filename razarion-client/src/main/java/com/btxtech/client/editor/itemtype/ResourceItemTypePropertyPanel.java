@@ -1,6 +1,8 @@
 package com.btxtech.client.editor.itemtype;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
+import com.btxtech.client.editor.widgets.I18nStringWidget;
+import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -31,20 +33,26 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
     @Inject
     @AutoBound
     private DataBinder<ResourceItemType> resourceItemTypeDataBinder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private Label id;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private TextBox internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Shape3DReferenceFiled shape3DReferenceFiled;
+    @Inject
+    @DataField
+    private I18nStringWidget i18nName;
+    @Inject
+    @DataField
+    private I18nStringWidget i18nDescription;
+    @Inject
+    @DataField
+    private ImageItemWidget thumbnail;
     @Inject
     @DataField
     private ValueListBox<TerrainType> terrainType;
@@ -68,6 +76,9 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
             resourceItemType.setShape3DId(shape3DId);
             resourceItemRenderTask.onResourceItemTypeChanged(resourceItemType);
         });
+        i18nName.init(resourceItemType.getI18nName(), resourceItemType::setI18nName);
+        i18nDescription.init(resourceItemType.getI18nDescription(), resourceItemType::setI18nDescription);
+        thumbnail.setImageId(resourceItemType.getThumbnail(), resourceItemType::setThumbnail);
         terrainType.setAcceptableValues(Arrays.asList(TerrainType.values()));
         terrainType.setValue(resourceItemType.getTerrainType());
         terrainType.addValueChangeHandler(event -> {
