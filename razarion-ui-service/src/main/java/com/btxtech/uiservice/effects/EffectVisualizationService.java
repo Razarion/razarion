@@ -76,7 +76,7 @@ public class EffectVisualizationService {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
         Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleConfigId();
         if (explosionParticleEmitterSequenceConfigId == null) {
-            logger.warning("No explosionParticleEmitterSequenceConfigId configured for: " + System.currentTimeMillis());
+            logger.warning("No explosionParticleEmitterSequenceConfigId configured for baseItemType: " + baseItemType.getId());
             return;
         }
         playParticle(timeStamp, syncBaseItem.getPosition3d(), null, explosionParticleEmitterSequenceConfigId);

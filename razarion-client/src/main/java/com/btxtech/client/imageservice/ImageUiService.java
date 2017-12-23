@@ -1,9 +1,10 @@
 package com.btxtech.client.imageservice;
 
-import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -87,8 +88,19 @@ public class ImageUiService {
 
     public void overrideImage(int id, String dataUrl, int size, String type) {
         ImageElement imageElement = imageElementLibrary.get(id);
+        if (imageElement == null) {
+            // Happens if invalid image is uploaded
+            imageElement = Document.get().createImageElement();
+            imageElementLibrary.put(id, imageElement);
+        }
         imageElement.setSrc(dataUrl);
         ImageGalleryItem imageGalleryItem = imageGalleryItemLibrary.get(id);
+        if (imageGalleryItem == null) {
+            // Happens if invalid image is uploaded
+            imageGalleryItem = new ImageGalleryItem();
+            imageGalleryItem.setId(id);
+            imageGalleryItemLibrary.put(id, imageGalleryItem);
+        }
         imageGalleryItem.setSize(size);
         imageGalleryItem.setType(type);
         changed.add(imageGalleryItem);
@@ -98,19 +110,16 @@ public class ImageUiService {
     }
 
     public void getImageGalleryItems(final ImageGalleryItemListener imageGalleryItemListener) {
-        imageService.call(new RemoteCallback<List<ImageGalleryItem>>() {
-            @Override
-            public void callback(List<ImageGalleryItem> imageGalleryItems) {
-                List<ImageGalleryItem> result = new ArrayList<>();
-                for (ImageGalleryItem imageGalleryItem : imageGalleryItems) {
-                    if (changed.contains(imageGalleryItem)) {
-                        result.add(imageGalleryItemLibrary.get(imageGalleryItem.getId()));
-                    } else {
-                        result.add(imageGalleryItem);
-                    }
+        imageService.call((RemoteCallback<List<ImageGalleryItem>>) imageGalleryItems -> {
+            List<ImageGalleryItem> result = new ArrayList<>();
+            for (ImageGalleryItem imageGalleryItem : imageGalleryItems) {
+                if (changed.contains(imageGalleryItem)) {
+                    result.add(imageGalleryItemLibrary.get(imageGalleryItem.getId()));
+                } else {
+                    result.add(imageGalleryItem);
                 }
-                imageGalleryItemListener.onLoaded(result);
             }
+            imageGalleryItemListener.onLoaded(result);
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "getImageGalleryItem failed: " + message, throwable);
             return false;
@@ -213,12 +222,7 @@ public class ImageUiService {
     }
 
     private void loadImageGalleyItem(final int id, final ImageElement imageElement) {
-        imageService.call(new RemoteCallback<ImageGalleryItem>() {
-            @Override
-            public void callback(ImageGalleryItem imageGalleryItem) {
-                addImageGalleryItem(id, imageGalleryItem, imageElement);
-            }
-        }, (message, throwable) -> {
+        imageService.call((RemoteCallback<ImageGalleryItem>) imageGalleryItem -> addImageGalleryItem(id, imageGalleryItem, imageElement), (message, throwable) -> {
             logger.log(Level.SEVERE, "getImageGalleryItems failed: " + message, throwable);
             return false;
         }).getImageGalleryItem(id);
@@ -238,13 +242,8 @@ public class ImageUiService {
     }
 
     private <T> void addListener(Map<Integer, Collection<T>> idListeners, int id, T listener) {
-        Collection<T> listenerCollection = idListeners.get(id);
-        if (listenerCollection == null) {
-            listenerCollection = new ArrayList<>();
-            idListeners.put(id, listenerCollection);
-        }
+        Collection<T> listenerCollection = idListeners.computeIfAbsent(id, k -> new ArrayList<>());
         listenerCollection.add(listener);
-
     }
 
     private <T> void removeListener(Map<Integer, Collection<T>> idListeners, int id, T listener) {
