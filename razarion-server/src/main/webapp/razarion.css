@@ -66,9 +66,15 @@ a:active {
 }
 
 @keyframes buttonBlink {
-    0%   { border-color: #0f4261; }
-    50%  { border-color: #FF0000; }
-    100% { border-color: #0f4261; }
+    0% {
+        border-color: #0f4261;
+    }
+    50% {
+        border-color: #FF0000;
+    }
+    100% {
+        border-color: #0f4261;
+    }
 }
 
 .button-blink {
@@ -633,6 +639,33 @@ a:active {
 .unlock-dialog-crystals {
     font-size: 90%;
     margin-bottom: 10px;
+}
+
+.unlock-dialog-item-image-div {
+    position: relative;
+    width: 40px;
+    height: 40px
+}
+
+.unlock-dialog-item-image {
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    border: 1px solid aqua;
+    background-color: white;
+}
+
+.unlock-dialog-item-span {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    z-index: 2;
+    color: black;
+    font-weight: 900;
+    font-size: 12px;
+    font-stretch: unset;
+    background-color: #00fffff5;
+    line-height: 12px;
 }
 
 .unlock-dialog-item {
