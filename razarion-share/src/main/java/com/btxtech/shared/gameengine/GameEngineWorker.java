@@ -260,15 +260,15 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private void initWarmInternal(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, Runnable finishCallback, Consumer<String> failCallback) {
         this.gameEngineMode = gameEngineMode;
         this.userContext = userContext;
-        if (gameEngineMode == GameEngineMode.SLAVE) {
-            serverConnection = connectionInstance.get();
-            serverConnection.init();
-        }
         planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo, () -> {
                     if (gameEngineMode == GameEngineMode.SLAVE && slaveSyncItemInfo.getActualBaseId() != null) {
                         playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
                     }
                     finishCallback.run();
+                    if (gameEngineMode == GameEngineMode.SLAVE) {
+                        serverConnection = connectionInstance.get();
+                        serverConnection.init();
+                    }
                 }
                 , failCallback);
     }
