@@ -32,6 +32,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -104,9 +105,13 @@ public class Group {
     }
 
     @Deprecated
-    // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getSyncBaseItemsMonitors().
-    public Collection<SyncBaseItemSimpleDto> getItems() {
+    // some properties are outdated. These properties are taken during the scelection (Snapshot). Use getItems() or getSyncBaseItemsMonitors().
+    public Collection<SyncBaseItemSimpleDto> _getItems() {
         return syncBaseItems;
+    }
+
+    public Collection<SyncBaseItemSimpleDto> getItems() {
+        return syncBaseItemsMonitors.stream().map(monitor -> monitor.getSyncBaseItemState().getSyncBaseItem()).collect(Collectors.toList());
     }
 
     public Collection<SyncBaseItemMonitor> getSyncBaseItemsMonitors() {

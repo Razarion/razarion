@@ -27,6 +27,7 @@ import java.util.List;
  * Time: 11:55:18
  */
 public class GroupSelectionFrame {
+    private static final double MIN_DISTANCE = 0.1;
     private Vertex start;
     private Rectangle2D rectangle2D;
     private List<Vertex> corners;
@@ -37,7 +38,7 @@ public class GroupSelectionFrame {
 
     public void onMove(Vertex position) {
         DecimalPosition delta = start.toXY().sub(position.toXY());
-        if (MathHelper.compareWithPrecision(delta.getX(), 0.0) || MathHelper.compareWithPrecision(delta.getY(), 0.0)) {
+        if (MathHelper.compareWithPrecision(delta.getX(), 0, MIN_DISTANCE) || MathHelper.compareWithPrecision(delta.getY(), 0, MIN_DISTANCE)) {
             rectangle2D = null;
         } else {
             double x = Math.min(start.getX(), position.getX());

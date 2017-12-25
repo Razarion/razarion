@@ -112,7 +112,7 @@ public class SelectionHandler {
             return;
         }
 
-        clearSelection(false);
+        // clearSelection(false);
     }
 
     private void onBaseItemsSelected(Collection<SyncBaseItemSimpleDto> selectedBaseItems) {

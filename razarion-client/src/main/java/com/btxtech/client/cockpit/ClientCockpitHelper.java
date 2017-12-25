@@ -28,7 +28,7 @@ public class ClientCockpitHelper {
             return;
         }
         modalDialogManager.showQuestionDialog(I18nHelper.getConstants().sellConfirmationTitle(), I18nHelper.getConstants().sellConfirmation(), () -> {
-            gameEngineControl.sellItems(group.getItems());
+            gameEngineControl.sellItems(group._getItems());
         }, null);
     }
 }

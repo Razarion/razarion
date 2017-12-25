@@ -214,8 +214,8 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         SelectionTracking selectionTracking = new SelectionTracking();
         initDetailedTracking(selectionTracking);
         List<Integer> selectedIds = new ArrayList<>();
-        if (selectionEvent.getSelectedGroup() != null && selectionEvent.getSelectedGroup().getItems() != null) {
-            for (SyncBaseItemSimpleDto syncBaseItemSimpleDto : selectionEvent.getSelectedGroup().getItems()) {
+        if (selectionEvent.getSelectedGroup() != null && selectionEvent.getSelectedGroup()._getItems() != null) {
+            for (SyncBaseItemSimpleDto syncBaseItemSimpleDto : selectionEvent.getSelectedGroup()._getItems()) {
                 selectedIds.add(syncBaseItemSimpleDto.getId());
             }
         }

@@ -127,9 +127,9 @@ public class GameCanvas {
                 return;
             }
             MouseEvent mouseEvent = (MouseEvent) evt;
-            terrainMouseHandler.onMouseDown(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height,
-                    GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY), GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.SECONDARY), GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.AUXILIARY),
-                    mouseEvent.isCtrlKey(), mouseEvent.isShiftKey());
+            if (GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY)) {
+                terrainMouseHandler.onMouseDown(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height, mouseEvent.isShiftKey());
+            }
             if (mouseEvent.getButton() == MouseEvent.Button.PRIMARY && mouseEvent.isAltKey()) {
                 JsUint8Array uint8Array = WebGlUtil.createUint8Array(4);
                 ctx3d.readPixels(mouseEvent.getClientX(), canvas.getCoordinateSpaceHeight() - mouseEvent.getClientY(), 1, 1, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, uint8Array);
@@ -146,8 +146,9 @@ public class GameCanvas {
                 return;
             }
             MouseEvent mouseEvent = (MouseEvent) evt;
-            terrainMouseHandler.onMouseUp(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height,
-                    GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY));
+            if(GwtUtils.isButtonResponsible4Event(mouseEvent, MouseEvent.Button.PRIMARY)) {
+                terrainMouseHandler.onMouseUp(mouseEvent.getClientX(), mouseEvent.getClientY(), width, height);
+            }
         }, true);
         getCanvasElement().addEventListener("wheel", evt -> {
             if (playbackMode) {

@@ -53,7 +53,7 @@ public class BaseItemPlacerService {
         return baseItemPlacer != null;
     }
 
-    public void onMouseDownEvent(Vertex terrainPosition) {
+    public void onMouseUpEvent(Vertex terrainPosition) {
         if (!isActive()) {
             return;
         }

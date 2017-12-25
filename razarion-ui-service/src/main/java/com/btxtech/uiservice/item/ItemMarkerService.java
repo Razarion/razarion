@@ -68,7 +68,7 @@ public class ItemMarkerService {
         clearSelection();
 
         if (selectionEvent.getType() == SelectionEvent.Type.OWN) {
-            for (SyncBaseItemSimpleDto syncBaseItemSimpleDto : selectionEvent.getSelectedGroup().getItems()) {
+            for (SyncBaseItemSimpleDto syncBaseItemSimpleDto : selectionEvent.getSelectedGroup()._getItems()) {
                 setupSelectionModelMatrices(syncBaseItemSimpleDto, baseItemUiService.monitorSyncItem(syncBaseItemSimpleDto));
             }
         } else if (selectionEvent.getType() == SelectionEvent.Type.OTHER) {

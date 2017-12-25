@@ -113,7 +113,7 @@ public abstract class BuildupItemPanel {
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> {
                 audioService.onCommandSent();
-                gameEngineControl.fabricateCmd(factories.getItems(), itemType);
+                gameEngineControl.fabricateCmd(factories._getItems(), itemType);
             }));
         }
         setBuildupItem(buildupItems);

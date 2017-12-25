@@ -65,7 +65,7 @@ public abstract class CursorService {
         if (baseItemUiService.isMyOwnProperty(syncBaseItem)) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
             if (syncBaseItem.checkBuildup() && baseItemType.getItemContainerType() != null && selectionHandler.hasOwnSelection()) {
-                setCursor(CursorType.LOAD, atLeastOneAllowedToLoad(baseItemType.getItemContainerType(), selectionHandler.getOwnSelection().getItems()));
+                setCursor(CursorType.LOAD, atLeastOneAllowedToLoad(baseItemType.getItemContainerType(), selectionHandler.getOwnSelection()._getItems()));
             } else {
                 if (!syncBaseItem.checkBuildup()) {
                     Collection<SyncBaseItemSimpleDto> builder = selectionHandler.getOwnSelection().getBuilders(syncBaseItem.getItemTypeId());
@@ -164,7 +164,7 @@ public abstract class CursorService {
     }
 
     private boolean isNotMyself(SyncBaseItemSimpleDto me) {
-        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection().getItems()) {
+        for (SyncBaseItemSimpleDto syncBaseItem : selectionHandler.getOwnSelection()._getItems()) {
             if (syncBaseItem.equals(me)) {
                 return false;
             }
