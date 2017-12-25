@@ -118,7 +118,6 @@ public class GameUiControlConfigPersistence {
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SOUTH_LEFT_MOUSE_IMAGE));
         gameTipVisualConfig.setDirectionShape3DId(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_DIRECTION_SHAPE3D));
         gameTipVisualConfig.setSplashScrollImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SPLASH_SCROLL_IMAGE));
-        gameTipVisualConfig.setUseRightMouseButtonImageId(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_USE_RIGHT_MOUSE_BUTTON_IMAGE));
         return gameTipVisualConfig;
     }
 

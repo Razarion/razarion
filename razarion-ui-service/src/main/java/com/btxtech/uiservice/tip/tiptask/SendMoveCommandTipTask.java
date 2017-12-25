@@ -29,11 +29,6 @@ public class SendMoveCommandTipTask extends AbstractTipTask {
     }
 
     @Override
-    protected void onSelectionCleared() {
-        modalDialogManager.showMessageImageDialog(I18nHelper.getConstants().useRightMouseButtonTitle(), I18nHelper.getConstants().useRightMouseButtonMoveMessage(), getGameTipVisualConfig().getUseRightMouseButtonImageId());
-    }
-
-    @Override
     public void internalStart() {
     }
 
