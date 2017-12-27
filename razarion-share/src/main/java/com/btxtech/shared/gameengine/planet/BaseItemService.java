@@ -142,8 +142,8 @@ public class BaseItemService {
                 // If something went wrong with the base create.
                 // Prevent user from having a base without any units.
                 deleteBaseSlave(playerBase.getBaseId());
-                throw e;
             }
+            throw e;
         }
         return playerBase;
     }
@@ -203,6 +203,16 @@ public class BaseItemService {
         energyService.onBaseKilled(playerBase);
     }
 
+    public PlayerBase changeBaseNameChanged(int baseId, String name) {
+        synchronized (bases) {
+            PlayerBase playerBase = bases.get(baseId);
+            if (playerBase == null) {
+                throw new IllegalStateException("changeBaseNameChanged: Base with Id does not exits: " + baseId);
+            }
+            playerBase.updateName(name);
+            return playerBase;
+        }
+    }
 
     public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, double angle, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         if (!terrainService.getPathingAccess().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {

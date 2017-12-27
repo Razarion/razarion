@@ -67,9 +67,15 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = @JoinColumn(name = "levelUnlockEntity"))
     private List<LevelUnlockEntity> levelUnlockEntities;
+    @Column(unique=true)
+    private String name;
 
     public Integer getId() {
         return id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void fromFacebookUserLoginInfo(String facebookUserId, HumanPlayerIdEntity humanPlayerId, Locale locale) {
@@ -80,7 +86,7 @@ public class UserEntity {
     }
 
     public UserContext toUserContext() {
-        return new UserContext().setName("Registered User").setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities)).setAdmin(admin).setXp(xp);
+        return new UserContext().setName(name).setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities)).setAdmin(admin).setXp(xp);
     }
 
     public HumanPlayerId createHumanPlayerId() {

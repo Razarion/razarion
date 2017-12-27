@@ -273,6 +273,12 @@ public class BaseItemUiService {
         }
     }
 
+    public void updateBase(PlayerBaseDto playerBaseDto) {
+        synchronized (bases) {
+            bases.put(playerBaseDto.getBaseId(), playerBaseDto);
+        }
+    }
+
     public PlayerBaseDto getBase(int baseId) {
         synchronized (bases) {
             PlayerBaseDto base = bases.get(baseId);

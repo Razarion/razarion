@@ -68,4 +68,16 @@ public class PlayerBaseInfo {
         this.botId = botId;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "PlayerBaseInfo{" +
+                "baseId=" + baseId +
+                ", name='" + name + '\'' +
+                ", character=" + character +
+                ", resources=" + resources +
+                ", humanPlayerId=" + humanPlayerId +
+                ", botId=" + botId +
+                '}';
+    }
 }

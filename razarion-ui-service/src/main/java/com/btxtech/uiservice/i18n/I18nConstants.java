@@ -43,6 +43,10 @@ public interface I18nConstants {
 
     String spaceLimitExceeded();
 
+    String unregisteredUser();
+
+    String unnamedUser();
+
     String yes();
 
     String no();
@@ -221,7 +225,7 @@ public interface I18nConstants {
 
     String registrationUser();
 
-    String chooseNickName();
+    String setName();
 
     // Side Cockpit
     String tooltipEnergy();
@@ -871,5 +875,4 @@ public interface I18nConstants {
     String planetRestartTitle();
 
     String planetRestartMessage();
-
 }

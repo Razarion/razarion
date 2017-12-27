@@ -4,7 +4,10 @@ import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.LevelService;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
+import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -15,6 +18,7 @@ import com.btxtech.uiservice.unlock.UnlockUiService;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -22,6 +26,7 @@ import javax.inject.Inject;
  */
 @ApplicationScoped
 public class UserUiService {
+    private static final long SET_NAME_TIME = 1000 * 60 * 5;
     // private Logger logger = Logger.getLogger(UserUiService.class.getName());
     @Inject
     private GameEngineControl gameEngineControl;
@@ -37,10 +42,38 @@ public class UserUiService {
     private Instance<GameUiControl> gameUiControlInstance;
     @Inject
     private UnlockUiService unlockUiService;
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private ModalDialogManager modalDialogManager;
     private UserContext userContext;
+    private Consumer<UserContext> userRegistrationCallback;
+    private SimpleScheduledFuture setUserNameFuture;
+
+    public void start() {
+        if (!isRegistered()) {
+        } else if (!isRegisteredAndNamed()) {
+            if (gameUiControlInstance.get().getGameEngineMode() == GameEngineMode.SLAVE) {
+                activateSetUserNameTimer();
+            }
+        }
+
+    }
+
+    public void stop() {
+        clearSetUserNameTimer();
+    }
+
+    public void activateSetUserNameTimer() {
+        clearSetUserNameTimer();
+        setUserNameFuture = simpleExecutorService.schedule(SET_NAME_TIME, modalDialogManager::showSetUserNameDialog, SimpleExecutorService.Type.UNSPECIFIED);
+    }
 
     public void setUserContext(UserContext userContext) {
         this.userContext = userContext;
+        if (userRegistrationCallback != null) {
+            userRegistrationCallback.accept(userContext);
+        }
     }
 
     public UserContext getUserContext() {
@@ -87,4 +120,33 @@ public class UserUiService {
         itemCockpitService.onStateChanged();
     }
 
+    public void setUserRegistrationListener(Consumer<UserContext> userRegistrationCallback) {
+        this.userRegistrationCallback = userRegistrationCallback;
+        if (userContext != null && userRegistrationCallback != null) {
+            userRegistrationCallback.accept(userContext);
+        }
+    }
+
+    public boolean isRegistered() {
+        return userContext.checkRegistered();
+    }
+
+    public boolean isRegisteredAndNamed() {
+        return userContext.checkName();
+    }
+
+    public void onUserNameSet(UserContext userContext) {
+        this.userContext = userContext;
+        if (userRegistrationCallback != null) {
+            userRegistrationCallback.accept(userContext);
+        }
+        clearSetUserNameTimer();
+    }
+
+    public void clearSetUserNameTimer() {
+        if (setUserNameFuture != null) {
+            setUserNameFuture.cancel();
+            setUserNameFuture = null;
+        }
+    }
 }

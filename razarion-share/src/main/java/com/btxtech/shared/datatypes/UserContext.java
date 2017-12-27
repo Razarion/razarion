@@ -70,4 +70,24 @@ public class UserContext {
         this.xp = xp;
         return this;
     }
+
+    public boolean checkRegistered() {
+        return humanPlayerId.getUserId() != null;
+    }
+
+    public boolean checkName() {
+        return name != null;
+    }
+
+    @Override
+    public String toString() {
+        return "UserContext{" +
+                "humanPlayerId=" + humanPlayerId +
+                ", name='" + name + '\'' +
+                ", admin=" + admin +
+                ", levelId=" + levelId +
+                ", unlockedItemLimit=" + unlockedItemLimit +
+                ", xp=" + xp +
+                '}';
+    }
 }

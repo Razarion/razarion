@@ -28,32 +28,36 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return id;
     }
 
-    public void setId(int id) {
+    public SlopeConfig setId(int id) {
         this.id = id;
+        return this;
     }
 
     public String getInternalName() {
         return internalName;
     }
 
-    public void setInternalName(String internalName) {
+    public SlopeConfig setInternalName(String internalName) {
         this.internalName = internalName;
+        return this;
     }
 
     public List<SlopeShape> getShape() {
         return shape;
     }
 
-    public void setShape(List<SlopeShape> shape) {
+    public SlopeConfig setShape(List<SlopeShape> shape) {
         this.shape = shape;
+        return this;
     }
 
     public SlopeSkeletonConfig getSlopeSkeletonConfig() {
         return slopeSkeletonConfig;
     }
 
-    public void setSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
+    public SlopeConfig setSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
         this.slopeSkeletonConfig = slopeSkeletonConfig;
+        return this;
     }
 
     public double getFractalRoughness() {
@@ -73,32 +77,36 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return fractalMin;
     }
 
-    public void setFractalMin(double fractalMin) {
+    public SlopeConfig setFractalMin(double fractalMin) {
         this.fractalMin = fractalMin;
+        return this;
     }
 
     public double getFractalMax() {
         return fractalMax;
     }
 
-    public void setFractalMax(double fractalMax) {
+    public SlopeConfig setFractalMax(double fractalMax) {
         this.fractalMax = fractalMax;
+        return this;
     }
 
     public double getFractalClampMin() {
         return fractalClampMin;
     }
 
-    public void setFractalClampMin(double fractalClampMin) {
+    public SlopeConfig setFractalClampMin(double fractalClampMin) {
         this.fractalClampMin = fractalClampMin;
+        return this;
     }
 
     public double getFractalClampMax() {
         return fractalClampMax;
     }
 
-    public void setFractalClampMax(double fractalClampMax) {
+    public SlopeConfig setFractalClampMax(double fractalClampMax) {
         this.fractalClampMax = fractalClampMax;
+        return this;
     }
 
     public FractalFieldConfig toFractalFiledConfig() {

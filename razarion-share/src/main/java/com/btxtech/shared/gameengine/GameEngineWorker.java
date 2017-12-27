@@ -277,6 +277,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (serverConnection != null) {
             serverConnection.createHumanBaseWithBaseItem(position);
         } else {
+            if (name.equals("")) {
+                name = null;
+            }
             playerBase = baseItemService.createHumanBaseWithBaseItem(levelId, unlockedItemLimit, humanPlayerId, name, position);
         }
     }
@@ -439,7 +442,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
             this.playerBase = playerBase;
         }
-        sendBaseToClient(playerBase);
+        sendBaseToClient(GameEngineControlPackage.Command.BASE_CREATED, playerBase);
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onBaseCreated(playerBase);
         }
@@ -447,7 +450,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onBaseSlaveCreated(PlayerBase playerBase) {
-        sendBaseToClient(playerBase);
+        sendBaseToClient(GameEngineControlPackage.Command.BASE_CREATED, playerBase);
     }
 
     public void onServerBaseCreated(PlayerBaseInfo playerBaseInfo) {
@@ -461,14 +464,19 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         baseItemService.deleteBaseSlave(baseId);
     }
 
-    private void sendBaseToClient(PlayerBase playerBase) {
+    public void onServerBaseNameChanged(PlayerBaseInfo playerBaseInfo) {
+        PlayerBase playerBase = baseItemService.changeBaseNameChanged(playerBaseInfo.getBaseId(), playerBaseInfo.getName());
+        sendBaseToClient(GameEngineControlPackage.Command.BASE_UPDATED, playerBase);
+    }
+
+    private void sendBaseToClient(GameEngineControlPackage.Command cmd, PlayerBase playerBase) {
         PlayerBaseDto playerBaseDto = new PlayerBaseDto();
         playerBaseDto.setBaseId(playerBase.getBaseId());
         playerBaseDto.setName(playerBase.getName());
         playerBaseDto.setCharacter(playerBase.getCharacter());
         playerBaseDto.setHumanPlayerId(playerBase.getHumanPlayerId());
         playerBaseDto.setBotId(playerBase.getBotId());
-        sendToClient(GameEngineControlPackage.Command.BASE_CREATED, playerBaseDto);
+        sendToClient(cmd, playerBaseDto);
     }
 
     @Override

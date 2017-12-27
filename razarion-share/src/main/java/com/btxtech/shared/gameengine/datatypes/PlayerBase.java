@@ -14,7 +14,6 @@
 package com.btxtech.shared.gameengine.datatypes;
 
 import com.btxtech.shared.datatypes.HumanPlayerId;
-import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 
 /**
@@ -46,6 +45,10 @@ public class PlayerBase {
 
     public String getName() {
         return name;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
     }
 
     public Character getCharacter() {
@@ -81,7 +84,7 @@ public class PlayerBase {
     }
 
     public boolean withdrawalResource(double amount) {
-        if(character.isBot()) {
+        if (character.isBot()) {
             return true;
         }
         if (amount > resources) {

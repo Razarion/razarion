@@ -102,6 +102,7 @@ public class WorkerMarshaller {
             case COMMAND_UNLOAD_CONTAINER:
             case BASE_CREATED:
             case BASE_DELETED:
+            case BASE_UPDATED:
             case PROJECTILE_DETONATION:
             case SINGLE_Z_TERRAIN_ANSWER:
             case ENERGY_CHANGED:
@@ -259,6 +260,9 @@ public class WorkerMarshaller {
                 break;
             case BASE_DELETED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                break;
+            case BASE_UPDATED:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseDto.class));
                 break;
             case USE_INVENTORY_ITEM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), UseInventoryItem.class));

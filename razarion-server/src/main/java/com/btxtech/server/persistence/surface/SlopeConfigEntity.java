@@ -163,6 +163,8 @@ public class SlopeConfigEntity {
         shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(0, 0)).setSlopeFactor(1));
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(1, 1)).setSlopeFactor(1));
+        lightConfigEmbeddable = new LightConfigEmbeddable();
+        slopeSkeletonEntries = new ArrayList<>();
     }
 
     private List<SlopeShape> toSlopeShapes() {

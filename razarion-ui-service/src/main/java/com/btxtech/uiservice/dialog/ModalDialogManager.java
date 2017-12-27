@@ -35,6 +35,8 @@ public abstract class ModalDialogManager {
 
     public abstract void showMessageImageDialog(String title, String message, Integer imageId);
 
+    public abstract void showSetUserNameDialog();
+
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, () -> {
             if (questPassedCallback != null) {

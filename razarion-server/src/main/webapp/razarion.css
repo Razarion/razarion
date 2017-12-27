@@ -584,6 +584,20 @@ a:active {
 
 /** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
 
+/** -------------------------- DIALOG QUEST PASSED  -------------------------- */
+.set-name-dialog {
+    max-width: 30em;
+}
+
+.set-name-dialog-error {
+    height: 1em;
+    margin-bottom: 6px;
+    color: red;
+    font-size: 85%;
+    font-weight: bolder;
+}
+/** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
+
 /** -------------------------- DIALOG INVENTORY  -------------------------- */
 .inventory-item-table {
 

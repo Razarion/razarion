@@ -1,8 +1,10 @@
 package com.btxtech.server;
 
+import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
+import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
@@ -25,6 +27,7 @@ import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -32,6 +35,11 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.SlopeNode;
+import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainSlopeCorner;
+import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -39,6 +47,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -47,6 +56,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -77,6 +87,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -84,6 +95,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -128,8 +140,8 @@ public class ArquillianBaseTest {
     public static int LEVEL_UNLOCK_ID_L5_1;
     public static int LEVEL_UNLOCK_ID_L5_2;
     // SlopeConfigEntity
-    public static int SLOPE_CONFIG_ENTITY_1;
-    public static int SLOPE_CONFIG_ENTITY_2;
+    public static int SLOPE_LAND_CONFIG_ENTITY_1;
+    public static int SLOPE_WATER_CONFIG_ENTITY_2;
     @PersistenceContext
     private EntityManager em;
     @Inject
@@ -140,6 +152,10 @@ public class ArquillianBaseTest {
     private ItemTypePersistence itemTypePersistence;
     @Inject
     private Shape3DPersistence shape3DPersistence;
+    @Inject
+    private PlanetPersistence planetPersistence;
+    @Inject
+    private ServerGameEngineControl serverGameEngineControl;
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -390,8 +406,8 @@ public class ArquillianBaseTest {
         PLANET_1_ID = planetEntity1.getId();
 
         PlanetEntity planetEntity2 = new PlanetEntity();
-        planetEntity2.setGroundMeshDimension(new Rectangle(0, 0, 5, 5));
-        planetEntity2.setPlayGround(new Rectangle2D(50, 50, 700, 700));
+        planetEntity2.setGroundMeshDimension(new Rectangle(0, 0, 10, 10));
+        planetEntity2.setPlayGround(new Rectangle2D(50, 50, 1500, 1500));
         planetEntity2.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
         planetEntity2.setItemTypeLimitation(setupPlanet2Limitation());
         em.persist(planetEntity2);
@@ -443,17 +459,83 @@ public class ArquillianBaseTest {
         utx.commit();
     }
 
+    protected void setupPlanetWithSlopes() throws Exception {
+        setupSlopeConfigEntities();
+        setupPlanets();
+
+        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+
+        // Land slope
+        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
+        terrainSlopePositionLand.setSlopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
+        terrainSlopePositionLand.setPolygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(50, 40)), new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 40)),
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 60)), new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 90)),
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(100, 110)), new TerrainSlopeCorner().setPosition(new DecimalPosition(50, 110))));
+        terrainSlopePositions.add(terrainSlopePositionLand);
+        // Water slope
+        TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
+        terrainSlopePositionWater.setSlopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
+        terrainSlopePositionWater.setPolygon(Arrays.asList(new TerrainSlopeCorner().setPosition(new DecimalPosition(64, 200)), new TerrainSlopeCorner().setPosition(new DecimalPosition(231, 200)),
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(231, 256)), new TerrainSlopeCorner().setPosition(new DecimalPosition(151, 257)),
+                new TerrainSlopeCorner().setPosition(new DecimalPosition(239, 359)), new TerrainSlopeCorner().setPosition(new DecimalPosition(49, 360))));
+        terrainSlopePositions.add(terrainSlopePositionWater);
+
+        planetPersistence.createTerrainSlopePositions(PLANET_2_ID, terrainSlopePositions);
+
+        // Start from ServletContextMonitor.contextInitialized() not working
+        serverGameEngineControl.start(null, true);
+    }
+
     protected void setupSlopeConfigEntities() throws Exception {
         runInTransaction(em -> {
             SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
+            SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
+            slopeSkeletonConfigLand.setLightConfig(new LightConfig());
+            slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
+            slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+            slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+                    {new SlopeNode().setPosition(new Vertex(2, 0, 5)).setSlopeFactor(1)},
+                    {new SlopeNode().setPosition(new Vertex(4, 0, 10)).setSlopeFactor(0.7)},
+                    {new SlopeNode().setPosition(new Vertex(7, 0, 20)).setSlopeFactor(0.7)},
+            }));
+            slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
             slopeConfigEntity1.setDefault();
+            List<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2,5), 1), new SlopeShape(new DecimalPosition(4,10), 1), new SlopeShape(new DecimalPosition(7,20), 1));
+            slopeConfigEntity1.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigLand).setInternalName("Land").setShape(shapeLand), imagePersistence);
             em.persist(slopeConfigEntity1);
-            SLOPE_CONFIG_ENTITY_1 = slopeConfigEntity1.getId();
+
+
+            SLOPE_LAND_CONFIG_ENTITY_1 = slopeConfigEntity1.getId();
             SlopeConfigEntity slopeConfigEntity2 = new SlopeConfigEntity();
+            SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
+            slopeSkeletonConfigWater.setLightConfig(new LightConfig());
+            slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
+            slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setVerticalSpace(6).setHeight(-2);
+            slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+                    {new SlopeNode().setPosition(new Vertex(5, 0, 0.5)).setSlopeFactor(0.5)},
+                    {new SlopeNode().setPosition(new Vertex(10, 0, -0.1)).setSlopeFactor(1)},
+                    {new SlopeNode().setPosition(new Vertex(15, 0, -0.8)).setSlopeFactor(1)},
+                    {new SlopeNode().setPosition(new Vertex(20, 0, -2)).setSlopeFactor(1)},
+            }));
+            slopeSkeletonConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
             slopeConfigEntity2.setDefault();
+            List<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5,0.5), 0.5f), new SlopeShape(new DecimalPosition(10,-0.1), 1), new SlopeShape(new DecimalPosition(15,-0.8), 1), new SlopeShape(new DecimalPosition(20,-2), 1));
+            slopeConfigEntity2.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigWater).setInternalName("Water").setShape(shapeWater), imagePersistence);
             em.persist(slopeConfigEntity2);
-            SLOPE_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();
+            SLOPE_WATER_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();
         });
+    }
+
+    protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
+        int xCount = rowColumn[0].length;
+        int yCount = rowColumn.length;
+        SlopeNode[][] columnRow = new SlopeNode[xCount][yCount];
+        for (int x = 0; x < xCount; x++) {
+            for (int y = 0; y < yCount; y++) {
+                columnRow[x][y] = rowColumn[y][x];
+            }
+        }
+        return columnRow;
     }
 
     private Map<BaseItemTypeEntity, Integer> setupPlanet2Limitation() {

@@ -7,6 +7,7 @@ import com.btxtech.client.dialog.unlock.UnlockDialog;
 import com.btxtech.client.editor.EditorMenuDialog;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.uiservice.cockpit.SideCockpit;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.DialogButton;
@@ -90,13 +91,19 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Inject
     @DataField
     private Div radarNoEnergyInnerDiv;
+    @Inject
+    @DataField
+    private Span userNameSpan;
+    @Inject
+    @DataField
+    private Button userButton;
 
     @PostConstruct
     public void init() {
         getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
         GwtUtils.preventContextMenu(this);
         unlockUiService.setBlinkListener(blink -> {
-            if(blink) {
+            if (blink) {
                 //noinspection GWTStyleCheck
                 unlockButton.addStyleName("button-blink");
             } else {
@@ -104,6 +111,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
                 unlockButton.removeStyleName("button-blink");
             }
         });
+        userUiService.setUserRegistrationListener(this::displayUserRegistration);
     }
 
     @Override
@@ -142,6 +150,14 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
         modalDialogManager.show(I18nHelper.getConstants().unlockDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnlockDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
+    @EventHandler("userButton")
+    private void onUserButtonClick(ClickEvent event) {
+        if (!userUiService.isRegistered()) {
+        } else if (!userUiService.isRegisteredAndNamed()) {
+            modalDialogManager.showSetUserNameDialog();
+        }
+   }
+
     @Override
     public void displayResources(int resources) {
         resourceLabel.setTextContent(Integer.toString(resources));
@@ -175,6 +191,21 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Override
     public Rectangle getScrollHomeButtonLocation() {
         return new Rectangle(scrollHomeButton.getAbsoluteLeft(), scrollHomeButton.getAbsoluteTop(), scrollHomeButton.getOffsetWidth(), scrollHomeButton.getOffsetHeight());
+    }
+
+    private void displayUserRegistration(UserContext userContext) {
+        userNameSpan.getStyle().setProperty("display", "none");
+        userButton.getElement().getStyle().setDisplay(Style.Display.NONE);
+        if (!userUiService.isRegistered()) {
+            // userButton.getElement().getStyle().setDisplay(Style.Display.TABLE_ROW);
+            userButton.setText(I18nHelper.getConstants().register());
+        } else if (!userUiService.isRegisteredAndNamed()) {
+            userButton.getElement().getStyle().setDisplay(Style.Display.TABLE_ROW);
+            userButton.setText(I18nHelper.getConstants().setName());
+        } else {
+            userNameSpan.getStyle().setProperty("display", "table-row");
+            userNameSpan.setTextContent(userContext.getName());
+        }
     }
 
     @Override

@@ -107,4 +107,15 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
             alert.showAndWait();
         });
     }
+
+    @Override
+    public void showSetUserNameDialog() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Set user name");
+            alert.setHeaderText(null);
+            alert.setContentText("Set user name");
+            alert.showAndWait();
+        });
+    }
 }

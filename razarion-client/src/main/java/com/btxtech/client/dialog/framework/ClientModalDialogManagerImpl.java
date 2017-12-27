@@ -5,6 +5,7 @@ import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.dialog.common.MessageDialog;
 import com.btxtech.client.dialog.common.MessageImage;
 import com.btxtech.client.dialog.common.MessageImageDialog;
+import com.btxtech.client.dialog.common.SetUserNameDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.client.dialog.unlock.UnlockDialog;
@@ -95,6 +96,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     @Override
     public void showMessageImageDialog(String title, String message, Integer imageId) {
         show(title, Type.STACK_ABLE, MessageImageDialog.class, new MessageImage(message, imageId), null, null, DialogButton.Button.CLOSE);
+    }
+
+    @Override
+    public void showSetUserNameDialog() {
+        show(I18nHelper.getConstants().setName(), Type.QUEUE_ABLE, SetUserNameDialog.class, null, null, null, DialogButton.Button.CANCEL);
     }
 
     public void showMessageDialog(String title, String message) {

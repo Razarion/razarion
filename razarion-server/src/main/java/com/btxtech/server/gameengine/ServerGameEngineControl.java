@@ -322,4 +322,12 @@ public class ServerGameEngineControl implements GameLogicListener {
     public PlanetConfig getPlanetConfig() {
         return planetService.getPlanetConfig();
     }
+
+    public void updateUserName(UserContext userContext, String name) {
+        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+        if (playerBase != null) {
+            playerBase = baseItemService.changeBaseNameChanged(playerBase.getBaseId(), name);
+            clientGameConnectionService.onBaseNameChanged(playerBase);
+        }
+    }
 }

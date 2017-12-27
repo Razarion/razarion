@@ -77,7 +77,7 @@ public class ServerLevelQuestService implements QuestListener {
             boolean activeQuest = questService.hasActiveQuest(userContext.getHumanPlayerId());
             userContext.setLevelId(newLevelId);
             QuestConfig newQuest = null;
-            if (userContext.getHumanPlayerId().getUserId() != null) {
+            if (userContext.checkRegistered()) {
                 userService.persistLevel(userContext.getHumanPlayerId().getUserId(), newLevel);
                 if (!activeQuest) {
                     newQuest = userService.getAndSaveNewQuest(userContext.getHumanPlayerId().getUserId());
@@ -170,7 +170,7 @@ public class ServerLevelQuestService implements QuestListener {
     @Transactional
     public List<Integer> readActiveOrPassedQuestIds(UserContext userContext) {
         List<Integer> ignoredQuests = new ArrayList<>();
-        if (userContext.getHumanPlayerId().getUserId() != null) {
+        if (userContext.checkRegistered()) {
             ignoredQuests.addAll(userService.findActivePassedQuestId(userContext.getHumanPlayerId().getUserId()));
         } else {
             UnregisteredUser unregisteredUser = sessionService.findPlayerSession(userContext.getHumanPlayerId()).getUnregisteredUser();

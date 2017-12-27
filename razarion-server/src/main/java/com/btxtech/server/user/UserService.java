@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
@@ -14,15 +15,19 @@ import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -57,6 +62,8 @@ public class UserService {
     private ServerGameEnginePersistence serverGameEnginePersistence;
     @Inject
     private SessionService sessionService;
+    @Inject
+    private Instance<ServerGameEngineControl> serverGameEngine;
 
     @Transactional
     public UserContext getUserContextFromSession() {
@@ -103,7 +110,6 @@ public class UserService {
         userContext.setLevelId(levelPersistence.getStarterLevel().getId());
         userContext.setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelPersistence.getStartUnlockedItemLimit()));
         //}
-        userContext.setName("Unregistered User");
         return userContext;
     }
 
@@ -405,5 +411,49 @@ public class UserService {
     @Transactional
     public Collection<Integer> unlockedEntityIds(int userId) {
         return getUserEntity(userId).getLevelUnlockEntities().stream().map(LevelUnlockEntity::getId).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public SetNameResult setName(String name) {
+        ErrorResult errorResult = verifySetName(name);
+        if (errorResult != null) {
+            return new SetNameResult().setErrorResult(errorResult);
+        }
+        UserContext userContext = getUserContextFromSession();
+        UserEntity userEntity = entityManager.find(UserEntity.class, userContext.getHumanPlayerId().getUserId());
+        userEntity.setName(name);
+        entityManager.merge(userEntity);
+        userContext.setName(name);
+        serverGameEngine.get().updateUserName(userContext, name);
+        return new SetNameResult().setUserContext(userContext);
+    }
+
+    @Transactional
+    public ErrorResult verifySetName(String name) {
+        if (name == null || name.isEmpty()) {
+            return ErrorResult.TO_SHORT;
+        }
+
+        if (name.length() < 3) {
+            return ErrorResult.TO_SHORT;
+        }
+        UserContext userContext = getUserContextFromSession();
+        if (!userContext.checkRegistered()) {
+            throw new IllegalStateException("Only registered user chan set a name: " + userContext);
+        }
+        if (userContext.checkName()) {
+            throw new IllegalStateException("The name has already been set: " + userContext);
+        }
+
+        final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        final Root<UserEntity> from = criteriaQuery.from(UserEntity.class);
+        criteriaQuery.select(criteriaBuilder.count(from));
+        criteriaQuery.where(criteriaBuilder.equal(from.get(UserEntity_.name), name));
+        TypedQuery<Long> typedQuery = entityManager.createQuery(criteriaQuery);
+        if (typedQuery.getSingleResult() > 0) {
+            return ErrorResult.ALREADY_USED;
+        }
+        return null;
     }
 }

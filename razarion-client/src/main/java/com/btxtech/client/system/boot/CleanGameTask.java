@@ -19,6 +19,7 @@ import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -31,10 +32,13 @@ import javax.inject.Inject;
 public class CleanGameTask extends AbstractStartupTask {
     @Inject
     private LifecycleService lifecycleService;
+    @Inject
+    private UserUiService userUiService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
+        userUiService.stop();
         lifecycleService.clearAndHold(deferredStartup);
     }
 }

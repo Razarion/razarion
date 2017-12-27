@@ -7,8 +7,6 @@ import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
-import com.btxtech.shared.utils.CollectionUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,7 +50,7 @@ public class TerrainPersistenceTest extends ArquillianBaseTest {
         TerrainEditorUpdate terrainEditorUpdate = new TerrainEditorUpdate();
         List<TerrainSlopePosition> expectedTerrainSlopePosition = new ArrayList<>();
         TerrainSlopePosition terrainSlopePosition = new TerrainSlopePosition();
-        terrainSlopePosition.setSlopeConfigId(SLOPE_CONFIG_ENTITY_1);
+        terrainSlopePosition.setSlopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
         terrainSlopePosition.setPolygon(Arrays.asList(createTSC(100, 200, null), createTSC(300, 200, null), createTSC(300, 500, null), createTSC(100, 500, null)));
         expectedTerrainSlopePosition.add(terrainSlopePosition);
         terrainEditorUpdate.setCreatedSlopes(expectedTerrainSlopePosition);
@@ -69,7 +67,7 @@ public class TerrainPersistenceTest extends ArquillianBaseTest {
         expectedTerrainSlopePosition = new ArrayList<>();
         terrainSlopePosition = new TerrainSlopePosition();
         terrainSlopePosition.setId(firstSlopeId);
-        terrainSlopePosition.setSlopeConfigId(SLOPE_CONFIG_ENTITY_2);
+        terrainSlopePosition.setSlopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
         terrainSlopePosition.setPolygon(Arrays.asList(createTSC(100, 200, null), createTSC(300, 200, null), createTSC(400, 500, null), createTSC(800, 500, null), createTSC(100, 500, null)));
         expectedTerrainSlopePosition.add(terrainSlopePosition);
         terrainEditorUpdate.setUpdatedSlopes(expectedTerrainSlopePosition);
@@ -82,7 +80,7 @@ public class TerrainPersistenceTest extends ArquillianBaseTest {
         terrainEditorUpdate = new TerrainEditorUpdate();
         List<TerrainSlopePosition> expectedChildTerrainSlopePosition = new ArrayList<>();
         terrainSlopePosition = new TerrainSlopePosition();
-        terrainSlopePosition.setSlopeConfigId(SLOPE_CONFIG_ENTITY_1);
+        terrainSlopePosition.setSlopeConfigId(SLOPE_LAND_CONFIG_ENTITY_1);
         terrainSlopePosition.setEditorParentId(firstSlopeId);
         terrainSlopePosition.setInverted(true);
         terrainSlopePosition.setPolygon(Arrays.asList(createTSC(200, 300, null), createTSC(200, 400, null), createTSC(300, 500, null)));
@@ -102,7 +100,7 @@ public class TerrainPersistenceTest extends ArquillianBaseTest {
         terrainEditorUpdate = new TerrainEditorUpdate();
         expectedChildTerrainSlopePosition = new ArrayList<>();
         terrainSlopePosition = new TerrainSlopePosition();
-        terrainSlopePosition.setSlopeConfigId(SLOPE_CONFIG_ENTITY_2);
+        terrainSlopePosition.setSlopeConfigId(SLOPE_WATER_CONFIG_ENTITY_2);
         terrainSlopePosition.setId(firstSlopeChildId);
         terrainSlopePosition.setInverted(false);
         terrainSlopePosition.setPolygon(Arrays.asList(createTSC(201, 301, null), createTSC(201, 401, null), createTSC(300, 500, null), createTSC(302, 503, null)));

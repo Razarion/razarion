@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.cockpit;
 
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.uiservice.control.GameUiControl;
 
 /**

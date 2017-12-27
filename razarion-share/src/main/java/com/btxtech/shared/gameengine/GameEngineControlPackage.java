@@ -43,6 +43,7 @@ public class GameEngineControlPackage {
         CREATE_HUMAN_BASE_WITH_BASE_ITEM,
         BASE_CREATED,
         BASE_DELETED,
+        BASE_UPDATED,
         USE_INVENTORY_ITEM,
         UPDATE_LEVEL,
         // Base items

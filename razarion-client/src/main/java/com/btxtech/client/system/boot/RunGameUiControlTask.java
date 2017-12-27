@@ -8,6 +8,7 @@ import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
+import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -31,6 +32,8 @@ public class RunGameUiControlTask extends AbstractStartupTask {
     private PerfmonService perfmonService;
     @Inject
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
+    @Inject
+    private UserUiService userUiService;
 
     @Override
     protected void privateStart(DeferredStartup deferredStartup) {
@@ -39,5 +42,6 @@ public class RunGameUiControlTask extends AbstractStartupTask {
         gameCanvas.startRenderLoop();
         perfmonService.start();
         clientPerformanceTrackerService.start();
+        userUiService.start();
     }
 }

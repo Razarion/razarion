@@ -1,13 +1,12 @@
 package com.btxtech.shared.system;
 
+import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -31,7 +30,10 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     // Inventory
     BOX_PICKED(BoxContent.class),
     // Unlock
-    UNLOCKED_ITEM_LIMIT(UnlockedItemPacket.class);
+    UNLOCKED_ITEM_LIMIT(UnlockedItemPacket.class),
+    // User
+    VERIFY_USER_NAME(String.class),
+    USER_NAME_RESULT(ErrorResult.class);
 
     private Class theClass;
 

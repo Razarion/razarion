@@ -137,7 +137,7 @@ public abstract class GameEngineControl {
                 userUiService.getUserContext().getLevelId(),
                 userUiService.getUserContext().getUnlockedItemLimit(),
                 userUiService.getUserContext().getHumanPlayerId(),
-                userUiService.getUserContext().getName(),
+                userUiService.getUserContext().getName() == null ? "" : userUiService.getUserContext().getName(), // Errai demarsheller is not able to handle top level null JSON object
                 position);
     }
 
@@ -326,6 +326,9 @@ public abstract class GameEngineControl {
                 break;
             case BASE_DELETED:
                 baseItemUiService.removeBase((Integer) controlPackage.getSingleData());
+                break;
+            case BASE_UPDATED:
+                baseItemUiService.updateBase((PlayerBaseDto) controlPackage.getSingleData());
                 break;
             case QUEST_PASSED:
                 gameUiControl.onQuestPassed();

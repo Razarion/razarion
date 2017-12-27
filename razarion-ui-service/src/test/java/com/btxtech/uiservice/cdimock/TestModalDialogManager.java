@@ -53,4 +53,9 @@ public class TestModalDialogManager extends ModalDialogManager {
     public void showMessageImageDialog(String title, String message, Integer imageId) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void showSetUserNameDialog() {
+        throw new UnsupportedOperationException();
+    }
 }

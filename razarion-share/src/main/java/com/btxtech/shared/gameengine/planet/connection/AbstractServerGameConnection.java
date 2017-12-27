@@ -69,6 +69,9 @@ public abstract class AbstractServerGameConnection {
             case BASE_DELETED:
                 gameEngineWorker.onServerBaseDeleted((int) param);
                 break;
+            case BASE_NAME_CHANGED:
+                gameEngineWorker.onServerBaseNameChanged((PlayerBaseInfo) param);
+                break;
             case SYNC_BASE_ITEM_CHANGED:
                 baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) param);
                 break;
