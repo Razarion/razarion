@@ -1,7 +1,6 @@
 package com.btxtech.uiservice.control;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -26,6 +25,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.TrackerService;
+import com.btxtech.uiservice.cockpit.ChatService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -46,7 +46,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -65,6 +64,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private BaseItemUiService baseItemUiService;
     @Inject
     private CockpitService cockpitService;
+    @Inject
+    private ChatService chatService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -148,6 +149,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void start() {
         startTimeStamp = new Date();
         cockpitService.show(userUiService.getUserContext());
+        chatService.start();
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.MASTER) {
             if (coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {

@@ -505,6 +505,40 @@ a:active {
     background-color: black;
 }
 
+/** ----- chat ----- */
+.chat-cockpit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 280px;
+    height: 220px;
+    display: table;
+    background-image: url('images/DialogBackground.png');
+    border: 8px solid transparent;
+    border-image-source: url('images/Border.png');
+    border-image-slice: 8;
+    border-image-repeat: repeat;
+    box-shadow: 3px 3px 15px 1px #000;
+}
+
+.chat-message-div {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    border: 1px solid #3289bd5c;
+    background-color: #025cff2e;
+}
+
+.chat-user-span {
+    font-size: 80%;
+    color: red;
+}
+
+.chat-text-span {
+    font-size: 80%;
+    color: #d8d0d0;
+}
+
 /** ----- Main ----- */
 .playback-cockpit {
     color: #d8d0d0;

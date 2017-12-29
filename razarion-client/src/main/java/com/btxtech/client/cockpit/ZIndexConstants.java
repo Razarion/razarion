@@ -8,6 +8,7 @@ public class ZIndexConstants {
     private static int counter = 1;
     public static final int WEBGL_CANVAS = counter++;
     public static final int MAIN_COCKPIT = counter++;
+    public static final int CHAT_COCKPIT = counter++;
     public static final int EDITOR_SIDE_BAR = counter++;
     public static final int QUEST_SIDE_BAR = counter++;
     public static final int ITEM_COCKPIT = counter++;
