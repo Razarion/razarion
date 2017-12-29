@@ -78,6 +78,10 @@ public class UserEntity {
         this.name = name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void fromFacebookUserLoginInfo(String facebookUserId, HumanPlayerIdEntity humanPlayerId, Locale locale) {
         registerDate = new Date();
         this.facebookUserId = facebookUserId;

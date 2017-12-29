@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.chat;
 
-import com.btxtech.server.persistence.AudioLibraryEntity;
 import com.btxtech.server.user.UserEntity;
+import com.btxtech.shared.datatypes.ChatMessage;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,14 +25,15 @@ public class ChatMessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="user")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user")
     private UserEntity userEntity;
     @Lob
     @Column(length = 500)
     private String message;
     private Date timestamp;
-    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    @Column(length = 190)
+// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;
 
 
@@ -52,6 +53,10 @@ public class ChatMessageEntity {
         this.sessionId = sessionId;
     }
 
+    public ChatMessage toChatMessage() {
+        return new ChatMessage().setUserId(userEntity.getId()).setUserName(userEntity.getName()).setMessage(message);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -69,5 +74,4 @@ public class ChatMessageEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

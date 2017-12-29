@@ -24,6 +24,7 @@ public class ChatUiService {
         if (chatCockpit == null) {
             chatCockpit = instance.get();
             chatCockpit.show();
+            chatCockpit.displayMessages(chatMessages);
         }
     }
 

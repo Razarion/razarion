@@ -64,6 +64,7 @@ public class ClientSystemConnection {
         async = session.getAsyncRemote();
         httpSessionId = ((HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY)).getId() ;
         clientSystemConnectionService.onOpen(this);
+        chatPersistence.sendLastMessages(getSession());
     }
 
     @OnError

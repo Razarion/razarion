@@ -27,6 +27,10 @@ public class TestClientSystemConnection extends ClientSystemConnection {
         this.playerSession = playerSession;
     }
 
+    public void clear() {
+        messagesSent.clear();
+    }
+
     @Override
     public void sendToClient(String text) {
         messagesSent.add(text);

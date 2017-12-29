@@ -3,6 +3,7 @@ package com.btxtech.server.persistence.chat;
 import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.TestClientSystemConnection;
+import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
@@ -14,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import java.util.Date;
 
 /**
  * Created by Beat
@@ -80,6 +82,68 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
         } catch (IllegalStateException e) {
             Assert.assertTrue(e.getMessage(), e.getMessage().startsWith("User has no name: "));
         }
+        cleanUsers();
+    }
+
+    @Test
+    public void testLoadCache() throws Exception {
+        final UserEntity userEntity1 = new UserEntity();
+        final UserEntity userEntity2 = new UserEntity();
+
+        runInTransaction(entityManager -> {
+            // Create users
+            userEntity1.setName("name1");
+            entityManager.persist(userEntity1);
+            userEntity2.setName("name2");
+            entityManager.persist(userEntity2);
+            // Create Chat messages
+            long timeStamp = System.currentTimeMillis() - 100000L;
+            for(int i = 0; i < 20; i++) {
+                ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
+                chatMessageEntity.setTimestamp(new Date(timeStamp + i * 1000));
+                chatMessageEntity.setUserEntity(userEntity1);
+                chatMessageEntity.setMessage("xxxx" + i);
+                entityManager.persist(chatMessageEntity);
+            }
+
+            timeStamp += 100000L;
+            ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
+            chatMessageEntity.setTimestamp(new Date(timeStamp + 1000));
+            chatMessageEntity.setUserEntity(userEntity1);
+            chatMessageEntity.setMessage("zuri ouhbdf ndswokijui");
+            entityManager.persist(chatMessageEntity);
+            chatMessageEntity = new ChatMessageEntity();
+            chatMessageEntity.setTimestamp(new Date(timeStamp + 5000));
+            chatMessageEntity.setUserEntity(userEntity1);
+            chatMessageEntity.setMessage("asdfsdfsdaf");
+            entityManager.persist(chatMessageEntity);
+            chatMessageEntity = new ChatMessageEntity();
+            chatMessageEntity.setTimestamp(new Date(timeStamp + 3000));
+            chatMessageEntity.setUserEntity(userEntity2);
+            chatMessageEntity.setMessage("asd gfrfsagh ewrfwrfew");
+            entityManager.persist(chatMessageEntity);
+        });
+
+        chatPersistence.fillCacheFromDb();
+
+        UserContext userContext = userService.handleFacebookUserLogin("0000001");
+        userService.setName("sdifbj");
+        TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
+        chatPersistence.sendLastMessages(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()));
+        // Verify
+        testClientSystemConnection.assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("zuri ouhbdf ndswokijui"));
+        testClientSystemConnection.assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
+        testClientSystemConnection.assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
+        // Send message
+        chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "frghstehllool");
+        testClientSystemConnection.clear();
+        chatPersistence.sendLastMessages(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()));
+        // Verify
+        testClientSystemConnection.assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
+        testClientSystemConnection.assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
+        testClientSystemConnection.assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("frghstehllool"));
+
+        cleanTable(ChatMessageEntity.class);
         cleanUsers();
     }
 

@@ -106,6 +106,10 @@ public class ClientSystemConnectionService {
         sendToClients(SystemConnectionPacket.CHAT_RECEIVE_MESSAGE, chatMessage);
     }
 
+    public void sendChatMessage(PlayerSession playerSession, ChatMessage chatMessage) {
+        sendToClient(playerSession, SystemConnectionPacket.CHAT_RECEIVE_MESSAGE, chatMessage);
+    }
+
     private void sendToClient(PlayerSession playerSession, SystemConnectionPacket packet, Object object) {
         Collection<ClientSystemConnection> clientSystemConnections;
         synchronized (systemGameConnections) {

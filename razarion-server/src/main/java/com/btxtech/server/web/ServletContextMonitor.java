@@ -1,6 +1,7 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -17,12 +18,19 @@ public class ServletContextMonitor implements ServletContextListener {
     @Inject
     private ServerGameEngineControl gameEngineService;
     @Inject
+    private ChatPersistence chatPersistence;
+    @Inject
     private ExceptionHandler exceptionHandler;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
             gameEngineService.start(null, true);
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
+        try {
+            chatPersistence.fillCacheFromDb();
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }
