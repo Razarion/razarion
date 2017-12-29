@@ -14,8 +14,8 @@ public interface Colors {
 
     Color OWN = new Color(0.6, 1.0, 0.6, 1.0);
     Color ENEMY = new Color(1.0, 0.0, 0.0, 1.0);
-    Color FRIEND = new Color(0.0, 0.0, 1.0, 1.0);
-    Color NONE_BASE = new Color(1.0, 1.0, 0.0, 1.0);
+    Color FRIEND = new Color(1.0, 1.0, 0.6, 1.0);
+    Color NONE_BASE = new Color(6.0, 6.0, 0.0, 1.0);
 
     double SELECTION_ALPHA = 0.8;
     double HOVER_ALPHA = 0.4;

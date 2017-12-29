@@ -86,7 +86,7 @@ public class ClientSystemConnection {
                 gameSessionUuid = (String)param;
                 break;
             case CHAT_SEND_MESSAGE:
-                chatPersistence.onMessage((String)param);
+                chatPersistence.onMessage(getSession(), (String)param);
                 break;
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);

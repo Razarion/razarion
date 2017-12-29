@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.control;
 
+import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
@@ -9,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.SystemConnectionPacket;
+import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
@@ -25,6 +27,8 @@ public abstract class AbstractServerSystemConnection {
     private UserUiService userUiService;
     @Inject
     private InventoryUiService inventoryUiService;
+    @Inject
+    private ChatUiService chatUiService;
 
     protected abstract void sendToServer(String text);
 
@@ -74,6 +78,9 @@ public abstract class AbstractServerSystemConnection {
                 break;
             case LIFECYCLE_CONTROL:
                 onLifecyclePacket((LifecyclePacket) param);
+                break;
+            case CHAT_RECEIVE_MESSAGE:
+                chatUiService.onMessage((ChatMessage) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);

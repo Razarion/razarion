@@ -153,6 +153,8 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @EventHandler("userButton")
     private void onUserButtonClick(ClickEvent event) {
         if (!userUiService.isRegistered()) {
+            // TODO show register dialog
+            // TODO also in UnregisteredDialog
         } else if (!userUiService.isRegisteredAndNamed()) {
             modalDialogManager.showSetUserNameDialog();
         }

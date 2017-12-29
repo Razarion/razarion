@@ -1,16 +1,25 @@
 package com.btxtech.client.cockpit.chat;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.dialog.common.UnnamedDialog;
+import com.btxtech.client.dialog.common.UnregisteredDialog;
+import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.guielements.Div;
+import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.uiservice.cockpit.ChatCockpit;
 import com.btxtech.uiservice.control.GameUiControl;
+import com.btxtech.uiservice.dialog.DialogButton;
+import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.DOMUtil;
+import org.jboss.errai.common.client.dom.Event;
 import org.jboss.errai.common.client.dom.EventListener;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Input;
+import org.jboss.errai.common.client.dom.KeyboardEvent;
 import org.jboss.errai.common.client.dom.MouseEvent;
 import org.jboss.errai.common.client.dom.Window;
 import org.jboss.errai.databinding.client.components.ListComponent;
@@ -20,7 +29,8 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -33,6 +43,10 @@ public class ClientChatCockpit implements ChatCockpit, IsElement {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
+    private ClientModalDialogManagerImpl modalDialogManager;
+    @Inject
+    private UserUiService userUiService;
+    @Inject
     @DataField
     private Div chatCockpit;
     @Inject
@@ -41,7 +55,7 @@ public class ClientChatCockpit implements ChatCockpit, IsElement {
     @Inject
     @DataField
     @ListContainer("tbody")
-    private ListComponent<MessageModel, MessageWidget> messageTable;
+    private ListComponent<ChatMessage, MessageWidget> messageTable;
     @Inject
     @DataField
     private Button sendButton;
@@ -80,10 +94,11 @@ public class ClientChatCockpit implements ChatCockpit, IsElement {
                 resizeMode = false;
             }
         }, false);
-        // TODO --- remove
-        messageTable.setValue(Arrays.asList(new MessageModel().setUserName("beat").setMessage("adsfol dasfdasofui rawgh'üokjarew adsfjunouigfh asrfghdrfashouiuha  asg arsw graew gh"), new MessageModel().setUserName("beat").setMessage("adsfol dasfdasofui rawgh'üokjarew adsfjunouigfh asrfghdrfashouiuha  asg arsw graew gh"), new MessageModel().setUserName("beat").setMessage("adsfol dasfdasofui rawgh'üokjarew adsfjunouigfh asrfghdrfashouiuha  asg arsw graew gh"), new MessageModel().setUserName("beat").setMessage("adsfol dasfdasofui rawgh'üokjarew adsfjunouigfh asrfghdrfashouiuha  asg arsw graew gh")));
-        // TODO --- remove ends
-        messageDiv.setScrollTop(Integer.MAX_VALUE);
+        messageInput.addEventListener("keydown", (EventListener<KeyboardEvent>) event -> {
+            if(event.getKeyCode() == 13) {
+                send();
+            }
+        }, false);
     }
 
     private boolean isResizeAllowed(MouseEvent event) {
@@ -96,12 +111,31 @@ public class ClientChatCockpit implements ChatCockpit, IsElement {
     }
 
     @Override
+    public void displayMessages(List<ChatMessage> messages) {
+        messageTable.setValue(Collections.emptyList());
+        messageTable.setValue(messages);
+        messageDiv.setScrollTop(Integer.MAX_VALUE);
+    }
+
+    @Override
     public HTMLElement getElement() {
         return chatCockpit;
     }
 
     @EventHandler("sendButton")
     private void onSendButtonClicked(ClickEvent event) {
+        send();
+    }
+
+    private void send() {
+        if (!userUiService.isRegistered()) {
+            modalDialogManager.show(I18nHelper.getConstants().unregistered(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnregisteredDialog.class, I18nHelper.getConstants().chatUnregistered(), null, null, DialogButton.Button.CANCEL);
+            return;
+        } else if (!userUiService.isRegisteredAndNamed()) {
+            modalDialogManager.show(I18nHelper.getConstants().unnamed(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnnamedDialog.class, I18nHelper.getConstants().chatUnnamed(), null, null, DialogButton.Button.CANCEL);
+            return;
+        }
+
         if (messageInput.getValue() == null || messageInput.getValue().trim().length() == 0) {
             return;
         }

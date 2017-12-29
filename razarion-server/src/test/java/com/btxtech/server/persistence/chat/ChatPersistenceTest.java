@@ -5,6 +5,7 @@ import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.shared.datatypes.UserContext;
 import org.junit.After;
@@ -27,6 +28,8 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
     private ClientSystemConnectionServiceTestHelper systemConnectionService;
     @Inject
     private SessionHolder sessionHolder;
+    @Inject
+    private SessionService sessionService;
 
     @Before
     public void before() throws Exception {
@@ -45,10 +48,10 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
 
         TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
 
-        chatPersistence.onMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
+        chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
         testClientSystemConnection.assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef"));
 
-        chatPersistence.onMessage("asdf kll wssxdvbhnmhjhki   äöpoöoöpo");
+        chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "asdf kll wssxdvbhnmhjhki   äöpoöoöpo");
         testClientSystemConnection.assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("asdf kll wssxdvbhnmhjhki   äöpoöoöpo"));
 
         assertCount(2, ChatMessageEntity.class);
@@ -60,7 +63,8 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
     @Test
     public void testSendUnregistered() {
         try {
-            chatPersistence.onMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
+            userService.getUserContextFromSession(); // Simulate anonymous access
+            chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
             Assert.fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             Assert.assertTrue(e.getMessage(), e.getMessage().startsWith("User is not registered. Session id:"));
@@ -71,7 +75,7 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
     public void testSendUnnamed() throws Exception {
         userService.handleFacebookUserLogin("0000001");
         try {
-            chatPersistence.onMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
+            chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
             Assert.fail("IllegalStateException expected");
         } catch (IllegalStateException e) {
             Assert.assertTrue(e.getMessage(), e.getMessage().startsWith("User has no name: "));

@@ -1,5 +1,8 @@
 package com.btxtech.client.cockpit.chat;
 
+import com.btxtech.shared.datatypes.ChatMessage;
+import com.btxtech.uiservice.Colors;
+import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.TakesValue;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
@@ -15,7 +18,9 @@ import javax.inject.Inject;
  * on 29.12.2017.
  */
 @Templated("ClientChatCockpit.html#messageRow")
-public class MessageWidget implements TakesValue<MessageModel>, IsElement {
+public class MessageWidget implements TakesValue<ChatMessage>, IsElement {
+    @Inject
+    private UserUiService userUiService;
     @Inject
     @DataField
     private TableRow messageRow;
@@ -25,18 +30,23 @@ public class MessageWidget implements TakesValue<MessageModel>, IsElement {
     @Inject
     @DataField
     private Span messageEntrySpan;
-    private MessageModel messageModel;
+    private ChatMessage chatMessage;
 
     @Override
-    public void setValue(MessageModel messageModel) {
-        this.messageModel = messageModel;
-        userEntrySpan.setTextContent(messageModel.getUserName());
-        messageEntrySpan.setTextContent(messageModel.getMessage());
+    public void setValue(ChatMessage chatMessage) {
+        this.chatMessage = chatMessage;
+        if(userUiService.isRegistered() && userUiService.getUserContext().getHumanPlayerId().getUserId() == chatMessage.getUserId()) {
+            userEntrySpan.getStyle().setProperty("color", Colors.OWN.toHtmlColor());
+        } else {
+            userEntrySpan.getStyle().setProperty("color", Colors.FRIEND.toHtmlColor());
+        }
+        userEntrySpan.setTextContent(chatMessage.getUserName() + ": ");
+        messageEntrySpan.setTextContent(chatMessage.getMessage());
     }
 
     @Override
-    public MessageModel getValue() {
-        return messageModel;
+    public ChatMessage getValue() {
+        return chatMessage;
     }
 
     @Override

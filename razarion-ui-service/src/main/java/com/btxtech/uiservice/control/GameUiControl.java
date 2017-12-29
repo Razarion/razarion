@@ -25,7 +25,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.uiservice.TrackerService;
-import com.btxtech.uiservice.cockpit.ChatService;
+import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
@@ -65,7 +65,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     @Inject
     private CockpitService cockpitService;
     @Inject
-    private ChatService chatService;
+    private ChatUiService chatUiService;
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -149,7 +149,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void start() {
         startTimeStamp = new Date();
         cockpitService.show(userUiService.getUserContext());
-        chatService.start();
+        chatUiService.start();
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.MASTER) {
             if (coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {

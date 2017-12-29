@@ -195,6 +195,14 @@ public interface I18nConstants {
     String tooltipSell();
 
     // Register dialog
+    String unregistered();
+
+    String unnamed();
+
+    String chatUnregistered();
+
+    String chatUnnamed();
+
     String registerText();
 
     String registerFacebookNickname();
