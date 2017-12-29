@@ -2,6 +2,7 @@ package com.btxtech.server.connection;
 
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
@@ -99,6 +100,10 @@ public class ClientSystemConnectionService {
 
     public void sendLifecyclePacket(LifecyclePacket lifecyclePacket) {
         sendToClients(SystemConnectionPacket.LIFECYCLE_CONTROL, lifecyclePacket);
+    }
+
+    public void sendChatMessage(ChatMessage chatMessage) {
+        sendToClients(SystemConnectionPacket.CHAT_RECEIVE_MESSAGE, chatMessage);
     }
 
     private void sendToClient(PlayerSession playerSession, SystemConnectionPacket packet, Object object) {

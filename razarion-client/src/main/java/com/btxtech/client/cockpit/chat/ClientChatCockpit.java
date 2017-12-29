@@ -3,6 +3,7 @@ package com.btxtech.client.cockpit.chat;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.guielements.Div;
 import com.btxtech.uiservice.cockpit.ChatCockpit;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.google.gwt.event.dom.client.ClickEvent;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Button;
@@ -29,6 +30,8 @@ import java.util.Arrays;
 public class ClientChatCockpit implements ChatCockpit, IsElement {
     private static final int RESIZE_CURSOR_AREA = 10;
     // private Logger logger = Logger.getLogger(ClientChatCockpit.class.getName());
+    @Inject
+    private GameUiControl gameUiControl;
     @Inject
     @DataField
     private Div chatCockpit;
@@ -99,6 +102,10 @@ public class ClientChatCockpit implements ChatCockpit, IsElement {
 
     @EventHandler("sendButton")
     private void onSendButtonClicked(ClickEvent event) {
+        if (messageInput.getValue() == null || messageInput.getValue().trim().length() == 0) {
+            return;
+        }
+        gameUiControl.sendChatMessage(messageInput.getValue());
         messageInput.setValue("");
     }
 }

@@ -2,6 +2,7 @@ package com.btxtech.server.connection;
 
 import com.btxtech.server.gameengine.WebSocketEndpointConfigAware;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
+import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.rest.RestUrl;
@@ -37,6 +38,8 @@ public class ClientSystemConnection {
     private ServerLevelQuestService serverLevelQuestService;
     @Inject
     private SessionService sessionService;
+    @Inject
+    private ChatPersistence chatPersistence;
     private ObjectMapper mapper = new ObjectMapper();
     private RemoteEndpoint.Async async;
     private Date time;
@@ -81,6 +84,9 @@ public class ClientSystemConnection {
                 break;
             case SET_GAME_SESSION_UUID:
                 gameSessionUuid = (String)param;
+                break;
+            case CHAT_SEND_MESSAGE:
+                chatPersistence.onMessage((String)param);
                 break;
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);

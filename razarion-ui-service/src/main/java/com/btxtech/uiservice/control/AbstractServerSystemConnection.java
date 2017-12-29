@@ -13,7 +13,6 @@ import com.btxtech.uiservice.inventory.InventoryUiService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * Created by Beat
@@ -41,6 +40,10 @@ public abstract class AbstractServerSystemConnection {
 
     public void onLevelChanged(LevelConfig levelConfig) {
         sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.LEVEL_UPDATE_CLIENT, toJson(levelConfig.getLevelId())));
+    }
+
+    public void sendChatMessage(String message) {
+        sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.CHAT_SEND_MESSAGE, toJson(message)));
     }
 
     public void handleMessage(String text) {

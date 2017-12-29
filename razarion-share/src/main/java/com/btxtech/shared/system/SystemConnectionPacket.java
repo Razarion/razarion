@@ -1,5 +1,6 @@
 package com.btxtech.shared.system;
 
+import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.LifecyclePacket;
@@ -31,9 +32,9 @@ public enum SystemConnectionPacket implements ConnectionMarshaller.Packet {
     BOX_PICKED(BoxContent.class),
     // Unlock
     UNLOCKED_ITEM_LIMIT(UnlockedItemPacket.class),
-    // User
-    VERIFY_USER_NAME(String.class),
-    USER_NAME_RESULT(ErrorResult.class);
+    // Chat
+    CHAT_SEND_MESSAGE(String.class),
+    CHAT_RECEIVE_MESSAGE(ChatMessage.class);
 
     private Class theClass;
 

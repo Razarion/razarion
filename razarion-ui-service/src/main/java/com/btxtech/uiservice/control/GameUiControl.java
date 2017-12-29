@@ -374,6 +374,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         abstractServerSystemConnection.onLevelChanged(newLevelConfig);
     }
 
+    public void sendChatMessage(String message) {
+        abstractServerSystemConnection.sendChatMessage(message);
+    }
+
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
         if (currentScene != null) {
             currentScene.onQuestProgress(questProgressInfo);
