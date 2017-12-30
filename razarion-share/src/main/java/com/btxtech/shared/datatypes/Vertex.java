@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -254,6 +255,10 @@ public class Vertex {
             decimalPositions.add(vertex.toXY());
         }
         return decimalPositions;
+    }
+
+    public static List<Vertex> toVertex(List<DecimalPosition> positions, double z) {
+        return positions.stream().map(decimalPosition -> new Vertex(decimalPosition, z)).collect(Collectors.toList());
     }
 
     public static Comparator<Vertex> createVertexComparator1(double delta) {

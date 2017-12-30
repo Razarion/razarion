@@ -173,6 +173,20 @@ public class ExtendedGraphicsContext {
         }
     }
 
+    public void fillPolygon(List<DecimalPosition> polygon, Color color) {
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        double[] xPoints = new double[polygon.size()];
+        double[] yPoints = new double[polygon.size()];
+        for (int i = 0; i < polygon.size(); i++) {
+            DecimalPosition decimalPosition = polygon.get(i);
+            xPoints[i] = decimalPosition.getX();
+            yPoints[i] = decimalPosition.getY();
+        }
+
+        gc.fillPolygon(xPoints, yPoints, polygon.size());
+    }
+
     public void strokeCurve(List<? extends Vertex> curve, double strokeWidth, Color color, boolean showPoint) {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));

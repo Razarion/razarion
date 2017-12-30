@@ -114,8 +114,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
     @Override
     protected void doRender() {
-        Index fromTileIndex = new Index(0, 0);
-        Index toTileIndex = new Index(2, 2);
+        Index fromTileIndex = new Index(3, 5);
+        Index toTileIndex = fromTileIndex.add(2, 2);
 
         if (weldTestController.renderTerrainTileSplattings() || weldTestController.renderTerrainTileWater() || weldTestController.renderTerrainTileGround() || weldTestController.renderTerrainTileSlope() || weldTestController.renderTerrainTileHeight() || weldTestController.renderTerrainTileTerrainType()) {
             doRenderTile(fromTileIndex, toTileIndex);

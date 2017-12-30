@@ -1,5 +1,6 @@
 package com.btxtech.shared.datatypes;
 
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -58,7 +59,9 @@ public class Triangulator {
 
             boolean isEar = true;
             for (int reflexCornerIndex : reflexCornerIndices) {
-                if (reflexCornerIndex == convexCornerIndex || reflexCornerIndex == convexCornerIndex + 1 || reflexCornerIndex == convexCornerIndex - 1) {
+                if (reflexCornerIndex == convexCornerIndex
+                        || reflexCornerIndex == CollectionUtils.getCorrectedIndex(convexCornerIndex + 1, convexCornerIndices)
+                        || reflexCornerIndex == CollectionUtils.getCorrectedIndex(convexCornerIndex - 1, convexCornerIndices)) {
                     continue;
                 }
 
@@ -71,12 +74,12 @@ public class Triangulator {
             if (isEar) {
                 ears.add(convexCornerIndex);
             }
-
         }
 
         // Add the triangle
         if (ears.isEmpty()) {
-            throw new IllegalStateException("No ears found");
+            // throw new IllegalStateException("No ears found");
+            return; // Happens if all points are on a straight line
         }
 
         int earIndex = ears.get(0);
