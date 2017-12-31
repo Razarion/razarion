@@ -30,7 +30,27 @@
     </h:form>
 
     <script type="text/javascript">
+        function logError(message, file, lineNumber) {
+            var errorMessage = encodeURI("-facebookappstart.xhtml-window.onerror\nMessage: " + message + "\nFile: " + file + "\nLinenumber: " + lineNumber);
+            errorMessage = errorMessage.replace(/\//g, "-");
+            var pathName = encodeURI(window.location.pathname);
+            var img = document.createElement('img');
+            img.src = '/rest/remote_logging/simpleweb/' + errorMessage + '/' + new Date().getTime() + '/' + pathName.replace(/\//g, "-");
+            document.body.appendChild(img);
+            return true;
+        }
+
+        window.onerror = function (message, file, lineNumber) {
+            logError(message, file, lineNumber);
+        };
+
+        var fbLoadTimeout = window.setTimeout(function myFunction() {
+            logError("Timeout loading facebook connect.facebook.net/en_US/sdk.js", "-", "-");
+            doPost('');
+        }, 10000);
+
         function statusChangeCallback(response) {
+            window.clearTimeout(fbLoadTimeout);
             if (response.status === 'connected') {
                 doPost(response.authResponse.userID);
             } else {

@@ -7,6 +7,8 @@ import com.btxtech.shared.dto.ThrownLogInfo;
 import com.btxtech.shared.rest.LoggingProvider;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
+import java.util.Base64;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -21,6 +23,7 @@ public class LoggingProviderImpl implements LoggingProvider {
 //    private final static String MODULE_NAME = "com.btxtech.Razarion-Client";
 //    private final static String SIMPLE_MODULE_NAME = "razarion_client";
     private Logger logger = Logger.getLogger(LoggingProviderImpl.class.getName());
+    public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
     @Inject
     private SessionHolder sessionHolder;
     // @Inject
@@ -30,6 +33,13 @@ public class LoggingProviderImpl implements LoggingProvider {
     public void simpleLogger(String logString) {
         logger.severe("SimpleLogger: SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
         logger.severe("SimpleLogger: " + logString);
+    }
+
+    @Override
+    public Response simpleWebLogger(String errorMessage, String timestamp, String pathName) {
+        logger.severe("SimpleWebLogger: SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
+        logger.severe("SimpleWebLogger: errorMessage: " + errorMessage + "\ntimestamp: " + timestamp + "\npathName:" + pathName);
+        return Response.ok(PIXEL_BYTES).build();
     }
 
     @Override
