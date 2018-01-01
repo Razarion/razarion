@@ -47,4 +47,9 @@ public class DevToolsRenderServiceImpl extends RenderService {
     protected void prepare(RenderUnitControl renderUnitControl) {
 
     }
+
+    @Override
+    public boolean depthTextureSupported() {
+        return true;
+    }
 }

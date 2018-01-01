@@ -29,9 +29,11 @@ import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.unlock.UnlockUiService;
@@ -98,6 +100,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private ProjectionTransformation projectionTransformation;
     @Inject
     private UnlockUiService unlockUiService;
+    @Inject
+    private RenderService renderService;
     private ColdGameUiControlConfig coldGameUiControlConfig;
     private int nextSceneNumber;
     private Scene currentScene;
@@ -147,6 +151,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void start() {
+        if(!renderService.depthTextureSupported()) {
+           modalDialogManager.showMessageDialog(I18nHelper.getConstants().oldBrowserDialogTitle(), I18nHelper.getConstants().oldBrowserDialogMessage());
+        }
+
         startTimeStamp = new Date();
         cockpitService.show(userUiService.getUserContext());
         chatUiService.start();

@@ -46,6 +46,8 @@ public abstract class RenderService {
 
     protected abstract void prepare(RenderUnitControl renderUnitControl);
 
+    public abstract boolean depthTextureSupported();
+
     public void setup() {
         internalSetup();
         renderTasks.clear();
@@ -90,8 +92,10 @@ public abstract class RenderService {
             perfmonService.onEntered(PerfmonEnum.RENDERER);
             long timeStamp = System.currentTimeMillis();
             renderTasks.forEach(renderTask -> renderTask.prepareRender(timeStamp));
-            prepareDepthBufferRendering();
-            renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
+            if (depthTextureSupported()) {
+                prepareDepthBufferRendering();
+                renderTasks.forEach(AbstractRenderTask::drawDepthBuffer);
+            }
             prepareMainRendering();
 
             for (RenderUnitControl renderUnitControl : RenderUnitControl.getRenderUnitControls()) {

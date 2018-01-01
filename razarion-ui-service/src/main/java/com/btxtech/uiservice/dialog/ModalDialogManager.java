@@ -33,6 +33,8 @@ public abstract class ModalDialogManager {
 
     public abstract void showLeaveStartTutorial(Runnable closeListener);
 
+    public abstract void showMessageDialog(String title, String message);
+
     public abstract void showMessageImageDialog(String title, String message, Integer imageId);
 
     public abstract void showSetUserNameDialog();

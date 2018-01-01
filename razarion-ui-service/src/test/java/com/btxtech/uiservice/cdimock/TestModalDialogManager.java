@@ -55,6 +55,11 @@ public class TestModalDialogManager extends ModalDialogManager {
     }
 
     @Override
+    public void showMessageDialog(String title, String message) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void showSetUserNameDialog() {
         throw new UnsupportedOperationException();
     }

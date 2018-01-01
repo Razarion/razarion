@@ -883,4 +883,8 @@ public interface I18nConstants {
     String planetRestartTitle();
 
     String planetRestartMessage();
+
+    String oldBrowserDialogTitle();
+
+    String oldBrowserDialogMessage();
 }

@@ -103,6 +103,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         show(I18nHelper.getConstants().setName(), Type.QUEUE_ABLE, SetUserNameDialog.class, null, null, null, DialogButton.Button.CANCEL);
     }
 
+    @Override
     public void showMessageDialog(String title, String message) {
         show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
     }
