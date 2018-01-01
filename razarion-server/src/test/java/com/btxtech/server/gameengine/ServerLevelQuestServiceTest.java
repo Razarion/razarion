@@ -73,6 +73,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         cleanTable(QuestHistoryEntity.class);
     }
 
+    // Fails due to complex mocking. Use setupPlanetWithSlopes() and real
     @Test
     public void onLevelUpUnregistered() throws Exception {
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
@@ -96,6 +97,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
     }
 
     @Test
+    // Fails due to complex mocking. Use setupPlanetWithSlopes() and real
     public void onLevelUpRegister() throws Exception {
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
         UserContext userContext = userService.handleFacebookUserLogin("0000001");
@@ -133,6 +135,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
     }
 
     @Test
+    // Fails due to complex mocking. Use setupPlanetWithSlopes() and real
     public void onQuestPassedUnregistered() throws Exception {
         // Setup mocks
         ServerGameEngineControl serverGameEngineControlMock = EasyMock.createStrictMock(ServerGameEngineControl.class);
@@ -247,6 +250,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
     }
 
     @Test
+    // Fails due to complex mocking. Use setupPlanetWithSlopes() and real
     public void onQuestPassedRegistered() throws Exception {
         // Simulate quest by previous users
         runInTransaction(entityManager -> {
@@ -368,6 +372,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
     }
 
     @Test
+    // Fails due to complex mocking. Use setupPlanetWithSlopes() and real
     public void activateQuestRegistered() throws Exception {
         // Setup session
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
@@ -391,6 +396,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
     }
 
     @Test
+    // Fails due to complex mocking. Use setupPlanetWithSlopes() and real
     public void activateQuestUnRegistered() throws Exception {
         // Setup session
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();

@@ -121,7 +121,7 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotConfigEntity b").getSingleResult());
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotEnragementStateConfigEntity b").getSingleResult());
         Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(b) FROM BotItemConfigEntity b").getSingleResult());
-        Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(p) FROM PlaceConfigEntity p").getSingleResult());
+        Assert.assertEquals(0L, entityManager.createQuery("SELECT COUNT(p) FROM PlaceConfigEntity p").getSingleResult()); // If orphan removal fails see: https://hibernate.atlassian.net/browse/HHH-9663
         assertEmptyCountNative("SERVER_GAME_ENGINE_BOT_CONFIG");
     }
 
@@ -284,7 +284,9 @@ public class ServerGameEnginePersistenceTest extends ArquillianBaseTest {
         serverGameEnginePersistence.updateResourceRegionConfigs(expectedResourceRegionConfigs);
         List<ResourceRegionConfig> actualResourceRegionConfigs = serverGameEnginePersistence.readMasterPlanetConfig().getResourceRegionConfigs();
 
+        ObjectComparatorIgnore.add(ResourceRegionConfig.class, "id");
         ReflectionAssert.assertReflectionEquals(expectedResourceRegionConfigs, actualResourceRegionConfigs);
+        ObjectComparatorIgnore.clear();
 
         serverGameEnginePersistence.updateResourceRegionConfigs(new ArrayList<>());
         Assert.assertTrue(serverGameEnginePersistence.readMasterPlanetConfig().getResourceRegionConfigs().isEmpty());
