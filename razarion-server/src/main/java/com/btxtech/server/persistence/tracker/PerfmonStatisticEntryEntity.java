@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.shared.system.perfmon.PerfmonStatisticEntry;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +23,7 @@ public class PerfmonStatisticEntryEntity {
     private Integer id;
     private double frequency;
     private double avgDuration;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date date;
 
     @Override

@@ -26,7 +26,7 @@ public class QuestHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME(3)")
     private Date timeStamp;
     @Enumerated(EnumType.STRING)
     private Type type;

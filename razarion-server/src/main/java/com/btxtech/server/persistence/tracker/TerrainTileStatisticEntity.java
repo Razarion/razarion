@@ -23,10 +23,12 @@ public class TerrainTileStatisticEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date timeStamp;
     @Column(nullable = false, length = 190)
     // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date clientTimeStamp;
     @AttributeOverrides({
             @AttributeOverride(name = "x", column = @Column(name = "terrainTileX")),

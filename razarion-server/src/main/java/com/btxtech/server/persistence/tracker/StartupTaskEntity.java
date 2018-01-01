@@ -39,8 +39,9 @@ public class StartupTaskEntity {
     @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String gameSessionUuid;
     private String taskEnum;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME(3)")
     private Date startTime;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date clientStartTime;
     private int duration;
     @Lob

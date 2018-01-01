@@ -39,6 +39,7 @@ public class StartupTerminatedEntity {
     private String gameSessionUuid;
     private boolean successful;
     private int totalTime;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date timeStamp;
 
     public String getSessionId() {

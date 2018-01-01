@@ -1,5 +1,6 @@
 package com.btxtech.server.marketing;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,6 +18,7 @@ public class ClickTrackerEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date timeStamp;
     private String adId;
 

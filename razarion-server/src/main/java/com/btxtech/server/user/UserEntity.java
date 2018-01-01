@@ -41,6 +41,7 @@ public class UserEntity {
     @Column(length = 190)
     // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String facebookUserId;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date registerDate;
     private boolean admin;
     @OneToOne(fetch = FetchType.LAZY)

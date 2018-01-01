@@ -26,7 +26,7 @@ public class LevelHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DATETIME(3)")
     private Date timeStamp;
     private int humanPlayerIdEntityId;
     private int levelId;

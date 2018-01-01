@@ -5,6 +5,7 @@ import com.btxtech.server.marketing.restdatatypes.AdInterestJson;
 import com.btxtech.server.marketing.restdatatypes.CampaignJson;
 
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,7 +30,9 @@ public class HistoryAdEntity {
     private long campaignId;
     private long adSetId;
     private long adId;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date dateStart;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date dateStop;
     private int clicks;
     private int impressions;
@@ -44,7 +47,9 @@ public class HistoryAdEntity {
     )
     private List<Interest> interests;
     private String urlTagParam;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date scheduleTimeStart;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date scheduleTimeEnd;
     private boolean lifeTime;
     private Double dailyBudget;

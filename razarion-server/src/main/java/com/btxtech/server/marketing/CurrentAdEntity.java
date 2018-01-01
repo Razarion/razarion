@@ -4,6 +4,7 @@ import com.btxtech.server.marketing.facebook.CreationInput;
 import com.btxtech.server.marketing.facebook.CreationResult;
 
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -34,9 +35,13 @@ public class CurrentAdEntity {
     private Integer id;
     @Enumerated(EnumType.STRING)
     private State state;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date dateStart;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date dateStop;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date scheduleTimeStart;
+    @Column(columnDefinition = "DATETIME(3)")
     private Date scheduleTimeEnd;
     private long campaignId;
     private long adSetId;
