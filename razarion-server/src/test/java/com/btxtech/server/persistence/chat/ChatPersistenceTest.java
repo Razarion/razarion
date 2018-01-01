@@ -100,7 +100,7 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
             long timeStamp = System.currentTimeMillis() - 100000L;
             for(int i = 0; i < 20; i++) {
                 ChatMessageEntity chatMessageEntity = new ChatMessageEntity();
-                chatMessageEntity.setTimestamp(new Date(timeStamp + i * 1000));
+                chatMessageEntity.setTimestamp(new Date(timeStamp + i));
                 chatMessageEntity.setUserEntity(userEntity1);
                 chatMessageEntity.setMessage("xxxx" + i);
                 entityManager.persist(chatMessageEntity);
@@ -126,11 +126,29 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
 
         chatPersistence.fillCacheFromDb();
 
+
         UserContext userContext = userService.handleFacebookUserLogin("0000001");
         userService.setName("sdifbj");
         TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         chatPersistence.sendLastMessages(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()));
-        // Verify
+        // Verify (order with the correct milliseconds in DB)
+        testClientSystemConnection.assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx3"));
+        testClientSystemConnection.assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx4"));
+        testClientSystemConnection.assertMessageSent(2, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx5"));
+        testClientSystemConnection.assertMessageSent(3, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx6"));
+        testClientSystemConnection.assertMessageSent(4, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx7"));
+        testClientSystemConnection.assertMessageSent(5, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx8"));
+        testClientSystemConnection.assertMessageSent(6, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx9"));
+        testClientSystemConnection.assertMessageSent(7, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx10"));
+        testClientSystemConnection.assertMessageSent(8, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx11"));
+        testClientSystemConnection.assertMessageSent(9, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx12"));
+        testClientSystemConnection.assertMessageSent(10, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx13"));
+        testClientSystemConnection.assertMessageSent(11, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx14"));
+        testClientSystemConnection.assertMessageSent(12, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx15"));
+        testClientSystemConnection.assertMessageSent(13, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx16"));
+        testClientSystemConnection.assertMessageSent(14, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx17"));
+        testClientSystemConnection.assertMessageSent(15, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx18"));
+        testClientSystemConnection.assertMessageSent(16, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx19"));
         testClientSystemConnection.assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("zuri ouhbdf ndswokijui"));
         testClientSystemConnection.assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
         testClientSystemConnection.assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
@@ -142,6 +160,7 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
         testClientSystemConnection.assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
         testClientSystemConnection.assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
         testClientSystemConnection.assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("frghstehllool"));
+
 
         cleanTable(ChatMessageEntity.class);
         cleanUsers();
