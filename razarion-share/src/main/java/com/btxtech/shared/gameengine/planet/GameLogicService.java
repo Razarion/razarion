@@ -60,15 +60,15 @@ public class GameLogicService {
 
     public void onBaseKilled(PlayerBase playerBase, SyncBaseItem actor) {
         questServiceInstance.get().onBaseKilled(actor);
-        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
+        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase, actor.getBase()));
     }
 
     public void onBaseRemoved(PlayerBase playerBase) {
-        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
+        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase, null));
     }
 
     public void onSurrenderBase(PlayerBase playerBase) {
-        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase));
+        gameLogicListener.ifPresent(listener -> listener.onBaseDeleted(playerBase, null));
     }
 
     public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
@@ -121,6 +121,11 @@ public class GameLogicService {
 
     public void onSpawnSyncItemFinished(SyncBaseItem syncBaseItem) {
         questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
+    }
+
+
+    public void onSpawnSyncItemNoSpan(SyncBaseItem syncBaseItem) {
+        gameLogicListener.ifPresent(listener -> listener.onSpawnSyncItemNoSpan(syncBaseItem));
     }
 
     public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
@@ -177,6 +182,7 @@ public class GameLogicService {
         if (syncBaseItem.getBase().getCharacter().isBot()) {
             botServiceInstance.get().onBotSyncBaseItemCreated(syncBaseItem, createdBy);
         }
+        gameLogicListener.ifPresent(listener -> listener.onBuildingSyncItem(syncBaseItem, createdBy));
     }
 
     public void onFactoryLimitation4ItemTypeExceeded() {
@@ -194,6 +200,7 @@ public class GameLogicService {
         } else {
             questServiceInstance.get().onSyncItemBuilt(syncBaseItem);
         }
+        gameLogicListener.ifPresent(listener -> listener.onFactorySyncItem(syncBaseItem, createdBy));
     }
 
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {

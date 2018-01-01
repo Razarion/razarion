@@ -51,7 +51,8 @@ public class MongoDbService {
 
     public enum CollectionName {
         IN_GAME_TRACKING("in_game_tracking"),
-        PLANET_BACKUP("planet_backup");
+        PLANET_BACKUP("planet_backup"),
+        SERVER_ITEM_TRACKING("server_item_tracking");
 
         private String name;
 

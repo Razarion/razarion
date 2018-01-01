@@ -22,10 +22,13 @@ public interface GameLogicListener {
     default void onBaseSlaveCreated(PlayerBase playerBase) {
     }
 
-    default void onBaseDeleted(PlayerBase playerBase) {
+    default void onBaseDeleted(PlayerBase playerBase, PlayerBase actorBase) {
     }
 
     default void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
+    }
+
+    default void onSpawnSyncItemNoSpan(SyncBaseItem syncBaseItem) {
     }
 
     default void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
@@ -86,5 +89,11 @@ public interface GameLogicListener {
     }
 
     default void onSyncItemUnloaded(SyncBaseItem contained) {
+    }
+
+    default void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+    }
+
+    default void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
     }
 }

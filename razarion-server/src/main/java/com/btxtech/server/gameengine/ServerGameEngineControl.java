@@ -4,6 +4,7 @@ import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
+import com.btxtech.server.persistence.item.ItemTrackerPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
@@ -82,6 +83,8 @@ public class ServerGameEngineControl implements GameLogicListener {
     private ServerInventoryService serverInventoryService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ItemTrackerPersistence itemTrackerPersistence;
     private final Object reloadLook = new Object();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
@@ -220,47 +223,71 @@ public class ServerGameEngineControl implements GameLogicListener {
     @Override
     public void onBaseCreated(PlayerBaseFull playerBase) {
         clientGameConnectionService.onBaseCreated(playerBase);
+        itemTrackerPersistence.onBaseCreated(playerBase);
     }
 
     @Override
-    public void onBaseDeleted(PlayerBase playerBase) {
+    public void onBaseDeleted(PlayerBase playerBase, PlayerBase actor) {
         clientGameConnectionService.onBaseDeleted(playerBase);
+        itemTrackerPersistence.onBaseDeleted(playerBase, actor);
     }
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
         clientGameConnectionService.onSpawnSyncItemStart(syncBaseItem);
         clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
+        itemTrackerPersistence.onSpawnSyncItemStart(syncBaseItem);
+    }
+
+    @Override
+    public void onSpawnSyncItemNoSpan(SyncBaseItem syncBaseItem) {
+        itemTrackerPersistence.onSpawnSyncItemNoSpan(syncBaseItem);
+    }
+
+    @Override
+    public  void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        itemTrackerPersistence.onBuildingSyncItem(syncBaseItem, createdBy);
+    }
+
+    @Override
+    public  void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+        itemTrackerPersistence.onFactorySyncItem(syncBaseItem, createdBy);
     }
 
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
         clientGameConnectionService.onSyncItemRemoved(syncBaseItem, true);
+        itemTrackerPersistence.onSyncBaseItemKilled(syncBaseItem, actor);
     }
 
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
         clientGameConnectionService.onSyncItemRemoved(syncBaseItem, false);
+        itemTrackerPersistence.onSyncBaseItemRemoved(syncBaseItem);
     }
 
     @Override
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
         clientGameConnectionService.onSyncResourceItemCreated(syncResourceItem);
+        itemTrackerPersistence.onResourceCreated(syncResourceItem);
     }
 
     @Override
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
         clientGameConnectionService.onSyncItemRemoved(syncResourceItem, false);
+        itemTrackerPersistence.onResourceDeleted(syncResourceItem);
     }
 
     @Override
     public void onBoxCreated(SyncBoxItem syncBoxItem) {
         clientGameConnectionService.onSyncBoxCreated(syncBoxItem);
+        itemTrackerPersistence.onSyncBoxCreated(syncBoxItem);
     }
 
     @Override
     public void onSyncBoxDeleted(SyncBoxItem box) {
         clientGameConnectionService.onSyncItemRemoved(box, false);
+        itemTrackerPersistence.onSyncBoxDeleted(box);
     }
 
     @Override

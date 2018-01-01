@@ -263,6 +263,7 @@ public class BaseItemService {
         if (noSpawn) {
             syncBaseItem.setSpawnProgress(1.0);
             syncBaseItem.handleIfItemBecomesReady();
+            gameLogicService.onSpawnSyncItemNoSpan(syncBaseItem);
         } else {
             gameLogicService.onSpawnSyncItemStart(syncBaseItem);
         }

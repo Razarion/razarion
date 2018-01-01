@@ -73,7 +73,7 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
-    public void onBaseDeleted(PlayerBase playerBase) {
+    public void onBaseDeleted(PlayerBase playerBase, PlayerBase actorBase) {
         testWebSocket.onBaseDeleted(playerBase);
     }
 

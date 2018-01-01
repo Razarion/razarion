@@ -480,7 +480,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onBaseDeleted(PlayerBase playerBase) {
+    public void onBaseDeleted(PlayerBase playerBase, PlayerBase actorBase) {
         if (playerBase.getHumanPlayerId() != null && playerBase.getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
             this.playerBase = null;
         }
