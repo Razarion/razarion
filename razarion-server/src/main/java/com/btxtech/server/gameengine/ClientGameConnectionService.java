@@ -1,5 +1,6 @@
 package com.btxtech.server.gameengine;
 
+import com.btxtech.server.persistence.tracker.ConnectionTrackingPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
@@ -31,6 +32,8 @@ public class ClientGameConnectionService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private SessionService sessionService;
+    @Inject
+    private ConnectionTrackingPersistence connectionTrackingPersistence;
     private final MapCollection<HumanPlayerId, ClientGameConnection> gameConnections = new MapCollection<>();
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -38,12 +41,14 @@ public class ClientGameConnectionService {
         synchronized (gameConnections) {
             gameConnections.put(humanPlayerId, clientGameConnection);
         }
+        connectionTrackingPersistence.onGameConnectionOpened(clientGameConnection.getHttpSessionId(), humanPlayerId);
     }
 
     public void onClose(ClientGameConnection clientGameConnection) {
         synchronized (gameConnections) {
             gameConnections.remove(clientGameConnection.getHumanPlayerId(), clientGameConnection);
         }
+        connectionTrackingPersistence.onGameConnectionClosed(clientGameConnection.getHttpSessionId(), clientGameConnection.getHumanPlayerId());
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {

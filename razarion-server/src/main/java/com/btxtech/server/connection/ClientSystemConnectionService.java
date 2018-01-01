@@ -1,5 +1,6 @@
 package com.btxtech.server.connection;
 
+import com.btxtech.server.persistence.tracker.ConnectionTrackingPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.ChatMessage;
@@ -34,6 +35,8 @@ public class ClientSystemConnectionService {
     private ExceptionHandler exceptionHandler;
     @Inject
     private SessionService sessionService;
+    @Inject
+    private ConnectionTrackingPersistence connectionTrackingPersistence;
     private ObjectMapper mapper = new ObjectMapper();
     private final MapCollection<PlayerSession, ClientSystemConnection> systemGameConnections = new MapCollection<>();
 
@@ -41,12 +44,14 @@ public class ClientSystemConnectionService {
         synchronized (systemGameConnections) {
             systemGameConnections.put(clientSystemConnection.getSession(), clientSystemConnection);
         }
+        connectionTrackingPersistence.onSystemConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
     public void onClose(ClientSystemConnection clientSystemConnection) {
         synchronized (systemGameConnections) {
             systemGameConnections.remove(clientSystemConnection.getSession(), clientSystemConnection);
         }
+        connectionTrackingPersistence.onSystemConnectionClosed(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
     public void onQuestProgressInfo(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {

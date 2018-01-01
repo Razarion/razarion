@@ -152,4 +152,8 @@ public class ClientGameConnection {
     private PlayerSession getPlayerSession() {
         return sessionService.getSession(httpSessionId);
     }
+
+    public String getHttpSessionId() {
+        return httpSessionId;
+    }
 }
