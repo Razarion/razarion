@@ -37,7 +37,7 @@ public class TerrainPersistenceTest extends ArquillianBaseTest {
     @After
     public void after() throws Exception {
         cleanPlanets();
-        cleanSlopeConfigEntities();
+        cleanSlopeEntities();
     }
 
     @Test

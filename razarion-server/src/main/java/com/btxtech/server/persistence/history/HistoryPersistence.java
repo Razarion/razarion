@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
+import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -118,6 +119,32 @@ public class HistoryPersistence {
             inventoryHistoryEntry.setUnlockEntityName(levelUnlockEntity.getInternalName());
             inventoryHistoryEntry.setCrystals(levelUnlockEntity.getCrystalCost());
             entityManager.persist(inventoryHistoryEntry);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    @Transactional
+    public void onUserLoggedIn(UserEntity userEntity, String httpSessionId) {
+        try {
+            UserHistoryEntity userHistoryEntity = new UserHistoryEntity();
+            userHistoryEntity.setUserId(userEntity.getId());
+            userHistoryEntity.setLoggedIn(new Date());
+            userHistoryEntity.setSessionId(httpSessionId);
+            entityManager.persist(userHistoryEntity);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    @Transactional
+    public void onUserLoggedOut(int userId, String httpSessionId) {
+        try {
+            UserHistoryEntity userHistoryEntity = new UserHistoryEntity();
+            userHistoryEntity.setUserId(userId);
+            userHistoryEntity.setLoggedOut(new Date());
+            userHistoryEntity.setSessionId(httpSessionId);
+            entityManager.persist(userHistoryEntity);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }

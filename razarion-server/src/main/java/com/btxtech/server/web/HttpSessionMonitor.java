@@ -1,5 +1,6 @@
 package com.btxtech.server.web;
 
+import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.user.UserService;
@@ -32,6 +33,8 @@ public class HttpSessionMonitor implements HttpSessionListener {
     private UserService userService;
     @Inject
     private SessionService sessionService;
+    @Inject
+    private HistoryPersistence historyPersistence;
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
@@ -49,6 +52,9 @@ public class HttpSessionMonitor implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        sessionService.sessionDestroyed(se.getSession().getId());
+        PlayerSession playerSession = sessionService.sessionDestroyed(se.getSession().getId());
+        if (playerSession.getUserContext() != null && playerSession.getUserContext().checkRegistered()) {
+            historyPersistence.onUserLoggedOut(playerSession.getUserContext().getHumanPlayerId().getUserId(), playerSession.getHttpSessionId());
+        }
     }
 }

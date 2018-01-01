@@ -5,6 +5,7 @@ import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
+import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
@@ -64,6 +65,8 @@ public class UserService {
     private SessionService sessionService;
     @Inject
     private Instance<ServerGameEngineControl> serverGameEngine;
+    @Inject
+    private Instance<HistoryPersistence> historyPersistence;
 
     @Transactional
     public UserContext getUserContextFromSession() {
@@ -83,6 +86,7 @@ public class UserService {
         if (userEntity == null) {
             userEntity = createUser(facebookUserId);
         }
+        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = userEntity.toUserContext();
         HumanPlayerId alreadyLoggerIn = null;
         if (sessionHolder.getPlayerSession().getUserContext() != null) {

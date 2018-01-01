@@ -4,6 +4,7 @@ import com.btxtech.server.ArquillianBaseTest;
 import com.btxtech.server.ClientGameConnectionServiceTestHelper;
 import com.btxtech.server.TestClientGameConnection;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
+import com.btxtech.server.persistence.history.UserHistoryEntity;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ErrorResult;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 import java.util.Locale;
 import java.util.logging.Logger;
 
@@ -39,6 +41,8 @@ public class UserServiceTest extends ArquillianBaseTest {
     private ClientGameConnectionServiceTestHelper clientGameConnectionServiceTestHelper;
     @Resource(name = "DefaultManagedScheduledExecutorService")
     private ManagedScheduledExecutorService scheduleExecutor;
+    @Inject
+    private HttpSession session;
 
     @Test
     public void registeredUser() throws Exception {
@@ -52,10 +56,9 @@ public class UserServiceTest extends ArquillianBaseTest {
         Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId());
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertEquals(userEntity.getId(), userContext.getHumanPlayerId().getUserId());
-        Assert.assertEquals("Registered User", userContext.getName());
+        Assert.assertNull(userContext.getName());
         Assert.assertFalse(userContext.isAdmin());
         Assert.assertTrue(userContext.getUnlockedItemLimit().isEmpty());
-
         runInTransaction(em -> {
             UserEntity actualUserEntity = em.find(UserEntity.class, userEntity.getId());
             Assert.assertEquals(LEVEL_1_ID, (int) actualUserEntity.getLevel().getId());
@@ -64,7 +67,16 @@ public class UserServiceTest extends ArquillianBaseTest {
             em.remove(actualUserEntity);
         });
 
-
+        // Verify history entry
+        runInTransaction(em -> {
+            em.createQuery("SELECT uhe FROM UserHistoryEntity uhe where uhe.id =:userId AND uhe.loggedIn is not null AND uhe.sessionId =:sessionId", UserHistoryEntity.class).setParameter("userId", userContext.getHumanPlayerId().getUserId()).setParameter("sessionId", sessionHolder.getPlayerSession().getHttpSessionId()).getFirstResult();
+        });
+        session.invalidate();
+        // Verify history entry
+        runInTransaction(em -> {
+            em.createQuery("SELECT uhe FROM UserHistoryEntity uhe where uhe.id =:userId AND uhe.loggedOut is not null AND uhe.sessionId =:sessionId", UserHistoryEntity.class).setParameter("userId", userContext.getHumanPlayerId().getUserId()).setParameter("sessionId", sessionHolder.getPlayerSession().getHttpSessionId()).getFirstResult();
+        });
+        cleanTable(UserHistoryEntity.class);
         cleanLevels();
     }
 
@@ -76,11 +88,13 @@ public class UserServiceTest extends ArquillianBaseTest {
         Assert.assertEquals(LEVEL_1_ID, userContext.getLevelId());
         Assert.assertEquals(0, userContext.getXp());
         Assert.assertNull(userContext.getHumanPlayerId().getUserId());
-        Assert.assertEquals("Unregistered User", userContext.getName());
+        Assert.assertNull(userContext.getName());
         Assert.assertFalse(userContext.isAdmin());
         Assert.assertTrue(userContext.getUnlockedItemLimit().isEmpty());
 
         cleanLevels();
+        session.invalidate();
+        assertEmptyCount(UserHistoryEntity.class);
     }
 
     @Test
@@ -153,6 +167,7 @@ public class UserServiceTest extends ArquillianBaseTest {
 //        });
 //
 //        scheduleExecutor.invokeAll(callables, 10, TimeUnit.SECONDS);
-
+        cleanUsers();
+        cleanPlanetWithSlopes();
     }
 }

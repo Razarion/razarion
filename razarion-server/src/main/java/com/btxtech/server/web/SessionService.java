@@ -25,9 +25,9 @@ public class SessionService {
         return playerSession;
     }
 
-    public void sessionDestroyed(String sessionId) {
+    public PlayerSession sessionDestroyed(String sessionId) {
         synchronized (sessions) {
-            sessions.remove(sessionId);
+            return sessions.remove(sessionId);
         }
     }
 
