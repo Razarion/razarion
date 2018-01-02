@@ -98,6 +98,10 @@ public class UserEntity {
         return new HumanPlayerId().setPlayerId(humanPlayerIdEntity.getId()).setUserId(id);
     }
 
+    public HumanPlayerIdEntity getHumanPlayerIdEntity() {
+        return humanPlayerIdEntity;
+    }
+
     public LevelEntity getLevel() {
         return level;
     }

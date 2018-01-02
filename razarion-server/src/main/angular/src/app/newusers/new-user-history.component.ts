@@ -26,8 +26,8 @@ export class NewUserHistory implements OnInit {
     this.load()
   }
 
-  onClickUser(userId: number) {
-
+  onClickUser(playerId: number) {
+    this.route.navigate(['/user', playerId]);
   }
 
   onClickSession(sessionId: string) {

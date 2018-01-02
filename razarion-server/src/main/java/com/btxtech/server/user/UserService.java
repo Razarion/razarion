@@ -339,7 +339,7 @@ public class UserService {
         if (userEntity == null) {
             return null;
         }
-        UserBackendInfo userBackendInfo = new UserBackendInfo().setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId());
+        UserBackendInfo userBackendInfo = new UserBackendInfo().setName(userEntity.getName()).setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId());
         userBackendInfo.setHumanPlayerId(userEntity.createHumanPlayerId()).setLevelNumber(userEntity.getLevel().getNumber()).setXp(userEntity.getXp()).setCrystals(userEntity.getCrystals());
         if (userEntity.getActiveQuest() != null) {
             userBackendInfo.setActiveQuest(new QuestBackendInfo().setId(userEntity.getActiveQuest().getId()).setInternalName(userEntity.getActiveQuest().getInternalName()));
@@ -468,6 +468,6 @@ public class UserService {
         CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
         Root<UserEntity> from = userQuery.from(UserEntity.class);
         userQuery.orderBy(criteriaBuilder.desc(from.get(UserEntity_.registerDate)));
-        return entityManager.createQuery(userQuery).setMaxResults(20).getResultList().stream().map(userEntity -> new NewUser().setId(userEntity.getId()).setName(userEntity.getName()).setDate(userEntity.getRegisterDate()).setSessionId(entityManager.find(HumanPlayerIdEntity.class, userEntity.createHumanPlayerId().getPlayerId()).getSessionId())).collect(Collectors.toList());
+        return entityManager.createQuery(userQuery).setMaxResults(20).getResultList().stream().map(userEntity -> new NewUser().setId(userEntity.getId()).setName(userEntity.getName()).setDate(userEntity.getRegisterDate()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId()).setSessionId(entityManager.find(HumanPlayerIdEntity.class, userEntity.getHumanPlayerIdEntity().getId()).getSessionId())).collect(Collectors.toList());
     }
 }

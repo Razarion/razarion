@@ -10,6 +10,7 @@ public class NewUser {
     private Date date;
     private String name;
     private int id;
+    private int playerId;
     private String sessionId;
 
     public Date getDate() {
@@ -36,6 +37,15 @@ public class NewUser {
 
     public NewUser setId(int id) {
         this.id = id;
+        return this;
+    }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public NewUser setPlayerId(int playerId) {
+        this.playerId = playerId;
         return this;
     }
 
