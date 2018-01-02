@@ -7,9 +7,9 @@ import {InMemoryDataService} from "./in-memory-data.service";
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api/in-memory-web-api.module';
 import {MainWindow} from "./main-window.component";
 import {AppRoutingModule} from "./app-routing.module";
-import {SessionHistory} from "./tracking/session-history.component";
-import {SessionService} from "./tracking/session.service";
-import {SessionDetails} from "./tracking/session-detail.component";
+import {SessionHistory} from "./session/session-history.component";
+import {SessionService} from "./session/session.service";
+import {SessionDetails} from "./session/session-detail.component";
 import {BackupRestoreComponent} from "./backuprestore/backup-restore.component";
 import {BackupRestoreService} from "./backuprestore/backup-restore.service";
 import {OnlineService} from "./connection/online.service";
@@ -17,6 +17,9 @@ import {OnlineComponent} from "./connection/online.component";
 import {DurationPipe} from "./duration.pipe";
 import {UserComponent} from "./user/user.component";
 import {UserService} from "./user/user.service";
+import {UserLoginHistory} from "./userloginhistory/user-login-history.component";
+import {NewUserHistory} from "./newusers/new-user-history.component";
+import {NewUserService} from "./newusers/new-user.service";
 
 @NgModule({
   declarations: [
@@ -27,7 +30,9 @@ import {UserService} from "./user/user.service";
     BackupRestoreComponent,
     OnlineComponent,
     DurationPipe,
-    UserComponent
+    UserComponent,
+    UserLoginHistory,
+    NewUserHistory
   ],
   imports: [
     BrowserModule,
@@ -36,7 +41,7 @@ import {UserService} from "./user/user.service";
     AppRoutingModule,
     // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/servermgmtprovider"})
   ],
-  providers: [SessionService, BackupRestoreService, OnlineService, UserService],
+  providers: [SessionService, BackupRestoreService, OnlineService, UserService, NewUserService],
   bootstrap: [MainWindow]
 })
 export class Backend {

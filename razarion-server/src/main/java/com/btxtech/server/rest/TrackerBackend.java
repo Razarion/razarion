@@ -4,6 +4,8 @@ import com.btxtech.server.persistence.tracker.SearchConfig;
 import com.btxtech.server.persistence.tracker.SessionDetail;
 import com.btxtech.server.persistence.tracker.SessionTracker;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
+import com.btxtech.server.user.NewUser;
+import com.btxtech.server.user.UserService;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -26,6 +28,8 @@ public class TrackerBackend {
     private ExceptionHandler exceptionHandler;
     @Inject
     private TrackerPersistence trackerPersistence;
+    @Inject
+    private UserService userService;
 
     @POST
     @Path("sessions")
@@ -46,6 +50,18 @@ public class TrackerBackend {
     public SessionDetail sessiondetail(@PathParam("id") String id) {
         try {
             return trackerPersistence.readSessionDetail(id);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @GET
+    @Path("newusers")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<NewUser> newUsers() {
+        try {
+            return userService.findNewUsers();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

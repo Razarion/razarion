@@ -35,6 +35,10 @@ public class HumanPlayerIdEntity {
         this.sessionId = sessionId;
     }
 
+    public String getSessionId() {
+        return sessionId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

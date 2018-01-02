@@ -5,8 +5,14 @@
       <online-component></online-component>
     </div>
     <div class="flexbox-current-child simple-border">
-      <h2>Session History</h2>
-      <session-history></session-history>
+      <div>
+        <button (click)="setView(enumAccess.SESSIONS)">Sessions</button>
+        <button (click)="setView(enumAccess.NEW_USERS)">New users</button>
+        <button (click)="setView(enumAccess.LOGIN_HISTORY)">Logins</button>
+      </div>
+      <session-history *ngIf="currentView==enumAccess.SESSIONS"></session-history>
+      <new-user-history *ngIf="currentView==enumAccess.NEW_USERS"></new-user-history>
+      <user-login-history *ngIf="currentView==enumAccess.LOGIN_HISTORY"></user-login-history>
     </div>
   </div>
   <div class="simple-border">

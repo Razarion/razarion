@@ -1,7 +1,7 @@
 import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {Dashboard} from "./dashboard.component";
-import {SessionDetails} from "./tracking/session-detail.component";
+import {SessionDetails} from "./session/session-detail.component";
 import {BackupRestoreComponent} from "./backuprestore/backup-restore.component";
 import {UserComponent} from "./user/user.component";
 

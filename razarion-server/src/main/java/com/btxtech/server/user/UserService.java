@@ -460,4 +460,14 @@ public class UserService {
         }
         return null;
     }
+
+    @Transactional
+    @SecurityCheck
+    public List<NewUser> findNewUsers() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> from = userQuery.from(UserEntity.class);
+        userQuery.orderBy(criteriaBuilder.desc(from.get(UserEntity_.registerDate)));
+        return entityManager.createQuery(userQuery).setMaxResults(20).getResultList().stream().map(userEntity -> new NewUser().setId(userEntity.getId()).setName(userEntity.getName()).setDate(userEntity.getRegisterDate()).setSessionId(entityManager.find(HumanPlayerIdEntity.class, userEntity.createHumanPlayerId().getPlayerId()).getSessionId())).collect(Collectors.toList());
+    }
 }
