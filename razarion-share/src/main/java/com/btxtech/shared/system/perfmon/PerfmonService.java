@@ -152,6 +152,7 @@ public class PerfmonService {
             terrainTileStatistic.setGenerationTime((int) time);
             terrainTileStatistic.setTerrainTileIndex(terrainTileIndex);
             terrainTileStatistic.setTimeStamp(new Date());
+            terrainTileStatistic.setGameSessionUuid(gameSessionUuid);
             terrainTileStatistics.add(terrainTileStatistic);
         }
     }

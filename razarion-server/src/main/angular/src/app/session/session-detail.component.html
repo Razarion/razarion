@@ -1,6 +1,6 @@
 <h2>Session detail</h2>
 
-<table>
+<table class="propertyTable">
   <tr>
     <td>Id:</td>
     <td>{{sessionDetail.id}}</td>
@@ -28,11 +28,10 @@
 </table>
 
 <h3>Game sessions</h3>
-<table>
+<table class="sessionTable">
   <tr *ngFor="let gameSessionDetail of sessionDetail.gameSessionDetails">
     <td>
-      <hr>
-      <table>
+      <table class="propertyTable">
         <tr>
           <td>
             Date
@@ -63,7 +62,7 @@
             Startup
           </td>
           <td>
-            <table>
+            <table class="normalTable">
               <thead>
               <tr>
                 <th>Client Timestamp</th>
@@ -71,6 +70,7 @@
                 <th>Duration [s]</th>
                 <th>Error</th>
               </tr>
+              </thead>
               <tbody>
               <tr *ngFor="let startupTaskDetail of gameSessionDetail.startupTaskDetails">
                 <td>{{ startupTaskDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
@@ -92,39 +92,93 @@
             gameSessionDetail.startupTerminatedDetail.totalTime / 1000}}
           </td>
         </tr>
-      </table>
-  <tr>
-    <td>
-      Scene Tracking
-    </td>
-    <td>
-      <table>
-        <thead>
         <tr>
-          <th>Client Timestamp</th>
-          <th>Internal Name</th>
-          <th>Duration [s]</th>
+          <td>
+            Scene Tracking
+          </td>
+          <td>
+            <table class="normalTable">
+              <thead>
+              <tr>
+                <th>Client Timestamp</th>
+                <th>Internal Name</th>
+                <th>Duration [s]</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let sceneTrackerDetail of gameSessionDetail.sceneTrackerDetails">
+                <td>{{ sceneTrackerDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td>{{ sceneTrackerDetail.internalName }}</td>
+                <td>{{ sceneTrackerDetail.duration / 1000}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
         </tr>
-        <tbody>
-        <tr *ngFor="let sceneTrackerDetail of gameSessionDetail.sceneTrackerDetails">
-          <td>{{ sceneTrackerDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-          <td>{{ sceneTrackerDetail.internalName }}</td>
-          <td>{{ sceneTrackerDetail.duration / 1000}}</td>
+        <tr>
+          <td>
+            Perfmon game enigne
+          </td>
+          <td>
+            <table class="normalTable">
+              <thead>
+              <tr>
+                <th>Client Timestamp</th>
+                <th>Type</th>
+                <th>Frequency [Hz]</th>
+                <th>Duration [s]</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let perfmonTrackerDetail of gameSessionDetail.perfmonTrackerDetails">
+                <td>{{ perfmonTrackerDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td>{{ perfmonTrackerDetail.type }}</td>
+                <td>{{ perfmonTrackerDetail.frequency}}</td>
+                <td>{{ perfmonTrackerDetail.duration}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
         </tr>
-        </tbody>
+        <tr>
+          <td>
+            Perfmon terrain tile
+          </td>
+          <td>
+            <table class="normalTable">
+              <thead>
+              <tr>
+                <th>Client Timestamp</th>
+                <th>Position</th>
+                <th>Duration [s]</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let perfmonTerrainTileDetail of gameSessionDetail.perfmonTerrainTileDetails">
+                <td>{{ perfmonTerrainTileDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                <td>{{ perfmonTerrainTileDetail.positionX}}:{{ perfmonTerrainTileDetail.positionY}}</td>
+                <td>{{ perfmonTerrainTileDetail.duration / 1000}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
       </table>
     </td>
   </tr>
 </table>
 
+<hr>
 <h3>Pages</h3>
-<table>
+<table class="normalTable">
+  <thead>
   <tr>
     <th>Date</th>
     <th>Page</th>
     <th>Parameters</th>
     <th>URI</th>
   </tr>
+  </thead>
   <tr *ngFor="let pageDetail of sessionDetail.pageDetails">
     <td>{{ pageDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ pageDetail.page }}</td>

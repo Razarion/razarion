@@ -12,6 +12,7 @@ public class TerrainTileStatistic {
     private Index terrainTileIndex;
     private int generationTime;
     private Date timeStamp;
+    private String gameSessionUuid;
 
     public Index getTerrainTileIndex() {
         return terrainTileIndex;
@@ -37,6 +38,15 @@ public class TerrainTileStatistic {
 
     public TerrainTileStatistic setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
+        return this;
+    }
+
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
+    }
+
+    public TerrainTileStatistic setGameSessionUuid(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
         return this;
     }
 }

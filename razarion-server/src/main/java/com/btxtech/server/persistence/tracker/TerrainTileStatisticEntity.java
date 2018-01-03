@@ -1,5 +1,7 @@
 package com.btxtech.server.persistence.tracker;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 
 import javax.persistence.AttributeOverride;
@@ -36,6 +38,8 @@ public class TerrainTileStatisticEntity {
     })
     private com.btxtech.shared.datatypes.Index terrainTileIndex;
     private int generationTime;
+    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private String gameSessionUuid;
 
     public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
@@ -49,6 +53,12 @@ public class TerrainTileStatisticEntity {
         clientTimeStamp = terrainTileStatistic.getTimeStamp();
         terrainTileIndex = terrainTileStatistic.getTerrainTileIndex();
         generationTime = terrainTileStatistic.getGenerationTime();
+        gameSessionUuid = terrainTileStatistic.getGameSessionUuid();
+    }
+
+    public PerfmonTerrainTileDetail toPerfmonTerrainTileDetail() {
+        DecimalPosition position = TerrainUtil.toTileAbsolute(terrainTileIndex);
+        return new PerfmonTerrainTileDetail().setDuration(generationTime).setClientStartTime(clientTimeStamp).setPositionX(position.getX()).setPositionY(position.getY());
     }
 
     @Override

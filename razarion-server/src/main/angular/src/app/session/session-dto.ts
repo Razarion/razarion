@@ -40,8 +40,8 @@ export class GameSessionDetail {
   startupTerminatedDetail: StartupTerminatedDetail;
   inGameTracking: boolean;
   sceneTrackerDetails: SceneTrackerDetail[];
-
-
+  perfmonTrackerDetails : PerfmonTrackerDetail[];
+  perfmonTerrainTileDetails : PerfmonTerrainTileDetail[];
 }
 
 export class StartupTaskDetail {
@@ -60,5 +60,19 @@ export class StartupTerminatedDetail {
 export class SceneTrackerDetail {
   clientStartTime: Date;
   internalName: string;
+  duration: number;
+}
+
+export class PerfmonTrackerDetail  {
+  clientStartTime: Date;
+  type: string;
+  frequency: number;
+  duration: number;
+}
+
+export class PerfmonTerrainTileDetail {
+  clientStartTime: Date;
+  positionX: number;
+  positionY: number;
   duration: number;
 }

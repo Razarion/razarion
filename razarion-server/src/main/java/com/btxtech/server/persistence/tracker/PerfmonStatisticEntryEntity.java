@@ -26,6 +26,25 @@ public class PerfmonStatisticEntryEntity {
     @Column(columnDefinition = "DATETIME(3)")
     private Date date;
 
+    public PerfmonStatisticEntryEntity fromPerfmonStatisticEntry(PerfmonStatisticEntry perfmonStatisticEntry) {
+        frequency = perfmonStatisticEntry.getFrequency();
+        avgDuration = perfmonStatisticEntry.getAvgDuration();
+        date = perfmonStatisticEntry.getDate();
+        return this;
+    }
+
+    public double getFrequency() {
+        return frequency;
+    }
+
+    public double getAvgDuration() {
+        return avgDuration;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -37,13 +56,6 @@ public class PerfmonStatisticEntryEntity {
 
         PerfmonStatisticEntryEntity that = (PerfmonStatisticEntryEntity) o;
         return id != null && id.equals(that.id);
-    }
-
-    public PerfmonStatisticEntryEntity fromPerfmonStatisticEntry(PerfmonStatisticEntry perfmonStatisticEntry) {
-        frequency = perfmonStatisticEntry.getFrequency();
-        avgDuration = perfmonStatisticEntry.getAvgDuration();
-        date = perfmonStatisticEntry.getDate();
-        return this;
     }
 
     @Override

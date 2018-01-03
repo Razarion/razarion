@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public class PerfmonStatisticEntity {
     private PerfmonEnum perfmonEnum;
     @Column(columnDefinition = "DATETIME(3)")
     private Date clientTimeStamp;
+    @Column(length = 190)
+// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String gameSessionUuid;
     @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "perfmonStatisticEntity", nullable = false)
@@ -53,6 +56,20 @@ public class PerfmonStatisticEntity {
         clientTimeStamp = perfmonStatistic.getTimeStamp();
         gameSessionUuid = perfmonStatistic.getGameSessionUuid();
         perfmonStatisticEntryEntities = perfmonStatistic.getPerfmonStatisticEntries().stream().map(perfmonStatisticEntry -> new PerfmonStatisticEntryEntity().fromPerfmonStatisticEntry(perfmonStatisticEntry)).collect(Collectors.toList());
+    }
+
+    public List<PerfmonTrackerDetail> toPerfmonTrackerDetails() {
+        if (perfmonStatisticEntryEntities != null) {
+            return perfmonStatisticEntryEntities.stream().map(perfmonStatisticEntryEntity -> {
+                PerfmonTrackerDetail perfmonTrackerDetail = new PerfmonTrackerDetail();
+                perfmonTrackerDetail.setClientStartTime(perfmonStatisticEntryEntity.getDate());
+                perfmonTrackerDetail.setDuration(perfmonStatisticEntryEntity.getAvgDuration());
+                perfmonTrackerDetail.setFrequency(perfmonStatisticEntryEntity.getFrequency());
+                perfmonTrackerDetail.setType(perfmonEnum.toString());
+                return perfmonTrackerDetail;
+            }).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     @Override

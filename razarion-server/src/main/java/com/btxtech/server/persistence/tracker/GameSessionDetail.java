@@ -15,6 +15,8 @@ public class GameSessionDetail {
     private StartupTerminatedDetail startupTerminatedDetail;
     private boolean inGameTracking;
     private List<SceneTrackerDetail> sceneTrackerDetails;
+    private List<PerfmonTrackerDetail> perfmonTrackerDetails;
+    private List<PerfmonTerrainTileDetail> perfmonTerrainTileDetails;
 
     public Date getTime() {
         return time;
@@ -76,5 +78,23 @@ public class GameSessionDetail {
 
     public void setSceneTrackerDetails(List<SceneTrackerDetail> sceneTrackerDetails) {
         this.sceneTrackerDetails = sceneTrackerDetails;
+    }
+
+    public List<PerfmonTrackerDetail> getPerfmonTrackerDetails() {
+        return perfmonTrackerDetails;
+    }
+
+    public GameSessionDetail setPerfmonTrackerDetails(List<PerfmonTrackerDetail> perfmonTrackerDetails) {
+        this.perfmonTrackerDetails = perfmonTrackerDetails;
+        return this;
+    }
+
+    public List<PerfmonTerrainTileDetail> getPerfmonTerrainTileDetails() {
+        return perfmonTerrainTileDetails;
+    }
+
+    public GameSessionDetail setPerfmonTerrainTileDetails(List<PerfmonTerrainTileDetail> perfmonTerrainTileDetails) {
+        this.perfmonTerrainTileDetails = perfmonTerrainTileDetails;
+        return this;
     }
 }

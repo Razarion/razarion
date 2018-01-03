@@ -34,6 +34,7 @@ import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -319,6 +320,8 @@ public class TrackerPersistence {
         gameSessionDetail.setStartupTerminatedDetail(readStartupTerminatedDetail(sessionId, gameSessionUuid));
         gameSessionDetail.setInGameTracking(trackingContainerMongoDb.hasServerTrackerStarts(sessionId, gameSessionUuid));
         gameSessionDetail.setSceneTrackerDetails(readSceneTrackerDetails(sessionId, gameSessionUuid));
+        gameSessionDetail.setPerfmonTrackerDetails(readPerfmonTrackerDetails(sessionId, gameSessionUuid));
+        gameSessionDetail.setPerfmonTerrainTileDetails(readPerfmonTerrainTileDetails(sessionId, gameSessionUuid));
         return gameSessionDetail;
     }
 
@@ -356,6 +359,28 @@ public class TrackerPersistence {
         query.orderBy(criteriaBuilder.asc(root.get(SceneTrackerEntity_.clientStartTime)));
 
         return entityManager.createQuery(query).getResultList().stream().map(SceneTrackerEntity::toSceneTrackerDetail).collect(Collectors.toList());
+    }
+
+    private List<PerfmonTrackerDetail> readPerfmonTrackerDetails(String sessionId, String gameSessionUuid) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PerfmonStatisticEntity> query = criteriaBuilder.createQuery(PerfmonStatisticEntity.class);
+        Root<PerfmonStatisticEntity> root = query.from(PerfmonStatisticEntity.class);
+        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(PerfmonStatisticEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(PerfmonStatisticEntity_.gameSessionUuid), gameSessionUuid));
+        query.orderBy(criteriaBuilder.asc(root.get(PerfmonStatisticEntity_.clientTimeStamp)));
+
+        List<PerfmonTrackerDetail> perfmonTrackerDetails = new ArrayList<>();
+        entityManager.createQuery(query).getResultList().forEach(perfmonStatisticEntity -> perfmonTrackerDetails.addAll(perfmonStatisticEntity.toPerfmonTrackerDetails()));
+        perfmonTrackerDetails.sort(Comparator.comparing(PerfmonTrackerDetail::getClientStartTime));
+        return perfmonTrackerDetails;
+    }
+
+    private List<PerfmonTerrainTileDetail> readPerfmonTerrainTileDetails(String sessionId, String gameSessionUuid) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<TerrainTileStatisticEntity> query = criteriaBuilder.createQuery(TerrainTileStatisticEntity.class);
+        Root<TerrainTileStatisticEntity> root = query.from(TerrainTileStatisticEntity.class);
+        query.where(criteriaBuilder.and(criteriaBuilder.equal(root.get(TerrainTileStatisticEntity_.sessionId), sessionId)), criteriaBuilder.equal(root.get(TerrainTileStatisticEntity_.gameSessionUuid), gameSessionUuid));
+        query.orderBy(criteriaBuilder.asc(root.get(TerrainTileStatisticEntity_.clientTimeStamp)));
+        return entityManager.createQuery(query).getResultList().stream().map(TerrainTileStatisticEntity::toPerfmonTerrainTileDetail).collect(Collectors.toList());
     }
 
     @Transactional
