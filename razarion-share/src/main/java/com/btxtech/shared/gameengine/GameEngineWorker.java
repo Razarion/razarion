@@ -286,7 +286,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public void start() {
         planetService.start();
-        perfmonService.start();
+        perfmonService.start(gameSessionUuid);
         // planetService.enableTracking(true);
     }
 

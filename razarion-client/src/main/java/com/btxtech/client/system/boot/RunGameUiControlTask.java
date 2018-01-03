@@ -1,12 +1,12 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
+import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.user.UserUiService;
 
@@ -23,7 +23,7 @@ public class RunGameUiControlTask extends AbstractStartupTask {
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ClientRenderServiceImpl renderService;
+    private ClientRunner clientRunner;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -40,7 +40,7 @@ public class RunGameUiControlTask extends AbstractStartupTask {
         gameEngineControl.start();
         gameUiControl.start();
         gameCanvas.startRenderLoop();
-        perfmonService.start();
+        perfmonService.start(clientRunner.getGameSessionUuid());
         clientPerformanceTrackerService.start();
         userUiService.start();
     }

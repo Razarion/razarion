@@ -37,8 +37,10 @@ public class PerfmonService {
     private MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
     private SimpleScheduledFuture simpleScheduledFuture;
     private List<TerrainTileStatistic> terrainTileStatistics = new ArrayList<>();
+    private String gameSessionUuid;
 
-    public void start() {
+    public void start(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
         if (simpleScheduledFuture != null) {
             simpleScheduledFuture.cancel();
             simpleScheduledFuture = null;
@@ -98,6 +100,7 @@ public class PerfmonService {
         for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
             PerfmonStatistic perfmonStatistic = new PerfmonStatistic();
             perfmonStatistic.setTimeStamp(new Date());
+            perfmonStatistic.setGameSessionUuid(gameSessionUuid);
             perfmonStatistic.setPerfmonEnum(entry.getKey());
             List<PerfmonStatisticEntry> perfmonStatisticEntries = new ArrayList<>();
             List<StatisticEntry> value = entry.getValue();

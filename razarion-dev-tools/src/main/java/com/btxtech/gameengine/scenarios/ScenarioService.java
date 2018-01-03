@@ -295,7 +295,7 @@ public class ScenarioService implements QuestListener {
                 currentScenario.setupBots(botService);
                 planetService.enableTracking(true);
                 planetService.start();
-                perfmonService.start();
+                perfmonService.start("DevTool");
                 resourceService.startResourceRegions();
                 PlayerBaseFull playerBase = baseItemService.createHumanBase(0, userContext.getLevelId(), Collections.emptyMap(), userContext.getHumanPlayerId(), userContext.getName());
                 currentScenario.setupSyncItems(baseItemService, playerBase, resourceService, boxService, pathingService, syncItemContainerService);

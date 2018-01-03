@@ -40,6 +40,8 @@ export class GameSessionDetail {
   startupTerminatedDetail: StartupTerminatedDetail;
   inGameTracking: boolean;
   sceneTrackerDetails: SceneTrackerDetail[];
+
+
 }
 
 export class StartupTaskDetail {

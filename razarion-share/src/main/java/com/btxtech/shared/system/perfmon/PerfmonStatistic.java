@@ -11,6 +11,7 @@ public class PerfmonStatistic {
     private PerfmonEnum perfmonEnum;
     private List<PerfmonStatisticEntry> perfmonStatisticEntries;
     private Date timeStamp;
+    private String gameSessionUuid;
 
     public PerfmonEnum getPerfmonEnum() {
         return perfmonEnum;
@@ -34,5 +35,13 @@ public class PerfmonStatistic {
 
     public void setTimeStamp(Date timeStamp) {
         this.timeStamp = timeStamp;
+    }
+
+    public String getGameSessionUuid() {
+        return gameSessionUuid;
+    }
+
+    public void setGameSessionUuid(String gameSessionUuid) {
+        this.gameSessionUuid = gameSessionUuid;
     }
 }

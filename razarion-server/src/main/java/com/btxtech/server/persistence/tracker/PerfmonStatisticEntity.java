@@ -40,6 +40,7 @@ public class PerfmonStatisticEntity {
     private PerfmonEnum perfmonEnum;
     @Column(columnDefinition = "DATETIME(3)")
     private Date clientTimeStamp;
+    private String gameSessionUuid;
     @OneToMany(orphanRemoval = true, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "perfmonStatisticEntity", nullable = false)
     @OrderColumn(name = "orderColumn")
@@ -50,6 +51,7 @@ public class PerfmonStatisticEntity {
         this.timeStamp = timeStamp;
         perfmonEnum = perfmonStatistic.getPerfmonEnum();
         clientTimeStamp = perfmonStatistic.getTimeStamp();
+        gameSessionUuid = perfmonStatistic.getGameSessionUuid();
         perfmonStatisticEntryEntities = perfmonStatistic.getPerfmonStatisticEntries().stream().map(perfmonStatisticEntry -> new PerfmonStatisticEntryEntity().fromPerfmonStatisticEntry(perfmonStatisticEntry)).collect(Collectors.toList());
     }
 
