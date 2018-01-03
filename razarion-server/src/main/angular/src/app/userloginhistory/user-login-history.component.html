@@ -1,0 +1,26 @@
+<h2>New Users</h2>
+
+<button (click)="onReload()">Reload</button>
+<br>
+<span style="color: red; font-size: 80%">Too many login. There is an error in the code.</span>
+<br>
+<table>
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Id</th>
+    <th>Login</th>
+    <th>Session timeout</th>
+    <th>Session Id</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let userLoginEntry of userLoginEntries">
+    <td (click)="onClickUser(userLoginEntry.playerId)" style="cursor: pointer">{{ userLoginEntry.name }}</td>
+    <td (click)="onClickUser(userLoginEntry.playerId)" style="cursor: pointer">{{ userLoginEntry.id }}</td>
+    <td>{{ userLoginEntry.login | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td>{{ userLoginEntry.logout | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td (click)="onClickSession(userLoginEntry.sessionId)" style="cursor: pointer">{{ userLoginEntry.sessionId }}</td>
+  </tr>
+  </tbody>
+</table>

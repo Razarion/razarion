@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
@@ -16,7 +17,9 @@ import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -149,4 +152,19 @@ public class HistoryPersistence {
             exceptionHandler.handleException(throwable);
         }
     }
+
+    @Transactional
+    @SecurityCheck
+    public List<UserHistoryEntry> readLoginHistory() {
+        List<UserHistoryEntity> userHistoryEntities = entityManager.createNativeQuery("select * from HISTORY_USER order by (IFNULL(UNIX_TIMESTAMP(loggedIn), 0) + IFNULL(UNIX_TIMESTAMP(loggedOut), 0)) desc", UserHistoryEntity.class).setMaxResults(100).getResultList();
+        List<UserHistoryEntry> userHistoryEntries = new ArrayList<>();
+        for (UserHistoryEntity historyEntity : userHistoryEntities) {
+            UserHistoryEntry userHistoryEntry = new UserHistoryEntry().setId(historyEntity.getUserId()).setLogin(historyEntity.getLoggedIn()).setLogout(historyEntity.getLoggedOut()).setSessionId(historyEntity.getSessionId());
+            UserEntity userEntity = entityManager.find(UserEntity.class, historyEntity.getUserId());
+            userHistoryEntry.setName(userEntity.getName()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId());
+            userHistoryEntries.add(userHistoryEntry);
+        }
+        return userHistoryEntries;
+    }
+
 }

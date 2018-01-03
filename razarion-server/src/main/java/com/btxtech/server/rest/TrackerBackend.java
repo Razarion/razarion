@@ -1,10 +1,12 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.tracker.SearchConfig;
 import com.btxtech.server.persistence.tracker.SessionDetail;
 import com.btxtech.server.persistence.tracker.SessionTracker;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.user.NewUser;
+import com.btxtech.server.persistence.history.UserHistoryEntry;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -30,6 +32,8 @@ public class TrackerBackend {
     private TrackerPersistence trackerPersistence;
     @Inject
     private UserService userService;
+    @Inject
+    private HistoryPersistence historyPersistence;
 
     @POST
     @Path("sessions")
@@ -62,6 +66,18 @@ public class TrackerBackend {
     public List<NewUser> newUsers() {
         try {
             return userService.findNewUsers();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @GET
+    @Path("userhistory")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UserHistoryEntry> userHistory() {
+        try {
+            return historyPersistence.readLoginHistory();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
