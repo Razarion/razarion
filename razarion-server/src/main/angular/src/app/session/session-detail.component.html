@@ -130,7 +130,8 @@
               </tr>
               </thead>
               <tbody>
-              <tr *ngFor="let perfmonTrackerDetail of gameSessionDetail.perfmonTrackerDetails">
+              <tr *ngFor="let perfmonTrackerDetail of gameSessionDetail.perfmonTrackerDetails"
+                  [ngStyle]="{'background-color':perfmonTrackerDetail.type === 'RENDERER' ? '#72c772' : perfmonTrackerDetail.type === 'GAME_ENGINE' ? '#8787e0' : 'red' }">
                 <td>{{ perfmonTrackerDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
                 <td>{{ perfmonTrackerDetail.type }}</td>
                 <td>{{ perfmonTrackerDetail.frequency}}</td>
