@@ -20,6 +20,8 @@ public class UserBackendInfo {
     private int xp;
     private int crystals;
     private List<UnlockedBackendInfo> unlockedBackendInfos;
+    private List<GameHistoryEntry> gameHistoryEntries;
+
 
     public HumanPlayerId getHumanPlayerId() {
         return humanPlayerId;
@@ -108,6 +110,15 @@ public class UserBackendInfo {
 
     public UserBackendInfo setUnlockedBackendInfos(List<UnlockedBackendInfo> unlockedBackendInfos) {
         this.unlockedBackendInfos = unlockedBackendInfos;
+        return this;
+    }
+
+    public List<GameHistoryEntry> getGameHistoryEntries() {
+        return gameHistoryEntries;
+    }
+
+    public UserBackendInfo setGameHistoryEntries(List<GameHistoryEntry> gameHistoryEntries) {
+        this.gameHistoryEntries = gameHistoryEntries;
         return this;
     }
 }

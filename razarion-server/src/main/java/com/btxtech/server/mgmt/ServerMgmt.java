@@ -6,6 +6,7 @@ import com.btxtech.server.gameengine.ClientGameConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.QuestPersistence;
+import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.user.PlayerSession;
@@ -49,6 +50,8 @@ public class ServerMgmt {
     private ServerUnlockService serverUnlockService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private HistoryPersistence historyPersistence;
 
     @SecurityCheck
     public List<OnlineInfo> loadAllOnlines() {
@@ -68,9 +71,9 @@ public class ServerMgmt {
             OnlineInfo onlineInfo = new OnlineInfo().setType(OnlineInfo.Type.NORMAL).setSessionId(clientSystemConnection.getHttpSessionId()).setTime(clientSystemConnection.getTime()).setDuration(clientSystemConnection.getDuration());
             try {
                 if (clientSystemConnection.getSession().getUserContext() != null) {
-                    onlineInfo.setHumanPlayerId(clientSystemConnection.getSession().getUserContext().getHumanPlayerId());
+                    onlineInfo.setName(clientSystemConnection.getSession().getUserContext().getName()).setHumanPlayerId(clientSystemConnection.getSession().getUserContext().getHumanPlayerId());
                 }
-            } catch(Exception e) {
+            } catch (Exception e) {
                 exceptionHandler.handleException(e);
             }
             ClientGameConnection clientGameConnection = gameSessionUuids.remove(clientSystemConnection.getGameSessionUuid());
@@ -93,6 +96,7 @@ public class ServerMgmt {
     public UserBackendInfo loadBackendUserInfo(int playerId) {
         UserBackendInfo userBackendInfo = userService.findUserBackendInfo(playerId);
         if (userBackendInfo != null) {
+            userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
             return userBackendInfo;
         }
         HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
@@ -100,7 +104,9 @@ public class ServerMgmt {
         if (playerSession == null) {
             throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
         }
-        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+        userBackendInfo = setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+        userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
+        return userBackendInfo;
     }
 
     private UserBackendInfo setupUnregisteredUserBackendInfo(HumanPlayerId humanPlayerId, PlayerSession playerSession) {

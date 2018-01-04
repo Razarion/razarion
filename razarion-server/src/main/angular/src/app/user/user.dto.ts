@@ -11,9 +11,15 @@ export class UserBackendInfo {
   xp: number;
   crystals: number;
   unlockedBackendInfos: UnlockedBackendInfo[];
+  gameHistoryEntries: GameHistoryEntry[];
 }
 
 export class UnlockedBackendInfo {
   id: number;
   internalName: string;
+}
+
+export class GameHistoryEntry {
+  date: Date;
+  description: string;
 }

@@ -17,6 +17,7 @@ public class OnlineInfo {
     private Date time;
     private Integer duration;
     private HumanPlayerId humanPlayerId;
+    private String name;
     private String sessionId;
     private String multiplayerPlanet;
     private Date multiplayerDate;
@@ -47,6 +48,15 @@ public class OnlineInfo {
 
     public OnlineInfo setHumanPlayerId(HumanPlayerId humanPlayerId) {
         this.humanPlayerId = humanPlayerId;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public OnlineInfo setName(String name) {
+        this.name = name;
         return this;
     }
 

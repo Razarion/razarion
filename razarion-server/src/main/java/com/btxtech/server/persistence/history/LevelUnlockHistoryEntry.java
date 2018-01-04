@@ -55,6 +55,14 @@ public class LevelUnlockHistoryEntry {
         this.unlockEntityName = unlockEntityName;
     }
 
+    public Integer getUnlockEntityId() {
+        return unlockEntityId;
+    }
+
+    public String getUnlockEntityName() {
+        return unlockEntityName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

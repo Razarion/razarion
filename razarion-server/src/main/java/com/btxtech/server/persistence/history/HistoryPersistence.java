@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.history;
 
+import com.btxtech.server.mgmt.GameHistoryEntry;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
@@ -16,8 +17,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -166,5 +172,57 @@ public class HistoryPersistence {
         }
         return userHistoryEntries;
     }
+
+    @Transactional
+    @SecurityCheck
+    public List<GameHistoryEntry> readUserHistory(int playerId) {
+        List<GameHistoryEntry> history = new ArrayList<>();
+        readAllHistory(entityManager, LevelHistoryEntity.class, playerId, LevelHistoryEntity_.humanPlayerIdEntityId, LevelHistoryEntity_.timeStamp).forEach(levelHistoryEntity -> history.add(new GameHistoryEntry().setDate(levelHistoryEntity.getTimeStamp()).setDescription("Level up: " + levelHistoryEntity.getLevelNumber() + " (" + levelHistoryEntity.getLevelId() + ")")));
+        readAllHistory(entityManager, QuestHistoryEntity.class, playerId, QuestHistoryEntity_.humanPlayerIdEntityId, QuestHistoryEntity_.timeStamp).forEach(questHistoryEntity -> {
+            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(questHistoryEntity.getTimeStamp());
+            switch (questHistoryEntity.getType()) {
+                case QUEST_ACTIVATED:
+                    gameHistoryEntry.setDescription("Quest activated: " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
+                    break;
+                case QUEST_DEACTIVATED:
+                    gameHistoryEntry.setDescription("Quest deactivated: " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
+                    break;
+                case QUEST_PASSED:
+                    gameHistoryEntry.setDescription("Quest passed: " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
+                    break;
+                default:
+                    gameHistoryEntry.setDescription(questHistoryEntity.getType() + " ??? : " + questHistoryEntity.getQuestInternalName() + " (" + questHistoryEntity.getQuestId() + ")");
+            }
+            history.add(gameHistoryEntry);
+        });
+        readAllHistory(entityManager, InventoryHistoryEntry.class, playerId, InventoryHistoryEntry_.humanPlayerIdEntityId, InventoryHistoryEntry_.timeStamp).forEach(inventoryHistoryEntry -> {
+            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(inventoryHistoryEntry.getTimeStamp());
+            switch (inventoryHistoryEntry.getType()) {
+                case BOX_PICKED:
+                    gameHistoryEntry.setDescription("Box picked. Crystals: " + inventoryHistoryEntry.getCrystals() + ". Inventory item " + inventoryHistoryEntry.getInventoryItemName() + " (" + inventoryHistoryEntry.getInventoryItemId() + ")");
+                    break;
+                case INVENTORY_ITEM_USED:
+                    gameHistoryEntry.setDescription("Inventory item used. Inventory item " + inventoryHistoryEntry.getInventoryItemName() + " (" + inventoryHistoryEntry.getInventoryItemId() + ")");
+                    break;
+                default:
+                    gameHistoryEntry.setDescription(inventoryHistoryEntry.getType() + " ???");
+            }
+            history.add(gameHistoryEntry);
+        });
+        readAllHistory(entityManager, LevelUnlockHistoryEntry.class, playerId, LevelUnlockHistoryEntry_.humanPlayerIdEntityId, LevelUnlockHistoryEntry_.timeStamp).forEach(levelUnlockHistoryEntry -> history.add(new GameHistoryEntry().setDate(levelUnlockHistoryEntry.getTimeStamp()).setDescription("Unlocked. Crystals: " + levelUnlockHistoryEntry.getCrystals() + ". Unlock item " + levelUnlockHistoryEntry.getUnlockEntityName() + " (" + levelUnlockHistoryEntry.getUnlockEntityId() + ")")));
+        history.sort(Comparator.comparing(GameHistoryEntry::getDate));
+        return history;
+    }
+
+    private <T> List<T> readAllHistory(EntityManager entityManager, Class<T> theClass, int playerId, SingularAttribute<T, Integer> humanPlayerIdAttr, SingularAttribute<T, Date> orderByAttribute) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<T> userQuery = criteriaBuilder.createQuery(theClass);
+        Root<T> from = userQuery.from(theClass);
+        CriteriaQuery<T> userSelect = userQuery.select(from);
+        userSelect.where(criteriaBuilder.equal(from.get(humanPlayerIdAttr), playerId));
+        userQuery.orderBy(criteriaBuilder.desc(from.get(orderByAttribute)));
+        return entityManager.createQuery(userSelect).getResultList();
+    }
+
 
 }

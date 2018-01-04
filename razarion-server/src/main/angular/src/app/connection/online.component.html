@@ -14,9 +14,9 @@
     <td>{{ onlineInfo.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ onlineInfo.duration | duration}}</td>
     <td>
-      <div *ngIf="onlineInfo.humanPlayerId" (click)="onClickUser(onlineInfo)" style="cursor: pointer">
-        <div *ngIf="onlineInfo.humanPlayerId.userId; else elseBlock">Registered</div>
-        <ng-template #elseBlock>Unregistered</ng-template>
+      <div (click)="onClickUser(onlineInfo)" style="cursor: pointer">
+        <div *ngIf="onlineInfo.humanPlayerId.userId; else elseBlock">{{onlineInfo.name}}</div>
+        <ng-template #elseBlock>---</ng-template>
       </div>
     </td>
     <td>

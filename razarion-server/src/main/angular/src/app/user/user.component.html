@@ -1,5 +1,5 @@
 <!--<div *ngIf="userBackendInfo.humanPlayerId.userId; else elseBlock">Registered user-->
-<table *ngIf="userBackendInfo">
+<table *ngIf="userBackendInfo" class="propertyTable">
   <tr *ngIf="userBackendInfo.humanPlayerId.userId">
     <td>User id</td>
     <td> {{userBackendInfo.humanPlayerId.userId}}</td>
@@ -36,7 +36,7 @@
   </tr>
   <tr>
     <td>Crystals</td>
-    <td> {{userBackendInfo.crystals}}  <input type="number" #crystalsBox min="0" step="1" style="width: 5em;">
+    <td> {{userBackendInfo.crystals}} <input type="number" #crystalsBox min="0" step="1" style="width: 5em;">
       <button (click)="onSetNewCrystals(crystalsBox.value)">Activate</button>
     </td>
   </tr>
@@ -51,7 +51,7 @@
   <tr>
     <td>Completed quests</td>
     <td>
-      <table>
+      <table class="normalTable">
         <tr *ngFor="let completedQuest of userBackendInfo.completedQuests">
           <td>
             {{completedQuest.internalName}} ({{completedQuest.id}})
@@ -66,7 +66,7 @@
   <tr>
     <td>Unlocked</td>
     <td>
-      <table>
+      <table class="normalTable">
         <tr *ngFor="let unlockedBackendInfo of userBackendInfo.unlockedBackendInfos">
           <td>
             {{unlockedBackendInfo.internalName}} ({{unlockedBackendInfo.id}})
@@ -74,6 +74,23 @@
           <td>
             <button (click)="onRemoveUnlocked(unlockedBackendInfo)">Remove</button>
           </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td>Game history</td>
+    <td>
+      <table class="normalTable">
+        <thead>
+        <tr>
+          <th>Deat</th>
+          <th>Description</th>
+        </tr>
+        </thead>
+        <tr *ngFor="let gameHistoryEntry of userBackendInfo.gameHistoryEntries">
+          <td>{{gameHistoryEntry.date | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+          <td>{{gameHistoryEntry.description}}</td>
         </tr>
       </table>
     </td>
