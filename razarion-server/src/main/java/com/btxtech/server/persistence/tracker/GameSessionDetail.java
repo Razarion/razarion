@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class GameSessionDetail {
     private Date time;
+    private Date clientTime;
     private String id;
     private String sessionId;
     private List<StartupTaskDetail> startupTaskDetails;
@@ -24,6 +25,15 @@ public class GameSessionDetail {
 
     public GameSessionDetail setTime(Date time) {
         this.time = time;
+        return this;
+    }
+
+    public Date getClientTime() {
+        return clientTime;
+    }
+
+    public GameSessionDetail setClientTime(Date clientTime) {
+        this.clientTime = clientTime;
         return this;
     }
 

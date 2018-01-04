@@ -307,15 +307,15 @@ public class TrackerPersistence {
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
         Root<StartupTaskEntity> root = cq.from(StartupTaskEntity.class);
         cq.where(criteriaBuilder.equal(root.get(StartupTaskEntity_.sessionId), sessionId));
-        cq.multiselect(root.get(StartupTaskEntity_.gameSessionUuid));
+        cq.multiselect(root.get(StartupTaskEntity_.gameSessionUuid), root.get(StartupTaskEntity_.startTime), root.get(StartupTaskEntity_.clientStartTime));
         cq.groupBy(root.get(StartupTaskEntity_.gameSessionUuid));
         cq.orderBy(criteriaBuilder.asc(root.get(StartupTaskEntity_.clientStartTime)));
-        return entityManager.createQuery(cq).getResultList().stream().map(tuple -> readGameSessionDetail(sessionId, (String) tuple.get(0))).collect(Collectors.toList());
+        return entityManager.createQuery(cq).getResultList().stream().map(tuple -> readGameSessionDetail(sessionId, (String) tuple.get(0), (Date) tuple.get(1), (Date) tuple.get(2))).collect(Collectors.toList());
     }
 
-    private GameSessionDetail readGameSessionDetail(String sessionId, String gameSessionUuid) {
+    private GameSessionDetail readGameSessionDetail(String sessionId, String gameSessionUuid, Date time, Date clientTime) {
         GameSessionDetail gameSessionDetail = new GameSessionDetail();
-        gameSessionDetail.setSessionId(sessionId).setId(gameSessionUuid);
+        gameSessionDetail.setSessionId(sessionId).setId(gameSessionUuid).setTime(time).setClientTime(clientTime);
         gameSessionDetail.setStartupTaskDetails(readStartupTaskDetails(sessionId, gameSessionUuid));
         gameSessionDetail.setStartupTerminatedDetail(readStartupTerminatedDetail(sessionId, gameSessionUuid));
         gameSessionDetail.setInGameTracking(trackingContainerMongoDb.hasServerTrackerStarts(sessionId, gameSessionUuid));

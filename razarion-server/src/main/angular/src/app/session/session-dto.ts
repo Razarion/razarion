@@ -34,6 +34,7 @@ export class PageDetail {
 
 export class GameSessionDetail {
   time: Date;
+  clientTime: Date;
   id: string;
   sessionId: string;
   startupTaskDetails: StartupTaskDetail[];
