@@ -2,7 +2,6 @@ package com.btxtech.shared.system.perfmon;
 
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -34,7 +33,8 @@ public class PerfmonService {
     private ExceptionHandler exceptionHandler;
     private Map<PerfmonEnum, Long> enterTimes = new HashMap<>();
     private Collection<SampleEntry> sampleEntries = new ArrayList<>();
-    private MapList<PerfmonEnum, StatisticEntry> statisticEntries = new MapList<>();
+    private StatisticConsumer clientStatisticConsumer = new StatisticConsumer();
+    private StatisticConsumer serverStatisticConsumer = new StatisticConsumer();
     private SimpleScheduledFuture simpleScheduledFuture;
     private List<TerrainTileStatistic> terrainTileStatistics = new ArrayList<>();
     private String gameSessionUuid;
@@ -50,10 +50,8 @@ public class PerfmonService {
             try {
                 Collection<StatisticEntry> statisticEntries = analyse();
                 for (StatisticEntry statisticEntry : statisticEntries) {
-                    this.statisticEntries.put(statisticEntry.getPerfmonEnum(), statisticEntry);
-                    if (this.statisticEntries.get(statisticEntry.getPerfmonEnum()).size() >= COUNT) {
-                        this.statisticEntries.get(statisticEntry.getPerfmonEnum()).remove(0);
-                    }
+                    clientStatisticConsumer.push(statisticEntry);
+                    serverStatisticConsumer.push(statisticEntry);
                 }
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
@@ -67,7 +65,8 @@ public class PerfmonService {
             simpleScheduledFuture = null;
             enterTimes.clear();
             sampleEntries.clear();
-            statisticEntries.clear();
+            clientStatisticConsumer.clear();
+            serverStatisticConsumer.clear();
         } else {
             logger.warning("PerfmonService.stop(): simpleScheduledFuture == null");
         }
@@ -95,33 +94,12 @@ public class PerfmonService {
         sampleEntries.add(new SampleEntry(perfmonEnum, startTime));
     }
 
-    public List<PerfmonStatistic> getPerfmonStatistics(int count) {
-        List<PerfmonStatistic> perfmonStatistics = new ArrayList<>();
-        for (Map.Entry<PerfmonEnum, List<StatisticEntry>> entry : statisticEntries.getMap().entrySet()) {
-            PerfmonStatistic perfmonStatistic = new PerfmonStatistic();
-            perfmonStatistic.setTimeStamp(new Date());
-            perfmonStatistic.setGameSessionUuid(gameSessionUuid);
-            perfmonStatistic.setPerfmonEnum(entry.getKey());
-            List<PerfmonStatisticEntry> perfmonStatisticEntries = new ArrayList<>();
-            List<StatisticEntry> value = entry.getValue();
-            if (count < 1) {
-                count = value.size() - 1;
-            } else if (count > value.size() - 1) {
-                count = value.size() - 1;
-            }
-            for (int i = count; i >= 0; i--) {
-                StatisticEntry statisticEntry = value.get(i);
-                PerfmonStatisticEntry perfmonStatisticEntry = new PerfmonStatisticEntry();
-                perfmonStatisticEntry.setFrequency(statisticEntry.getFrequency());
-                perfmonStatisticEntry.setAvgDuration(statisticEntry.getAvgDuration());
-                perfmonStatisticEntry.setDate(new Date(statisticEntry.getFistSample()));
-                perfmonStatisticEntries.add(perfmonStatisticEntry);
-            }
-            Collections.reverse(perfmonStatisticEntries);
-            perfmonStatistic.setPerfmonStatisticEntries(perfmonStatisticEntries);
-            perfmonStatistics.add(perfmonStatistic);
-        }
-        return perfmonStatistics;
+    public List<PerfmonStatistic> peekClientPerfmonStatistics() {
+        return clientStatisticConsumer.peek(gameSessionUuid);
+    }
+
+    public List<PerfmonStatistic> pullServerPerfmonStatistics() {
+        return serverStatisticConsumer.pull(gameSessionUuid);
     }
 
     private Collection<StatisticEntry> analyse() {

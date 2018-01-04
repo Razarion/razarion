@@ -568,7 +568,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     private void onPerfmonRequest() {
-        sendToClient(GameEngineControlPackage.Command.PERFMON_RESPONSE, perfmonService.getPerfmonStatistics(-1));
+        sendToClient(GameEngineControlPackage.Command.PERFMON_RESPONSE, perfmonService.peekClientPerfmonStatistics());
     }
 
     private void getTerrainZ(DecimalPosition position) {

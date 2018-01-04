@@ -310,7 +310,7 @@ public class GameEngineMonitorController implements Initializable {
     }
 
     public void onPerfmonButtonClicked() {
-        List<PerfmonStatistic> perfmonStatistics = perfmonService.getPerfmonStatistics(-1);
+        List<PerfmonStatistic> perfmonStatistics = perfmonService.peekClientPerfmonStatistics();
         for (PerfmonStatistic perfmonStatistic : perfmonStatistics) {
             System.out.println("--------------------" + perfmonStatistic.getPerfmonEnum() + "--------------------");
             for (PerfmonStatisticEntry perfmonStatisticEntry : perfmonStatistic.getPerfmonStatisticEntries()) {

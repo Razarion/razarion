@@ -13,12 +13,6 @@ public class StatisticEntry {
     private int totalDuration;
     private double avgDuration;
 
-    /**
-     * Used by Errai
-     */
-    public StatisticEntry() {
-    }
-
     public StatisticEntry(PerfmonEnum perfmonEnum) {
         this.perfmonEnum = perfmonEnum;
     }

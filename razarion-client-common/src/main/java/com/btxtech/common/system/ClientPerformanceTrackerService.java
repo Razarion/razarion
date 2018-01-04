@@ -56,8 +56,7 @@ public class ClientPerformanceTrackerService {
     }
 
     private void sendToClient() {
-        int sendCount = (int) (SEND_SERVER_INTERVAL / PerfmonService.DUMP_DELAY);
-        List<PerfmonStatistic> perfmonStatistics = perfmonService.getPerfmonStatistics(sendCount);
+        List<PerfmonStatistic> perfmonStatistics = perfmonService.pullServerPerfmonStatistics();
         for (PerfmonStatistic perfmonStatistic : perfmonStatistics) {
             providerCaller.call(response -> {
             }, (message, throwable) -> {

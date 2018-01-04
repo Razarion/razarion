@@ -63,8 +63,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
     }
 
     private void drawBar(Collection<PerfmonStatistic> workerPerfmonStatistics) {
-        Collection<PerfmonStatistic> allStatistics = new ArrayList<>();
-        allStatistics.addAll(perfmonService.getPerfmonStatistics(-1));
+        Collection<PerfmonStatistic> allStatistics = new ArrayList<>(perfmonService.peekClientPerfmonStatistics());
         if (workerPerfmonStatistics != null) {
             allStatistics.addAll(workerPerfmonStatistics);
         }
