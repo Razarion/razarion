@@ -120,25 +120,27 @@
             Perfmon game enigne
           </td>
           <td>
-            <table class="normalTable">
-              <thead>
-              <tr>
-                <th>Client Timestamp</th>
-                <th>Type</th>
-                <th>Frequency [Hz]</th>
-                <th>Duration [s]</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let perfmonTrackerDetail of gameSessionDetail.perfmonTrackerDetails"
-                  [ngStyle]="{'background-color':perfmonTrackerDetail.type === 'RENDERER' ? '#72c772' : perfmonTrackerDetail.type === 'GAME_ENGINE' ? '#8787e0' : 'red' }">
-                <td>{{ perfmonTrackerDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-                <td>{{ perfmonTrackerDetail.type }}</td>
-                <td>{{ perfmonTrackerDetail.frequency}}</td>
-                <td>{{ perfmonTrackerDetail.duration}}</td>
-              </tr>
-              </tbody>
-            </table>
+            <div style="max-height: 300px; overflow: auto">
+              <table class="normalTable">
+                <thead>
+                <tr>
+                  <th>Client Timestamp</th>
+                  <th>Type</th>
+                  <th>Frequency [Hz]</th>
+                  <th>Duration [s]</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let perfmonTrackerDetail of gameSessionDetail.perfmonTrackerDetails"
+                    [ngStyle]="{'background-color':perfmonTrackerDetail.type === 'RENDERER' ? '#72c772' : perfmonTrackerDetail.type === 'GAME_ENGINE' ? '#8787e0' : 'red' }">
+                  <td>{{ perfmonTrackerDetail.clientStartTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+                  <td>{{ perfmonTrackerDetail.type }}</td>
+                  <td>{{ perfmonTrackerDetail.frequency | number : '1.2-2'}}</td>
+                  <td>{{ perfmonTrackerDetail.duration | number : '1.4-4'}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
           </td>
         </tr>
         <tr>
