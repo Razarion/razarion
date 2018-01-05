@@ -242,7 +242,7 @@ public class WeldBaseTest {
         return baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
     }
 
-    public void assertSyncItemCount(int baseCount, int resourceCount, int boxCount) {
+    public void assertSyncItemCount(int baseItemCount, int resourceCount, int boxCount) {
         SingleHolder<Integer> actualBaseCount = new SingleHolder<>(0);
         SingleHolder<Integer> actualResourceCount = new SingleHolder<>(0);
         SingleHolder<Integer> actualBoxCount = new SingleHolder<>(0);
@@ -258,7 +258,7 @@ public class WeldBaseTest {
             }
             return null;
         });
-        Assert.assertEquals("Base items", baseCount, (int) actualBaseCount.getO());
+        Assert.assertEquals("Base items", baseItemCount, (int) actualBaseCount.getO());
         Assert.assertEquals("Resource items", resourceCount, (int) actualResourceCount.getO());
         Assert.assertEquals("Box items", boxCount, (int) actualBoxCount.getO());
     }

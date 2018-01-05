@@ -2,12 +2,22 @@ package com.btxtech.shared.gameengine.planet.basic;
 
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -76,6 +86,153 @@ public class ItemContainerTest extends BaseBasicTest {
 
         // showDisplay();
     }
+
+    @Test
+    public void sellContainer() {
+        setup();
+
+        HumanBaseContext humanBaseContext = createHumanBaseBFA();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMater(createLevel1UserContext(), this);
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        getCommandService().move(transporter, new DecimalPosition(146, 200));
+        tickPlanetServiceBaseServiceActive();
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
+        // Load 1.
+        getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
+        tickPlanetServiceBaseServiceActive();
+        // Verify loaded
+        Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
+        assertSyncItemCount(5, 0,0);
+        // Sell
+        getBaseItemService().sellItems(Collections.singletonList(transporter.getId()), humanBaseContext.getPlayerBaseFull());
+        // Verify sold
+        assertSyncItemCount(3, 0,0);
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(transporter.getId()));
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(humanBaseContext.getBuilder().getId()));
+    }
+
+    @Test
+    public void sellContainerBaseLost() {
+        setup();
+
+        HumanBaseContext humanBaseContext = createHumanBaseBFA();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMater(createLevel1UserContext(), this);
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        getCommandService().move(transporter, new DecimalPosition(146, 200));
+        tickPlanetServiceBaseServiceActive();
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
+        // Sell others
+        getBaseItemService().sellItems(Arrays.asList(humanBaseContext.getAttacker().getId(), humanBaseContext.getFactory().getId(), harbour.getId()), humanBaseContext.getPlayerBaseFull());
+        // Load 1.
+        getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
+        tickPlanetServiceBaseServiceActive();
+        // Verify loaded
+        Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
+        assertSyncItemCount(2, 0,0);
+        // Sell
+        getBaseItemService().sellItems(Collections.singletonList(transporter.getId()), humanBaseContext.getPlayerBaseFull());
+        // Verify sold
+        assertSyncItemCount(0, 0,0);
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(transporter.getId()));
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(humanBaseContext.getBuilder().getId()));
+        // Verify base deleted
+        try {
+            getBaseItemService().getPlayerBase4BaseId(humanBaseContext.getPlayerBaseFull().getBaseId());
+            Assert.fail("IllegalArgumentException expected");
+        } catch(IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().startsWith("No base for BaseId:"));
+        }
+    }
+
+    @Test
+    public void killContainer() {
+        setup();
+
+        HumanBaseContext humanBaseContext = createHumanBaseBFA();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMater(createLevel1UserContext(), this);
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        getCommandService().move(transporter, new DecimalPosition(146, 200));
+        tickPlanetServiceBaseServiceActive();
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
+        // Sell others
+        getBaseItemService().sellItems(Arrays.asList(humanBaseContext.getAttacker().getId(), humanBaseContext.getFactory().getId(), harbour.getId()), humanBaseContext.getPlayerBaseFull());
+        // Load 1.
+        getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
+        tickPlanetServiceBaseServiceActive();
+        // Verify loaded
+        Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
+        assertSyncItemCount(2, 0,0);
+        // Setup bot
+        setupSimpleAttackerBot();
+        // Kill transporter
+        getCommandService().move(transporter, new DecimalPosition(116, 352));
+        tickPlanetServiceBaseServiceActive();
+        // Verify killed
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(transporter.getId()));
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(humanBaseContext.getBuilder().getId()));
+        // Verify base deleted
+        try {
+            getBaseItemService().getPlayerBase4BaseId(humanBaseContext.getPlayerBaseFull().getBaseId());
+            Assert.fail("IllegalArgumentException expected");
+        } catch(IllegalArgumentException e) {
+            Assert.assertTrue(e.getMessage().startsWith("No base for BaseId:"));
+        }
+    }
+
+    @Test
+    public void killContainerBaseLost() {
+        setup();
+
+        HumanBaseContext humanBaseContext = createHumanBaseBFA();
+        WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
+        permSlave.connectToMater(createLevel1UserContext(), this);
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        getCommandService().move(transporter, new DecimalPosition(146, 200));
+        tickPlanetServiceBaseServiceActive();
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
+        // Load 1.
+        getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
+        tickPlanetServiceBaseServiceActive();
+        // Verify loaded
+        Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
+        assertSyncItemCount(5, 0,0);
+        // Setup bot
+        setupSimpleAttackerBot();
+        // Kill transporter
+        getCommandService().move(transporter, new DecimalPosition(116, 352));
+        tickPlanetServiceBaseServiceActive();
+        // Verify killed
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(transporter.getId()));
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(humanBaseContext.getBuilder().getId()));
+    }
+
 
     private void assertNoCommand4Contained(HumanBaseContext humanBaseContext) {
         try {
@@ -182,4 +339,14 @@ public class ItemContainerTest extends BaseBasicTest {
         }
     }
 
+    public void setupSimpleAttackerBot() {
+        List<BotConfig> botConfigs = new ArrayList<>();
+        List<BotItemConfig> botItems = new ArrayList<>();
+        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.SHIP_ATTACKER_ITEM_TYPE_ID).setCount(5).setCreateDirectly(true));
+        List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
+        botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
+        botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Test bot").setNpc(false).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(96,312, 40, 40))));
+        getBotService().startBots(botConfigs);
+        tickPlanetServiceBaseServiceActive();
+    }
 }

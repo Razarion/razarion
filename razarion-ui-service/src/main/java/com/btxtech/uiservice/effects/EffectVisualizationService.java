@@ -60,7 +60,9 @@ public class EffectVisualizationService {
     public void onSyncBaseItemsExplode(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
         long timeStamp = System.currentTimeMillis();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            onSyncBaseItemExplode(syncBaseItem, timeStamp);
+            if (!syncBaseItem.isContained()) {
+                onSyncBaseItemExplode(syncBaseItem, timeStamp);
+            }
         }
     }
 

@@ -348,6 +348,9 @@ public class BaseItemService {
         syncItemContainerService.destroySyncItem(target);
         energyService.onBaseItemRemoved(target);
         boxService.onSyncBaseItemKilled(target);
+        if(target.getSyncItemContainer() != null) {
+            target.getSyncItemContainer().getContainedItems().forEach(syncBaseItem -> killContaining(syncBaseItem, actor));
+        }
         if (base.getItemCount() == 0) {
             gameLogicService.onBaseKilled(base, actor);
             synchronized (bases) {
@@ -355,6 +358,14 @@ public class BaseItemService {
             }
             energyService.onBaseKilled(base);
         }
+    }
+
+    private void killContaining(SyncBaseItem target, SyncBaseItem actor) {
+        gameLogicService.onSyncBaseItemKilledMaster(target, actor);
+        PlayerBaseFull base = (PlayerBaseFull) target.getBase();
+        base.removeItem(target);
+        syncItemContainerService.destroySyncItem(target);
+        energyService.onBaseItemRemoved(target);
     }
 
     public void removeSyncItem(SyncBaseItem target) {
@@ -391,6 +402,10 @@ public class BaseItemService {
         syncBaseItem.getBase().addResource(resources);
         gameLogicService.onResourcesBalanceChanged(syncBaseItem.getBase(), (int) syncBaseItem.getBase().getResources());
         removeSyncItem(syncBaseItem);
+        // Remove containing
+        if(syncBaseItem.getSyncItemContainer() != null) {
+            syncBaseItem.getSyncItemContainer().getContainedItems().forEach(this::removeSyncItem);
+        }
     }
 
 
