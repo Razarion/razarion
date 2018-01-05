@@ -19,8 +19,8 @@ import javax.inject.Inject;
  */
 @Dependent
 public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFieldListener {
-    private static final long SCROLL_DELAY = 3000;
-    private static final long TIMER_DELAY = 1000;
+    private static final long SCROLL_DELAY = 2000;
+    private static final long TIMER_DELAY = 500;
     @Inject
     private ViewService viewService;
     @Inject
