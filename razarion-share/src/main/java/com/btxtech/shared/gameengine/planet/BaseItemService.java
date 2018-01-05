@@ -604,23 +604,26 @@ public class BaseItemService {
     }
 
     public void restore(BackupPlanetInfo backupPlanetInfo) {
-        SingleHolder<Integer> lastBaseItIdHolde = new SingleHolder<>(1);
-        backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
-            lastBaseItIdHolde.setO(Math.max(playerBaseInfo.getBaseId(), lastBaseItIdHolde.getO()));
-            bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getUnlockedItemLimit(), playerBaseInfo.getHumanPlayerId(), null));
-        });
         Set<Integer> failedItems = new HashSet<>();
+        boolean failed;
         do {
-            lastBaseItId = lastBaseItIdHolde.getO();
+            failed = false;
+            bases.clear();
+            lastBaseItId = 1;
             syncItemContainerService.clear();
+            energyService.clean();
+            backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
+                lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
+                bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getUnlockedItemLimit(), playerBaseInfo.getHumanPlayerId(), null));
+            });
             Collection<SyncBaseItemInfo> syncBaseItemInfos = backupPlanetInfo.getSyncBaseItemInfos().stream().filter(syncBaseItemInfo -> !failedItems.contains(syncBaseItemInfo.getId())).collect(Collectors.toList());
-            failedItems.clear();
             Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
             for (SyncBaseItemInfo syncBaseItemInfo : syncBaseItemInfos) {
                 try {
                     SyncBaseItem syncBaseItem = createSyncBaseItemRestore(syncBaseItemInfo, (PlayerBaseFull) getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
                     tmp.put(syncBaseItem, syncBaseItemInfo);
                 } catch (Exception e) {
+                    failed = true;
                     failedItems.add(syncBaseItemInfo.getId());
                     exceptionHandler.handleException("BaseItemService.restore()", e);
                 }
@@ -629,12 +632,12 @@ public class BaseItemService {
                 try {
                     synchronizeActivateSlave(entry.getKey(), entry.getValue());
                 } catch (Exception e) {
-                    exceptionHandler.handleException("BaseItemService.restore()", e);
+                    failed = true;
                     failedItems.add(entry.getValue().getId());
+                    exceptionHandler.handleException("BaseItemService.restore()", e);
                 }
             }
-        } while (!failedItems.isEmpty());
-        // Strip off empty bases
+        } while (failed);
         Collection<Integer> basesToRemove = bases.values().stream().filter(playerBase -> ((PlayerBaseFull)playerBase).getItemCount() == 0).map(PlayerBase::getBaseId).collect(Collectors.toList());
         basesToRemove.forEach(baseId -> {
             PlayerBase playerBase = bases.remove(baseId);

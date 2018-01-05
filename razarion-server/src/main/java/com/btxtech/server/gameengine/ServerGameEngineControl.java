@@ -94,10 +94,10 @@ public class ServerGameEngineControl implements GameLogicListener {
         terrainShapeService.start();
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null, () -> {
             gameLogicService.setGameLogicListener(this);
-            planetService.start();
             if (finaBackupPlanetInfo != null) {
                 planetService.restoreBases(finaBackupPlanetInfo);
             }
+            planetService.start();
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
             botService.startBots(serverGameEnginePersistence.readBotConfigs());
