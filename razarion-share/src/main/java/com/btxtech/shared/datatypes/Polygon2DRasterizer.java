@@ -26,6 +26,7 @@ public class Polygon2DRasterizer {
     private Set<Index> closedInside = new HashSet<>();
 
     public static Polygon2DRasterizer create(Polygon2D polygon, int rasterSize) {
+        polygon.checkForLineCrossing();
         Polygon2DRasterizer polygon2DRasterizer = new Polygon2DRasterizer(polygon, rasterSize);
         polygon2DRasterizer.rasterize();
         return polygon2DRasterizer;

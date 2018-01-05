@@ -135,6 +135,26 @@ public class Polygon2D {
         return false;
     }
 
+    public void checkForLineCrossing() {
+
+        for (int outerIndex = 0; outerIndex < lines.size(); outerIndex++) {
+            Line outerLine = lines.get(outerIndex);
+            int precursor = CollectionUtils.getCorrectedIndex(outerIndex - 1, lines);
+            int successor = CollectionUtils.getCorrectedIndex(outerIndex + 1, lines);
+            for (int innerIndex = outerIndex; innerIndex < lines.size(); innerIndex++) {
+                if (innerIndex == precursor || innerIndex == outerIndex || innerIndex == successor) {
+                    continue;
+                }
+                Line innerLine = lines.get(innerIndex);
+                DecimalPosition crossPoint = innerLine.getCrossInclusive(outerLine);
+                if (crossPoint != null) {
+                    throw new IllegalStateException("Polygon2D.checkForLineCrossing() polygon lines cross at: " + crossPoint);
+                }
+            }
+
+        }
+    }
+
     public double getInnerAngle(int index) {
         return getCorner(index).angle(getCorner(index + 1), getCorner(index - 1));
     }

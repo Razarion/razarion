@@ -72,13 +72,17 @@ public class ModifiedSlope {
     }
 
     public Polygon2D combine(Polygon2D other) {
-        polygon = polygon.combine(other);
+        Polygon2D tmpPolygon = polygon.combine(other);
+        tmpPolygon.checkForLineCrossing();
+        polygon = tmpPolygon;
         dirty = true;
         return polygon;
     }
 
     public Polygon2D remove(Polygon2D other) {
-        polygon = polygon.remove(other);
+        Polygon2D tmpPolygon = polygon.remove(other);
+        tmpPolygon.checkForLineCrossing();
+        polygon = tmpPolygon;
         dirty = true;
         return polygon;
     }
