@@ -3,12 +3,15 @@ package com.btxtech.client.editor.i18n;
 import com.btxtech.shared.datatypes.I18nStringEditor;
 import org.jboss.errai.databinding.client.api.Bindable;
 
+import java.util.logging.Logger;
+
 /**
  * Created by Beat
  * on 10.09.2017.
  */
 @Bindable
 public class I18nStringEditorModel {
+    // private Logger logger = Logger.getLogger(I18nStringEditorModel.class.getName());
     private boolean dirty;
     private I18nStringEditor i18nStringEditor;
 
