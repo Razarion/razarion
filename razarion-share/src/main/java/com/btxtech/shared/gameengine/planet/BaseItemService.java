@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -40,9 +41,13 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -50,7 +55,7 @@ import java.util.Map;
  */
 @Singleton // Rename to BaseService
 public class BaseItemService {
-    // private Logger logger = Logger.getLogger(BaseItemService.class.getName());
+    private Logger logger = Logger.getLogger(BaseItemService.class.getName());
     private static final double ITEM_SELL_FACTOR = 0.5;
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -599,26 +604,41 @@ public class BaseItemService {
     }
 
     public void restore(BackupPlanetInfo backupPlanetInfo) {
-        lastBaseItId = 1;
+        SingleHolder<Integer> lastBaseItIdHolde = new SingleHolder<>(1);
         backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
-            lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
+            lastBaseItIdHolde.setO(Math.max(playerBaseInfo.getBaseId(), lastBaseItIdHolde.getO()));
             bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getUnlockedItemLimit(), playerBaseInfo.getHumanPlayerId(), null));
         });
-        Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
-        for (SyncBaseItemInfo syncBaseItemInfo : backupPlanetInfo.getSyncBaseItemInfos()) {
-            try {
-                SyncBaseItem syncBaseItem = createSyncBaseItemRestore(syncBaseItemInfo, (PlayerBaseFull) getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
-                tmp.put(syncBaseItem, syncBaseItemInfo);
-            } catch (Exception e) {
-                exceptionHandler.handleException("BaseItemService.restore()", e);
+        Set<Integer> failedItems = new HashSet<>();
+        do {
+            lastBaseItId = lastBaseItIdHolde.getO();
+            syncItemContainerService.clear();
+            Collection<SyncBaseItemInfo> syncBaseItemInfos = backupPlanetInfo.getSyncBaseItemInfos().stream().filter(syncBaseItemInfo -> !failedItems.contains(syncBaseItemInfo.getId())).collect(Collectors.toList());
+            failedItems.clear();
+            Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
+            for (SyncBaseItemInfo syncBaseItemInfo : syncBaseItemInfos) {
+                try {
+                    SyncBaseItem syncBaseItem = createSyncBaseItemRestore(syncBaseItemInfo, (PlayerBaseFull) getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
+                    tmp.put(syncBaseItem, syncBaseItemInfo);
+                } catch (Exception e) {
+                    failedItems.add(syncBaseItemInfo.getId());
+                    exceptionHandler.handleException("BaseItemService.restore()", e);
+                }
             }
-        }
-        for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
-            try {
-                synchronizeActivateSlave(entry.getKey(), entry.getValue());
-            } catch (Exception e) {
-                exceptionHandler.handleException("BaseItemService.restore()", e);
+            for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
+                try {
+                    synchronizeActivateSlave(entry.getKey(), entry.getValue());
+                } catch (Exception e) {
+                    exceptionHandler.handleException("BaseItemService.restore()", e);
+                    failedItems.add(entry.getValue().getId());
+                }
             }
-        }
+        } while (!failedItems.isEmpty());
+        // Strip off empty bases
+        Collection<Integer> basesToRemove = bases.values().stream().filter(playerBase -> ((PlayerBaseFull)playerBase).getItemCount() == 0).map(PlayerBase::getBaseId).collect(Collectors.toList());
+        basesToRemove.forEach(baseId -> {
+            PlayerBase playerBase = bases.remove(baseId);
+            logger.warning("BaseItemService.restore(). PlayerBase remove due to no units. baseId: " + baseId + " name: " + playerBase.getName());
+        });
     }
 }
