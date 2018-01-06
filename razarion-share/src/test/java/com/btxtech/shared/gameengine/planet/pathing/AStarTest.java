@@ -203,7 +203,6 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         }
     }
 
-
     @Test
     public void harbor1() throws Exception {
         setup();
@@ -211,9 +210,16 @@ public class AStarTest extends WeldTerrainServiceTestBase {
         SimplePath simplePath = getPathingService().setupPathToDestination(builder, 10, TerrainType.WATER_COAST, new DecimalPosition(96, 197), 5);
         // printSimplePath(simplePath);
         // showDisplay(simplePath);
-        assertSimplePath(simplePath, 0.0, new DecimalPosition(132.0, 164.0), new DecimalPosition(124.0, 164.0), new DecimalPosition(116.0, 164.0), new DecimalPosition(108.0, 164.0),
-                new DecimalPosition(100.0, 164.0), new DecimalPosition(100.0, 172.0), new DecimalPosition(92.0, 172.0), new DecimalPosition(92.0, 180.0), new DecimalPosition(90.0, 186.0),
-                new DecimalPosition(86.0, 186.0), new DecimalPosition(81.0, 187.0));
+    }
+
+    @Test
+    public void stuck() {
+        setup();
+        SyncBaseItem builder = GameTestHelper.createMockSyncBaseItem(3, TerrainType.WATER, new DecimalPosition(178.5, 259.5));
+        SimplePath simplePath = getPathingService().setupPathToDestination(builder, new DecimalPosition(180, 250));
+        printSimplePath(simplePath);
+        assertSimplePath(simplePath, 0.0, new DecimalPosition(178.5, 258.5), new DecimalPosition(179.0, 257.0), new DecimalPosition(180.0, 250.0));
+        // showDisplay(simplePath);
     }
 
     private void assertSimplePath(SimplePath actual, double expectedTotalRanges, DecimalPosition... expectedPosition) {

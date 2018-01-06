@@ -77,6 +77,9 @@ public class PathingService {
             correctedDestinationNode = destinationFinder.find();
             aStarContext = new AStarContext(syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope);
         }
+        aStarContext.setStartSuck(startNode.isStuck(aStarContext));
+        aStarContext.setStartPosition(syncItem.getSyncPhysicalArea().getPosition2d());
+        aStarContext.setMaxStuckDistance(syncItem.getSyncPhysicalArea().getRadius());
 
         AStar aStar = new AStar(startNode, correctedDestinationNode, aStarContext);
         aStar.expandAllNodes();

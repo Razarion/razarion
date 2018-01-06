@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -16,11 +17,22 @@ import java.util.Map;
 public class AStarContext {
     private TerrainType terrainType;
     private List<Index> subNodeIndexScope;
+    private boolean startSuck;
     private final Map<PathingNodeWrapper, Collection<PathingNodeWrapper>> cache = new HashMap<>();
+    private DecimalPosition startPosition;
+    private double maxStuckDistance;
 
     public AStarContext(TerrainType terrainType, List<Index> subNodeIndexScope) {
         this.terrainType = terrainType;
         this.subNodeIndexScope = subNodeIndexScope;
+    }
+
+    public boolean isStartSuck() {
+        return startSuck;
+    }
+
+    public void setStartSuck(boolean startSuck) {
+        this.startSuck = startSuck;
     }
 
     public boolean isNullTerrainTypeAllowed() {
@@ -51,4 +63,19 @@ public class AStarContext {
         }
     }
 
+    public void setStartPosition(DecimalPosition startPosition) {
+        this.startPosition = startPosition;
+    }
+
+    public DecimalPosition getStartPosition() {
+        return startPosition;
+    }
+
+    public double getMaxStuckDistance() {
+        return maxStuckDistance;
+    }
+
+    public void setMaxStuckDistance(double maxStuckDistance) {
+        this.maxStuckDistance = maxStuckDistance;
+    }
 }

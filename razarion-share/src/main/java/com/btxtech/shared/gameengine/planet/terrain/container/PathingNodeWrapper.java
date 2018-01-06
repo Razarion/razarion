@@ -189,26 +189,34 @@ public class PathingNodeWrapper {
 
     private Consumer<PathingNodeWrapper> checkScopeAdapter(AStarContext aStarContext, Consumer<PathingNodeWrapper> northNodeHandler) {
         return pathingNodeWrapper -> {
-            if (aStarContext.hasSubNodeIndexScope()) {
-                if (pathingNodeWrapper.getTerrainShapeSubNode() != null) {
-//                    if (aStarContext.isSkippable(pathingNodeWrapper.getTerrainShapeSubNode().getTerrainType(), pathingNodeWrapper.getCenter())) {
-//                        northNodeHandler.accept(pathingNodeWrapper);
-//                        return;
-//                    }
-                    for (Index index : aStarContext.getSubNodeIndexScope()) {
-                        DecimalPosition scanPosition = pathingNodeWrapper.getSubNodePosition().add(TerrainUtil.smallestSubNodeCenter(index));
-                        if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanPosition))) {
-                            return;
-                        }
-                    }
-                    northNodeHandler.accept(pathingNodeWrapper);
-                } else {
+            if(aStarContext.isStartSuck()) {
+                double distance = pathingNodeWrapper.getCenter().getDistance(aStarContext.getStartPosition());
+                if (distance < aStarContext.getMaxStuckDistance()) {
                     northNodeHandler.accept(pathingNodeWrapper);
                 }
-            } else {
+            }
+            if (!pathingNodeWrapper.isStuck(aStarContext)) {
                 northNodeHandler.accept(pathingNodeWrapper);
             }
         };
+    }
+
+    public boolean isStuck(AStarContext aStarContext) {
+        if (aStarContext.hasSubNodeIndexScope()) {
+            if (getTerrainShapeSubNode() != null) {
+                for (Index index : aStarContext.getSubNodeIndexScope()) {
+                    DecimalPosition scanPosition = getSubNodePosition().add(TerrainUtil.smallestSubNodeCenter(index));
+                    if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanPosition))) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override
