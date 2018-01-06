@@ -385,7 +385,7 @@ public class BaseItemUiService {
     }
 
     public int getMyItemCount(int itemTypeId) {
-        return findMyItemsOfType(itemTypeId).size();
+        return findMyItemsOfType(itemTypeId, true).size();
     }
 
     private SyncBaseItemSimpleDto findMyItemOfType(int baseItemTypeId) {
@@ -468,10 +468,10 @@ public class BaseItemUiService {
         return result;
     }
 
-    public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId) {
+    public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId, boolean includeContained) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
         for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.isContained()) {
+            if (!includeContained && syncBaseItem.isContained()) {
                 continue;
             }
             if (!isMyOwnProperty(syncBaseItem)) {

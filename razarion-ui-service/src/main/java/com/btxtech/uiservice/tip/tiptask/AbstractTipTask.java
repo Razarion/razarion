@@ -172,7 +172,7 @@ public abstract class AbstractTipTask {
     }
 
     Collection<SyncBaseItemSimpleDto> findItemsOfType(int baseItemTypeId) {
-        return baseItemUiService.findMyItemsOfType(baseItemTypeId);
+        return baseItemUiService.findMyItemsOfType(baseItemTypeId, false);
     }
 
     protected NativeMatrixFactory getNativeMatrixFactory() {
