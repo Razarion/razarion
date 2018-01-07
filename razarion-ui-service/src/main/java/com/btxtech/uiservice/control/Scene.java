@@ -301,8 +301,6 @@ public class Scene implements ViewService.ViewFieldListener {
                 inGameQuestVisualizationService.stop();
             }
             serverQuest = quest;
-        } else {
-            logger.severe("Scene.onQuestActivated() but not sceneConfig.isProcessServerQuests()");
         }
     }
 

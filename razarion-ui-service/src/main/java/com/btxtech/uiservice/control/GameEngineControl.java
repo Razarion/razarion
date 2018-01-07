@@ -84,6 +84,7 @@ public abstract class GameEngineControl {
     private ClientRunner clientRunner;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
+    private Runnable stopCallback;
 
     protected abstract void sendToWorker(GameEngineControlPackage.Command command, Object... data);
 
@@ -96,9 +97,9 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
 
-    public void stop(DeferredStartup deferredStartup) {
+    public void stop(Runnable stopCallback) {
         perfmonConsumer = null;
-        this.deferredStartup = deferredStartup;
+        this.stopCallback = stopCallback;
         sendToWorker(GameEngineControlPackage.Command.STOP_REQUEST);
     }
 
@@ -255,9 +256,9 @@ public abstract class GameEngineControl {
     }
 
     private void onStopped() {
-        if (deferredStartup != null) {
-            deferredStartup.finished();
-            deferredStartup = null;
+        if (stopCallback != null) {
+            stopCallback.run();
+            stopCallback = null;
         }
     }
 

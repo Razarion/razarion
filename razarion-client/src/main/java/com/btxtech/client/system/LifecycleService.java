@@ -136,15 +136,17 @@ public class LifecycleService {
     }
 
     public void clearAndHold(DeferredStartup deferredStartup) {
-        gameEngineControl.stop(deferredStartup);
+        gameEngineControl.stop(() -> {
+            baseItemUiService.clear();
+            boxUiService.clear();
+            resourceUiService.clear();
+            deferredStartup.finished();
+        });
         modalDialogManager.closeAll();
         gameCanvas.stopRenderLoop();
         clientPerformanceTrackerService.stop();
         perfmonService.stop();
-        baseItemUiService.clear();
-        boxUiService.clear();
         itemMarkerService.clear();
-        resourceUiService.clear();
         terrainMouseHandler.clear();
         cursorService.clear();
         particleService.clear();

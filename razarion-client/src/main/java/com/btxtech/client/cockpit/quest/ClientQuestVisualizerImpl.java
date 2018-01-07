@@ -46,8 +46,6 @@ public class ClientQuestVisualizerImpl implements QuestVisualizer {
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
         if (questSidebar != null) {
             questSidebar.onQuestProgress(questProgressInfo);
-        } else {
-            logger.severe("ClientQuestVisualizerImpl.onQuestProgress() questSidebar == null");
         }
     }
 }
