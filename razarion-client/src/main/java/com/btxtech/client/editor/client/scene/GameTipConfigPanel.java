@@ -156,6 +156,10 @@ public class GameTipConfigPanel {
                 terrainPositionHintTr.getStyle().setProperty("display", "table-row");
                 terrainPositionHintWidget.init(gameTipConfig.getTerrainPositionHint(), position -> gameTipConfig.setTerrainPositionHint(position));
                 break;
+            case SCROLL_HOME_BUTTON:
+                terrainPositionHintTr.getStyle().setProperty("display", "table-row");
+                terrainPositionHintWidget.init(gameTipConfig.getTerrainPositionHint(), position -> gameTipConfig.setTerrainPositionHint(position));
+                break;
             default:
                 throw new IllegalArgumentException("GameTipConfigPanel.setupGui() unknown tip: " + gameTipConfig.getTip());
         }

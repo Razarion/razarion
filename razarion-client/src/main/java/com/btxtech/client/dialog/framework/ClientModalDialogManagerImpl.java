@@ -5,6 +5,7 @@ import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.dialog.common.MessageDialog;
 import com.btxtech.client.dialog.common.MessageImage;
 import com.btxtech.client.dialog.common.MessageImageDialog;
+import com.btxtech.client.dialog.common.ScrollTipDialog;
 import com.btxtech.client.dialog.common.SetUserNameDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
 import com.btxtech.shared.datatypes.LevelUpPacket;
@@ -18,6 +19,7 @@ import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.tip.tiptask.ScrollTipTask;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -106,6 +108,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     @Override
     public void showMessageDialog(String title, String message) {
         show(title, Type.STACK_ABLE, MessageDialog.class, message, null, null, DialogButton.Button.CLOSE);
+    }
+
+    @Override
+    public void showScrollTipDialog(ScrollTipTask scrollTipTask) {
+        show(scrollTipTask.getDialogTitle(), Type.STACK_ABLE, ScrollTipDialog.class, scrollTipTask, null, null, DialogButton.Button.CLOSE);
     }
 
     public void showMessageNoClosableDialog(String title, String message, Consumer<ModalDialogPanel> shownCallback) {

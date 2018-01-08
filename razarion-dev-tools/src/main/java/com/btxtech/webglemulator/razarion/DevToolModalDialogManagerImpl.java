@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.tip.tiptask.ScrollTipTask;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
 
@@ -126,6 +127,17 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
             alert.setTitle("Set user name");
             alert.setHeaderText(null);
             alert.setContentText("Set user name");
+            alert.showAndWait();
+        });
+    }
+
+    @Override
+    public void showScrollTipDialog(ScrollTipTask scrollTipTask) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("showScrollTipDialog");
+            alert.setHeaderText(null);
+            alert.setContentText("showScrollTipDialog");
             alert.showAndWait();
         });
     }

@@ -629,6 +629,7 @@ a:active {
     font-size: 85%;
     font-weight: bolder;
 }
+
 /** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
 
 /** -------------------------- DIALOG INVENTORY  -------------------------- */
@@ -736,6 +737,18 @@ a:active {
 
 .unlock-dialog-tr-cost {
     font-size: 80%;
+}
+
+/** -------------------------- DIALOG BOX CONTENT ENDS -------------------------- */
+
+/** -------------------------- DIALOG BOX CONTENT  -------------------------- */
+
+.scroll-tip-dialog-message {
+    margin-bottom: 10px;
+}
+
+.scroll-tip-dialog-map-image {
+    border: 1px solid #3289bd;
 }
 
 /** -------------------------- DIALOG BOX CONTENT ENDS -------------------------- */

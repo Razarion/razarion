@@ -487,4 +487,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public GameEngineMode getGameEngineMode() {
         return gameEngineMode;
     }
+
+    public Scene getCurrentScene() {
+        return currentScene;
+    }
 }

@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.tip.tiptask.ScrollTipTask;
 
 import javax.enterprise.context.ApplicationScoped;
 
@@ -61,6 +62,11 @@ public class TestModalDialogManager extends ModalDialogManager {
 
     @Override
     public void showSetUserNameDialog() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void showScrollTipDialog(ScrollTipTask scrollTipTask) {
         throw new UnsupportedOperationException();
     }
 }

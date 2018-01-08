@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
@@ -72,6 +73,10 @@ public abstract class AbstractTipTask {
     }
 
     // Override ins subclasses
+    protected void onOtherSelectionChanged(SyncItemSimpleDto selectedOther) {
+    }
+
+    // Override ins subclasses
     protected void onSelectionCleared() {
     }
 
@@ -133,6 +138,8 @@ public abstract class AbstractTipTask {
             case OTHER: {
                 if (failOnTargetSelectionChanged) {
                     onFailed();
+                } else {
+                    onOtherSelectionChanged(selectionEvent.getSelectedOther());
                 }
                 break;
             }
