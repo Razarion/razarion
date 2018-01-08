@@ -12,6 +12,12 @@ import org.jboss.errai.common.client.api.annotations.Element;
 @Element("div")
 public interface Div extends org.jboss.errai.common.client.dom.Div {
     @JsProperty
+    int getOffsetLeft ();
+
+    @JsProperty
+    int getOffsetTop();
+
+    @JsProperty
     int getClientWidth();
 
     @JsProperty

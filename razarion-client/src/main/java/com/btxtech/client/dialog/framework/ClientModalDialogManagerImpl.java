@@ -8,10 +8,9 @@ import com.btxtech.client.dialog.common.MessageImageDialog;
 import com.btxtech.client.dialog.common.ScrollTipDialog;
 import com.btxtech.client.dialog.common.SetUserNameDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
-import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.client.dialog.unlock.UnlockDialog;
+import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
-import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -28,6 +27,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -54,6 +54,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     private ModalDialogPanel activeDialog;
     private List<DialogParameters> dialogQueue = new ArrayList<>();
     private List<ModalDialogPanel> stackedDialogs = new ArrayList<>();
+    private BiConsumer<ModalDialogPanel, Boolean> trackerCallback;
 
     @Override
     protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
@@ -64,7 +65,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     protected void showLevelUp(LevelUpPacket levelUpPacket, Runnable closeListener) {
         show(I18nHelper.getConstants().levelUpDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, LevelUpDialog.class, levelUpPacket, (button, value) -> {
             closeListener.run();
-            if(unlockUiService.hasItems2Unlock()) {
+            if (unlockUiService.hasItems2Unlock()) {
                 show(I18nHelper.getConstants().unlockDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnlockDialog.class, null, null, null, DialogButton.Button.CLOSE);
             }
         }, null, audioService.getAudioConfig().getOnLevelUp(), DialogButton.Button.CLOSE);
@@ -199,11 +200,17 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         if (shownCallback != null) {
             shownCallback.accept(modalDialogPanel);
         }
+        if (trackerCallback != null) {
+            trackerCallback.accept(modalDialogPanel, true);
+        }
     }
 
     public void close(ModalDialogPanel modalDialogPanel) {
         audioService.onDialogClosed();
         modalDialogPanel.onClose();
+        if (trackerCallback != null) {
+            trackerCallback.accept(modalDialogPanel, false);
+        }
         RootPanel.get().remove(modalDialogPanel);
         if (modalDialogPanel == activeDialog) {
             activeDialog = null;
@@ -223,6 +230,10 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         if (activeDialog != null) {
             close(activeDialog);
         }
+    }
+
+    public void setTrackerCallback(BiConsumer<ModalDialogPanel, Boolean> trackerCallback) {
+        this.trackerCallback = trackerCallback;
     }
 
     private class DialogParameters {

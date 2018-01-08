@@ -26,6 +26,7 @@ public class TrackingContainerAccess {
 
         bestFit.analyse(trackingContainer.getCameraTrackings());
         bestFit.analyse(trackingContainer.getSelectionTrackings());
+        bestFit.analyse(trackingContainer.getDialogTrackings());
         bestFit.analyse(trackingContainer.getBrowserWindowTrackings());
         bestFit.analyse(trackingContainer.getMouseMoveTrackings());
         bestFit.analyse(trackingContainer.getMouseButtonTrackings());
@@ -43,6 +44,7 @@ public class TrackingContainerAccess {
 
         bestFit.analyse(trackingContainer.getCameraTrackings());
         bestFit.analyse(trackingContainer.getSelectionTrackings());
+        bestFit.analyse(trackingContainer.getDialogTrackings());
         bestFit.analyse(trackingContainer.getBrowserWindowTrackings());
         bestFit.analyse(trackingContainer.getMouseMoveTrackings());
         bestFit.analyse(trackingContainer.getMouseButtonTrackings());

@@ -1,11 +1,16 @@
 package com.btxtech.client;
 
+import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
+import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.renderer.GameCanvas;
+import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
+import com.btxtech.shared.datatypes.tracking.DialogTracking;
 import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
 import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
 import com.btxtech.shared.datatypes.tracking.SelectionTracking;
@@ -73,6 +78,8 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private ExceptionHandler exceptionHandler;
     @Inject
     private ViewService viewService;
+    @Inject
+    private ClientModalDialogManagerImpl clientModalDialogManager;
     private TrackingContainer trackingContainer;
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
@@ -180,6 +187,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         Browser.getDocument().addEventListener(Event.MOUSEMOVE, this::onMouseMove, true);
         Browser.getDocument().addEventListener(Event.MOUSEDOWN, this::onMouseButtonDown, true);
         Browser.getDocument().addEventListener(Event.MOUSEUP, this::onMouseButtonUp, true);
+        clientModalDialogManager.setTrackerCallback(this::trackDialog);
 
         TrackingStart trackingStart = new TrackingStart().setPlanetId(planetId).setGameSessionUuid(clientRunner.getGameSessionUuid());
         trackingStart.setBrowserWindowDimension(gameCanvas.getWindowDimenionForPlayback());
@@ -189,21 +197,17 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
             logger.log(Level.SEVERE, "trackingStart failed: " + message, throwable);
             return false;
         }).trackingStart(trackingStart);
-        // MapWindow.getInstance().setTrackingEvents(true);
-        // TerrainView.getInstance().addTerrainScrollListener(this);
-        // DialogManager.getInstance().addDialogListener(this);
     }
 
     @Override
     public void stopDetailedTracking() {
         detailedTracking = false;
         viewService.removeViewFieldListeners(this);
-        // TODO DialogManager.getInstance().removeDialogListener(this);
+        clientModalDialogManager.setTrackerCallback(null);
         if (detailedTrackingFuture != null) {
             detailedTrackingFuture.cancel();
             detailedTrackingFuture = null;
         }
-        // TODO SelectionHandler.getInstance().removeSelectionListener(this);
         sendEventTrackerItems();
     }
 
@@ -254,7 +258,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private void onMouseMove(Event event) {
         try {
             MouseEvent mouseEvent = (MouseEvent) event;
-            MouseMoveTracking mouseMoveTracking = new MouseMoveTracking().setPosition(new Index(mouseEvent.getClientX(), mouseEvent.getClientY()));
+            MouseMoveTracking mouseMoveTracking = new MouseMoveTracking().setPosition(GwtUtils.correctIndex(mouseEvent.getClientX(), mouseEvent.getClientY()));
             initDetailedTracking(mouseMoveTracking);
             trackingContainer.addMouseMoveTrackings(mouseMoveTracking);
         } catch (Exception e) {
@@ -281,6 +285,30 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
             trackingContainer.addMouseButtonTrackings(mouseButtonTracking);
         } catch (Exception e) {
             exceptionHandler.handleException("ClientTrackerService.onMouseButton()", e);
+        }
+    }
+
+    private void trackDialog(ModalDialogPanel modalDialogPanel, boolean appearing) {
+        if (!detailedTracking) {
+            return;
+        }
+        try {
+            DialogTracking dialogTracking = new DialogTracking();
+            initDetailedTracking(dialogTracking);
+            dialogTracking.setAppearing(appearing);
+            dialogTracking.setIdentityHashCode(System.identityHashCode(modalDialogPanel));
+            if (appearing) {
+                dialogTracking.setTitle(modalDialogPanel.getTitle());
+                Rectangle dialogRectangle = modalDialogPanel.getDialogRectangle();
+                dialogTracking.setLeft(dialogRectangle.startX());
+                dialogTracking.setTop(dialogRectangle.startY());
+                dialogTracking.setWidth(dialogRectangle.width());
+                dialogTracking.setHeight(dialogRectangle.height());
+                dialogTracking.setzIndex(Integer.parseInt(modalDialogPanel.getElement().getStyle().getZIndex()));
+            }
+            trackingContainer.addDialogTracking(dialogTracking);
+        } catch (Throwable t) {
+            exceptionHandler.handleException("ClientTrackerService.trackDialog()", t);
         }
     }
 

@@ -47,4 +47,19 @@ public class TestPlaybackControl extends PlaybackControl {
     protected void onSleeping(long timeToSleep) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected void showPlaybackDialog(int identityHashCode, String title, int left, int top, int width, int height, int zIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void hidePlaybackDialog(int identityHashCode) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void onOnPause() {
+        throw new UnsupportedOperationException();
+    }
 }

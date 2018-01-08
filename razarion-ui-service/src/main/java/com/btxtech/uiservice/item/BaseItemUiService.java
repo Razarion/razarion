@@ -502,6 +502,10 @@ public class BaseItemUiService {
         return syncBaseItems;
     }
 
+    public SyncBaseItemSimpleDto getSyncBaseItemSimpleDto4IdPlayback(int itemId) {
+        return syncBaseItems.stream().filter(syncBaseItemSimpleDto -> syncBaseItemSimpleDto.getId() == itemId).findFirst().orElse(null);
+    }
+
     public boolean hasRadar() {
         return hasRadar;
     }

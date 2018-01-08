@@ -34,6 +34,9 @@ public class PlaybackSidebar extends Composite {
     private Span sleepingLabel;
     @Inject
     @DataField
+    private Button pauseButton;
+    @Inject
+    @DataField
     private Button skipButton;
 
     @PostConstruct
@@ -51,6 +54,10 @@ public class PlaybackSidebar extends Composite {
         stateLabel.setText("Playing");
     }
 
+    public void onOnPause() {
+        stateLabel.setText("Pause");
+    }
+
     public void onFinished() {
         stateLabel.setText("Finished");
         sleepingLabel.setInnerHTML("");
@@ -58,6 +65,11 @@ public class PlaybackSidebar extends Composite {
 
     public void onOnSleeping(long timeToSleep) {
         sleepingLabel.setInnerHTML(DisplayUtils.formatMinuteTimeStamp(timeToSleep));
+    }
+
+    @EventHandler("pauseButton")
+    private void onPauseButtonClick(ClickEvent event) {
+        playbackControl.pause();
     }
 
     @EventHandler("skipButton")

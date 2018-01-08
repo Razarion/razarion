@@ -1,5 +1,6 @@
 package com.btxtech.client.utils;
 
+import com.btxtech.shared.datatypes.Index;
 import com.google.gwt.user.client.ui.Widget;
 import elemental.dom.Element;
 import elemental.events.Event;
@@ -81,4 +82,19 @@ public class GwtUtils {
         return wheelEvent.deltaY;
     }-*/;
 
+    /**
+     * @param integer to correct
+     * @return corrected integer
+     */
+    public static int correctInt(int integer) {
+        return (int) Math.floor(integer);
+    }
+
+    public static Index correctIndex(Index index) {
+        return new Index(correctInt(index.getX()), correctInt(index.getY()));
+    }
+
+    public static Index correctIndex(int x, int y) {
+        return new Index(correctInt(x), correctInt(y));
+    }
 }

@@ -15,6 +15,7 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * User: beat
@@ -141,7 +143,7 @@ public class SelectionHandler {
 
     public void clearSelection(boolean suppressAudio) {
         selectedOtherSyncItem = null;
-        if(selectedGroup != null) {
+        if (selectedGroup != null) {
             selectedGroup.release();
         }
         selectedGroup = null;
@@ -188,6 +190,44 @@ public class SelectionHandler {
     public void resourceItemRemove(SyncResourceItemSimpleDto syncResourceItem) {
         if (syncResourceItem.equals(selectedOtherSyncItem)) {
             clearSelection(false);
+        }
+    }
+
+    public void playbackSelection(List<Integer> selectedIds) {
+        if (selectedIds.isEmpty()) {
+            return;
+        }
+        Collection<SyncBaseItemSimpleDto> ownSelection = new ArrayList<>();
+        SingleHolder<SyncItemSimpleDto> other = new SingleHolder<>();
+
+        selectedIds.forEach(itemId -> {
+            SyncBaseItemSimpleDto syncBaseItemSimpleDto = baseItemUiService.getSyncBaseItemSimpleDto4IdPlayback(itemId);
+            if (syncBaseItemSimpleDto != null) {
+                if (baseItemUiService.isMyOwnProperty(syncBaseItemSimpleDto)) {
+                    ownSelection.add(syncBaseItemSimpleDto);
+                } else {
+                    other.setO(syncBaseItemSimpleDto);
+                }
+                return;
+            }
+            SyncResourceItemSimpleDto syncResourceItemSimpleDto = resourceUiService.getSyncResourceItemSimpleDto4IdPlayback(itemId);
+            if (syncResourceItemSimpleDto != null) {
+                other.setO(syncResourceItemSimpleDto);
+            }
+            SyncBoxItemSimpleDto syncBoxItemSimpleDto = boxUiService.getSyncBoxItemSimpleDto4IdPlayback(itemId);
+            if (syncBoxItemSimpleDto != null) {
+                other.setO(syncBoxItemSimpleDto);
+            }
+        });
+
+        if (!ownSelection.isEmpty()) {
+            Group group = groupInstance.get();
+            group.setItems(ownSelection);
+            setItemGroupSelected(group);
+        } else if (!other.isEmpty()) {
+            setOtherItemSelected(other.getO());
+        } else {
+            clearSelection(true);
         }
     }
 }

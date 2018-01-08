@@ -130,7 +130,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
         synchronized (resourceModelMatrices) {
             resourceModelMatrices.clear();
             Rectangle2D aabb = viewService.getCurrentAabb();
-            if(aabb == null) {
+            if (aabb == null) {
                 return;
             }
             for (SyncResourceItemSimpleDto resourceItem : resources.values()) {
@@ -170,5 +170,9 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.onViewChanged(viewField);
         }
+    }
+
+    public SyncResourceItemSimpleDto getSyncResourceItemSimpleDto4IdPlayback(int resourceItemId) {
+        return resources.get(resourceItemId);
     }
 }

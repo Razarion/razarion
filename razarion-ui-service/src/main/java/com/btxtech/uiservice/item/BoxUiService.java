@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
@@ -176,6 +177,10 @@ public class BoxUiService implements ViewService.ViewFieldListener {
         if (syncStaticItemSetPositionMonitor != null) {
             syncStaticItemSetPositionMonitor.onViewChanged(viewField);
         }
+    }
+
+    public SyncBoxItemSimpleDto getSyncBoxItemSimpleDto4IdPlayback(int syncBoxId) {
+        return boxes.get(syncBoxId);
     }
 
 }

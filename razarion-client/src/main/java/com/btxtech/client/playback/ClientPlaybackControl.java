@@ -11,11 +11,13 @@ import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.RootPanel;
+import org.jboss.errai.common.client.dom.Window;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by Beat
@@ -34,8 +36,11 @@ public class ClientPlaybackControl extends PlaybackControl {
     private Canvas mousePlaybackCanvas;
     @Inject
     private Instance<PlaybackSidebar> playbackSidebarInstance;
+    @Inject
+    private Instance<PlaybackDialog> playbackDialogInstance;
     private PlaybackSidebar playbackSidebar;
     private Date endTimeStamp;
+    private HashMap<Integer, PlaybackDialog> openPlaybackDialogs = new HashMap<>();
 
     @Override
     protected void activatePlaybackMode(Date startTimeStamp, DetailedTracking endDetailedTracking) {
@@ -125,7 +130,26 @@ public class ClientPlaybackControl extends PlaybackControl {
     }
 
     @Override
+    protected void onOnPause() {
+        playbackSidebar.onOnPause();
+    }
+
+    @Override
     protected void onFinished() {
         playbackSidebar.onFinished();
+    }
+
+    @Override
+    protected void showPlaybackDialog(int identityHashCode, String title, int left, int top, int width, int height, int zIndex) {
+        PlaybackDialog playbackDialog = playbackDialogInstance.get();
+        playbackDialog.init(title, left, top, width, height, zIndex);
+        openPlaybackDialogs.put(identityHashCode, playbackDialog);
+        Window.getDocument().getBody().appendChild(playbackDialog.getElement());
+    }
+
+    @Override
+    protected void hidePlaybackDialog(int identityHashCode) {
+        PlaybackDialog playbackDialog = openPlaybackDialogs.remove(identityHashCode);
+        Window.getDocument().getBody().removeChild(playbackDialog.getElement());
     }
 }

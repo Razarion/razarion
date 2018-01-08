@@ -14,6 +14,7 @@ public class TrackingContainer {
     private List<MouseMoveTracking> mouseMoveTrackings = new ArrayList<>();
     private List<MouseButtonTracking> mouseButtonTrackings = new ArrayList<>();
     private List<SelectionTracking> selectionTrackings = new ArrayList<>();
+    private List<DialogTracking> dialogTrackings = new ArrayList<>();
     private List<PlayerBaseTracking> playerBaseTrackings = new ArrayList<>();
     private List<SyncItemDeletedTracking> syncItemDeletedTrackings = new ArrayList<>();
     private List<SyncBaseItemTracking> syncBaseItemTrackings = new ArrayList<>();
@@ -53,6 +54,15 @@ public class TrackingContainer {
 
     public TrackingContainer setSelectionTrackings(List<SelectionTracking> selectionTrackings) {
         this.selectionTrackings = selectionTrackings;
+        return this;
+    }
+
+    public List<DialogTracking> getDialogTrackings() {
+        return dialogTrackings;
+    }
+
+    public TrackingContainer setDialogTrackings(List<DialogTracking> dialogTrackings) {
+        this.dialogTrackings = dialogTrackings;
         return this;
     }
 
@@ -135,6 +145,13 @@ public class TrackingContainer {
         selectionTrackings.add(selectionTracking);
     }
 
+    public void addDialogTracking(DialogTracking dialogTracking) {
+        if (dialogTrackings == null) {
+            dialogTrackings = new ArrayList<>();
+        }
+        dialogTrackings.add(dialogTracking);
+    }
+
     public void addMouseMoveTrackings(MouseMoveTracking mouseMoveTracking) {
         if (mouseMoveTrackings == null) {
             mouseMoveTrackings = new ArrayList<>();
@@ -188,6 +205,7 @@ public class TrackingContainer {
         return (cameraTrackings == null || cameraTrackings.isEmpty())
                 && (browserWindowTrackings == null || browserWindowTrackings.isEmpty())
                 && (selectionTrackings == null || selectionTrackings.isEmpty())
+                && (dialogTrackings == null || dialogTrackings.isEmpty())
                 && (mouseMoveTrackings == null || mouseMoveTrackings.isEmpty())
                 && (mouseButtonTrackings == null || mouseButtonTrackings.isEmpty())
                 && (playerBaseTrackings == null || playerBaseTrackings.isEmpty())

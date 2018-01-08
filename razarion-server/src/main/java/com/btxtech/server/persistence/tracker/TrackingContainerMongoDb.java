@@ -98,6 +98,12 @@ public class TrackingContainerMongoDb {
             if (trackingContainer.getBrowserWindowTrackings() != null) {
                 result.getBrowserWindowTrackings().addAll(trackingContainer.getBrowserWindowTrackings());
             }
+            if (trackingContainer.getSelectionTrackings() != null) {
+                result.getSelectionTrackings().addAll(trackingContainer.getSelectionTrackings());
+            }
+            if (trackingContainer.getDialogTrackings() != null) {
+                result.getDialogTrackings().addAll(trackingContainer.getDialogTrackings());
+            }
             if (trackingContainer.getMouseMoveTrackings() != null) {
                 result.getMouseMoveTrackings().addAll(trackingContainer.getMouseMoveTrackings());
             }
@@ -122,6 +128,8 @@ public class TrackingContainerMongoDb {
         }
         result.getCameraTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getBrowserWindowTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getSelectionTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
+        result.getDialogTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getMouseMoveTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getMouseButtonTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));
         result.getPlayerBaseTrackings().sort(Comparator.comparing(DetailedTracking::getTimeStamp));

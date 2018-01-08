@@ -5,9 +5,11 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.tracking.BrowserWindowTracking;
 import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
+import com.btxtech.shared.datatypes.tracking.DialogTracking;
 import com.btxtech.shared.datatypes.tracking.MouseButtonTracking;
 import com.btxtech.shared.datatypes.tracking.MouseMoveTracking;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
+import com.btxtech.shared.datatypes.tracking.SelectionTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBaseItemTracking;
 import com.btxtech.shared.datatypes.tracking.SyncBoxItemTracking;
 import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
@@ -15,6 +17,7 @@ import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
+import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 
@@ -36,6 +39,8 @@ public abstract class PlaybackControl {
     private SimpleExecutorService simpleExecutorService;
     @Inject
     private GameEngineControl gameEngineControl;
+    @Inject
+    private SelectionHandler selectionHandler;
     private Date lastAction;
     private TrackingContainerAccess trackingContainerAccess;
     private DetailedTracking nextDetailedTracking;
@@ -53,7 +58,13 @@ public abstract class PlaybackControl {
 
     protected abstract void onFinished();
 
+    protected abstract void onOnPause();
+
     protected abstract void onSleeping(long timeToSleep);
+
+    protected abstract void showPlaybackDialog(int identityHashCode, String title, int left, int top, int width, int height, int zIndex);
+
+    protected abstract void hidePlaybackDialog(int identityHashCode);
 
     public void start(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
         lastAction = playbackGameUiControlConfig.getTrackingStart().getTimeStamp();
@@ -69,6 +80,13 @@ public abstract class PlaybackControl {
             return;
         }
         nextDetailedTracking = trackingContainerAccess.removeNextDetailedTracking();
+        waitForNextAction();
+    }
+
+    private void waitForNextAction() {
+        if (nextDetailedTracking == null) {
+            return;
+        }
         long timeToSleep = nextDetailedTracking.getTimeStamp().getTime() - lastAction.getTime();
         if (timeToSleep < 0) {
             timeToSleep = 0;
@@ -77,8 +95,18 @@ public abstract class PlaybackControl {
         simpleScheduledFuture = simpleExecutorService.schedule(timeToSleep, this::executeAction, SimpleExecutorService.Type.UNSPECIFIED);
     }
 
+    public void pause() {
+        if (simpleScheduledFuture != null) {
+            simpleScheduledFuture.cancel();
+            simpleScheduledFuture = null;
+            onOnPause();
+        } else {
+            waitForNextAction();
+        }
+    }
+
     public void skip() {
-        if(simpleScheduledFuture != null) {
+        if (simpleScheduledFuture != null) {
             simpleScheduledFuture.cancel();
             simpleScheduledFuture = null;
             executeAction();
@@ -110,10 +138,23 @@ public abstract class PlaybackControl {
             gameEngineControl.playbackSyncResourceItem(((SyncResourceItemTracking) nextDetailedTracking).getSyncResourceItemInfo());
         } else if (nextDetailedTracking instanceof SyncBoxItemTracking) {
             gameEngineControl.playbackSyncBoxItem(((SyncBoxItemTracking) nextDetailedTracking).getSyncBoxItemInfo());
+        } else if (nextDetailedTracking instanceof SelectionTracking) {
+            selectionHandler.playbackSelection(((SelectionTracking) nextDetailedTracking).getSelectedIds());
+        } else if (nextDetailedTracking instanceof DialogTracking) {
+            handlePlaybackDialog((DialogTracking) nextDetailedTracking);
         } else {
             logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
         }
         lastAction = nextDetailedTracking.getTimeStamp();
         scheduleNextAction();
+    }
+
+    private void handlePlaybackDialog(DialogTracking dialogTracking) {
+        if (dialogTracking.isAppearing()) {
+            showPlaybackDialog(dialogTracking.getIdentityHashCode(), dialogTracking.getTitle(), dialogTracking.getLeft(), dialogTracking.getTop(), dialogTracking.getWidth(), dialogTracking.getHeight(), dialogTracking.getzIndex());
+        } else {
+            hidePlaybackDialog(dialogTracking.getIdentityHashCode());
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package com.btxtech.client.dialog.framework;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.user.client.ui.Composite;
@@ -21,7 +22,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 20.05.2016.
  */
-@Templated("ModalDialogPanel.html#modal-dialog")
+@Templated("ModalDialogPanel.html#glass-panel")
 public class ModalDialogPanel<T> extends Composite {
     // private Logger logger = Logger.getLogger(ModalDialogPanel.class.getName());
     @Inject
@@ -35,6 +36,12 @@ public class ModalDialogPanel<T> extends Composite {
     private Label headerLabel;
     @Inject
     @DataField
+    private com.btxtech.client.guielements.Div glassPanelDiv;
+    @Inject
+    @DataField
+    private com.btxtech.client.guielements.Div modalDialogDiv;
+    @Inject
+    @DataField
     private SimplePanel content;
     @Inject
     @DataField
@@ -42,6 +49,7 @@ public class ModalDialogPanel<T> extends Composite {
     private ModalDialogContent<T> modalDialogContent;
     private T applyValue;
     private DialogButton.Listener<T> listener;
+    private String title;
 
     @PostConstruct
     public void postConstruct() {
@@ -55,6 +63,7 @@ public class ModalDialogPanel<T> extends Composite {
             modalDialogContent = contentInstance.select(contentClass).get();
             modalDialogContent.init(t);
             headerLabel.setText(title);
+            this.title = title;
             content.setWidget(modalDialogContent);
             modalDialogContent.customize(this);
             setupFooterButton(dialogButtons);
@@ -102,5 +111,16 @@ public class ModalDialogPanel<T> extends Composite {
             }
         }, false);
         buttonDiv.appendChild(button);
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    public Rectangle getDialogRectangle() {
+        int x = GwtUtils.correctInt(glassPanelDiv.getOffsetLeft() + modalDialogDiv.getOffsetLeft());
+        int y = GwtUtils.correctInt(glassPanelDiv.getOffsetTop() + modalDialogDiv.getOffsetTop());
+        return new Rectangle(x, y, GwtUtils.correctInt(modalDialogDiv.getClientWidth()), GwtUtils.correctInt(modalDialogDiv.getClientHeight()));
     }
 }
