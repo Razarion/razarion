@@ -45,6 +45,7 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
     private InGameDirectionVisualization inGameDirectionVisualization;
     private boolean dialogVisible;
     private Runnable openDialogCloseCallback;
+    private boolean ended;
 
     public void init(DecimalPosition terrainPositionHint) {
         selectionHandler.clearSelection(true);
@@ -65,6 +66,7 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
 
     @Override
     protected void internalCleanup() {
+        ended = true;
         viewService.removeViewFieldListeners(this);
         stopTimer();
     }
@@ -100,6 +102,9 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
     }
 
     private void startTimer() {
+        if(ended) {
+            return;
+        }
         if (simpleScheduledFuture == null) {
             simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(TIMER_DELAY, true, this::onTimer, SimpleExecutorService.Type.UNSPECIFIED);
         }
@@ -118,7 +123,9 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
         }
         this.dialogVisible = splashVisible;
         if (splashVisible) {
-            modalDialogManager.showScrollTipDialog(this);
+            if(!ended) {
+                modalDialogManager.showScrollTipDialog(this);
+            }
             stopTimer();
         } else {
             if(openDialogCloseCallback != null) {
@@ -166,6 +173,9 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
 
     public void onDialogClosed() {
         openDialogCloseCallback = null;
+        if(ended) {
+            return;
+        }
         selectionHandler.clearSelection(true);
         startTimer();
         showScrollDialog(false);
