@@ -15,6 +15,7 @@ import com.btxtech.shared.datatypes.tracking.SyncBoxItemTracking;
 import com.btxtech.shared.datatypes.tracking.SyncItemDeletedTracking;
 import com.btxtech.shared.datatypes.tracking.SyncResourceItemTracking;
 import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionHandler;
@@ -41,6 +42,8 @@ public abstract class PlaybackControl {
     private GameEngineControl gameEngineControl;
     @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Date lastAction;
     private TrackingContainerAccess trackingContainerAccess;
     private DetailedTracking nextDetailedTracking;
@@ -115,35 +118,39 @@ public abstract class PlaybackControl {
 
     private void executeAction() {
         onNextAction(nextDetailedTracking);
-        if (nextDetailedTracking instanceof CameraTracking) {
-            CameraTracking cameraTracking = (CameraTracking) nextDetailedTracking;
-            camera.setTranslateXY(cameraTracking.getPosition().getX(), cameraTracking.getPosition().getY());
-            projectionTransformation.setFovY(cameraTracking.getFovY());
-        } else if (nextDetailedTracking instanceof BrowserWindowTracking) {
-            BrowserWindowTracking browserWindowTracking = (BrowserWindowTracking) nextDetailedTracking;
-            setCanvasPlaybackDimension(browserWindowTracking.getDimension());
-        } else if (nextDetailedTracking instanceof MouseMoveTracking) {
-            MouseMoveTracking mouseMoveTracking = (MouseMoveTracking) nextDetailedTracking;
-            displayMouseMove(mouseMoveTracking.getPosition());
-        } else if (nextDetailedTracking instanceof MouseButtonTracking) {
-            MouseButtonTracking mouseButtonTracking = (MouseButtonTracking) nextDetailedTracking;
-            displayMouseButton(mouseButtonTracking.getButton(), mouseButtonTracking.isDown());
-        } else if (nextDetailedTracking instanceof PlayerBaseTracking) {
-            gameEngineControl.playbackPlayerBase((PlayerBaseTracking) nextDetailedTracking);
-        } else if (nextDetailedTracking instanceof SyncItemDeletedTracking) {
-            gameEngineControl.playbackSyncItemDeleted(((SyncItemDeletedTracking) nextDetailedTracking).getSyncItemDeletedInfo());
-        } else if (nextDetailedTracking instanceof SyncBaseItemTracking) {
-            gameEngineControl.playbackSyncBaseItem(((SyncBaseItemTracking) nextDetailedTracking).getSyncBaseItemInfo());
-        } else if (nextDetailedTracking instanceof SyncResourceItemTracking) {
-            gameEngineControl.playbackSyncResourceItem(((SyncResourceItemTracking) nextDetailedTracking).getSyncResourceItemInfo());
-        } else if (nextDetailedTracking instanceof SyncBoxItemTracking) {
-            gameEngineControl.playbackSyncBoxItem(((SyncBoxItemTracking) nextDetailedTracking).getSyncBoxItemInfo());
-        } else if (nextDetailedTracking instanceof SelectionTracking) {
-            selectionHandler.playbackSelection(((SelectionTracking) nextDetailedTracking).getSelectedIds());
-        } else if (nextDetailedTracking instanceof DialogTracking) {
-            handlePlaybackDialog((DialogTracking) nextDetailedTracking);
-        } else {
-            logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
+        try {
+            if (nextDetailedTracking instanceof CameraTracking) {
+                CameraTracking cameraTracking = (CameraTracking) nextDetailedTracking;
+                camera.setTranslateXY(cameraTracking.getPosition().getX(), cameraTracking.getPosition().getY());
+                projectionTransformation.setFovY(cameraTracking.getFovY());
+            } else if (nextDetailedTracking instanceof BrowserWindowTracking) {
+                BrowserWindowTracking browserWindowTracking = (BrowserWindowTracking) nextDetailedTracking;
+                setCanvasPlaybackDimension(browserWindowTracking.getDimension());
+            } else if (nextDetailedTracking instanceof MouseMoveTracking) {
+                MouseMoveTracking mouseMoveTracking = (MouseMoveTracking) nextDetailedTracking;
+                displayMouseMove(mouseMoveTracking.getPosition());
+            } else if (nextDetailedTracking instanceof MouseButtonTracking) {
+                MouseButtonTracking mouseButtonTracking = (MouseButtonTracking) nextDetailedTracking;
+                displayMouseButton(mouseButtonTracking.getButton(), mouseButtonTracking.isDown());
+            } else if (nextDetailedTracking instanceof PlayerBaseTracking) {
+                gameEngineControl.playbackPlayerBase((PlayerBaseTracking) nextDetailedTracking);
+            } else if (nextDetailedTracking instanceof SyncItemDeletedTracking) {
+                gameEngineControl.playbackSyncItemDeleted(((SyncItemDeletedTracking) nextDetailedTracking).getSyncItemDeletedInfo());
+            } else if (nextDetailedTracking instanceof SyncBaseItemTracking) {
+                gameEngineControl.playbackSyncBaseItem(((SyncBaseItemTracking) nextDetailedTracking).getSyncBaseItemInfo());
+            } else if (nextDetailedTracking instanceof SyncResourceItemTracking) {
+                gameEngineControl.playbackSyncResourceItem(((SyncResourceItemTracking) nextDetailedTracking).getSyncResourceItemInfo());
+            } else if (nextDetailedTracking instanceof SyncBoxItemTracking) {
+                gameEngineControl.playbackSyncBoxItem(((SyncBoxItemTracking) nextDetailedTracking).getSyncBoxItemInfo());
+            } else if (nextDetailedTracking instanceof SelectionTracking) {
+                selectionHandler.playbackSelection(((SelectionTracking) nextDetailedTracking).getSelectedIds());
+            } else if (nextDetailedTracking instanceof DialogTracking) {
+                handlePlaybackDialog((DialogTracking) nextDetailedTracking);
+            } else {
+                logger.severe("PlaybackControl.executeAction() can not handle: " + nextDetailedTracking + " class: " + nextDetailedTracking.getClass());
+            }
+        } catch (Throwable t) {
+            exceptionHandler.handleException("PlaybackControl.executeAction()", t);
         }
         lastAction = nextDetailedTracking.getTimeStamp();
         scheduleNextAction();
