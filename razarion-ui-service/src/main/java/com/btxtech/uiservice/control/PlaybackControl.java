@@ -158,7 +158,7 @@ public abstract class PlaybackControl {
 
     private void handlePlaybackDialog(DialogTracking dialogTracking) {
         if (dialogTracking.isAppearing()) {
-            showPlaybackDialog(dialogTracking.getIdentityHashCode(), dialogTracking.getTitle(), dialogTracking.getLeft(), dialogTracking.getTop(), dialogTracking.getWidth(), dialogTracking.getHeight(), dialogTracking.getzIndex());
+            showPlaybackDialog(dialogTracking.getIdentityHashCode(), dialogTracking.getTitle(), dialogTracking.getLeft(), dialogTracking.getTop(), dialogTracking.getWidth(), dialogTracking.getHeight(), dialogTracking.getIndexZ());
         } else {
             hidePlaybackDialog(dialogTracking.getIdentityHashCode());
         }

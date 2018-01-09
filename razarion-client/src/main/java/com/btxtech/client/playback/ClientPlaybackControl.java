@@ -18,6 +18,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -40,7 +41,7 @@ public class ClientPlaybackControl extends PlaybackControl {
     private Instance<PlaybackDialog> playbackDialogInstance;
     private PlaybackSidebar playbackSidebar;
     private Date endTimeStamp;
-    private HashMap<Integer, PlaybackDialog> openPlaybackDialogs = new HashMap<>();
+    private Map<Integer, PlaybackDialog> openPlaybackDialogs = new HashMap<>();
 
     @Override
     protected void activatePlaybackMode(Date startTimeStamp, DetailedTracking endDetailedTracking) {

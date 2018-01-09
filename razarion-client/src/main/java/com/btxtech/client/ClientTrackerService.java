@@ -84,7 +84,6 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     private boolean detailedTracking = false;
     private SimpleScheduledFuture detailedTrackingFuture;
 
-
     @Override
     public void trackGameUiControl(Date startTimeStamp) {
         GameUiControlTrackerInfo gameUiControlTrackerInfo = new GameUiControlTrackerInfo();
@@ -304,7 +303,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
                 dialogTracking.setTop(dialogRectangle.startY());
                 dialogTracking.setWidth(dialogRectangle.width());
                 dialogTracking.setHeight(dialogRectangle.height());
-                dialogTracking.setzIndex(Integer.parseInt(modalDialogPanel.getElement().getStyle().getZIndex()));
+                dialogTracking.setIndexZ(Integer.parseInt(modalDialogPanel.getElement().getStyle().getZIndex()));
             }
             trackingContainer.addDialogTracking(dialogTracking);
         } catch (Throwable t) {

@@ -9,7 +9,7 @@ public class DialogTracking extends DetailedTracking {
     private Integer top;
     private Integer width;
     private Integer height;
-    private Integer zIndex;
+    private Integer indexZ; // zIndex does not work here. Errai marshalling
     private String title;
     private boolean appearing;
     private int identityHashCode;
@@ -50,12 +50,12 @@ public class DialogTracking extends DetailedTracking {
         return this;
     }
 
-    public Integer getzIndex() {
-        return zIndex;
+    public Integer getIndexZ() {
+        return indexZ;
     }
 
-    public DialogTracking setzIndex(Integer zIndex) {
-        this.zIndex = zIndex;
+    public DialogTracking setIndexZ(Integer indexZ) {
+        this.indexZ = indexZ;
         return this;
     }
 
