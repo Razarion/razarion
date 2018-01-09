@@ -31,11 +31,11 @@ public class ItemTrackerDisruptor {
     @PostConstruct
     public void postConstruct() {
         try {
-            Disruptor<ItemTracking> disruptor = new Disruptor<>(() -> new ItemTracking().setTimeStamp(new Date()), 1024, managedThreadFactory);
+            Disruptor<ItemTracking> disruptor = new Disruptor<>(ItemTracking::new, 1024, managedThreadFactory);
             disruptor.handleEventsWith(new ItemTrackingEventHandler());
             disruptor.start();
             ringBuffer = disruptor.getRingBuffer();
-            ringBuffer.publishEvent((event, sequence) -> event.setType(ItemTracking.Type.SERVER_START));
+            ringBuffer.publishEvent((event, sequence, date) -> event.setTimeStamp(date).setType(ItemTracking.Type.SERVER_START), new Date());
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
         }
@@ -62,7 +62,7 @@ public class ItemTrackerDisruptor {
         public void onEvent(ItemTracking event, long sequence, boolean endOfBatch) {
             try {
                 mongoDbService.storeObject(event, ItemTracking.class, MongoDbService.CollectionName.SERVER_ITEM_TRACKING);
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
         }

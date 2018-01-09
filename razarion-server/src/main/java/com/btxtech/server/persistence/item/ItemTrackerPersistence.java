@@ -6,10 +6,12 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.lmax.disruptor.EventTranslatorOneArg;
+import com.lmax.disruptor.EventTranslatorThreeArg;
 import com.lmax.disruptor.EventTranslatorTwoArg;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Date;
 
 /**
  * Created by Beat
@@ -19,8 +21,9 @@ import javax.inject.Singleton;
 public class ItemTrackerPersistence {
     @Inject
     private ItemTrackerDisruptor itemTrackerDisruptor;
-    private static final EventTranslatorOneArg<ItemTracking, PlayerBase> BASE_CREATE =
-            (event, sequence, base) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, PlayerBase> BASE_CREATE =
+            (event, sequence,date, base) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_CREATED);
                 event.setActorBaseBotId(base.getBaseId());
                 event.setActorBaseBotId(base.getBotId());
@@ -28,8 +31,9 @@ public class ItemTrackerPersistence {
                     event.setActorHumanPlayerId(base.getHumanPlayerId().getPlayerId());
                 }
             };
-    private static final EventTranslatorTwoArg<ItemTracking, PlayerBase, PlayerBase> BASE_DELETED =
-            (event, sequence, base, actor) -> {
+    private static final EventTranslatorThreeArg<ItemTracking, Date, PlayerBase, PlayerBase> BASE_DELETED =
+            (event, sequence, date , base, actor) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_DELETE);
                 event.setTargetBaseBotId(base.getBaseId());
                 event.setTargetBaseBotId(base.getBotId());
@@ -44,8 +48,9 @@ public class ItemTrackerPersistence {
                     }
                 }
             };
-    private static final EventTranslatorOneArg<ItemTracking, SyncBaseItem> BASE_ITEM_SPAWN =
-            (event, sequence, syncBaseItem) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBaseItem> BASE_ITEM_SPAWN =
+            (event, sequence,date, syncBaseItem) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_SPAWN);
                 event.setItemId(syncBaseItem.getId());
                 event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
@@ -57,8 +62,9 @@ public class ItemTrackerPersistence {
                 }
             };
 
-    private static final EventTranslatorOneArg<ItemTracking, SyncBaseItem> BASE_ITEM_SPAWN_DIRECTLY =
-            (event, sequence, syncBaseItem) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBaseItem> BASE_ITEM_SPAWN_DIRECTLY =
+            (event, sequence,date, syncBaseItem) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_SPAWN_DIRECTLY);
                 event.setItemId(syncBaseItem.getId());
                 event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
@@ -69,8 +75,9 @@ public class ItemTrackerPersistence {
                     event.setActorHumanPlayerId(syncBaseItem.getBase().getHumanPlayerId().getPlayerId());
                 }
             };
-    private static final EventTranslatorTwoArg<ItemTracking, SyncBaseItem, SyncBaseItem> BASE_ITEM_BUILT =
-            (event, sequence, syncBaseItem, createdBy) -> {
+    private static final EventTranslatorThreeArg<ItemTracking, Date, SyncBaseItem, SyncBaseItem> BASE_ITEM_BUILT =
+            (event, sequence,date, syncBaseItem, createdBy) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_BUILT);
                 event.setItemId(syncBaseItem.getId());
                 event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
@@ -82,8 +89,9 @@ public class ItemTrackerPersistence {
                 }
                 event.setActorItemId(createdBy.getId());
             };
-    private static final EventTranslatorTwoArg<ItemTracking, SyncBaseItem, SyncBaseItem> BASE_ITEM_FACTORIZED =
-            (event, sequence, syncBaseItem, createdBy) -> {
+    private static final EventTranslatorThreeArg<ItemTracking, Date, SyncBaseItem, SyncBaseItem> BASE_ITEM_FACTORIZED =
+            (event, sequence,date, syncBaseItem, createdBy) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_FACTORIZED);
                 event.setItemId(syncBaseItem.getId());
                 event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
@@ -96,8 +104,9 @@ public class ItemTrackerPersistence {
                 event.setActorItemId(createdBy.getId());
             };
 
-    private static final EventTranslatorTwoArg<ItemTracking, SyncBaseItem, SyncBaseItem> BASE_ITEM_KILLED =
-            (event, sequence, syncBaseItem, actor) -> {
+    private static final EventTranslatorThreeArg<ItemTracking, Date, SyncBaseItem, SyncBaseItem> BASE_ITEM_KILLED =
+            (event, sequence,date, syncBaseItem, actor) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_KILLED);
                 event.setItemId(syncBaseItem.getId());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
@@ -109,8 +118,9 @@ public class ItemTrackerPersistence {
                 }
                 event.setActorItemId(actor.getId());
             };
-    private static final EventTranslatorOneArg<ItemTracking, SyncBaseItem> BASE_ITEM_REMOVED =
-            (event, sequence, syncBaseItem) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBaseItem> BASE_ITEM_REMOVED =
+            (event, sequence, date,syncBaseItem) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_ITEM_REMOVED);
                 event.setItemId(syncBaseItem.getId());
                 event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
@@ -121,29 +131,33 @@ public class ItemTrackerPersistence {
                     event.setTargetBaseId(syncBaseItem.getBase().getHumanPlayerId().getPlayerId());
                 }
             };
-    private static final EventTranslatorOneArg<ItemTracking, SyncResourceItem> RESOURCE_ITEM_CREATED =
-            (event, sequence, resource) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, SyncResourceItem> RESOURCE_ITEM_CREATED =
+            (event, sequence,date, resource) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.RESOURCE_ITEM_CREATED);
                 event.setItemId(resource.getId());
                 event.setDecimalPosition(resource.getSyncPhysicalArea().getPosition2d());
                 event.setItemTypeId(resource.getItemType().getId());
             };
-    private static final EventTranslatorOneArg<ItemTracking, SyncResourceItem> RESOURCE_ITEM_DELETED =
-            (event, sequence, resource) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, SyncResourceItem> RESOURCE_ITEM_DELETED =
+            (event, sequence,date, resource) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.RESOURCE_ITEM_DELETED);
                 event.setItemId(resource.getId());
                 event.setDecimalPosition(resource.getSyncPhysicalArea().getPosition2d());
                 event.setItemTypeId(resource.getItemType().getId());
             };
-    private static final EventTranslatorOneArg<ItemTracking, SyncBoxItem> BOX_ITEM_CREATED =
-            (event, sequence, box) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBoxItem> BOX_ITEM_CREATED =
+            (event, sequence,date, box) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BOX_ITEM_CREATED);
                 event.setItemId(box.getId());
                 event.setDecimalPosition(box.getSyncPhysicalArea().getPosition2d());
                 event.setItemTypeId(box.getItemType().getId());
             };
-    private static final EventTranslatorOneArg<ItemTracking, SyncBoxItem> BOX_ITEM_DELETED =
-            (event, sequence, box) -> {
+    private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBoxItem> BOX_ITEM_DELETED =
+            (event, sequence,date, box) -> {
+                event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BOX_ITEM_DELETED);
                 event.setItemId(box.getId());
                 event.setDecimalPosition(box.getSyncPhysicalArea().getPosition2d());
@@ -151,50 +165,50 @@ public class ItemTrackerPersistence {
             };
 
     public void onBaseCreated(PlayerBaseFull playerBase) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_CREATE, playerBase));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_CREATE, new Date(), playerBase));
     }
 
     public void onBaseDeleted(PlayerBase playerBase, PlayerBase actor) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_DELETED, playerBase, actor));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_DELETED, new Date(), playerBase, actor));
     }
 
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_SPAWN, syncBaseItem));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_SPAWN, new Date(), syncBaseItem));
     }
 
     public void onSpawnSyncItemNoSpan(SyncBaseItem syncBaseItem) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_SPAWN_DIRECTLY, syncBaseItem));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_SPAWN_DIRECTLY, new Date(), syncBaseItem));
     }
 
     public void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_BUILT, syncBaseItem, createdBy));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_BUILT, new Date(), syncBaseItem, createdBy));
     }
 
     public void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_FACTORIZED, syncBaseItem, createdBy));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_FACTORIZED, new Date(), syncBaseItem, createdBy));
     }
 
     public void onSyncBaseItemKilled(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_KILLED, syncBaseItem, actor));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_KILLED, new Date(), syncBaseItem, actor));
     }
 
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_REMOVED, syncBaseItem));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BASE_ITEM_REMOVED, new Date(), syncBaseItem));
     }
 
     public void onResourceCreated(SyncResourceItem syncResourceItem) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(RESOURCE_ITEM_CREATED, syncResourceItem));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(RESOURCE_ITEM_CREATED, new Date(), syncResourceItem));
     }
 
     public void onResourceDeleted(SyncResourceItem syncResourceItem) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(RESOURCE_ITEM_DELETED, syncResourceItem));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(RESOURCE_ITEM_DELETED, new Date(), syncResourceItem));
     }
 
     public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BOX_ITEM_CREATED, syncBoxItem));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BOX_ITEM_CREATED, new Date(), syncBoxItem));
     }
 
     public void onSyncBoxDeleted(SyncBoxItem syncBoxItem) {
-        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BOX_ITEM_DELETED, syncBoxItem));
+        itemTrackerDisruptor.publishEvent(ringBuffer -> ringBuffer.publishEvent(BOX_ITEM_DELETED, new Date(), syncBoxItem));
     }
 }

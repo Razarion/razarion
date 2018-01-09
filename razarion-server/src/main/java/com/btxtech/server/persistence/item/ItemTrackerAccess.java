@@ -24,9 +24,6 @@ public class ItemTrackerAccess {
     @Inject
     private MongoDbService mongoDbService;
 
-    // TODO save specific playback: 08.01.2018 21:17:41
-    // TODO migrate or delete MongoDB collections
-
     @SecurityCheck
     public List<ItemTracking> read(ItemTrackingSearch itemTrackingSearch) {
         MongoCollection<ItemTracking> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.SERVER_ITEM_TRACKING, ItemTracking.class);
