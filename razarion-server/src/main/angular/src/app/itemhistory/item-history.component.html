@@ -1,0 +1,23 @@
+<h3>Item history</h3>
+
+<button (click)="onReload()">Reload</button>
+
+<div>Count: {{itemTrackingCount}}</div>
+<table class="item-tracking-table">
+  <thead>
+  <tr>
+    <th>Time</th>
+    <th>Type</th>
+    <th>Position</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let itemTracking of itemTrackings" [ngStyle]="{'background-color':getBgColor(itemTracking.type)}">
+    <td>{{ itemTracking.timeStamp | date:'dd.MM.yyyy HH:mm:ss.SSS'}}</td>
+    <td>{{ itemTracking.type }}</td>
+    <td><span *ngIf="itemTracking.decimalPosition">{{ itemTracking.decimalPosition.x | number : '1.2-2'}} : {{
+      itemTracking.decimalPosition.y| number : '1.2-2' }}</span>
+    </td>
+  </tr>
+  </tbody>
+</table>

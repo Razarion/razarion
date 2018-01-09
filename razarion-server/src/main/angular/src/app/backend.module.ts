@@ -21,6 +21,8 @@ import {UserLoginHistory} from "./userloginhistory/user-login-history.component"
 import {NewUserHistory} from "./newusers/new-user-history.component";
 import {NewUserService} from "./newusers/new-user.service";
 import {UserHistoryService} from "./userloginhistory/user-login-history.service";
+import {ItemHistoryComponent} from "./itemhistory/item-history.component";
+import {ItemHistoryService} from "./itemhistory/item-history.service";
 
 @NgModule({
   declarations: [
@@ -33,7 +35,8 @@ import {UserHistoryService} from "./userloginhistory/user-login-history.service"
     DurationPipe,
     UserComponent,
     UserLoginHistory,
-    NewUserHistory
+    NewUserHistory,
+    ItemHistoryComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,7 @@ import {UserHistoryService} from "./userloginhistory/user-login-history.service"
     AppRoutingModule,
     // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/servermgmtprovider"})
   ],
-  providers: [SessionService, BackupRestoreService, OnlineService, UserService, NewUserService, UserHistoryService],
+  providers: [SessionService, BackupRestoreService, OnlineService, UserService, NewUserService, UserHistoryService, ItemHistoryService],
   bootstrap: [MainWindow]
 })
 export class Backend {
