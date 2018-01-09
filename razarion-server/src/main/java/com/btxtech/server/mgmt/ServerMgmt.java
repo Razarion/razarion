@@ -160,7 +160,7 @@ public class ServerMgmt {
     @SecurityCheck
     public UserBackendInfo setLevelNumber(int playerId, int levelNumber) {
         HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
-        UserContext userContext = userService.getUserContext(humanPlayerId);
+        UserContext userContext = userService.getUserContextTransactional(humanPlayerId);
         LevelEntity newLevel = levelPersistence.getLevel4Number(levelNumber);
         userContext.setLevelId(newLevel.getId());
         clientSystemConnectionService.onLevelUp(humanPlayerId, userContext, serverUnlockService.gatherAvailableUnlocks(humanPlayerId, newLevel.getId()));
@@ -174,7 +174,7 @@ public class ServerMgmt {
     @SecurityCheck
     public UserBackendInfo setXp(int playerId, int xp) {
         HumanPlayerId humanPlayerId = userService.findHumanPlayerId(playerId);
-        UserContext userContext = userService.getUserContext(humanPlayerId);
+        UserContext userContext = userService.getUserContextTransactional(humanPlayerId);
         userContext.setXp(xp);
         clientSystemConnectionService.onXpChanged(humanPlayerId, xp);
         if (humanPlayerId.getUserId() != null) {

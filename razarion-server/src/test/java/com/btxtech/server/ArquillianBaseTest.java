@@ -3,6 +3,7 @@ package com.btxtech.server;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
@@ -59,13 +60,20 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.quest.BackupComparisionInfo;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.Block;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -91,6 +99,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -98,6 +107,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 /**
  * Created by Beat
@@ -157,6 +169,10 @@ public class ArquillianBaseTest {
     private PlanetPersistence planetPersistence;
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
+    @Inject
+    private MongoDbService mongoDbService;
+    @Inject
+    private BaseItemService baseItemService;
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -171,6 +187,7 @@ public class ArquillianBaseTest {
                     .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
                     .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                     .addAsResource("mongodb/PlanetBackup.json", "mongodb/PlanetBackup.json")
+                    .addAsResource("mongodb/ServerItemTracking.json", "mongodb/ServerItemTracking.json")
                     .addAsLibraries(libraries);
             System.out.println(webArchive.toString(true));
             return webArchive;
@@ -639,7 +656,13 @@ public class ArquillianBaseTest {
         new MongoClient().getDatabase("razarion").drop();
     }
 
-    protected <T> void fillBackupInfoMongoDb(String collectionName, String fileName) {
+    protected <T> MongoCollection<T> getMongoCollection(String collectionName, Class<T> theClass) {
+        CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(), fromProviders(PojoCodecProvider.builder().automatic(true).build()));
+        MongoClient mongoClient = new MongoClient("localhost", MongoClientOptions.builder().codecRegistry(pojoCodecRegistry).build());
+        return mongoClient.getDatabase("razarion").getCollection(collectionName, theClass);
+    }
+
+    protected <T> void fillBackupInfoMongoDb(String collectionName, String fileName, Class<T> theClass) {
         try {
             InputStream input = getClass().getResourceAsStream(fileName);
             if (input == null) {
@@ -652,16 +675,40 @@ public class ArquillianBaseTest {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setDateFormat(new SimpleDateFormat(DateUtil.JSON_FORMAT_STRING));
             objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            List<T> entries = objectMapper.readValue(jsonString, new TypeReference<List<T>>() {
-            });
-            MongoCollection<Document> mongoCollection = new MongoClient().getDatabase("razarion").getCollection(collectionName);
+            List<T> entries = objectMapper.readValue(jsonString, objectMapper.getTypeFactory().constructCollectionType(List.class, theClass));
+            MongoCollection<T> mongoCollection = getMongoCollection(collectionName, theClass);
             for (T entry : entries) {
-                mongoCollection.insertOne(Document.parse(objectMapper.writeValueAsString(entry)));
+                mongoCollection.insertOne(entry);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    protected <T> List<T> readMongoDb(String collectionName, Class<T> theClass) {
+        MongoCollection<T> mongoCollection = getMongoCollection(collectionName, theClass);
+        FindIterable<T> findIterable = mongoCollection.find();
+        List<T> result = new ArrayList<>();
+        findIterable.forEach((Consumer<T>) result::add);
+        return result;
+    }
+
+    protected void tickPlanetServiceBaseServiceActive(SyncBaseItem... ignores) {
+        while (isBaseServiceActive(ignores)) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    protected boolean isBaseServiceActive(SyncBaseItem[] ignores) {
+        Collection<SyncBaseItem> activeItems = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItems", baseItemService));
+        activeItems.removeAll(Arrays.asList(ignores));
+        Collection<SyncBaseItem> activeItemQueue = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService));
+        activeItemQueue.removeAll(Arrays.asList(ignores));
+        return !activeItems.isEmpty() || !activeItemQueue.isEmpty();
+    }
 
 }

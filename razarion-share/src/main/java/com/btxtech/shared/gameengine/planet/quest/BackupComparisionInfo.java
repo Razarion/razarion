@@ -17,7 +17,7 @@ public class BackupComparisionInfo {
     private HumanPlayerId humanPlayerId;
     private Integer remainingCount;
     private Integer remainingMilliSeconds;
-    private Map<Integer, Integer> remainingItemTypes;
+    private Map<String, Integer> remainingItemTypes; // MongoDb org.bson.codecs.configuration.CodecConfigurationException: Invalid Map type. Maps MUST have string keys, found class java.lang.Integer instead.
 
     public int getQuestId() {
         return questId;
@@ -49,11 +49,11 @@ public class BackupComparisionInfo {
         this.remainingCount = remainingCount;
     }
 
-    public Map<Integer, Integer> getRemainingItemTypes() {
+    public Map<String, Integer> getRemainingItemTypes() {
         return remainingItemTypes;
     }
 
-    public void setRemainingItemTypes(Map<Integer, Integer> remainingItemTypes) {
+    public void setRemainingItemTypes(Map<String, Integer> remainingItemTypes) {
         this.remainingItemTypes = remainingItemTypes;
     }
 
@@ -61,17 +61,21 @@ public class BackupComparisionInfo {
         if (remainingItemTypes == null) {
             remainingItemTypes = new HashMap<>();
         }
-        if (remainingItemTypes.containsKey(itemType.getId())) {
+        // MongoDb org.bson.codecs.configuration.CodecConfigurationException: Invalid Map type. Maps MUST have string keys, found class java.lang.Integer instead.
+        if (remainingItemTypes.containsKey(Integer.toString(itemType.getId()))) {
             throw new IllegalStateException("BackupComparisionInfo.addRemainingItemType() remainingItemTypes already containes item type: " + itemType + " for questId: " + questId);
         }
-        remainingItemTypes.put(itemType.getId(), remainingCount);
+        remainingItemTypes.put(Integer.toString(itemType.getId()), remainingCount);
     }
 
     public void iterateOverRemainingItemType(BiConsumer<Integer, Integer> callback) {
         if (remainingItemTypes == null) {
             throw new IllegalStateException("BackupComparisionInfo.iterateOverRemainingItemType() remainingItemTypes == null for questId: " + questId);
         }
-        remainingItemTypes.forEach(callback);
+        remainingItemTypes.forEach((itemTypeIdString, count) -> {
+            // MongoDb org.bson.codecs.configuration.CodecConfigurationException: Invalid Map type. Maps MUST have string keys, found class java.lang.Integer instead.
+            callback.accept(Integer.parseInt(itemTypeIdString), count);
+        });
     }
 
     public void setRemainingMilliSeconds(Integer remainingMilliSeconds) {

@@ -7,6 +7,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.junit.After;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class ServerGameEngineControlTest extends ArquillianBaseTest {
     public void before() throws Exception {
         setupPlanets();
         clearMongoDb();
-        fillBackupInfoMongoDb("planet_backup", "/mongodb/PlanetBackup.json");
+        fillBackupInfoMongoDb("planet_backup", "/mongodb/PlanetBackup.json", BackupPlanetInfo.class);
     }
 
     @After

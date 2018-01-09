@@ -45,8 +45,7 @@
         "humanPlayerId": {
           "playerId": 1,
           "userId": 1
-        },
-        "level": 4
+        }
       }
     ]
   },
@@ -96,8 +95,7 @@
         "humanPlayerId": {
           "playerId": 1,
           "userId": 1
-        },
-        "level": 4
+        }
       }
     ]
   },
@@ -147,8 +145,7 @@
         "humanPlayerId": {
           "playerId": 1,
           "userId": 1
-        },
-        "level": 4
+        }
       }
     ]
   },
@@ -230,8 +227,7 @@
         "humanPlayerId": {
           "playerId": 1,
           "userId": 1
-        },
-        "level": 4
+        }
       }
     ],
     "backupComparisionInfos": [

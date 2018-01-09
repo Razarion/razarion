@@ -24,7 +24,7 @@ public class PlanetBackupMongoDbTest extends ArquillianBaseTest {
     public void before() throws Exception {
         setupPlanets();
         clearMongoDb();
-        fillBackupInfoMongoDb("planet_backup", "/mongodb/PlanetBackup.json");
+        fillBackupInfoMongoDb("planet_backup", "/mongodb/PlanetBackup.json", BackupPlanetInfo.class);
     }
 
     @After

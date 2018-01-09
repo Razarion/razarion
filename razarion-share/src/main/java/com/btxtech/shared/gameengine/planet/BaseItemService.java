@@ -559,8 +559,8 @@ public class BaseItemService {
         return playerBaseInfos;
     }
 
-    public List<BackupPlayerBaseInfo> getBackupPlayerBaseInfos(boolean saveUnregistered) {
-        List<BackupPlayerBaseInfo> playerBaseInfos = new ArrayList<>();
+    public List<PlayerBaseInfo> getBackupPlayerBaseInfos(boolean saveUnregistered) {
+        List<PlayerBaseInfo> playerBaseInfos = new ArrayList<>();
         for (PlayerBase playerBase : bases.values()) {
             if (playerBase.getCharacter().isBot()) {
                 continue;
@@ -572,7 +572,7 @@ public class BaseItemService {
             }
             PlayerBaseFull playerBaseFull = (PlayerBaseFull) playerBase;
             if (playerBaseFull.getItemCount() > 0) {
-                playerBaseInfos.add(playerBaseFull.getBackupPlayerBaseInfo());
+                playerBaseInfos.add(playerBaseFull.getPlayerBaseInfo());
             }
         }
         return playerBaseInfos;
@@ -618,7 +618,7 @@ public class BaseItemService {
         return !playerBase.getCharacter().isBot() && (saveUnregistered || playerBase.getHumanPlayerId().getUserId() != null);
     }
 
-    public void restore(BackupPlanetInfo backupPlanetInfo) {
+    public void restore(BackupPlanetInfo backupPlanetInfo, BaseRestoreProvider baseRestoreProvider) {
         Set<Integer> failedItems = new HashSet<>();
         boolean failed;
         do {
@@ -629,7 +629,7 @@ public class BaseItemService {
             energyService.clean();
             backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
                 lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
-                bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), playerBaseInfo.getName(), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), playerBaseInfo.getLevel(), playerBaseInfo.getUnlockedItemLimit(), playerBaseInfo.getHumanPlayerId(), null));
+                bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), baseRestoreProvider.getName(playerBaseInfo), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), baseRestoreProvider.getLevel(playerBaseInfo), baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo), playerBaseInfo.getHumanPlayerId(), null));
             });
             Collection<SyncBaseItemInfo> syncBaseItemInfos = backupPlanetInfo.getSyncBaseItemInfos().stream().filter(syncBaseItemInfo -> !failedItems.contains(syncBaseItemInfo.getId())).collect(Collectors.toList());
             Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();

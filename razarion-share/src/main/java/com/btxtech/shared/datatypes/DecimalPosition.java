@@ -276,6 +276,24 @@ public class DecimalPosition {
         return y;
     }
 
+    /**
+     * Should only be called by the frameworks: e.g. Errai, MonogDB etc
+     *
+     * @param x x value
+     */
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    /**
+     * Should only be called by the frameworks: e.g. Errai, MonogDB etc
+     *
+     * @param y y value
+     */
+    public void setY(double y) {
+        this.y = y;
+    }
+
     public double determinant(DecimalPosition other) {
         return x * other.y - y * other.x;
     }

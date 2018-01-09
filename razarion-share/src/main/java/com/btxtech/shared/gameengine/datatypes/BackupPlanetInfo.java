@@ -16,7 +16,7 @@ public class BackupPlanetInfo {
     private Date date;
     private int planetId;
     private List<SyncBaseItemInfo> syncBaseItemInfos;
-    private List<BackupPlayerBaseInfo> playerBaseInfos;
+    private List<PlayerBaseInfo> playerBaseInfos;
     private List<BackupComparisionInfo> backupComparisionInfos;
 
     public Date getDate() {
@@ -43,11 +43,11 @@ public class BackupPlanetInfo {
         this.syncBaseItemInfos = syncBaseItemInfos;
     }
 
-    public List<BackupPlayerBaseInfo> getPlayerBaseInfos() {
+    public List<PlayerBaseInfo> getPlayerBaseInfos() {
         return playerBaseInfos;
     }
 
-    public void setPlayerBaseInfos(List<BackupPlayerBaseInfo> playerBaseInfos) {
+    public void setPlayerBaseInfos(List<PlayerBaseInfo> playerBaseInfos) {
         this.playerBaseInfos = playerBaseInfos;
     }
 

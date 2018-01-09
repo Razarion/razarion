@@ -1,26 +1,21 @@
 package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.persistence.MongoDbService;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.Block;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
-import org.bson.Document;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -30,8 +25,6 @@ import java.util.List;
 public class TrackingContainerMongoDb {
     @Inject
     private MongoDbService mongoDbService;
-    @Inject
-    private ExceptionHandler exceptionHandler;
 
     public void storeTrackingStart(String sessionId, TrackingStart trackingStart) throws JsonProcessingException {
         ServerTrackerStart serverTrackerStart = new ServerTrackerStart();
@@ -39,7 +32,7 @@ public class TrackingContainerMongoDb {
         serverTrackerStart.setTimeStamp(new Date());
         serverTrackerStart.setTrackingStart(trackingStart);
 
-        mongoDbService.storeObject(serverTrackerStart, MongoDbService.CollectionName.IN_GAME_TRACKING);
+        mongoDbService.storeObject(serverTrackerStart, ServerTrackerStart.class, MongoDbService.CollectionName.IN_GAME_TRACKING);
     }
 
     public void storeDetailedTracking(String sessionId, TrackingContainer trackingContainer) throws JsonProcessingException {
@@ -47,45 +40,22 @@ public class TrackingContainerMongoDb {
         serverTrackerStart.setSessionId(sessionId);
         serverTrackerStart.setTimeStamp(new Date());
         serverTrackerStart.setTrackingContainer(trackingContainer);
-        mongoDbService.storeObject(serverTrackerStart, MongoDbService.CollectionName.IN_GAME_TRACKING);
+        mongoDbService.storeObject(serverTrackerStart, ServerTrackingContainer.class, MongoDbService.CollectionName.IN_GAME_TRACKING);
     }
 
     public boolean hasServerTrackerStarts(String sessionId, String gameSessionUuid) {
-        return mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING).count(Filters.and(Filters.eq("sessionId", sessionId), Filters.eq("trackingStart.gameSessionUuid", gameSessionUuid))) > 0;
+        return mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING, ServerTrackerStart.class).count(Filters.and(Filters.eq("sessionId", sessionId), Filters.eq("trackingStart.gameSessionUuid", gameSessionUuid))) > 0;
     }
 
     public ServerTrackerStart findServerTrackerStart(GameUiControlInput gameUiControlInput) {
-        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING);
-        ObjectMapper objectMapper =  mongoDbService.setupObjectMapper();
-        SingleHolder<ServerTrackerStart> holder = new SingleHolder<>();
-        dbCollection.find(Filters.and(Filters.eq("sessionId", gameUiControlInput.getPlaybackSessionUuid()), Filters.eq("trackingStart.gameSessionUuid", gameUiControlInput.getPlaybackGameSessionUuid()))).forEach((Block<Document>) document -> {
-            try {
-                if (!holder.isEmpty()) {
-                    throw new IllegalStateException("More the one entry found. SessionId: " + gameUiControlInput.getPlaybackSessionUuid() + " gameSessionUuid: " + gameUiControlInput.getPlaybackGameSessionUuid());
-                }
-                holder.setO(objectMapper.readValue(document.toJson(), ServerTrackerStart.class));
-            } catch (IOException e) {
-                exceptionHandler.handleException(e);
-            }
-        });
-        if (holder.isEmpty()) {
-            throw new IllegalArgumentException("No entity found. SessionId: " + gameUiControlInput.getPlaybackSessionUuid() + " gameSessionUuid: " + gameUiControlInput.getPlaybackGameSessionUuid());
-        }
-        return holder.getO();
+        MongoCollection<ServerTrackerStart> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING, ServerTrackerStart.class);
+        return dbCollection.find(Filters.and(Filters.eq("sessionId", gameUiControlInput.getPlaybackSessionUuid()), Filters.eq("trackingStart.gameSessionUuid", gameUiControlInput.getPlaybackGameSessionUuid()))).first();
     }
 
     public TrackingContainer findServerTrackingContainer(GameUiControlInput gameUiControlInput) {
-        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING);
-        ObjectMapper objectMapper = mongoDbService.setupObjectMapper();
+        MongoCollection<ServerTrackingContainer> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.IN_GAME_TRACKING, ServerTrackingContainer.class);
         List<TrackingContainer> trackingContainers = new ArrayList<>();
-        dbCollection.find(Filters.and(Filters.eq("sessionId", gameUiControlInput.getPlaybackSessionUuid()), Filters.eq("trackingContainer.gameSessionUuid", gameUiControlInput.getPlaybackGameSessionUuid()))).forEach((Block<Document>) document -> {
-            try {
-                trackingContainers.add(objectMapper.readValue(document.toJson(), ServerTrackingContainer.class).getTrackingContainer());
-            } catch (IOException e) {
-                exceptionHandler.handleException(e);
-            }
-        });
-
+        dbCollection.find(Filters.and(Filters.eq("sessionId", gameUiControlInput.getPlaybackSessionUuid()), Filters.eq("trackingContainer.gameSessionUuid", gameUiControlInput.getPlaybackGameSessionUuid()))).forEach((Consumer<ServerTrackingContainer>) serverTrackingContainer -> trackingContainers.add(serverTrackingContainer.getTrackingContainer()));
         return generateTrackingContainer(trackingContainers);
     }
 

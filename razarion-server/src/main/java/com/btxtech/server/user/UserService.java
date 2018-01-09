@@ -398,6 +398,11 @@ public class UserService {
     }
 
     @Transactional
+    public UserContext getUserContextTransactional(HumanPlayerId humanPlayerId) {
+        return getUserContext(humanPlayerId);
+    }
+
+    @Transactional
     public InventoryInfo readInventoryInfo(int userId) {
         return getUserEntity(userId).toInventoryInfo();
     }

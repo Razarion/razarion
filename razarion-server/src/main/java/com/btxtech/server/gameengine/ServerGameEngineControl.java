@@ -20,8 +20,10 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.BaseRestoreProvider;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
@@ -47,7 +49,7 @@ import java.util.logging.Logger;
  * 18.04.2017.
  */
 @ApplicationScoped
-public class ServerGameEngineControl implements GameLogicListener {
+public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider {
     private Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
@@ -95,7 +97,7 @@ public class ServerGameEngineControl implements GameLogicListener {
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null, () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
-                planetService.restoreBases(finaBackupPlanetInfo);
+                planetService.restoreBases(finaBackupPlanetInfo, this);
             }
             planetService.start();
             resourceService.startResourceRegions();
@@ -245,12 +247,12 @@ public class ServerGameEngineControl implements GameLogicListener {
     }
 
     @Override
-    public  void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+    public void onBuildingSyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         itemTrackerPersistence.onBuildingSyncItem(syncBaseItem, createdBy);
     }
 
     @Override
-    public  void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
+    public void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
         itemTrackerPersistence.onFactorySyncItem(syncBaseItem, createdBy);
     }
 
@@ -356,5 +358,30 @@ public class ServerGameEngineControl implements GameLogicListener {
             playerBase = baseItemService.changeBaseNameChanged(playerBase.getBaseId(), name);
             clientGameConnectionService.onBaseNameChanged(playerBase);
         }
+    }
+
+    @Override
+    public Integer getLevel(PlayerBaseInfo playerBaseInfo) {
+        if (playerBaseInfo.getHumanPlayerId() == null) {
+            throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
+        }
+        return userService.getUserContextTransactional(playerBaseInfo.getHumanPlayerId()).getLevelId();
+
+    }
+
+    @Override
+    public Map<Integer, Integer> getUnlockedItemLimit(PlayerBaseInfo playerBaseInfo) {
+        if (playerBaseInfo.getHumanPlayerId() == null) {
+            throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
+        }
+        return userService.getUserContextTransactional(playerBaseInfo.getHumanPlayerId()).getUnlockedItemLimit();
+    }
+
+    @Override
+    public String getName(PlayerBaseInfo playerBaseInfo) {
+        if (playerBaseInfo.getHumanPlayerId() == null) {
+            throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
+        }
+        return userService.getUserContextTransactional(playerBaseInfo.getHumanPlayerId()).getName();
     }
 }

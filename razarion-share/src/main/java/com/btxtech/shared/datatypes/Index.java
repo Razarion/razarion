@@ -91,10 +91,20 @@ public class Index {
         return new Index(x, y);
     }
 
+    /**
+     * Should only be called by the frameworks: e.g. Errai, MonogDB etc
+     *
+     * @param x x value
+     */
     public void setX(int x) {
         this.x = x;
     }
 
+    /**
+     * Should only be called by the frameworks: e.g. Errai, MonogDB etc
+     *
+     * @param y y value
+     */
     public void setY(int y) {
         this.y = y;
     }

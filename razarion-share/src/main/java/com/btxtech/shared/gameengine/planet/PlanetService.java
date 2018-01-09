@@ -103,11 +103,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
         return backupPlanetInfo;
     }
 
-    public void restoreBases(BackupPlanetInfo backupPlanetInfo) {
+    public void restoreBases(BackupPlanetInfo backupPlanetInfo, BaseRestoreProvider baseRestoreProvider) {
         long time = System.currentTimeMillis();
-        baseItemService.restore(backupPlanetInfo);
+        baseItemService.restore(backupPlanetInfo, baseRestoreProvider);
         energyService.tick();
-        logger.info("BackupPlanetInfo.restoreBases() in:" + (System.currentTimeMillis() - time));
+        logger.info("Backup from '" + backupPlanetInfo.getDate() + "' loaded in: " + (System.currentTimeMillis() - time));
     }
 
     @Override

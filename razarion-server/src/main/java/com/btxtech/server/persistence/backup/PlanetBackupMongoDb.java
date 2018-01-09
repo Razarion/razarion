@@ -1,25 +1,21 @@
 package com.btxtech.server.persistence.backup;
 
 import com.btxtech.server.persistence.MongoDbService;
-import com.btxtech.server.util.DateUtil;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.Block;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 
 /**
@@ -35,12 +31,11 @@ public class PlanetBackupMongoDb {
     private ExceptionHandler exceptionHandler;
 
     public void saveBackup(BackupPlanetInfo backupPlanetInfo) throws JsonProcessingException {
-        mongoDbService.storeObject(backupPlanetInfo, MongoDbService.CollectionName.PLANET_BACKUP);
+        mongoDbService.storeObject(backupPlanetInfo, BackupPlanetInfo.class, MongoDbService.CollectionName.PLANET_BACKUP);
     }
 
     public List<BackupPlanetOverview> loadAllBackupBaseOverviews() {
-        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP);
-        ObjectMapper objectMapper = mongoDbService.setupObjectMapper();
+        MongoCollection<BackupPlanetOverview> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP, BackupPlanetOverview.class);
         List<BackupPlanetOverview> backupPlanetOverviews = new ArrayList<>();
         List<Document> pipeline = Collections.singletonList(Document.parse("{\n" +
                 "        \"$project\": {\n" +
@@ -51,64 +46,34 @@ public class PlanetBackupMongoDb {
                 "            \"quests\": { \"$size\": {\"$ifNull\": [\"$backupComparisionInfos\", [] ]}}\n" +
                 "        }\n" +
                 "    }"));
-        dbCollection.aggregate(pipeline).forEach((Block<Document>) document -> {
-            try {
-                backupPlanetOverviews.add(objectMapper.readValue(document.toJson(), BackupPlanetOverview.class));
-            } catch (IOException e) {
-                exceptionHandler.handleException(e);
-            }
-        });
+        dbCollection.aggregate(pipeline).forEach((Consumer<BackupPlanetOverview>) backupPlanetOverviews::add);
         return backupPlanetOverviews;
     }
 
     public BackupPlanetInfo loadBackup(BackupPlanetOverview backupPlanetOverview) {
-        SingleHolder<BackupPlanetInfo> holder = new SingleHolder<>();
-        ObjectMapper objectMapper = mongoDbService.setupObjectMapper();
-        mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP).find(setupBackupFilter(backupPlanetOverview)).forEach((Block<Document>) document -> {
-            try {
-                if (!holder.isEmpty()) {
-                    throw new IllegalStateException("More the one entry found. Date: " + backupPlanetOverview.getDate() + " planet id: " + backupPlanetOverview.getPlanetId());
-                }
-                holder.setO(objectMapper.readValue(document.toJson(), BackupPlanetInfo.class));
-            } catch (IOException e) {
-                exceptionHandler.handleException(e);
-            }
-        });
-        if (holder.isEmpty()) {
+        BackupPlanetInfo backupPlanetInfo = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP, BackupPlanetInfo.class).find(setupBackupFilter(backupPlanetOverview)).first();
+        if (backupPlanetInfo == null) {
             throw new IllegalStateException("No entries found. Date: " + backupPlanetOverview.getDate() + " planet id: " + backupPlanetOverview.getPlanetId());
         }
-        return holder.getO();
+        return backupPlanetInfo;
     }
 
     public BackupPlanetInfo loadLastBackup(int planetId) {
-        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP);
-        List<Document> pipeline = new ArrayList<>();
-        pipeline.add(Document.parse("{\n" +
-                "       $match : { planetId : " + planetId + " }\n" +
-                "   }"
-        ));
-        pipeline.add(Document.parse("{\n" +
-                "       $group:\n" +
-                "         {\n" +
-                "           _id: \"$planetId\",\n" +
-                "           date: { $max: \"$date\" }\n" +
-                "         }\n" +
-                "     }\n"));
-        SingleHolder<Date> holder = new SingleHolder<>();
-        dbCollection.aggregate(pipeline).forEach((Block<Document>) document -> holder.setO(DateUtil.fromJsonTimeString(document.get("date").toString())));
-        if (holder.isEmpty()) {
-            return null;
-        } else {
-            return loadBackup(new BackupPlanetOverview().setDate(holder.getO()).setPlanetId(planetId));
+        try {
+            MongoCollection<BackupPlanetInfo> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP, BackupPlanetInfo.class);
+            return dbCollection.find(Filters.eq("planetId", planetId)).sort(Sorts.descending("date")).first();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
+        return null;
     }
 
     public void deleteBackup(BackupPlanetOverview backupPlanetOverview) {
-        MongoCollection<Document> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP);
+        MongoCollection<BackupPlanetInfo> dbCollection = mongoDbService.getCollection(MongoDbService.CollectionName.PLANET_BACKUP, BackupPlanetInfo.class);
         dbCollection.deleteOne(setupBackupFilter(backupPlanetOverview));
     }
 
     private Bson setupBackupFilter(BackupPlanetOverview backupPlanetOverview) {
-        return Filters.and(Filters.eq("date", DateUtil.toJsonTimeString(backupPlanetOverview.getDate())), Filters.eq("planetId", backupPlanetOverview.getPlanetId()));
+        return Filters.and(Filters.eq("date", backupPlanetOverview.getDate()), Filters.eq("planetId", backupPlanetOverview.getPlanetId()));
     }
 }

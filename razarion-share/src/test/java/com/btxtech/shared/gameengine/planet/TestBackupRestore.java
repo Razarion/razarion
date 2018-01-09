@@ -15,10 +15,12 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyServiceTest;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.BackupComparisionInfo;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -30,16 +32,18 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * on 31.08.2017.
  */
 public class TestBackupRestore extends WeldMasterBaseTest {
-
     @Test
     public void test() {
         setupMasterEnvironment();
+        TestBaseRestoreProvider testBaseRestoreProvider = new TestBaseRestoreProvider();
         // Resources
         getResourceService().startResourceRegions();
         Collection<SyncResourceItem> resources = getSyncItemContainerService().findResourceItemWithPlace(GameTestContent.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
@@ -53,6 +57,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         // Create base 1
         UserContext userContext1 = createLevel1UserContext(1);
         PlayerBaseFull playerBaseFull1 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext1);
+        testBaseRestoreProvider.addUserContext(userContext1);
         tickPlanetServiceBaseServiceActive();
         QuestConfig questCreate1 = GameTestContent.createItemCountCreatedQuest();
         getQuestService().activateCondition(playerBaseFull1.getHumanPlayerId(), questCreate1);
@@ -72,6 +77,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         getCommandService().harvest(harvester1, CollectionUtils.getFirst(resources));
         // Create base 2
         UserContext userContext2 = createLevel1UserContext();
+        testBaseRestoreProvider.addUserContext(userContext2);
         PlayerBaseFull playerBaseFull2 = createHumanBaseWithBaseItem(new DecimalPosition(20, 40), userContext2);
         tickPlanetServiceBaseServiceActive(harvester1);
         QuestConfig questCreate2 = GameTestContent.createItemTypeCountCreatedQuest();
@@ -101,17 +107,17 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         Assert.assertEquals(5, backupPlanetInfoRegistered.getSyncBaseItemInfos().size());
         Assert.assertEquals(1, backupPlanetInfoRegistered.getBackupComparisionInfos().size());
         assertQuestRegistered(backupPlanetInfoRegistered.getBackupComparisionInfos(), playerBaseFull1);
-        restoreVerifyUnregistered(resources, playerBaseFull1, builder1, factory1, attacker1, boxPicker1, harvester1, playerBaseFull2, builder2, consumer2, backupPlanetInfoUnregistered);
-        restoreVerifyRegistered(resources, playerBaseFull1, builder1, factory1, attacker1, boxPicker1, harvester1, backupPlanetInfoRegistered);
+        restoreVerifyUnregistered(resources, playerBaseFull1, builder1, factory1, attacker1, boxPicker1, harvester1, playerBaseFull2, builder2, consumer2, backupPlanetInfoUnregistered, testBaseRestoreProvider);
+        restoreVerifyRegistered(resources, playerBaseFull1, builder1, factory1, attacker1, boxPicker1, harvester1, backupPlanetInfoRegistered, testBaseRestoreProvider);
     }
 
-    private void restoreVerifyUnregistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem boxPicker1, SyncBaseItem harvester1, PlayerBaseFull playerBaseFull2, SyncBaseItem builder2, SyncBaseItem consumer2, BackupPlanetInfo backupPlanetInfoUnregistered) {
+    private void restoreVerifyUnregistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem boxPicker1, SyncBaseItem harvester1, PlayerBaseFull playerBaseFull2, SyncBaseItem builder2, SyncBaseItem consumer2, BackupPlanetInfo backupPlanetInfoUnregistered, BaseRestoreProvider baseRestoreProvider) {
         getBotService().killAllBots();
         getPlanetService().stop();
         setupMasterEnvironment();
         Assert.assertTrue(getBaseItemService().getPlayerBaseInfos().isEmpty());
         Assert.assertTrue(getSyncItemContainerService().getSyncBaseItemInfos().isEmpty());
-        getPlanetService().restoreBases(backupPlanetInfoUnregistered);
+        getPlanetService().restoreBases(backupPlanetInfoUnregistered, baseRestoreProvider);
 
         Assert.assertEquals(2, getBaseItemService().getPlayerBaseInfos().size());
         Assert.assertEquals(7, getSyncItemContainerService().getSyncBaseItemInfos().size());
@@ -183,13 +189,13 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         Assert.assertEquals(4, (int) questProgressInfo.getCount());
     }
 
-    private void restoreVerifyRegistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem boxPicker1, SyncBaseItem harvester1, BackupPlanetInfo backupPlanetInfoRegistered) {
+    private void restoreVerifyRegistered(Collection<SyncResourceItem> resources, PlayerBaseFull playerBaseFull1, SyncBaseItem builder1, SyncBaseItem factory1, SyncBaseItem attacker1, SyncBaseItem boxPicker1, SyncBaseItem harvester1, BackupPlanetInfo backupPlanetInfoRegistered, BaseRestoreProvider baseRestoreProvider) {
         getBotService().killAllBots();
         getPlanetService().stop();
         setupMasterEnvironment();
         Assert.assertTrue(getBaseItemService().getPlayerBaseInfos().isEmpty());
         Assert.assertTrue(getSyncItemContainerService().getSyncBaseItemInfos().isEmpty());
-        getPlanetService().restoreBases(backupPlanetInfoRegistered);
+        getPlanetService().restoreBases(backupPlanetInfoRegistered, baseRestoreProvider);
 
         Assert.assertEquals(1, getBaseItemService().getPlayerBaseInfos().size());
         Assert.assertEquals(5, getSyncItemContainerService().getSyncBaseItemInfos().size());
@@ -301,7 +307,18 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
     private void assertPlayerBaseFull(PlayerBaseFull expected, PlayerBaseFull actual) {
         Assert.assertNotEquals(System.identityHashCode(expected), System.identityHashCode(actual));
-        ReflectionAssert.assertReflectionEquals(expected.getBackupPlayerBaseInfo(), actual.getBackupPlayerBaseInfo());
+        ReflectionAssert.assertReflectionEquals(expected.getPlayerBaseInfo(), actual.getPlayerBaseInfo());
+        Assert.assertEquals(expected.getLevelId(), actual.getLevelId());
+        Assert.assertEquals(expected.getHouseSpace(), actual.getHouseSpace());
+        Assert.assertEquals(expected.getItemCount(), actual.getItemCount());
+        Collection<Integer> expectedIds = expected.getItems().stream().map(SyncItem::getId).collect(Collectors.toList());
+        for (SyncBaseItem actualId : actual.getItems()) {
+            Assert.assertTrue("Item not expected: " + actual, expectedIds.remove(actualId.getId()));
+        }
+        if(!expectedIds.isEmpty()) {
+            Assert.fail("Some items ar missing: " + expectedIds);
+        }
+        ReflectionAssert.assertReflectionEquals(expected.getUnlockedItemLimit(), actual.getUnlockedItemLimit());
     }
 
     private void assertEnergy(int consumingExpected, int generatingExpected, PlayerBase playerBase) {
@@ -344,6 +361,36 @@ public class TestBackupRestore extends WeldMasterBaseTest {
             }
         }
         throw new IllegalArgumentException("No BackupComparisionInfo found for HumanPlayerId: " + playerBase1.getHumanPlayerId());
+    }
+
+    private class TestBaseRestoreProvider implements BaseRestoreProvider {
+        private Collection<UserContext> userContexts = new ArrayList<>();
+
+        public void addUserContext(UserContext userContext) {
+            userContexts.add(userContext);
+        }
+
+        @Override
+        public Integer getLevel(PlayerBaseInfo playerBaseInfo) {
+            return getUserContext(playerBaseInfo).getLevelId();
+        }
+
+        @Override
+        public Map<Integer, Integer> getUnlockedItemLimit(PlayerBaseInfo playerBaseInfo) {
+            return getUserContext(playerBaseInfo).getUnlockedItemLimit();
+        }
+
+        @Override
+        public String getName(PlayerBaseInfo playerBaseInfo) {
+            return getUserContext(playerBaseInfo).getName();
+        }
+
+        private UserContext getUserContext(PlayerBaseInfo playerBaseInfo) {
+            if (playerBaseInfo.getHumanPlayerId() == null) {
+                throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
+            }
+            return userContexts.stream().filter(userContext -> userContext.getHumanPlayerId().equals(playerBaseInfo.getHumanPlayerId())).findFirst().orElseThrow(() -> new IllegalArgumentException("No Context for: " + playerBaseInfo.getHumanPlayerId()));
+        }
     }
 
 }

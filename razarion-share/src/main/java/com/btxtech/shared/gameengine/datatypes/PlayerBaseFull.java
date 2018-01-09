@@ -74,16 +74,4 @@ public class PlayerBaseFull extends PlayerBase {
     public void setUnlockedItemLimit(Map<Integer, Integer> unlockedItemLimit) {
         this.unlockedItemLimit = unlockedItemLimit;
     }
-
-    public BackupPlayerBaseInfo getBackupPlayerBaseInfo() {
-        BackupPlayerBaseInfo playerBaseInfo = new BackupPlayerBaseInfo();
-        playerBaseInfo.setBaseId(getBaseId());
-        playerBaseInfo.setCharacter(getCharacter());
-        playerBaseInfo.setName(getName());
-        playerBaseInfo.setHumanPlayerId(getHumanPlayerId());
-        playerBaseInfo.setResources(getResources());
-        playerBaseInfo.setLevel(levelId);
-        playerBaseInfo.setUnlockedItemLimit(unlockedItemLimit);
-        return playerBaseInfo;
-    }
 }

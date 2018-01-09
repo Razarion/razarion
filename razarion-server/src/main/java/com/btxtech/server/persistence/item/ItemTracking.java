@@ -145,5 +145,4 @@ public class ItemTracking {
         this.actorItemId = actorItemId;
         return this;
     }
-
 }

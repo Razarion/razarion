@@ -61,7 +61,7 @@ public class ItemTrackerDisruptor {
         @Override
         public void onEvent(ItemTracking event, long sequence, boolean endOfBatch) {
             try {
-                mongoDbService.storeObject(event, MongoDbService.CollectionName.SERVER_ITEM_TRACKING);
+                mongoDbService.storeObject(event, ItemTracking.class, MongoDbService.CollectionName.SERVER_ITEM_TRACKING);
             } catch(Throwable t) {
                 exceptionHandler.handleException(t);
             }
