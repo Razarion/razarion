@@ -1,23 +1,65 @@
 <h3>Item history</h3>
 
-<button (click)="onReload()">Reload</button>
 
-<div>Count: {{itemTrackingCount}}</div>
+
+<table class="propertyTable">
+  <tr>
+    <td>From date</td>
+    <td><input type="datetime-local" [(ngModel)]="searchFromDateString"></td>
+  </tr>
+  <tr>
+    <td>To date</td>
+    <td><input type="datetime-local" [(ngModel)]="searchToDateString"></td>
+  </tr>
+  <tr>
+    <td>Count</td>
+    <td><input type="number" min="1" step="1" [(ngModel)]="searchCount"></td>
+  </tr>
+  <tr>
+    <td>Actual count</td>
+    <td>{{actualCount}}</td>
+  </tr>
+  <tr>
+    <td>Reload</td>
+    <td><button (click)="onReload()">Reload</button></td>
+  </tr>
+</table>
+
+<br>
+
 <table class="item-tracking-table">
   <thead>
   <tr>
     <th>Time</th>
     <th>Type</th>
+    <th>Target base id</th>
+    <th>Target base bot id</th>
+    <th>Target human player id</th>
+    <th>Actor base id</th>
+    <th>Actor base bot id</th>
+    <th>Actor human player id</th>
+    <th>Item id</th>
     <th>Position</th>
+    <th>Item type id</th>
+    <th>Actor item id</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let itemTracking of itemTrackings" [ngStyle]="{'background-color':getBgColor(itemTracking.type)}">
     <td>{{ itemTracking.timeStamp | date:'dd.MM.yyyy HH:mm:ss.SSS'}}</td>
     <td>{{ itemTracking.type }}</td>
+    <td>{{ itemTracking.targetBaseId }}</td>
+    <td>{{ itemTracking.targetBaseBotId }}</td>
+    <td>{{ itemTracking.targetHumanPlayerId }}</td>
+    <td>{{ itemTracking.actorBaseId }}</td>
+    <td>{{ itemTracking.actorBaseBotId }}</td>
+    <td>{{ itemTracking.actorHumanPlayerId }}</td>
+    <td>{{ itemTracking.itemId }}</td>
     <td><span *ngIf="itemTracking.decimalPosition">{{ itemTracking.decimalPosition.x | number : '1.2-2'}} : {{
       itemTracking.decimalPosition.y| number : '1.2-2' }}</span>
     </td>
+    <td>{{ itemTracking.itemTypeId }}</td>
+    <td>{{ itemTracking.actorItemId }}</td>
   </tr>
   </tbody>
 </table>

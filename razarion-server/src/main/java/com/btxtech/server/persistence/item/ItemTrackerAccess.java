@@ -47,7 +47,12 @@ public class ItemTrackerAccess {
             findIterable = dbCollection.find();
         }
         List<ItemTracking> itemTrackings = new ArrayList<>();
-        findIterable.limit(MAX_RESULT).sort(Sorts.descending("timeStamp")).forEach((Consumer<ItemTracking>) itemTrackings::add);
+        if (itemTrackingSearch.getCount() != null) {
+            findIterable = findIterable.limit(itemTrackingSearch.getCount());
+        } else {
+            findIterable = findIterable.limit(MAX_RESULT);
+        }
+        findIterable.sort(Sorts.descending("timeStamp")).forEach((Consumer<ItemTracking>) itemTrackings::add);
         return itemTrackings;
     }
 

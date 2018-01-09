@@ -89,12 +89,13 @@ public class TrackerBackend {
         }
     }
 
-    @GET
+    @POST
     @Path("itemhistory")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemTracking> itemHistory() {
+    public List<ItemTracking> itemHistory(ItemTrackingSearch itemTrackingSearch) {
         try {
-            return itemTrackerAccess.read(new ItemTrackingSearch());
+            return itemTrackerAccess.read(itemTrackingSearch);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

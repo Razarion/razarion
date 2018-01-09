@@ -13,11 +13,12 @@ export class ItemTracking {
   decimalPosition: DecimalPosition;
   itemTypeId: number;
   actorItemId: number;
-  date: Date;
-  name: string;
-  id: number;
-  playerId: number;
-  sessionId: string;
+}
+
+export class ItemTrackingSearch {
+  from: Date;
+  to: Date;
+  count: number;
 }
 
 export enum ItemTrackingType {

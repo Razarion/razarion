@@ -1,5 +1,5 @@
 import {Component, OnInit} from "@angular/core";
-import {ItemTracking, ItemTrackingType} from "./item-history.dto";
+import {ItemTracking, ItemTrackingSearch, ItemTrackingType} from "./item-history.dto";
 import {Router} from "@angular/router";
 import {ItemHistoryService} from "./item-history.service";
 
@@ -11,7 +11,10 @@ import {ItemHistoryService} from "./item-history.service";
 
 export class ItemHistoryComponent implements OnInit {
   itemTrackings: ItemTracking[];
-  itemTrackingCount: number = 0;
+  searchFromDateString: string;
+  searchToDateString: string;
+  searchCount: number;
+  actualCount: number = 0;
 
   constructor(private itemHistoryService: ItemHistoryService, private route: Router) {
   }
@@ -21,9 +24,14 @@ export class ItemHistoryComponent implements OnInit {
   }
 
   load() {
-    this.itemHistoryService.getItemHistory().then(itemTrackings => {
+    let itemTrackingSearch: ItemTrackingSearch = new ItemTrackingSearch();
+    itemTrackingSearch.from = new Date(this.searchFromDateString);
+    itemTrackingSearch.to = new Date(this.searchToDateString);
+    itemTrackingSearch.count = this.searchCount;
+
+    this.itemHistoryService.getItemHistory(itemTrackingSearch).then(itemTrackings => {
       this.itemTrackings = itemTrackings;
-      this.itemTrackingCount = itemTrackings.length;
+      this.actualCount = itemTrackings.length;
     });
   }
 

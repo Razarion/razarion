@@ -29,3 +29,12 @@ table.item-tracking-table>thead>tr>th, table.item-tracking-table>tbody>tr>td {
   border: 1px solid black;
   padding: 3px;
 }
+
+/*---------------------------*/
+table.propertyTable>tbody>tr>td{
+  background-color: transparent;
+}
+
+table.propertyTable>tbody>tr>td:first-child  {
+  background-color: #ddeeff
+}
