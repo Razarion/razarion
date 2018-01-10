@@ -32,34 +32,34 @@
   <tr>
     <th>Time</th>
     <th>Type</th>
-    <th>Target base id</th>
-    <th>Target base bot id</th>
-    <th>Target human player id</th>
-    <th>Actor base id</th>
-    <th>Actor base bot id</th>
-    <th>Actor human player id</th>
     <th>Item id</th>
-    <th>Position</th>
     <th>Item type id</th>
     <th>Actor item id</th>
+    <th>Target base id</th>
+    <th>Target human player id</th>
+    <th>Target base bot id</th>
+    <th>Actor base id</th>
+    <th>Actor human player id</th>
+    <th>Actor base bot id</th>
+    <th>Position</th>
   </tr>
   </thead>
   <tbody>
   <tr *ngFor="let itemTracking of itemTrackings" [ngStyle]="{'background-color':getBgColor(itemTracking.type)}">
     <td>{{ itemTracking.timeStamp | date:'dd.MM.yyyy HH:mm:ss.SSS'}}</td>
     <td>{{ itemTracking.type }}</td>
-    <td>{{ itemTracking.targetBaseId }}</td>
-    <td>{{ itemTracking.targetBaseBotId }}</td>
-    <td>{{ itemTracking.targetHumanPlayerId }}</td>
-    <td>{{ itemTracking.actorBaseId }}</td>
-    <td>{{ itemTracking.actorBaseBotId }}</td>
-    <td>{{ itemTracking.actorHumanPlayerId }}</td>
     <td>{{ itemTracking.itemId }}</td>
+    <td>{{ itemTracking.itemTypeId }}</td>
+    <td>{{ itemTracking.actorItemId }}</td>
+    <td>{{ itemTracking.targetBaseId }}</td>
+    <td>{{ itemTracking.targetHumanPlayerId }}</td>
+    <td>{{ itemTracking.targetBaseBotId }}</td>
+    <td>{{ itemTracking.actorBaseId }}</td>
+    <td>{{ itemTracking.actorHumanPlayerId }}</td>
+    <td>{{ itemTracking.actorBaseBotId }}</td>
     <td><span *ngIf="itemTracking.decimalPosition">{{ itemTracking.decimalPosition.x | number : '1.2-2'}} : {{
       itemTracking.decimalPosition.y| number : '1.2-2' }}</span>
     </td>
-    <td>{{ itemTracking.itemTypeId }}</td>
-    <td>{{ itemTracking.actorItemId }}</td>
   </tr>
   </tbody>
 </table>

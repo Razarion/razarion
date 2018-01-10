@@ -28,7 +28,7 @@
     <td>{{ sessionTracker.fbAdRazTrack }}</td>
     <td>{{ sessionTracker.remoteHost }}</td>
     <td>{{ sessionTracker.pageHits }}</td>
-    <td>{{ sessionTracker.userAgent }}</td>
+    <td>{{ (sessionTracker.userAgent | slice:0:130) + (sessionTracker.userAgent.length > 130 ? '...' : '')}}</td>
   </tr>
   </tbody>
 </table>
