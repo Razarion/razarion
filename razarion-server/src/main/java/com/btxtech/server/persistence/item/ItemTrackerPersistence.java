@@ -25,7 +25,7 @@ public class ItemTrackerPersistence {
                 event.clean();
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_CREATED);
-                event.setActorBaseBotId(base.getBaseId());
+                event.setActorBaseId(base.getBaseId());
                 event.setActorBaseBotId(base.getBotId());
                 if (base.getHumanPlayerId() != null) {
                     event.setActorHumanPlayerId(base.getHumanPlayerId().getPlayerId());
@@ -36,13 +36,13 @@ public class ItemTrackerPersistence {
                 event.clean();
                 event.setTimeStamp(date);
                 event.setType(ItemTracking.Type.BASE_DELETE);
-                event.setTargetBaseBotId(base.getBaseId());
+                event.setTargetBaseId(base.getBaseId());
                 event.setTargetBaseBotId(base.getBotId());
                 if (base.getHumanPlayerId() != null) {
                     event.setTargetHumanPlayerId(base.getHumanPlayerId().getPlayerId());
                 }
                 if (actor != null) {
-                    event.setActorBaseBotId(actor.getBaseId());
+                    event.setActorBaseId(actor.getBaseId());
                     event.setActorBaseBotId(actor.getBotId());
                     if (actor.getHumanPlayerId() != null) {
                         event.setActorHumanPlayerId(actor.getHumanPlayerId().getPlayerId());
@@ -57,7 +57,7 @@ public class ItemTrackerPersistence {
                 event.setItemId(syncBaseItem.getId());
                 event.setDecimalPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
                 event.setItemTypeId(syncBaseItem.getBaseItemType().getId());
-                event.setActorBaseBotId(syncBaseItem.getBase().getBaseId());
+                event.setActorBaseId(syncBaseItem.getBase().getBaseId());
                 event.setActorBaseBotId(syncBaseItem.getBase().getBotId());
                 if (syncBaseItem.getBase().getHumanPlayerId() != null) {
                     event.setActorHumanPlayerId(syncBaseItem.getBase().getHumanPlayerId().getPlayerId());
@@ -120,9 +120,15 @@ public class ItemTrackerPersistence {
                 event.setTargetBaseId(syncBaseItem.getBase().getBaseId());
                 event.setTargetBaseBotId(syncBaseItem.getBase().getBotId());
                 if (syncBaseItem.getBase().getHumanPlayerId() != null) {
-                    event.setTargetBaseId(syncBaseItem.getBase().getHumanPlayerId().getPlayerId());
+                    event.setTargetHumanPlayerId(syncBaseItem.getBase().getHumanPlayerId().getPlayerId());
                 }
                 event.setActorItemId(actor.getId());
+                event.setActorBaseId(actor.getBase().getBaseId());
+                event.setActorBaseBotId(actor.getBase().getBotId());
+                if (actor.getBase().getHumanPlayerId() != null) {
+                    event.setActorHumanPlayerId(actor.getBase().getHumanPlayerId().getPlayerId());
+                }
+
             };
     private static final EventTranslatorTwoArg<ItemTracking, Date, SyncBaseItem> BASE_ITEM_REMOVED =
             (event, sequence, date, syncBaseItem) -> {
@@ -135,7 +141,7 @@ public class ItemTrackerPersistence {
                 event.setTargetBaseId(syncBaseItem.getBase().getBaseId());
                 event.setTargetBaseBotId(syncBaseItem.getBase().getBotId());
                 if (syncBaseItem.getBase().getHumanPlayerId() != null) {
-                    event.setTargetBaseId(syncBaseItem.getBase().getHumanPlayerId().getPlayerId());
+                    event.setTargetHumanPlayerId(syncBaseItem.getBase().getHumanPlayerId().getPlayerId());
                 }
             };
     private static final EventTranslatorTwoArg<ItemTracking, Date, SyncResourceItem> RESOURCE_ITEM_CREATED =
