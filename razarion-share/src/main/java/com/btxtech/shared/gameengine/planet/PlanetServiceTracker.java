@@ -8,7 +8,7 @@ import java.util.logging.Logger;
  */
 public class PlanetServiceTracker {
     private Logger logger = Logger.getLogger(PlanetServiceTracker.class.getName());
-    private static final int TICKS_FOR_DUMP = 100;
+    private static final int TICKS_FOR_DUMP = 1000;
     private long startPeriodTimeStamp;
     private long startTimeStamp;
     private long startTickTimeStamp;
@@ -20,6 +20,7 @@ public class PlanetServiceTracker {
     private int energyServiceTime;
     private int baseItemServiceTime;
     private int boxServiceTime;
+    private int afterTickListenerTime;
     private boolean running;
 
     public void setRunning(boolean running) {
@@ -39,6 +40,7 @@ public class PlanetServiceTracker {
         energyServiceTime = 0;
         baseItemServiceTime = 0;
         boxServiceTime = 0;
+        afterTickListenerTime = 0;
     }
 
     public void startTick() {
@@ -92,6 +94,14 @@ public class PlanetServiceTracker {
         boxServiceTime += calculateDifAndReload();
     }
 
+
+    public void afterTickListener() {
+        if (!running) {
+            return;
+        }
+        afterTickListenerTime += calculateDifAndReload();
+    }
+
     public void endTick() {
         if (!running) {
             return;
@@ -124,6 +134,7 @@ public class PlanetServiceTracker {
                 "energyServiceTime: " + energyServiceTime * factor + "s\n" +
                 "baseItemServiceTime: " + baseItemServiceTime * factor + "s\n" +
                 "boxServiceTime: " + boxServiceTime * factor + "s\n" +
+                "afterTickListenerTime: " + afterTickListenerTime * factor + "s\n" +
                 "-------------------------------------------------");
     }
 }

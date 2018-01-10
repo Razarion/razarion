@@ -129,8 +129,9 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterEnergyService();
             boxService.tick();
             planetServiceTracker.afterBoxService();
-            planetServiceTracker.endTick();
             notifyTickListeners();
+            planetServiceTracker.afterTickListener();
+            planetServiceTracker.endTick();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
