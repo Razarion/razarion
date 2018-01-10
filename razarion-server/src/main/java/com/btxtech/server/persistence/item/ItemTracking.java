@@ -38,6 +38,25 @@ public class ItemTracking {
     private Integer itemTypeId;
     private Integer actorItemId;
 
+    /**
+     * Lmax Disruptor ringbuffer reuses instances of this clas
+     */
+    public void clean() {
+        timeStamp = null;
+        type = null;
+        targetBaseId = null;
+        targetBaseBotId = null;
+        targetHumanPlayerId = null;
+        actorBaseId = null;
+        actorBaseBotId = null;
+        actorHumanPlayerId = null;
+        itemId = null;
+        decimalPosition = null;
+        itemTypeId = null;
+        actorItemId = null;
+    }
+
+
     public Date getTimeStamp() {
         return timeStamp;
     }
