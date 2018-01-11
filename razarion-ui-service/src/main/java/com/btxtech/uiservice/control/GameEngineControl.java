@@ -117,7 +117,7 @@ public abstract class GameEngineControl {
 
     public void initWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, slaveSyncItemInfo, userUiService.getUserContext(), gameEngineMode);
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, slaveSyncItemInfo, userUiService.getUserContext(), gameEngineMode, clientRunner.getGameSessionUuid());
     }
 
     void startBots(List<BotConfig> botConfigs) {

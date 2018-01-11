@@ -117,13 +117,13 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             // Quadruple JSON data
-            case INITIALIZE_WARM:
             case TICK_UPDATE_RESPONSE:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 break;
+            case INITIALIZE_WARM:
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
@@ -182,6 +182,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_1), SlaveSyncItemInfo.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), UserContext.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_3), GameEngineMode.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_4), String.class));
                 break;
             case INITIALISING_FAILED:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), String.class));
