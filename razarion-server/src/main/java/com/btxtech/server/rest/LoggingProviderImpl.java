@@ -5,11 +5,14 @@ import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
 import com.btxtech.shared.dto.ThrownLogInfo;
 import com.btxtech.shared.rest.LoggingProvider;
+import com.google.gwt.core.server.StackTraceDeobfuscator;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -28,6 +31,7 @@ public class LoggingProviderImpl implements LoggingProvider {
     private SessionHolder sessionHolder;
     // @Inject
     // private FilePropertiesService filePropertiesService;
+    private Map<String, StackTraceDeobfuscator> stackTraceDeobfuscators = new HashMap<>();
 
     @Override
     public void simpleLogger(String logString) {
@@ -69,20 +73,19 @@ public class LoggingProviderImpl implements LoggingProvider {
 
         logRecord.setMillis(Long.parseLong(logRecordInfo.getMillis()));
         logRecord.setLoggerName(logRecordInfo.getLoggerName());
-        logRecord.setThrown(handleThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtStrongName()));
+        logRecord.setThrown(handleThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtModuleName(), logRecordInfo.getGwtStrongName()));
         return logRecord;
     }
 
-    private Throwable handleThrown(ThrownLogInfo thrownLogInfo, String strongName) {
+    private Throwable handleThrown(ThrownLogInfo thrownLogInfo, String gwtModuleName, String strongName) {
         Throwable throwable = setupThrown(thrownLogInfo);
         if (throwable == null) {
             return null;
         }
-//        import com.google.gwt.core.server.StackTraceDeobfuscator;
-//        StackTraceDeobfuscator stackTraceDeobfuscator = getStackTraceDeobfuscator();
-//        if (stackTraceDeobfuscator != null) {
-//            stackTraceDeobfuscator.deobfuscateStackTrace(throwable, strongName);
-//        }
+        StackTraceDeobfuscator stackTraceDeobfuscator = getStackTraceDeobfuscator(gwtModuleName);
+        if (stackTraceDeobfuscator != null) {
+            stackTraceDeobfuscator.deobfuscateStackTrace(throwable, strongName);
+        }
         return throwable;
     }
 
@@ -112,21 +115,16 @@ public class LoggingProviderImpl implements LoggingProvider {
         return stackTraceElements;
     }
 
-//    private StackTraceDeobfuscator getStackTraceDeobfuscator() {
-//        if (!filePropertiesService.isDeveloperMode()) {
-//            return null;
-//        }
-//
-//        String filePath = getFilePath();
-//        if (filePath == null) {
-//            return null;
-//        }
-//        return new StackTraceDeobfuscator() {
-//            protected InputStream openInputStream(String fileName) throws IOException {
-//                return new FileInputStream(new File(filePath, fileName));
-//            }
-//        };
-//    }
+    private StackTraceDeobfuscator getStackTraceDeobfuscator(String gwtModuleName) {
+        StackTraceDeobfuscator stackTraceDeobfuscator = stackTraceDeobfuscators.get(gwtModuleName);
+        if (stackTraceDeobfuscator != null) {
+            return stackTraceDeobfuscator;
+        }
+
+        stackTraceDeobfuscator = StackTraceDeobfuscator.fromFileSystem("C:\\dev\\projects\\razarion\\code\\razarion2\\razarion-server\\src\\main\\webapp\\debug\\" + gwtModuleName + "\\symbolMaps");
+        stackTraceDeobfuscators.put(gwtModuleName, stackTraceDeobfuscator);
+        return stackTraceDeobfuscator;
+    }
 
 
 //    private String getFilePath() {
