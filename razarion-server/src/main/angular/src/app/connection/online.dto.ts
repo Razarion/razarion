@@ -10,7 +10,7 @@ export class OnlineInfo {
   time: Date;
   duration: number;
   humanPlayerId: HumanPlayerId;
-  name: String;
+  name: string;
   sessionId: string;
   multiplayerPlanet: string;
   multiplayerDate: Date;
