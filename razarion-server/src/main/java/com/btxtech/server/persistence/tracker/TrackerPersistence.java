@@ -3,6 +3,9 @@ package com.btxtech.server.persistence.tracker;
 import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.history.HistoryPersistence;
+import com.btxtech.server.user.HumanPlayerIdEntity;
+import com.btxtech.server.user.HumanPlayerIdEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
@@ -59,6 +62,8 @@ public class TrackerPersistence {
     private EntityManager entityManager;
     @Inject
     private TrackingContainerMongoDb trackingContainerMongoDb;
+    @Inject
+    private HistoryPersistence historyPersistence;
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
@@ -219,6 +224,8 @@ public class TrackerPersistence {
             SessionTracker sessionTracker = sessionTrackerEntity.toSessionTracker();
             sessionTracker.setGameAttempts(readStartupTaskCount(sessionTrackerEntity.getSessionId())).setSuccessGameAttempts(readSuccessStartupTerminatedCount(sessionTrackerEntity.getSessionId()));
             sessionTracker.setFbAdRazTrack(getFbAdRazTrack(sessionTrackerEntity.getSessionId()));
+            sessionTracker.setCreatedHumanPlayerId(readCreatedHumanPlayerId(sessionTrackerEntity.getSessionId()));
+            sessionTracker.setUserFromHistory(historyPersistence.readUserFromHistory(sessionTrackerEntity.getSessionId()));
             sessionTracker.setPageHits(getPageHits(sessionTrackerEntity.getSessionId()));
             sessionTrackers.add(sessionTracker);
         }
@@ -263,6 +270,22 @@ public class TrackerPersistence {
             toIndex = pageTrackerEntity.getParams().length();
         }
         return pageTrackerEntity.getParams().substring(fromIndex + 1, toIndex).trim();
+    }
+
+    private Integer readCreatedHumanPlayerId(String sessionId) {
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<HumanPlayerIdEntity> cq = criteriaBuilder.createQuery(HumanPlayerIdEntity.class);
+        Root<HumanPlayerIdEntity> root = cq.from(HumanPlayerIdEntity.class);
+        cq.where(criteriaBuilder.equal(root.get(HumanPlayerIdEntity_.sessionId), sessionId));
+        List<HumanPlayerIdEntity> humanPlayerIdEntities = entityManager.createQuery(cq).getResultList();
+        if (humanPlayerIdEntities.isEmpty()) {
+            return null;
+        }
+        if (humanPlayerIdEntities.size() > 1) {
+            logger.warning("More the one HumanPlayerIdEntity found for session id: " + sessionId);
+        }
+        return humanPlayerIdEntities.get(0).getId();
     }
 
     private int getPageHits(String sessionId) {

@@ -1,5 +1,7 @@
 package com.btxtech.server.persistence.tracker;
 
+import com.btxtech.server.persistence.history.SimpleUserBackend;
+
 import java.util.Date;
 
 /**
@@ -12,6 +14,8 @@ public class SessionTracker {
     private int successGameAttempts;
     private String remoteHost;
     private String fbAdRazTrack;
+    private Integer createdHumanPlayerId;
+    private SimpleUserBackend userFromHistory;
     private String userAgent;
     private int pageHits;
 
@@ -66,6 +70,24 @@ public class SessionTracker {
 
     public SessionTracker setFbAdRazTrack(String fbAdRazTrack) {
         this.fbAdRazTrack = fbAdRazTrack;
+        return this;
+    }
+
+    public Integer getCreatedHumanPlayerId() {
+        return createdHumanPlayerId;
+    }
+
+    public SessionTracker setCreatedHumanPlayerId(Integer createdHumanPlayerId) {
+        this.createdHumanPlayerId = createdHumanPlayerId;
+        return this;
+    }
+
+    public SimpleUserBackend getUserFromHistory() {
+        return userFromHistory;
+    }
+
+    public SessionTracker setUserFromHistory(SimpleUserBackend userFromHistory) {
+        this.userFromHistory = userFromHistory;
         return this;
     }
 

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -33,6 +34,7 @@ import java.util.List;
  */
 @Singleton
 public class HistoryPersistence {
+    private Logger logger = Logger.getLogger(HistoryPersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -175,6 +177,20 @@ public class HistoryPersistence {
 
     @Transactional
     @SecurityCheck
+    public SimpleUserBackend readUserFromHistory(String sessionId) {
+        List<UserEntity> userEntities = entityManager.createQuery("select u from UserEntity u where u.id in (select h.userId from UserHistoryEntity h where h.sessionId=:sessionId and h.loggedIn is not null)", UserEntity.class).setParameter("sessionId", sessionId).getResultList();
+        if (userEntities.isEmpty()) {
+            return null;
+        }
+        if (userEntities.size() > 1) {
+            logger.warning("More the one entry for UserHistoryEntity found for session id: " + sessionId);
+        }
+        UserEntity userEntity = userEntities.get(0);
+        return new SimpleUserBackend().setName(userEntity.getName()).setHumanPlayerId(userEntity.createHumanPlayerId());
+    }
+
+    @Transactional
+    @SecurityCheck
     public List<GameHistoryEntry> readUserHistory(int playerId) {
         List<GameHistoryEntry> history = new ArrayList<>();
         readAllHistory(entityManager, LevelHistoryEntity.class, playerId, LevelHistoryEntity_.humanPlayerIdEntityId, LevelHistoryEntity_.timeStamp).forEach(levelHistoryEntity -> history.add(new GameHistoryEntry().setDate(levelHistoryEntity.getTimeStamp()).setDescription("Level up: " + levelHistoryEntity.getLevelNumber() + " (" + levelHistoryEntity.getLevelId() + ")")));
@@ -223,6 +239,4 @@ public class HistoryPersistence {
         userQuery.orderBy(criteriaBuilder.desc(from.get(orderByAttribute)));
         return entityManager.createQuery(userSelect).getResultList();
     }
-
-
 }

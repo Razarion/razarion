@@ -101,10 +101,14 @@ public class ServerMgmt {
         }
         HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
         PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
-        if (playerSession == null) {
-            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
+        if (playerSession != null) {
+            // Anonymous user from session
+            userBackendInfo = setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+        } else {
+            // Anonymous user session is gone
+            userBackendInfo = new UserBackendInfo();
+            userBackendInfo.setHumanPlayerId(new HumanPlayerId().setPlayerId(playerId));
         }
-        userBackendInfo = setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
         userBackendInfo.setGameHistoryEntries(historyPersistence.readUserHistory(playerId));
         return userBackendInfo;
     }

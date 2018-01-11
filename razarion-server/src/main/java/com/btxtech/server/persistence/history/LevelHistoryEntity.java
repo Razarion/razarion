@@ -1,18 +1,10 @@
 package com.btxtech.server.persistence.history;
 
-import com.btxtech.server.persistence.itemtype.ResourceItemTypeEntity;
-import com.btxtech.server.persistence.level.LevelEntity;
-import com.btxtech.server.persistence.tracker.PageTrackerEntity;
-import com.btxtech.server.user.HumanPlayerIdEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Date;
 
