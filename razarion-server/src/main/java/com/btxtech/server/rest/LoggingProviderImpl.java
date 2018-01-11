@@ -5,10 +5,15 @@ import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
 import com.btxtech.shared.dto.ThrownLogInfo;
 import com.btxtech.shared.rest.LoggingProvider;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.google.gwt.core.server.StackTraceDeobfuscator;
 
 import javax.inject.Inject;
+import javax.servlet.ServletContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +34,10 @@ public class LoggingProviderImpl implements LoggingProvider {
     public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
     @Inject
     private SessionHolder sessionHolder;
+    @Inject
+    private ExceptionHandler exceptionHandler;
+    @Context
+    private ServletContext context;
     // @Inject
     // private FilePropertiesService filePropertiesService;
     private Map<String, StackTraceDeobfuscator> stackTraceDeobfuscators = new HashMap<>();
@@ -120,10 +129,15 @@ public class LoggingProviderImpl implements LoggingProvider {
         if (stackTraceDeobfuscator != null) {
             return stackTraceDeobfuscator;
         }
-
-        stackTraceDeobfuscator = StackTraceDeobfuscator.fromFileSystem("C:\\dev\\projects\\razarion\\code\\razarion2\\razarion-server\\src\\main\\webapp\\debug\\" + gwtModuleName + "\\symbolMaps");
-        stackTraceDeobfuscators.put(gwtModuleName, stackTraceDeobfuscator);
-        return stackTraceDeobfuscator;
+        try {
+            URL url = context.getResource("/debug/" + gwtModuleName + "/symbolMaps/");
+            stackTraceDeobfuscator = StackTraceDeobfuscator.fromUrl(url);
+            stackTraceDeobfuscators.put(gwtModuleName, stackTraceDeobfuscator);
+            return stackTraceDeobfuscator;
+        } catch (MalformedURLException e) {
+            exceptionHandler.handleException(e);
+        }
+        return null;
     }
 
 
