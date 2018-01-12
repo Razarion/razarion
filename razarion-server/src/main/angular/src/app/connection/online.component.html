@@ -15,8 +15,7 @@
     <td>{{ onlineInfo.duration | duration}}</td>
     <td>
       <div (click)="onClickUser(onlineInfo)" style="cursor: pointer">
-        <div *ngIf="onlineInfo.humanPlayerId.userId; else elseBlock">{{onlineInfo.name}}</div>
-        <ng-template #elseBlock>---</ng-template>
+        {{getUserState(onlineInfo)}}
       </div>
     </td>
     <td>

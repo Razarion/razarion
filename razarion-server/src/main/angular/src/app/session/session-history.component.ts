@@ -35,11 +35,72 @@ export class SessionHistory implements OnInit {
     this.updateSessions();
   }
 
-  onClick(session: SessionTracker): void {
+  onClickSessionId(session: SessionTracker): void {
     this.route.navigate(['/session', session.id]);
+  }
+
+  onClickUserState(sessionTracker: SessionTracker): void {
+    if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory == null) {
+      // Anonymous
+      this.route.navigate(['/user', sessionTracker.createdHumanPlayerId]);
+    } else if (sessionTracker.createdHumanPlayerId == null && sessionTracker.userFromHistory != null) {
+      // Logged in
+      this.route.navigate(['/user', sessionTracker.userFromHistory.humanPlayerId.playerId]);
+    } else if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory != null) {
+      if (sessionTracker.createdHumanPlayerId == sessionTracker.userFromHistory.humanPlayerId.playerId) {
+        // New user
+        this.route.navigate(['/user', sessionTracker.createdHumanPlayerId]);
+      } else {
+        // Invalid
+      }
+    }
   }
 
   onSearch() {
     this.updateSessions();
+  }
+
+  analyseUserState(sessionTracker: SessionTracker): string {
+    if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory == null) {
+      return "Anonymous: " + sessionTracker.createdHumanPlayerId;
+    } else if (sessionTracker.createdHumanPlayerId == null && sessionTracker.userFromHistory != null) {
+      let description = "Logged in: ";
+      if (sessionTracker.userFromHistory.name != null) {
+        description += sessionTracker.userFromHistory.name
+      } else {
+        description += "(" + sessionTracker.userFromHistory.humanPlayerId.userId + ")";
+      }
+      return description;
+    } else if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory != null) {
+      if (sessionTracker.createdHumanPlayerId == sessionTracker.userFromHistory.humanPlayerId.playerId) {
+        let description = "New user: ";
+        if (sessionTracker.userFromHistory.name != null) {
+          description += sessionTracker.userFromHistory.name
+        } else {
+          description += "(" + sessionTracker.userFromHistory.humanPlayerId.userId + ")";
+        }
+        return description;
+      } else {
+        return "Invalid (createdHumanPlayerId != userFromHistory.humanPlayerId.userId)";
+      }
+    } else {
+      return null;
+    }
+  }
+
+  analyseUserStateBgColor(sessionTracker: SessionTracker): string {
+    if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory == null) {
+      return "#d2d2d2"; // Anonymous
+    } else if (sessionTracker.createdHumanPlayerId == null && sessionTracker.userFromHistory != null) {
+      return "#cef8d0"; // Logged in
+    } else if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory != null) {
+      if (sessionTracker.createdHumanPlayerId == sessionTracker.userFromHistory.humanPlayerId.playerId) {
+        return "#ffd7e0"; // New user
+      } else {
+        return "#FF0000"; // Invalid
+      }
+    } else {
+      return "transparent";
+    }
   }
 }

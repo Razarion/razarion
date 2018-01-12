@@ -21,6 +21,7 @@ public class InventoryHistoryEntry {
         BOX_PICKED,
         INVENTORY_ITEM_USED
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -11,21 +11,25 @@
     <th>Sessio Id</th>
     <th>Game Attemps</th>
     <th>Facebook Ad</th>
+    <th>User state</th>
     <th>Remote Host</th>
     <th>Pages</th>
     <th>User Agent</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let sessionTracker of sessionTrackers" (click)="onClick(sessionTracker)" style="cursor: pointer">
+  <tr *ngFor="let sessionTracker of sessionTrackers">
     <td>{{ sessionTracker.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-    <td>{{ sessionTracker.id }}</td>
+    <td (click)="onClickSessionId(sessionTracker)" style="cursor: pointer">{{ sessionTracker.id }}</td>
     <td *ngIf="sessionTracker.gameAttempts > 0 || sessionTracker.successGameAttempts > 0"
         [style.background-color]="sessionTracker.gameAttempts != sessionTracker.successGameAttempts?'red':'green'">{{
       sessionTracker.gameAttempts}} / {{sessionTracker.successGameAttempts }}
     </td>
     <td *ngIf="sessionTracker.gameAttempts <= 0 && sessionTracker.successGameAttempts <= 0"></td>
     <td>{{ sessionTracker.fbAdRazTrack }}</td>
+    <td  (click)="onClickUserState(sessionTracker)" style="cursor: pointer"[ngStyle]="{'background-color':analyseUserStateBgColor(sessionTracker)}">
+      {{analyseUserState(sessionTracker)}}
+    </td>
     <td>{{ sessionTracker.remoteHost }}</td>
     <td>{{ sessionTracker.pageHits }}</td>
     <td>{{ (sessionTracker.userAgent | slice:0:130) + (sessionTracker.userAgent.length > 130 ? '...' : '')}}</td>

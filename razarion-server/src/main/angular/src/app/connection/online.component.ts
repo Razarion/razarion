@@ -43,4 +43,18 @@ export class OnlineComponent implements OnInit {
   onClickUser(onlineInfo: OnlineInfo) {
     this.route.navigate(['/user', onlineInfo.humanPlayerId.playerId]);
   }
+
+  getUserState(onlineInfo: OnlineInfo): string {
+    if (onlineInfo.name != null) {
+      return onlineInfo.name;
+    }
+    if (onlineInfo.humanPlayerId == null) {
+      return "humanPlayerId == null";
+    }
+    if (onlineInfo.humanPlayerId.userId != null) {
+      return "Unnamed (" + onlineInfo.humanPlayerId.userId + ")";
+    } else {
+      return "Anonymous: " + onlineInfo.humanPlayerId.playerId;
+    }
+  }
 }

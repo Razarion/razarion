@@ -34,6 +34,19 @@
             <artifactId>razarion-share</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!-- Used in GWT logging to deobfuscate the stack trace-->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwt.version}</version>
+        </dependency>
+        <!-- Used in GWT logging to deobfuscate the stack trace-->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- JPA meta model generator -->
         <dependency>
             <groupId>org.hibernate</groupId>

@@ -1,3 +1,5 @@
+import {HumanPlayerId, SimpleUserBackend} from "../Common";
+
 export class SearchConfig {
   fromDate: Date;
   botFilter: boolean;
@@ -9,6 +11,8 @@ export class SessionTracker {
   gameAttempts: number;
   successGameAttempts: number;
   fbAdRazTrack: string;
+  createdHumanPlayerId: number;
+  userFromHistory: SimpleUserBackend;
   remoteHost: string;
   userAgent: string;
   pageHits: number;

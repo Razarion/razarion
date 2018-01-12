@@ -128,7 +128,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                         (UserContext) controlPackage.getData(3), (GameEngineMode) controlPackage.getData(4), (Boolean) controlPackage.getData(5), (String) controlPackage.getData(6));
                 break;
             case INITIALIZE_WARM:
-                initialiseWarm((PlanetConfig) controlPackage.getData(0), (SlaveSyncItemInfo) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3));
+                initialiseWarm((PlanetConfig) controlPackage.getData(0), (SlaveSyncItemInfo) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3), (String) controlPackage.getData(4));
                 break;
             case START:
                 start();
@@ -243,8 +243,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initialiseWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode) {
+    private void initialiseWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid) {
         try {
+            this.gameSessionUuid = gameSessionUuid;
             initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode, () -> {
                 workerTrackerHandler = null;
                 sendToClient(GameEngineControlPackage.Command.INITIALIZED);

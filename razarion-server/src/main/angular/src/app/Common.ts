@@ -15,6 +15,11 @@ export class HumanPlayerId {
   userId: number;
 }
 
+export class SimpleUserBackend {
+  humanPlayerId: HumanPlayerId;
+  name: string;
+}
+
 export class QuestBackendInfo {
   id: number;
   internalName: string;

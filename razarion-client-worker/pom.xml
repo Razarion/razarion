@@ -89,7 +89,7 @@
                 <artifactId>gwt-maven-plugin</artifactId>
                 <version>${gwt.pulgin.version}</version>
                 <configuration>
-                    <warSourceDirectory>${project.parent.basedir}/razarion-server/src/main/webapp/</warSourceDirectory>
+                    <warSourceDirectory>${project.parent.basedir}${raz.web-dir}</warSourceDirectory>
                     <logLevel>WARN</logLevel>
                     <noServer>true</noServer>
                     <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M</extraJvmArgs>
@@ -98,6 +98,7 @@
                     <hostedWebapp>src/main/webapp</hostedWebapp>
                     <strict>true</strict>
                     <inplace>true</inplace>
+                    <deploy>${project.parent.basedir}${raz.web-dir}debug</deploy>
                     <!--<style>DETAILED</style>-->
                     <!-- Only work with modified gwt-maven-plugin -->
                     <!-- mvn gwt:run-codeserver -->
