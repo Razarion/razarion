@@ -7,8 +7,8 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.InGameItemVisualization;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrix;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 

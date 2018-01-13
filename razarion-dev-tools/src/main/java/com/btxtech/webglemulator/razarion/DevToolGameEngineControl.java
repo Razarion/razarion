@@ -1,6 +1,8 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.uiservice.control.GameEngineControl;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -32,5 +34,15 @@ public class DevToolGameEngineControl extends GameEngineControl {
     @Override
     protected void onLoaded() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected NativeTickInfo castToNativeTickInfo(Object javaScriptObject) {
+        return (NativeTickInfo) javaScriptObject;
+    }
+
+    @Override
+    protected NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object javaScriptObject) {
+        return (NativeSyncBaseItemTickInfo) javaScriptObject;
     }
 }

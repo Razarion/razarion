@@ -7,7 +7,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -69,7 +69,7 @@ public class ItemMarkerService {
 
         if (selectionEvent.getType() == SelectionEvent.Type.OWN) {
             for (SyncBaseItemSimpleDto syncBaseItemSimpleDto : selectionEvent.getSelectedGroup()._getItems()) {
-                setupSelectionModelMatrices(syncBaseItemSimpleDto, baseItemUiService.monitorSyncItem(syncBaseItemSimpleDto));
+                setupSelectionModelMatrices(syncBaseItemSimpleDto, baseItemUiService.monitorSyncItem(syncBaseItemSimpleDto.getId()));
             }
         } else if (selectionEvent.getType() == SelectionEvent.Type.OTHER) {
             setupSelectionModelMatrices(selectionEvent.getSelectedOther(), itemUiService.monitorSyncItem(selectionEvent.getSelectedOther()));

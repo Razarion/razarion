@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 /**
  * Created by Beat

@@ -2,6 +2,7 @@ package com.btxtech.uiservice.tip.tiptask;
 
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.tip.GameTipService;
@@ -85,15 +86,15 @@ public class TipTaskContainer {
         }
     }
 
-    public void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
+    public void onSyncBaseItemIdle(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         if (hasTip()) {
-            getCurrentTask().onSyncBaseItemIdle(syncBaseItem);
+            getCurrentTask().onSyncBaseItemIdle(nativeSyncBaseItemTickInfo);
         }
     }
 
-    public void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
+    public void onSpawnSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
         if (hasTip()) {
-            getCurrentTask().onSpawnSyncItem(syncBaseItem);
+            getCurrentTask().onSpawnSyncItem(nativeSyncBaseItemTickInfo);
         }
     }
 

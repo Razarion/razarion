@@ -11,7 +11,6 @@ import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
-import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -24,9 +23,6 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class BaseItemPlacerRenderTask extends AbstractRenderTask<BaseItemPlacer> {
     private Logger logger = Logger.getLogger(BaseItemPlacerRenderTask.class.getName());
-    @Inject
-    private TerrainScrollHandler terrainScrollHandler;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Shape3DUiService shape3DUiService;
     private boolean active;

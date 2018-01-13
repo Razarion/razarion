@@ -1,12 +1,13 @@
 package com.btxtech.uiservice.effects;
 
 import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -43,12 +44,12 @@ public class TrailService {
         wreckageItems.clear();
     }
 
-    public void addWreckage(SyncBaseItemSimpleDto syncBaseItem) {
-        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+    public void addWreckage(NativeSimpleSyncBaseItemTickInfo nativeSimpleSyncBaseItemTickInfo) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSimpleSyncBaseItemTickInfo.itemTypeId);
         if (baseItemType.getWreckageShape3DId() == null) {
             return;
         }
-        WreckageItem wreckageItem = new WreckageItem(baseItemType, syncBaseItem.getPosition3d(), nativeMatrixFactory);
+        WreckageItem wreckageItem = new WreckageItem(baseItemType, new Vertex(nativeSimpleSyncBaseItemTickInfo.x, nativeSimpleSyncBaseItemTickInfo.y, nativeSimpleSyncBaseItemTickInfo.z), nativeMatrixFactory);
         wreckageItems.add(wreckageItem);
         wreckageModelMatrices.put(baseItemType, wreckageItem.getModelMatrices());
     }

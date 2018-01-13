@@ -5,7 +5,8 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionParticleConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.DemolitionStepEffect;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.particle.ParticleEmitterSequenceConfig;
 import com.btxtech.uiservice.particle.ParticleService;
@@ -13,7 +14,6 @@ import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,31 +57,31 @@ public class EffectVisualizationService {
         playParticle(System.currentTimeMillis(), position, null, detonationParticleEmitterSequenceConfigId);
     }
 
-    public void onSyncBaseItemsExplode(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+    public void onSyncBaseItemsExplode(NativeSimpleSyncBaseItemTickInfo[] nativeSimpleSyncBaseItemTickInfos) {
         long timeStamp = System.currentTimeMillis();
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (!syncBaseItem.isContained()) {
-                onSyncBaseItemExplode(syncBaseItem, timeStamp);
+        for (NativeSimpleSyncBaseItemTickInfo nativeSimpleSyncBaseItemTickInfo : nativeSimpleSyncBaseItemTickInfos) {
+            if (!nativeSimpleSyncBaseItemTickInfo.contained) {
+                onSyncBaseItemExplode(nativeSimpleSyncBaseItemTickInfo, timeStamp);
             }
         }
     }
 
-    public void baseItemRemoved(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            removeBuildingDemolitionEffect(syncBaseItem);
+    public void baseItemRemoved(int[] removeSyncBaseItemIds) {
+        for (int syncBaseItemId : removeSyncBaseItemIds) {
+            removeBuildingDemolitionEffect(syncBaseItemId);
         }
     }
 
-    private void onSyncBaseItemExplode(SyncBaseItemSimpleDto syncBaseItem, long timeStamp) {
-        removeBuildingDemolitionEffect(syncBaseItem);
-        trailService.addWreckage(syncBaseItem);
-        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+    private void onSyncBaseItemExplode(NativeSimpleSyncBaseItemTickInfo nativeSimpleSyncBaseItemTickInfo, long timeStamp) {
+        removeBuildingDemolitionEffect(nativeSimpleSyncBaseItemTickInfo.id);
+        trailService.addWreckage(nativeSimpleSyncBaseItemTickInfo);
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSimpleSyncBaseItemTickInfo.itemTypeId);
         Integer explosionParticleEmitterSequenceConfigId = baseItemType.getExplosionParticleConfigId();
         if (explosionParticleEmitterSequenceConfigId == null) {
             logger.warning("No explosionParticleEmitterSequenceConfigId configured for baseItemType: " + baseItemType.getId());
             return;
         }
-        playParticle(timeStamp, syncBaseItem.getPosition3d(), null, explosionParticleEmitterSequenceConfigId);
+        playParticle(timeStamp, new Vertex(nativeSimpleSyncBaseItemTickInfo.x, nativeSimpleSyncBaseItemTickInfo.y, nativeSimpleSyncBaseItemTickInfo.z), null, explosionParticleEmitterSequenceConfigId);
     }
 
     private void playParticle(long timeStamp, Vertex position, Vertex direction, Integer muzzleFlashParticleEmitterSequenceConfigId) {
@@ -106,9 +106,9 @@ public class EffectVisualizationService {
 
     }
 
-    public void updateBuildingDemolitionEffect(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
-        DemolitionBaseItemEntry demolitionBaseItemEntry = demolitionBaseItemEntries.computeIfAbsent(syncBaseItem.getId(), key -> new DemolitionBaseItemEntry());
-        int step = baseItemType.getDemolitionStep(syncBaseItem.getHealth());
+    public void updateBuildingDemolitionEffect(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, Vertex position3d, BaseItemType baseItemType) {
+        DemolitionBaseItemEntry demolitionBaseItemEntry = demolitionBaseItemEntries.computeIfAbsent(nativeSyncBaseItemTickInfo.id, key -> new DemolitionBaseItemEntry());
+        int step = baseItemType.getDemolitionStep(nativeSyncBaseItemTickInfo.health);
         if (demolitionBaseItemEntry.getDemolitionStep() == step) {
             return;
         }
@@ -118,14 +118,14 @@ public class EffectVisualizationService {
 
         for (DemolitionParticleConfig demolitionParticleConfig : demolitionStepEffect.getDemolitionParticleConfigs()) {
             ParticleEmitterSequenceConfig particleEmitterSequenceConfig = particleService.getParticleEmitterSequenceConfig(demolitionParticleConfig.getParticleConfigId());
-            demolitionBaseItemEntry.addParticleHandler(particleService.start(System.currentTimeMillis(), syncBaseItem.getPosition3d().add(demolitionParticleConfig.getPosition()), null, particleEmitterSequenceConfig));
+            demolitionBaseItemEntry.addParticleHandler(particleService.start(System.currentTimeMillis(), position3d.add(demolitionParticleConfig.getPosition()), null, particleEmitterSequenceConfig));
         }
 
         demolitionBaseItemEntry.setDemolitionStep(step);
     }
 
-    private void removeBuildingDemolitionEffect(SyncBaseItemSimpleDto syncBaseItem) {
-        DemolitionBaseItemEntry demolitionBaseItemEntry = demolitionBaseItemEntries.remove(syncBaseItem.getId());
+    private void removeBuildingDemolitionEffect(int syncBaseItemId) {
+        DemolitionBaseItemEntry demolitionBaseItemEntry = demolitionBaseItemEntries.remove(syncBaseItemId);
         if (demolitionBaseItemEntry != null) {
             demolitionBaseItemEntry.disposePartices();
         }

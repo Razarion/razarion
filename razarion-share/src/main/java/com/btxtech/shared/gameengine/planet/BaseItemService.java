@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -22,7 +21,6 @@ import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededExcept
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
 import com.btxtech.shared.gameengine.datatypes.exception.NotYourBaseException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
@@ -95,17 +93,29 @@ public class BaseItemService {
             planetConfig = planetActivationEvent.getPlanetConfig();
             if (gameEngineMode == GameEngineMode.SLAVE && planetActivationEvent.getSlaveSyncItemInfo() != null) {
                 for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getSlaveSyncItemInfo().getPlayerBaseInfos()) {
-                    createBaseSlave(playerBaseInfo);
+                    try {
+                        createBaseSlave(playerBaseInfo);
+                    } catch (Throwable t) {
+                        exceptionHandler.handleException(t);
+                    }
                 }
 
                 Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
                 for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getSlaveSyncItemInfo().getSyncBaseItemInfos()) {
-                    SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
-                    tmp.put(syncBaseItem, syncBaseItemInfo);
+                    try {
+                        SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
+                        tmp.put(syncBaseItem, syncBaseItemInfo);
+                    } catch (Throwable t) {
+                        exceptionHandler.handleException(t);
+                    }
                 }
 
                 for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
-                    synchronizeActivateSlave(entry.getKey(), entry.getValue());
+                    try {
+                        synchronizeActivateSlave(entry.getKey(), entry.getValue());
+                    } catch (Throwable t) {
+                        exceptionHandler.handleException(t);
+                    }
                 }
             }
         }
@@ -348,7 +358,7 @@ public class BaseItemService {
         syncItemContainerService.destroySyncItem(target);
         energyService.onBaseItemRemoved(target);
         boxService.onSyncBaseItemKilled(target);
-        if(target.getSyncItemContainer() != null) {
+        if (target.getSyncItemContainer() != null) {
             target.getSyncItemContainer().getContainedItems().forEach(syncBaseItem -> killContaining(syncBaseItem, actor));
         }
         if (base.getItemCount() == 0) {
@@ -403,7 +413,7 @@ public class BaseItemService {
         gameLogicService.onResourcesBalanceChanged(syncBaseItem.getBase(), (int) syncBaseItem.getBase().getResources());
         removeSyncItem(syncBaseItem);
         // Remove containing
-        if(syncBaseItem.getSyncItemContainer() != null) {
+        if (syncBaseItem.getSyncItemContainer() != null) {
             syncBaseItem.getSyncItemContainer().getContainedItems().forEach(this::removeSyncItem);
         }
     }
@@ -653,7 +663,7 @@ public class BaseItemService {
                 }
             }
         } while (failed);
-        Collection<Integer> basesToRemove = bases.values().stream().filter(playerBase -> ((PlayerBaseFull)playerBase).getItemCount() == 0).map(PlayerBase::getBaseId).collect(Collectors.toList());
+        Collection<Integer> basesToRemove = bases.values().stream().filter(playerBase -> ((PlayerBaseFull) playerBase).getItemCount() == 0).map(PlayerBase::getBaseId).collect(Collectors.toList());
         basesToRemove.forEach(baseId -> {
             PlayerBase playerBase = bases.remove(baseId);
             logger.warning("BaseItemService.restore(). PlayerBase remove due to no units. baseId: " + baseId + " name: " + playerBase.getName());

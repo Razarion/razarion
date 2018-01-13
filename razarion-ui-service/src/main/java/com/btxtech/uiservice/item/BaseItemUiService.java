@@ -9,9 +9,14 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -19,13 +24,13 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.user.UserUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +74,7 @@ public class BaseItemUiService {
     private int usedHouseSpace;
     private int itemCount;
     private boolean hasRadar;
-    private Collection<SyncBaseItemSimpleDto> syncBaseItems = new ArrayList<>();
+    private NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
     private MapList<BaseItemType, ModelMatrices> spawningModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> buildupModelMatrices = new MapList<>();
     private MapList<BaseItemType, ModelMatrices> aliveModelMatrices = new MapList<>();
@@ -88,7 +93,7 @@ public class BaseItemUiService {
         houseSpace = 0;
         usedHouseSpace = 0;
         itemCount = 0;
-        syncBaseItems.clear();
+        nativeSyncBaseItemTickInfos = new NativeSyncBaseItemTickInfo[0];
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
         aliveModelMatrices.clear();
@@ -132,10 +137,10 @@ public class BaseItemUiService {
         return weaponTurretModelMatrices.get(baseItemType);
     }
 
-    public void updateSyncBaseItems(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+    public void updateSyncBaseItems(NativeSyncBaseItemTickInfo[] nativeSyncBaseItemTickInfos) {
         // May be easier if replaced with SyncItemState and SyncItemMonitor
         lastUpdateTimeStamp = System.currentTimeMillis();
-        this.syncBaseItems = syncBaseItems;
+        this.nativeSyncBaseItemTickInfos = nativeSyncBaseItemTickInfos;
         spawningModelMatrices.clear();
         buildupModelMatrices.clear();
         aliveModelMatrices.clear();
@@ -150,77 +155,84 @@ public class BaseItemUiService {
         if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null) {
             syncBaseItemSetPositionMonitor.init(viewService.getCurrentViewField().calculateCenter());
         }
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (isMyOwnProperty(syncBaseItem)) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
+            DecimalPosition position2d = NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo);
+            Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
+            boolean isSpawning = nativeSyncBaseItemTickInfo.spawning < 1.0;
+            boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
+            boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
+            NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
+
+            if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
                 tmpItemCount++;
                 usedHouseSpace += baseItemType.getConsumingHouseSpace();
-                if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && syncBaseItem.checkBuildup() && !syncBaseItem.checkSpawning()) {
+                if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && isBuildup && !isSpawning) {
                     radar = true;
                 }
             }
-            updateSyncItemMonitor(syncBaseItem);
-            if (syncBaseItem.isContained()) {
+            updateSyncItemMonitor(nativeSyncBaseItemTickInfo);
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
+            if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
                 // TODO move to worker
-                if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && isMyEnemy(syncBaseItem) && !syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup()) {
-                    syncBaseItemSetPositionMonitor.notInViewAabb(syncBaseItem, baseItemType);
+                if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && isMyEnemy(nativeSyncBaseItemTickInfo) && !isSpawning && isBuildup) {
+                    syncBaseItemSetPositionMonitor.notInViewAabb(nativeSyncBaseItemTickInfo.baseId, position2d, baseItemType);
                 }
                 continue;
             }
             boolean attackAble = true;
             // Spawning
-            if (syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup()) {
+            if (isSpawning && isBuildup) {
                 attackAble = false;
-                spawningModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getSpawning(), nativeMatrixFactory));
+                spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning));
             }
             // Buildup
-            if (!syncBaseItem.checkSpawning() && !syncBaseItem.checkBuildup()) {
+            if (!isSpawning && !isBuildup) {
                 attackAble = false;
-                buildupModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getBuildup(), nativeMatrixFactory));
+                buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup));
             }
             // Alive
-            if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && syncBaseItem.checkHealth()) {
-                aliveModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity(), nativeMatrixFactory));
-                if (syncBaseItem.getWeaponTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity(), nativeMatrixFactory));
+            if (!isSpawning && isBuildup && isHealthy) {
+                aliveModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
                 }
             }
-            if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(syncBaseItem)) {
+            if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
                 if (viewFieldCache == null) {
                     viewFieldCache = viewService.getCurrentViewField().toPolygon();
                 }
-                if (viewFieldCache.isInside(syncBaseItem.getPosition2d())) {
-                    syncBaseItemSetPositionMonitor.inViewAabb(syncBaseItem, baseItemType);
+                if (viewFieldCache.isInside(position2d)) {
+                    syncBaseItemSetPositionMonitor.inViewAabb(nativeSyncBaseItemTickInfo.baseId, position3d, baseItemType);
                 } else {
-                    syncBaseItemSetPositionMonitor.notInViewAabb(syncBaseItem, baseItemType);
+                    syncBaseItemSetPositionMonitor.notInViewAabb(nativeSyncBaseItemTickInfo.baseId, position2d, baseItemType);
                 }
             }
 
             // Demolition
-            if (!syncBaseItem.checkSpawning() && syncBaseItem.checkBuildup() && !syncBaseItem.checkHealth()) {
-                ModelMatrices modelMatrices = new ModelMatrices(syncBaseItem.getModel(), syncBaseItem.getInterpolatableVelocity(), syncBaseItem.getHealth(), nativeMatrixFactory);
+            if (!isSpawning && isBuildup && !isHealthy) {
+                ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.health);
                 demolitionModelMatrices.put(baseItemType, modelMatrices);
                 if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
-                    effectVisualizationService.updateBuildingDemolitionEffect(syncBaseItem, baseItemType);
+                    effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
                 }
-                if (syncBaseItem.getWeaponTurret() != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(syncBaseItem.getWeaponTurret(), syncBaseItem.getInterpolatableVelocity(), nativeMatrixFactory));
+                if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
+                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
                 }
             }
 
             // Harvesting
-            if (syncBaseItem.getHarvestingResourcePosition() != null) {
-                Vertex origin = syncBaseItem.getModel().multiply(baseItemType.getHarvesterType().getAnimationOrigin(), 1.0);
-                Vertex direction = syncBaseItem.getHarvestingResourcePosition().sub(origin).normalize(1.0);
+            if (nativeSyncBaseItemTickInfo.harvestingResourcePosition != null) {
+                NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getHarvesterType().getAnimationOrigin()), 1.0);
+                NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.harvestingResourcePosition, origin);
                 harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
             }
             // Building
-            if (syncBaseItem.getBuildingPosition() != null) {
-                Vertex origin = syncBaseItem.getModel().multiply(baseItemType.getBuilderType().getAnimationOrigin(), 1.0);
-                Vertex direction = syncBaseItem.getBuildingPosition().sub(origin).normalize(1.0);
+            if (nativeSyncBaseItemTickInfo.buildingPosition != null) {
+                NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getBuilderType().getAnimationOrigin()), 1.0);
+                NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.buildingPosition, origin);
                 builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
             }
         }
@@ -297,6 +309,10 @@ public class BaseItemUiService {
         return myBase != null && syncBaseItem.getBaseId() == myBase.getBaseId();
     }
 
+    public boolean isMyOwnProperty(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        return myBase != null && nativeSyncBaseItemTickInfo.baseId == myBase.getBaseId();
+    }
+
     public boolean isMyEnemy(SyncBaseItemSimpleDto syncBaseItem) {
         try {
             return getBase(syncBaseItem).getCharacter() == Character.BOT;
@@ -307,9 +323,29 @@ public class BaseItemUiService {
         }
     }
 
-    public SyncBaseItemMonitor monitorSyncItem(SyncBaseItemSimpleDto syncBaseItemSimpleDto) {
-        double radius = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getRadius();
-        SyncBaseItemState syncBaseItemState = syncItemStates.computeIfAbsent(syncBaseItemSimpleDto.getId(), k -> new SyncBaseItemState(syncBaseItemSimpleDto, syncBaseItemSimpleDto.getInterpolatableVelocity(), radius, this::releaseSyncItemMonitor));
+    public boolean isMyEnemy(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        try {
+            return getBase(nativeSyncBaseItemTickInfo.baseId).getCharacter() == Character.BOT;
+        } catch (Exception e) {
+            // This may happen if own base gets lost and notified while items are still in syncItemStates variable
+            // Occurs white BaseItemPlacer in GameUiControl restart base scenario after base is lost
+            return true;
+        }
+    }
+
+    public SyncBaseItemMonitor monitorSyncItem(int basItemId) {
+        // Does not work here Arrays.stream(nativeSyncBaseItemTickInfos)
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.id == basItemId) {
+                return monitorSyncItem(nativeSyncBaseItemTickInfo);
+            }
+        }
+        throw new IllegalArgumentException("No NativeSyncBaseItemTickInfo for basItemId: " + basItemId);
+    }
+
+    public SyncBaseItemMonitor monitorSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        double radius = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId).getPhysicalAreaConfig().getRadius();
+        SyncBaseItemState syncBaseItemState = syncItemStates.computeIfAbsent(nativeSyncBaseItemTickInfo.id, k -> new SyncBaseItemState(nativeSyncBaseItemTickInfo, radius, this::releaseSyncItemMonitor));
         return (SyncBaseItemMonitor) syncBaseItemState.createSyncItemMonitor();
     }
 
@@ -317,25 +353,25 @@ public class BaseItemUiService {
         syncItemStates.remove(syncItemState.getSyncItemId());
     }
 
-    private void updateSyncItemMonitor(SyncBaseItemSimpleDto syncBaseItem) {
-        SyncItemState syncItemState = syncItemStates.get(syncBaseItem.getId());
+    private void updateSyncItemMonitor(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        SyncItemState syncItemState = syncItemStates.get(nativeSyncBaseItemTickInfo.id);
         if (syncItemState == null) {
             return;
         }
-        syncItemState.update(syncBaseItem, syncBaseItem.getInterpolatableVelocity());
+        syncItemState.update(nativeSyncBaseItemTickInfo, nativeSyncBaseItemTickInfo.interpolatableVelocity);
     }
 
     public SyncItemMonitor monitorMySyncBaseItemOfType(int itemTypeId) {
-        SyncBaseItemSimpleDto syncBaseItem = findMyItemOfType(itemTypeId);
-        if (syncBaseItem != null) {
-            return monitorSyncItem(syncBaseItem);
+        NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = findMyItemOfType(itemTypeId);
+        if (nativeSyncBaseItemTickInfo != null) {
+            return monitorSyncItem(nativeSyncBaseItemTickInfo);
         } else {
             return null;
         }
     }
 
     public SyncItemMonitor monitorMyEnemyItemWithPlace(PlaceConfig placeConfig) {
-        SyncBaseItemSimpleDto enemy = findMyEnemyItemWithPlace(placeConfig);
+        NativeSyncBaseItemTickInfo enemy = findMyEnemyItemWithPlace(placeConfig);
         if (enemy != null) {
             return monitorSyncItem(enemy);
         } else {
@@ -355,14 +391,14 @@ public class BaseItemUiService {
         return resources;
     }
 
-    public void updateGameInfo(GameInfo gameInfo) {
-        if (resources != gameInfo.getResources()) {
-            resources = gameInfo.getResources();
+    public void updateGameInfo(NativeTickInfo nativeTickInfo) {
+        if (resources != nativeTickInfo.resources) {
+            resources = nativeTickInfo.resources;
             cockpitService.updateResource(resources);
             itemCockpitService.onResourcesChanged(resources);
         }
-        if (houseSpace != gameInfo.getHouseSpace()) {
-            houseSpace = gameInfo.getHouseSpace();
+        if (houseSpace != nativeTickInfo.houseSpace) {
+            houseSpace = nativeTickInfo.houseSpace;
             itemCockpitService.onStateChanged();
             updateItemCountOnSideCockpit();
         }
@@ -384,37 +420,45 @@ public class BaseItemUiService {
         return (double) (System.currentTimeMillis() - lastUpdateTimeStamp) / 1000.0;
     }
 
-    public int getMyItemCount(int itemTypeId) {
-        return findMyItemsOfType(itemTypeId, true).size();
+    public int getMyItemCount(int baseItemTypeId) {
+        int count = 0;
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (!isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+                continue;
+            }
+            if (nativeSyncBaseItemTickInfo.itemTypeId == baseItemTypeId) {
+                count++;
+            }
+        }
+        return count;
     }
 
-    private SyncBaseItemSimpleDto findMyItemOfType(int baseItemTypeId) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.isContained()) {
+    private NativeSyncBaseItemTickInfo findMyItemOfType(int baseItemTypeId) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            if (!isMyOwnProperty(syncBaseItem)) {
+            if (!isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
                 continue;
             }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (baseItemType.getId() == baseItemTypeId) {
-                return syncBaseItem;
+            if (nativeSyncBaseItemTickInfo.itemTypeId == baseItemTypeId) {
+                return nativeSyncBaseItemTickInfo;
             }
         }
         return null;
     }
 
-    private SyncBaseItemSimpleDto findMyEnemyItemWithPlace(PlaceConfig placeConfig) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.isContained()) {
+    private NativeSyncBaseItemTickInfo findMyEnemyItemWithPlace(PlaceConfig placeConfig) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            if (!isMyEnemy(syncBaseItem)) {
+            if (!isMyEnemy(nativeSyncBaseItemTickInfo)) {
                 continue;
             }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (placeConfig.checkInside(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
-                return syncBaseItem;
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
+            if (placeConfig.checkInside(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo), baseItemType.getPhysicalAreaConfig().getRadius())) {
+                return nativeSyncBaseItemTickInfo;
             }
         }
         return null;
@@ -425,30 +469,29 @@ public class BaseItemUiService {
         return findMyEnemyItemWithPlace(new PlaceConfig().setPosition(position).setRadius(enemyFreeRadius)) != null;
     }
 
-    public boolean hasItemsInRange(Collection<DecimalPosition> positions, double radius) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.isContained()) {
+    public boolean hasItemsInRangeInViewField(Collection<DecimalPosition> positions, double radius) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            double itemRadius = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId()).getPhysicalAreaConfig().getRadius();
+            double itemRadius = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId).getPhysicalAreaConfig().getRadius();
             for (DecimalPosition position : positions) {
-                if (syncBaseItem.getPosition2d().getDistance(position) < radius + itemRadius) {
+                if (position.getDistance(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y) < radius + itemRadius) {
                     return true;
                 }
-
             }
         }
         return false;
     }
 
     public SyncBaseItemSimpleDto findItemAtPosition(DecimalPosition decimalPosition) {
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.isContained()) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (syncBaseItem.getPosition2d().getDistance(decimalPosition) <= baseItemType.getPhysicalAreaConfig().getRadius()) {
-                return syncBaseItem;
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
+            if (decimalPosition.getDistance(nativeSyncBaseItemTickInfo.x, nativeSyncBaseItemTickInfo.y) <= baseItemType.getPhysicalAreaConfig().getRadius()) {
+                return SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo);
             }
         }
         return null;
@@ -456,13 +499,13 @@ public class BaseItemUiService {
 
     public Collection<SyncBaseItemSimpleDto> findItemsInRect(Rectangle2D rectangle) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.isContained()) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (rectangle.adjoinsCircleExclusive(syncBaseItem.getPosition2d(), baseItemType.getPhysicalAreaConfig().getRadius())) {
-                result.add(syncBaseItem);
+            BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
+            if (rectangle.adjoinsCircleExclusive(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo), baseItemType.getPhysicalAreaConfig().getRadius())) {
+                result.add(SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo));
             }
         }
         return result;
@@ -470,16 +513,15 @@ public class BaseItemUiService {
 
     public Collection<SyncBaseItemSimpleDto> findMyItemsOfType(int baseItemTypeId, boolean includeContained) {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (!includeContained && syncBaseItem.isContained()) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (!includeContained && nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            if (!isMyOwnProperty(syncBaseItem)) {
+            if (!isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
                 continue;
             }
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-            if (baseItemType.getId() == baseItemTypeId) {
-                result.add(syncBaseItem);
+            if (nativeSyncBaseItemTickInfo.itemTypeId == baseItemTypeId) {
+                result.add(SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo));
             }
         }
         return result;
@@ -487,26 +529,27 @@ public class BaseItemUiService {
 
     public Collection<SyncBaseItemSimpleDto> findMyItems() {
         Collection<SyncBaseItemSimpleDto> result = new ArrayList<>();
-        for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-            if (syncBaseItem.isContained()) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            if (isMyOwnProperty(syncBaseItem)) {
-                result.add(syncBaseItem);
+            if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+                result.add(SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo));
             }
         }
         return result;
     }
 
-    public Collection<SyncBaseItemSimpleDto> getSyncBaseItems() {
-        return syncBaseItems;
+    public NativeSyncBaseItemTickInfo[] getNativeSyncBaseItemTickInfos() {
+        return nativeSyncBaseItemTickInfos;
     }
 
     public SyncBaseItemSimpleDto getSyncBaseItemSimpleDto4IdPlayback(int itemId) {
-        return syncBaseItems.stream().filter(syncBaseItemSimpleDto -> syncBaseItemSimpleDto.getId() == itemId).findFirst().orElse(null);
+        return Arrays.stream(nativeSyncBaseItemTickInfos).filter(syncBaseItemSimpleDto -> syncBaseItemSimpleDto.id == itemId).map(SyncBaseItemSimpleDto::from).findFirst().orElse(null);
     }
 
     public boolean hasRadar() {
         return hasRadar;
     }
+
 }

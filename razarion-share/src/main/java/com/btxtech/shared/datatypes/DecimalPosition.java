@@ -253,6 +253,11 @@ public class DecimalPosition {
         return new DecimalPosition(x * m, y * m);
     }
 
+    public double getDistance(double x, double y) {
+        double sqrtC = Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2);
+        return Math.sqrt(sqrtC);
+    }
+
     public double getDistance(DecimalPosition decimalPosition) {
         double sqrtC = Math.pow(decimalPosition.x - x, 2) + Math.pow(decimalPosition.y - y, 2);
         return Math.sqrt(sqrtC);

@@ -6,10 +6,9 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 
@@ -160,7 +159,7 @@ public class BoxUiService implements ViewService.ViewFieldListener {
 
     public SyncItemMonitor monitorSyncBoxItem(SyncBoxItemSimpleDto boxItemSimpleDto) {
         // No monitoring is done, since boxes do not move
-        return new SyncItemState(boxItemSimpleDto, null, itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
+        return new SyncItemState(boxItemSimpleDto.getId(), boxItemSimpleDto.getPosition2d(), boxItemSimpleDto.getPosition3d(), itemTypeService.getBoxItemType(boxItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
     public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor() {

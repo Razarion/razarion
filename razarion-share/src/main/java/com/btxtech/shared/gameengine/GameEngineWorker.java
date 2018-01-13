@@ -26,9 +26,10 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -51,6 +52,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.NoInterpolatedTerrainTriangleException;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.ExceptionUtil;
@@ -102,10 +104,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     private Instance<AbstractServerGameConnection> connectionInstance;
     @Inject
     private Instance<WorkerTrackerHandler> workerTrackerHandlerInstance;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private UserContext userContext;
     private PlayerBase playerBase;
-    private List<SyncBaseItemSimpleDto> killed = new ArrayList<>();
-    private List<SyncBaseItemSimpleDto> removed = new ArrayList<>();
+    private List<SyncBaseItem> killedSyncBaseItems = new ArrayList<>();
+    private List<Integer> removedSyncBaseItemIds = new ArrayList<>();
     private int xpFromKills;
     private boolean sendTickUpdate;
     private AbstractServerGameConnection serverConnection;
@@ -298,8 +302,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             planetService.stop();
             userContext = null;
             playerBase = null;
-            killed.clear();
-            removed.clear();
+            killedSyncBaseItems.clear();
+            removedSyncBaseItemIds.clear();
             xpFromKills = 0;
             sendTickUpdate = false;
             if (serverConnection != null) {
@@ -324,29 +328,27 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
         sendTickUpdate = false;
         try {
-            List<SyncBaseItemSimpleDto> syncItems = new ArrayList<>();
+            NativeTickInfo nativeTickInfo = new NativeTickInfo();
+            List<NativeSyncBaseItemTickInfo> tmp = new ArrayList<>();
             syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
                 if (syncItem instanceof SyncBaseItem) {
                     SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                    SyncBaseItemSimpleDto simpleDto = syncBaseItem.createSyncBaseItemSimpleDto();
-                    syncItems.add(simpleDto);
+                    tmp.add(syncBaseItem.createNativeSyncBaseItemTickInfo());
                 }
                 return null;
             });
-            GameInfo gameInfo = new GameInfo();
+            nativeTickInfo.updatedNativeSyncBaseItemTickInfos = tmp.stream().toArray(value -> new NativeSyncBaseItemTickInfo[tmp.size()]);
             if (gameEngineMode == GameEngineMode.SLAVE) {
-                gameInfo.setXpFromKills(xpFromKills);
+                nativeTickInfo.xpFromKills = xpFromKills;
             }
             xpFromKills = 0;
-            List<SyncBaseItemSimpleDto> tmpKilled = killed;
-            killed = new ArrayList<>();
-            List<SyncBaseItemSimpleDto> tmpRemoved = removed;
-            removed = new ArrayList<>();
+            nativeTickInfo.killedSyncBaseItems = convertAndClearKilled();
+            nativeTickInfo.removeSyncBaseItemIds = convertAndClearRemoved();
             if (playerBase != null) {
-                gameInfo.setHouseSpace(PlayerBaseFull.HOUSE_SPACE);
-                gameInfo.setResources((int) playerBase.getResources());
+                nativeTickInfo.houseSpace = PlayerBaseFull.HOUSE_SPACE;
+                nativeTickInfo.resources = (int) playerBase.getResources();
             }
-            sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, syncItems, gameInfo, tmpRemoved, tmpKilled);
+            sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE, nativeTickInfo);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
             sendToClient(GameEngineControlPackage.Command.TICK_UPDATE_RESPONSE_FAIL);
@@ -406,7 +408,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createSyncBaseItemSimpleDto());
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_IDLE, syncBaseItem.createNativeSyncBaseItemTickInfo());
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onSyncBaseItem(syncBaseItem);
         }
@@ -432,7 +434,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createSyncBaseItemSimpleDto());
+        sendToClient(GameEngineControlPackage.Command.SYNC_ITEM_START_SPAWNED, syncBaseItem.createNativeSyncBaseItemTickInfo());
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onSyncBaseItem(syncBaseItem);
         }
@@ -504,7 +506,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
-        killed.add(target.createSyncBaseItemSimpleDto());
+        killedSyncBaseItems.add(target);
         if (actor.getBase().getHumanPlayerId() != null && actor.getBase().getHumanPlayerId().equals(userContext.getHumanPlayerId())) {
             xpFromKills += target.getBaseItemType().getXpOnKilling();
         }
@@ -515,12 +517,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onSyncBaseItemKilledSlave(SyncBaseItem target) {
-        killed.add(target.createSyncBaseItemSimpleDto());
+        killedSyncBaseItems.add(target);
     }
 
     @Override
     public void onSyncBaseItemRemoved(SyncBaseItem syncBaseItem) {
-        removed.add(syncBaseItem.createSyncBaseItemSimpleDto());
+        removedSyncBaseItemIds.add(syncBaseItem.getId());
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onSyncItemDeleted(syncBaseItem, false);
         }
@@ -659,5 +661,35 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public String getGameSessionUuid() {
         return gameSessionUuid;
+    }
+
+    private NativeSimpleSyncBaseItemTickInfo[] convertAndClearKilled() {
+        if (killedSyncBaseItems.isEmpty()) {
+            return null;
+        }
+        NativeSimpleSyncBaseItemTickInfo[] killed = killedSyncBaseItems.stream().map(item -> {
+            NativeSimpleSyncBaseItemTickInfo nativeSimpleSyncBaseItemTickInfo = new NativeSimpleSyncBaseItemTickInfo();
+            nativeSimpleSyncBaseItemTickInfo.id = item.getId();
+            nativeSimpleSyncBaseItemTickInfo.itemTypeId = item.getBaseItemType().getId();
+            nativeSimpleSyncBaseItemTickInfo.contained = item.isContainedIn();
+            if (!nativeSimpleSyncBaseItemTickInfo.contained) {
+                Vertex position = item.getSyncPhysicalArea().getPosition3d();
+                nativeSimpleSyncBaseItemTickInfo.x = position.getX();
+                nativeSimpleSyncBaseItemTickInfo.y = position.getY();
+                nativeSimpleSyncBaseItemTickInfo.z = position.getZ();
+            }
+            return nativeSimpleSyncBaseItemTickInfo;
+        }).toArray(value -> new NativeSimpleSyncBaseItemTickInfo[killedSyncBaseItems.size()]);
+        killedSyncBaseItems.clear();
+        return killed;
+    }
+
+    private int[] convertAndClearRemoved() {
+        if (removedSyncBaseItemIds.isEmpty()) {
+            return null;
+        }
+        int[] removedIds = removedSyncBaseItemIds.stream().mapToInt(integer -> integer).toArray();
+        removedSyncBaseItemIds.clear();
+        return nativeMatrixFactory.intArrayConverter(removedIds);
     }
 }

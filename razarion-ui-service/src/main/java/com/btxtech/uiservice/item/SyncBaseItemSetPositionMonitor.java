@@ -51,21 +51,21 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
         minDistance = Double.MAX_VALUE;
     }
 
-    public void inViewAabb(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
-        if (!isAllowed(syncBaseItem, baseItemType)) {
+    public void inViewAabb(int baseId, Vertex position, BaseItemType baseItemType) {
+        if (!isAllowed(baseId, baseItemType)) {
             return;
         }
-        inViewVertices.add(syncBaseItem.getPosition3d());
+        inViewVertices.add(position);
     }
 
-    public void notInViewAabb(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
-        if (!isAllowed(syncBaseItem, baseItemType)) {
+    public void notInViewAabb(int baseId, DecimalPosition position, BaseItemType baseItemType) {
+        if (!isAllowed(baseId, baseItemType)) {
             return;
         }
-        double distance = syncBaseItem.getPosition2d().getDistance(viewFieldCenter);
+        double distance = position.getDistance(viewFieldCenter);
         if (distance < minDistance) {
             minDistance = distance;
-            nearestOutOfViewPosition = syncBaseItem.getPosition2d();
+            nearestOutOfViewPosition = position;
         }
     }
 
@@ -73,14 +73,14 @@ public class SyncBaseItemSetPositionMonitor extends AbstractSyncItemSetPositionM
         this.itemTypeFilter = itemTypeFilter;
     }
 
-    private boolean isAllowed(SyncBaseItemSimpleDto syncBaseItem, BaseItemType baseItemType) {
+    private boolean isAllowed(int baseId, BaseItemType baseItemType) {
         if (itemTypeFilter != null) {
             if (!itemTypeFilter.contains(baseItemType.getId())) {
                 return false;
             }
         }
         if (botIdFilter != null) {
-            Integer botId = baseItemUiService.getBase(syncBaseItem.getBaseId()).getBotId();
+            Integer botId = baseItemUiService.getBase(baseId).getBotId();
             if (botId == null) {
                 return false;
             }

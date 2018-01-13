@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.Dependent;

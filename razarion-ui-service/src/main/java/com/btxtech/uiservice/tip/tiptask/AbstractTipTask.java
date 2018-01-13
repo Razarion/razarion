@@ -4,6 +4,7 @@ package com.btxtech.uiservice.tip.tiptask;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -13,7 +14,7 @@ import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.QuestVisualizer;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameDirectionVisualization;
@@ -85,11 +86,11 @@ public abstract class AbstractTipTask {
     }
 
     // Override ins subclasses
-    protected void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
+    protected void onSyncBaseItemIdle(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
     }
 
     // Override ins subclasses
-    protected void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
+    protected void onSpawnSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
     }
 
     // Override ins subclasses

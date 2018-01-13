@@ -10,8 +10,11 @@ import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.nativejs.NativeMatrixDto;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -26,6 +29,8 @@ import java.util.Collection;
 public class SyncPhysicalArea {
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private SyncItem syncItem;
     private DecimalPosition position2d;
     private double angle;
@@ -35,6 +40,7 @@ public class SyncPhysicalArea {
     private boolean fixVerticalNorm;
     private TerrainType terrainType;
     private Matrix4 modelMatrices;
+    private NativeMatrixDto modelNativeMatrixDto;
 
     public void init(SyncItem syncItem, double radius, boolean fixVerticalNorm, TerrainType terrainType, DecimalPosition position2d, double angle) {
         this.syncItem = syncItem;
@@ -91,6 +97,7 @@ public class SyncPhysicalArea {
             norm = terrainService.getSurfaceAccess().getInterpolatedNorm(position2d);
         }
         modelMatrices = null;
+        modelNativeMatrixDto = null;
     }
 
     public Vertex getPosition3d() {
@@ -112,6 +119,13 @@ public class SyncPhysicalArea {
             modelMatrices = Matrix4.createTranslation(getPosition3d()).multiply(Matrix4.createFromNormAndYaw(getNorm(), angle));
         }
         return modelMatrices;
+    }
+
+    public NativeMatrixDto getModelNativeMatrixDto() {
+        if (modelNativeMatrixDto == null) {
+            modelNativeMatrixDto = nativeMatrixFactory.createNativeMatrixDtoColumnMajorArray(getModelMatrices().toWebGlArray());
+        }
+        return modelNativeMatrixDto;
     }
 
     public boolean hasDestination() {

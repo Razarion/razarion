@@ -1,6 +1,8 @@
 package com.btxtech.uiservice.cdimock;
 
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.uiservice.control.GameEngineControl;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -27,4 +29,13 @@ public class TestGameEngineControl extends GameEngineControl {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    protected NativeTickInfo castToNativeTickInfo(Object javaScriptObject) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object singleData) {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -4,7 +4,8 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
@@ -64,14 +65,16 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
         }
     }
 
-    public void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
-        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
+    public void onSpawnSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
         Integer audioId = baseItemType.getSpawnAudioId();
         if (audioId == null) {
             return;
         }
-        if (viewService.getCurrentViewField().isInside(syncBaseItem.getPosition2d())) {
-            playAudio(audioId);
+        if (!nativeSyncBaseItemTickInfo.contained) {
+            if (viewService.getCurrentViewField().isInside(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo))) {
+                playAudio(audioId);
+            }
         }
     }
 

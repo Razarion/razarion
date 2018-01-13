@@ -26,7 +26,6 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,9 +61,9 @@ public class Group {
     }
 
     private void addMonitor(SyncBaseItemSimpleDto syncBaseItem) {
-        SyncBaseItemMonitor syncBaseItemMonitor = baseItemUiService.monitorSyncItem(syncBaseItem);
+        SyncBaseItemMonitor syncBaseItemMonitor = baseItemUiService.monitorSyncItem(syncBaseItem.getId());
         syncBaseItemsMonitors.add(syncBaseItemMonitor);
-        syncBaseItemMonitor.setContainedChangeListener(syncItemMonitor -> selectionHandler.baseItemRemoved(Collections.singletonList(syncBaseItem)));
+        syncBaseItemMonitor.setContainedChangeListener(syncItemMonitor -> selectionHandler.baseItemRemoved(new int[]{syncBaseItem.getId()}));
     }
 
     public boolean onlyFactories() {
@@ -91,9 +90,16 @@ public class Group {
         return syncBaseItems.contains(syncBaseItem);
     }
 
-    public boolean remove(SyncBaseItemSimpleDto syncBaseItem) {
-        removeMonitor(syncBaseItem);
-        return syncBaseItems.remove(syncBaseItem);
+    public boolean remove(int syncItemId) {
+        removeMonitor(syncItemId);
+        for (Iterator<SyncBaseItemSimpleDto> iterator = syncBaseItems.iterator(); iterator.hasNext(); ) {
+            SyncBaseItemSimpleDto syncBaseItem = iterator.next();
+            if (syncBaseItem.getId() == syncItemId) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isEmpty() {
@@ -217,6 +223,16 @@ public class Group {
         for (Iterator<SyncBaseItemMonitor> iterator = syncBaseItemsMonitors.iterator(); iterator.hasNext(); ) {
             SyncBaseItemMonitor syncBaseItemsMonitor = iterator.next();
             if (syncBaseItemsMonitor.getSyncItemId() == syncBaseItem.getId()) {
+                iterator.remove();
+                syncBaseItemsMonitor.release();
+            }
+        }
+    }
+
+    public void removeMonitor(int syncBaseItemId) {
+        for (Iterator<SyncBaseItemMonitor> iterator = syncBaseItemsMonitors.iterator(); iterator.hasNext(); ) {
+            SyncBaseItemMonitor syncBaseItemsMonitor = iterator.next();
+            if (syncBaseItemsMonitor.getSyncItemId() == syncBaseItemId) {
                 iterator.remove();
                 syncBaseItemsMonitor.release();
             }

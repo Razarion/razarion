@@ -3,7 +3,7 @@ package com.btxtech.uiservice.tip.visualization;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 

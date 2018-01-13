@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.item;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 
 import java.util.function.Consumer;
 
@@ -14,14 +14,14 @@ public class SyncBaseItemState extends SyncItemState {
     private double health;
     private double constructing;
     private boolean contained;
-    private SyncBaseItemSimpleDto syncBaseItem;
+    private NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo;
 
-    public SyncBaseItemState(SyncBaseItemSimpleDto syncBaseItem, DecimalPosition interpolatableVelocity, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
-        super(syncBaseItem, interpolatableVelocity, radius, releaseMonitorCallback);
-        health = syncBaseItem.getHealth();
-        constructing = syncBaseItem.getConstructing();
-        contained = syncBaseItem.isContained();
-        this.syncBaseItem = syncBaseItem;
+    public SyncBaseItemState(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
+        super(nativeSyncBaseItemTickInfo, nativeSyncBaseItemTickInfo.interpolatableVelocity, radius, releaseMonitorCallback);
+        health = nativeSyncBaseItemTickInfo.health;
+        constructing = nativeSyncBaseItemTickInfo.constructing;
+        contained = nativeSyncBaseItemTickInfo.contained;
+        this.nativeSyncBaseItemTickInfo = nativeSyncBaseItemTickInfo;
     }
 
     @Override
@@ -42,31 +42,29 @@ public class SyncBaseItemState extends SyncItemState {
     }
 
     public SyncBaseItemSimpleDto getSyncBaseItem() {
-        return syncBaseItem;
+        return SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo);
     }
 
     @Override
-    public void update(SyncItemSimpleDto syncItemSimpleDto, DecimalPosition interpolatableVelocity) {
-        super.update(syncItemSimpleDto, interpolatableVelocity);
-        SyncBaseItemSimpleDto syncBaseItem = (SyncBaseItemSimpleDto) syncItemSimpleDto;
-        this.syncBaseItem = syncBaseItem;
+    public void update(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, NativeVertexDto interpolatableVelocity) {
+        super.update(nativeSyncBaseItemTickInfo, interpolatableVelocity);
 
-        if (health != syncBaseItem.getHealth()) {
-            health = syncBaseItem.getHealth();
+        if (health != nativeSyncBaseItemTickInfo.health) {
+            health = nativeSyncBaseItemTickInfo.health;
             for (SyncItemMonitor monitor : getMonitors()) {
                 ((SyncBaseItemMonitor) monitor).onHealthChanged();
             }
         }
 
-        if (constructing != syncBaseItem.getConstructing()) {
-            constructing = syncBaseItem.getConstructing();
+        if (constructing != nativeSyncBaseItemTickInfo.constructing) {
+            constructing = nativeSyncBaseItemTickInfo.constructing;
             for (SyncItemMonitor monitor : getMonitors()) {
                 ((SyncBaseItemMonitor) monitor).onConstructingChanged();
             }
         }
 
-        if (contained != syncBaseItem.isContained()) {
-            contained = syncBaseItem.isContained();
+        if (contained != nativeSyncBaseItemTickInfo.contained) {
+            contained = nativeSyncBaseItemTickInfo.contained;
             for (SyncItemMonitor monitor : getMonitors()) {
                 ((SyncBaseItemMonitor) monitor).onContainedChanged();
             }

@@ -5,8 +5,8 @@ import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrix;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.inject.Inject;
 import java.util.Collection;

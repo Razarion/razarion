@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -37,7 +38,8 @@ import com.btxtech.shared.gameengine.datatypes.exception.TargetHasNoPositionExce
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.CommandService;
@@ -672,43 +674,45 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         return spawnProgress < 1.0;
     }
 
-    public SyncBaseItemSimpleDto createSyncBaseItemSimpleDto() {
-        SyncBaseItemSimpleDto simpleDto = new SyncBaseItemSimpleDto();
-        simpleDto.setId(getId());
-        simpleDto.setItemTypeId(getBaseItemType().getId());
-        simpleDto.setBaseId(base.getBaseId());
+    public NativeSyncBaseItemTickInfo createNativeSyncBaseItemTickInfo() {
+        NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo = new NativeSyncBaseItemTickInfo();
+        nativeSyncBaseItemTickInfo.id = getId();
+        nativeSyncBaseItemTickInfo.itemTypeId = getBaseItemType().getId();
+        nativeSyncBaseItemTickInfo.baseId = base.getBaseId();
         if (containedIn == null) {
-            simpleDto.setModel(getSyncPhysicalArea().getModelMatrices());
+            nativeSyncBaseItemTickInfo.model = getSyncPhysicalArea().getModelNativeMatrixDto();
             if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
-                simpleDto.setWeaponTurret(syncWeapon.createTurretMatrix4Shape3D());
+                nativeSyncBaseItemTickInfo.weaponTurret = syncWeapon.createTurretMatrix4Shape3D();
             }
-            simpleDto.setPosition2d(getSyncPhysicalArea().getPosition2d());
-            simpleDto.setPosition3d(getSyncPhysicalArea().getPosition3d());
+            Vertex position3d = getSyncPhysicalArea().getPosition3d();
+            nativeSyncBaseItemTickInfo.x = position3d.getX();
+            nativeSyncBaseItemTickInfo.y = position3d.getY();
+            nativeSyncBaseItemTickInfo.z = position3d.getZ();
             if (syncHarvester != null && syncHarvester.isHarvesting()) {
-                simpleDto.setHarvestingResourcePosition(syncHarvester.getResource().getSyncPhysicalArea().getPosition3d());
+                nativeSyncBaseItemTickInfo.harvestingResourcePosition = NativeUtil.toNativeVertex(syncHarvester.getResource().getSyncPhysicalArea().getPosition3d());
             }
             if (syncBuilder != null && syncBuilder.isBuilding()) {
-                simpleDto.setBuildingPosition(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
-                simpleDto.setConstructing(syncBuilder.getCurrentBuildup().getBuildup());
+                nativeSyncBaseItemTickInfo.buildingPosition = NativeUtil.toNativeVertex(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
+                nativeSyncBaseItemTickInfo.constructing = syncBuilder.getCurrentBuildup().getBuildup();
             }
             if (syncFactory != null && syncFactory.isActive()) {
-                simpleDto.setConstructing(syncFactory.getBuildup());
+                nativeSyncBaseItemTickInfo.constructing = syncFactory.getBuildup();
             }
             if (getSyncPhysicalArea().canMove()) {
-                simpleDto.setInterpolatableVelocity(getSyncPhysicalMovable().setupInterpolatableVelocity());
+                nativeSyncBaseItemTickInfo.interpolatableVelocity = getSyncPhysicalMovable().setupInterpolatableVelocity();
             }
-            simpleDto.setContained(false);
+            nativeSyncBaseItemTickInfo.contained = false;
         } else {
-            simpleDto.setContained(true);
+            nativeSyncBaseItemTickInfo.contained = true;
         }
         if (syncItemContainer != null) {
-            simpleDto.setContainingItemCount(syncItemContainer.getContainedItems().size());
-            simpleDto.setMaxContainingRadius(syncItemContainer.getMaxContainingRadius());
+            nativeSyncBaseItemTickInfo.containingItemCount = syncItemContainer.getContainedItems().size();
+            nativeSyncBaseItemTickInfo.maxContainingRadius = syncItemContainer.getMaxContainingRadius();
         }
-        simpleDto.setSpawning(spawnProgress);
-        simpleDto.setBuildup(buildup);
-        simpleDto.setHealth(getNormalizedHealth());
-        return simpleDto;
+        nativeSyncBaseItemTickInfo.spawning = spawnProgress;
+        nativeSyncBaseItemTickInfo.buildup = buildup;
+        nativeSyncBaseItemTickInfo.health = getNormalizedHealth();
+        return nativeSyncBaseItemTickInfo;
     }
 
     @Override

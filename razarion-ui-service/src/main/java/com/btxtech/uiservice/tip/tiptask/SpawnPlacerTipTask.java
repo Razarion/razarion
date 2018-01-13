@@ -1,7 +1,7 @@
 package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacer;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerListener;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
@@ -54,8 +54,8 @@ public class SpawnPlacerTipTask extends AbstractTipTask implements BaseItemPlace
     }
 
     @Override
-    protected void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
-        if (syncBaseItem.getItemTypeId() == spawnItemTypeId) {
+    protected void onSpawnSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (nativeSyncBaseItemTickInfo.itemTypeId == spawnItemTypeId) {
             onSucceed();
         }
     }

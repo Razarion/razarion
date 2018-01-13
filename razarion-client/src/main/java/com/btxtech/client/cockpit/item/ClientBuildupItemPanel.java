@@ -46,12 +46,12 @@ public class ClientBuildupItemPanel extends BuildupItemPanel implements IsElemen
 
     @EventHandler("leftArrowButton")
     private void leftArrowButtonClick(ClickEvent event) {
-        throw new UnsupportedOperationException();
+        // TODO throw new UnsupportedOperationException();
     }
 
     @EventHandler("rightArrowButton")
     private void rightArrowButtonClick(ClickEvent event) {
-        throw new UnsupportedOperationException();
+        // TODO throw new UnsupportedOperationException();
     }
 
     @Override

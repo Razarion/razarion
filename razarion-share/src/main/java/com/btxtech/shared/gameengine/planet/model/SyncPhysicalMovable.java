@@ -15,10 +15,13 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
@@ -278,12 +281,18 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
     }
 
-    public DecimalPosition setupInterpolatableVelocity() {
+    public NativeVertexDto setupInterpolatableVelocity() {
         if (velocity == null) {
             return null;
         }
-        return velocity;
-
+        if (MathHelper.compareToZeroWithPrecision(getNorm().getX(), 0.0001) || MathHelper.compareToZeroWithPrecision(getNorm().getY(), 0.0001)) {
+            return NativeUtil.toNativeVertex(velocity.getX(), velocity.getY(), 0);
+        }
+        double angle = getNorm().unsignedAngle(Vertex.Z_NORM);
+        double zV = Math.tan(angle) * velocity.magnitude();
+        double xV = -(getNorm().getZ() * zV) / (getNorm().getX() + (getNorm().getY() * velocity.getY()) / getNorm().getX());
+        double yV = xV * velocity.getY() / velocity.getX();
+        return NativeUtil.toNativeVertex(xV, yV, zV);
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {

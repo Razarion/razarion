@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.tip.tiptask;
 
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 
 import javax.enterprise.context.Dependent;
 
@@ -31,8 +31,8 @@ public class IdleItemTipTask extends AbstractTipTask {
     }
 
     @Override
-    public void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
-        if (syncBaseItem.getItemTypeId() == actorItemTypeId) {
+    public void onSyncBaseItemIdle(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (nativeSyncBaseItemTickInfo.itemTypeId == actorItemTypeId) {
             onSucceed();
         }
     }

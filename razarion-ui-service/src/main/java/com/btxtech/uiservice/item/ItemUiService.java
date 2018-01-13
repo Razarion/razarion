@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
@@ -27,7 +28,7 @@ public class ItemUiService {
         if (syncItem instanceof SyncBoxItemSimpleDto) {
             return boxUiService.monitorSyncBoxItem((SyncBoxItemSimpleDto) syncItem);
         } else if (syncItem instanceof SyncBaseItemSimpleDto) {
-            return baseItemUiService.monitorSyncItem((SyncBaseItemSimpleDto) syncItem);
+            return baseItemUiService.monitorSyncItem(syncItem.getId());
         } else if (syncItem instanceof SyncResourceItemSimpleDto) {
             return resourceUiService.monitorSyncResourceItem((SyncResourceItemSimpleDto) syncItem);
         } else {
@@ -51,6 +52,16 @@ public class ItemUiService {
             return Colors.NONE_BASE;
         } else {
             throw new IllegalArgumentException("Don't know how to handle: " + syncItem);
+        }
+    }
+
+    public Color color4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (baseItemUiService.isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+            return Colors.OWN;
+        } else if (baseItemUiService.isMyEnemy(nativeSyncBaseItemTickInfo)) {
+            return Colors.ENEMY;
+        } else {
+            return Colors.FRIEND;
         }
     }
 

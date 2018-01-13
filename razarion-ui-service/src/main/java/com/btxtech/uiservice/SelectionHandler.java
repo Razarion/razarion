@@ -17,6 +17,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSimpleSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
@@ -31,6 +33,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -150,11 +153,11 @@ public class SelectionHandler {
         selectionEventEventTrigger.fire(new SelectionEvent(suppressAudio));
     }
 
-    public void baseItemRemoved(Collection<SyncBaseItemSimpleDto> syncBaseItems) {
+    public void baseItemRemoved(int[] removedSyncItemIds) {
         if (selectedGroup != null) {
             boolean changed = false;
-            for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-                if (selectedGroup.remove(syncBaseItem)) {
+            for (int syncItemId : removedSyncItemIds) {
+                if (selectedGroup.remove(syncItemId)) {
                     changed = true;
                 }
             }
@@ -166,13 +169,22 @@ public class SelectionHandler {
                 }
             }
         } else if (selectedOtherSyncItem != null && selectedOtherSyncItem instanceof SyncBaseItemSimpleDto) {
-            for (SyncBaseItemSimpleDto syncBaseItem : syncBaseItems) {
-                if (selectedOtherSyncItem.equals(syncBaseItem)) {
+            for (int syncBaseItemId : removedSyncItemIds) {
+                if (selectedOtherSyncItem.getId() == syncBaseItemId) {
                     clearSelection(true);
                     break;
                 }
             }
         }
+    }
+
+    public void baseItemRemoved(NativeSimpleSyncBaseItemTickInfo[] removedSyncBaseItems) {
+        int[] removedIds = new int[removedSyncBaseItems.length];
+        // Does not work here Arrays.stream(nativeSyncBaseItemTickInfos)
+        for (int i = 0; i < removedSyncBaseItems.length; i++) {
+            removedIds[i] = removedSyncBaseItems[i].id;
+        }
+        baseItemRemoved(removedIds);
     }
 
     public void onMyBaseRemoved() {

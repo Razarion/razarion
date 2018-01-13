@@ -3,6 +3,8 @@ package com.btxtech.client;
 import com.btxtech.common.ClientUrls;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -71,4 +73,14 @@ public class ClientGameEngineControl extends GameEngineControl {
         deferredStartup.finished();
         deferredStartup = null;
     }
+
+    @Override
+    protected native NativeTickInfo castToNativeTickInfo(Object javaScriptObject) /*-{
+        return javaScriptObject;
+    }-*/;
+
+    @Override
+    protected native NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object javaScriptObject) /*-{
+        return javaScriptObject;
+    }-*/;
 }

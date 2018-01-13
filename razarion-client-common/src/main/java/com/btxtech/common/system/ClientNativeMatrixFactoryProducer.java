@@ -1,6 +1,6 @@
-package com.btxtech.client;
+package com.btxtech.common.system;
 
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -17,7 +17,4 @@ public class ClientNativeMatrixFactoryProducer {
     public NativeMatrixFactory getNativeMatrixFactory() {
         return nativeMatrixFactory;
     }
-
-    ;
-
 }

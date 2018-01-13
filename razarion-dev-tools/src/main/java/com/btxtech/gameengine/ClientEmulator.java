@@ -3,8 +3,8 @@ package com.btxtech.gameengine;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -30,11 +30,12 @@ public class ClientEmulator {
             aliveModelMatrices.clear();
             syncItemContainerService.iterateOverItems(false, false, null, syncItem -> {
                 if (syncItem instanceof SyncBaseItem) {
-                    SyncBaseItemSimpleDto simpleDto = ((SyncBaseItem) syncItem).createSyncBaseItemSimpleDto();
-                    // Alive
-                    if (!simpleDto.checkSpawning() && simpleDto.checkBuildup() && simpleDto.checkHealth()) {
-                        aliveModelMatrices.add(new ModelMatrices(simpleDto.getModel(), simpleDto.getInterpolatableVelocity(), nativeMatrixFactory));
-                    }
+                    throw new UnsupportedOperationException("NativeSyncBaseItemTickInfo has been introduced");
+//                    SyncBaseItemSimpleDto simpleDto = ((SyncBaseItem) syncItem).createNativeSyncBaseItemTickInfo();
+//                    // Alive
+//                    if (!simpleDto.checkSpawning() && simpleDto.checkBuildup() && simpleDto.checkHealth()) {
+//                        aliveModelMatrices.add(new ModelMatrices(simpleDto.getModel(), simpleDto.getInterpolatableVelocity(), nativeMatrixFactory));
+//                    }
 
                 }
                 return null;

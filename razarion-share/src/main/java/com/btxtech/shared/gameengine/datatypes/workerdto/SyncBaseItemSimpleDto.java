@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.workerdto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 
 /**
@@ -14,17 +13,14 @@ import com.btxtech.shared.datatypes.Vertex;
  * https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm
  * <p>
  * GWT strips of unused methods. Getter and setter are not available
+ * <p>
+ * This is only used on the client side. This is no longer used in the game engine
  */
 public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snapshot or volatile
     private int baseId;
-    private Matrix4 weaponTurret;
-    private double spawning;
     private double buildup;
     private double health;
     private double constructing;
-    private Vertex harvestingResourcePosition;
-    private Vertex buildingPosition;
-    private DecimalPosition interpolatableVelocity;
     private int containingItemCount;
     private double maxContainingRadius;
     private boolean contained;
@@ -35,26 +31,6 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
 
     public void setBaseId(int baseId) {
         this.baseId = baseId;
-    }
-
-    public Matrix4 getWeaponTurret() {
-        return weaponTurret;
-    }
-
-    public void setWeaponTurret(Matrix4 weaponTurret) {
-        this.weaponTurret = weaponTurret;
-    }
-
-    public double getSpawning() {
-        return spawning;
-    }
-
-    public void setSpawning(double spawning) {
-        this.spawning = spawning;
-    }
-
-    public boolean checkSpawning() {
-        return spawning < 1.0;
     }
 
     public double getBuildup() {
@@ -93,30 +69,6 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
         return constructing > 0.0;
     }
 
-    public Vertex getHarvestingResourcePosition() {
-        return harvestingResourcePosition;
-    }
-
-    public void setHarvestingResourcePosition(Vertex harvestingResourcePosition) {
-        this.harvestingResourcePosition = harvestingResourcePosition;
-    }
-
-    public Vertex getBuildingPosition() {
-        return buildingPosition;
-    }
-
-    public void setBuildingPosition(Vertex buildingPosition) {
-        this.buildingPosition = buildingPosition;
-    }
-
-    public DecimalPosition getInterpolatableVelocity() {
-        return interpolatableVelocity;
-    }
-
-    public void setInterpolatableVelocity(DecimalPosition interpolatableVelocity) {
-        this.interpolatableVelocity = interpolatableVelocity;
-    }
-
     public int getContainingItemCount() {
         return containingItemCount;
     }
@@ -139,5 +91,22 @@ public class SyncBaseItemSimpleDto extends SyncItemSimpleDto { // Rename to Snap
 
     public void setContained(boolean contained) {
         this.contained = contained;
+    }
+
+    public static SyncBaseItemSimpleDto from(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        SyncBaseItemSimpleDto syncBaseItemSimpleDto = new SyncBaseItemSimpleDto();
+        syncBaseItemSimpleDto.setId(nativeSyncBaseItemTickInfo.id);
+        syncBaseItemSimpleDto.setItemTypeId(nativeSyncBaseItemTickInfo.itemTypeId);
+        syncBaseItemSimpleDto.setPosition2d(NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo));
+        syncBaseItemSimpleDto.setPosition3d(NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo));
+        //  Matrix4 model is not set. Use this from NativeSyncBaseItemTickInfo
+        syncBaseItemSimpleDto.setBaseId(nativeSyncBaseItemTickInfo.baseId);
+        syncBaseItemSimpleDto.setBuildup(nativeSyncBaseItemTickInfo.buildup);
+        syncBaseItemSimpleDto.setHealth(nativeSyncBaseItemTickInfo.health);
+        syncBaseItemSimpleDto.setConstructing(nativeSyncBaseItemTickInfo.constructing);
+        syncBaseItemSimpleDto.setContainingItemCount(nativeSyncBaseItemTickInfo.containingItemCount);
+        syncBaseItemSimpleDto.setMaxContainingRadius(nativeSyncBaseItemTickInfo.maxContainingRadius);
+        syncBaseItemSimpleDto.setContained(nativeSyncBaseItemTickInfo.contained);
+        return syncBaseItemSimpleDto;
     }
 }

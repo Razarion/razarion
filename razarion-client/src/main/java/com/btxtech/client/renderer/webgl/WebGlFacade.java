@@ -16,7 +16,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.VisualUiService;
-import com.btxtech.uiservice.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;

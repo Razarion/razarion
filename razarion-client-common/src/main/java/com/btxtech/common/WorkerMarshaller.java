@@ -68,8 +68,6 @@ public class WorkerMarshaller {
             case CREATE_RESOURCES:
             case RESOURCE_CREATED:
             case RESOURCE_DELETED:
-            case SYNC_ITEM_START_SPAWNED:
-            case SYNC_ITEM_IDLE:
             case CREATE_BOXES:
             case BOX_CREATED:
             case BOX_DELETED:
@@ -116,13 +114,6 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
-            // Quadruple JSON data
-            case TICK_UPDATE_RESPONSE:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
-                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
-                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
-                break;
             case INITIALIZE_WARM:
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
@@ -144,6 +135,12 @@ public class WorkerMarshaller {
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
                 array.set(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
+                break;
+            // Single Structure clone
+            case TICK_UPDATE_RESPONSE:
+            case SYNC_ITEM_START_SPAWNED:
+            case SYNC_ITEM_IDLE:
+                array.set(DATA_OFFSET_0, (JavaScriptObject)controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -204,10 +201,11 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_4), DecimalPosition.class));
                 break;
             case TICK_UPDATE_RESPONSE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_3), List.class));
+                data.add(array.getObject(DATA_OFFSET_0));
+//                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+//                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+//                data.add(fromJson(array.getString(DATA_OFFSET_2), List.class));
+//                data.add(fromJson(array.getString(DATA_OFFSET_3), List.class));
                 break;
             case COMMAND_ATTACK:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
@@ -269,10 +267,10 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), UseInventoryItem.class));
                 break;
             case SYNC_ITEM_START_SPAWNED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemSimpleDto.class));
+                data.add(array.getObject(DATA_OFFSET_0));
                 break;
             case SYNC_ITEM_IDLE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemSimpleDto.class));
+                data.add(array.getObject(DATA_OFFSET_0));
                 break;
             case CREATE_BOXES:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));

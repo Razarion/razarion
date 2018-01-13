@@ -7,10 +7,10 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 import com.btxtech.uiservice.renderer.ViewService;
 
@@ -153,7 +153,7 @@ public class ResourceUiService implements ViewService.ViewFieldListener {
 
     public SyncItemMonitor monitorSyncResourceItem(SyncResourceItemSimpleDto syncResourceItemSimpleDto) {
         // No monitoring is done, since resources do not move
-        return new SyncItemState(syncResourceItemSimpleDto, null, itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
+        return new SyncItemState(syncResourceItemSimpleDto.getId(), syncResourceItemSimpleDto.getPosition2d(), syncResourceItemSimpleDto.getPosition3d(), itemTypeService.getResourceItemType(syncResourceItemSimpleDto.getItemTypeId()).getRadius(), null).createSyncItemMonitor();
     }
 
     public SyncStaticItemSetPositionMonitor createSyncItemSetPositionMonitor() {

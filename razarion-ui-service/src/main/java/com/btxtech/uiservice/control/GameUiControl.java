@@ -19,7 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -151,8 +151,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void start() {
-        if(!renderService.depthTextureSupported()) {
-           modalDialogManager.showMessageDialog(I18nHelper.getConstants().oldBrowserDialogTitle(), I18nHelper.getConstants().oldBrowserDialogMessage());
+        if (!renderService.depthTextureSupported()) {
+            modalDialogManager.showMessageDialog(I18nHelper.getConstants().oldBrowserDialogTitle(), I18nHelper.getConstants().oldBrowserDialogMessage());
         }
 
         startTimeStamp = new Date();
@@ -249,10 +249,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
     }
 
-    public void setGameInfo(GameInfo gameInfo) {
-        baseItemUiService.updateGameInfo(gameInfo);
-        if (gameInfo.getXpFromKills() > 0) {
-            userUiService.increaseXp(gameInfo.getXpFromKills());
+    public void setGameInfo(NativeTickInfo nativeTickInfo) {
+        baseItemUiService.updateGameInfo(nativeTickInfo);
+        if (nativeTickInfo.xpFromKills > 0) {
+            userUiService.increaseXp(nativeTickInfo.xpFromKills);
         }
     }
 

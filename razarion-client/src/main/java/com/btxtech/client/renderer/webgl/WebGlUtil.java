@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.webgl;
 
-import com.btxtech.uiservice.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrix;
 import com.google.gwt.dom.client.CanvasElement;
 import elemental.html.Float32Array;
 import elemental.html.WebGLRenderingContext;

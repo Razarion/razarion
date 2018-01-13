@@ -2,6 +2,7 @@ package com.btxtech.uiservice.tip;
 
 import com.btxtech.shared.dto.GameTipConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -95,15 +96,15 @@ public class GameTipService {
         }
     }
 
-    public void onSyncBaseItemIdle(SyncBaseItemSimpleDto syncBaseItem) {
-        if (tipTaskContainer != null && baseItemUiService.isMyOwnProperty(syncBaseItem)) {
-            tipTaskContainer.onSyncBaseItemIdle(syncBaseItem);
+    public void onSyncBaseItemIdle(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (tipTaskContainer != null && baseItemUiService.isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+            tipTaskContainer.onSyncBaseItemIdle(nativeSyncBaseItemTickInfo);
         }
     }
 
-    public void onSpawnSyncItem(SyncBaseItemSimpleDto syncBaseItem) {
-        if (tipTaskContainer != null && baseItemUiService.isMyOwnProperty(syncBaseItem)) {
-            tipTaskContainer.onSpawnSyncItem(syncBaseItem);
+    public void onSpawnSyncItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (tipTaskContainer != null && baseItemUiService.isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+            tipTaskContainer.onSpawnSyncItem(nativeSyncBaseItemTickInfo);
         }
     }
 

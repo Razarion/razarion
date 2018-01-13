@@ -171,6 +171,10 @@ public class MathHelper {
         return compareWithPrecision(value1, value2, PRECISION);
     }
 
+    public static boolean compareToZeroWithPrecision(double value, double precision) {
+        return compareWithPrecision(value, 0, PRECISION);
+    }
+
     public static boolean compareWithPrecision(double value1, double value2, double precision) {
         if (precision < 0) {
             throw new IllegalArgumentException("Precision is not allowed to be smaller than 0");

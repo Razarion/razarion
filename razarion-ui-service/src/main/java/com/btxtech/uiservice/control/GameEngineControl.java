@@ -22,7 +22,8 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
-import com.btxtech.shared.gameengine.datatypes.workerdto.GameInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
@@ -91,6 +92,10 @@ public abstract class GameEngineControl {
     protected abstract void onLoaded();
 
     public abstract boolean isStarted();
+
+    protected abstract NativeTickInfo castToNativeTickInfo(Object javaScriptObject);
+
+    protected abstract NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object singleData);
 
     public void start() {
         sendToWorker(GameEngineControlPackage.Command.START);
@@ -220,13 +225,17 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.TERRAIN_TILE_REQUEST, terrainTileIndex);
     }
 
-    private void onTickUpdate(Collection<SyncBaseItemSimpleDto> updatedSyncBaseItems, GameInfo gameInfo, Collection<SyncBaseItemSimpleDto> baseItemRemoved, Collection<SyncBaseItemSimpleDto> baseItemKilled) {
-        baseItemUiService.updateSyncBaseItems(updatedSyncBaseItems);
-        gameUiControl.setGameInfo(gameInfo);
-        selectionHandler.baseItemRemoved(baseItemRemoved);
-        selectionHandler.baseItemRemoved(baseItemKilled);
-        effectVisualizationService.baseItemRemoved(baseItemRemoved);
-        effectVisualizationService.onSyncBaseItemsExplode(baseItemKilled);
+    private void onTickUpdate(NativeTickInfo nativeTickInfo) {
+        baseItemUiService.updateSyncBaseItems(nativeTickInfo.updatedNativeSyncBaseItemTickInfos);
+        gameUiControl.setGameInfo(nativeTickInfo);
+        if (nativeTickInfo.removeSyncBaseItemIds != null) {
+            selectionHandler.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
+            effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
+        }
+        if (nativeTickInfo.killedSyncBaseItems != null) {
+            selectionHandler.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
+            effectVisualizationService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
+        }
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
 
@@ -294,18 +303,17 @@ public abstract class GameEngineControl {
                 onInitialisingFailed((String) controlPackage.getSingleData());
                 break;
             case TICK_UPDATE_RESPONSE:
-                onTickUpdate((Collection<SyncBaseItemSimpleDto>) controlPackage.getData(0), (GameInfo) controlPackage.getData(1),
-                        (Collection<SyncBaseItemSimpleDto>) controlPackage.getData(2), (Collection<SyncBaseItemSimpleDto>) controlPackage.getData(3));
+                onTickUpdate(castToNativeTickInfo(controlPackage.getData(0)));
                 break;
             case TICK_UPDATE_RESPONSE_FAIL:
                 onTickUpdateFailed();
                 break;
             case SYNC_ITEM_START_SPAWNED:
-                audioService.onSpawnSyncItem((SyncBaseItemSimpleDto) controlPackage.getSingleData());
-                gameTipService.onSpawnSyncItem((SyncBaseItemSimpleDto) controlPackage.getSingleData());
+                 audioService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                 gameTipService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
                 break;
             case SYNC_ITEM_IDLE:
-                gameTipService.onSyncBaseItemIdle((SyncBaseItemSimpleDto) controlPackage.getSingleData());
+                gameTipService.onSyncBaseItemIdle(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
                 break;
             case RESOURCE_CREATED:
                 resourceUiService.addResource((SyncResourceItemSimpleDto) controlPackage.getSingleData());

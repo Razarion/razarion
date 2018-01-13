@@ -27,6 +27,8 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
+import com.btxtech.shared.nativejs.NativeMatrixDto;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -52,6 +54,8 @@ public class SyncWeapon extends SyncBaseAbility {
     private PathingService pathingService;
     @Inject
     private Instance<SyncTurret> syncTurretInstance;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
     private WeaponType weaponType;
     private SyncBaseItem target;
     private boolean followTarget;
@@ -247,7 +251,7 @@ public class SyncWeapon extends SyncBaseAbility {
         return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix());
     }
 
-    public Matrix4 createTurretMatrix4Shape3D() {
-        return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix4Shape3D());
+    public NativeMatrixDto createTurretMatrix4Shape3D() {
+        return nativeMatrixFactory.createNativeMatrixDtoColumnMajorArray(getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix4Shape3D()).toWebGlArray());
     }
 }

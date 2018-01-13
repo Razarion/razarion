@@ -1,14 +1,12 @@
-package com.btxtech.uiservice.nativejs;
+package com.btxtech.shared.nativejs;
 
 import jsinterop.annotations.JsType;
-
-import javax.enterprise.inject.Vetoed;
 
 /**
  * Created by Beat
  * 24.03.2017.
  */
-@JsType(name = "NativeMatrixFactory", isNative = true)
+@JsType(name = "NativeMatrixFactory", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public abstract class NativeMatrixFactory {
     public native NativeMatrix createFromColumnMajorArray(double[] array);
 
@@ -21,4 +19,10 @@ public abstract class NativeMatrixFactory {
     public native NativeMatrix createYRotation(double rad);
 
     public native NativeMatrix createZRotation(double rad);
+
+    public native NativeMatrix createFromNativeMatrixDto(NativeMatrixDto nativeMatrixDto);
+
+    public native NativeMatrixDto createNativeMatrixDtoColumnMajorArray(double array[]);
+
+    public native int[] intArrayConverter(int[] ints);
 }

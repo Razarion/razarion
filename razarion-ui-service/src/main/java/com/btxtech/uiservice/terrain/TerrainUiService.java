@@ -21,7 +21,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;

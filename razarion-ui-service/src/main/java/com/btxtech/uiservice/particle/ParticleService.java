@@ -2,7 +2,7 @@ package com.btxtech.uiservice.particle;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.Camera;
 
 import javax.annotation.PostConstruct;

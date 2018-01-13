@@ -2,7 +2,7 @@ package com.btxtech.uiservice.tip.tiptask;
 
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.item.BaseItemUiService;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.tip.visualization.InGameItemTipVisualization;
 import com.btxtech.uiservice.tip.visualization.InGameTipVisualization;
 

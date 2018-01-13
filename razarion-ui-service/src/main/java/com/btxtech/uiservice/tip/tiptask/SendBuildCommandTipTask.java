@@ -78,7 +78,7 @@ public class SendBuildCommandTipTask extends AbstractTipTask implements BaseItem
     @Override
     public InGameTipVisualization createInGameTipVisualization() {
         if (toBeFinalized != null) {
-            return new InGameItemTipVisualization(() -> baseItemUiService.monitorSyncItem(toBeFinalized), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getToBeFinalizedCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId(), getNativeMatrixFactory());
+            return new InGameItemTipVisualization(() -> baseItemUiService.monitorSyncItem(toBeFinalized.getId()), getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getToBeFinalizedCornerColor(), getGameTipVisualConfig().getDefaultCommandShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId(), getNativeMatrixFactory());
         } else {
             InGamePositionTipVisualization visualization = new InGamePositionTipVisualization(getGameTipVisualConfig().getCornerMoveDistance(), getGameTipVisualConfig().getCornerMoveDuration(), getGameTipVisualConfig().getCornerLength(), getGameTipVisualConfig().getBaseItemPlacerCornerColor(), getGameTipVisualConfig().getBaseItemPlacerShape3DId(), getGameTipVisualConfig().getOutOfViewShape3DId(), getNativeMatrixFactory());
             terrainUiService.getTerrainPosition(positionHint, visualization::setPosition);

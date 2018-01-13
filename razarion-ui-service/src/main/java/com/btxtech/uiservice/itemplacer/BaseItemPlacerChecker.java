@@ -51,7 +51,7 @@ public class BaseItemPlacerChecker {
         }
         isItemsOk = false;
         if (isEnemiesOk) {
-            isItemsOk = !baseItemUiService.hasItemsInRange(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
+            isItemsOk = !baseItemUiService.hasItemsInRangeInViewField(absoluteItemPositions, baseItemType.getPhysicalAreaConfig().getRadius());
         }
         isTerrainOk = isItemsOk && terrainUiService.isTerrainFreeInDisplay(absoluteItemPositions, baseItemType);
     }

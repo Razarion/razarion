@@ -6,7 +6,7 @@ import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

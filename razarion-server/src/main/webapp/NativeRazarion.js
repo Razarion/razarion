@@ -1,10 +1,10 @@
 com = {
     btxtech: {
-        uiservice: {
+        shared: {
             nativejs: {
                 NativeMatrixFactory: function () {
                     this.createFromColumnMajorArray = function (array) {
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(new Float32Array(array), this);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(new Float32Array(array), this);
                     };
 
                     /**
@@ -35,7 +35,7 @@ com = {
                         float32Array[14] = z;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -66,7 +66,7 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -96,7 +96,7 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -126,7 +126,7 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(float32Array, this);
                     };
 
                     /**
@@ -156,10 +156,25 @@ com = {
                         float32Array[14] = 0;
                         float32Array[15] = 1;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(float32Array, this);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(float32Array, this);
+                    };
+
+                    this.createFromNativeMatrixDto = function (nativeMatrixDto) {
+                        return new com.btxtech.shared.nativejs.NativeMatrix(nativeMatrixDto.numbers, this);
+                    };
+
+                    this.createNativeMatrixDtoColumnMajorArray = function (array) {
+                        return new com.btxtech.shared.nativejs.NativeMatrixDto(new Float32Array(array), this);
+                    };
+
+                    this.intArrayConverter = function (array) {
+                        var result = [];
+                        for (i = 0; i < array.length; i++) {
+                            result[i] = array[i];
+                        }
+                        return result;
                     };
                 },
-
 
                 NativeMatrix: function (float32Array, nativeMatrixFactory) {
                     this.float32Array = float32Array;
@@ -212,7 +227,15 @@ com = {
                         out[14] = b0 * a02 + b1 * a12 + b2 * a22 + b3 * a32;
                         out[15] = b0 * a03 + b1 * a13 + b2 * a23 + b3 * a33;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
+                    };
+
+                    this.multiplyVertex = function (nativeVertexDto, w) {
+                        var resultNativeVertexDto = new com.btxtech.shared.nativejs.NativeVertexDto();
+                        resultNativeVertexDto.x = this.float32Array[0] * nativeVertexDto.x + this.float32Array[4] * nativeVertexDto.y + this.float32Array[8] * nativeVertexDto.z + this.float32Array[12] * w;
+                        resultNativeVertexDto.y = this.float32Array[1] * nativeVertexDto.x + this.float32Array[5] * nativeVertexDto.y + this.float32Array[9] * nativeVertexDto.z + this.float32Array[13] * w;
+                        resultNativeVertexDto.z = this.float32Array[2] * nativeVertexDto.x + this.float32Array[6] * nativeVertexDto.y + this.float32Array[10] * nativeVertexDto.z + this.float32Array[14] * w;
+                        return resultNativeVertexDto;
                     };
 
                     this.invert = function () {
@@ -265,7 +288,7 @@ com = {
                         out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
                         out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
                     };
 
                     this.transpose = function () {
@@ -288,7 +311,7 @@ com = {
                         out[14] = this.float32Array[11];
                         out[15] = this.float32Array[15];
 
-                        return new com.btxtech.uiservice.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
+                        return new com.btxtech.shared.nativejs.NativeMatrix(out, this.nativeMatrixFactory);
                     };
 
                     this.toColumnMajorArray = function () {
@@ -311,11 +334,18 @@ com = {
                         return s;
                     }
 
-                }
-            }
-        },
-        shared: {
-            nativejs: {
+                },
+
+                NativeMatrixDto: function (float32Array) {
+                    this.numbers = float32Array;
+                },
+
+                NativeVertexDto: function () {
+                    this.x = null;
+                    this.y = null;
+                    this.z = null;
+                },
+
                 TerrainTile: function () {
                     this.init = function (indexX, indexY) {
                         this.indexX = indexX;
@@ -761,6 +791,47 @@ com = {
                             }
                         }
                     };
+                },
+
+                workerdto: {
+                    NativeTickInfo: function () {
+                        this.resources = 0;
+                        this.xpFromKills = 0;
+                        this.houseSpace = 0;
+                        this.updatedNativeSyncBaseItemTickInfos = null;
+                        this.killedSyncBaseItems = null;
+                        this.removeSyncBaseItemIds = null;
+                    },
+
+                    NativeSimpleSyncBaseItemTickInfo: function () {
+                        this.id = 0;
+                        this.itemTypeId = 0;
+                        this.contained = false;
+                        this.x = 0;
+                        this.y = 0;
+                        this.z = 0;
+                    },
+
+                    NativeSyncBaseItemTickInfo: function () {
+                        this.id = 0;
+                        this.itemTypeId = 0;
+                        this.x = 0;
+                        this.y = 0;
+                        this.z = 0;
+                        this.model = null;
+                        this.baseId = 0;
+                        this.weaponTurret = null;
+                        this.spawning = 0;
+                        this.buildup = 0;
+                        this.health = 0;
+                        this.constructing = 0;
+                        this.harvestingResourcePosition = null;
+                        this.buildingPosition = null;
+                        this.interpolatableVelocity = null;
+                        this.containingItemCount = 0;
+                        this.maxContainingRadius = 0;
+                        this.contained = false;
+                    }
                 }
             }
         }

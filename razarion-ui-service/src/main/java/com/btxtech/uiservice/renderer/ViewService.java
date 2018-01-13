@@ -1,8 +1,8 @@
 package com.btxtech.uiservice.renderer;
 
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.uiservice.nativejs.NativeMatrix;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;

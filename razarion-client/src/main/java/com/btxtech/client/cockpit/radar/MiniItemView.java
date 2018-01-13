@@ -1,7 +1,9 @@
 package com.btxtech.client.cockpit.radar;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -32,15 +34,16 @@ public class MiniItemView extends AbstractGameCoordinates {
     protected void draw(CanvasRenderingContext2D ctx) {
         Rectangle2D rectangle2D = getVisibleField();
         double width = toCanvasPixel(1.0 * getZoom());
-        for (SyncBaseItemSimpleDto syncBaseItemSimpleDto : baseItemUiService.getSyncBaseItems()) {
-            if (syncBaseItemSimpleDto.getPosition2d() == null) {
+        for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : baseItemUiService.getNativeSyncBaseItemTickInfos()) {
+            if (nativeSyncBaseItemTickInfo.contained) {
                 continue;
             }
-            if (!rectangle2D.contains(syncBaseItemSimpleDto.getPosition2d())) {
+            DecimalPosition position = NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo);
+            if (!rectangle2D.contains(position)) {
                 continue;
             }
-            getCtx().setFillStyle(itemUiService.color4SyncItem(syncBaseItemSimpleDto).toHtmlColor());
-            getCtx().fillRect((float) syncBaseItemSimpleDto.getPosition2d().getX(), (float) syncBaseItemSimpleDto.getPosition2d().getY(), (float) width, (float) width);
+            getCtx().setFillStyle(itemUiService.color4SyncBaseItem(nativeSyncBaseItemTickInfo).toHtmlColor());
+            getCtx().fillRect((float) position.getX(), (float) position.getY(), (float) width, (float) width);
         }
     }
 

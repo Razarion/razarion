@@ -1,8 +1,11 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.uiservice.nativejs.NativeMatrix;
-import com.btxtech.uiservice.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
+import com.btxtech.shared.nativejs.NativeVertexDto;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixDto;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -43,6 +46,23 @@ public class DevToolNativeMatrixFactoryProducer {
         public NativeMatrix createZRotation(double rad) {
             return new DevToolNativeMatrix(Matrix4.createZRotation(rad));
         }
+
+        @Override
+        public NativeMatrix createFromNativeMatrixDto(NativeMatrixDto nativeMatrixDto) {
+            return new DevToolNativeMatrix(nativeMatrixDto);
+        }
+
+        @Override
+        public NativeMatrixDto createNativeMatrixDtoColumnMajorArray(double[] array) {
+            NativeMatrixDto nativeMatrixDto = new NativeMatrixDto();
+            nativeMatrixDto.numbers = array;
+            return nativeMatrixDto;
+        }
+
+        @Override
+        public int[] intArrayConverter(int[] ints) {
+            return ints;
+        }
     };
 
     @Produces
@@ -61,9 +81,18 @@ public class DevToolNativeMatrixFactoryProducer {
             this.matrix4 = matrix4;
         }
 
+        public DevToolNativeMatrix(NativeMatrixDto nativeMatrixDto) {
+            this.matrix4 = Matrix4.fromColumnMajorOrder(nativeMatrixDto.numbers);
+        }
+
         @Override
         public DevToolNativeMatrix multiply(NativeMatrix other) {
             return new DevToolNativeMatrix(matrix4.multiply(((DevToolNativeMatrix) other).matrix4));
+        }
+
+        @Override
+        public NativeVertexDto multiplyVertex(NativeVertexDto other, double w) {
+            return NativeUtil.toNativeVertex(matrix4.multiply(NativeUtil.toVertex(other), w));
         }
 
         @Override
