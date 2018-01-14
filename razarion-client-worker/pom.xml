@@ -99,6 +99,8 @@
                     <strict>true</strict>
                     <inplace>true</inplace>
                     <deploy>${project.parent.basedir}${raz.web-dir}debug</deploy>
+                    <!--<saveSource>true</saveSource>-->
+                    <!--<saveSourceOutput>${project.parent.basedir}${raz.web-dir}debug</saveSourceOutput>-->
                     <!--<style>DETAILED</style>-->
                     <!-- Only work with modified gwt-maven-plugin -->
                     <!-- mvn gwt:run-codeserver -->
