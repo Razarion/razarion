@@ -29,6 +29,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     private ExceptionHandler exceptionHandler;
     private Worker worker;
     private DeferredStartup deferredStartup;
+    private QueueStatistics queueStatistics;
 
     @Override
     public boolean isStarted() {
@@ -44,6 +45,9 @@ public class ClientGameEngineControl extends GameEngineControl {
                     MessageEvent messageEvent = (MessageEvent) event;
                     GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData());
                     dispatch(controlPackage);
+                    if (queueStatistics != null) {
+                        queueStatistics.received(controlPackage.getCommand());
+                    }
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
                 }
@@ -61,6 +65,9 @@ public class ClientGameEngineControl extends GameEngineControl {
 
     @Override
     protected void sendToWorker(GameEngineControlPackage.Command command, Object... data) {
+        if (queueStatistics != null) {
+            queueStatistics.send(command);
+        }
         try {
             worker.postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, data)));
         } catch (Throwable t) {
@@ -72,6 +79,10 @@ public class ClientGameEngineControl extends GameEngineControl {
     protected void onLoaded() {
         deferredStartup.finished();
         deferredStartup = null;
+    }
+
+    public void enableQueueStatistics() {
+        queueStatistics = new QueueStatistics();
     }
 
     @Override
