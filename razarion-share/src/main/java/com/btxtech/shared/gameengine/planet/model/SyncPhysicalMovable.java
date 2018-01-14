@@ -285,14 +285,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         if (velocity == null) {
             return null;
         }
-        if (MathHelper.compareToZeroWithPrecision(getNorm().getX(), 0.0001) || MathHelper.compareToZeroWithPrecision(getNorm().getY(), 0.0001)) {
-            return NativeUtil.toNativeVertex(velocity.getX(), velocity.getY(), 0);
-        }
-        double angle = getNorm().unsignedAngle(Vertex.Z_NORM);
-        double zV = Math.tan(angle) * velocity.magnitude();
-        double xV = -(getNorm().getZ() * zV) / (getNorm().getX() + (getNorm().getY() * velocity.getY()) / getNorm().getX());
-        double yV = xV * velocity.getY() / velocity.getX();
-        return NativeUtil.toNativeVertex(xV, yV, zV);
+        Vertex originalVelocity = new Vertex(velocity, 0);
+        double angle = originalVelocity.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
+        double z = Math.tan(angle) * velocity.magnitude();
+        // Original x and y are taken because game engine does not consider heights
+        return NativeUtil.toNativeVertex(velocity.getX(), velocity.getY(), z);
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
