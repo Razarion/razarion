@@ -97,6 +97,9 @@ public abstract class GameEngineControl {
 
     protected abstract NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object singleData);
 
+    public void enableTracking() {
+    }
+
     public void start() {
         sendToWorker(GameEngineControlPackage.Command.START);
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);

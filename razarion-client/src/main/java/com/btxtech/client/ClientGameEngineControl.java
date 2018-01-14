@@ -81,7 +81,8 @@ public class ClientGameEngineControl extends GameEngineControl {
         deferredStartup = null;
     }
 
-    public void enableQueueStatistics() {
+    @Override
+    public void enableTracking() {
         queueStatistics = new QueueStatistics();
     }
 
