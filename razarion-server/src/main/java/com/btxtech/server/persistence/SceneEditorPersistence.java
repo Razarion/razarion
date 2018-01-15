@@ -47,6 +47,8 @@ public class SceneEditorPersistence {
     @Inject
     private InventoryPersistence inventoryPersistence;
     @Inject
+    private ImagePersistence imagePersistence;
+    @Inject
     private Instance<ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig>> sceneConfigCrudInstance;
 
     public ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> getSceneConfigCrud(int gameUiControlConfigId) {
@@ -57,9 +59,7 @@ public class SceneEditorPersistence {
         crud.setEntityIdProvider(SceneEntity::getId).setConfigIdProvider(SceneConfig::getId);
         crud.setConfigGenerator(sceneEntity -> sceneEntity.toSceneConfig(Locale.US));
         crud.setEntityFactory(SceneEntity::new);
-        crud.setEntityFiller((sceneEntity, sceneConfig) -> {
-            saveScene(sceneEntity, sceneConfig, Locale.US);
-        });
+        crud.setEntityFiller((sceneEntity, sceneConfig) -> saveScene(sceneEntity, sceneConfig, Locale.US));
         return crud;
     }
 
@@ -190,6 +190,7 @@ public class SceneEditorPersistence {
                 placeConfigEntity.fromPlaceConfig(sceneConfig.getGameTipConfig().getPlaceConfig());
                 gameTipConfigEntity.setPlaceConfig(placeConfigEntity);
             }
+            gameTipConfigEntity.setScrollMapImage(imagePersistence.getImageLibraryEntity(sceneConfig.getGameTipConfig().getScrollMapImageId()));
             sceneEntity.setGameTipConfigEntity(gameTipConfigEntity);
         }
 

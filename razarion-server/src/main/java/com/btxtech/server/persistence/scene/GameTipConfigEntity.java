@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.scene;
 
+import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
@@ -58,7 +59,9 @@ public class GameTipConfigEntity {
     private DecimalPosition terrainPositionHint;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity placeConfig;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private ImageLibraryEntity scrollMapImage;
 
     public GameTipConfig toGameTipConfig() {
         GameTipConfig gameTipConfig = new GameTipConfig().setTip(tip);
@@ -80,6 +83,9 @@ public class GameTipConfigEntity {
         gameTipConfig.setTerrainPositionHint(terrainPositionHint);
         if (placeConfig != null) {
             gameTipConfig.setPlaceConfig(placeConfig.toPlaceConfig());
+        }
+        if (scrollMapImage != null) {
+            gameTipConfig.setScrollMapImageId(scrollMapImage.getId());
         }
         return gameTipConfig;
     }
@@ -114,6 +120,10 @@ public class GameTipConfigEntity {
 
     public void setPlaceConfig(PlaceConfigEntity placeConfig) {
         this.placeConfig = placeConfig;
+    }
+
+    public void setScrollMapImage(ImageLibraryEntity scrollMapImage) {
+        this.scrollMapImage = scrollMapImage;
     }
 
     @Override

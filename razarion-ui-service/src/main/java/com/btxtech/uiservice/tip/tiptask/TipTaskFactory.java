@@ -103,7 +103,7 @@ public class TipTaskFactory {
     }
 
     private void createStartPlacer(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
-        tipTaskContainer.add(createSpawnPlacerTipTask(gameTipConfig.getToCreatedItemTypeId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.add(createSpawnPlacerTipTask(gameTipConfig.getToCreatedItemTypeId(), gameTipConfig.getTerrainPositionHint(), gameTipConfig.getScrollMapImageId()));
     }
 
     private void createPickBox(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
@@ -115,12 +115,12 @@ public class TipTaskFactory {
     private void createSpawnInventoryItem(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         tipTaskContainer.add(tipTaskInstance.select(OpenInventoryTipTask.class).get());
         tipTaskContainer.add(createUseInventoryItemTipTask(gameTipConfig.getInventoryItemId()));
-        tipTaskContainer.add(createSpawnPlacerTipTask(inventoryTypeService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemTypeId(), gameTipConfig.getTerrainPositionHint()));
+        tipTaskContainer.add(createSpawnPlacerTipTask(inventoryTypeService.getInventoryItem(gameTipConfig.getInventoryItemId()).getBaseItemTypeId(), gameTipConfig.getTerrainPositionHint(), gameTipConfig.getScrollMapImageId()));
     }
 
     private void createScrollTipTask(TipTaskContainer tipTaskContainer, GameTipConfig gameTipConfig) {
         ScrollTipTask scrollTipTask = tipTaskInstance.select(ScrollTipTask.class).get();
-        scrollTipTask.init(gameTipConfig.getTerrainPositionHint());
+        scrollTipTask.init(gameTipConfig.getTerrainPositionHint(), gameTipConfig.getScrollMapImageId());
         tipTaskContainer.add(scrollTipTask);
     }
 
@@ -176,9 +176,9 @@ public class TipTaskFactory {
         return sendAttackCommandTipTask;
     }
 
-    private SpawnPlacerTipTask createSpawnPlacerTipTask(int spawnItemTypeId, DecimalPosition positionHint) {
+    private SpawnPlacerTipTask createSpawnPlacerTipTask(int spawnItemTypeId, DecimalPosition positionHint, Integer dialogMapImageId) {
         SpawnPlacerTipTask spawnPlacerTipTask = tipTaskInstance.select(SpawnPlacerTipTask.class).get();
-        spawnPlacerTipTask.init(spawnItemTypeId, positionHint);
+        spawnPlacerTipTask.init(spawnItemTypeId, positionHint, dialogMapImageId);
         return spawnPlacerTipTask;
     }
 

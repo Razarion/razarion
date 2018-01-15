@@ -44,10 +44,12 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
     // private SplashTipVisualization splashTipVisualization;
     private InGameDirectionVisualization inGameDirectionVisualization;
     private boolean dialogVisible;
-    private Runnable openDialogCloseCallback;
+    private Runnable dialogCloseCallback;
     private boolean ended;
+    private Integer mapImageId;
 
-    public void init(DecimalPosition terrainPositionHint) {
+    public void init(DecimalPosition terrainPositionHint, Integer mapImageId) {
+        this.mapImageId = mapImageId;
         selectionHandler.clearSelection(true);
         this.terrainPositionHint = terrainPositionHint;
     }
@@ -61,7 +63,9 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
     protected void internalStart() {
         viewService.addViewFieldListeners(this);
         dialogShowTimestamp = System.currentTimeMillis();
-        startTimer();
+        if (mapImageId != null) {
+            startTimer();
+        }
     }
 
     @Override
@@ -102,7 +106,7 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
     }
 
     private void startTimer() {
-        if(ended) {
+        if (ended) {
             return;
         }
         if (simpleScheduledFuture == null) {
@@ -118,62 +122,55 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
     }
 
     private void showScrollDialog(boolean splashVisible) {
+        if (mapImageId == null) {
+            inGameDirectionVisualization.setVisible(!splashVisible);
+            return;
+        }
         if (this.dialogVisible == splashVisible) {
             return;
         }
         this.dialogVisible = splashVisible;
         if (splashVisible) {
-            if(!ended) {
-                modalDialogManager.showScrollTipDialog(this);
+            if (!ended) {
+                modalDialogManager.showScrollTipDialog(setupScrollTipDialogModel());
             }
             stopTimer();
         } else {
-            if(openDialogCloseCallback != null) {
-                openDialogCloseCallback.run();
+            if (dialogCloseCallback != null) {
+                dialogCloseCallback.run();
             }
         }
         inGameDirectionVisualization.setVisible(!splashVisible);
     }
 
-    public String getDialogTitle() {
+    private ScrollTipDialogModel setupScrollTipDialogModel() {
+        ScrollTipDialogModel scrollTipDialogModel = new ScrollTipDialogModel();
+        scrollTipDialogModel.setScrollDialogKeyboardImageId(getGameTipVisualConfig().getScrollDialogKeyboardImageId());
+        scrollTipDialogModel.setScrollDialogMapImageId(mapImageId);
         Scene scene = gameUiControl.getCurrentScene();
-        if (scene == null) {
+        if (scene != null) {
+            ScrollUiQuest scrollUiQuest = scene.getSceneConfig().getScrollUiQuest();
+            if (scrollUiQuest != null) {
+                scrollTipDialogModel.setDialogTitle(scrollUiQuest.getTitle());
+                scrollTipDialogModel.setDialogMessage(scrollUiQuest.getDescription());
+            } else {
+                logger.warning("ScrollTipTask.getDialogMessage() scrollUiQuest == null");
+                scrollTipDialogModel.setDialogTitle("");
+                scrollTipDialogModel.setDialogMessage("");
+            }
+        } else {
             logger.warning("ScrollTipTask.getDialogMessage() scene == null");
-            return "???";
+            scrollTipDialogModel.setDialogTitle("");
+            scrollTipDialogModel.setDialogMessage("");
         }
-        ScrollUiQuest scrollUiQuest = scene.getSceneConfig().getScrollUiQuest();
-        if (scrollUiQuest == null) {
-            logger.warning("ScrollTipTask.getDialogMessage() scrollUiQuest == null");
-            return "???";
-        }
-        return scrollUiQuest.getTitle();
-    }
-
-    public String getDialogMessage() {
-        Scene scene = gameUiControl.getCurrentScene();
-        if (scene == null) {
-            logger.warning("ScrollTipTask.getDialogMessage() scene == null");
-            return "???";
-        }
-        ScrollUiQuest scrollUiQuest = scene.getSceneConfig().getScrollUiQuest();
-        if (scrollUiQuest == null) {
-            logger.warning("ScrollTipTask.getDialogMessage() scrollUiQuest == null");
-            return "???";
-        }
-        return scrollUiQuest.getDescription();
-    }
-
-    public Integer getScrollDialogMapImageId() {
-        return getGameTipVisualConfig().getScrollDialogMapImageId();
-    }
-
-    public Integer getScrollDialogKeyboardImageId() {
-        return getGameTipVisualConfig().getScrollDialogKeyboardImageId();
+        scrollTipDialogModel.setDialogOpenCallback(this::onDialogOpened);
+        scrollTipDialogModel.setDialogCloseCallback(this::onDialogClosed);
+        return scrollTipDialogModel;
     }
 
     public void onDialogClosed() {
-        openDialogCloseCallback = null;
-        if(ended) {
+        dialogCloseCallback = null;
+        if (ended) {
             return;
         }
         selectionHandler.clearSelection(true);
@@ -183,6 +180,6 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
     }
 
     public void onDialogOpened(Runnable openDialog) {
-        this.openDialogCloseCallback = openDialog;
+        this.dialogCloseCallback = openDialog;
     }
 }

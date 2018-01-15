@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.client.scene;
 
+import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.editor.widgets.itemtype.base.BaseItemTypeWidget;
 import com.btxtech.client.editor.widgets.itemtype.box.BoxItemTypeWidget;
 import com.btxtech.client.editor.widgets.itemtype.inventoryitem.InventoryItemWidget;
@@ -67,6 +68,12 @@ public class GameTipConfigPanel {
     @Inject
     @DataField
     private TableRow inventoryItemWidgetTr;
+    @Inject
+    @DataField
+    private ImageItemWidget scrollIMapImageWidget;
+    @Inject
+    @DataField
+    private TableRow scrollImapImageTr;
     private GameTipConfig gameTipConfig;
 
     public void init(GameTipConfig gameTipConfig, Consumer<GameTipConfig> gameTipConfigListener) {
@@ -96,6 +103,7 @@ public class GameTipConfigPanel {
         placeConfigWidgetTr.getStyle().setProperty("display", "none");
         boxItemTypeWidgetTr.getStyle().setProperty("display", "none");
         inventoryItemWidgetTr.getStyle().setProperty("display", "none");
+        scrollImapImageTr.getStyle().setProperty("display", "none");
         if (gameTipConfig == null) {
             return;
         }
@@ -139,6 +147,8 @@ public class GameTipConfigPanel {
                 toCreatedItemTypeWidget.init(gameTipConfig.getToCreatedItemTypeId(), toBeCreatedId -> gameTipConfig.setToCreatedItemTypeId(toBeCreatedId));
                 terrainPositionHintTr.getStyle().setProperty("display", "table-row");
                 terrainPositionHintWidget.init(gameTipConfig.getTerrainPositionHint(), position -> gameTipConfig.setTerrainPositionHint(position));
+                scrollImapImageTr.getStyle().setProperty("display", "table-row");
+                scrollIMapImageWidget.setImageId(gameTipConfig.getScrollMapImageId(), imageId -> gameTipConfig.setScrollMapImageId(imageId));
                 break;
             case PICK_BOX:
                 actorWidgetTr.getStyle().setProperty("display", "table-row");
@@ -151,10 +161,14 @@ public class GameTipConfigPanel {
                 inventoryItemWidget.init(gameTipConfig.getInventoryItemId(), inventoryItemId -> gameTipConfig.setInventoryItemId(inventoryItemId));
                 terrainPositionHintTr.getStyle().setProperty("display", "table-row");
                 terrainPositionHintWidget.init(gameTipConfig.getTerrainPositionHint(), position -> gameTipConfig.setTerrainPositionHint(position));
+                scrollImapImageTr.getStyle().setProperty("display", "table-row");
+                scrollIMapImageWidget.setImageId(gameTipConfig.getScrollMapImageId(), imageId -> gameTipConfig.setScrollMapImageId(imageId));
                 break;
             case SCROLL:
                 terrainPositionHintTr.getStyle().setProperty("display", "table-row");
                 terrainPositionHintWidget.init(gameTipConfig.getTerrainPositionHint(), position -> gameTipConfig.setTerrainPositionHint(position));
+                scrollImapImageTr.getStyle().setProperty("display", "table-row");
+                scrollIMapImageWidget.setImageId(gameTipConfig.getScrollMapImageId(), imageId -> gameTipConfig.setScrollMapImageId(imageId));
                 break;
             case SCROLL_HOME_BUTTON:
                 terrainPositionHintTr.getStyle().setProperty("display", "table-row");

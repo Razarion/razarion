@@ -5,7 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
-import com.btxtech.uiservice.tip.tiptask.ScrollTipTask;
+import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 
 import javax.inject.Inject;
 
@@ -40,7 +40,7 @@ public abstract class ModalDialogManager {
 
     public abstract void showSetUserNameDialog();
 
-    public abstract void showScrollTipDialog(ScrollTipTask scrollTipTask);
+    public abstract void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel);
 
     public void showQuestPassed(QuestDescriptionConfig questDescriptionConfig) {
         showQuestPassed(questDescriptionConfig, () -> {

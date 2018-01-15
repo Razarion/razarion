@@ -23,7 +23,7 @@ public class DbPropertiesServiceTest extends ArquillianBaseTest {
         Assert.assertEquals(0, dbPropertiesService.getIntProperty(DbPropertyKey.TIP_CORNER_MOVE_DURATION));
         Assert.assertEquals(0.0, dbPropertiesService.getDoubleProperty(DbPropertyKey.TIP_CORNER_MOVE_DISTANCE), 0.0001);
         Assert.assertNull(dbPropertiesService.getAudioIdProperty(DbPropertyKey.AUDIO_BASE_LOST));
-        Assert.assertNull(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_MAP_IMAGE));
+        Assert.assertNull(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
         Assert.assertNull(dbPropertiesService.getShape3DIdProperty(DbPropertyKey.TIP_BASE_ITEM_PLACER_SHAPE3D));
         Assert.assertNull(dbPropertiesService.getColorProperty(DbPropertyKey.TIP_ATTACK_COMMAND_CORNER_COLOR));
         // Test int value
@@ -52,12 +52,12 @@ public class DbPropertiesServiceTest extends ArquillianBaseTest {
         // Test image value
         ImageLibraryEntity image1 = persistInTransaction(new ImageLibraryEntity());
         ImageLibraryEntity image2 = persistInTransaction(new ImageLibraryEntity());
-        dbPropertiesService.setImageIdProperty(image1.getId(), DbPropertyKey.TIP_SCROLL_DIALOG_MAP_IMAGE);
-        Assert.assertEquals(image1.getId(), dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_MAP_IMAGE));
-        dbPropertiesService.setImageIdProperty(image2.getId(), DbPropertyKey.TIP_SCROLL_DIALOG_MAP_IMAGE);
-        Assert.assertEquals(image2.getId(), dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_MAP_IMAGE));
-        dbPropertiesService.setImageIdProperty(null, DbPropertyKey.TIP_SCROLL_DIALOG_MAP_IMAGE);
-        Assert.assertNull(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_MAP_IMAGE));
+        dbPropertiesService.setImageIdProperty(image1.getId(), DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE);
+        Assert.assertEquals(image1.getId(), dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
+        dbPropertiesService.setImageIdProperty(image2.getId(), DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE);
+        Assert.assertEquals(image2.getId(), dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
+        dbPropertiesService.setImageIdProperty(null, DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE);
+        Assert.assertNull(dbPropertiesService.getImageIdProperty(DbPropertyKey.TIP_SCROLL_DIALOG_KEYBOARD_IMAGE));
         // Test shape3DId value
         ColladaEntity shape3D1 = persistInTransaction(new ColladaEntity());
         ColladaEntity shape3D2 = persistInTransaction(new ColladaEntity());

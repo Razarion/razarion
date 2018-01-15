@@ -37,7 +37,6 @@ public enum DbPropertyKey {
     TIP_WEST_LEFT_MOUSE_IMAGE("tip.west.leftMouseImage"),
     TIP_SOUTH_LEFT_MOUSE_IMAGE("tip.south.leftMouseImage"),
     TIP_DIRECTION_SHAPE3D("tip.direction.shape3d"),
-    TIP_SCROLL_DIALOG_MAP_IMAGE("tip.scroll.dialog.map.image"),
     TIP_SCROLL_DIALOG_KEYBOARD_IMAGE("tip.scroll.dialog.keyboard.image"),
     // Quest in game visualization
     QUEST_IN_GAME_VISUALIZATION_CORNER_LENGTH("questInGameVisualization.corner.length"),

@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 import com.btxtech.uiservice.tip.tiptask.ScrollTipTask;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -132,7 +133,7 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
     }
 
     @Override
-    public void showScrollTipDialog(ScrollTipTask scrollTipTask) {
+    public void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel) {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("showScrollTipDialog");

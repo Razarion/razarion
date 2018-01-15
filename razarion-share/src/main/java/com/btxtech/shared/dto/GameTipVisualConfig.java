@@ -23,7 +23,6 @@ public class GameTipVisualConfig {
     private Integer westLeftMouseGuiImageId;
     private Integer southLeftMouseGuiImageId;
     private Integer directionShape3DId;
-    private Integer scrollDialogMapImageId;
     private Integer scrollDialogKeyboardImageId;
 
     public double getCornerLength() {
@@ -167,15 +166,6 @@ public class GameTipVisualConfig {
 
     public GameTipVisualConfig setDirectionShape3DId(Integer directionShape3DId) {
         this.directionShape3DId = directionShape3DId;
-        return this;
-    }
-
-    public Integer getScrollDialogMapImageId() {
-        return scrollDialogMapImageId;
-    }
-
-    public GameTipVisualConfig setScrollDialogMapImageId(Integer scrollDialogMapImageId) {
-        this.scrollDialogMapImageId = scrollDialogMapImageId;
         return this;
     }
 

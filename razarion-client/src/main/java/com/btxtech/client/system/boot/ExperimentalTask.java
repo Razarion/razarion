@@ -111,7 +111,6 @@ public class ExperimentalTask extends AbstractStartupTask {
         gameTipVisualConfig.setWestLeftMouseGuiImageId(272506);
         gameTipVisualConfig.setSouthLeftMouseGuiImageId(272507);
         gameTipVisualConfig.setDirectionShape3DId(272503);
-        gameTipVisualConfig.setScrollDialogMapImageId(272508);
         return gameTipVisualConfig;
     }
 

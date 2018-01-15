@@ -33,6 +33,7 @@ public class GameTipConfig {
     private Integer inventoryItemId;
     private DecimalPosition terrainPositionHint;
     private PlaceConfig placeConfig;
+    private Integer scrollMapImageId;
 
     public Tip getTip() {
         return tip;
@@ -103,6 +104,15 @@ public class GameTipConfig {
 
     public GameTipConfig setPlaceConfig(PlaceConfig placeConfig) {
         this.placeConfig = placeConfig;
+        return this;
+    }
+
+    public Integer getScrollMapImageId() {
+        return scrollMapImageId;
+    }
+
+    public GameTipConfig setScrollMapImageId(Integer scrollMapImageId) {
+        this.scrollMapImageId = scrollMapImageId;
         return this;
     }
 }
