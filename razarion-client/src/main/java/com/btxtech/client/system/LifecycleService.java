@@ -10,6 +10,7 @@ import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -85,6 +86,8 @@ public class LifecycleService {
     private ScreenCover screenCover;
     @Inject
     private LeftSideBarManager leftSideBarManager;
+    @Inject
+    private SelectionHandler selectionHandler;
 
     @PostConstruct
     public void postConstruct() {
@@ -146,6 +149,7 @@ public class LifecycleService {
         gameCanvas.stopRenderLoop();
         clientPerformanceTrackerService.stop();
         perfmonService.stop();
+        selectionHandler.clearSelection(true);
         itemMarkerService.clear();
         terrainMouseHandler.clear();
         cursorService.clear();
