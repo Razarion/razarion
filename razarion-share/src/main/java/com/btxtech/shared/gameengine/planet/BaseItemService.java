@@ -86,7 +86,7 @@ public class BaseItemService {
         activeItems.clear();
         activeItemQueue.clear();
         bases.clear();
-        guardingItemService.clear();
+        guardingItemService.init(planetActivationEvent.getGameEngineMode());
         lastBaseItId = 1;
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
             gameEngineMode = planetActivationEvent.getGameEngineMode();

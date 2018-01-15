@@ -16,8 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.datatypes.PlanetMode;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
@@ -60,10 +59,6 @@ import javax.inject.Inject;
 public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     @Inject
     private Instance<SyncBaseAbility> instance;
-    @Inject
-    private Instance<SyncPhysicalMovable> instanceMovable;
-    @Inject
-    private ItemTypeService itemTypeService;
     @Inject
     private BaseItemService baseItemService;
     @Inject
@@ -620,7 +615,6 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         }
     }
 
-
     public boolean isRazarionEarningOrConsuming() {
         return isRazarionEarningOrConsuming;
     }
@@ -632,7 +626,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     public void onAttacked(double damage, SyncBaseItem actor) throws TargetHasNoPositionException {
         gameLogicService.onAttacked(this, actor, damage);
         decreaseHealth(damage, actor);
-        if (PlanetService.MODE != PlanetMode.MASTER) {
+        if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
             return;
         }
         if (!isAlive()) {

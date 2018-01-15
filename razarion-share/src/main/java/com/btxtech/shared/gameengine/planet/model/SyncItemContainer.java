@@ -14,14 +14,14 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.datatypes.PlanetMode;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.command.UnloadContainerCommand;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.WrongOperationSurfaceException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ItemContainerType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -29,7 +29,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,6 +46,8 @@ public class SyncItemContainer extends SyncBaseAbility {
     private TerrainService terrainService;
     @Inject
     private GameLogicService gameLogicService;
+    @Inject
+    private BaseItemService baseItemService;
     private ItemContainerType itemContainerType;
     private List<SyncBaseItem> containedItems = new ArrayList<>();
     private DecimalPosition unloadPos;
@@ -77,7 +78,7 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     public void load(SyncBaseItem syncBaseItem) {
-        if (PlanetService.MODE != PlanetMode.MASTER) {
+        if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
             return;
         }
 
@@ -104,7 +105,7 @@ public class SyncItemContainer extends SyncBaseAbility {
     }
 
     private void unload() throws ItemDoesNotExistException {
-        if (PlanetService.MODE != PlanetMode.MASTER) {
+        if (baseItemService.getGameEngineMode() != GameEngineMode.MASTER) {
             return;
         }
         containedItems.removeIf(contained -> {

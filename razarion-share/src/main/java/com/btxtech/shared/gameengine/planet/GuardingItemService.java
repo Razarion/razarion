@@ -1,6 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.gameengine.datatypes.PlanetMode;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -25,15 +25,17 @@ public class GuardingItemService {
     @Inject
     private Instance<CommandService> commandService;
     private final Collection<SyncBaseItem> guardingItems = new ArrayList<>();
+    private GameEngineMode gameEngineMode;
 
-    public void clear() {
+    public void init(GameEngineMode gameEngineMode) {
+        this.gameEngineMode = gameEngineMode;
         synchronized (guardingItems) {
             guardingItems.clear();
         }
     }
 
     public void tick() {
-        if (PlanetService.MODE != PlanetMode.MASTER) {
+        if (gameEngineMode != GameEngineMode.MASTER) {
             return;
         }
 
@@ -49,7 +51,7 @@ public class GuardingItemService {
 
     public boolean add(SyncBaseItem syncBaseItem) {
         try {
-            if (PlanetService.MODE != PlanetMode.MASTER) {
+            if (gameEngineMode != GameEngineMode.MASTER) {
                 return false;
             }
 
@@ -75,7 +77,7 @@ public class GuardingItemService {
     }
 
     public void remove(SyncBaseItem syncBaseItem) {
-        if (PlanetService.MODE != PlanetMode.MASTER) {
+        if (gameEngineMode != GameEngineMode.MASTER) {
             return;
         }
         if (syncBaseItem.getSyncWeapon() == null) {

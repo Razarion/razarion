@@ -5,7 +5,6 @@ import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
-import com.btxtech.shared.gameengine.datatypes.PlanetMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.energy.EnergyService;
@@ -33,7 +32,6 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class PlanetService implements Runnable { // Only available in worker. On ui part is GameUiControl
-    public static final PlanetMode MODE = PlanetMode.MASTER;
     public static final int TICK_TIME_MILLI_SECONDS = 100;
     public static final int TICKS_PER_SECONDS = (int) (1000.0 / TICK_TIME_MILLI_SECONDS);
     public static final double TICK_FACTOR = (double) TICK_TIME_MILLI_SECONDS / 1000.0;
