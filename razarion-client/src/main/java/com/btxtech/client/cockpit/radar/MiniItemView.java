@@ -49,7 +49,7 @@ public class MiniItemView extends AbstractGameCoordinates {
 
     public void startUpdater() {
         stopUpdater();
-        simpleExecutorService.scheduleAtFixedRate(REDRAW_TIME, true, this::update, SimpleExecutorService.Type.UNSPECIFIED);
+        simpleExecutorService.scheduleAtFixedRate(REDRAW_TIME, true, this::update, SimpleExecutorService.Type.DRAW_MINI_MAP);
     }
 
     public void stopUpdater() {

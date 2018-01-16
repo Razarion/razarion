@@ -56,7 +56,7 @@ public class PerfmonService {
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
-        }, SimpleExecutorService.Type.UNSPECIFIED);
+        }, SimpleExecutorService.Type.PERFMON_ANALYSE);
     }
 
     public void stop() {

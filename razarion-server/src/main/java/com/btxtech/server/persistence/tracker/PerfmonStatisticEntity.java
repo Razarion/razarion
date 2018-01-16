@@ -65,6 +65,7 @@ public class PerfmonStatisticEntity {
                 perfmonTrackerDetail.setClientStartTime(perfmonStatisticEntryEntity.getDate());
                 perfmonTrackerDetail.setDuration(perfmonStatisticEntryEntity.getAvgDuration());
                 perfmonTrackerDetail.setFrequency(perfmonStatisticEntryEntity.getFrequency());
+                perfmonTrackerDetail.setSamples(perfmonStatisticEntryEntity.getSamples());
                 perfmonTrackerDetail.setType(perfmonEnum.toString());
                 return perfmonTrackerDetail;
             }).collect(Collectors.toList());

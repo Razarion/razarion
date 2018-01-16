@@ -80,7 +80,7 @@ public class Scene implements ViewService.ViewFieldListener {
             simpleExecutorService.schedule(ScreenCover.FADE_DURATION, () -> {
                 screenCover.removeLoadingCover();
                 onComplete();
-            }, SimpleExecutorService.Type.UNSPECIFIED);
+            }, SimpleExecutorService.Type.SCENE_RUNNER);
         }
         if (sceneConfig.getIntroText() != null && !sceneConfig.getIntroText().trim().isEmpty()) {
             screenCover.showStoryCover(sceneConfig.getIntroText());
@@ -155,7 +155,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            simpleExecutorService.schedule(sceneConfig.getDuration(), this::onComplete, SimpleExecutorService.Type.UNSPECIFIED);
+            simpleExecutorService.schedule(sceneConfig.getDuration(), this::onComplete, SimpleExecutorService.Type.SCENE_WAIT);
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             scrollBouncePrevention = false;

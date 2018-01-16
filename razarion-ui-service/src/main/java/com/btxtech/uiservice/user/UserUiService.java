@@ -66,7 +66,7 @@ public class UserUiService {
 
     public void activateSetUserNameTimer() {
         clearSetUserNameTimer();
-        setUserNameFuture = simpleExecutorService.schedule(SET_NAME_TIME, modalDialogManager::showSetUserNameDialog, SimpleExecutorService.Type.UNSPECIFIED);
+        setUserNameFuture = simpleExecutorService.schedule(SET_NAME_TIME, modalDialogManager::showSetUserNameDialog, SimpleExecutorService.Type.USER_SET_NAME);
     }
 
     public void setUserContext(UserContext userContext) {

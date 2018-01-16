@@ -73,6 +73,7 @@ export class PerfmonTrackerDetail {
   type: string;
   frequency: number;
   duration: number;
+  samples: number;
 }
 
 export class PerfmonTerrainTileDetail {

@@ -58,7 +58,7 @@ public class TerrainScrollHandler {
 
     @PostConstruct
     public void postConstruct() {
-        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, false, this::autoScroll, SimpleExecutorService.Type.UNSPECIFIED);
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(SCROLL_TIMER_DELAY, false, this::autoScroll, SimpleExecutorService.Type.SCROLL);
     }
 
     public void setPlayGround(Rectangle2D playGround) {
@@ -214,7 +214,7 @@ public class TerrainScrollHandler {
                     } else {
                         setCameraPosition(camera.getPosition().toXY().getPointWithDistance(distance, possibleCameraPosition, false));
                     }
-                }, SimpleExecutorService.Type.UNSPECIFIED);
+                }, SimpleExecutorService.Type.SCROLL_AUTO);
             }
         } else {
             setScrollDisabled(viewFieldConfig.getCameraLocked(), viewFieldConfig.getBottomWidth());

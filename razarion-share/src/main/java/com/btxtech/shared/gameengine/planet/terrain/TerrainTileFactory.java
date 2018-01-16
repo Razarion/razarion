@@ -18,7 +18,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
-import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
 
@@ -43,13 +42,10 @@ public class TerrainTileFactory {
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
-    private PerfmonService perfmonService;
-    @Inject
     private ExceptionHandler exceptionHandler;
 
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
-        long time = System.currentTimeMillis();
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileContext terrainTileContext = terrainTileContextInstance.get();
         terrainTileContext.init(terrainTileIndex, terrainShapeTile, terrainTypeService.getGroundSkeletonConfig(), terrainShape.getPlayGround());
@@ -58,9 +54,7 @@ public class TerrainTileFactory {
         insertSlopePart(terrainTileContext, terrainShapeTile);
         insertWaterPart(terrainTileContext, terrainShapeTile);
         insertHeightAndType(terrainTileContext, terrainShapeTile);
-        TerrainTile terrainTile = terrainTileContext.complete();
-        perfmonService.onTerrainTile(terrainTileIndex, System.currentTimeMillis() - time);
-        return terrainTile;
+        return terrainTileContext.complete();
     }
 
     private void insertGroundPart(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
@@ -107,7 +101,7 @@ public class TerrainTileFactory {
         Vertex vertexTR = terrainTileContext.setupVertexWithGroundSkeletonHeight(rightXNode, topYNode, groundHeight);
         Vertex vertexTL = terrainTileContext.setupVertexWithGroundSkeletonHeight(xNode, topYNode, groundHeight);
 
-        if(!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+        if (!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
             return;
         }
 
@@ -163,7 +157,7 @@ public class TerrainTileFactory {
         Vertex vertexTR = terrainTileContext.setupVertex(rightXNode, topYNode, drivewayHeightTR);
         Vertex vertexTL = terrainTileContext.setupVertex(xNode, topYNode, drivewayHeightTL);
 
-        if(!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+        if (!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
             return;
         }
 

@@ -47,6 +47,7 @@ public class StatisticConsumer {
                 PerfmonStatisticEntry perfmonStatisticEntry = new PerfmonStatisticEntry();
                 perfmonStatisticEntry.setFrequency(statisticEntry.getFrequency());
                 perfmonStatisticEntry.setAvgDuration(statisticEntry.getAvgDuration());
+                perfmonStatisticEntry.setSamples(statisticEntry.getSamples());
                 perfmonStatisticEntry.setDate(new Date(statisticEntry.getFistSample()));
                 return perfmonStatisticEntry;
             }).collect(Collectors.toList()));

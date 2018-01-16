@@ -95,7 +95,7 @@ public abstract class PlaybackControl {
             timeToSleep = 0;
         }
         onSleeping(timeToSleep);
-        simpleScheduledFuture = simpleExecutorService.schedule(timeToSleep, this::executeAction, SimpleExecutorService.Type.UNSPECIFIED);
+        simpleScheduledFuture = simpleExecutorService.schedule(timeToSleep, this::executeAction, SimpleExecutorService.Type.PLAYBACK);
     }
 
     public void pause() {

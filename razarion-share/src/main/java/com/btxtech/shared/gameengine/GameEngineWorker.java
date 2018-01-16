@@ -290,9 +290,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     public void start() {
+        // planetService.enableTracking(true);
         planetService.start();
         perfmonService.start(gameSessionUuid);
-        // planetService.enableTracking(true);
     }
 
     public void stop() {
@@ -585,8 +585,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     private void getTerrainTile(Index terrainTileIndex) {
-        TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
-        sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
+        long time = System.currentTimeMillis();
+         TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
+         sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
+        perfmonService.onTerrainTile(terrainTileIndex, System.currentTimeMillis() - time);
     }
 
     private void sellItems(List<Integer> items) {

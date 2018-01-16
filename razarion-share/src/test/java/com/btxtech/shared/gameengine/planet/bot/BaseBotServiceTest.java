@@ -16,7 +16,7 @@ public class BaseBotServiceTest extends WeldMasterBaseTest {
 
     protected void startBot(List<BotConfig> botConfigs) {
         getWeldBean(BotService.class).startBots(botConfigs);
-        botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT);
+        botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
     }
 
     protected void tickBotRunner() {

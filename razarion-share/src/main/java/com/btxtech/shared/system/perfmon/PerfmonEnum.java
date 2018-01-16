@@ -6,21 +6,30 @@ package com.btxtech.shared.system.perfmon;
  * Time: 15:00
  */
 public enum PerfmonEnum {
-    RENDERER("Renderer", true),
-    GAME_ENGINE("Game Engine", true),
-    BOT("Bot", false),
-    DETAILED_TRACKING("Detailed Tracking", false);
+    RENDERER(true),
+    GAME_ENGINE(true),
+    BOT_TICKER(true),
+    BOT_TIMER(true),
+    DETAILED_TRACKING(true),
+    COVER_FADE(true),
+    DRAW_MINI_MAP(true),
+    PERFMON_SEND_TO_CLIENT(true),
+    PERFMON_ANALYSE(true),
+    PLAYBACK(true),
+    SCENE_RUNNER(true),
+    SCENE_WAIT(true),
+    TRAIL_SERVICE(true),
+    SCROLL(true),
+    SCROLL_AUTO(true),
+    TIP_SCROLL(true),
+    TIP_SPAWN(true),
+    TIP_GUI_POINTING(true),
+    USER_SET_NAME(true);
 
-    private String displayName;
     private boolean fps;
 
-    PerfmonEnum(String displayName, boolean fps) {
-        this.displayName = displayName;
+    PerfmonEnum(boolean fps) {
         this.fps = fps;
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 
     public boolean isFps() {

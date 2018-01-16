@@ -10,6 +10,7 @@ import java.util.List;
 public class PerfmonStatisticEntry {
     private double frequency;
     private double avgDuration;
+    private int samples;
     private Date date;
 
     public double getFrequency() {
@@ -26,6 +27,14 @@ public class PerfmonStatisticEntry {
 
     public void setAvgDuration(double avgDuration) {
         this.avgDuration = avgDuration;
+    }
+
+    public int getSamples() {
+        return samples;
+    }
+
+    public void setSamples(int samples) {
+        this.samples = samples;
     }
 
     public Date getDate() {

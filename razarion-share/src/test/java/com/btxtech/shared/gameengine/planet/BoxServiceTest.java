@@ -13,7 +13,6 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -147,7 +146,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         getBotService().startBots(botConfigs);
         // Attack
         assertSyncItemCount(5,0,0);
-        TestSimpleScheduledFuture botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT);
+        TestSimpleScheduledFuture botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
         for (int i = 0; i < 100; i++) {
             botScheduledFuture.invokeRun();
             tickPlanetServiceBaseServiceActive();

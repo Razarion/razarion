@@ -36,7 +36,7 @@ public class TrailService {
 
     @PostConstruct
     public void postConstruct() {
-        simpleExecutorService.scheduleAtFixedRate(CLEANUP_INTERVAL_MILLIS, true, this::cleanup, SimpleExecutorService.Type.UNSPECIFIED);
+        simpleExecutorService.scheduleAtFixedRate(CLEANUP_INTERVAL_MILLIS, true, this::cleanup, SimpleExecutorService.Type.TRAIL_SERVICE);
     }
 
     public void clear() {

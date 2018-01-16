@@ -11,6 +11,7 @@ public class PerfmonTrackerDetail {
     private String type;
     private double frequency;
     private double duration;
+    private int samples;
 
     public Date getClientStartTime() {
         return clientStartTime;
@@ -45,6 +46,15 @@ public class PerfmonTrackerDetail {
 
     public PerfmonTrackerDetail setDuration(double duration) {
         this.duration = duration;
+        return this;
+    }
+
+    public int getSamples() {
+        return samples;
+    }
+
+    public PerfmonTrackerDetail setSamples(int samples) {
+        this.samples = samples;
         return this;
     }
 }

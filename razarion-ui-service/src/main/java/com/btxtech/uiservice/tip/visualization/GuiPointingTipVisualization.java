@@ -38,7 +38,7 @@ public class GuiPointingTipVisualization extends AbstractGuiTipVisualization{
 
     @Override
     public void start(SimpleExecutorService simpleExecutorService) {
-        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(DELAY_MILLIS, true, this::handlePosition, SimpleExecutorService.Type.UNSPECIFIED);
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(DELAY_MILLIS, true, this::handlePosition, SimpleExecutorService.Type.TIP_GUI_POINTING);
     }
 
     private void handlePosition() {

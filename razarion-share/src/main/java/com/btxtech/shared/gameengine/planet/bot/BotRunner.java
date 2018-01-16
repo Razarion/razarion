@@ -193,7 +193,7 @@ public class BotRunner {
         killBotThread();
         BotTicker botTicker = new BotTicker();
         botTicker.run();
-        botTickerFuture = simpleExecutorService.scheduleAtFixedRate(botConfig.getActionDelay(), true, botTicker, SimpleExecutorService.Type.BOT);
+        botTickerFuture = simpleExecutorService.scheduleAtFixedRate(botConfig.getActionDelay(), true, botTicker, SimpleExecutorService.Type.BOT_TICKER);
     }
 
     private void runBotTimer() {
@@ -221,6 +221,6 @@ public class BotRunner {
         Random random = new Random();
         long delay = min + (long) (random.nextDouble() * (double) (max - min));
         killTimer();
-        botTimerFuture = simpleExecutorService.schedule(delay, new BotTimer(), SimpleExecutorService.Type.UNSPECIFIED);
+        botTimerFuture = simpleExecutorService.schedule(delay, new BotTimer(), SimpleExecutorService.Type.BOT_TIMER);
     }
 }

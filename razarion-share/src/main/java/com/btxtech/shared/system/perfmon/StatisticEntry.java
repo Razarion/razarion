@@ -33,6 +33,10 @@ public class StatisticEntry {
         return fistSample;
     }
 
+    public int getSamples() {
+        return samples;
+    }
+
     public void analyze(SampleEntry sample) {
         samples++;
         totalDuration += sample.getDuration();
@@ -50,7 +54,9 @@ public class StatisticEntry {
 
     public void finalizeStatistic() {
         double samplingDuration = (double) (lastSample - fistSample) / 1000.0;
-        frequency = (double) samples / samplingDuration;
+        if(samplingDuration > 0) {
+            frequency = (double) samples / samplingDuration;
+        }
         avgDuration = (double) totalDuration / (double) samples / 1000.0;
     }
 }

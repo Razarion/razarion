@@ -9,9 +9,23 @@ import com.btxtech.shared.system.perfmon.PerfmonEnum;
 public interface SimpleExecutorService {
     enum Type {
         GAME_ENGINE(PerfmonEnum.GAME_ENGINE),
-        BOT(PerfmonEnum.BOT),
+        BOT_TICKER(PerfmonEnum.BOT_TICKER),
+        BOT_TIMER(PerfmonEnum.BOT_TIMER),
         DETAILED_TRACKING(PerfmonEnum.DETAILED_TRACKING),
-        UNSPECIFIED(null);
+        COVER_FADE(PerfmonEnum.COVER_FADE),
+        DRAW_MINI_MAP(PerfmonEnum.DRAW_MINI_MAP),
+        PERFMON_SEND_TO_CLIENT(PerfmonEnum.PERFMON_SEND_TO_CLIENT),
+        PERFMON_ANALYSE(PerfmonEnum.PERFMON_ANALYSE),
+        PLAYBACK(PerfmonEnum.PLAYBACK),
+        SCENE_RUNNER(PerfmonEnum.SCENE_RUNNER),
+        SCENE_WAIT(PerfmonEnum.SCENE_WAIT),
+        TRAIL_SERVICE(PerfmonEnum.TRAIL_SERVICE),
+        SCROLL(PerfmonEnum.SCROLL),
+        SCROLL_AUTO(PerfmonEnum.SCROLL_AUTO),
+        TIP_SCROLL(PerfmonEnum.TIP_SCROLL),
+        TIP_SPAWN(PerfmonEnum.TIP_SPAWN),
+        TIP_GUI_POINTING(PerfmonEnum.TIP_GUI_POINTING),
+        USER_SET_NAME(PerfmonEnum.USER_SET_NAME);
 
         private PerfmonEnum perfmonEnum;
 

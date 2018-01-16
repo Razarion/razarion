@@ -23,12 +23,14 @@ public class PerfmonStatisticEntryEntity {
     private Integer id;
     private double frequency;
     private double avgDuration;
+    private int samples;
     @Column(columnDefinition = "DATETIME(3)")
     private Date date;
 
     public PerfmonStatisticEntryEntity fromPerfmonStatisticEntry(PerfmonStatisticEntry perfmonStatisticEntry) {
         frequency = perfmonStatisticEntry.getFrequency();
         avgDuration = perfmonStatisticEntry.getAvgDuration();
+        samples = perfmonStatisticEntry.getSamples();
         date = perfmonStatisticEntry.getDate();
         return this;
     }
@@ -39,6 +41,10 @@ public class PerfmonStatisticEntryEntity {
 
     public double getAvgDuration() {
         return avgDuration;
+    }
+
+    public int getSamples() {
+        return samples;
     }
 
     public Date getDate() {

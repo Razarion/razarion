@@ -110,7 +110,7 @@ public class ScrollTipTask extends AbstractTipTask implements ViewService.ViewFi
             return;
         }
         if (simpleScheduledFuture == null) {
-            simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(TIMER_DELAY, true, this::onTimer, SimpleExecutorService.Type.UNSPECIFIED);
+            simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(TIMER_DELAY, true, this::onTimer, SimpleExecutorService.Type.TIP_SCROLL);
         }
     }
 

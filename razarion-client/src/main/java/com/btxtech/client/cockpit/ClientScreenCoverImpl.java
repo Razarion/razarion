@@ -86,7 +86,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
         EmptyCover emptyCover = emptyCoverInstance.get();
         RootPanel.get().add(emptyCover);
         emptyCover.startFadeout();
-        simpleExecutorService.schedule(FADE_DURATION, () -> Browser.getWindow().getLocation().setHref(url), SimpleExecutorService.Type.UNSPECIFIED);
+        simpleExecutorService.schedule(FADE_DURATION, () -> Browser.getWindow().getLocation().setHref(url), SimpleExecutorService.Type.COVER_FADE);
     }
 
     @Override

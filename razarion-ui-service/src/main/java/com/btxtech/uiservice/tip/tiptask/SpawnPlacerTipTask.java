@@ -110,7 +110,7 @@ public class SpawnPlacerTipTask extends AbstractTipTask implements BaseItemPlace
 
     public void startTimer() {
         stopTimer();
-        simpleScheduledFuture = simpleExecutorService.schedule(TIMER_DELAY, this::onTimer, SimpleExecutorService.Type.UNSPECIFIED);
+        simpleScheduledFuture = simpleExecutorService.schedule(TIMER_DELAY, this::onTimer, SimpleExecutorService.Type.TIP_SPAWN);
     }
 
     public void stopTimer() {
