@@ -74,7 +74,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
             webSocket.close();
             webSocket = null;
         } catch (Throwable throwable) {
-            exceptionHandler.handleException("ClientServerGameConnection.close()", throwable);
+            exceptionHandler.handleException("ClientServerSystemConnection.close()", throwable);
         }
     }
 
