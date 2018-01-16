@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
+import java.util.Date;
 import java.util.logging.Logger;
 
 /**
@@ -125,7 +126,9 @@ public class PlanetServiceTracker {
         double ticksPerSecond = tickCount / periodTime;
         double factor = 1.0 / tickCount / 1000;
         logger.warning("\n-------------------------------------------------\n" +
+                "start time: " + new Date(startPeriodTimeStamp) + "s\n" +
                 "periodTime: " + periodTime + "s\n" +
+                "tickCount: " + tickCount + "\n" +
                 "ticksPerSecond: " + ticksPerSecond + "\n" +
                 "totalTickTime: " + totalTickTime * factor + "s\n" +
                 "questServiceTime: " + questServiceTime * factor + "s\n" +
