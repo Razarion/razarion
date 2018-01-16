@@ -47,4 +47,5 @@ table.propertyTable>tbody>tr>td:first-child  {
 /*---------------------------*/
 .sessionTable>tbody>tr>td {
   border: 1px solid black;
+  width: 100%;
 }
