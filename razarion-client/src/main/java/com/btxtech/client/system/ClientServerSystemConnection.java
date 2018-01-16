@@ -3,11 +3,9 @@ package com.btxtech.client.system;
 import com.btxtech.common.WebSocketHelper;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.rest.RestUrl;
-import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
-import com.btxtech.uiservice.system.boot.ClientRunner;
 import elemental.client.Browser;
 import elemental.events.Event;
 import elemental.events.MessageEvent;
@@ -28,8 +26,6 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
     private LifecycleService lifecycleService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private ClientRunner clientRunner;
     private Logger logger = Logger.getLogger(ClientServerSystemConnection.class.getName());
     private WebSocket webSocket;
 
@@ -40,7 +36,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
         webSocket.setOnclose(evt -> logger.severe("ClientServerSystemConnection WebSocket Close: " + evt));
         webSocket.setOnmessage(this::handleMessage);
         webSocket.setOnopen(evt -> {
-            sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.SET_GAME_SESSION_UUID, toJson(clientRunner.getGameSessionUuid())));
+            sendGameSessionUuid();
         });
     }
 

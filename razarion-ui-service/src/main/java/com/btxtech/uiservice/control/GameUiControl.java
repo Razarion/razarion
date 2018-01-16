@@ -146,6 +146,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     }
 
     public void initWarm() {
+        abstractServerSystemConnection.sendGameSessionUuid();
         gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
         terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
     }
