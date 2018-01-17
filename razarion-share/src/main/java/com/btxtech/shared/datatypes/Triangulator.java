@@ -59,9 +59,8 @@ public class Triangulator {
 
             boolean isEar = true;
             for (int reflexCornerIndex : reflexCornerIndices) {
-                if (reflexCornerIndex == convexCornerIndex
-                        || reflexCornerIndex == CollectionUtils.getCorrectedIndex(convexCornerIndex + 1, convexCornerIndices)
-                        || reflexCornerIndex == CollectionUtils.getCorrectedIndex(convexCornerIndex - 1, convexCornerIndices)) {
+                if (reflexCornerIndex == CollectionUtils.getCorrectedIndex(convexCornerIndex + 1, polygonCorners)
+                        || reflexCornerIndex == CollectionUtils.getCorrectedIndex(convexCornerIndex - 1, polygonCorners)) {
                     continue;
                 }
 

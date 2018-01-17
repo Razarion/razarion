@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.gui;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DifferenceCollector;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
 import javafx.scene.paint.Color;
 
@@ -31,6 +32,8 @@ public class UserDataRenderer {
             render((SimplePath) userObject);
         } else if (userObject instanceof PositionMarker) {
             render((PositionMarker) userObject);
+        } else if (userObject instanceof DifferenceCollector) {
+            render((DifferenceCollector) userObject);
         } else {
             throw new IllegalArgumentException("Unknown userObject: " + userObject);
         }
@@ -53,4 +56,11 @@ public class UserDataRenderer {
     private void render(List<DecimalPosition> userObject) {
         weldTestRenderer.strokeLine(userObject, AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.DEEPPINK, true);
     }
+
+    private void render(DifferenceCollector differenceCollector) {
+        differenceCollector.getDifferenceTriangleElements().forEach(diffTriangleElement -> {
+            weldTestRenderer.showDifference(diffTriangleElement);
+        });
+    }
+
 }

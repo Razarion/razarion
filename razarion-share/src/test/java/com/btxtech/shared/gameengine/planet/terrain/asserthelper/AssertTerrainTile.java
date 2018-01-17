@@ -11,7 +11,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
-import com.btxtech.shared.gameengine.planet.terrain.gui.teraintile.TerrainTileTestDisplay;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -32,10 +31,14 @@ import java.util.List;
 public class AssertTerrainTile {
     public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     // public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion2\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
-    private static final boolean SHOW_GUI = false;
     private Collection<TerrainTile> expected;
+    private DifferenceCollector differenceCollector;
 
     public AssertTerrainTile(Class theClass, String resourceName) {
+        this(theClass, resourceName, null);
+    }
+    public AssertTerrainTile(Class theClass, String resourceName, DifferenceCollector differenceCollector) {
+        this.differenceCollector = differenceCollector;
         InputStream inputStream = theClass.getResourceAsStream(resourceName);
         if (inputStream == null) {
             throw new RuntimeException("Resource does not exist: " + theClass.getProtectionDomain().getCodeSource().getLocation().getPath() + "/" + resourceName);
@@ -54,10 +57,6 @@ public class AssertTerrainTile {
     }
 
     public void assertEquals(Collection<TerrainTile> actual) {
-        if (SHOW_GUI) {
-            TerrainTileTestDisplay.show(expected, actual);
-        }
-
         if (expected.size() != actual.size()) {
             Assert.fail("Expected size does not match one single TerrainTile. Expected size: " + expected.size());
         }
@@ -88,13 +87,17 @@ public class AssertTerrainTile {
         // Ground
         Assert.assertEquals("Index X", expected.getIndexX(), actual.getIndexX());
         Assert.assertEquals("Index Y", expected.getIndexY(), actual.getIndexY());
-        Assert.assertArrayEquals("Ground Vertices", expected.getGroundVertices(), actual.getGroundVertices(), 0.001);
-        Assert.assertArrayEquals("Ground Norms", expected.getGroundNorms(), actual.getGroundNorms(), 0.001);
-        Assert.assertArrayEquals("Ground Tangents", expected.getGroundTangents(), actual.getGroundTangents(), 0.001);
-        Assert.assertArrayEquals("Ground Splattings", expected.getGroundSplattings(), actual.getGroundSplattings(), 0.001);
-        Assert.assertEquals("Ground Vertex Count", expected.getGroundVertexCount(), actual.getGroundVertexCount());
-        Assert.assertEquals("Height", expected.getHeight(), actual.getHeight(), 0.001);
-        Assert.assertEquals("LandWaterProportion", expected.getLandWaterProportion(), actual.getLandWaterProportion(), 0.001);
+        if(differenceCollector != null) {
+            differenceCollector.compareArray("Ground Vertices", expected.getGroundVertices(), actual.getGroundVertices(), 0.001);
+        } else {
+            Assert.assertArrayEquals("Ground Vertices", expected.getGroundVertices(), actual.getGroundVertices(), 0.001);
+            Assert.assertArrayEquals("Ground Norms", expected.getGroundNorms(), actual.getGroundNorms(), 0.001);
+            Assert.assertArrayEquals("Ground Tangents", expected.getGroundTangents(), actual.getGroundTangents(), 0.001);
+            Assert.assertArrayEquals("Ground Splattings", expected.getGroundSplattings(), actual.getGroundSplattings(), 0.001);
+            Assert.assertEquals("Ground Vertex Count", expected.getGroundVertexCount(), actual.getGroundVertexCount());
+            Assert.assertEquals("Height", expected.getHeight(), actual.getHeight(), 0.001);
+            Assert.assertEquals("LandWaterProportion", expected.getLandWaterProportion(), actual.getLandWaterProportion(), 0.001);
+        }
         // Slope
         int expectedSlopeTileCount = 0;
         if (expected.getTerrainSlopeTiles() != null) {

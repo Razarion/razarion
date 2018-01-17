@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DifferenceCollector;
 import org.junit.Test;
 
 import java.util.ArrayList;

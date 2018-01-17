@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.DiffTriangleElement;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
@@ -114,7 +115,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
     @Override
     protected void doRender() {
-        Index fromTileIndex = new Index(3, 5);
+        Index fromTileIndex = new Index(0, 0);
         Index toTileIndex = fromTileIndex.add(2, 2);
 
         if (weldTestController.renderTerrainTileSplattings() || weldTestController.renderTerrainTileWater() || weldTestController.renderTerrainTileGround() || weldTestController.renderTerrainTileSlope() || weldTestController.renderTerrainTileHeight() || weldTestController.renderTerrainTileTerrainType()) {
@@ -223,6 +224,51 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         double[] xCorners = new double[]{groundVertices[index1], groundVertices[index2], groundVertices[index3]};
         double[] yCorners = new double[]{groundVertices[index1 + 1], groundVertices[index2 + 1], groundVertices[index3 + 1]};
         getGc().fillPolygon(xCorners, yCorners, 3);
+    }
+
+    private void fillTriangle(double[] groundVertices, int index1, int index2, int index3) {
+        double[] xCorners = new double[]{groundVertices[index1], groundVertices[index2], groundVertices[index3]};
+        double[] yCorners = new double[]{groundVertices[index1 + 1], groundVertices[index2 + 1], groundVertices[index3 + 1]};
+        getGc().fillPolygon(xCorners, yCorners, 3);
+    }
+
+    public void showDifference(DiffTriangleElement diffTriangleElement) {
+        switch (diffTriangleElement.getDifference()) {
+            case XY:
+                getGc().setLineWidth(LINE_WIDTH);
+                getGc().setStroke(Color.RED);
+                strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
+                break;
+            case Z:
+                getGc().setFill(new Color(1.0, 0.5, 0.5, 0.5));
+                fillTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
+                break;
+            case XYZ:
+                getGc().setFill(new Color(1.0, 0.5, 0.5, 0.5));
+                fillTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
+                getGc().setLineWidth(LINE_WIDTH);
+                getGc().setStroke(Color.RED);
+                strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
+                break;
+            case MISSING:
+                getGc().setLineWidth(LINE_WIDTH);
+                getGc().setStroke(new Color(1.0, 0.8, 0.0, 1.0));
+                strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
+                break;
+            case UNEXPECTED:
+                getGc().setLineWidth(LINE_WIDTH);
+                getGc().setStroke(new Color(0.8, 0, 0.8, 1.0));
+                strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown Difference: " + diffTriangleElement.getDifference());
+        }
+    }
+
+    private void strokeTriangle(double[] vertices, int index1, int index2, int index3) {
+        getGc().strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
+        getGc().strokeLine(vertices[index2], vertices[index2 + 1], vertices[index3], vertices[index3 + 1]);
+        getGc().strokeLine(vertices[index3], vertices[index3 + 1], vertices[index1], vertices[index1 + 1]);
     }
 
     private void strokeZTriangle(double[] vertices, int index1, int index2, int index3) {
