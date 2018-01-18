@@ -3,6 +3,7 @@ package com.btxtech.client.editor.perfmon;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.PerfmonStatisticEntry;
@@ -20,7 +21,10 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -32,6 +36,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
     private static final int HEIGHT = 300;
     private static final double MAX_AVG_FREQUENCY = 60;
     private static final double MAX_AVG_DURATION = 0.1;
+    private static final Set<PerfmonEnum> FILTER = new HashSet<>(Arrays.asList(PerfmonEnum.RENDERER, PerfmonEnum.GAME_ENGINE));
     // private Logger logger = Logger.getLogger(PerfmonDialog.class.getName());
     @Inject
     private PerfmonService perfmonService;
@@ -74,6 +79,9 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
         int barWidth = barPairWidth / 2;
         int y = 0;
         for (PerfmonStatistic perfmonStatistic : allStatistics) {
+            if (!FILTER.contains(perfmonStatistic.getPerfmonEnum())) {
+                continue;
+            }
             // Text
             SVGTextElement descr = Browser.getDocument().createSVGTextElement();
             descr.setTextContent(perfmonStatistic.getPerfmonEnum().toString());
