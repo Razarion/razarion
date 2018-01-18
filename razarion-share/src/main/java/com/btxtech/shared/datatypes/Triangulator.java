@@ -49,7 +49,7 @@ public class Triangulator {
             }
         }
         // Setup ear list
-        List<Integer> ears = new LinkedList<>();
+        Integer earToClipIndex = null;
         for (int convexCornerIndex : convexCornerIndices) {
             DecimalPosition previousCorner = polygon.getCorner(convexCornerIndex - 1);
             DecimalPosition corner = polygon.getCorner(convexCornerIndex);
@@ -71,25 +71,25 @@ public class Triangulator {
             }
 
             if (isEar) {
-                ears.add(convexCornerIndex);
+                earToClipIndex = convexCornerIndex;
+                break;
             }
         }
 
         // Add the triangle
-        if (ears.isEmpty()) {
+        if (earToClipIndex == null) {
             // throw new IllegalStateException("No ears found");
             return; // Happens if all points are on a straight line
         }
 
-        int earIndex = ears.get(0);
-        T corner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex));
-        T previousCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex - 1));
-        T nextCorner = vertexPolygon.get(polygon.getCorrectedIndex(earIndex + 1));
+        T corner = vertexPolygon.get(polygon.getCorrectedIndex(earToClipIndex));
+        T previousCorner = vertexPolygon.get(polygon.getCorrectedIndex(earToClipIndex - 1));
+        T nextCorner = vertexPolygon.get(polygon.getCorrectedIndex(earToClipIndex + 1));
 
         checkAndCallListener(previousCorner, corner, nextCorner, listener, minLength);
 
         List<T> newVertexPolygon = new ArrayList<>(vertexPolygon);
-        newVertexPolygon.remove(earIndex);
+        newVertexPolygon.remove(earToClipIndex.intValue()); // must be int value or wrong newVertexPolygon.remove(object) method is called
         extractTriangle(newVertexPolygon, minLength, listener);
     }
 
