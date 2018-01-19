@@ -99,6 +99,7 @@ public class TerrainShape {
                                 }
                                 terrainShapeTile.setTerrainShapeNodes(terrainShapeNodes);
                             }
+                            terrainShapeTile.setNativeTerrainShapeObjectLists(nativeTerrainShapeTile.nativeTerrainShapeObjectLists);
                         }
                     }
                 }

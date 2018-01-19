@@ -4,6 +4,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
@@ -38,5 +39,10 @@ public class DevToolJsInteropObjectFactory implements JsInteropObjectFactory {
     @Override
     public TerrainSubNode generateTerrainSubNode() {
         return new DevToolTerrainSubNode();
+    }
+
+    @Override
+    public TerrainTileObjectList generateTerrainTileObjectList() {
+        return new DevToolTerrainTileObjectList();
     }
 }

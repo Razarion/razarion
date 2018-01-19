@@ -3,11 +3,13 @@ package com.btxtech.shared;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -27,6 +29,7 @@ public class TestTerrainTile extends TerrainTile {
     private double landWaterProportion;
     private TestTerrainNode[][] testTerrainNodes;
     private double height;
+    private List<TestTerrainTileObjectList> terrainTileObjectLists;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -150,7 +153,7 @@ public class TestTerrainTile extends TerrainTile {
 
     @Override
     public void insertTerrainNode(int x, int y, TerrainNode terrainNode) {
-        testTerrainNodes[x][y] = (TestTerrainNode)terrainNode;
+        testTerrainNodes[x][y] = (TestTerrainNode) terrainNode;
     }
 
     @Override
@@ -166,5 +169,21 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public double getHeight() {
         return height;
+    }
+
+    @Override
+    public TerrainTileObjectList[] getTerrainTileObjectLists() {
+        if (terrainTileObjectLists == null) {
+            return null;
+        }
+        return terrainTileObjectLists.toArray(new TestTerrainTileObjectList[terrainTileObjectLists.size()]);
+    }
+
+    @Override
+    public void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList) {
+        if (terrainTileObjectLists == null) {
+            terrainTileObjectLists = new ArrayList<>();
+        }
+        terrainTileObjectLists.add((TestTerrainTileObjectList)terrainTileObjectList);
     }
 }

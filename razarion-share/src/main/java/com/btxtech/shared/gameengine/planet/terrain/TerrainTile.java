@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.nativejs.NativeMatrix;
 import jsinterop.annotations.JsType;
 
 /**
@@ -56,4 +57,7 @@ public abstract class TerrainTile {
 
     public native int fromArray(Object object);
 
+    public native TerrainTileObjectList[] getTerrainTileObjectLists();
+
+    public native void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList);
 }

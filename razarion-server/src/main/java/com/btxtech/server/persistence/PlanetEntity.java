@@ -87,11 +87,6 @@ public class PlanetEntity {
     public PlanetConfig toPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setPlanetId(id);
-        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
-        for (TerrainObjectPositionEntity terrainObjectPositionEntity : terrainObjectPositionEntities) {
-            terrainObjectPositions.add(terrainObjectPositionEntity.toTerrainObjectPosition());
-        }
-        planetConfig.setTerrainObjectPositions(terrainObjectPositions);
         planetConfig.setTerrainTileDimension(groundMeshDimension);
         planetConfig.setPlayGround(playGround);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();

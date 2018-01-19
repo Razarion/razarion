@@ -51,7 +51,6 @@ public class RazarionEmulator {
             gameUiControl.setColdGameUiControlConfig(httpConnectionEmu.getColdGameUiControlConfig());
             gameUiControl.init();
             gameEngineControl.init(gameUiControl.getColdGameUiControlConfig(), null);
-            terrainUiService.init(httpConnectionEmu.getColdGameUiControlConfig().getWarmGameUiControlConfig().getPlanetConfig());
             devToolShape3DUiService.loadBuffer();
             gameEngineControl.start();
             gameUiControl.start();

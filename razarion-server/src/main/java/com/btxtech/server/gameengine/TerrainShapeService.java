@@ -31,20 +31,8 @@ public class TerrainShapeService {
         planetPersistence.loadAllPlanetConfig().forEach(this::setupTerrainShape);
     }
 
-    public void setupTerrainShapeDryRun(int planetId, TerrainEditorUpdate terrainEditorUpdate) {
-        PlanetConfig planetConfig = planetPersistence.loadPlanetConfig(planetId);
-        List<TerrainSlopePosition> terrainSlopePositions = planetPersistence.getTerrainSlopePositions(planetConfig.getPlanetId());
-
-        terrainSlopePositions.removeIf(terrainSlopePosition -> terrainEditorUpdate.getDeletedSlopeIds().contains(terrainSlopePosition.getId()));
-        terrainSlopePositions.addAll(terrainEditorUpdate.getCreatedSlopes());
-        terrainSlopePositions.removeAll(terrainEditorUpdate.getUpdatedSlopes());
-        terrainSlopePositions.addAll(terrainEditorUpdate.getUpdatedSlopes());
-
-        new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, planetConfig.getTerrainObjectPositions());
-    }
-
     public void setupTerrainShape(PlanetConfig planetConfig) {
-        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetPersistence.getTerrainSlopePositions(planetConfig.getPlanetId()), planetConfig.getTerrainObjectPositions());
+        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetPersistence.getTerrainSlopePositions(planetConfig.getPlanetId()), planetPersistence.getTerrainObjectPositions(planetConfig.getPlanetId()));
         terrainShapes.put(planetConfig.getPlanetId(), terrainShape.toNativeTerrainShape());
     }
 

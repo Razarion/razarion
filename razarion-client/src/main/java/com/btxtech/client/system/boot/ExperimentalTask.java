@@ -132,8 +132,6 @@ public class ExperimentalTask extends AbstractStartupTask {
 
     private PlanetConfig defaultPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
-        // TODO planetConfig.setTerrainSlopePositions(Collections.emptyList());
-        planetConfig.setTerrainObjectPositions(Collections.emptyList());
         planetConfig.setHouseSpace(10);
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 64, 64));
         planetConfig.setPlayGround(new Rectangle2D(50, 40, 310, 320));

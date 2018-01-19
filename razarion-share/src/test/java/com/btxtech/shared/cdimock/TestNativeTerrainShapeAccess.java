@@ -1,5 +1,6 @@
 package com.btxtech.shared.cdimock;
 
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -23,10 +24,11 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private TerrainTypeService terrainTypeService;
     private PlanetConfig planetConfig;
     private List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+    private List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, planetConfig.getTerrainObjectPositions());
+        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, terrainObjectPositions);
         loadedCallback.accept(terrainShape.toNativeTerrainShape());
     }
 
@@ -36,5 +38,9 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     public void setTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions) {
         this.terrainSlopePositions = terrainSlopePositions;
+    }
+
+    public void setTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
+        this.terrainObjectPositions = terrainObjectPositions;
     }
 }

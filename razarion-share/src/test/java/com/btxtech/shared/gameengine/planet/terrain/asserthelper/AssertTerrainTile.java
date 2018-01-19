@@ -9,8 +9,10 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -37,6 +39,7 @@ public class AssertTerrainTile {
     public AssertTerrainTile(Class theClass, String resourceName) {
         this(theClass, resourceName, null);
     }
+
     public AssertTerrainTile(Class theClass, String resourceName, DifferenceCollector differenceCollector) {
         this.differenceCollector = differenceCollector;
         InputStream inputStream = theClass.getResourceAsStream(resourceName);
@@ -84,10 +87,11 @@ public class AssertTerrainTile {
     }
 
     private void compare(TerrainTile expected, TerrainTile actual) {
+        Index tileIndex = new Index(expected.getIndexX(), actual.getIndexX());
         // Ground
         Assert.assertEquals("Index X", expected.getIndexX(), actual.getIndexX());
         Assert.assertEquals("Index Y", expected.getIndexY(), actual.getIndexY());
-        if(differenceCollector != null) {
+        if (differenceCollector != null) {
             differenceCollector.compareArray("Ground Vertices", expected.getGroundVertices(), actual.getGroundVertices(), 0.001);
         } else {
             Assert.assertArrayEquals("Ground Vertices", expected.getGroundVertices(), actual.getGroundVertices(), 0.001);
@@ -132,6 +136,14 @@ public class AssertTerrainTile {
             Assert.fail("TerrainWaterTile expected.getTerrainNodes() != null && actual.getTerrainNodes() == null");
         } else if (actual.getTerrainNodes() != null) {
             Assert.fail("TerrainWaterTile expected.getTerrainNodes() == null && actual.getTerrainNodes() != null");
+        }
+        // Terrain objects
+        if (expected.getTerrainTileObjectLists() != null && actual.getTerrainTileObjectLists() != null) {
+            compare(tileIndex, expected.getTerrainTileObjectLists(), actual.getTerrainTileObjectLists());
+        } else if (expected.getTerrainTileObjectLists() != null) {
+            Assert.fail("expected.getTerrainTileObjectLists() != null && actual.getTerrainTileObjectLists() == null");
+        } else if (actual.getTerrainTileObjectLists() != null) {
+            Assert.fail("expected.getTerrainTileObjectLists() == null && actual.getTerrainTileObjectLists() != null");
         }
     }
 
@@ -197,6 +209,43 @@ public class AssertTerrainTile {
         Assert.assertEquals("TerrainNode Height. At: " + absoluteStart, expected.getHeight(), actual.getHeight(), 0.001);
 
         compare(expected.getTerrainSubNodes(), actual.getTerrainSubNodes(), absoluteStart);
+    }
+
+    private void compare(Index tileIndex, TerrainTileObjectList[] expectedObjectLists, TerrainTileObjectList[] actualObjectLists1) {
+        Assert.assertEquals("TerrainTileObjectList length. tileIndex: " + tileIndex, expectedObjectLists.length, actualObjectLists1.length);
+        for (int i = 0; i < expectedObjectLists.length; i++) {
+            compare(tileIndex, expectedObjectLists[i], actualObjectLists1[i]);
+        }
+    }
+
+    private void compare(Index tileIndex, TerrainTileObjectList expectedObjectList, TerrainTileObjectList actualObjectList) {
+        Assert.assertEquals("getTerrainObjectConfigId. tileIndex: " + tileIndex, expectedObjectList.getTerrainObjectConfigId(), actualObjectList.getTerrainObjectConfigId());
+        if (expectedObjectList.getModels() == null && actualObjectList.getModels() == null) {
+            Assert.fail("Not expected");
+        }
+        if (expectedObjectList.getModels() != null && actualObjectList.getModels() == null) {
+            Assert.fail("expectedObjectList.getModels() != null && actualObjectList.getModels() == null. tileIndex: " + tileIndex);
+        }
+        if (expectedObjectList.getModels() == null) {
+            Assert.fail("expected == null. tileIndex: " + tileIndex);
+        }
+        Assert.assertEquals("TerrainTileObjectList length. tileIndex: " + tileIndex, expectedObjectList.getModels().length, actualObjectList.getModels().length);
+        for (int i = 0; i < expectedObjectList.getModels().length; i++) {
+            compare(tileIndex, expectedObjectList.getModels()[i], actualObjectList.getModels()[i]);
+        }
+    }
+
+    private void compare(Index tileIndex, NativeMatrix expected, NativeMatrix actual) {
+        if (expected == null && actual == null) {
+            Assert.fail("Not expected. tileIndex: " + tileIndex);
+        }
+        if (expected != null && actual == null) {
+            Assert.fail("expected != null && actual == null. tileIndex: " + tileIndex);
+        }
+        if (expected == null) {
+            Assert.fail("expected == null. tileIndex: " + tileIndex);
+        }
+        Assert.assertArrayEquals("tileIndex: " + tileIndex, expected.toColumnMajorArray(), actual.toColumnMajorArray(), 0.0001);
     }
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {

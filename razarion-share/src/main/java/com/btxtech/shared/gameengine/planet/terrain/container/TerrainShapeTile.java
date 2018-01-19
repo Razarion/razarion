@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlope;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
 
@@ -42,6 +43,7 @@ public class TerrainShapeTile {
     private Double renderFullWaterLevel;
     private Double uniformGroundHeight;
     private List<FractionalSlope> fractionalSlopes;
+    private NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists;
 
     public boolean isRenderLand() {
         return renderFullWaterLevel == null;
@@ -166,7 +168,15 @@ public class TerrainShapeTile {
                 }
             }
         }
+        nativeTerrainShapeTile.nativeTerrainShapeObjectLists = nativeTerrainShapeObjectLists;
         return nativeTerrainShapeTile;
     }
 
+    public NativeTerrainShapeObjectList[] getNativeTerrainShapeObjectLists() {
+        return nativeTerrainShapeObjectLists;
+    }
+
+    public void setNativeTerrainShapeObjectLists(NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists) {
+        this.nativeTerrainShapeObjectLists = nativeTerrainShapeObjectLists;
+    }
 }

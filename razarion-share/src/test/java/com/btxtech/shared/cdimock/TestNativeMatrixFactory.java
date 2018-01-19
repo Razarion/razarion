@@ -1,8 +1,11 @@
 package com.btxtech.shared.cdimock;
 
+import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixDto;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 
 import javax.inject.Singleton;
 
@@ -12,6 +15,12 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class TestNativeMatrixFactory extends NativeMatrixFactory {
+    private static TestNativeMatrixFactory testNativeMatrixFactory;
+
+    public TestNativeMatrixFactory() {
+        testNativeMatrixFactory = this;
+    }
+
     @Override
     public NativeMatrix createFromColumnMajorArray(double[] array) {
         throw new UnsupportedOperationException("Only works between worker and client");
@@ -19,12 +28,12 @@ public class TestNativeMatrixFactory extends NativeMatrixFactory {
 
     @Override
     public NativeMatrix createTranslation(double x, double y, double z) {
-        throw new UnsupportedOperationException("Only works between worker and client");
+        return new TestNativeMatrix(Matrix4.createTranslation(x, y, z));
     }
 
     @Override
     public NativeMatrix createScale(double x, double y, double z) {
-        throw new UnsupportedOperationException("Only works between worker and client");
+        return new TestNativeMatrix(Matrix4.createScale(x, y, z));
     }
 
     @Override
@@ -39,7 +48,7 @@ public class TestNativeMatrixFactory extends NativeMatrixFactory {
 
     @Override
     public NativeMatrix createZRotation(double rad) {
-        throw new UnsupportedOperationException("Only works between worker and client");
+        return new TestNativeMatrix(Matrix4.createZRotation(rad));
     }
 
     @Override
@@ -57,4 +66,47 @@ public class TestNativeMatrixFactory extends NativeMatrixFactory {
         throw new UnsupportedOperationException("Only works between worker and client");
     }
 
+    public static class TestNativeMatrix extends NativeMatrix {
+        private Matrix4 matrix4;
+
+        public TestNativeMatrix(Matrix4 matrix4) {
+            this.matrix4 = matrix4;
+        }
+
+        @Override
+        public NativeMatrix multiply(NativeMatrix other) {
+            return new TestNativeMatrix(matrix4.multiply(((TestNativeMatrix) other).matrix4));
+        }
+
+        @Override
+        public NativeVertexDto multiplyVertex(NativeVertexDto other, double w) {
+            return NativeUtil.toNativeVertex(matrix4.multiply(NativeUtil.toVertex(other), w));
+        }
+
+        @Override
+        public double[] toColumnMajorArray() {
+            return matrix4.toWebGlArray();
+        }
+
+        @Override
+        public NativeMatrix invert() {
+            return new TestNativeMatrix(matrix4.invert());
+        }
+
+        @Override
+        public NativeMatrix transpose() {
+            return new TestNativeMatrix(matrix4.transpose());
+        }
+
+        @Override
+        public NativeMatrixFactory getNativeMatrixFactory() {
+            return TestNativeMatrixFactory.testNativeMatrixFactory;
+        }
+
+        @Override
+        public String toString() {
+            return matrix4.toString();
+        }
+
+    }
 }

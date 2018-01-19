@@ -196,7 +196,6 @@ public class PlanetPersistence {
     }
 
     private TerrainSlopePositionEntityChain getSlopePositionEntityFromPlanet(PlanetEntity planetEntity, int id) {
-        Collection<TerrainSlopePositionEntity> possibleParents = new ArrayList<>();
         for (TerrainSlopePositionEntity terrainSlopePositionEntity : planetEntity.getTerrainSlopePositionEntities()) {
             if (terrainSlopePositionEntity.getId() == id) {
                 return new TerrainSlopePositionEntityChain(null, terrainSlopePositionEntity);

@@ -2,6 +2,7 @@ package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -10,10 +11,12 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
 
@@ -21,7 +24,9 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,6 +50,7 @@ public class UiTerrainTile {
     private boolean active;
     private Collection<UiTerrainSlopeTile> uiTerrainSlopeTiles;
     private UiTerrainWaterTile uiTerrainWaterTile;
+    private MapList<Integer, ModelMatrices> terrainObjectModelMatrices;
 
     public void init(Index index, GroundSkeletonConfig groundSkeletonConfig) {
         this.index = index;
@@ -151,6 +157,24 @@ public class UiTerrainTile {
         if (uiTerrainSlopeTiles != null) {
             uiTerrainSlopeTiles.forEach(uiTerrainSlopeTile -> uiTerrainSlopeTile.overrideSlopeSkeletonConfig(skeletonConfig));
         }
+    }
+
+    public MapList<Integer, ModelMatrices> getTerrainObjectModelMatrices() {
+        if (terrainObjectModelMatrices != null) {
+            return terrainObjectModelMatrices;
+        }
+        TerrainTileObjectList[] terrainTileObjectLists = terrainTile.getTerrainTileObjectLists();
+        if (terrainTileObjectLists == null) {
+            return null;
+        }
+        terrainObjectModelMatrices = new MapList<>();
+        Arrays.stream(terrainTileObjectLists).forEach(terrainTileObjectList -> {
+            List<ModelMatrices> modelMatrices = new ArrayList<>();
+            Arrays.stream(terrainTileObjectList.getModels()).forEach(nativeMatrix -> modelMatrices.add(new ModelMatrices(nativeMatrix)));
+            terrainObjectModelMatrices.putAll(terrainTileObjectList.getTerrainObjectConfigId(), modelMatrices);
+        });
+
+        return terrainObjectModelMatrices;
     }
 
     public void dispose() {

@@ -152,7 +152,7 @@ public class TerrainTileContext {
     }
 
     public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
-        if(!checkPlayGround(vertexA, vertexB, vertexC)) {
+        if (!checkPlayGround(vertexA, vertexB, vertexC)) {
             return;
         }
 
@@ -257,17 +257,21 @@ public class TerrainTileContext {
         terrainTile.insertTerrainNode(x, y, terrainNode);
     }
 
-    public boolean checkPlayGround(Vertex ... positions) {
-        if(playGround == null) {
+    public boolean checkPlayGround(Vertex... positions) {
+        if (playGround == null) {
             return true;
         }
         for (Vertex position : positions) {
-            if(!playGround.contains(position.toXY())) {
+            if (!playGround.contains(position.toXY())) {
                 return false;
             }
         }
         return true;
     }
 
-
+    public TerrainTileObjectList createAndAddTerrainTileObjectList() {
+        TerrainTileObjectList terrainTileObjectList = jsInteropObjectFactory.generateTerrainTileObjectList();
+        terrainTile.addTerrainTileObjectList(terrainTileObjectList);
+        return terrainTileObjectList;
+    }
 }

@@ -7,6 +7,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFra
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeNode;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeVertex;
@@ -107,6 +108,20 @@ public interface AssertTerrainShape {
                 }
             }
         }
+
+        if (expectedTile.nativeTerrainShapeObjectLists != null && actualTile.nativeTerrainShapeObjectLists == null) {
+            Assert.fail("expectedTile.nativeTerrainShapeObjectLists != null && actualTile.nativeTerrainShapeObjectLists == null");
+        }
+        if (expectedTile.nativeTerrainShapeObjectLists == null && actualTile.nativeTerrainShapeObjectLists != null) {
+            Assert.fail("expectedTile.nativeTerrainShapeObjectLists == null && actualTile.nativeTerrainShapeObjectLists != null");
+        }
+        if (expectedTile.nativeTerrainShapeObjectLists != null) {
+            Assert.assertEquals("nativeTerrainShapeObjectLists.length", expectedTile.nativeTerrainShapeObjectLists.length, actualTile.nativeTerrainShapeObjectLists.length);
+            for (int i = 0; i < expectedTile.nativeTerrainShapeObjectLists.length; i++) {
+                compareTerrainShapeObjectList(expectedTile.nativeTerrainShapeObjectLists[i], actualTile.nativeTerrainShapeObjectLists[i]);
+            }
+        }
+
     }
 
     static void compareFractionalSlope(NativeFractionalSlope expectedFractionalSlope, NativeFractionalSlope actualFractionalSlope1) {
@@ -235,6 +250,20 @@ public interface AssertTerrainShape {
             TestHelper.assertDouble("height: " + message, expected[i].height, actual[i].height);
             TestHelper.assertDoubleArray("drivewayHeights: " + message, expected[i].drivewayHeights, actual[i].drivewayHeights);
             assertNativeTerrainShapeSubNode("nativeTerrainShapeSubNodes: " + message, expected[i].nativeTerrainShapeSubNodes, actual[i].nativeTerrainShapeSubNodes);
+        }
+    }
+
+
+    static void compareTerrainShapeObjectList(NativeTerrainShapeObjectList expectedTerrainShapeObjectList, NativeTerrainShapeObjectList actualTerrainShapeObjectList) {
+        Assert.assertNotNull(expectedTerrainShapeObjectList);
+        Assert.assertNotNull(actualTerrainShapeObjectList);
+        Assert.assertEquals(expectedTerrainShapeObjectList.terrainObjectId, actualTerrainShapeObjectList.terrainObjectId);
+        Assert.assertEquals(expectedTerrainShapeObjectList.positions.length, actualTerrainShapeObjectList.positions.length);
+        for (int i = 0; i < expectedTerrainShapeObjectList.positions.length; i++) {
+            Assert.assertEquals(expectedTerrainShapeObjectList.positions[i].x, actualTerrainShapeObjectList.positions[i].x, 0.0001);
+            Assert.assertEquals(expectedTerrainShapeObjectList.positions[i].y, actualTerrainShapeObjectList.positions[i].y, 0.0001);
+            Assert.assertEquals(expectedTerrainShapeObjectList.positions[i].scale, actualTerrainShapeObjectList.positions[i].scale, 0.0001);
+            Assert.assertEquals(expectedTerrainShapeObjectList.positions[i].rotationZ, actualTerrainShapeObjectList.positions[i].rotationZ, 0.0001);
         }
     }
 

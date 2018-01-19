@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -49,10 +48,10 @@ public class WeldTerrainServiceTestBase extends WeldBaseTest {
         if (planetConfig == null) {
             planetConfig = GameTestContent.setupPlanetConfig();
         }
-        planetConfig.setTerrainObjectPositions(terrainObjectPositions);
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getTestNativeTerrainShapeAccess().setTerrainSlopePositions(terrainSlopePositions);
+        getTestNativeTerrainShapeAccess().setTerrainObjectPositions(terrainObjectPositions);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
     }
 

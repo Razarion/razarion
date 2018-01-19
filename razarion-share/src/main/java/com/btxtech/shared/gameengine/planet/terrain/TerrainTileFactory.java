@@ -16,6 +16,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
+import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.utils.InterpolationUtils;
@@ -24,6 +27,7 @@ import com.btxtech.shared.utils.MathHelper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
+import java.util.Arrays;
 
 /**
  * Created by Beat
@@ -43,6 +47,10 @@ public class TerrainTileFactory {
     private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private TerrainService terrainService;
+    @Inject
+    private NativeMatrixFactory nativeMatrixFactory;
 
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
@@ -54,6 +62,7 @@ public class TerrainTileFactory {
         insertSlopePart(terrainTileContext, terrainShapeTile);
         insertWaterPart(terrainTileContext, terrainShapeTile);
         insertHeightAndType(terrainTileContext, terrainShapeTile);
+        insertTerrainObjects(terrainTileContext, terrainShapeTile);
         return terrainTileContext.complete();
     }
 
@@ -366,6 +375,34 @@ public class TerrainTileFactory {
 
     private interface SubNodeFeeder {
         void insertSubNode(int x, int y, TerrainSubNode terrainSubNode);
+    }
+
+    private void insertTerrainObjects(TerrainTileContext terrainTileContext, TerrainShapeTile terrainShapeTile) {
+        if (terrainShapeTile == null) {
+            return;
+        }
+        NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists = terrainShapeTile.getNativeTerrainShapeObjectLists();
+        if (nativeTerrainShapeObjectLists == null) {
+            return;
+        }
+        Arrays.stream(nativeTerrainShapeObjectLists).forEach(nativeTerrainShapeObjectList -> {
+            if(nativeTerrainShapeObjectList.positions == null || nativeTerrainShapeObjectList.positions.length == 0) {
+                return;
+            }
+            TerrainTileObjectList terrainTileObjectList = terrainTileContext.createAndAddTerrainTileObjectList();
+            terrainTileObjectList.setTerrainObjectConfigId(nativeTerrainShapeObjectList.terrainObjectId);
+            Arrays.stream(nativeTerrainShapeObjectList.positions).forEach(nativeTerrainObjectPosition -> {
+                try {
+                    double z = terrainService.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
+                    NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, z);
+                    newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(nativeTerrainObjectPosition.scale, nativeTerrainObjectPosition.scale, nativeTerrainObjectPosition.scale));
+                    newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(nativeTerrainObjectPosition.rotationZ));
+                    terrainTileObjectList.addModel(newMatrix);
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                }
+            });
+        });
     }
 
 }

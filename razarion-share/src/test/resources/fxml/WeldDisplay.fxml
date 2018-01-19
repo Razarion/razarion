@@ -16,6 +16,7 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.shared.gameengine.planet.gui.WeldTestController">
     <center>
@@ -45,34 +46,36 @@
             <panes>
                 <TitledPane alignment="TOP_LEFT" animated="false" text="Terrain">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="339.0" prefWidth="250.0">
+                        <VBox>
                             <children>
-                                <CheckBox fx:id="terrainTileSplattingCheck" layoutX="1.0" layoutY="-1.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="98.0" text="Tile Splatting" />
-                                <CheckBox fx:id="terrainTileWaterCheck" layoutX="1.0" layoutY="16.0" mnemonicParsing="false" text="Tile Water" />
-                                <CheckBox fx:id="terrainTileGroundCheck" layoutX="1.0" layoutY="33.0" mnemonicParsing="false" text="Tile Ground" />
-                                <CheckBox fx:id="terrainTileSlopeCheck" layoutX="1.0" layoutY="50.0" mnemonicParsing="false" text="Tile Slope" />
-                                <CheckBox fx:id="terrainTileHeightCheck" layoutX="1.0" layoutY="67.0" mnemonicParsing="false" text="Tile Height" />
-                                <CheckBox fx:id="terrainTileTerrainTypeCheck" layoutX="1.0" layoutY="84.0" mnemonicParsing="false" text="Tile Terrain Type" />
-                                <CheckBox fx:id="shapeAccessCheck" layoutX="1.0" layoutY="101.0" mnemonicParsing="false" text="Shape access" />
-                                <CheckBox fx:id="shapeTerrainTypeCheck" layoutX="1.0" layoutY="118.0" mnemonicParsing="false" text="Shape terrain type" />
-                                <CheckBox fx:id="shapeFractionalSlopeCheck" layoutX="1.0" layoutY="152.0" mnemonicParsing="false" text="Shape fractional slope" />
-                                <CheckBox fx:id="shapeObstaclesCheck" layoutX="1.0" layoutY="169.0" mnemonicParsing="false" text="Shape obstacles" />
-                                <CheckBox fx:id="groundSlopeConnectionsCheck" layoutX="1.0" layoutY="186.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="195.0" text="Shape ground slope connections" />
-                        <CheckBox fx:id="shapeWaterCheck" layoutX="1.0" layoutY="203.0" mnemonicParsing="false" text="Shape water" />
-                        <CheckBox fx:id="shapeTerrainHeightCheck" layoutX="1.0" layoutY="135.0" mnemonicParsing="false" text="Shape terrain height (Game engine)" />
+                                <CheckBox fx:id="terrainTileSplattingCheck" mnemonicParsing="false" text="Tile Splatting" />
+                                <CheckBox fx:id="terrainTileWaterCheck" mnemonicParsing="false" text="Tile Water" />
+                                <CheckBox fx:id="terrainTileGroundCheck" mnemonicParsing="false" text="Tile Ground" />
+                                <CheckBox fx:id="terrainTileSlopeCheck" mnemonicParsing="false" text="Tile Slope" />
+                                <CheckBox fx:id="terrainTileHeightCheck" mnemonicParsing="false" text="Tile Height" />
+                                <CheckBox fx:id="terrainTileTerrainTypeCheck" mnemonicParsing="false" text="Tile Terrain Type" />
+                        <CheckBox fx:id="terrainTileTerrainObjectCheck" mnemonicParsing="false" text="Tile Terrain Object" />
+                                <CheckBox fx:id="shapeAccessCheck" mnemonicParsing="false" text="Shape access" />
+                                <CheckBox fx:id="shapeTerrainTypeCheck" mnemonicParsing="false" text="Shape terrain type" />
+                                <CheckBox fx:id="shapeTerrainHeightCheck" mnemonicParsing="false" text="Shape terrain height (Game engine)" />
+                                <CheckBox fx:id="shapeFractionalSlopeCheck" mnemonicParsing="false" text="Shape fractional slope" />
+                                <CheckBox fx:id="shapeObstaclesCheck" mnemonicParsing="false" text="Shape obstacles" />
+                                <CheckBox fx:id="groundSlopeConnectionsCheck" mnemonicParsing="false" text="Shape ground slope connections" />
+                                <CheckBox fx:id="shapeWaterCheck" mnemonicParsing="false" text="Shape water" />
+                        <CheckBox fx:id="shapeTerrainObjectCheck" mnemonicParsing="false" text="Shape Terrain Object" />
+                            </children>
+                        </VBox>
+                    </content>
+                </TitledPane>
+                <TitledPane animated="false" text="Game engin">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Button layoutX="2.0" layoutY="2.0" mnemonicParsing="false" onAction="#onTickButton" text="Tick" />
                             </children>
                         </AnchorPane>
                     </content>
                 </TitledPane>
-            <TitledPane animated="false" text="Game engin">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <Button layoutX="2.0" layoutY="2.0" mnemonicParsing="false" onAction="#onTickButton" text="Tick" />
-                     </children>
-                  </AnchorPane>
-              </content>
-            </TitledPane>
             </panes>
         </Accordion>
     </right>

@@ -5,8 +5,13 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
+import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -31,7 +36,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.debugtool.DebugStaticStorage;
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
@@ -44,6 +51,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,6 +71,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private static final double SYNC_ITEM_DISPLAY_FRONT_ANGEL = MathHelper.gradToRad(60);
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private TerrainTypeService terrainTypeService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     private TerrainShape actual;
@@ -118,7 +128,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         Index fromTileIndex = new Index(0, 0);
         Index toTileIndex = fromTileIndex.add(2, 2);
 
-        if (weldTestController.renderTerrainTileSplattings() || weldTestController.renderTerrainTileWater() || weldTestController.renderTerrainTileGround() || weldTestController.renderTerrainTileSlope() || weldTestController.renderTerrainTileHeight() || weldTestController.renderTerrainTileTerrainType()) {
+        if (weldTestController.renderTerrainTileSplattings() || weldTestController.renderTerrainTileWater() || weldTestController.renderTerrainTileGround() || weldTestController.renderTerrainTileSlope() || weldTestController.renderTerrainTileHeight() || weldTestController.renderTerrainTileTerrainType() || weldTestController.renderTerrainTileTerrainObject()) {
             doRenderTile(fromTileIndex, toTileIndex);
         }
 
@@ -127,7 +137,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
 
         // renderTerrainPathingSurfaceAccess();
-        if (weldTestController.renderShapeTerrainType() || weldTestController.renderShapeTerrainHeight() || weldTestController.renderShapeFractionalSlope() || weldTestController.renderShapeObstacles() || weldTestController.renderGroundSlopeConnections() || weldTestController.renderShapeWater()) {
+        if (weldTestController.renderShapeTerrainType() || weldTestController.renderShapeTerrainHeight() || weldTestController.renderShapeFractionalSlope() || weldTestController.renderShapeObstacles() || weldTestController.renderGroundSlopeConnections() || weldTestController.renderShapeWater() || weldTestController.renderShapeTerrainObject()) {
             doRenderShape();
         }
         renderItemTypes();
@@ -213,6 +223,23 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
                 for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
                     drawTerrainSlopeTile(terrainSlopeTile);
                 }
+            }
+        }
+
+        if (weldTestController.renderTerrainTileTerrainObject()) {
+            if (terrainTile.getTerrainTileObjectLists() != null) {
+                getGc().setFill(Color.BROWN);
+                Arrays.stream(terrainTile.getTerrainTileObjectLists()).forEach(terrainTileObjectList -> {
+                    if (terrainTileObjectList.getModels() != null) {
+                        TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.getTerrainObjectConfigId());
+                        Arrays.stream(terrainTileObjectList.getModels()).forEach(nativeMatrix -> {
+                            NativeVertexDto br = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(-terrainObjectConfig.getRadius(), -terrainObjectConfig.getRadius(), 0), 1.0);
+                            NativeVertexDto tl = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(terrainObjectConfig.getRadius(), terrainObjectConfig.getRadius(), 0), 1.0);
+                            Rectangle2D rect = Rectangle2D.generateRectangleFromAnyPoints(new DecimalPosition(br.x, br.y), new DecimalPosition(tl.x, tl.y)); // If rotated, it is may upside down
+                            getGc().fillOval(rect.startX(), rect.startY(), rect.width(), rect.height());
+                        });
+                    }
+                });
             }
         }
     }
@@ -540,6 +567,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         if (weldTestController.renderShapeFractionalSlope()) {
             displayFractionalSlope(terrainShapeTile.getFractionalSlopes());
         }
+        if (weldTestController.renderShapeTerrainObject()) {
+            displayShapeTerrainObject(terrainShapeTile.getNativeTerrainShapeObjectLists());
+        }
     }
 
     private void displayNodes(DecimalPosition absoluteTile, TerrainShapeTile terrainShapeTile) {
@@ -670,6 +700,23 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
             strokeLine(inner, LINE_WIDTH, Color.PINK, true);
             strokeLine(outer, LINE_WIDTH, Color.AQUA, true);
         }
+    }
+
+    private void displayShapeTerrainObject(NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists) {
+        if (nativeTerrainShapeObjectLists == null) {
+            return;
+        }
+        getGc().setStroke(Color.BROWN);
+        getGc().setLineWidth(FAT_LINE_WIDTH);
+        Arrays.stream(nativeTerrainShapeObjectLists).forEach(nativeTerrainShapeObjectList -> {
+            if (nativeTerrainShapeObjectList.positions != null) {
+                double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectId).getRadius();
+                Arrays.stream(nativeTerrainShapeObjectList.positions).forEach(nativeTerrainShapeObjectPosition -> {
+                    double correctedRadius = radius * nativeTerrainShapeObjectPosition.scale;
+                    getGc().strokeOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
+                });
+            }
+        });
     }
 
     public void drawSyncItem(SyncItem syncItem) {

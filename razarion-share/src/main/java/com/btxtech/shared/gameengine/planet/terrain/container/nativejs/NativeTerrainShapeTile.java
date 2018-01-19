@@ -13,4 +13,5 @@ public class NativeTerrainShapeTile {
     public NativeFractionalSlope[] fractionalSlopes;
     public Double uniformGroundHeight;
     public NativeTerrainShapeNode[][] nativeTerrainShapeNodes;
+    public NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists;
 }

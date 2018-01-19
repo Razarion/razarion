@@ -181,13 +181,6 @@ public class ModelMatrices {
         return createFromPositionAndZRotation(position.getX(), position.getY(), position.getZ(), zRotation, nativeMatrixFactory);
     }
 
-    public static ModelMatrices create4TerrainObject(double x, double y, double z, double scale, double zRotation, NativeMatrixFactory nativeMatrixFactory) {
-        NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(x, y, z);
-        newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
-        newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(zRotation));
-        return new ModelMatrices(newMatrix);
-    }
-
     public static ModelMatrices createFromPosition(Vertex position, NativeMatrixFactory nativeMatrixFactory) {
         return createFromPosition(position.getX(), position.getY(), position.getZ(), nativeMatrixFactory);
     }

@@ -5,29 +5,24 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line3d;
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.dto.TerrainObjectConfig;
-import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.ViewField;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -46,20 +40,16 @@ import java.util.logging.Logger;
 public class TerrainUiService {
     private static final double HIGHEST_POINT_IN_VIEW = 20;
     private static final double LOWEST_POINT_IN_VIEW = -2;
-    private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
+    // private Logger logger = Logger.getLogger(TerrainUiService.class.getName());
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
     private GameEngineControl gameEngineControl;
-    @Inject
-    private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
-    private MapCollection<TerrainObjectConfig, ModelMatrices> terrainObjectConfigModelMatrices;
+    private MapList<Integer, ModelMatrices> terrainObjectConfigModelMatrices = new MapList<>();
     private MapCollection<DecimalPosition, BiConsumer<DecimalPosition, Double>> terrainZConsumers = new MapCollection<>();
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
@@ -68,24 +58,6 @@ public class TerrainUiService {
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
         lowestPointInView = LOWEST_POINT_IN_VIEW;
-    }
-
-    public void init(PlanetConfig planetConfig) {
-        List<TerrainObjectPosition> terrainObjectPositions = planetConfig.getTerrainObjectPositions();
-        terrainObjectConfigModelMatrices = new MapCollection<>();
-        for (TerrainObjectPosition terrainObjectPosition : terrainObjectPositions) {
-            try {
-                getTerrainZ(terrainObjectPosition.getPosition(), (position, z) -> {
-                    if (z != null) {
-                        terrainObjectConfigModelMatrices.put(terrainTypeService.getTerrainObjectConfig(terrainObjectPosition.getTerrainObjectId()), ModelMatrices.create4TerrainObject(position.getX(), position.getY(), z, terrainObjectPosition.getScale(), terrainObjectPosition.getRotationZ(), nativeMatrixFactory));
-                    } else {
-                        logger.warning("TerrainUiService: Can not place TerrainObjectPosition with id: " + terrainObjectPosition.getId());
-                    }
-                });
-            } catch (Throwable t) {
-                exceptionHandler.handleException("Placing terrain object failed", t);
-            }
-        }
     }
 
     public void clear() {
@@ -133,6 +105,14 @@ public class TerrainUiService {
             cacheTerrainTiles.put(entry.getKey(), entry.getValue());
         }
         displayTerrainTiles = newDisplayTerrainTiles;
+        // Terrain objects
+        terrainObjectConfigModelMatrices.clear();
+        displayTerrainTiles.values().forEach(uiTerrainTile -> {
+            MapList<Integer, ModelMatrices> terrainObjectModelMatrices = uiTerrainTile.getTerrainObjectModelMatrices();
+            if (terrainObjectModelMatrices != null) {
+                terrainObjectConfigModelMatrices.putAll(terrainObjectModelMatrices);
+            }
+        });
     }
 
     public double getHighestPointInView() {
@@ -143,10 +123,10 @@ public class TerrainUiService {
         return lowestPointInView;
     }
 
-    public List<ModelMatrices> provideTerrainObjectModelMatrices(TerrainObjectConfig terrainObjectConfig) {
-        Collection<ModelMatrices> modelMatrices = terrainObjectConfigModelMatrices.get(terrainObjectConfig);
+    public List<ModelMatrices> provideTerrainObjectModelMatrices(int terrainObjectConfigId) {
+        List<ModelMatrices> modelMatrices = terrainObjectConfigModelMatrices.get(terrainObjectConfigId);
         if (modelMatrices != null) {
-            return new ArrayList<>(modelMatrices);
+            return modelMatrices;
         } else {
             return Collections.emptyList();
         }

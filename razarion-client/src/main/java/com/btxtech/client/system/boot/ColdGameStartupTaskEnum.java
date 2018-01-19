@@ -34,19 +34,18 @@ public enum ColdGameStartupTaskEnum implements StartupTaskEnum {
         }
     },
     INIT_GAME_UI(InitGameUiTask.class),
-    INIT_TERRAIN_UI(InitUiTerrainTask.class) {
-        @Override
-        public StartupTaskEnum[] getWaitForBackgroundTasks() {
-            return new StartupTaskEnum[]{INIT_WORKER};
-        }
-    },
     INIT_RENDERER(InitRendererTask.class) {
         @Override
         public StartupTaskEnum[] getWaitForBackgroundTasks() {
             return new StartupTaskEnum[]{LOAD_MEDIAS, LOAD_SHAPE3D_BUFFER};
         }
     },
-    RUN_GAME(RunGameUiControlTask.class);
+    RUN_GAME(RunGameUiControlTask.class) {
+        @Override
+        public StartupTaskEnum[] getWaitForBackgroundTasks() {
+            return new StartupTaskEnum[]{INIT_WORKER};
+        }
+    };
 
     private Class<? extends AbstractStartupTask> taskClass;
 

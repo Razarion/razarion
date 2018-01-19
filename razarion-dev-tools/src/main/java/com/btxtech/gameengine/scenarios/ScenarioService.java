@@ -12,6 +12,7 @@ import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -46,7 +47,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.webglemulator.razarion.DevToolNativeTerrainShapeAccess;
-import com.btxtech.webglemulator.razarion.DevToolsSimpleExecutorServiceImpl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -79,8 +79,6 @@ public class ScenarioService implements QuestListener {
     static final int TERRAIN_OBJECT_ID = 1;
     @Inject
     private BaseItemService baseItemService;
-    @Inject
-    private DevToolsSimpleExecutorServiceImpl devToolsSimpleExecutorService;
     @Inject
     private BotService botService;
     @Inject
@@ -282,7 +280,8 @@ public class ScenarioService implements QuestListener {
         MasterPlanetConfig masterPlanetConfig = setupMasterPlanetConfig();
 
         List<TerrainSlopePosition> slopePositions = new ArrayList<>();
-        currentScenario.setupTerrain(slopePositions, planetConfig.getTerrainObjectPositions());
+        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
+        currentScenario.setupTerrain(slopePositions, terrainObjectPositions);
         devToolNativeTerrainShapeAccess.setPlanetConfig(planetConfig);
         devToolNativeTerrainShapeAccess.setTerrainSlopePositions(slopePositions);
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
@@ -365,8 +364,6 @@ public class ScenarioService implements QuestListener {
     private PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(-7, -7, 14, 14)).setHouseSpace(1000).setStartRazarion(100);
-        // planetConfig.setTerrainSlopePositions(new ArrayList<>());
-        planetConfig.setTerrainObjectPositions(new ArrayList<>());
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE.getId(), 1000);

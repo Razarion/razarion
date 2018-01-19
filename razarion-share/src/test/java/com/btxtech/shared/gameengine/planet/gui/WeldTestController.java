@@ -47,6 +47,8 @@ public class WeldTestController extends AbstractTerrainTestController {
     @FXML
     private CheckBox terrainTileHeightCheck;
     @FXML
+    private CheckBox terrainTileTerrainObjectCheck;
+    @FXML
     private CheckBox terrainTileTerrainTypeCheck;
     @FXML
     private CheckBox shapeAccessCheck;
@@ -62,6 +64,8 @@ public class WeldTestController extends AbstractTerrainTestController {
     private CheckBox groundSlopeConnectionsCheck;
     @FXML
     private CheckBox shapeWaterCheck;
+    @FXML
+    private CheckBox shapeTerrainObjectCheck;
     private Object[] userObjects;
     private MouseMoveCallback mouseMoveCallback;
 
@@ -82,6 +86,7 @@ public class WeldTestController extends AbstractTerrainTestController {
         addRenderListener(terrainTileGroundCheck);
         addRenderListener(terrainTileSlopeCheck);
         addRenderListener(terrainTileHeightCheck);
+        addRenderListener(terrainTileTerrainObjectCheck);
         addRenderListener(terrainTileTerrainTypeCheck);
         addRenderListener(shapeAccessCheck);
         addRenderListener(shapeTerrainTypeCheck);
@@ -90,6 +95,7 @@ public class WeldTestController extends AbstractTerrainTestController {
         addRenderListener(shapeObstaclesCheck);
         addRenderListener(groundSlopeConnectionsCheck);
         addRenderListener(shapeWaterCheck);
+        addRenderListener(shapeTerrainObjectCheck);
     }
 
     private void addRenderListener(CheckBox checkBox) {
@@ -171,6 +177,10 @@ public class WeldTestController extends AbstractTerrainTestController {
         return terrainTileHeightCheck.isSelected();
     }
 
+    public boolean renderTerrainTileTerrainObject() {
+        return terrainTileTerrainObjectCheck.isSelected();
+    }
+
     public boolean renderTerrainTileTerrainType() {
         return terrainTileTerrainTypeCheck.isSelected();
     }
@@ -201,6 +211,10 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     public boolean renderShapeWater() {
         return shapeWaterCheck.isSelected();
+    }
+
+    public boolean renderShapeTerrainObject() {
+        return shapeTerrainObjectCheck.isSelected();
     }
 
     public void onTickButton(ActionEvent actionEvent) {

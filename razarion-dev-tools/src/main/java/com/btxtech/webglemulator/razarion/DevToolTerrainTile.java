@@ -3,10 +3,12 @@ package com.btxtech.webglemulator.razarion;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -25,6 +27,7 @@ public class DevToolTerrainTile extends TerrainTile {
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
+    private List<DevToolTerrainTileObjectList> terrainTileObjectLists;
 
     @Override
     public void init(int indexX, int indexY) {
@@ -164,5 +167,21 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public double getHeight() {
         return height;
+    }
+
+    @Override
+    public TerrainTileObjectList[] getTerrainTileObjectLists() {
+        if(terrainTileObjectLists == null) {
+            return null;
+        }
+        return terrainTileObjectLists.toArray(new TerrainTileObjectList[terrainTileObjectLists.size()]);
+    }
+
+    @Override
+    public void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList) {
+        if(terrainTileObjectLists == null) {
+            terrainTileObjectLists = new ArrayList<>();
+        }
+        terrainTileObjectLists.add((DevToolTerrainTileObjectList) terrainTileObjectList);
     }
 }

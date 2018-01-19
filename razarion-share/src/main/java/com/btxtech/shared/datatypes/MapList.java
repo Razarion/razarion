@@ -20,6 +20,22 @@ public class MapList<K, L> {
         collection.add(value);
     }
 
+    public void putAll(K key, List<L> values) {
+        List<L> list = map.get(key);
+        if (list != null) {
+            list.addAll(values);
+        } else {
+            map.put(key, values);
+        }
+    }
+
+    public void putAll(MapList<K, L> other) {
+        other.map.forEach((otherKey, otherList) -> {
+            List<L> list = map.computeIfAbsent(otherKey, k -> new ArrayList<>());
+            list.addAll(otherList);
+        });
+    }
+
     public List<L> get(K key) {
         return map.get(key);
     }

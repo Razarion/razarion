@@ -113,7 +113,6 @@ public abstract class AbstractTerrainScenario extends Scenario {
 
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(-7, -7, 14, 14)).setHouseSpace(1000).setStartRazarion(100);
-        planetConfig.setTerrainObjectPositions(new ArrayList<>());
         devToolNativeTerrainShapeAccess.setPlanetConfig(planetConfig);
 
         getTerrainService().setup(planetConfig, () -> {
