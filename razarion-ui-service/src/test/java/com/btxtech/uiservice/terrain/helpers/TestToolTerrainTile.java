@@ -4,6 +4,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -152,7 +153,7 @@ public class TestToolTerrainTile extends TerrainTile {
     }
 
     @Override
-    public int fromArray(Object object) {
+    public int fromArray(Object object, NativeMatrixFactory nativeMatrixFactory) {
         throw new UnsupportedOperationException();
     }
 

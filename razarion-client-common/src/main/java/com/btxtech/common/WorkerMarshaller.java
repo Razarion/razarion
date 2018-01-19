@@ -19,10 +19,10 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBoxItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayMixed;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
@@ -148,7 +148,7 @@ public class WorkerMarshaller {
         return array;
     }
 
-    public static GameEngineControlPackage deMarshall(Object javaScriptObject) {
+    public static GameEngineControlPackage deMarshall(Object javaScriptObject, NativeMatrixFactory nativeMatrixFactory) {
         JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
         GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(array.getString(COMMAND_OFFSET));
 
@@ -316,7 +316,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_0), Index.class));
                 break;
             case TERRAIN_TILE_RESPONSE:
-                data.add(demarshallTerrainTile(array.getObject(DATA_OFFSET_0)));
+                data.add(demarshallTerrainTile(array.getObject(DATA_OFFSET_0), nativeMatrixFactory));
                 break;
             case PLAYBACK_PLAYER_BASE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseTracking.class));
@@ -365,10 +365,10 @@ public class WorkerMarshaller {
     }
 
 
-    private static TerrainTile demarshallTerrainTile(JavaScriptObject data) {
+    private static TerrainTile demarshallTerrainTile(JavaScriptObject data, NativeMatrixFactory nativeMatrixFactory) {
         TerrainTile terrainTile = new TerrainTile() {
         };
-        terrainTile.fromArray(data);
+        terrainTile.fromArray(data, nativeMatrixFactory);
         return terrainTile;
     }
 

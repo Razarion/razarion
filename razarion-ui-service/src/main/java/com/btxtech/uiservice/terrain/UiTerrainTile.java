@@ -87,6 +87,12 @@ public class UiTerrainTile {
             uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
             uiTerrainWaterTile.init(active, terrainTile.getTerrainWaterTile());
         }
+        if(active) {
+            MapList<Integer, ModelMatrices> terrainObjects = getTerrainObjectModelMatrices();
+            if(terrainObjects != null) {
+                terrainUiService.onTerrainObjectModelMatrices(terrainObjects);
+            }
+        }
     }
 
     public TerrainTile getTerrainTile() {
@@ -162,6 +168,9 @@ public class UiTerrainTile {
     public MapList<Integer, ModelMatrices> getTerrainObjectModelMatrices() {
         if (terrainObjectModelMatrices != null) {
             return terrainObjectModelMatrices;
+        }
+        if (terrainTile == null) {
+            return null;
         }
         TerrainTileObjectList[] terrainTileObjectLists = terrainTile.getTerrainTileObjectLists();
         if (terrainTileObjectLists == null) {

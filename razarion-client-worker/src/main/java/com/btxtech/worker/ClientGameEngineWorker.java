@@ -5,6 +5,7 @@ import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -28,7 +29,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
     @Inject
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
     @Inject
-    private PerfmonService perfmonService;
+    private NativeMatrixFactory nativeMatrixFactory;
 
     @PostConstruct
     public void onModuleLoad() {
@@ -38,7 +39,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
             try {
                 MessageEvent messageEvent = (MessageEvent) evt;
                 data = messageEvent.getData();
-                GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData());
+                GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData(), nativeMatrixFactory);
                 dispatch(controlPackage);
             } catch (Throwable t) {
                 exceptionHandler.handleException("Exception processing package on worker. Data: " + data, t);

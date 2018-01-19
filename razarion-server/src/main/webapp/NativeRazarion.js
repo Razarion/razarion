@@ -455,6 +455,17 @@ com = {
                         return this.terrainNodes;
                     };
 
+                    this.getTerrainTileObjectLists = function () {
+                        return this.terrainTileObjectLists;
+                    };
+
+                    this.addTerrainTileObjectList = function (terrainTileObjectList) {
+                        if (typeof this.terrainTileObjectLists === 'undefined') {
+                            this.terrainTileObjectLists = [];
+                        }
+                        this.terrainTileObjectLists.push(terrainTileObjectList)
+                    };
+
                     this.toArray = function () {
                         var terrainSlopeTilesArray = [];
                         if (typeof this.terrainSlopeTiles !== 'undefined') {
@@ -481,10 +492,19 @@ com = {
                             }
                         }
 
-                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents, this.groundSplattings, terrainSlopeTilesArray, terrainWaterTile, this.landWaterProportion, this.height, terrainNodesField];
+                        var terrainTileObjectListsField = [];
+                        if (typeof this.terrainTileObjectLists !== 'undefined') {
+                            for (var z = 0; z < this.terrainTileObjectLists.length; z++) {
+                                terrainTileObjectListsField.push(this.terrainTileObjectLists[z].toArray());
+                            }
+                        }
+
+                        return [this.indexX, this.indexY, this.groundVertexCount, this.groundVertices, this.groundNorms, this.groundTangents,
+                            this.groundSplattings, terrainSlopeTilesArray, terrainWaterTile, this.landWaterProportion, this.height, terrainNodesField,
+                            terrainTileObjectListsField];
                     };
 
-                    this.fromArray = function (array) {
+                    this.fromArray = function (array, nativeMatrixFactory) {
                         this.indexX = array[0];
                         this.indexY = array[1];
                         this.groundVertexCount = array[2];
@@ -521,6 +541,15 @@ com = {
                                         this.terrainNodes[x][y] = terrainNode;
                                     }
                                 }
+                            }
+                        }
+                        var terrainTileObjectListsField = array[12];
+                        if (typeof terrainTileObjectListsField !== 'undefined' && terrainTileObjectListsField.length > 0) {
+                            this.terrainTileObjectLists = [];
+                            for (var a = 0; a < terrainTileObjectListsField.length; a++) {
+                                var tileObjectList = new com.btxtech.shared.nativejs.TerrainTileObjectList();
+                                tileObjectList.fromArray(terrainTileObjectListsField[a], nativeMatrixFactory);
+                                this.terrainTileObjectLists.push(tileObjectList);
                             }
                         }
                     }
@@ -789,6 +818,47 @@ com = {
                                     }
                                 }
                             }
+                        }
+                    };
+                },
+
+                TerrainTileObjectList: function () {
+                    this.getTerrainObjectConfigId = function () {
+                        return this.terrainObjectConfigId;
+                    };
+
+                    this.setTerrainObjectConfigId = function (terrainObjectConfigId) {
+                        this.terrainObjectConfigId = terrainObjectConfigId;
+                    };
+
+                    this.addModel = function (nativeMatrix) {
+                        if (typeof this.models === 'undefined') {
+                            this.models = [];
+                        }
+                        this.models.push(nativeMatrix);
+                    };
+
+                    this.getModels = function () {
+                        return this.models;
+                    };
+
+                    this.toArray = function() {
+                        var array = [];
+                        array[0] = this.terrainObjectConfigId;
+                        var modelArray = [];
+                        for(i = 0; i < this.models.length; i++) {
+                            modelArray[i] = this.models[i].float32Array;
+                        }
+                        array[1] = modelArray;
+                        return array;
+                    };
+
+                    this.fromArray = function(array, nativeMatrixFactory) {
+                        this.terrainObjectConfigId = array[0];
+                        this.models = [];
+                        var nativeMatrices = array[1];
+                        for(i = 0; i < nativeMatrices.length; i++) {
+                            this.models.push(new com.btxtech.shared.nativejs.NativeMatrix(nativeMatrices[i], nativeMatrixFactory));
                         }
                     };
                 },

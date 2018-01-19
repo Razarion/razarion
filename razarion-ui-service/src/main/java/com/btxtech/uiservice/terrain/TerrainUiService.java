@@ -115,6 +115,10 @@ public class TerrainUiService {
         });
     }
 
+    public void onTerrainObjectModelMatrices(MapList<Integer, ModelMatrices> terrainObjects) {
+        terrainObjectConfigModelMatrices.putAll(terrainObjects);
+    }
+
     public double getHighestPointInView() {
         return highestPointInView;
     }
