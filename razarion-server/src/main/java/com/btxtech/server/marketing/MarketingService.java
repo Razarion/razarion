@@ -12,7 +12,7 @@ import com.btxtech.server.persistence.tracker.PageTrackerEntity;
 import com.btxtech.server.persistence.tracker.PageTrackerEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.util.DateUtil;
-import com.btxtech.server.util.ServerUtil;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -27,11 +27,13 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -47,6 +49,8 @@ public class MarketingService {
     private EntityManager entityManager;
     @Inject
     private FbFacade fbFacade;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     @Transactional
     @SecurityCheck
@@ -54,7 +58,7 @@ public class MarketingService {
         CreationResult creationResult = fbFacade.createAd(creationInput);
 
         CurrentAdEntity currentAdEntity = new CurrentAdEntity();
-        currentAdEntity.setState(CurrentAdEntity.State.RUNNING);
+        currentAdEntity.setState(AdState.RUNNING);
         currentAdEntity.setIds(creationResult);
         currentAdEntity.setDateStart(new Date());
         currentAdEntity.setCreationInput(creationInput);
@@ -66,14 +70,14 @@ public class MarketingService {
     @SecurityCheck
     public void stopCampaigns(long campaignId) {
         CurrentAdEntity currentAdEntity = getCurrentAdEntity(campaignId);
-        if (currentAdEntity.getState() != CurrentAdEntity.State.RUNNING) {
+        if (currentAdEntity.getState() != AdState.RUNNING) {
             throw new IllegalStateException("Ad is not running: " + currentAdEntity.getState());
         }
 
         fbFacade.stopCampaign(campaignId);
 
         currentAdEntity.setDateStop(new Date());
-        currentAdEntity.setState(CurrentAdEntity.State.WAITING_FOR_ARCHIVING);
+        currentAdEntity.setState(AdState.WAITING_FOR_ARCHIVING);
         entityManager.merge(currentAdEntity);
     }
 
@@ -81,7 +85,7 @@ public class MarketingService {
     @SecurityCheck
     public void archiveCampaignAndHistorize(long campaignId) {
         CurrentAdEntity currentAdEntity = getCurrentAdEntity(campaignId);
-        if (currentAdEntity.getState() != CurrentAdEntity.State.WAITING_FOR_ARCHIVING) {
+        if (currentAdEntity.getState() != AdState.WAITING_FOR_ARCHIVING) {
             throw new IllegalStateException("Campaign is not in WAITING_FOR_ARCHIVING state: " + currentAdEntity.getState());
         }
 
@@ -247,12 +251,42 @@ public class MarketingService {
     }
 
     private Map<String, FbAdImage> getFbAdImages() {
-        List<FbAdImage> fbAdImages = queryFbAdImages();
-        Map<String, FbAdImage> hashUrlMap = new HashMap<>();
-        for (FbAdImage fbAdImage : fbAdImages) {
-            hashUrlMap.put(fbAdImage.getHash(), fbAdImage);
+        try {
+            List<FbAdImage> fbAdImages = queryFbAdImages();
+            Map<String, FbAdImage> hashUrlMap = new HashMap<>();
+            for (FbAdImage fbAdImage : fbAdImages) {
+                hashUrlMap.put(fbAdImage.getHash(), fbAdImage);
+            }
+            return hashUrlMap;
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            return Collections.emptyMap();
         }
-        return hashUrlMap;
+    }
+
+    @Transactional
+    @SecurityCheck
+    public List<ActiveAdInfo> getActiveAdInfos() {
+        Map<String, FbAdImage> hashUrlMap = getFbAdImages();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<CurrentAdEntity> userQuery = criteriaBuilder.createQuery(CurrentAdEntity.class);
+        Root<CurrentAdEntity> root = userQuery.from(CurrentAdEntity.class);
+        CriteriaQuery<CurrentAdEntity> userSelect = userQuery.select(root);
+        List<ActiveAdInfo> activeAdInfos = new ArrayList<>();
+        entityManager.createQuery(userSelect).getResultList().forEach(currentAdEntity -> {
+            ActiveAdInfo activeAdInfo = new ActiveAdInfo().setCampaignId(currentAdEntity.getCampaignId()).setAdSetId(currentAdEntity.getAdSetId()).setAdId(currentAdEntity.getAdId());
+            activeAdInfo.setAdState(currentAdEntity.getState()).setTitle(currentAdEntity.getTitle()).setBody(currentAdEntity.getBody()).setScheduledDateStart(currentAdEntity.getScheduleTimeStart());
+            activeAdInfo.setScheduledDateEnd(currentAdEntity.getScheduleTimeEnd());
+            FbAdImage fbAdImage = hashUrlMap.get(currentAdEntity.getImageHash());
+            if (fbAdImage != null) {
+                activeAdInfo.setUrl128(fbAdImage.getUrl128());
+            }
+            if (currentAdEntity.getInterests() != null) {
+                activeAdInfo.setAdInterestJsons(currentAdEntity.getInterests().stream().map(Interest::generateAdInterestJson).collect(Collectors.toList()));
+            }
+            activeAdInfos.add(activeAdInfo);
+        });
+        return activeAdInfos;
     }
 
 //  DB MIGRATION CAN BE REMOVED

@@ -7,21 +7,6 @@
     flex-grow: 1;
 }
 
-.table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-}
-
-.td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-
-tr:nth-child(even) {
-    background-color: #dddddd;
-}
-
 .tooltip {
     position: relative;
     display: inline-block;
@@ -57,3 +42,26 @@ tr:nth-child(even) {
 .tooltip:hover .tooltiptext {
     visibility: visible;
 }
+
+/*---------------------------*/
+table.normalTable {
+    border-collapse: collapse;
+}
+
+table.normalTable>thead>tr>th {
+    text-align: left;
+    background-color: #7daedf;
+    color: black;
+    font-weight: bold;
+}
+
+table.normalTable>thead>tr>th, table.normalTable>tbody>tr>td {
+    border: 1px solid black;
+    padding: 3px;
+}
+
+table.normalTable>tbody>tr:nth-child(even) {
+    background-color: #ddeeff
+}
+
+/*---------------------------*/

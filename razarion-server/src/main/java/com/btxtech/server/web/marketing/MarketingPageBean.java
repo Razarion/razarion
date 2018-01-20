@@ -1,11 +1,17 @@
 package com.btxtech.server.web.marketing;
 
+import com.btxtech.server.marketing.ActiveAdInfo;
+import com.btxtech.server.marketing.AdState;
 import com.btxtech.server.marketing.MarketingService;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -22,6 +28,38 @@ public class MarketingPageBean {
     private String insights;
     private String campaignId;
     private String state;
+    private String readActiveInfoState;
+    private String stopActiveInfoState;
+
+    public List<ActiveAdInfo> getActiveAdInfos() {
+        readActiveInfoState = null;
+        try {
+            return marketingService.getActiveAdInfos();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            readActiveInfoState = t.getMessage();
+            return Collections.emptyList();
+        }
+    }
+
+    public void stopAndArchive(ActiveAdInfo activeAdInfo) {
+        stopActiveInfoState = null;
+        try {
+            marketingService.stopCampaigns(activeAdInfo.getCampaignId());
+            marketingService.archiveCampaignAndHistorize(activeAdInfo.getCampaignId());
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            stopActiveInfoState = t.getMessage();
+        }
+    }
+
+    public String getReadActiveInfoState() {
+        return readActiveInfoState;
+    }
+
+    public String getStopActiveInfoState() {
+        return stopActiveInfoState;
+    }
 
     public String getCampaignId() {
         return campaignId;

@@ -15,8 +15,88 @@
 
 <h:head>
     <title>Razarion Marketing</title>
+    <h:outputStylesheet library="css" name="marketing.css"/>
 </h:head>
 <h:body>
+    <h2>Current ads</h2>
+    <h:form>
+        <h:dataTable value="#{marketingPageBean.activeAdInfos}" var="activeAdInfo" styleClass="normalTable">
+            <h:column>
+                <f:facet name="header">State</f:facet>
+                <h:outputText value="#{activeAdInfo.adState}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Image</f:facet>
+                <h:graphicImage value="#{activeAdInfo.url128}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Title</f:facet>
+                <h:outputText value="#{activeAdInfo.title}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Body</f:facet>
+                <h:panelGroup layout="block" style="width: 30em">
+                    <h:outputText value="#{activeAdInfo.body}">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </h:panelGroup>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Lifetime</f:facet>
+                <h:outputText value="#{activeAdInfo.scheduledDateStart}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
+                <br/>
+                <h:outputText value="#{activeAdInfo.scheduledDateEnd}"/>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Interests</f:facet>
+                <h:dataTable value="#{activeAdInfo.adInterestJsons}" var="interest">
+                    <h:column>
+                        <h:outputText value="#{interest.name}"/>
+                        (<h:outputText value="#{interest.id}"/>)
+                    </h:column>
+                </h:dataTable>
+            </h:column>
+            <h:column>
+                <f:facet name="header">FB ids</f:facet>
+                <table>
+                    <tr>
+                        <td>
+                            Campaign id
+                        </td>
+                        <td>
+                            <h:outputText value="#{activeAdInfo.campaignId}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Ad set id
+                        </td>
+                        <td>
+                            <h:outputText value="#{activeAdInfo.adSetId}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Ad id
+                        </td>
+                        <td>
+                            <h:outputText value="#{activeAdInfo.adId}"/>
+                        </td>
+                    </tr>
+                </table>
+            </h:column>
+            <h:column>
+                <f:facet name="header">Stop and archive</f:facet>
+                <h:commandButton value="Stop and archive"
+                                 actionListener="#{marketingPageBean.stopAndArchive(activeAdInfo)}"/>
+            </h:column>
+        </h:dataTable>
+    </h:form>
+    <h:outputText value="#{marketingPageBean.readActiveInfoState}"/>
+    <h:outputText value="#{marketingPageBean.stopActiveInfoState}"/>
+    <hr/>
     <a href="/marketinghist/src/index.html">Marketing History</a>
     <br/>
     <br/>

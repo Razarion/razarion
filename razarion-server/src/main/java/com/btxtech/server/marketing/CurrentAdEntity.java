@@ -25,16 +25,12 @@ import java.util.List;
 @Entity
 @Table(name = "FB_MARKETING_CURRENT_AD")
 public class CurrentAdEntity {
-    public enum State {
-        RUNNING,
-        WAITING_FOR_ARCHIVING
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Enumerated(EnumType.STRING)
-    private State state;
+    private AdState state;
     @Column(columnDefinition = "DATETIME(3)")
     private Date dateStart;
     @Column(columnDefinition = "DATETIME(3)")
@@ -60,11 +56,11 @@ public class CurrentAdEntity {
     private Double dailyBudget;
     private Double lifeTimeBudget;
 
-    public State getState() {
+    public AdState getState() {
         return state;
     }
 
-    public void setState(State state) {
+    public void setState(AdState state) {
         this.state = state;
     }
 
