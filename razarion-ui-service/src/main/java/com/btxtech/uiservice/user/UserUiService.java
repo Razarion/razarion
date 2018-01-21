@@ -135,8 +135,8 @@ public class UserUiService {
         return userContext.checkName();
     }
 
-    public void onUserNameSet(UserContext userContext) {
-        this.userContext = userContext;
+    public void onUserNameSet(String userName) {
+        userContext.setName(userName);
         if (userRegistrationCallback != null) {
             userRegistrationCallback.accept(userContext);
         }

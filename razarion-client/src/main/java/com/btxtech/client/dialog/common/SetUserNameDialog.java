@@ -61,8 +61,8 @@ public class SetUserNameDialog extends Composite implements ModalDialogContent<V
     @EventHandler("saveButton")
     private void saveButtonClick(ClickEvent event) {
         caller.call((RemoteCallback<SetNameResult>) setNameResult -> {
-            if (setNameResult.getUserContext() != null) {
-                userUiService.onUserNameSet(setNameResult.getUserContext());
+            if (setNameResult.getUserName() != null) {
+                userUiService.onUserNameSet(setNameResult.getUserName());
                 ok = true;
                 modalDialogPanel.close();
             } else {

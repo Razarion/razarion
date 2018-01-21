@@ -434,7 +434,7 @@ public class UserService {
         entityManager.merge(userEntity);
         userContext.setName(name);
         serverGameEngine.get().updateUserName(userContext, name);
-        return new SetNameResult().setUserContext(userContext);
+        return new SetNameResult().setUserName(name);
     }
 
     @Transactional

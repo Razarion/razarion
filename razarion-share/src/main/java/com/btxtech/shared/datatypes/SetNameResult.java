@@ -5,15 +5,15 @@ package com.btxtech.shared.datatypes;
  * on 26.12.2017.
  */
 public class SetNameResult {
-    private UserContext userContext;
+    private String userName;
     private ErrorResult errorResult;
 
-    public UserContext getUserContext() {
-        return userContext;
+    public String getUserName() {
+        return userName;
     }
 
-    public SetNameResult setUserContext(UserContext userContext) {
-        this.userContext = userContext;
+    public SetNameResult setUserName(String userName) {
+        this.userName = userName;
         return this;
     }
 

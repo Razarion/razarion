@@ -138,7 +138,7 @@ public class UserServiceTest extends ArquillianBaseTest {
         SetNameResult setNameResult = userService.setName("USER 1 NAME");
         // Verify
         Assert.assertNull("USER 1 NAME", setNameResult.getErrorResult());
-        Assert.assertEquals("USER 1 NAME", setNameResult.getUserContext().getName());
+        Assert.assertEquals("USER 1 NAME", setNameResult.getUserName());
         Assert.assertEquals("USER 1 NAME", playerBase.getName());
         Assert.assertEquals("USER 1 NAME", userService.getUserContextFromSession().getName());
         runInTransaction(entityManager -> Assert.assertEquals("USER 1 NAME", entityManager.find(UserEntity.class, userEntity.getId()).toUserContext().getName()));
@@ -154,7 +154,7 @@ public class UserServiceTest extends ArquillianBaseTest {
         }
         // Verify
         Assert.assertNull("USER 1 NAME", setNameResult.getErrorResult());
-        Assert.assertEquals("USER 1 NAME", setNameResult.getUserContext().getName());
+        Assert.assertEquals("USER 1 NAME", setNameResult.getUserName());
         Assert.assertEquals("USER 1 NAME", playerBase.getName());
         Assert.assertEquals("USER 1 NAME", userService.getUserContextFromSession().getName());
         runInTransaction(entityManager -> Assert.assertEquals("USER 1 NAME", entityManager.find(UserEntity.class, userEntity.getId()).toUserContext().getName()));
