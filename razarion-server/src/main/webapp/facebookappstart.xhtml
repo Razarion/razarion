@@ -22,6 +22,15 @@
 </h:head>
 
 <h:body>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/rest/tracker/webpagescript/facebookappstart');
+        xhr.send(null);
+    </script>
+    <noscript>
+        <img src="/rest/tracker/webpagenoscript/facebookappstart"/>
+        <div>Dein Browser unterstützt kein JavaScript. JavaScript wird jedoch zum Spielen von Razarion benötigt.</div>
+    </noscript>
 
     <h:form id="helperForm" style="visibility: hidden">
         <h:inputHidden id="fbUserIdField" value="#{facebookAppStart.fbUserId}"/>

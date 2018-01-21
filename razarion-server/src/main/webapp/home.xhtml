@@ -13,6 +13,16 @@
     <title>Razarion</title>
 </h:head>
 <h:body>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/rest/tracker/webpagescript/home');
+        xhr.send(null);
+    </script>
+    <noscript>
+        <img src="/rest/tracker/webpagenoscript/home"/>
+        <div>Dein Browser unterstützt kein JavaScript. JavaScript wird jedoch zum Spielen von Razarion benötigt.</div>
+    </noscript>
+
     <h:form id="helperForm" style="visibility: hidden">
         <h:inputHidden id="fbUserIdField" value="#{homePageBean.fbUserId}"/>
         <h:commandButton id="fbResponseFormButton" value="Submit" action="#{homePageBean.fbLoginResponse}">

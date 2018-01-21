@@ -11,9 +11,13 @@ import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 /**
@@ -61,4 +65,14 @@ public interface TrackerProvider {
     @Path("detailedTracking")
     @Consumes(MediaType.APPLICATION_JSON)
     void detailedTracking(TrackingContainer trackingContainer);
+
+    @GET
+    @Path("webpagenoscript/{p}")
+    @Produces({"image/jpeg", "image/png", "image/gif"})
+    Response webPageNoScript(@PathParam("p") String page);
+
+    @GET
+    @Path("webpagescript/{p}")
+    @Produces(MediaType.TEXT_PLAIN)
+    String webPageScript(@PathParam("p") String page);
 }

@@ -14,13 +14,16 @@ import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.shared.system.perfmon.TerrainTileStatistic;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 03.03.2017.
  */
 public class TrackerProviderImpl implements TrackerProvider {
+    private Logger logger = Logger.getLogger(TrackerProviderImpl.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -104,5 +107,17 @@ public class TrackerProviderImpl implements TrackerProvider {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
+    }
+
+    @Override
+    public Response webPageNoScript(String page) {
+        logger.severe("Noscript for page: " + page + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+        return Response.ok(LoggingProviderImpl.PIXEL_BYTES).build();
+    }
+
+    @Override
+    public String webPageScript(String page) {
+        logger.severe("Script for page: " + page + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+        return "";
     }
 }

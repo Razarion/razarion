@@ -19,6 +19,16 @@
     <script type="text/javascript" language="javascript" src="razarion_client/razarion_client.nocache.js"></script>
 </h:head>
 <h:body styleClass="main-page">
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/rest/tracker/webpagescript/facebookappstart');
+        xhr.send(null);
+    </script>
+    <noscript>
+        <img src="/rest/tracker/webpagenoscript/facebookappstart"/>
+        <div>Dein Browser unterstützt kein JavaScript. JavaScript wird jedoch zum Spielen von Razarion benötigt.</div>
+    </noscript>
+
     <script type="text/javascript">
         window.RAZ_startTime = new Date().getTime();
         window.fbAsyncInit = function () {
