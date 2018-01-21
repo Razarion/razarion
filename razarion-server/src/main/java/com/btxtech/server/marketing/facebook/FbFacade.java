@@ -106,7 +106,7 @@ public class FbFacade {
         Targeting targeting = new Targeting()
                 .setFieldDevicePlatforms(Collections.singletonList(Targeting.EnumDevicePlatforms.VALUE_DESKTOP))
                 .setFieldPublisherPlatforms(Collections.singletonList("facebook"))
-                .setFieldFacebookPositions(Collections.singletonList("right_hand_column"))
+                .setFieldFacebookPositions(Collections.singletonList("feed"))
                 .setFieldExcludedConnections(Collections.singletonList(new IDName().setFieldId(filePropertiesService.getFacebookAppId()).setFieldName("Razarion")))
                 .setFieldGeoLocations(new TargetingGeoLocation().setFieldCountries(Arrays.asList("CH", "AT", "DE")))
                 .setFieldLocales(Collections.singletonList(5L))

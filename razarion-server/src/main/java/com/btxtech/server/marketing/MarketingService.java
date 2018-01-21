@@ -62,6 +62,7 @@ public class MarketingService {
         currentAdEntity.setIds(creationResult);
         currentAdEntity.setDateStart(new Date());
         currentAdEntity.setCreationInput(creationInput);
+        currentAdEntity.setFacebookPositions("feed");
         entityManager.persist(currentAdEntity);
         return creationResult;
     }

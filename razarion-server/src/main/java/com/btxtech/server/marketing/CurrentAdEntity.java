@@ -55,6 +55,7 @@ public class CurrentAdEntity {
     private boolean lifeTime;
     private Double dailyBudget;
     private Double lifeTimeBudget;
+    private String facebookPositions;
 
     public AdState getState() {
         return state;
@@ -136,6 +137,14 @@ public class CurrentAdEntity {
 
     public Double getLifeTimeBudget() {
         return lifeTimeBudget;
+    }
+
+    public String getFacebookPositions() {
+        return facebookPositions;
+    }
+
+    public void setFacebookPositions(String facebookPositions) {
+        this.facebookPositions = facebookPositions;
     }
 
     public void setCreationInput(CreationInput creationInput) {
