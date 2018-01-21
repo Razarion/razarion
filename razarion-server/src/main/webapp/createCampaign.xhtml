@@ -26,7 +26,7 @@
                 Query interesst: <h:inputText value="#{createCampaignBean.interestQuery}"/>
                 <h:commandButton value="Query" action="#{createCampaignBean.queryInterest}"/>
                 <h:commandButton value="Deep Query" action="#{createCampaignBean.deepQueryInterest}"/>
-                <h:dataTable value="#{createCampaignBean.availableAdInterest}" var="i">
+                <h:dataTable value="#{createCampaignBean.availableAdInterest}" var="i" styleClass="normalTable">
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Name</f:facet>
@@ -111,7 +111,7 @@
                 <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/></h:inputText>
                 <br/>
                 <h:graphicImage value="#{createCampaignBean.selectedImage.url128}"/>
-                <h:dataTable value="#{createCampaignBean.selectedAdInterest}" var="i">
+                <h:dataTable value="#{createCampaignBean.selectedAdInterest}" var="i" styleClass="normalTable">
                     <h:column>
                         <!-- column header -->
                         <f:facet name="header">Name</f:facet>
@@ -160,7 +160,7 @@
             </div>
             <div>
                 <h2>Images</h2>
-                <h:dataTable value="#{createCampaignBean.fbAdImages}" var="image">
+                <h:dataTable value="#{createCampaignBean.fbAdImages}" var="image" styleClass="normalTable">
                     <h:column>
                         <f:facet name="header">Image</f:facet>
                         <h:graphicImage value="#{image.url128}"/>
