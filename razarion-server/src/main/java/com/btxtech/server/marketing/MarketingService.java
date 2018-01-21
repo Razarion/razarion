@@ -93,7 +93,7 @@ public class MarketingService {
         AdSetInsight adSetInsight;
         if (adSetInsights.size() != 1) {
             adSetInsight = new AdSetInsight();
-            logger.warning("More then one AdSetInsight received: " + adSetInsights.size() + " for Facebook AdSet: " + currentAdEntity.getAdSetId());
+            logger.warning("adSetInsights.size() != 1: AdSetInsight received: " + adSetInsights.size() + " for Facebook AdSet: " + currentAdEntity.getAdSetId());
         } else {
             adSetInsight = CollectionUtils.getFirst(adSetInsights);
         }
