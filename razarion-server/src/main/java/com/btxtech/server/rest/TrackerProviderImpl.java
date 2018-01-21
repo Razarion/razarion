@@ -120,4 +120,10 @@ public class TrackerProviderImpl implements TrackerProvider {
         logger.severe("Script for page: " + page + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
         return "";
     }
+
+    @Override
+    public String webPageCookie(String page, Boolean enabled) {
+        logger.severe("Cookies for page: " + page + ". Enabled: " + enabled + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+        return "";
+    }
 }

@@ -2,7 +2,6 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
-import com.btxtech.shared.datatypes.tracking.CameraTracking;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
@@ -75,4 +74,10 @@ public interface TrackerProvider {
     @Path("webpagescript/{p}")
     @Produces(MediaType.TEXT_PLAIN)
     String webPageScript(@PathParam("p") String page);
+
+    @GET
+    @Path("webpagecookie/{p}/{e}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String webPageCookie(@PathParam("p") String page, @PathParam("e") Boolean enabled);
+
 }

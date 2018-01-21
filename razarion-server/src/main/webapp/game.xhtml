@@ -21,13 +21,18 @@
 <h:body styleClass="main-page">
     <script>
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', '/rest/tracker/webpagescript/facebookappstart');
+        xhr.open('GET', '/rest/tracker/webpagescript/game');
         xhr.send(null);
     </script>
     <noscript>
-        <img src="/rest/tracker/webpagenoscript/facebookappstart"/>
+        <img src="/rest/tracker/webpagenoscript/game"/>
         <div>Dein Browser unterstützt kein JavaScript. JavaScript wird jedoch zum Spielen von Razarion benötigt.</div>
     </noscript>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/rest/tracker/webpagecookie/game/' + navigator.cookieEnabled);
+        xhr.send(null);
+    </script>
 
     <script type="text/javascript">
         window.RAZ_startTime = new Date().getTime();
