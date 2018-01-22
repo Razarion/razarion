@@ -2,6 +2,8 @@ package com.btxtech.server.persistence.tracker;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,51 +17,38 @@ import java.util.Date;
 @Entity
 @Table(name = "TRACKER_CONNECTION")
 public class ConnectionTrackerEntity {
+    public enum Type {
+        SYSTEM_OPEN,
+        SYSTEM_CLOSE,
+        GAME_OPEN,
+        GAME_CLOSE
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(columnDefinition = "DATETIME(3)")
-    private Date systemOpen;
-    @Column(columnDefinition = "DATETIME(3)")
-    private Date systemClose;
-    @Column(columnDefinition = "DATETIME(3)")
-    private Date gameOpen;
-    @Column(columnDefinition = "DATETIME(3)")
-    private Date gameClose;
+    private Date timeStamp;
+    @Enumerated(EnumType.STRING)
+    private Type type;
     @Column(length = 190) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String sessionId;
     private int humanPlayerId;
 
-    public Date getSystemOpen() {
-        return systemOpen;
+
+    public Date getTimeStamp() {
+        return timeStamp;
     }
 
-    public void setSystemOpen(Date systemOpen) {
-        this.systemOpen = systemOpen;
+    public void setTimeStamp(Date timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
-    public Date getSystemClose() {
-        return systemClose;
+    public Type getType() {
+        return type;
     }
 
-    public void setSystemClose(Date systemClose) {
-        this.systemClose = systemClose;
-    }
-
-    public Date getGameOpen() {
-        return gameOpen;
-    }
-
-    public void setGameOpen(Date gameOpen) {
-        this.gameOpen = gameOpen;
-    }
-
-    public Date getGameClose() {
-        return gameClose;
-    }
-
-    public void setGameClose(Date gameClose) {
-        this.gameClose = gameClose;
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public String getSessionId() {

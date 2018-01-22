@@ -25,11 +25,7 @@ public class ConnectionTrackingPersistence {
     @Transactional
     public void onSystemConnectionOpened(String sessionId, PlayerSession playerSession) {
         try {
-            ConnectionTrackerEntity connectionTrackerEntity = new ConnectionTrackerEntity();
-            connectionTrackerEntity.setSystemOpen(new Date());
-            connectionTrackerEntity.setSessionId(sessionId);
-            connectionTrackerEntity.setHumanPlayerId(playerSession.getUserContext().getHumanPlayerId().getPlayerId());
-            entityManager.persist(connectionTrackerEntity);
+            persist(ConnectionTrackerEntity.Type.SYSTEM_OPEN, sessionId, playerSession.getUserContext().getHumanPlayerId().getPlayerId());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -38,11 +34,7 @@ public class ConnectionTrackingPersistence {
     @Transactional
     public void onSystemConnectionClosed(String sessionId, PlayerSession playerSession) {
         try {
-            ConnectionTrackerEntity connectionTrackerEntity = new ConnectionTrackerEntity();
-            connectionTrackerEntity.setSystemClose(new Date());
-            connectionTrackerEntity.setSessionId(sessionId);
-            connectionTrackerEntity.setHumanPlayerId(playerSession.getUserContext().getHumanPlayerId().getPlayerId());
-            entityManager.persist(connectionTrackerEntity);
+            persist(ConnectionTrackerEntity.Type.SYSTEM_CLOSE, sessionId, playerSession.getUserContext().getHumanPlayerId().getPlayerId());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -51,11 +43,7 @@ public class ConnectionTrackingPersistence {
     @Transactional
     public void onGameConnectionOpened(String sessionId, HumanPlayerId humanPlayerId) {
         try {
-            ConnectionTrackerEntity connectionTrackerEntity = new ConnectionTrackerEntity();
-            connectionTrackerEntity.setGameOpen(new Date());
-            connectionTrackerEntity.setSessionId(sessionId);
-            connectionTrackerEntity.setHumanPlayerId(humanPlayerId.getPlayerId());
-            entityManager.persist(connectionTrackerEntity);
+            persist(ConnectionTrackerEntity.Type.GAME_OPEN, sessionId, humanPlayerId.getPlayerId());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -64,13 +52,19 @@ public class ConnectionTrackingPersistence {
     @Transactional
     public void onGameConnectionClosed(String sessionId, HumanPlayerId humanPlayerId) {
         try {
-            ConnectionTrackerEntity connectionTrackerEntity = new ConnectionTrackerEntity();
-            connectionTrackerEntity.setGameClose(new Date());
-            connectionTrackerEntity.setSessionId(sessionId);
-            connectionTrackerEntity.setHumanPlayerId(humanPlayerId.getPlayerId());
-            entityManager.persist(connectionTrackerEntity);
+            persist(ConnectionTrackerEntity.Type.GAME_CLOSE, sessionId, humanPlayerId.getPlayerId());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
     }
+
+    private void persist(ConnectionTrackerEntity.Type type, String sessionId, int humanPlayerId) {
+        ConnectionTrackerEntity connectionTrackerEntity = new ConnectionTrackerEntity();
+        connectionTrackerEntity.setTimeStamp(new Date());
+        connectionTrackerEntity.setType(type);
+        connectionTrackerEntity.setSessionId(sessionId);
+        connectionTrackerEntity.setHumanPlayerId(humanPlayerId);
+        entityManager.persist(connectionTrackerEntity);
+    }
+
 }

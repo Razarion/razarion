@@ -5,6 +5,8 @@ import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
+import com.btxtech.server.persistence.tracker.ConnectionTrackerEntity;
+import com.btxtech.server.persistence.tracker.ConnectionTrackerEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
@@ -221,11 +223,31 @@ public class HistoryPersistence {
                     gameHistoryEntry.setDescription("Inventory item used. Inventory item " + inventoryHistoryEntry.getInventoryItemName() + " (" + inventoryHistoryEntry.getInventoryItemId() + ")");
                     break;
                 default:
-                    gameHistoryEntry.setDescription(inventoryHistoryEntry.getType() + " ???");
+                    gameHistoryEntry.setDescription("Box or Inventory unknown type: " + inventoryHistoryEntry.getType() + " ???");
             }
             history.add(gameHistoryEntry);
         });
         readAllHistory(entityManager, LevelUnlockHistoryEntry.class, playerId, LevelUnlockHistoryEntry_.humanPlayerIdEntityId, LevelUnlockHistoryEntry_.timeStamp).forEach(levelUnlockHistoryEntry -> history.add(new GameHistoryEntry().setDate(levelUnlockHistoryEntry.getTimeStamp()).setDescription("Unlocked. Crystals: " + levelUnlockHistoryEntry.getCrystals() + ". Unlock item " + levelUnlockHistoryEntry.getUnlockEntityName() + " (" + levelUnlockHistoryEntry.getUnlockEntityId() + ")")));
+        readAllHistory(entityManager, ConnectionTrackerEntity.class, playerId, ConnectionTrackerEntity_.humanPlayerId, ConnectionTrackerEntity_.timeStamp).forEach(connectionTrackerEntity -> {
+            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(connectionTrackerEntity.getTimeStamp());
+            switch (connectionTrackerEntity.getType()) {
+                case SYSTEM_OPEN:
+                    gameHistoryEntry.setDescription("System connection open");
+                    break;
+                case SYSTEM_CLOSE:
+                    gameHistoryEntry.setDescription("System connection close");
+                    break;
+                case GAME_OPEN:
+                    gameHistoryEntry.setDescription("Game connection open");
+                    break;
+                case GAME_CLOSE:
+                    gameHistoryEntry.setDescription("Game connection close");
+                    break;
+                default:
+                    gameHistoryEntry.setDescription("Connection unknown type: " + connectionTrackerEntity.getType() + " ???");
+            }
+            history.add(gameHistoryEntry);
+        });
         history.sort(Comparator.comparing(GameHistoryEntry::getDate));
         return history;
     }
