@@ -3,11 +3,13 @@ package com.btxtech.server.rest;
 import com.btxtech.server.mgmt.OnlineInfo;
 import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.mgmt.UserBackendInfo;
+import com.btxtech.server.user.SecurityException;
 import com.btxtech.shared.rest.RestUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -23,6 +25,7 @@ import java.util.List;
  */
 @Path(RestUrl.SERVER_MGMT_PROVIDER_PATH)
 public class ServerMgmtProvider {
+    // private Logger logger = Logger.getLogger(ServerMgmt.class.getName());
     @Inject
     private ServerMgmt serverMgmt;
     @Inject
@@ -34,6 +37,9 @@ public class ServerMgmtProvider {
     public List<OnlineInfo> loadAllOnlines() {
         try {
             return serverMgmt.loadAllOnlines();
+        } catch (SecurityException t) {
+            exceptionHandler.handleException(t);
+            throw new ForbiddenException(); // Unfortunately, resteasy log this exception
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

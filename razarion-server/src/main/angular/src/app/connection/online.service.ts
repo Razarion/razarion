@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Http} from "@angular/http";
-import {Common, URL_SERVER_MGMT} from "../Common";
+import {URL_SERVER_MGMT} from "../Common";
 import {OnlineInfo} from "./online.dto";
 
 @Injectable()
@@ -13,6 +13,8 @@ export class OnlineService {
       .toPromise()
       .then(response => {
         return response.json();
-      }).catch(Common.handleError);
+      }).catch(reason => {
+        throw reason;
+      });
   }
 }

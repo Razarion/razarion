@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class ServerMgmt {
+    // private Logger logger = Logger.getLogger(ServerMgmt.class.getName());
     @Inject
     private ClientSystemConnectionService clientSystemConnectionService;
     @Inject

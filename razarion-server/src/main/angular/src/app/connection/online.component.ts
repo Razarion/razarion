@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {OnlineInfo, OnlineInfoType} from "./online.dto";
 import {OnlineService} from "./online.service";
 import {Router} from "@angular/router";
@@ -9,23 +9,30 @@ import {Router} from "@angular/router";
   styleUrls: ['./online.component.css']
 })
 
-export class OnlineComponent implements OnInit {
+export class OnlineComponent implements OnInit, OnDestroy {
   onlineInfos: OnlineInfo[];
   @Input() lastLoaded: Date;
+  lastError: String = null;
   onlineType: OnlineInfoType;
+  private timerId: number = null;
 
   constructor(private onlineService: OnlineService, private route: Router) {
   }
 
   ngOnInit(): void {
-    this.onlineService.loadAllOnlines().then(onlineInfos => this.setOnlineInfos(onlineInfos));
-    window.setInterval(() => {
-      this.onlineService.loadAllOnlines().then(onlineInfos => this.setOnlineInfos(onlineInfos));
+    this.loadAllOnlines();
+    this.clearTimer();
+    this.timerId = window.setInterval(() => {
+      this.loadAllOnlines();
     }, 60000);
   }
 
+  ngOnDestroy(): void {
+    this.clearTimer();
+  }
+
   onUpdate() {
-    this.onlineService.loadAllOnlines().then(onlineInfos => this.setOnlineInfos(onlineInfos));
+    this.loadAllOnlines();
   }
 
   private setOnlineInfos(onlineInfos: OnlineInfo[]): void {
@@ -42,6 +49,23 @@ export class OnlineComponent implements OnInit {
 
   onClickUser(onlineInfo: OnlineInfo) {
     this.route.navigate(['/user', onlineInfo.humanPlayerId.playerId]);
+  }
+
+  private clearTimer(): void {
+    if (this.timerId != null) {
+      window.clearInterval(this.timerId);
+      this.timerId = null;
+    }
+  }
+
+  private loadAllOnlines(): void {
+    this.onlineService.loadAllOnlines().then(onlineInfos => {
+      this.setOnlineInfos(onlineInfos);
+      this.lastError = null;
+    }).catch(reason => {
+      this.clearTimer();
+      this.lastError = reason.toString();
+    });
   }
 
   getUserState(onlineInfo: OnlineInfo): string {
