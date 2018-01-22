@@ -36,9 +36,7 @@
             <h:column>
                 <f:facet name="header">Body</f:facet>
                 <h:panelGroup layout="block" style="width: 30em">
-                    <h:outputText value="#{activeAdInfo.body}">
-                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
-                    </h:outputText>
+                    <h:outputText value="#{activeAdInfo.body}"/>
                 </h:panelGroup>
             </h:column>
             <h:column>
@@ -47,7 +45,9 @@
                     <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
                 </h:outputText>
                 <br/>
-                <h:outputText value="#{activeAdInfo.scheduledDateEnd}"/>
+                <h:outputText value="#{activeAdInfo.scheduledDateEnd}">
+                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                </h:outputText>
             </h:column>
             <h:column>
                 <f:facet name="header">Interests</f:facet>
