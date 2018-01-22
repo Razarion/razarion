@@ -317,6 +317,7 @@ public class BaseItemService {
 
     public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
         syncBaseItem.clearHealth();
+        logger.severe("onSlaveSyncBaseItemDeleted: " + syncBaseItem); // TODO remove, just for debugging
         syncItemContainerService.destroySyncItem(syncBaseItem);
         energyService.onBaseItemRemoved(syncBaseItem);
         if (syncItemDeletedInfo.isExplode()) {
