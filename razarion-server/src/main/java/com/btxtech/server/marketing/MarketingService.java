@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class MarketingService {
+    private static final long FB_AD_IMAGE_CACHE_PERIOD = 2 * 60 * 60 * 1000;
     private Logger logger = Logger.getLogger(MarketingService.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
@@ -51,6 +52,8 @@ public class MarketingService {
     private FbFacade fbFacade;
     @Inject
     private ExceptionHandler exceptionHandler;
+    private List<FbAdImage> fbAdImageCache;
+    private long lastFbAdImageCacheUpdate;
 
     @Transactional
     @SecurityCheck
@@ -188,9 +191,27 @@ public class MarketingService {
     }
 
     @SecurityCheck
-    public List<FbAdImage> queryFbAdImages() {
-        return fbFacade.queryFbAdImages();
+    public void updateFbAdImageCache() {
+        try {
+            fbAdImageCache = fbFacade.queryFbAdImages();
+            lastFbAdImageCacheUpdate = System.currentTimeMillis();
+            logger.severe("TODO remove me::: fbAdImageCache updated"); // TODO remove me
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
+
+    @SecurityCheck
+    public List<FbAdImage> getFbAdImages() {
+        if (fbAdImageCache == null) {
+            updateFbAdImageCache();
+        }
+        if (lastFbAdImageCacheUpdate + FB_AD_IMAGE_CACHE_PERIOD < System.currentTimeMillis()) {
+            updateFbAdImageCache();
+        }
+        return fbAdImageCache;
+    }
+
 
     @SecurityCheck
     public void deleteFbAdImage(FbAdImage image) {
@@ -205,7 +226,7 @@ public class MarketingService {
     @Transactional
     @SecurityCheck
     public List<CampaignJson> getCampaignHistory() {
-        Map<String, FbAdImage> hashUrlMap = getFbAdImages();
+        Map<String, FbAdImage> hashUrlMap = getFbAdImageHashes();
         List<CampaignJson> campaignJsons = new ArrayList<>();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<HistoryAdEntity> userQuery = criteriaBuilder.createQuery(HistoryAdEntity.class);
@@ -251,9 +272,9 @@ public class MarketingService {
         return clicksPerHourJsons;
     }
 
-    private Map<String, FbAdImage> getFbAdImages() {
+    private Map<String, FbAdImage> getFbAdImageHashes() {
         try {
-            List<FbAdImage> fbAdImages = queryFbAdImages();
+            List<FbAdImage> fbAdImages = getFbAdImages();
             Map<String, FbAdImage> hashUrlMap = new HashMap<>();
             for (FbAdImage fbAdImage : fbAdImages) {
                 hashUrlMap.put(fbAdImage.getHash(), fbAdImage);
@@ -268,7 +289,7 @@ public class MarketingService {
     @Transactional
     @SecurityCheck
     public List<ActiveAdInfo> getActiveAdInfos() {
-        Map<String, FbAdImage> hashUrlMap = getFbAdImages();
+        Map<String, FbAdImage> hashUrlMap = getFbAdImageHashes();
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CurrentAdEntity> userQuery = criteriaBuilder.createQuery(CurrentAdEntity.class);
         Root<CurrentAdEntity> root = userQuery.from(CurrentAdEntity.class);

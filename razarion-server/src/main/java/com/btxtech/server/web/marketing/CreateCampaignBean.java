@@ -9,7 +9,6 @@ import com.btxtech.server.util.ServerUtil;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,22 +29,12 @@ public class CreateCampaignBean implements Serializable {
     @Inject
     transient private ExceptionHandler exceptionHandler;
     private CreationInput creationInput = new CreationInput();
-    private List<FbAdImage> fbAdImages;
     private List<DetailedAdInterest> selectedAdInterest = new ArrayList<>();
     private List<DetailedAdInterest> availableAdInterest = new ArrayList<>();
     private String interestQuery;
     private String campaignCreationError;
     private String imageGalleryError;
     private Part uploadImageFile;
-
-    @PostConstruct
-    public void postConstruct() {
-        try {
-            fbAdImages = marketingService.queryFbAdImages();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-    }
 
     public CreationInput getCreationInput() {
         return creationInput;
@@ -186,7 +175,7 @@ public class CreateCampaignBean implements Serializable {
     }
 
     public List<FbAdImage> getFbAdImages() {
-        return fbAdImages;
+        return marketingService.getFbAdImages();
     }
 
     public void selectImage(FbAdImage image) {
@@ -196,7 +185,7 @@ public class CreateCampaignBean implements Serializable {
     public void deleteImage(FbAdImage image) {
         try {
             marketingService.deleteFbAdImage(image);
-            fbAdImages = marketingService.queryFbAdImages();
+            marketingService.updateFbAdImageCache();
             if (creationInput.getFbAdImage() == image) {
                 creationInput.setFbAdImage(null);
             }
@@ -232,7 +221,7 @@ public class CreateCampaignBean implements Serializable {
                 throw new IllegalStateException("bytesRead < 0");
             }
             marketingService.uploadImageFile(bytes);
-            fbAdImages = marketingService.queryFbAdImages();
+            marketingService.updateFbAdImageCache();
             uploadImageFile = null;
             imageGalleryError = null;
         } catch (Throwable e) {
