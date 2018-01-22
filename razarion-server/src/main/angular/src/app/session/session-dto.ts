@@ -1,4 +1,4 @@
-import {HumanPlayerId, SimpleUserBackend} from "../Common";
+import {SimpleUserBackend} from "../Common";
 
 export class SearchConfig {
   fromDate: Date;
@@ -25,6 +25,7 @@ export class SessionDetail {
   userAgent: string;
   remoteHost: string;
   remoteAddr: string;
+  referer: string;
   gameSessionDetails: GameSessionDetail[];
   pageDetails: PageDetail[];
 }

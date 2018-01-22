@@ -14,6 +14,7 @@ public class SessionDetail {
     private String userAgent;
     private String remoteHost;
     private String remoteAddr;
+    private String referer;
     private List<GameSessionDetail> gameSessionDetails;
     private List<PageDetail> pageDetails;
 
@@ -41,6 +42,15 @@ public class SessionDetail {
 
     public SessionDetail setFbAdRazTrack(String fbAdRazTrack) {
         this.fbAdRazTrack = fbAdRazTrack;
+        return this;
+    }
+
+    public String getReferer() {
+        return referer;
+    }
+
+    public SessionDetail setReferer(String referer) {
+        this.referer = referer;
         return this;
     }
 

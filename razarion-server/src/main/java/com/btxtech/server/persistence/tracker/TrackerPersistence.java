@@ -307,7 +307,7 @@ public class TrackerPersistence {
         query.where(criteriaBuilder.equal(root.get(SessionTrackerEntity_.sessionId), sessionId));
         SessionTrackerEntity sessionTrackerEntity = entityManager.createQuery(userSelect).getSingleResult();
 
-        SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent());
+        SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent()).setReferer(sessionTrackerEntity.getReferer());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
         sessionDetail.setRemoteAddr(sessionTrackerEntity.getRemoteAddr()).setRemoteHost(sessionTrackerEntity.getRemoteHost());
         sessionDetail.setGameSessionDetails(readGameSessionDetails(sessionId));
