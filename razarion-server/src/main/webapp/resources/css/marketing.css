@@ -1,3 +1,20 @@
+* {
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+a {
+    color: #a15ab7;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #ff1103;
+    text-decoration: underline;
+}
+
+/*-----------------------------------*/
+
 .flexbox-parent {
     display: flex;
     flex-direction: row;
@@ -6,6 +23,8 @@
 .ad-container {
     flex-grow: 1;
 }
+
+/*-----------------------------------*/
 
 .tooltip {
     position: relative;
@@ -48,20 +67,28 @@ table.normalTable {
     border-collapse: collapse;
 }
 
-table.normalTable>thead>tr>th {
+table.normalTable > thead > tr > th {
     text-align: left;
     background-color: #7daedf;
     color: black;
     font-weight: bold;
 }
 
-table.normalTable>thead>tr>th, table.normalTable>tbody>tr>td {
+table.normalTable > thead > tr > th, table.normalTable > tbody > tr > td {
     border: 1px solid black;
     padding: 3px;
 }
 
-table.normalTable>tbody>tr:nth-child(even) {
+table.normalTable > tbody > tr:nth-child(even) {
     background-color: #ddeeff
 }
 
 /*---------------------------*/
+
+table.propertyTable>tbody>tr>td{
+    background-color: transparent;
+}
+
+table.propertyTable>tbody>tr>td:first-child  {
+    background-color: #ddeeff
+}

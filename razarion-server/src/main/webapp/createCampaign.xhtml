@@ -92,69 +92,164 @@
                     </h:column>
                 </h:dataTable>
 
-                <h2>Create Compaign</h2>
                 <h2>Data</h2>
-                Title: <h:inputText value="#{createCampaignBean.creationInput.title}" size="25"/>
-                <br/>
-                Body: <h:inputText value="#{createCampaignBean.creationInput.body}" size="90"/>
-                <br/>
-                Lifetime: <h:selectBooleanCheckbox value="#{createCampaignBean.creationInput.lifeTime}"/>
-                <br/>
-                Daily Budget: <h:inputText value="#{createCampaignBean.creationInput.dailyBudget}" size="5"/>
-                <br/>
-                Lifetime Budget: <h:inputText value="#{createCampaignBean.creationInput.lifeTimeBudget}" size="5"/>
-                <br/>
-                Schedule Start Time:<h:inputText value="#{createCampaignBean.creationInput.scheduleStartTime}" size="20">
-                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/></h:inputText>
-                <br/>
-                Schedule End Time:<h:inputText value="#{createCampaignBean.creationInput.scheduleEndTime}" size="20">
-                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/></h:inputText>
-                <br/>
-                <h:graphicImage value="#{createCampaignBean.selectedImage.url128}"/>
-                <h:dataTable value="#{createCampaignBean.selectedAdInterest}" var="i" styleClass="normalTable">
-                    <h:column>
-                        <!-- column header -->
-                        <f:facet name="header">Name</f:facet>
-                        <!-- row record -->
-                        <h:outputText value="#{i.adInterest.name}"/>
-                    </h:column>
-                    <h:column>
-                        <!-- column header -->
-                        <f:facet name="header">Audience Size</f:facet>
-                        <!-- row record -->
-                        <h:outputText value="#{i.adInterest.audienceSize}"/>
-                    </h:column>
-                    <h:column>
-                        <!-- column header -->
-                        <f:facet name="header">Topic</f:facet>
-                        <!-- row record -->
-                        <h:outputText value="#{i.adInterest.topic}"/>
-                    </h:column>
-                    <h:column>
-                        <!-- column header -->
-                        <f:facet name="header">Id</f:facet>
-                        <!-- row record -->
-                        <h:outputText value="#{i.adInterest.id}"/>
-                    </h:column>
-                    <h:column>
-                        <!-- column header -->
-                        <f:facet name="header">Disambiguation Category</f:facet>
-                        <!-- row record -->
-                        <h:outputText value="#{i.adInterest.disambiguationCategory}"/>
-                    </h:column>
-                    <h:column>
-                        <!-- column header -->
-                        <f:facet name="header">Description</f:facet>
-                        <!-- row record -->
-                        <h:outputText value="#{i.adInterest.description}"/>
-                    </h:column>
-                    <h:column>
-                        <!-- column header -->
-                        <f:facet name="header">Remove</f:facet>
-                        <!-- row record -->
-                        <h:commandButton value="-" actionListener="#{createCampaignBean.removeInterest(i)}"/>
-                    </h:column>
-                </h:dataTable>
+                <table class="propertyTable">
+                    <tr>
+                        <td>
+                            Title
+                        </td>
+                        <td>
+                            <h:inputText value="#{createCampaignBean.creationInput.title}" size="25"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Body
+                        </td>
+                        <td>
+                            <h:inputText value="#{createCampaignBean.creationInput.body}" size="90"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Lifetime
+                        </td>
+                        <td>
+                            <h:selectBooleanCheckbox value="#{createCampaignBean.creationInput.lifeTime}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Daily Budget
+                        </td>
+                        <td>
+                            <h:inputText value="#{createCampaignBean.creationInput.dailyBudget}" size="5"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Lifetime Budget
+                        </td>
+                        <td>
+                            <h:inputText value="#{createCampaignBean.creationInput.lifeTimeBudget}" size="5"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Schedule Start Time
+                        </td>
+                        <td>
+                            <h:inputText value="#{createCampaignBean.creationInput.scheduleStartTime}" size="20">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:inputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Schedule End Time
+                        </td>
+                        <td>
+                            <h:inputText value="#{createCampaignBean.creationInput.scheduleEndTime}" size="20">
+                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:inputText>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Schedule time helper
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>
+                                        Doday start hour (0...23)
+                                    </td>
+                                    <td>
+                                        <h:inputText value="#{createCampaignBean.creationInput.scheduleHelperStartHour}" size="10"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Duration [h]
+                                    </td>
+                                    <td>
+                                        <h:inputText value="#{createCampaignBean.creationInput.scheduleHelperDuration}" size="10"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <h:commandButton value="Generate" actionListener="#{createCampaignBean.creationInput.scheduleHelperGenerate()}"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Image
+                        </td>
+                        <td>
+                            <h:graphicImage value="#{createCampaignBean.selectedImage.url128}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Interests
+                        </td>
+                        <td>
+                            <h:dataTable value="#{createCampaignBean.selectedAdInterest}" var="i"
+                                         styleClass="normalTable">
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">Name</f:facet>
+                                    <!-- row record -->
+                                    <h:outputText value="#{i.adInterest.name}"/>
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">Audience Size</f:facet>
+                                    <!-- row record -->
+                                    <h:outputText value="#{i.adInterest.audienceSize}"/>
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">Topic</f:facet>
+                                    <!-- row record -->
+                                    <h:outputText value="#{i.adInterest.topic}"/>
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">Id</f:facet>
+                                    <!-- row record -->
+                                    <h:outputText value="#{i.adInterest.id}"/>
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">Disambiguation Category</f:facet>
+                                    <!-- row record -->
+                                    <h:outputText value="#{i.adInterest.disambiguationCategory}"/>
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">Description</f:facet>
+                                    <!-- row record -->
+                                    <h:outputText value="#{i.adInterest.description}"/>
+                                </h:column>
+                                <h:column>
+                                    <!-- column header -->
+                                    <f:facet name="header">Remove</f:facet>
+                                    <!-- row record -->
+                                    <h:commandButton value="-"
+                                                     actionListener="#{createCampaignBean.removeInterest(i)}"/>
+                                </h:column>
+                            </h:dataTable>
+                        </td>
+                    </tr>
+                </table>
+
                 <h:commandButton value="Create Ad" action="#{createCampaignBean.createCampaign}"/>
                 <h:outputText value="#{createCampaignBean.campaignCreationError}"/>
             </div>

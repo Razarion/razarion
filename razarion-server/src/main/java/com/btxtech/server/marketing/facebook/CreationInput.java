@@ -2,9 +2,10 @@ package com.btxtech.server.marketing.facebook;
 
 import com.btxtech.server.marketing.Interest;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.function.DoubleFunction;
 
 /**
  * Created by Beat
@@ -21,6 +22,8 @@ public class CreationInput {
     private boolean lifeTime;
     private Double dailyBudget;
     private Double lifeTimeBudget;
+    private Integer scheduleHelperStartHour;
+    private Integer scheduleHelperDuration;
 
     public String getTitle() {
         return title;
@@ -100,5 +103,36 @@ public class CreationInput {
 
     public void setLifeTimeBudget(Double lifeTimeBudget) {
         this.lifeTimeBudget = lifeTimeBudget;
+    }
+
+    public Integer getScheduleHelperStartHour() {
+        return scheduleHelperStartHour;
+    }
+
+    public void setScheduleHelperStartHour(Integer scheduleHelperStartHour) {
+        this.scheduleHelperStartHour = scheduleHelperStartHour;
+    }
+
+    public Integer getScheduleHelperDuration() {
+        return scheduleHelperDuration;
+    }
+
+    public void setScheduleHelperDuration(Integer scheduleHelperDuration) {
+        this.scheduleHelperDuration = scheduleHelperDuration;
+    }
+
+    public void scheduleHelperGenerate() {
+        if (scheduleHelperStartHour != null && scheduleHelperDuration != null) {
+            Calendar gregorianCalendar = new GregorianCalendar();
+            gregorianCalendar.set(Calendar.HOUR_OF_DAY, scheduleHelperStartHour);
+            gregorianCalendar.set(Calendar.MINUTE, 0);
+            gregorianCalendar.set(Calendar.SECOND, 0);
+            gregorianCalendar.set(Calendar.MILLISECOND, 0);
+            scheduleStartTime = gregorianCalendar.getTime();
+            gregorianCalendar.set(Calendar.HOUR_OF_DAY, scheduleHelperStartHour + scheduleHelperDuration);
+            scheduleEndTime = gregorianCalendar.getTime();
+            scheduleHelperStartHour = null;
+            scheduleHelperDuration = null;
+        }
     }
 }
