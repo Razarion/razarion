@@ -122,6 +122,17 @@ public class DevToolModalDialogManagerImpl extends ModalDialogManager {
     }
 
     @Override
+    public void showRegisterDialog() {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Register");
+            alert.setHeaderText(null);
+            alert.setContentText("Register");
+            alert.showAndWait();
+        });
+    }
+
+    @Override
     public void showSetUserNameDialog() {
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);

@@ -622,7 +622,32 @@ a:active {
 
 /** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
 
-/** -------------------------- DIALOG QUEST PASSED  -------------------------- */
+/** -------------------------- DIALOG REGISTER  -------------------------- */
+.register-dialog {
+    max-width: 30em;
+}
+
+.register-dialog-fb-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+/** -------------------------- DIALOG REGISTER ENDS -------------------------- */
+
+/** -------------------------- DIALOG UNREGISTERED  -------------------------- */
+.unregistered-dialog {
+    max-width: 30em;
+}
+
+.unregistered-dialog-button-wrapper {
+    display: flex;
+    justify-content: center;
+}
+/** -------------------------- DIALOG UNREGISTERED ENDS -------------------------- */
+
+/** -------------------------- DIALOG SET NAME  -------------------------- */
 .set-name-dialog {
     max-width: 30em;
 }
@@ -634,8 +659,8 @@ a:active {
     font-size: 85%;
     font-weight: bolder;
 }
+/** -------------------------- DIALOG SET NAME ENDS -------------------------- */
 
-/** -------------------------- DIALOG QUEST PASSED ENDS -------------------------- */
 
 /** -------------------------- DIALOG INVENTORY  -------------------------- */
 .inventory-item-table {

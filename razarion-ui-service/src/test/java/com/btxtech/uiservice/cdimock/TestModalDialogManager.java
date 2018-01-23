@@ -62,6 +62,11 @@ public class TestModalDialogManager extends ModalDialogManager {
     }
 
     @Override
+    public void showRegisterDialog() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void showSetUserNameDialog() {
         throw new UnsupportedOperationException();
     }

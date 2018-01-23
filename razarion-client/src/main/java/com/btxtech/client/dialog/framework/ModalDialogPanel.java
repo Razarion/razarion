@@ -123,4 +123,8 @@ public class ModalDialogPanel<T> extends Composite {
         int y = GwtUtils.correctInt(glassPanelDiv.getOffsetTop() + modalDialogDiv.getOffsetTop());
         return new Rectangle(x, y, GwtUtils.correctInt(modalDialogDiv.getClientWidth()), GwtUtils.correctInt(modalDialogDiv.getClientHeight()));
     }
+
+    public void onShown() {
+        modalDialogContent.onShown();
+    }
 }

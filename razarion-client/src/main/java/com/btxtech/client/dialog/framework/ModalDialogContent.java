@@ -12,4 +12,8 @@ public interface ModalDialogContent<T> extends IsWidget {
     void init(T t);
 
     void customize(ModalDialogPanel<T> modalDialogPanel);
+
+    default void onShown() {
+
+    }
 }

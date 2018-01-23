@@ -24,6 +24,7 @@ public enum PerfmonEnum {
     TIP_SCROLL(true),
     TIP_SPAWN(true),
     TIP_GUI_POINTING(true),
+    REGISTER(true),
     USER_SET_NAME(true);
 
     private boolean fps;

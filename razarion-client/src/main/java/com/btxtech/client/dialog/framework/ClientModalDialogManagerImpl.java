@@ -5,8 +5,8 @@ import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.dialog.common.MessageDialog;
 import com.btxtech.client.dialog.common.MessageImage;
 import com.btxtech.client.dialog.common.MessageImageDialog;
+import com.btxtech.client.dialog.common.RegisterDialog;
 import com.btxtech.client.dialog.common.ScrollTipDialog;
-import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 import com.btxtech.client.dialog.common.SetUserNameDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
 import com.btxtech.client.dialog.unlock.UnlockDialog;
@@ -19,7 +19,9 @@ import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
+import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 import com.btxtech.uiservice.unlock.UnlockUiService;
+import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.ui.RootPanel;
 
 import javax.enterprise.inject.Instance;
@@ -45,6 +47,8 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
 
     @Inject
     private Instance<ModalDialogPanel<Object>> containerInstance;
+    @Inject
+    private Instance<UserUiService> userUiServicesInstance;
     @Inject
     private AudioService audioService;
     @Inject
@@ -102,7 +106,18 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     }
 
     @Override
+    public void showRegisterDialog() {
+        if (userUiServicesInstance.get().isRegistered()) {
+            throw new IllegalStateException("User is already registered");
+        }
+        show(I18nHelper.getConstants().register(), Type.QUEUE_ABLE, RegisterDialog.class, null, null, null, DialogButton.Button.CANCEL);
+    }
+
+    @Override
     public void showSetUserNameDialog() {
+        if (userUiServicesInstance.get().isRegisteredAndNamed()) {
+            throw new IllegalStateException("User is already registered and named");
+        }
         show(I18nHelper.getConstants().setName(), Type.QUEUE_ABLE, SetUserNameDialog.class, null, null, null, DialogButton.Button.CANCEL);
     }
 
@@ -197,6 +212,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     private void showDialog(ModalDialogPanel modalDialogPanel, Consumer<ModalDialogPanel> shownCallback, Integer audioId) {
         audioService.onDialogOpened(audioId);
         RootPanel.get().add(modalDialogPanel);
+        modalDialogPanel.onShown();
         if (shownCallback != null) {
             shownCallback.accept(modalDialogPanel);
         }

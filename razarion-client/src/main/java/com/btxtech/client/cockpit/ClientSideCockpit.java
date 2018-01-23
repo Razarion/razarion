@@ -93,10 +93,22 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     private Div radarNoEnergyInnerDiv;
     @Inject
     @DataField
-    private Span userNameSpan;
+    private TableRow registerTr;
     @Inject
     @DataField
-    private Button userButton;
+    private Button registerButton;
+    @Inject
+    @DataField
+    private TableRow setNameTr;
+    @Inject
+    @DataField
+    private Button setNameButton;
+    @Inject
+    @DataField
+    private TableRow userTr;
+    @Inject
+    @DataField
+    private Span userNameSpan;
 
     @PostConstruct
     public void init() {
@@ -150,15 +162,15 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
         modalDialogManager.show(I18nHelper.getConstants().unlockDialogTitle(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, UnlockDialog.class, null, null, null, DialogButton.Button.CLOSE);
     }
 
-    @EventHandler("userButton")
-    private void onUserButtonClick(ClickEvent event) {
-        if (!userUiService.isRegistered()) {
-            // TODO show register dialog
-            // TODO also in UnregisteredDialog
-        } else if (!userUiService.isRegisteredAndNamed()) {
-            modalDialogManager.showSetUserNameDialog();
-        }
-   }
+    @EventHandler("registerButton")
+    private void onRegisterButtonClick(ClickEvent event) {
+        modalDialogManager.showRegisterDialog();
+    }
+
+    @EventHandler("setNameButton")
+    private void onSetNameButtonClick(ClickEvent event) {
+        modalDialogManager.showRegisterDialog();
+    }
 
     @Override
     public void displayResources(int resources) {
@@ -196,16 +208,17 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     }
 
     private void displayUserRegistration(UserContext userContext) {
-        userNameSpan.getStyle().setProperty("display", "none");
-        userButton.getElement().getStyle().setDisplay(Style.Display.NONE);
+        registerTr.getStyle().setProperty("display", "none");
+        setNameTr.getStyle().setProperty("display", "none");
+        userTr.getStyle().setProperty("display", "none");
         if (!userUiService.isRegistered()) {
-            // userButton.getElement().getStyle().setDisplay(Style.Display.TABLE_ROW);
-            userButton.setText(I18nHelper.getConstants().register());
+            registerTr.getStyle().setProperty("display", "table-row");
+            registerButton.setText(I18nHelper.getConstants().register());
         } else if (!userUiService.isRegisteredAndNamed()) {
-            userButton.getElement().getStyle().setDisplay(Style.Display.TABLE_ROW);
-            userButton.setText(I18nHelper.getConstants().setName());
+            setNameTr.getStyle().setProperty("display", "table-row");
+            setNameButton.setText(I18nHelper.getConstants().setName());
         } else {
-            userNameSpan.getStyle().setProperty("display", "table-row");
+            userTr.getStyle().setProperty("display", "table-row");
             userNameSpan.setTextContent(userContext.getName());
         }
     }

@@ -203,8 +203,6 @@ public interface I18nConstants {
 
     String chatUnnamed();
 
-    String registerText();
-
     String registerFacebookNickname();
 
     String registerThanks();

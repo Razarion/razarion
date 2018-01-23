@@ -38,6 +38,8 @@ public abstract class ModalDialogManager {
 
     public abstract void showMessageImageDialog(String title, String message, Integer imageId);
 
+    public abstract void showRegisterDialog();
+
     public abstract void showSetUserNameDialog();
 
     public abstract void showScrollTipDialog(ScrollTipDialogModel scrollTipDialogModel);

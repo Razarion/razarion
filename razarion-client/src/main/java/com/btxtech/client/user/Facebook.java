@@ -1,6 +1,5 @@
 package com.btxtech.client.user;
 
-import com.google.gwt.core.client.JavaScriptObject;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -11,13 +10,29 @@ import jsinterop.annotations.JsType;
  * 20.02.2017.
  */
 public class Facebook {
+    @JsProperty(namespace = JsPackage.GLOBAL)
+    public static native FB getFB();
+
     @JsType(isNative = true)
     public interface FB {
         void getLoginStatus(LoginStatusCallback loginStatusCallback);
+
+        @JsProperty
+        XFBML getXFBML();
+
+        @JsProperty(name = "Event")
+        Event getEvent();
     }
 
-    @JsProperty(namespace = JsPackage.GLOBAL)
-    public static native FB getFB();
+    @JsType(isNative = true)
+    public interface XFBML {
+        void parse();
+    }
+
+    @JsType(isNative = true)
+    public interface Event {
+        void subscribe(String event, LoginStatusCallback callback);
+    }
 
     @JsType(isNative = true)
     public static class FbResponse {
@@ -35,6 +50,6 @@ public class Facebook {
 
     @JsFunction
     public interface LoginStatusCallback {
-        JavaScriptObject call(FbResponse response);
+        void call(FbResponse response);
     }
 }

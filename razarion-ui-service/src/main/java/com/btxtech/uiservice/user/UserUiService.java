@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 @ApplicationScoped
 public class UserUiService {
     private static final long SET_NAME_TIME = 1000 * 60 * 5;
+    private static final long REGISTER_TIME = 1000 * 60 * 4;
     // private Logger logger = Logger.getLogger(UserUiService.class.getName());
     @Inject
     private GameEngineControl gameEngineControl;
@@ -49,9 +50,11 @@ public class UserUiService {
     private UserContext userContext;
     private Consumer<UserContext> userRegistrationCallback;
     private SimpleScheduledFuture setUserNameFuture;
+    private SimpleScheduledFuture registerFuture;
 
     public void start() {
         if (!isRegistered()) {
+            activateRegisterTimer();
         } else if (!isRegisteredAndNamed()) {
             if (gameUiControlInstance.get().getGameEngineMode() == GameEngineMode.SLAVE) {
                 activateSetUserNameTimer();
@@ -62,11 +65,17 @@ public class UserUiService {
 
     public void stop() {
         clearSetUserNameTimer();
+        clearRegisterTimer();
     }
 
     public void activateSetUserNameTimer() {
         clearSetUserNameTimer();
         setUserNameFuture = simpleExecutorService.schedule(SET_NAME_TIME, modalDialogManager::showSetUserNameDialog, SimpleExecutorService.Type.USER_SET_NAME);
+    }
+
+    public void activateRegisterTimer() {
+        clearRegisterTimer();
+        registerFuture = simpleExecutorService.schedule(REGISTER_TIME, modalDialogManager::showRegisterDialog, SimpleExecutorService.Type.REGISTER);
     }
 
     public void setUserContext(UserContext userContext) {
@@ -147,6 +156,13 @@ public class UserUiService {
         if (setUserNameFuture != null) {
             setUserNameFuture.cancel();
             setUserNameFuture = null;
+        }
+    }
+
+    public void clearRegisterTimer() {
+        if (registerFuture != null) {
+            registerFuture.cancel();
+            registerFuture = null;
         }
     }
 }
