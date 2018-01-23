@@ -60,7 +60,7 @@ import java.util.logging.Logger;
 public class ClientTrackerService implements TrackerService, StartupProgressListener, ViewService.ViewFieldListener {
     private static final String WINDOW_CLOSE = "Window closed -> move to DB";
     private static final String START_UUID = "uuid";
-    private static final int DETAILED_TRACKING_DELAY = 1000 * 5;
+    private static final int DETAILED_TRACKING_DELAY = 1000 * 10;
     private Logger logger = Logger.getLogger(ClientTrackerService.class.getName());
     @Inject
     private Caller<TrackerProvider> trackingProvider;
