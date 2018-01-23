@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.nativejs.NativeVertexDto;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -66,6 +67,8 @@ public class BaseItemUiService {
     private UserUiService userUiService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private final Map<Integer, PlayerBaseDto> bases = new HashMap<>();
     private Map<Integer, SyncBaseItemState> syncItemStates = new HashMap<>();
     private PlayerBaseDto myBase;
@@ -545,7 +548,15 @@ public class BaseItemUiService {
     }
 
     public SyncBaseItemSimpleDto getSyncBaseItemSimpleDto4IdPlayback(int itemId) {
-        return Arrays.stream(nativeSyncBaseItemTickInfos).filter(syncBaseItemSimpleDto -> syncBaseItemSimpleDto.id == itemId).map(SyncBaseItemSimpleDto::from).findFirst().orElse(null);
+        return Arrays.stream(nativeSyncBaseItemTickInfos).filter(syncBaseItemSimpleDto -> syncBaseItemSimpleDto.id == itemId).map(nativeSyncBaseItemTickInfo -> {
+            // Problem with NativeSyncBaseItemTickInfos and SyncBaseItemSimpleDto::from.
+            try {
+                return SyncBaseItemSimpleDto.from(nativeSyncBaseItemTickInfo);
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+                return null;
+            }
+        }).findFirst().orElse(null);
     }
 
     public boolean hasRadar() {
