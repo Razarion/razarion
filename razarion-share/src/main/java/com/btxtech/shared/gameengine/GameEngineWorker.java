@@ -472,6 +472,11 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         sendBaseToClient(GameEngineControlPackage.Command.BASE_UPDATED, playerBase);
     }
 
+    public void onServerBaseHumanPlayerIdChanged(PlayerBaseInfo playerBaseInfo) {
+        PlayerBase playerBase = baseItemService.updateHumanPlayerId(playerBaseInfo.getBaseId(), playerBaseInfo.getHumanPlayerId());
+        sendBaseToClient(GameEngineControlPackage.Command.BASE_UPDATED, playerBase);
+    }
+
     private void sendBaseToClient(GameEngineControlPackage.Command cmd, PlayerBase playerBase) {
         PlayerBaseDto playerBaseDto = new PlayerBaseDto();
         playerBaseDto.setBaseId(playerBase.getBaseId());
@@ -586,8 +591,8 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     private void getTerrainTile(Index terrainTileIndex) {
         long time = System.currentTimeMillis();
-         TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
-         sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
+        TerrainTile terrainTile = terrainService.generateTerrainTile(terrainTileIndex);
+        sendToClient(GameEngineControlPackage.Command.TERRAIN_TILE_RESPONSE, terrainTile);
         perfmonService.onTerrainTile(terrainTileIndex, System.currentTimeMillis() - time);
     }
 

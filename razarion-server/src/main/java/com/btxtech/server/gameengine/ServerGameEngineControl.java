@@ -360,6 +360,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         }
     }
 
+    public void updateHumanPlayerId(UserContext userContext) {
+        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+        if (playerBase != null) {
+            playerBase = baseItemService.updateHumanPlayerId(playerBase.getBaseId(), userContext.getHumanPlayerId());
+            clientGameConnectionService.onBaseHumanPlayerIdChanged(playerBase);
+        }
+    }
+
     @Override
     public Integer getLevel(PlayerBaseInfo playerBaseInfo) {
         if (playerBaseInfo.getHumanPlayerId() == null) {

@@ -2,6 +2,8 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.ErrorResult;
+import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.rest.UserServiceProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -17,6 +19,16 @@ public class UserServiceProviderImpl implements UserServiceProvider {
     private UserService userService;
     @Inject
     private ExceptionHandler exceptionHandler;
+
+    @Override
+    public HumanPlayerId inGameFacebookRegister(FbAuthResponse fbAuthResponse) {
+        try {
+            return userService.handleInGameFacebookUserLogin(fbAuthResponse);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
 
     @Override
     public SetNameResult setName(String name) {

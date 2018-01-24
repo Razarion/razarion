@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.user;
 
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LevelUpPacket;
 import com.btxtech.shared.datatypes.UnlockedItemPacket;
 import com.btxtech.shared.datatypes.UserContext;
@@ -142,6 +143,17 @@ public class UserUiService {
 
     public boolean isRegisteredAndNamed() {
         return userContext.checkName();
+    }
+
+    public void onUserRegistered(HumanPlayerId humanPlayerId) {
+        userContext.setHumanPlayerId(humanPlayerId);
+        clearRegisterTimer();
+        if (gameUiControlInstance.get().getGameEngineMode() == GameEngineMode.SLAVE) {
+            activateSetUserNameTimer();
+        }
+        if (userRegistrationCallback != null) {
+            userRegistrationCallback.accept(userContext);
+        }
     }
 
     public void onUserNameSet(String userName) {

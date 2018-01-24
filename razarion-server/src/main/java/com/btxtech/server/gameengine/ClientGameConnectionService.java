@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
@@ -60,7 +61,11 @@ public class ClientGameConnectionService {
     }
 
     public void onBaseNameChanged(PlayerBase playerBase) {
-        sendToClients(GameConnectionPacket.BASE_NAME_CHANGED, new PlayerBase(playerBase.getBaseId(), playerBase.getName(), null, 0, null, null));
+        sendToClients(GameConnectionPacket.BASE_NAME_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName(playerBase.getName()));
+    }
+
+    public void onBaseHumanPlayerIdChanged(PlayerBase playerBase) {
+        sendToClients(GameConnectionPacket.BASE_HUMAN_PLAYER_ID_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setHumanPlayerId(playerBase.getHumanPlayerId()));
     }
 
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {

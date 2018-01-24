@@ -1,5 +1,6 @@
 package com.btxtech.client.user;
 
+import com.btxtech.shared.datatypes.FbAuthResponse;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -10,6 +11,8 @@ import jsinterop.annotations.JsType;
  * 20.02.2017.
  */
 public class Facebook {
+    public static final String CONNECTED = "connected";
+
     @JsProperty(namespace = JsPackage.GLOBAL)
     public static native FB getFB();
 
@@ -52,4 +55,9 @@ public class Facebook {
     public interface LoginStatusCallback {
         void call(FbResponse response);
     }
+
+    public static com.btxtech.shared.datatypes.FbAuthResponse toFbAuthResponse(FbAuthResponse authResponse) {
+        return new com.btxtech.shared.datatypes.FbAuthResponse().setUserID(authResponse.userID).setAccessToken(authResponse.accessToken).setSignedRequest(authResponse.signedRequest).setExpiresIn(authResponse.expiresIn);
+    }
+
 }

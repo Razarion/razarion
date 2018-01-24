@@ -229,6 +229,18 @@ public class BaseItemService {
         }
     }
 
+
+    public PlayerBase updateHumanPlayerId(int baseId, HumanPlayerId humanPlayerId) {
+        synchronized (bases) {
+            PlayerBase playerBase = bases.get(baseId);
+            if (playerBase == null) {
+                throw new IllegalStateException("changeBaseNameChanged: Base with Id does not exits: " + baseId);
+            }
+            playerBase.updateHumanPlayerId(humanPlayerId);
+            return playerBase;
+        }
+    }
+
     public SyncBaseItem createSyncBaseItem4Factory(BaseItemType toBeBuilt, DecimalPosition position, double angle, PlayerBaseFull base, SyncBaseItem createdBy) throws NoSuchItemTypeException, ItemLimitExceededException, HouseSpaceExceededException {
         if (!terrainService.getPathingAccess().isTerrainTypeAllowed(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), position, toBeBuilt.getPhysicalAreaConfig().getRadius())) {
             throw new TerrainTypeNotAllowedException("BaseItemService.createSyncBaseItem4Factory() " + toBeBuilt + " " + position);

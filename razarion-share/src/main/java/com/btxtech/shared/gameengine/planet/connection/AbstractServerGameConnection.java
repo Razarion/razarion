@@ -72,6 +72,9 @@ public abstract class AbstractServerGameConnection {
             case BASE_NAME_CHANGED:
                 gameEngineWorker.onServerBaseNameChanged((PlayerBaseInfo) param);
                 break;
+            case BASE_HUMAN_PLAYER_ID_CHANGED:
+                gameEngineWorker.onServerBaseHumanPlayerIdChanged((PlayerBaseInfo) param);
+                break;
             case SYNC_BASE_ITEM_CHANGED:
                 baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) param);
                 break;

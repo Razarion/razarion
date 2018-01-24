@@ -51,6 +51,10 @@ public class PlayerBase {
         this.name = name;
     }
 
+    public void updateHumanPlayerId(HumanPlayerId humanPlayerId) {
+        this.humanPlayerId = humanPlayerId;
+    }
+
     public Character getCharacter() {
         return character;
     }

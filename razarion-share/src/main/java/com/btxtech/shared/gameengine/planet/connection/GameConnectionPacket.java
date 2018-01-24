@@ -34,6 +34,7 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     CREATE_BASE(DecimalPosition.class),
     BASE_CREATED(PlayerBaseInfo.class),
     BASE_NAME_CHANGED(PlayerBaseInfo.class),
+    BASE_HUMAN_PLAYER_ID_CHANGED(PlayerBaseInfo.class),
     BASE_DELETED(Integer.class),
     RESOURCE_BALANCE_CHANGED(Integer.class),
     // Items

@@ -7,6 +7,7 @@ import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
+import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
@@ -17,6 +18,7 @@ import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.ErrorResult;
+import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserContext;
@@ -67,6 +69,8 @@ public class UserService {
     private Instance<ServerGameEngineControl> serverGameEngine;
     @Inject
     private Instance<HistoryPersistence> historyPersistence;
+    @Inject
+    private InventoryPersistence inventoryPersistence;
 
     @Transactional
     public UserContext getUserContextFromSession() {
@@ -80,6 +84,15 @@ public class UserService {
 
     @Transactional
     public UserContext handleFacebookUserLogin(String facebookUserId) {
+        if(sessionHolder.isLoggedIn()) {
+            String loggedInFacebookUserId = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId()).getFacebookUserId();
+            if(facebookUserId.equals(loggedInFacebookUserId)) {
+                return sessionHolder.getPlayerSession().getUserContext();
+            } else {
+                logger.warning("loggedInFacebookUserId != facebookUserId. loggedInFacebookUserId: " + loggedInFacebookUserId + ". facebookUserId: " + facebookUserId + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+            }
+        }
+
         // TODO verify facebook signedRequest
 
         UserEntity userEntity = getUserForFacebookId(facebookUserId);
@@ -88,6 +101,7 @@ public class UserService {
         }
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = userEntity.toUserContext();
+
         HumanPlayerId alreadyLoggerIn = null;
         if (sessionHolder.getPlayerSession().getUserContext() != null) {
             alreadyLoggerIn = sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId();
@@ -98,9 +112,30 @@ public class UserService {
         return loginUserContext(userContext, null);
     }
 
+
+    @Transactional
+    public HumanPlayerId handleInGameFacebookUserLogin(FbAuthResponse fbAuthResponse) {
+        if (sessionHolder.getPlayerSession().getUserContext() == null) {
+            throw new IllegalStateException("sessionHolder.getPlayerSession().getUserContext() == null");
+        }
+        if (sessionHolder.isLoggedIn()) {
+            throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
+        }
+
+        // TODO verify facebook signedRequest
+        UserEntity userEntity = getUserForFacebookId(fbAuthResponse.getUserID());
+        if (userEntity == null) {
+            userEntity = createUserFromUnregistered(fbAuthResponse.getUserID());
+        }
+        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+        UserContext userContext = userEntity.toUserContext();
+        loginUserContext(userContext, null);
+        serverGameEngine.get().updateHumanPlayerId(userContext);
+        return userContext.getHumanPlayerId();
+    }
+
     @Transactional
     public void handleUnregisteredLogin() {
-        logger.warning("handleUnregisteredLogin: " + sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = createUnregisteredUserContext();
         loginUserContext(userContext, new UnregisteredUser());
     }
@@ -129,6 +164,33 @@ public class UserService {
         userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId(), sessionHolder.getPlayerSession().getLocale());
         userEntity.setLevel(levelPersistence.getStarterLevel());
         userEntity.setLevelUnlockEntities(levelPersistence.getStartUnlockedItemLimit());
+        entityManager.persist(userEntity);
+        return userEntity;
+    }
+
+    private UserEntity createUserFromUnregistered(String facebookUserId) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.fromFacebookUserLoginInfo(facebookUserId, getHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getPlayerId()), sessionHolder.getPlayerSession().getLocale());
+        userEntity.setXp(sessionHolder.getPlayerSession().getUserContext().getXp());
+        userEntity.setLevel(levelPersistence.getLevel4Id(sessionHolder.getPlayerSession().getUserContext().getLevelId()));
+        UnregisteredUser unregisteredUser = sessionHolder.getPlayerSession().getUnregisteredUser();
+        if (unregisteredUser.getCompletedQuestIds() != null) {
+            unregisteredUser.getCompletedQuestIds().forEach(completedQuestId -> userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, completedQuestId)));
+        }
+        if (unregisteredUser.getActiveQuest() != null) {
+            userEntity.setActiveQuest(entityManager.find(QuestConfigEntity.class, unregisteredUser.getActiveQuest().getId()));
+        }
+        userEntity.setCrystals(unregisteredUser.getCrystals());
+        if (unregisteredUser.getInventoryItemIds() != null) {
+            unregisteredUser.getInventoryItemIds().forEach(inventoryItemId -> {
+                userEntity.addInventoryItem(inventoryPersistence.readInventoryItemEntity(inventoryItemId));
+            });
+        }
+        if (unregisteredUser.getLevelUnlockEntityIds() != null) {
+            unregisteredUser.getLevelUnlockEntityIds().forEach(levelUnlockEntityId -> {
+                userEntity.addLevelUnlockEntity(levelPersistence.readLevelUnlockEntity(levelUnlockEntityId));
+            });
+        }
         entityManager.persist(userEntity);
         return userEntity;
     }
