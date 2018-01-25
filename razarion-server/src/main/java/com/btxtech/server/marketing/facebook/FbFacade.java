@@ -23,6 +23,7 @@ import com.facebook.ads.sdk.FlexibleTargeting;
 import com.facebook.ads.sdk.IDName;
 import com.facebook.ads.sdk.Targeting;
 import com.facebook.ads.sdk.TargetingGeoLocation;
+import org.glassfish.jersey.filter.LoggingFilter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -30,7 +31,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -268,11 +268,10 @@ public class FbFacade {
 
     private void setTrackingTag(long addId, String url) {
         Client client = ClientBuilder.newClient();
-        // client.register(new LoggingFilter());
+        client.register(new LoggingFilter(Logger.getLogger(FbFacade.class.getName()), true));
         String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
         logger.severe("setTrackingTag: " + url);
-        Response response = client.target("https://graph.facebook.com/v2.11").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
-        logger.severe("setTrackingTag response: " + response.toString());
+        client.target("https://graph.facebook.com/v2.11").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
     }
 
     public List<FbAdImage> queryFbAdImages() {
