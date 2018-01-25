@@ -35,6 +35,7 @@ public class Facebook {
     @JsType(isNative = true)
     public interface Event {
         void subscribe(String event, LoginStatusCallback callback);
+        void unsubscribe(String event, LoginStatusCallback callback);
     }
 
     @JsType(isNative = true)

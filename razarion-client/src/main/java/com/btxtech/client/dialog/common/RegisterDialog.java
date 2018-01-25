@@ -31,6 +31,7 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
     @Inject
     private ExceptionHandler exceptionHandler;
     private ModalDialogPanel<Void> modalDialogPanel;
+    private Facebook.LoginStatusCallback statusCallback;
 
     @Override
     public void init(Void aVoid) {
@@ -45,23 +46,26 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
     @Override
     public void onShown() {
         try {
-            Facebook.getFB().getEvent().subscribe("auth.statusChange", response -> {
-                if (Facebook.CONNECTED.equalsIgnoreCase(response.status)) {
-                    caller.call((RemoteCallback<RegisterInfo>) registerInfo -> {
-                                if (registerInfo.isUserAlreadyExits()) {
-                                    // User has been logged in on the server
-                                    Window.Location.reload();
-                                } else {
-                                    userUiService.onUserRegistered(registerInfo.getHumanPlayerId());
-                                }
-                            },
-                            (message, throwable) -> {
-                                logger.log(Level.SEVERE, "RegisterDialog.inGameFacebookRegister() failed: " + message, throwable);
-                                return false;
-                            }).inGameFacebookRegister(Facebook.toFbAuthResponse(response.authResponse));
-                    modalDialogPanel.close();
-                }
-            });
+            if (statusCallback == null) {
+                statusCallback = response -> {
+                    if (Facebook.CONNECTED.equalsIgnoreCase(response.status)) {
+                        caller.call((RemoteCallback<RegisterInfo>) registerInfo -> {
+                                    if (registerInfo.isUserAlreadyExits()) {
+                                        // User has been logged in on the server
+                                        Window.Location.reload();
+                                    } else {
+                                        userUiService.onUserRegistered(registerInfo.getHumanPlayerId());
+                                    }
+                                },
+                                (message, throwable) -> {
+                                    logger.log(Level.SEVERE, "RegisterDialog.inGameFacebookRegister() failed: " + message, throwable);
+                                    return false;
+                                }).inGameFacebookRegister(Facebook.toFbAuthResponse(response.authResponse));
+                        modalDialogPanel.close();
+                    }
+                };
+                Facebook.getFB().getEvent().subscribe("auth.statusChange", statusCallback);
+            }
             // Renders the facebook register button
             Facebook.getFB().getXFBML().parse();
         } catch (Throwable t) {
@@ -72,5 +76,9 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
     @Override
     public void onClose() {
         userUiService.activateRegisterTimer();
+        if (statusCallback != null) {
+            Facebook.getFB().getEvent().unsubscribe("auth.statusChange", statusCallback);
+            statusCallback = null;
+        }
     }
 }
