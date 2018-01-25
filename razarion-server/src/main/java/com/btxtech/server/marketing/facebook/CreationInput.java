@@ -24,6 +24,7 @@ public class CreationInput {
     private Double lifeTimeBudget;
     private Integer scheduleHelperStartHour;
     private Integer scheduleHelperDuration;
+    private String custom;
 
     public String getTitle() {
         return title;
@@ -119,6 +120,18 @@ public class CreationInput {
 
     public void setScheduleHelperDuration(Integer scheduleHelperDuration) {
         this.scheduleHelperDuration = scheduleHelperDuration;
+    }
+
+    public String getCustom() {
+        return custom;
+    }
+
+    public void setCustom(String custom) {
+        this.custom = custom;
+    }
+
+    public boolean hasCustom() {
+        return custom != null && !custom.trim().isEmpty();
     }
 
     public void scheduleHelperGenerate() {

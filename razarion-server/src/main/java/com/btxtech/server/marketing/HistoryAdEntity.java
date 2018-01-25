@@ -55,6 +55,7 @@ public class HistoryAdEntity {
     private Double dailyBudget;
     private Double lifeTimeBudget;
     private String facebookPositions;
+    private String custom;
 
     public void fill(CurrentAdEntity currentAdEntity, AdSetInsight adSetInsight) {
         campaignId = currentAdEntity.getCampaignId();
@@ -79,6 +80,7 @@ public class HistoryAdEntity {
         dailyBudget = currentAdEntity.getDailyBudget();
         lifeTimeBudget = currentAdEntity.getLifeTimeBudget();
         facebookPositions = currentAdEntity.getFacebookPositions();
+        custom = currentAdEntity.getCustom();
     }
 
     public CampaignJson createCampaignJson() {

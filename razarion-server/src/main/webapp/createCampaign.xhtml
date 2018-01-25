@@ -248,6 +248,14 @@
                             </h:dataTable>
                         </td>
                     </tr>
+                    <tr>
+                        <td>
+                            Custom (No FB ad is generated)
+                        </td>
+                        <td>
+                            <h:inputText value="#{createCampaignBean.creationInput.custom}"/>
+                        </td>
+                    </tr>
                 </table>
 
                 <h:commandButton value="Create Ad" action="#{createCampaignBean.createCampaign}"/>

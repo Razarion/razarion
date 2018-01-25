@@ -56,6 +56,7 @@ public class CurrentAdEntity {
     private Double dailyBudget;
     private Double lifeTimeBudget;
     private String facebookPositions;
+    private String custom;
 
     public AdState getState() {
         return state;
@@ -115,6 +116,10 @@ public class CurrentAdEntity {
         return interests;
     }
 
+    public void setUrlTagParam(String urlTagParam) {
+        this.urlTagParam = urlTagParam;
+    }
+
     public String getUrlTagParam() {
         return urlTagParam;
     }
@@ -145,6 +150,14 @@ public class CurrentAdEntity {
 
     public void setFacebookPositions(String facebookPositions) {
         this.facebookPositions = facebookPositions;
+    }
+
+    public String getCustom() {
+        return custom;
+    }
+
+    public void setCustom(String custom) {
+        this.custom = custom;
     }
 
     public void setCreationInput(CreationInput creationInput) {

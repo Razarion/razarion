@@ -114,42 +114,43 @@ public class CreateCampaignBean implements Serializable {
 
 
     public Object createCampaign() {
-        if (creationInput.isLifeTime()) {
-            if (creationInput.getScheduleStartTime() == null) {
-                campaignCreationError = "If budget type is lifetime, Schedule Start Time must be set";
+        if (!creationInput.hasCustom()) {
+            if (creationInput.isLifeTime()) {
+                if (creationInput.getScheduleStartTime() == null) {
+                    campaignCreationError = "If budget type is lifetime, Schedule Start Time must be set";
+                    return null;
+                }
+                if (creationInput.getScheduleEndTime() == null) {
+                    campaignCreationError = "If budget type is lifetime, Schedule End Time must be set";
+                    return null;
+                }
+                if (creationInput.getLifeTimeBudget() == null) {
+                    campaignCreationError = "If budget type is lifetime, Lifetime budget must be set";
+                    return null;
+                }
+            } else {
+                if (creationInput.getDailyBudget() == null) {
+                    campaignCreationError = "If budget type is not lifetime, Daily budget must be set";
+                    return null;
+                }
+            }
+            if (StringUtils.isEmpty(creationInput.getTitle())) {
+                campaignCreationError = "Title not defined";
                 return null;
             }
-            if (creationInput.getScheduleEndTime() == null) {
-                campaignCreationError = "If budget type is lifetime, Schedule End Time must be set";
+            if (StringUtils.isEmpty(creationInput.getBody())) {
+                campaignCreationError = "Body not defined";
                 return null;
             }
-            if (creationInput.getLifeTimeBudget() == null) {
-                campaignCreationError = "If budget type is lifetime, Lifetime budget must be set";
+            if (creationInput.getFbAdImage() == null) {
+                campaignCreationError = "No Image selected";
                 return null;
             }
-        } else {
-            if (creationInput.getDailyBudget() == null) {
-                campaignCreationError = "If budget type is not lifetime, Daily budget must be set";
+            if (selectedAdInterest.isEmpty()) {
+                campaignCreationError = "No interests";
                 return null;
             }
         }
-        if (StringUtils.isEmpty(creationInput.getTitle())) {
-            campaignCreationError = "Title not defined";
-            return null;
-        }
-        if (StringUtils.isEmpty(creationInput.getBody())) {
-            campaignCreationError = "Body not defined";
-            return null;
-        }
-        if (creationInput.getFbAdImage() == null) {
-            campaignCreationError = "No Image selected";
-            return null;
-        }
-        if (selectedAdInterest.isEmpty()) {
-            campaignCreationError = "No interests";
-            return null;
-        }
-
         try {
             List<Interest> interests = new ArrayList<>();
             for (DetailedAdInterest selected : selectedAdInterest) {

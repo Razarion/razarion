@@ -20,6 +20,7 @@ public class ActiveAdInfo {
     private long campaignId;
     private long adSetId;
     private long adId;
+    private String urlTagParam;
 
     public AdState getAdState() {
         return adState;
@@ -108,6 +109,15 @@ public class ActiveAdInfo {
 
     public ActiveAdInfo setAdId(long adId) {
         this.adId = adId;
+        return this;
+    }
+
+    public String getUrlTagParam() {
+        return urlTagParam;
+    }
+
+    public ActiveAdInfo setUrlTagParam(String urlTagParam) {
+        this.urlTagParam = urlTagParam;
         return this;
     }
 }

@@ -57,17 +57,23 @@ public class MarketingService {
 
     @Transactional
     @SecurityCheck
-    public CreationResult startCampaign(CreationInput creationInput) {
-        CreationResult creationResult = fbFacade.createAd(creationInput);
+    public void startCampaign(CreationInput creationInput) {
+        CreationResult creationResult = null;
+        if (!creationInput.hasCustom()) {
+            creationResult = fbFacade.createAd(creationInput);
+        }
 
         CurrentAdEntity currentAdEntity = new CurrentAdEntity();
         currentAdEntity.setState(AdState.RUNNING);
-        currentAdEntity.setIds(creationResult);
         currentAdEntity.setDateStart(new Date());
-        currentAdEntity.setCreationInput(creationInput);
-        currentAdEntity.setFacebookPositions("feed");
+        if (!creationInput.hasCustom()) {
+            currentAdEntity.setIds(creationResult);
+            currentAdEntity.setCreationInput(creationInput);
+            currentAdEntity.setFacebookPositions("feed");
+        } else {
+            currentAdEntity.setUrlTagParam(creationInput.getUrlTagParam());
+        }
         entityManager.persist(currentAdEntity);
-        return creationResult;
     }
 
     @Transactional
@@ -298,7 +304,7 @@ public class MarketingService {
         entityManager.createQuery(userSelect).getResultList().forEach(currentAdEntity -> {
             ActiveAdInfo activeAdInfo = new ActiveAdInfo().setCampaignId(currentAdEntity.getCampaignId()).setAdSetId(currentAdEntity.getAdSetId()).setAdId(currentAdEntity.getAdId());
             activeAdInfo.setAdState(currentAdEntity.getState()).setTitle(currentAdEntity.getTitle()).setBody(currentAdEntity.getBody()).setScheduledDateStart(currentAdEntity.getScheduleTimeStart());
-            activeAdInfo.setScheduledDateEnd(currentAdEntity.getScheduleTimeEnd());
+            activeAdInfo.setScheduledDateEnd(currentAdEntity.getScheduleTimeEnd()).setUrlTagParam(currentAdEntity.getUrlTagParam());
             FbAdImage fbAdImage = hashUrlMap.get(currentAdEntity.getImageHash());
             if (fbAdImage != null) {
                 activeAdInfo.setUrl128(fbAdImage.getUrl128());

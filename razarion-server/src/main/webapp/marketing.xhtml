@@ -92,6 +92,10 @@
                 <h:commandButton value="Stop and archive"
                                  actionListener="#{marketingPageBean.stopAndArchive(activeAdInfo)}"/>
             </h:column>
+            <h:column>
+                <f:facet name="header">URL Tracking</f:facet>
+                <h:outputText value="#{activeAdInfo.urlTagParam}"/>
+            </h:column>
         </h:dataTable>
     </h:form>
     <h:outputText value="#{marketingPageBean.readActiveInfoState}"/>

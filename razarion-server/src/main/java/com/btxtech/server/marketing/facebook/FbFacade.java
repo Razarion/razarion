@@ -30,6 +30,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -270,7 +271,8 @@ public class FbFacade {
         // client.register(new LoggingFilter());
         String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
         logger.severe("setTrackingTag: " + url);
-        client.target("https://graph.facebook.com/v2.8").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
+        Response response = client.target("https://graph.facebook.com/v2.11").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
+        logger.severe("setTrackingTag response: " + response.toString());
     }
 
     public List<FbAdImage> queryFbAdImages() {
