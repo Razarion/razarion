@@ -268,7 +268,7 @@ public class FbFacade {
 
     private void setTrackingTag(long addId, String url) {
         Client client = ClientBuilder.newClient();
-        client.register(new LoggingFilter(Logger.getLogger(FbFacade.class.getName()), true));
+        client.register(new LoggingFilter(Logger.getLogger(FbFacade.class.getName()), true)); // TODO remove from log filePropertiesService.getFacebookAccessToken()
         String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
         logger.severe("setTrackingTag: " + url);
         client.target("https://graph.facebook.com/v2.11").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
