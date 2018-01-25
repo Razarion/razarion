@@ -647,6 +647,19 @@ a:active {
 }
 /** -------------------------- DIALOG UNREGISTERED ENDS -------------------------- */
 
+/** -------------------------- DIALOG UNNAMED  -------------------------- */
+.unnamed-dialog {
+    max-width: 30em;
+}
+
+.unnamed-dialog-button-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+/** -------------------------- DIALOG UNNAMED ENDS -------------------------- */
+
+
 /** -------------------------- DIALOG SET NAME  -------------------------- */
 .set-name-dialog {
     max-width: 30em;

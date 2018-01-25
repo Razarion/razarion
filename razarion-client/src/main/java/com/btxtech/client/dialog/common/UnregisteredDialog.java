@@ -40,7 +40,7 @@ public class UnregisteredDialog extends Composite implements ModalDialogContent<
     }
 
     @EventHandler("registerButton")
-    private void setNameButtonClick(ClickEvent event) {
+    private void registerButtonClick(ClickEvent event) {
         modalDialogPanel.close();
         modalDialogManager.showRegisterDialog();
     }

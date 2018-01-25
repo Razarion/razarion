@@ -169,7 +169,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("setNameButton")
     private void onSetNameButtonClick(ClickEvent event) {
-        modalDialogManager.showRegisterDialog();
+        modalDialogManager.showSetUserNameDialog();
     }
 
     @Override

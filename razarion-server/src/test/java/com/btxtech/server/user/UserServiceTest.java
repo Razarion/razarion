@@ -6,13 +6,18 @@ import com.btxtech.server.TestClientGameConnection;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.history.UserHistoryEntity;
+import com.btxtech.server.persistence.inventory.InventoryItemEntity;
+import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
+import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -25,7 +30,6 @@ import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -210,19 +214,22 @@ public class UserServiceTest extends ArquillianBaseTest {
 
         testClientGameConnection.clearMessages();
         // Actual test
-        userService.handleInGameFacebookUserLogin(new FbAuthResponse().setUserID("0123456789"));
+        RegisterInfo registerInfo = userService.handleInGameFacebookUserLogin(new FbAuthResponse().setUserID("0123456789"));
 
         // Verify UserContext from session
+        int userEntityId = userService.getUserForFacebookId("0123456789").getId();
+        Assert.assertEquals(oldHumanPlayerId.getPlayerId(), registerInfo.getHumanPlayerId().getPlayerId());
+        Assert.assertEquals(userEntityId, (int) registerInfo.getHumanPlayerId().getUserId());
+        Assert.assertFalse(registerInfo.isUserAlreadyExits());
         UserContext newUserContext = sessionHolder.getPlayerSession().getUserContext();
         Assert.assertEquals(32, newUserContext.getXp());
         Assert.assertEquals(LEVEL_4_ID, newUserContext.getLevelId());
         Assert.assertEquals(2, newUserContext.getUnlockedItemLimit().size());
-        Assert.assertEquals(1, (int)newUserContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_BULLDOZER_ID));
-        Assert.assertEquals(2, (int)newUserContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_ATTACKER_ID));
+        Assert.assertEquals(1, (int) newUserContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_BULLDOZER_ID));
+        Assert.assertEquals(2, (int) newUserContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_ATTACKER_ID));
         HumanPlayerId newHumanPlayerId = newUserContext.getHumanPlayerId();
         Assert.assertEquals(oldHumanPlayerId.getPlayerId(), newHumanPlayerId.getPlayerId());
-        int userEntityId = userService.getUserForFacebookId("0123456789").getId();
-        Assert.assertEquals(userEntityId, (int)newHumanPlayerId.getUserId());
+        Assert.assertEquals(userEntityId, (int) newHumanPlayerId.getUserId());
         // Verify usr in DB
         runInTransaction(entityManager -> {
             UserEntity userEntity = entityManager.find(UserEntity.class, userEntityId);
@@ -247,10 +254,62 @@ public class UserServiceTest extends ArquillianBaseTest {
         // Game engine
         PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(newUserContext.getHumanPlayerId());
         Assert.assertEquals(newUserContext.getHumanPlayerId().getPlayerId(), playerBase.getHumanPlayerId().getPlayerId());
-        Assert.assertEquals(userEntityId, (int)playerBase.getHumanPlayerId().getUserId());
+        Assert.assertEquals(userEntityId, (int) playerBase.getHumanPlayerId().getUserId());
         // Assert connection
         testClientGameConnection.assertMessageSentCount(1);
         testClientGameConnection.assertMessageSent(0, "BASE_HUMAN_PLAYER_ID_CHANGED", PlayerBaseInfo.class, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setHumanPlayerId(newHumanPlayerId));
+
+        cleanUsers();
+        cleanPlanetWithSlopes();
+    }
+
+    @Test
+    public void handleInGameFacebookUserLoginExisting() throws Exception {
+        setupPlanetWithSlopes();
+
+        // Prepare
+        SingleHolder<HumanPlayerId> holder = new SingleHolder<>();
+        runInTransaction(entityManager -> {
+                    HumanPlayerIdEntity humanPlayerIdEntity = userService.createHumanPlayerId();
+                    UserEntity existingUser = new UserEntity();
+                    existingUser.fromFacebookUserLoginInfo("0123456789", humanPlayerIdEntity, Locale.ENGLISH);
+                    existingUser.setXp(123);
+                    existingUser.setName("gegel");
+                    existingUser.setCrystals(346);
+                    existingUser.setLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
+                    existingUser.setActiveQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L4_1));
+                    existingUser.addLevelUnlockEntity(entityManager.find(LevelUnlockEntity.class, LEVEL_UNLOCK_ID_L4_1));
+                    existingUser.addLevelUnlockEntity(entityManager.find(LevelUnlockEntity.class, LEVEL_UNLOCK_ID_L5_1));
+                    existingUser.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_1));
+                    existingUser.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_2));
+                    existingUser.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_3));
+                    existingUser.addCompletedQuest(entityManager.find(QuestConfigEntity.class, SERVER_QUEST_ID_L5_3));
+                    existingUser.addInventoryItem(entityManager.find(InventoryItemEntity.class, INVENTORY_ITEM_1_ID));
+                    entityManager.persist(existingUser);
+                    holder.setO(existingUser.createHumanPlayerId());
+                    existingUser.createHumanPlayerId();
+                }
+        );
+        HumanPlayerId expectedHumanPlayerId = holder.getO();
+        userService.handleUnregisteredLogin();
+
+        // Actual test
+        RegisterInfo registerInfo = userService.handleInGameFacebookUserLogin(new FbAuthResponse().setUserID("0123456789"));
+
+        // Verify return value
+        Assert.assertTrue(registerInfo.isUserAlreadyExits());
+        Assert.assertNull(registerInfo.getHumanPlayerId());
+        // Verify session
+        Assert.assertNull(sessionHolder.getPlayerSession().getUnregisteredUser());
+        UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
+        Assert.assertEquals(expectedHumanPlayerId.getPlayerId(), userContext.getHumanPlayerId().getPlayerId());
+        Assert.assertEquals(expectedHumanPlayerId.getUserId(), userContext.getHumanPlayerId().getUserId());
+        Assert.assertEquals("gegel", userContext.getName());
+        Assert.assertEquals(LEVEL_4_ID, userContext.getLevelId());
+        Assert.assertEquals(123, userContext.getXp());
+        Assert.assertEquals(2, userContext.getUnlockedItemLimit().size());
+        Assert.assertEquals(1, (int) userContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_BULLDOZER_ID));
+        Assert.assertEquals(2, (int) userContext.getUnlockedItemLimit().get(BASE_ITEM_TYPE_ATTACKER_ID));
 
         cleanUsers();
         cleanPlanetWithSlopes();

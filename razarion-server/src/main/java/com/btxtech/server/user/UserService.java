@@ -20,6 +20,7 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
@@ -84,9 +85,9 @@ public class UserService {
 
     @Transactional
     public UserContext handleFacebookUserLogin(String facebookUserId) {
-        if(sessionHolder.isLoggedIn()) {
+        if (sessionHolder.isLoggedIn()) {
             String loggedInFacebookUserId = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId()).getFacebookUserId();
-            if(facebookUserId.equals(loggedInFacebookUserId)) {
+            if (facebookUserId.equals(loggedInFacebookUserId)) {
                 return sessionHolder.getPlayerSession().getUserContext();
             } else {
                 logger.warning("loggedInFacebookUserId != facebookUserId. loggedInFacebookUserId: " + loggedInFacebookUserId + ". facebookUserId: " + facebookUserId + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
@@ -114,7 +115,7 @@ public class UserService {
 
 
     @Transactional
-    public HumanPlayerId handleInGameFacebookUserLogin(FbAuthResponse fbAuthResponse) {
+    public RegisterInfo handleInGameFacebookUserLogin(FbAuthResponse fbAuthResponse) {
         if (sessionHolder.getPlayerSession().getUserContext() == null) {
             throw new IllegalStateException("sessionHolder.getPlayerSession().getUserContext() == null");
         }
@@ -123,15 +124,20 @@ public class UserService {
         }
 
         // TODO verify facebook signedRequest
+        RegisterInfo registerInfo = new RegisterInfo().setUserAlreadyExits(true);
         UserEntity userEntity = getUserForFacebookId(fbAuthResponse.getUserID());
         if (userEntity == null) {
             userEntity = createUserFromUnregistered(fbAuthResponse.getUserID());
+            registerInfo.setUserAlreadyExits(false);
         }
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = userEntity.toUserContext();
         loginUserContext(userContext, null);
-        serverGameEngine.get().updateHumanPlayerId(userContext);
-        return userContext.getHumanPlayerId();
+        if (!registerInfo.isUserAlreadyExits()) {
+            registerInfo.setHumanPlayerId(userContext.getHumanPlayerId());
+            serverGameEngine.get().updateHumanPlayerId(userContext);
+        }
+        return registerInfo;
     }
 
     @Transactional

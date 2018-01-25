@@ -3,6 +3,7 @@ package com.btxtech.shared.rest;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
 
 import javax.ws.rs.Consumes;
@@ -23,7 +24,7 @@ public interface UserServiceProvider {
     @Path("ingamefacebookregister")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    HumanPlayerId inGameFacebookRegister(FbAuthResponse fbAuthResponse);
+    RegisterInfo inGameFacebookRegister(FbAuthResponse fbAuthResponse);
 
     @POST
     @Path("setname/{name}")

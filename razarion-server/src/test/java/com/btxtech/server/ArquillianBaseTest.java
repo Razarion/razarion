@@ -451,9 +451,9 @@ public class ArquillianBaseTest {
         ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
         serverLevelQuestEntityL4.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
         QuestConfigEntity questConfigEntityL41 = new QuestConfigEntity();
-        questConfigEntityL41.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
+        questConfigEntityL41.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
         QuestConfigEntity questConfigEntityL42 = new QuestConfigEntity();
-        questConfigEntityL42.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 2").setXp(200).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
+        questConfigEntityL42.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 2").setXp(200).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setCount(2))), Locale.US);
         serverLevelQuestEntityL4.setQuestConfigs(Arrays.asList(questConfigEntityL41, questConfigEntityL42));
 
         ServerLevelQuestEntity serverLevelQuestEntityL5 = new ServerLevelQuestEntity();

@@ -3,10 +3,11 @@ package com.btxtech.client.dialog.common;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.user.Facebook;
-import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.rest.UserServiceProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.user.UserUiService;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -46,7 +47,14 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
         try {
             Facebook.getFB().getEvent().subscribe("auth.statusChange", response -> {
                 if (Facebook.CONNECTED.equalsIgnoreCase(response.status)) {
-                    caller.call((RemoteCallback<HumanPlayerId>) humanPlayerId -> userUiService.onUserRegistered(humanPlayerId),
+                    caller.call((RemoteCallback<RegisterInfo>) registerInfo -> {
+                                if (registerInfo.isUserAlreadyExits()) {
+                                    // User has been logged in on the server
+                                    Window.Location.reload();
+                                } else {
+                                    userUiService.onUserRegistered(registerInfo.getHumanPlayerId());
+                                }
+                            },
                             (message, throwable) -> {
                                 logger.log(Level.SEVERE, "RegisterDialog.inGameFacebookRegister() failed: " + message, throwable);
                                 return false;
