@@ -4,6 +4,7 @@ import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.facebook.ads.sdk.APIContext;
 import com.facebook.ads.sdk.APIException;
 import com.facebook.ads.sdk.APINode;
@@ -23,7 +24,6 @@ import com.facebook.ads.sdk.FlexibleTargeting;
 import com.facebook.ads.sdk.IDName;
 import com.facebook.ads.sdk.Targeting;
 import com.facebook.ads.sdk.TargetingGeoLocation;
-import org.glassfish.jersey.filter.LoggingFilter;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -53,6 +53,8 @@ public class FbFacade {
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     @Inject
     private FilePropertiesService filePropertiesService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
     private APIContext getContext() {
         return new APIContext(filePropertiesService.getFacebookAccessToken(), filePropertiesService.getFacebookSecret()).enableDebug(false);
@@ -267,11 +269,16 @@ public class FbFacade {
     }
 
     private void setTrackingTag(long addId, String url) {
-        Client client = ClientBuilder.newClient();
-        client.register(new LoggingFilter(Logger.getLogger(FbFacade.class.getName()), true)); // TODO remove from log filePropertiesService.getFacebookAccessToken()
-        String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
-        logger.severe("setTrackingTag: " + url);
-        client.target("https://graph.facebook.com/v2.11").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE));
+        try {
+            Client client = ClientBuilder.newClient();
+            // client.register(new LoggingFilter(Logger.getLogger(FbFacade.class.getName()), true)); // TODO remove from log filePropertiesService.getFacebookAccessToken()
+            String fields = "{\"access_token\": \"" + filePropertiesService.getFacebookAccessToken() + "\", \"url\": \"" + url + "\", \"add_template_param\": \"1\"}";
+            logger.severe("setTrackingTag: " + url);
+            String response = client.target("https://graph.facebook.com/v2.11").path(Long.toString(addId)).path("trackingtag").request(MediaType.APPLICATION_JSON).post(Entity.entity(fields, MediaType.APPLICATION_JSON_TYPE), String.class);
+            logger.severe("response: " + response);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public List<FbAdImage> queryFbAdImages() {
