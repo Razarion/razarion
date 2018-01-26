@@ -166,7 +166,7 @@
                 </executions>
                 <configuration>
                     <executable>ng</executable>
-                    <workingDirectory>${project.basedir}/src/main/angular</workingDirectory>
+                    <workingDirectory>${project.basedir}/src/main/angular/backend</workingDirectory>
                     <arguments>
                         <argument>build</argument>
                         <argument>--env=prod</argument>
