@@ -159,84 +159,88 @@ public class BaseItemUiService {
             syncBaseItemSetPositionMonitor.init(viewService.getCurrentViewField().calculateCenter());
         }
         for (NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo : nativeSyncBaseItemTickInfos) {
-            BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
-            DecimalPosition position2d = NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo);
-            Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
-            boolean isSpawning = nativeSyncBaseItemTickInfo.spawning < 1.0;
-            boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
-            boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
-            NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
+            try {
+                BaseItemType baseItemType = itemTypeService.getBaseItemType(nativeSyncBaseItemTickInfo.itemTypeId);
+                DecimalPosition position2d = NativeUtil.toSyncBaseItemPosition2d(nativeSyncBaseItemTickInfo);
+                Vertex position3d = NativeUtil.toSyncBaseItemPosition3d(nativeSyncBaseItemTickInfo);
+                boolean isSpawning = nativeSyncBaseItemTickInfo.spawning < 1.0;
+                boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
+                boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
 
-            if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
-                tmpItemCount++;
-                usedHouseSpace += baseItemType.getConsumingHouseSpace();
-                if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && isBuildup && !isSpawning) {
-                    radar = true;
+                if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+                    tmpItemCount++;
+                    usedHouseSpace += baseItemType.getConsumingHouseSpace();
+                    if (baseItemType.getSpecialType() != null && baseItemType.getSpecialType().isMiniTerrain() && isBuildup && !isSpawning) {
+                        radar = true;
+                    }
                 }
-            }
-            updateSyncItemMonitor(nativeSyncBaseItemTickInfo);
-            if (nativeSyncBaseItemTickInfo.contained) {
-                continue;
-            }
-            if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
-                // TODO move to worker
-                if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && isMyEnemy(nativeSyncBaseItemTickInfo) && !isSpawning && isBuildup) {
-                    syncBaseItemSetPositionMonitor.notInViewAabb(nativeSyncBaseItemTickInfo.baseId, position2d, baseItemType);
+                updateSyncItemMonitor(nativeSyncBaseItemTickInfo);
+                if (nativeSyncBaseItemTickInfo.contained) {
+                    continue;
                 }
-                continue;
-            }
-            boolean attackAble = true;
-            // Spawning
-            if (isSpawning && isBuildup) {
-                attackAble = false;
-                spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning));
-            }
-            // Buildup
-            if (!isSpawning && !isBuildup) {
-                attackAble = false;
-                buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup));
-            }
-            // Alive
-            if (!isSpawning && isBuildup && isHealthy) {
-                aliveModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity));
-                if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
+                if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
+                    // TODO move to worker
+                    if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && isMyEnemy(nativeSyncBaseItemTickInfo) && !isSpawning && isBuildup) {
+                        syncBaseItemSetPositionMonitor.notInViewAabb(nativeSyncBaseItemTickInfo.baseId, position2d, baseItemType);
+                    }
+                    continue;
                 }
-            }
-            if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
-                if (viewFieldCache == null) {
-                    viewFieldCache = viewService.getCurrentViewField().toPolygon();
+                boolean attackAble = true;
+                // Spawning
+                if (isSpawning && isBuildup) {
+                    attackAble = false;
+                    spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning));
                 }
-                if (viewFieldCache.isInside(position2d)) {
-                    syncBaseItemSetPositionMonitor.inViewAabb(nativeSyncBaseItemTickInfo.baseId, position3d, baseItemType);
-                } else {
-                    syncBaseItemSetPositionMonitor.notInViewAabb(nativeSyncBaseItemTickInfo.baseId, position2d, baseItemType);
+                // Buildup
+                if (!isSpawning && !isBuildup) {
+                    attackAble = false;
+                    buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup));
                 }
-            }
+                // Alive
+                if (!isSpawning && isBuildup && isHealthy) {
+                    aliveModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                    if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
+                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                    }
+                }
+                if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
+                    if (viewFieldCache == null) {
+                        viewFieldCache = viewService.getCurrentViewField().toPolygon();
+                    }
+                    if (viewFieldCache.isInside(position2d)) {
+                        syncBaseItemSetPositionMonitor.inViewAabb(nativeSyncBaseItemTickInfo.baseId, position3d, baseItemType);
+                    } else {
+                        syncBaseItemSetPositionMonitor.notInViewAabb(nativeSyncBaseItemTickInfo.baseId, position2d, baseItemType);
+                    }
+                }
 
-            // Demolition
-            if (!isSpawning && isBuildup && !isHealthy) {
-                ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.health);
-                demolitionModelMatrices.put(baseItemType, modelMatrices);
-                if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
-                    effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
+                // Demolition
+                if (!isSpawning && isBuildup && !isHealthy) {
+                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.health);
+                    demolitionModelMatrices.put(baseItemType, modelMatrices);
+                    if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
+                        effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
+                    }
+                    if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
+                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                    }
                 }
-                if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
-                    weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
-                }
-            }
 
-            // Harvesting
-            if (nativeSyncBaseItemTickInfo.harvestingResourcePosition != null) {
-                NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getHarvesterType().getAnimationOrigin()), 1.0);
-                NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.harvestingResourcePosition, origin);
-                harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
-            }
-            // Building
-            if (nativeSyncBaseItemTickInfo.buildingPosition != null) {
-                NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getBuilderType().getAnimationOrigin()), 1.0);
-                NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.buildingPosition, origin);
-                builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
+                // Harvesting
+                if (nativeSyncBaseItemTickInfo.harvestingResourcePosition != null) {
+                    NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getHarvesterType().getAnimationOrigin()), 1.0);
+                    NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.harvestingResourcePosition, origin);
+                    harvestModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
+                }
+                // Building
+                if (nativeSyncBaseItemTickInfo.buildingPosition != null) {
+                    NativeVertexDto origin = modelMatrix.multiplyVertex(NativeUtil.toNativeVertex(baseItemType.getBuilderType().getAnimationOrigin()), 1.0);
+                    NativeVertexDto direction = NativeUtil.subAndNormalize(nativeSyncBaseItemTickInfo.buildingPosition, origin);
+                    builderModelMatrices.put(baseItemType, ModelMatrices.createFromPositionAndZRotation(origin, direction, nativeMatrixFactory));
+                }
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
             }
         }
         if (itemCount != tmpItemCount) {

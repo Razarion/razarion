@@ -30,6 +30,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
@@ -83,6 +84,8 @@ public abstract class GameEngineControl {
     private TerrainUiService terrainUiService;
     @Inject
     private ClientRunner clientRunner;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;
@@ -229,15 +232,19 @@ public abstract class GameEngineControl {
     }
 
     private void onTickUpdate(NativeTickInfo nativeTickInfo) {
-        baseItemUiService.updateSyncBaseItems(nativeTickInfo.updatedNativeSyncBaseItemTickInfos);
-        gameUiControl.setGameInfo(nativeTickInfo);
-        if (nativeTickInfo.removeSyncBaseItemIds != null) {
-            selectionHandler.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
-            effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
-        }
-        if (nativeTickInfo.killedSyncBaseItems != null) {
-            selectionHandler.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
-            effectVisualizationService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
+        try {
+            baseItemUiService.updateSyncBaseItems(nativeTickInfo.updatedNativeSyncBaseItemTickInfos);
+            gameUiControl.setGameInfo(nativeTickInfo);
+            if (nativeTickInfo.removeSyncBaseItemIds != null) {
+                selectionHandler.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
+                effectVisualizationService.baseItemRemoved(nativeTickInfo.removeSyncBaseItemIds);
+            }
+            if (nativeTickInfo.killedSyncBaseItems != null) {
+                selectionHandler.baseItemRemoved(nativeTickInfo.killedSyncBaseItems);
+                effectVisualizationService.onSyncBaseItemsExplode(nativeTickInfo.killedSyncBaseItems);
+            }
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
     }
@@ -312,8 +319,8 @@ public abstract class GameEngineControl {
                 onTickUpdateFailed();
                 break;
             case SYNC_ITEM_START_SPAWNED:
-                 audioService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
-                 gameTipService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                audioService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
+                gameTipService.onSpawnSyncItem(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
                 break;
             case SYNC_ITEM_IDLE:
                 gameTipService.onSyncBaseItemIdle(castToNativeSyncBaseItemTickInfo(controlPackage.getSingleData()));
