@@ -40,6 +40,7 @@ public class RestUrl {
     public static final String INVENTORY_EDITOR_PROVIDER_PATH = "inventoryeditorprovider";
     public static final String UNLOCK_PROVIDER_PATH = "unlockprovider";
     public static final String USER_SERVICE_PROVIDER_PATH = "userserviceprovider";
+    public static final String FRONTEND_PATH = "frontend";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache

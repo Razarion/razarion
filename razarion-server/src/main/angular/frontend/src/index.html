@@ -1,14 +1,49 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <script>
+    var RAZ_fbScriptLoadedFlag = false;
+    var RAZ_fbScriptLoadedFrontendService = null;
+    var RAZ_fbScriptLoadedCallback = null;
+  </script>
   <meta charset="utf-8">
-  <title>Frontend</title>
+  <title>Razarion</title>
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-  <app-root></app-root>
+<script>
+  window.fbAsyncInit = function () {
+    FB.init({
+      appId: '321838644575219',
+      cookie: true,
+      xfbml: true,
+      version: 'v2.11'
+    });
+    RAZ_fbScriptLoaded = true;
+    if (RAZ_fbScriptLoadedCallback != null) {
+      RAZ_fbScriptLoadedCallback(RAZ_fbScriptLoadedFrontendService);
+    }
+    //
+    // FB.getLoginStatus(function(response) {
+    //   console.warn("Facebook login")
+    // });
+  };
+
+  (function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {
+      return;
+    }
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "https://connect.facebook.net/de_DE/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<app-root></app-root>
 </body>
 </html>
