@@ -42,7 +42,8 @@ public class FacebookAppStart {
         if (values == null || values.length == 0) {
             logger.warning("No signed_request for FacebookAppStart");
             pageTrackerBean.trackPage(page);
-            return GamePageBean.GAME_PAGE;
+            // return GamePageBean.GAME_PAGE;
+            return null;
         }
 
         try {
@@ -51,7 +52,8 @@ public class FacebookAppStart {
                 // Is authorized by facebook
                 userService.handleFacebookUserLogin(facebookSignedRequest.getUserId());
                 pageTrackerBean.trackPage(page);
-                return GamePageBean.GAME_PAGE;
+                // return GamePageBean.GAME_PAGE;
+                return null;
             } else {
                 // Is NOT authorized by facebook
                 return null;
@@ -59,7 +61,8 @@ public class FacebookAppStart {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             pageTrackerBean.trackPage(page);
-            return GamePageBean.GAME_PAGE;
+            // return GamePageBean.GAME_PAGE;
+            return null;
         }
     }
 
@@ -73,11 +76,11 @@ public class FacebookAppStart {
         } else {
             userService.handleUnregisteredLogin();
         }
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(GamePageBean.GAME_PAGE);
-        } catch (IOException e) {
-            exceptionHandler.handleException(e);
-        }
+//        try {
+//            FacesContext.getCurrentInstance().getExternalContext().redirect(GamePageBean.GAME_PAGE);
+//        } catch (IOException e) {
+//            exceptionHandler.handleException(e);
+//        }
         return null;
     }
 

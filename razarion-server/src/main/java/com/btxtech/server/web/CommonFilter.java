@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 28.01.2018.
  */
-@WebFilter(filterName = "angular-frontend", urlPatterns = {"/*"})
-public class OverallFilter implements Filter {
+@WebFilter(filterName = "razarion-common-filter", urlPatterns = {"/*"})
+public class CommonFilter implements Filter {
     public enum AngularType {
         FRONTEND,
         BACKEND,
@@ -39,6 +39,8 @@ public class OverallFilter implements Filter {
             CommonUrl.APPLICATION_PATH,
             CommonUrl.CLIENT_PATH,
             CommonUrl.CLIENT_WORKER_PATH,
+            CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT,
+            CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT,
             "/debug",
             "/images",
             "/marketinghist",
@@ -61,6 +63,7 @@ public class OverallFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
             HttpServletRequest servletRequest = (HttpServletRequest) request;
+            // logger.warning(servletRequest.getRequestURI() + ": " + extractAngularType(servletRequest));
             switch (extractAngularType(servletRequest)) {
                 case FRONTEND:
                     request.getRequestDispatcher(CommonUrl.FRONTEND_ANGULAR_HTML_FILE).forward(request, response);
@@ -72,7 +75,7 @@ public class OverallFilter implements Filter {
                     chain.doFilter(request, response);
                     break;
                 default:
-                    logger.warning("OverallFilter can not handle: " + servletRequest.getServletPath());
+                    logger.warning("CommonFilter can not handle: " + servletRequest.getServletPath());
                     chain.doFilter(request, response);
             }
         } catch (Throwable throwable) {

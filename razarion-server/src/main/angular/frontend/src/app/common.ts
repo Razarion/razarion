@@ -1,5 +1,5 @@
-// export const LOCALHOST_PREFIX = '';
-export const LOCALHOST_PREFIX = 'http://localhost:8080';
+export const LOCALHOST_PREFIX = '';
+// export const LOCALHOST_PREFIX = 'http://localhost:8080';
 export const URL_FRONTEND = LOCALHOST_PREFIX + '/rest/frontend';
 
 export class Common {
@@ -7,7 +7,6 @@ export class Common {
     console.log("Error: " + error)
   }
 }
-
 
 export class LogonState {
 

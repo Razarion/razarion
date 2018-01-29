@@ -61,7 +61,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     @Override
     public void removeLoadingCover() {
         loadingCoverBackup = Browser.getDocument().getElementById(LOADING_COVER_ID);
-        Browser.getDocument().getBody().removeChild(loadingCoverBackup);
+        loadingCoverBackup.getParentElement().removeChild(loadingCoverBackup);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     @Override
     public void fadeInLoadingCover() {
         Element element = Browser.getDocument().getElementById(LOADING_COVER_ID);
-        if(element == null) {
+        if (element == null) {
             element = loadingCoverBackup;
             Browser.getDocument().getBody().appendChild(element);
             loadingCoverBackup = null;
@@ -105,7 +105,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
         try {
             finishedStartupTasks++;
             double progress = (double) finishedStartupTasks / (double) totalStartupTasks;
-            ((ProgressElement)Browser.getDocument().getElementById(LOADING_PROGRESS_ID)).setValue(progress);
+            ((ProgressElement) Browser.getDocument().getElementById(LOADING_PROGRESS_ID)).setValue(progress);
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
