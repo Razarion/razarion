@@ -15,8 +15,24 @@ export class FrontendService {
   private resolve: any;
   private fbTimerId: number;
   private loggedIn: boolean = null;
+  private cookieAllowed: boolean = null;
 
   constructor(private http: HttpClient) {
+    try {
+      let d = new Date();
+      d.setTime(d.getTime() + 100000);
+      document.cookie = "username=testcookie; expires" + d.toUTCString();
+      this.cookieAllowed = document.cookie.indexOf("testcookie") != -1;
+      if (!this.cookieAllowed) {
+        this.log("Cookie are not allowed");
+      }
+    } catch (err) {
+      this.log("Cookie check failed: " + err);
+    }
+  }
+
+  isCookieAllowed(): boolean {
+    return this.cookieAllowed;
   }
 
   login(): Promise<boolean> {
@@ -55,7 +71,7 @@ export class FrontendService {
   }
 
   log(message: any): void {
-    this.http.post<void>(URL_FRONTEND + '/log', JSON.stringify(message), {headers: new HttpHeaders().set('Content-Type', 'text/plain')}).subscribe ();
+    this.http.post<void>(URL_FRONTEND + '/log', JSON.stringify(message), {headers: new HttpHeaders().set('Content-Type', 'text/plain')}).subscribe();
   }
 
   getLanguage(): string {

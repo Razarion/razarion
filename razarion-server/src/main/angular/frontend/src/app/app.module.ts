@@ -1,7 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {ErrorHandler, NgModule} from '@angular/core';
-
-
 import {AppComponent} from './app.component';
 import {FrontendService} from "./service/frontend.service";
 import {HttpClientModule} from "@angular/common/http";
@@ -10,6 +8,7 @@ import {HomeComponent} from "./home/home.component";
 import {GameComponent} from "./game/game.component";
 import {RegisterComponent} from "./register/register.component";
 import {GlobalErrorHandler} from "./global.error.fandler";
+import {NoCookies} from "./nocookies/nocookies.component";
 
 
 @NgModule({
@@ -17,7 +16,8 @@ import {GlobalErrorHandler} from "./global.error.fandler";
     AppComponent,
     HomeComponent,
     GameComponent,
-    RegisterComponent
+    RegisterComponent,
+    NoCookies
   ],
   imports: [
     BrowserModule,

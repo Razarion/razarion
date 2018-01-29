@@ -13,6 +13,10 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if(!this.frontendService.isCookieAllowed()) {
+      this.router.navigate(['/nocookies']);
+      return;
+    }
     this.frontendService.login().then(loggedIn => {
       if (loggedIn) {
         this.router.navigate(['/game']);

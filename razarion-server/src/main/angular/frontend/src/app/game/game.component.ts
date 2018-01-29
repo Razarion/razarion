@@ -1,5 +1,6 @@
 ﻿import {Component, OnInit} from '@angular/core';
 import {FrontendService} from "../service/frontend.service";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -9,10 +10,14 @@ import {FrontendService} from "../service/frontend.service";
 // TODO avoid add multiple times (meta, scripts)
 
 export class GameComponent implements OnInit {
-  constructor(private frontendService: FrontendService) {
+  constructor(private frontendService: FrontendService, private router: Router) {
   }
 
   ngOnInit(): void {
+    if(!this.frontendService.isCookieAllowed()) {
+      this.router.navigate(['/nocookies']);
+      return;
+    }
     this.frontendService.login().then(() => {
       this.startGame();
     });
