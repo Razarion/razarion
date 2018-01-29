@@ -1,5 +1,4 @@
 ﻿import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
 
 
@@ -14,6 +13,12 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.frontendService.login().then(() => {
+      this.startGame();
+    });
+  }
+
+  private startGame(): void {
     GameComponent.insertGameScript('window.RAZ_startTime = new Date().getTime();');
     GameComponent.insertMeta('gwt:property', this.frontendService.getLanguage());
     GameComponent.insertGameScript('erraiBusRemoteCommunicationEnabled = false;');

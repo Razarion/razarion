@@ -74,13 +74,13 @@ public class UserService {
         UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
         if (userContext == null) {
             logger.warning("UserService: no user in context: " + sessionHolder.getPlayerSession().getHttpSessionId());
-            userContext = createUnexpectedUserContext();
+            userContext = createAnonymousUserContext();
             loginUserContext(userContext, new UnregisteredUser());
         }
         return userContext;
     }
 
-    private UserContext createUnexpectedUserContext() {
+    private UserContext createAnonymousUserContext() {
         UserContext userContext = new UserContext();
         userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
         userContext.setLevelId(levelPersistence.getStarterLevel().getId());
@@ -145,11 +145,11 @@ public class UserService {
         return registerInfo;
     }
 
-//    @Transactional
-//    public void handleUnregisteredLogin() {
-//        UserContext userContext = createUnexpectedUserContext(); xxx
-//        loginUserContext(userContext, new UnregisteredUser());
-//    }
+    @Transactional
+    public void anonymousLogin() {
+        UserContext userContext = createAnonymousUserContext();
+        loginUserContext(userContext, new UnregisteredUser());
+    }
 
     private UserContext loginUserContext(UserContext userContext, UnregisteredUser unregisteredUser) {
         PlayerSession playerSession = sessionHolder.getPlayerSession();

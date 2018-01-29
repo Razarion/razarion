@@ -7,24 +7,29 @@ declare var RAZ_fbScriptLoadedFlag: boolean;
 declare var RAZ_fbScriptLoadedCallback: any;
 
 declare const FB: any;
-const FB_TIMEOUT: number = 5000;
+const FB_TIMEOUT: number = 8000;
 
 @Injectable()
 export class FrontendService {
   private language: string;
   private resolve: any;
   private fbTimerId: number;
+  private loggedIn: boolean = null;
 
   constructor(private http: HttpClient) {
   }
 
-  start(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+  login(): Promise<boolean> {
+    if (this.loggedIn != null) {
+      return Promise.resolve(this.loggedIn);
+    }
+    return new Promise((resolve) => {
       this.resolve = resolve;
       this.http.get<FrontendLoginState>(URL_FRONTEND + '/isloggedin').toPromise().then(loginState => {
         try {
           this.language = loginState.language;
           if (loginState.loggedIn) {
+            this.loggedIn = true;
             resolve(true);
           } else {
             // TODO remember me goes here
@@ -37,19 +42,20 @@ export class FrontendService {
             }
           }
         } catch (err) {
-          this.log(err);
+          this.log("Handle isloggedin response: " + err);
+          this.loggedIn = false;
           resolve(false);
         }
       }).catch(err => {
-        this.log(err);
+        this.log("isloggedin catch: " + err);
+        this.loggedIn = false;
         resolve(false);
       });
     });
   }
 
   log(message: any): void {
-    this.http.post<FrontendLoginState>(URL_FRONTEND + '/log', JSON.stringify(message), {headers: new HttpHeaders().set('Content-Type', 'text/plain')}).subscribe(value => {
-    });
+    this.http.post<void>(URL_FRONTEND + '/log', JSON.stringify(message), {headers: new HttpHeaders().set('Content-Type', 'text/plain')}).subscribe ();
   }
 
   getLanguage(): string {
@@ -71,30 +77,31 @@ export class FrontendService {
         fbAuthResponse.userID = fbResponse.authResponse.userID;
         this.http.post<boolean>(URL_FRONTEND + '/facebookauthenticated', fbAuthResponse, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
           loggedIn => {
+            this.loggedIn = loggedIn;
             this.resolve(loggedIn);
           },
           error => {
-            this.log(error);
+            this.log("facebookauthenticated catch: " + error);
+            this.loggedIn = false;
             this.resolve(false);
           });
-      } else if (fbResponse.status === 'not_authorized') {
-        this.resolve(false);
-        // this.http.post(URL_FRONTEND + '/facebooknotauthorized', {}).subscribe(
-        //   data => {
-        //   },
-        //   error => {
-        //     Common.handleError(error);
-        //   });
       } else {
-        this.resolve(false);
-        // this.http.post(URL_FRONTEND + '/nofacebookuser', {}).subscribe(
-        //   data => {
-        //   },
-        //   error => {
-        //     Common.handleError(error);
-        //   });
+        this.anonymousLogin();
       }
     });
+  }
+
+  private anonymousLogin(): void {
+    this.http.post<void>(URL_FRONTEND + '/anonymouslogin', {}).subscribe(
+      () => {
+        this.loggedIn = false;
+        this.resolve(false);
+      },
+      error => {
+        this.log("anonymouslogin catch: " + error);
+        this.loggedIn = false;
+        this.resolve(false);
+      });
   }
 
   static onFbScriptLoaded(frontendService: FrontendService) {
@@ -103,6 +110,6 @@ export class FrontendService {
 
   private onFbTimeout() {
     this.log("Facebook timed out");
-    this.resolve(false);
+    this.anonymousLogin();
   }
 }

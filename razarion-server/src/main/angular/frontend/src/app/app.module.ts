@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 
 
 import {AppComponent} from './app.component';
@@ -9,6 +9,7 @@ import {routing} from "./app.routing";
 import {HomeComponent} from "./home/home.component";
 import {GameComponent} from "./game/game.component";
 import {RegisterComponent} from "./register/register.component";
+import {GlobalErrorHandler} from "./global.error.fandler";
 
 
 @NgModule({
@@ -23,8 +24,17 @@ import {RegisterComponent} from "./register/register.component";
     HttpClientModule,
     routing
   ],
-  providers: [FrontendService],
+  providers: [FrontendService, {
+    provide: ErrorHandler,
+    useClass: GlobalErrorHandler
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule {
+
+  constructor(private frontendService: FrontendService) {
+    window.onerror = function (msg, url, line, col, error) {
+      this.frontendService.log("Gloabl error handler. msg: " + msg + ". url: " + url + ". line: " + line + ". col: " + col + ". error: " + error)
+    };
+  }
 }

@@ -59,20 +59,10 @@ public class FrontendProvider {
     }
 
     @POST
-    @Path("facebooknotauthorized")
-    public void facebookNotAuthorized() {
+    @Path("anonymouslogin")
+    public void anonymousLogin() {
         try {
-            frontendService.facebookNotAuthorized();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-    }
-
-    @POST
-    @Path("nofacebookuser")
-    public void noFacebookUser() {
-        try {
-            frontendService.noFacebookUser();
+            frontendService.anonymousLogin();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -82,7 +72,7 @@ public class FrontendProvider {
     @Consumes(MediaType.TEXT_PLAIN)
     @Path("log")
     public void log(String message) {
-        logger.warning("FrontendProvider log for session :" + sessionHolder.getPlayerSession().getHttpSessionId() + ". Message: " + message);
+        logger.warning("FrontendProvider log for session: " + sessionHolder.getPlayerSession().getHttpSessionId() + ". Message: " + message);
     }
 
 }

@@ -33,17 +33,13 @@ public class FrontendService {
     }
 
     public void facebookAuthenticated(FbAuthResponse fbAuthResponse) {
-        if(fbAuthResponse.getUserID() == null) {
+        if (fbAuthResponse.getUserID() == null) {
             throw new IllegalArgumentException("UserService: fbAuthResponse.getUserID() == null for sessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
         }
         userService.handleFacebookUserLogin(fbAuthResponse);
     }
 
-    public void facebookNotAuthorized() {
-
-    }
-
-    public void noFacebookUser() {
-
+    public void anonymousLogin() {
+        userService.anonymousLogin();
     }
 }
