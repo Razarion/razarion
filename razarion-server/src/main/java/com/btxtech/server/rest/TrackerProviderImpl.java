@@ -108,22 +108,4 @@ public class TrackerProviderImpl implements TrackerProvider {
             exceptionHandler.handleException(t);
         }
     }
-
-    @Override
-    public Response webPageNoScript(String page) {
-        logger.severe("Noscript for page: " + page + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
-        return Response.ok(LoggingProviderImpl.PIXEL_BYTES).build();
-    }
-
-    @Override
-    public String webPageScript(String page) {
-        logger.severe("Script for page: " + page + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
-        return "";
-    }
-
-    @Override
-    public String webPageCookie(String page, Boolean enabled) {
-        logger.severe("Cookies for page: " + page + ". Enabled: " + enabled + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
-        return "";
-    }
 }

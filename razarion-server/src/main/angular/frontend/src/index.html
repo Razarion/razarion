@@ -16,8 +16,13 @@
 </head>
 <body class="main-page">
 <noscript>
-  <img src="/rest/tracker/webpagenoscript/AngularFrontend"/>
-  <div>Dein Browser unterstützt kein JavaScript. JavaScript wird jedoch zum Spielen von Razarion benötigt.</div>
+  <img src="/rest/frontend/noscript"/>
+  <div style="margin-top: 100px;">
+    <div style="margin: auto;  width: 400px;  padding: 10px;  text-align: center;  border: 1px solid #3289bd5c;  background-color: #025cff2e;">
+      <div style="padding-bottom: 10px; margin: auto; font-size: 20px; font-weight: bolder;">JavaScript erforderlich</div>
+      <div style="font-size: 15px;">Dein Browser unterstützt kein JavaScript. JavaScript wird jedoch zum Spielen von Razarion benötigt.</div>
+    </div>
+  </div>
 </noscript>
 <script>
   window.fbAsyncInit = function () {
@@ -31,10 +36,6 @@
     if (RAZ_fbScriptLoadedCallback != null) {
       RAZ_fbScriptLoadedCallback(RAZ_fbScriptLoadedFrontendService);
     }
-    //
-    // FB.getLoginStatus(function(response) {
-    //   console.warn("Facebook login")
-    // });
   };
 
   (function (d, s, id) {

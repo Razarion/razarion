@@ -19,6 +19,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.logging.Logger;
 
 @Path(CommonUrl.FRONTEND_PATH)
@@ -75,4 +76,11 @@ public class FrontendProvider {
         logger.warning("FrontendProvider log for session: " + sessionHolder.getPlayerSession().getHttpSessionId() + ". Message: " + message);
     }
 
+    @GET
+    @Path("noscript")
+    @Produces({"image/jpeg", "image/png", "image/gif"})
+    public Response noScript() {
+        logger.warning("FrontendProvider no script. SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+        return Response.ok(LoggingProviderImpl.PIXEL_BYTES).build();
+    }
 }
