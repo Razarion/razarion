@@ -6,7 +6,7 @@ package com.btxtech.server.rest;
  */
 
 import com.btxtech.server.web.SessionHolder;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -16,7 +16,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path(RestUrl.FRONTEND_PATH)
+@Path(CommonUrl.FRONTEND_PATH)
 public class FrontendProvider {
     @Inject
     private SessionHolder sessionHolder;

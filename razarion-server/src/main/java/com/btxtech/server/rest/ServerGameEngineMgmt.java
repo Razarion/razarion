@@ -3,7 +3,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -23,7 +23,7 @@ import java.util.List;
  * Created by Beat
  * on 04.09.2017.
  */
-@Path(RestUrl.SERVER_GAME_ENGINE_MGMT_PATH)
+@Path(CommonUrl.SERVER_GAME_ENGINE_MGMT_PATH)
 public class ServerGameEngineMgmt {
     @Inject
     private ServerGameEngineControl serverGameEngineControl;

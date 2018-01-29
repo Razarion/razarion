@@ -1,6 +1,6 @@
 package com.btxtech.client.cockpit.item;
 
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -53,7 +53,7 @@ public class BaseItemTypeCountPanel implements TakesValue<BaseItemTypeCount>, Is
     @Override
     public void setValue(BaseItemTypeCount baseItemTypeCount) {
         this.baseItemTypeCount = baseItemTypeCount;
-        image.setUrl(RestUrl.getImageServiceUrlSafe(baseItemTypeCount.getBaseItemType().getThumbnail()));
+        image.setUrl(CommonUrl.getImageServiceUrlSafe(baseItemTypeCount.getBaseItemType().getThumbnail()));
         countLabel.setText(Integer.toString(baseItemTypeCount.getCount()));
         selectedItemTd.setTitle(I18nHelper.getConstants().tooltipSelect(I18nHelper.getLocalizedString(baseItemTypeCount.getBaseItemType().getI18nName())));
     }

@@ -35,23 +35,20 @@ export class SessionHistory implements OnInit {
     this.updateSessions();
   }
 
-  onClickSessionId(session: SessionTracker): void {
-    this.route.navigate(['/session', session.id]);
-  }
-
-  onClickUserState(sessionTracker: SessionTracker): void {
+  getHumanPlayerId(sessionTracker: SessionTracker): number {
     if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory == null) {
       // Anonymous
-      this.route.navigate(['/user', sessionTracker.createdHumanPlayerId]);
+      return sessionTracker.createdHumanPlayerId;
     } else if (sessionTracker.createdHumanPlayerId == null && sessionTracker.userFromHistory != null) {
       // Logged in
-      this.route.navigate(['/user', sessionTracker.userFromHistory.humanPlayerId.playerId]);
+      return sessionTracker.userFromHistory.humanPlayerId.playerId;
     } else if (sessionTracker.createdHumanPlayerId != null && sessionTracker.userFromHistory != null) {
       if (sessionTracker.createdHumanPlayerId == sessionTracker.userFromHistory.humanPlayerId.playerId) {
         // New user
-        this.route.navigate(['/user', sessionTracker.createdHumanPlayerId]);
+        return sessionTracker.createdHumanPlayerId;
       } else {
         // Invalid
+        return null;
       }
     }
   }

@@ -2,7 +2,7 @@ package com.btxtech.client.system;
 
 import com.btxtech.common.WebSocketHelper;
 import com.btxtech.shared.datatypes.LifecyclePacket;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
@@ -31,7 +31,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
 
     @Override
     public void init() {
-        webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(RestUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT));
+        webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT));
         webSocket.setOnerror(evt -> logger.severe("ClientServerSystemConnection WebSocket OnError: " + evt));
         webSocket.setOnclose(evt -> logger.severe("ClientServerSystemConnection WebSocket Close: " + evt));
         webSocket.setOnmessage(this::handleMessage);

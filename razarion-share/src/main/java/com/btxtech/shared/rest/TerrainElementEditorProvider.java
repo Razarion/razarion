@@ -1,10 +1,10 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Beat
  * 15.08.2015.
  */
-@Path(RestUrl.TERRAIN_ELEMENT_SERVICE_PATH)
+@Path(CommonUrl.TERRAIN_ELEMENT_SERVICE_PATH)
 public interface TerrainElementEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)

@@ -4,7 +4,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.utils.HumanReadableIntegerSizeConverter;
 import com.btxtech.shared.dto.AudioItemConfig;
 import com.btxtech.shared.rest.AudioProvider;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -23,7 +23,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,7 +77,7 @@ public class AudioWidget extends Composite {
         this.audioId = audioId;
         this.audioItemWidgetListener = audioItemWidgetListener;
         if (audioId != null) {
-            ((AudioElement) audio).setSrc(RestUrl.getAudioServiceUrl(audioId));
+            ((AudioElement) audio).setSrc(CommonUrl.getAudioServiceUrl(audioId));
             audioService.call(new RemoteCallback<AudioItemConfig>() {
                 @Override
                 public void callback(AudioItemConfig audioItemConfig) {

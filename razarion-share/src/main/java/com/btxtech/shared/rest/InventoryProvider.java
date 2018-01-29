@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.InventoryInfo;
 
 import javax.ws.rs.GET;
@@ -11,7 +12,7 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * on 17.09.2017.
  */
-@Path(RestUrl.INVENTORY_PROVIDER_PATH)
+@Path(CommonUrl.INVENTORY_PROVIDER_PATH)
 public interface InventoryProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)

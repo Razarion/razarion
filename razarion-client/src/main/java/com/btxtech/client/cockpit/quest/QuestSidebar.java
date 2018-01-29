@@ -11,7 +11,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
@@ -190,7 +190,7 @@ public class QuestSidebar extends Composite {
             }
             progressTableRowModel.setText(actual + "/" + expected);
             BaseItemType baseItemType = itemTypeService.getBaseItemType(itemId);
-            progressTableRowModel.setBaseItemImage(RestUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
+            progressTableRowModel.setBaseItemImage(CommonUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
             progressTableRowModel.setActionWord(I18nHelper.getLocalizedString(baseItemType.getI18nName()) + (actionWord != null ? (" " + actionWord) : ""));
             progressTableModels.add(progressTableRowModel);
         }

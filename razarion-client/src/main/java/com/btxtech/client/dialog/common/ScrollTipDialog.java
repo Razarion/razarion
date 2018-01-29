@@ -2,7 +2,7 @@ package com.btxtech.client.dialog.common;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
@@ -34,8 +34,8 @@ public class ScrollTipDialog extends Composite implements ModalDialogContent<Scr
     public void init(ScrollTipDialogModel scrollTipDialogModel) {
         this.scrollTipDialogModel = scrollTipDialogModel;
         this.message.setTextContent(scrollTipDialogModel.getDialogMessage());
-        mapImage.setUrl(RestUrl.getImageServiceUrlSafe(scrollTipDialogModel.getScrollDialogMapImageId()));
-        keyboardImage.setUrl(RestUrl.getImageServiceUrlSafe(scrollTipDialogModel.getScrollDialogKeyboardImageId()));
+        mapImage.setUrl(CommonUrl.getImageServiceUrlSafe(scrollTipDialogModel.getScrollDialogMapImageId()));
+        keyboardImage.setUrl(CommonUrl.getImageServiceUrlSafe(scrollTipDialogModel.getScrollDialogKeyboardImageId()));
         if (scrollTipDialogModel.getDialogOpenCallback() != null) {
             scrollTipDialogModel.getDialogOpenCallback().accept(() -> modalDialogPanel.close());
         }

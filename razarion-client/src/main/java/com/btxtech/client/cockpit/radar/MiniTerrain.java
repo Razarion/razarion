@@ -3,7 +3,7 @@ package com.btxtech.client.cockpit.radar;
 import com.btxtech.client.imageservice.ImageLoader;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -32,7 +32,7 @@ public class MiniTerrain extends AbstractMiniMap {
 
     public void show() {
         ImageLoader<Integer> imageLoader = new ImageLoader<>();
-        imageLoader.addImageUrl(RestUrl.getMiniMapPlanetUrl(gameUiControl.getPlanetConfig().getPlanetId()), gameUiControl.getPlanetConfig().getPlanetId());
+        imageLoader.addImageUrl(CommonUrl.getMiniMapPlanetUrl(gameUiControl.getPlanetConfig().getPlanetId()), gameUiControl.getPlanetConfig().getPlanetId());
         imageLoader.startLoading((loadedImageElements, failed) -> {
             if (!failed.isEmpty()) {
                 logger.warning("MiniTerrain.postConstruct() loading image failed: " + failed);

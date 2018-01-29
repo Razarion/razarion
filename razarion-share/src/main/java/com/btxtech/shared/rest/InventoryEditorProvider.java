@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * Created by Beat
  * on 19.09.2017.
  */
-@Path(RestUrl.INVENTORY_EDITOR_PROVIDER_PATH)
+@Path(CommonUrl.INVENTORY_EDITOR_PROVIDER_PATH)
 public interface InventoryEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)

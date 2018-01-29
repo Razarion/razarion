@@ -11,7 +11,7 @@ import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.user.NewUser;
 import com.btxtech.server.persistence.history.UserHistoryEntry;
 import com.btxtech.server.user.UserService;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by Beat on 29.05.2017.
  */
-@Path(RestUrl.TRACKER_BACKEND_PATH)
+@Path(CommonUrl.TRACKER_BACKEND_PATH)
 public class TrackerBackend {
     @Inject
     private ExceptionHandler exceptionHandler;

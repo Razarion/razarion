@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlTrackerInfo;
@@ -23,7 +24,7 @@ import java.util.List;
  * Created by Beat
  * 03.03.2017.
  */
-@Path(RestUrl.TRACKER_PATH)
+@Path(CommonUrl.TRACKER_PATH)
 public interface TrackerProvider {
     @POST
     @Path("startupTask")

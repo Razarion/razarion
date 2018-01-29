@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.Shape3DConfig;
@@ -19,11 +20,11 @@ import java.util.List;
  * Created by Beat
  * 16.08.2016.
  */
-@Path(RestUrl.SHAPE_3D_PROVIDER)
+@Path(CommonUrl.SHAPE_3D_PROVIDER)
 public interface Shape3DProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER)
+    @Path(CommonUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER)
     List<VertexContainerBuffer> getVertexBuffer();
 
     @GET

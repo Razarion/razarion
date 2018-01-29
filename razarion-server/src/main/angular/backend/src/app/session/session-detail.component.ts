@@ -20,7 +20,10 @@ export class SessionDetails implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.switchMap((params: Params) => this.sessionService.getSessionDetail(params['id'])).subscribe(sessionDetail => this.sessionDetail = sessionDetail);
+    this.route.params.switchMap((params: Params) => this.sessionService.getSessionDetail(params['id'])).subscribe(sessionDetail => {
+      this.sessionDetail = sessionDetail;
+      window.document.title = sessionDetail.id;
+    });
   }
 
 }

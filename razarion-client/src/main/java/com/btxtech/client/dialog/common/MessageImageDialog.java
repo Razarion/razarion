@@ -2,7 +2,7 @@ package com.btxtech.client.dialog.common;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -28,7 +28,7 @@ public class MessageImageDialog extends Composite implements ModalDialogContent<
     public void init(MessageImage messageImage) {
         this.messageLabel.setText(messageImage.getMessage());
         if (messageImage.getImageId() != null) {
-            this.messageImage.setUrl(RestUrl.getImageServiceUrlSafe(messageImage.getImageId()));
+            this.messageImage.setUrl(CommonUrl.getImageServiceUrlSafe(messageImage.getImageId()));
         }
     }
 

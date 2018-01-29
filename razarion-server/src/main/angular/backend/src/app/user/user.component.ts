@@ -19,30 +19,41 @@ export class UserComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.switchMap((params: Params) => this.userService.loadUserBackendInfo(params['id'])).subscribe(userBackendInfo => this.userBackendInfo = userBackendInfo);
+    this.route.params.switchMap((params: Params) => this.userService.loadUserBackendInfo(params['id'])).subscribe(userBackendInfo => this.displayUser(userBackendInfo));
   }
 
   onRemoveCompletedQuest(completedQuest: QuestBackendInfo) {
-    this.userService.removeCompletedQuest(this.userBackendInfo.humanPlayerId.playerId, completedQuest.id).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+    this.userService.removeCompletedQuest(this.userBackendInfo.humanPlayerId.playerId, completedQuest.id).then(userBackendInfo => this.displayUser(userBackendInfo));
   }
 
   onUpdate() {
-    this.userService.loadUserBackendInfo(this.userBackendInfo.humanPlayerId.playerId).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+    this.userService.loadUserBackendInfo(this.userBackendInfo.humanPlayerId.playerId).then(userBackendInfo => this.displayUser(userBackendInfo));
   }
 
   onSetNewLevel(levelNumber: number) {
-    this.userService.setLevelNumber(this.userBackendInfo.humanPlayerId.playerId, levelNumber).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+    this.userService.setLevelNumber(this.userBackendInfo.humanPlayerId.playerId, levelNumber).then(userBackendInfo => this.displayUser(userBackendInfo));
   }
 
   onSetNewXp(xp: number) {
-    this.userService.setXp(this.userBackendInfo.humanPlayerId.playerId, xp).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+    this.userService.setXp(this.userBackendInfo.humanPlayerId.playerId, xp).then(userBackendInfo => this.displayUser(userBackendInfo));
   }
 
   onSetNewCrystals(crystals: number) {
-    this.userService.setCrystals(this.userBackendInfo.humanPlayerId.playerId, crystals).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+    this.userService.setCrystals(this.userBackendInfo.humanPlayerId.playerId, crystals).then(userBackendInfo => this.displayUser(userBackendInfo));
   }
 
   onRemoveUnlocked(unlockedBackendInfo: UnlockedBackendInfo) {
-    this.userService.removeUnlocked(this.userBackendInfo.humanPlayerId.playerId, unlockedBackendInfo).then(userBackendInfo => this.userBackendInfo = userBackendInfo);
+    this.userService.removeUnlocked(this.userBackendInfo.humanPlayerId.playerId, unlockedBackendInfo).then(userBackendInfo => this.displayUser(userBackendInfo));
+  }
+
+  private displayUser(userBackendInfo: UserBackendInfo): void {
+    this.userBackendInfo = userBackendInfo;
+    if (userBackendInfo.name != null) {
+      window.document.title = userBackendInfo.name;
+    } else if (userBackendInfo.humanPlayerId.userId != null) {
+      window.document.title = "UserId: " + userBackendInfo.humanPlayerId.userId;
+    } else {
+      window.document.title = "PlayerId: " + userBackendInfo.humanPlayerId.playerId;
+    }
   }
 }

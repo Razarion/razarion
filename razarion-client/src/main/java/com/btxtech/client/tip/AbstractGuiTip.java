@@ -2,7 +2,7 @@ package com.btxtech.client.tip;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.imageservice.ImageUiService;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.google.gwt.dom.client.ImageElement;
 import org.jboss.errai.common.client.api.IsElement;
@@ -34,7 +34,7 @@ public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageL
     public void init(AbstractGuiTipVisualization guiPointingTipVisualization, String containerCss, String imageCss) {
         this.guiTipVisualization = guiPointingTipVisualization;
         imageUiService.requestImage(guiPointingTipVisualization.getImageId(), this);
-        image.setSrc(RestUrl.getImageServiceUrlSafe(guiPointingTipVisualization.getImageId()));
+        image.setSrc(CommonUrl.getImageServiceUrlSafe(guiPointingTipVisualization.getImageId()));
         div.getStyle().setProperty("z-index", Integer.toString(ZIndexConstants.TIP));
         div.setClassName(containerCss);
         image.setClassName(imageCss);

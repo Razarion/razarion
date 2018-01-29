@@ -1,6 +1,6 @@
 package com.btxtech.shared.rest;
 
-import com.btxtech.shared.dto.AudioConfig;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.AudioItemConfig;
 
 import javax.ws.rs.Consumes;
@@ -18,7 +18,7 @@ import java.util.List;
  * Created by Beat
  * 24.12.2016.
  */
-@Path(RestUrl.AUDIO_SERVICE_PATH)
+@Path(CommonUrl.AUDIO_SERVICE_PATH)
 public interface AudioProvider {
 
     @GET

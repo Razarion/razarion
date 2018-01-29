@@ -16,11 +16,11 @@
   </thead>
   <tbody>
   <tr *ngFor="let userLoginEntry of userLoginEntries">
-    <td (click)="onClickUser(userLoginEntry.playerId)" style="cursor: pointer">{{ userLoginEntry.name }}</td>
-    <td (click)="onClickUser(userLoginEntry.playerId)" style="cursor: pointer">{{ userLoginEntry.id }}</td>
+    <td><a routerLink="/humanplayer/{{ userLoginEntry.playerId }}" target="_blank">{{ userLoginEntry.name}}</a></td>
+    <td><a routerLink="/humanplayer/{{ userLoginEntry.playerId }}" target="_blank">{{ userLoginEntry.id}}</a></td>
     <td>{{ userLoginEntry.login | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ userLoginEntry.logout | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-    <td (click)="onClickSession(userLoginEntry.sessionId)" style="cursor: pointer">{{ userLoginEntry.sessionId }}</td>
+    <td><a routerLink="/session/{{ userLoginEntry.sessionId }}" target="_blank">{{ userLoginEntry.sessionId }}</a></td>
   </tr>
   </tbody>
 </table>

@@ -1,7 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.datatypes.LifecyclePacket;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
@@ -31,7 +31,7 @@ public class DevToolServerSystemConnection extends AbstractServerSystemConnectio
     @Override
     public void init() {
         try {
-            init("ws://localhost:8080" + RestUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, this);
+            init("ws://localhost:8080" + CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, this);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }

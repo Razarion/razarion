@@ -11,7 +11,7 @@ const routes: Routes = [
   {path: 'session/:id', component: SessionDetails},
   {path: 'backuprestore', component: BackupRestoreComponent},
   {path: 'itemhistory', component: ItemHistoryComponent},
-  {path: 'user/:id', component: UserComponent},
+  {path: 'humanplayer/:id', component: UserComponent},
   {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
 ];
 

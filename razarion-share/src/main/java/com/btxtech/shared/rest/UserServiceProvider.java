@@ -1,8 +1,7 @@
 package com.btxtech.shared.rest;
 
-import com.btxtech.shared.datatypes.ErrorResult;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
 
@@ -18,7 +17,7 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * on 26.12.2017.
  */
-@Path(RestUrl.USER_SERVICE_PROVIDER_PATH)
+@Path(CommonUrl.USER_SERVICE_PROVIDER_PATH)
 public interface UserServiceProvider {
     @POST
     @Path("ingamefacebookregister")

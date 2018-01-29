@@ -2,7 +2,7 @@ package com.btxtech.client.editor.widgets.audio;
 
 import com.btxtech.client.utils.HumanReadableIntegerSizeConverter;
 import com.btxtech.shared.dto.AudioItemConfig;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
@@ -67,7 +67,7 @@ public class AudioSelectorItemWidget implements TakesValue<AudioItemConfig>, IsE
 
     @Override
     public void setValue(AudioItemConfig audioItemConfig) {
-        ((AudioElement) audio).setSrc(RestUrl.getAudioServiceUrl(audioItemConfig.getId()));
+        ((AudioElement) audio).setSrc(CommonUrl.getAudioServiceUrl(audioItemConfig.getId()));
         dataBinder.setModel(audioItemConfig);
         setSelected(false);
     }

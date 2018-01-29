@@ -43,14 +43,6 @@ export class OnlineComponent implements OnInit, OnDestroy {
     this.lastLoaded = new Date();
   }
 
-  onClickSession(onlineInfo: OnlineInfo) {
-    this.route.navigate(['/session', onlineInfo.sessionId]);
-  }
-
-  onClickUser(onlineInfo: OnlineInfo) {
-    this.route.navigate(['/user', onlineInfo.humanPlayerId.playerId]);
-  }
-
   private clearTimer(): void {
     if (this.timerId != null) {
       window.clearInterval(this.timerId);

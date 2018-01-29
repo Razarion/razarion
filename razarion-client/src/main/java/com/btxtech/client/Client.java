@@ -3,7 +3,7 @@ package com.btxtech.client;
 import com.btxtech.client.clientI18n.ClientI18nConstants;
 import com.btxtech.client.system.LifecycleService;
 import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.core.client.GWT;
@@ -39,7 +39,7 @@ public class Client {
                 exceptionHandler.handleException("UncaughtExceptionHandler", e);
             }
         });
-        RestClient.setApplicationRoot('/' + RestUrl.APPLICATION_PATH); // If the html-page is in the faces servlet filter path, the charset is overridden. -> problems with special characters
+        RestClient.setApplicationRoot(CommonUrl.APPLICATION_PATH); // If the html-page is in the faces servlet filter path, the charset is overridden. -> problems with special characters
     }
 
     @PostConstruct

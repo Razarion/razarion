@@ -1,8 +1,7 @@
 package com.btxtech.client.dialog.unlock;
 
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 
 /**
  * Created by Beat
@@ -22,7 +21,7 @@ public class UnlockItemModel {
     }
 
     public String getImageUrl() {
-        return RestUrl.getImageServiceUrlSafe(levelUnlockConfig.getThumbnail());
+        return CommonUrl.getImageServiceUrlSafe(levelUnlockConfig.getThumbnail());
     }
 
     public void closeDialog() {

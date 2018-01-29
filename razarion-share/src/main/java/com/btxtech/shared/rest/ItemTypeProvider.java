@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
@@ -18,7 +19,7 @@ import java.util.List;
  * Created by Beat
  * 24.08.2016.
  */
-@Path(RestUrl.ITEM_TYPE_PROVIDER)
+@Path(CommonUrl.ITEM_TYPE_PROVIDER)
 public interface ItemTypeProvider {
     @POST
     @Path("createBaseItemType")

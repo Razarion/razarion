@@ -3,7 +3,7 @@ package com.btxtech.client.dialog.unlock;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -66,7 +66,7 @@ public class UnlockItemWidget implements TakesValue<UnlockItemModel>, IsElement 
         this.unlockItemModel = unlockItemModel;
         if (unlockItemModel.getLevelUnlockConfig().getBaseItemType() != null) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(unlockItemModel.getLevelUnlockConfig().getBaseItemType());
-            image.setUrl(RestUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
+            image.setUrl(CommonUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
             span.setTextContent("+" + unlockItemModel.getLevelUnlockConfig().getBaseItemTypeCount());
         } else {
             throw new UnsupportedOperationException("UnlockItemWidget.setValue() unlockItemModel.getLevelUnlockConfig().getBaseItemType() == null ...TODO...");

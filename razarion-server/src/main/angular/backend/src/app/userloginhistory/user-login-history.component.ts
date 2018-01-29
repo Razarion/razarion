@@ -25,12 +25,4 @@ export class UserLoginHistory implements OnInit {
   onReload() {
     this.load()
   }
-
-  onClickUser(playerId: number) {
-    this.route.navigate(['/user', playerId]);
-  }
-
-  onClickSession(sessionId: string) {
-    this.route.navigate(['/session', sessionId]);
-  }
 }

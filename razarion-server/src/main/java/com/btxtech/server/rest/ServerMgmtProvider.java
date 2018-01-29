@@ -4,7 +4,7 @@ import com.btxtech.server.mgmt.OnlineInfo;
 import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.user.SecurityException;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import java.util.List;
  * Created by Beat
  * on 05.09.2017.
  */
-@Path(RestUrl.SERVER_MGMT_PROVIDER_PATH)
+@Path(CommonUrl.SERVER_MGMT_PROVIDER_PATH)
 public class ServerMgmtProvider {
     // private Logger logger = Logger.getLogger(ServerMgmt.class.getName());
     @Inject

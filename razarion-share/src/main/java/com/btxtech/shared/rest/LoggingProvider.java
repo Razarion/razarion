@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.LogRecordInfo;
 
 import javax.ws.rs.Consumes;
@@ -15,17 +16,17 @@ import javax.ws.rs.core.Response;
  * Created by Beat
  * 06.07.2016.
  */
-@Path(RestUrl.REMOTE_LOGGING)
+@Path(CommonUrl.REMOTE_LOGGING)
 public interface LoggingProvider {
 
     @POST
     @Consumes(MediaType.TEXT_PLAIN)
-    @Path(RestUrl.LOGGING_SIMPLE)
+    @Path(CommonUrl.LOGGING_SIMPLE)
     void simpleLogger(String logString);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path(RestUrl.LOGGING_JSON)
+    @Path(CommonUrl.LOGGING_JSON)
     void jsonLogger(LogRecordInfo logRecordInfo);
 
     @GET

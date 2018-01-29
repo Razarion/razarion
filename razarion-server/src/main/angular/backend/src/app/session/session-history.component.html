@@ -20,15 +20,15 @@
   <tbody>
   <tr *ngFor="let sessionTracker of sessionTrackers">
     <td>{{ sessionTracker.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
-    <td (click)="onClickSessionId(sessionTracker)" style="cursor: pointer">{{ sessionTracker.id }}</td>
+    <td><a routerLink="/session/{{ sessionTracker.id }}" target="_blank">{{ sessionTracker.id }}</a></td>
     <td *ngIf="sessionTracker.gameAttempts > 0 || sessionTracker.successGameAttempts > 0"
         [style.background-color]="sessionTracker.gameAttempts != sessionTracker.successGameAttempts?'red':'green'">{{
       sessionTracker.gameAttempts}} / {{sessionTracker.successGameAttempts }}
     </td>
     <td *ngIf="sessionTracker.gameAttempts <= 0 && sessionTracker.successGameAttempts <= 0"></td>
     <td>{{ sessionTracker.fbAdRazTrack }}</td>
-    <td  (click)="onClickUserState(sessionTracker)" style="cursor: pointer"[ngStyle]="{'background-color':analyseUserStateBgColor(sessionTracker)}">
-      {{analyseUserState(sessionTracker)}}
+    <td [ngStyle]="{'background-color':analyseUserStateBgColor(sessionTracker)}">
+      <a routerLink="/humanplayer/{{getHumanPlayerId(sessionTracker) }}" target="_blank">{{analyseUserState(sessionTracker)}}</a>
     </td>
     <td>{{ sessionTracker.remoteHost }}</td>
     <td>{{ sessionTracker.pageHits }}</td>

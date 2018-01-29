@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.I18nStringEditor;
 import com.btxtech.shared.dto.ObjectNameId;
 
@@ -11,13 +12,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Beat
  * on 10.09.2017.
  */
-@Path(RestUrl.COMMON_EDITOR_PROVIDER_PATH)
+@Path(CommonUrl.COMMON_EDITOR_PROVIDER_PATH)
 public interface CommonEditorProvider {
 
     @GET

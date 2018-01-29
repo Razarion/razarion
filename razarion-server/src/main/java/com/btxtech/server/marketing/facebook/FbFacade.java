@@ -3,7 +3,7 @@ package com.btxtech.server.marketing.facebook;
 import com.btxtech.server.marketing.Interest;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.util.DateUtil;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.facebook.ads.sdk.APIContext;
 import com.facebook.ads.sdk.APIException;
@@ -75,7 +75,7 @@ public class FbFacade {
             creationResult.setAdSetId(adSetId);
             long adId = createAdd(adAccount, adSetId, creationInput);
             creationResult.setAdId(adId);
-            setTrackingTag(adId, RestUrl.fbClickTrackingReceiver());
+            setTrackingTag(adId, CommonUrl.fbClickTrackingReceiver());
             return creationResult;
         } catch (APIException e) {
             throw new RuntimeException(e);

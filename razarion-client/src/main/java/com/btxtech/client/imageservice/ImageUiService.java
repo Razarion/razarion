@@ -2,7 +2,7 @@ package com.btxtech.client.imageservice;
 
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.ImageElement;
@@ -183,7 +183,7 @@ public class ImageUiService {
     public void preloadImages(Collection<Integer> imageIds, DeferredStartup deferredStartup) {
         ImageLoader<Integer> imageLoader = new ImageLoader<>();
         for (Integer imageId : imageIds) {
-            imageLoader.addImageUrl(RestUrl.getImageServiceUrl(imageId), imageId);
+            imageLoader.addImageUrl(CommonUrl.getImageServiceUrl(imageId), imageId);
         }
         imageLoader.startLoading((loadedImageElements, failed) -> {
             for (Integer imageId : failed) {
@@ -207,7 +207,7 @@ public class ImageUiService {
         }
         currentlyLoading.add(id);
         ImageLoader<Integer> imageLoader = new ImageLoader<>();
-        imageLoader.addImageUrl(RestUrl.getImageServiceUrl(id), id);
+        imageLoader.addImageUrl(CommonUrl.getImageServiceUrl(id), id);
         imageLoader.startLoading((loadedImageElements, failed) -> {
             if (!failed.isEmpty()) {
                 throw new IllegalStateException("Failed loading image with id: " + id);

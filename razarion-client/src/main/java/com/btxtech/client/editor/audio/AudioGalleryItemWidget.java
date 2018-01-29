@@ -3,11 +3,9 @@ package com.btxtech.client.editor.audio;
 import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.utils.ControlUtils;
 import com.btxtech.client.utils.HumanReadableIntegerSizeConverter;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import elemental.client.Browser;
@@ -19,7 +17,6 @@ import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Bound;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
@@ -61,7 +58,7 @@ public class AudioGalleryItemWidget implements TakesValue<AudioGalleryItem>, IsE
     @Override
     public void setValue(AudioGalleryItem audioGalleryItem) {
         dataBinder.setModel(audioGalleryItem);
-        ((AudioElement) audio).setSrc(RestUrl.getAudioServiceUrl(audioGalleryItem.getId()));
+        ((AudioElement) audio).setSrc(CommonUrl.getAudioServiceUrl(audioGalleryItem.getId()));
         uploadButton.init("Upload", fileList -> ControlUtils.readFirstAsDataURL(fileList, (dataUrl, file) -> {
             ((AudioElement) audio).setSrc(dataUrl);
             dataBinder.getModel().setDataUrl(dataUrl);

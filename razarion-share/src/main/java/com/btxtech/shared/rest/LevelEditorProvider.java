@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * Created by Beat
  * on 22.08.2017.
  */
-@Path(RestUrl.LEVEL_EDITOR_PROVIDER_PATH)
+@Path(CommonUrl.LEVEL_EDITOR_PROVIDER_PATH)
 public interface LevelEditorProvider {
     @POST
     @Produces(MediaType.APPLICATION_JSON)

@@ -8,7 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.cockpit.item.OtherInfoPanel;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -93,7 +93,7 @@ public class ClientOtherInfoPanel extends Composite implements OtherInfoPanel {
             type.getStyle().setProperty("display", "none");
         }
         if (itemType != null) {
-            image.setUrl(RestUrl.getImageServiceUrlSafe(itemType.getThumbnail()));
+            image.setUrl(CommonUrl.getImageServiceUrlSafe(itemType.getThumbnail()));
             itemTypeName.setText(I18nHelper.getLocalizedString(itemType.getI18nName()));
             itemTypeDescr.setHTML(I18nHelper.getLocalizedString(itemType.getI18nDescription()));
         }

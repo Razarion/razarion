@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -64,7 +64,7 @@ public class ClientShape3DUiService extends Shape3DUiService {
     }
 
     public void loadBuffer(DeferredStartup deferredStartup) {
-        Xhr.get(RestUrl.loadShape3dBufferUrl(), new Xhr.Callback() {
+        Xhr.get(CommonUrl.loadShape3dBufferUrl(), new Xhr.Callback() {
             @Override
             public void onFail(XMLHttpRequest xhr) {
                 deferredStartup.failed("Calling Shape3D buffer failed: " + xhr.getStatus());

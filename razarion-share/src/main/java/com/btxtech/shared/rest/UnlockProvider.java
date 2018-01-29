@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.datatypes.packets.UnlockResultInfo;
 
 import javax.ws.rs.POST;
@@ -12,7 +13,7 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * on 23.09.2017.
  */
-@Path(RestUrl.UNLOCK_PROVIDER_PATH)
+@Path(CommonUrl.UNLOCK_PROVIDER_PATH)
 public interface UnlockProvider {
     @POST
     @Path("unlockViaCrystals/{levelUnlockConfigId}")

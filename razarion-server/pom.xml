@@ -72,17 +72,6 @@
             <version>2.22.1</version>
             <scope>provided</scope>
         </dependency>
-        <!-- JSF pretty url-->
-        <dependency>
-            <groupId>org.ocpsoft.rewrite</groupId>
-            <artifactId>rewrite-servlet</artifactId>
-            <version>3.4.1.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ocpsoft.rewrite</groupId>
-            <artifactId>rewrite-config-prettyfaces</artifactId>
-            <version>3.4.1.Final</version>
-        </dependency>
         <!-- Commons -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -152,28 +141,46 @@
                 <extensions>false</extensions>
             </plugin>
             <plugin>
-                <!-- Build angular -->
+                <!-- Build angular-->
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.6.0</version>
                 <executions>
                     <execution>
+                        <id>Build angular frontend</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
+                        <configuration>
+                            <executable>ng</executable>
+                            <workingDirectory>${project.basedir}/src/main/angular/frontend</workingDirectory>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>--env=prod</argument>
+                                <argument>--output-path=${project.build.directory}/ROOT</argument>
+                                <argument>--base-href=/</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Build angular backend</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>ng</executable>
+                            <workingDirectory>${project.basedir}/src/main/angular/backend</workingDirectory>
+                            <arguments>
+                                <argument>build</argument>
+                                <argument>--env=prod</argument>
+                                <argument>--output-path=${project.build.directory}/ROOT/backend</argument>
+                                <argument>--base-href=/backend/</argument>
+                            </arguments>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <executable>ng</executable>
-                    <workingDirectory>${project.basedir}/src/main/angular/backend</workingDirectory>
-                    <arguments>
-                        <argument>build</argument>
-                        <argument>--env=prod</argument>
-                        <argument>--output-path=${project.build.directory}/ROOT/backend</argument>
-                        <argument>--base-href=/backend/</argument>
-                    </arguments>
-                </configuration>
             </plugin>
         </plugins>
     </build>

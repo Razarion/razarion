@@ -1,6 +1,6 @@
 package com.btxtech.common.system.logging;
 
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.utils.ExceptionUtil;
 import com.google.gwt.xhr.client.XMLHttpRequest;
 import elemental.client.Browser;
@@ -19,7 +19,7 @@ public class FallbackLog {
     }
 
     public static void fallbackXhrLog(String message) {
-        Xhr.post(RestUrl.getSimpleLoggingUrl(), message, "text/plain", new Xhr.Callback() {
+        Xhr.post(CommonUrl.getSimpleLoggingUrl(), message, "text/plain", new Xhr.Callback() {
             @Override
             public void onFail(XMLHttpRequest xhr) {
                 if (xhr.getStatus() == 204) {

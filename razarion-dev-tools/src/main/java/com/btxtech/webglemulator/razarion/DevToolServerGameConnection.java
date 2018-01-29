@@ -2,7 +2,7 @@ package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +30,7 @@ public class DevToolServerGameConnection extends AbstractServerGameConnection im
     @Override
     public void init() {
         try {
-            init("ws://localhost:8080" + RestUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT, this);
+            init("ws://localhost:8080" + CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT, this);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }

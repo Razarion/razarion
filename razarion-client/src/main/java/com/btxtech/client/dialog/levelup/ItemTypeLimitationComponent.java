@@ -1,6 +1,6 @@
 package com.btxtech.client.dialog.levelup;
 
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -37,7 +37,7 @@ public class ItemTypeLimitationComponent implements TakesValue<ItemTypeLimitatio
     @Override
     public void setValue(ItemTypeLimitation itemTypeLimitation) {
         this.itemTypeLimitation = itemTypeLimitation;
-        image.setUrl(RestUrl.getImageServiceUrlSafe(itemTypeLimitation.getImageId()));
+        image.setUrl(CommonUrl.getImageServiceUrlSafe(itemTypeLimitation.getImageId()));
         count.setText(Integer.toString(itemTypeLimitation.getCount()));
         name.setText(itemTypeLimitation.getName());
     }

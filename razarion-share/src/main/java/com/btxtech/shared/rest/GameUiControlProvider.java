@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
@@ -15,17 +16,17 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * 06.07.2016.
  */
-@Path(RestUrl.GAME_UI_CONTROL_PATH)
+@Path(CommonUrl.GAME_UI_CONTROL_PATH)
 public interface GameUiControlProvider {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(RestUrl.COLD)
+    @Path(CommonUrl.COLD)
     ColdGameUiControlConfig loadGameUiControlConfig(GameUiControlInput gameUiControlInput);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path(RestUrl.WARM)
+    @Path(CommonUrl.WARM)
     WarmGameUiControlConfig loadWarmGameUiControlConfig();
 }

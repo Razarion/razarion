@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.marketing.MarketingService;
 import com.btxtech.server.marketing.restdatatypes.CampaignJson;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -20,7 +20,7 @@ import java.util.List;
  * Created by Beat
  * 22.03.2017.
  */
-@Path(RestUrl.MARKETING)
+@Path(CommonUrl.MARKETING)
 public class Marketing {
     @Inject
     private MarketingService marketingService;
@@ -29,7 +29,7 @@ public class Marketing {
 
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
-    @Path(RestUrl.FB_CLICK_TRACKING_TAGS_RECEIVER)
+    @Path(CommonUrl.FB_CLICK_TRACKING_TAGS_RECEIVER)
     public Response clickTrackerReceiver(@QueryParam("fb_adgroup_id") String adId) {
         try {
             marketingService.onClickTrackerReceived(adId);

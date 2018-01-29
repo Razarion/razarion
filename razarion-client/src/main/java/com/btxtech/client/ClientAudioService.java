@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.google.gwt.dom.client.MediaElement;
@@ -48,7 +48,7 @@ public class ClientAudioService extends AudioService {
             AudioElement audio = terrainLoopAudios.get(audioId);
             if (audio == null) {
                 audio = Browser.getDocument().createAudioElement();
-                audio.setSrc(RestUrl.getAudioServiceUrl(audioId));
+                audio.setSrc(CommonUrl.getAudioServiceUrl(audioId));
                 audio.play();
                 audio.setLoop(true);
                 terrainLoopAudios.put(audioId, audio);
@@ -103,7 +103,7 @@ public class ClientAudioService extends AudioService {
             if (available.size() < PARALLEL_PLAY_COUNT) {
                 audio = Browser.getDocument().createAudioElement();
                 setVolume(audio);
-                audio.setSrc(RestUrl.getAudioServiceUrl(audioId));
+                audio.setSrc(CommonUrl.getAudioServiceUrl(audioId));
                 available.add(audio);
                 return audio;
             } else {

@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -23,7 +24,7 @@ import java.util.List;
  * Created by Beat
  * on 28.07.2017.
  */
-@Path(RestUrl.SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH)
+@Path(CommonUrl.SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH)
 public interface ServerGameEngineEditorProvider {
 
     @GET

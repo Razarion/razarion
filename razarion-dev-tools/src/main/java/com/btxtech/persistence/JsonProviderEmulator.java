@@ -11,7 +11,7 @@ import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.webglemulator.razarion.HttpConnectionEmu;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,12 +46,12 @@ public class JsonProviderEmulator {
     private static final String VERTEX_CONTAINER_BUFFERS_FILE_NAME = "VertexContainerBuffers.json";
     private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
     public static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";
-    private static final String PLANET_EDITOR_READ_SLOPS = HTTP_LOCALHOST_8080 + "/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.PLANET_EDITOR_SERVICE_PATH + "/readTerrainSlopePositions";
-    private static final String URL_GAME_UI_CONTROL = HTTP_LOCALHOST_8080 + "/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.GAME_UI_CONTROL_PATH + "/" + RestUrl.COLD;
+    private static final String PLANET_EDITOR_READ_SLOPS = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.PLANET_EDITOR_SERVICE_PATH + "/readTerrainSlopePositions";
+    private static final String URL_GAME_UI_CONTROL = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.GAME_UI_CONTROL_PATH + "/" + CommonUrl.COLD;
     private static final String URL_LOGIN = HTTP_LOCALHOST_8080;
-    private static final String URL_TERRAIN_SHAPE = HTTP_LOCALHOST_8080 + "/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.TERRAIN_SHAPE_PROVIDER + "/";
-    private static final String URL_SLOPES_PROVIDER = HTTP_LOCALHOST_8080 + "/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.PLANET_EDITOR_SERVICE_PATH + "/" + "readTerrainSlopePositions/";
-    private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = HTTP_LOCALHOST_8080 + "/" + RestUrl.APPLICATION_PATH + "/" + RestUrl.SHAPE_3D_PROVIDER + "/" + RestUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
+    private static final String URL_TERRAIN_SHAPE = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.TERRAIN_SHAPE_PROVIDER + "/";
+    private static final String URL_SLOPES_PROVIDER = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.PLANET_EDITOR_SERVICE_PATH + "/" + "readTerrainSlopePositions/";
+    private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.SHAPE_3D_PROVIDER + "/" + CommonUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     private static final String GAME_UI_CONTROL_INPUT = "{\"playbackGameSessionUuid\": null, \"playbackSessionUuid\": null}";
     private static final String FB_USER_ID_TEST = "100003634094139";
 

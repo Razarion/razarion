@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.TerrainShapeService;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -16,7 +16,7 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * on 28.06.2017.
  */
-@Path(RestUrl.TERRAIN_SHAPE_PROVIDER)
+@Path(CommonUrl.TERRAIN_SHAPE_PROVIDER)
 public class TerrainShapeProvider {
     @Inject
     private TerrainShapeService terrainShapeService;

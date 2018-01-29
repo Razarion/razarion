@@ -8,6 +8,7 @@
         <param-value>true</param-value>
     </context-param>
 
+    <!-- MAY REMOVE -->
     <!-- Faces Servlet -->
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
@@ -21,7 +22,7 @@
     </servlet-mapping>
 
     <welcome-file-list>
-        <welcome-file>faces/home.xhtml</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
 </web-app>

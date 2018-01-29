@@ -2,7 +2,7 @@ package com.btxtech.client.cockpit.item;
 
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.cockpit.item.BuildupItem;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -104,7 +104,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     @Override
     public void setValue(BuildupItem buildupItem) {
         this.buildupItem = buildupItem;
-        image.setUrl(RestUrl.getImageServiceUrlSafe(buildupItem.getItemType().getThumbnail()));
+        image.setUrl(CommonUrl.getImageServiceUrlSafe(buildupItem.getItemType().getThumbnail()));
         discoverEnableState();
         priceLabel.setText(Integer.toString(buildupItem.getItemType().getPrice()));
         displayEnableState();

@@ -1,7 +1,7 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.SceneConfig;
 
 import javax.ws.rs.Consumes;
@@ -19,7 +19,7 @@ import java.util.List;
  * Created by Beat
  * 24.12.2016.
  */
-@Path(RestUrl.SCENE_EDITOR_PATH)
+@Path(CommonUrl.SCENE_EDITOR_PATH)
 public interface SceneEditorProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)

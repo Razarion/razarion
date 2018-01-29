@@ -5,7 +5,7 @@ import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
@@ -28,7 +28,7 @@ import java.util.Date;
  * Created by Beat
  * 25.04.2017.
  */
-@ServerEndpoint(value = RestUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, configurator = WebSocketEndpointConfigAware.class)
+@ServerEndpoint(value = CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, configurator = WebSocketEndpointConfigAware.class)
 public class ClientSystemConnection {
     @Inject
     private ExceptionHandler exceptionHandler;

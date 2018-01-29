@@ -4,7 +4,7 @@ import com.btxtech.common.WebSocketHelper;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental.client.Browser;
@@ -32,7 +32,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
 
     @Override
     public void init() {
-        webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(RestUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT));
+        webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT));
         webSocket.setOnerror(evt -> logger.severe("ClientServerGameConnection WebSocket OnError: " + evt));
         webSocket.setOnclose(evt -> logger.severe("ClientServerGameConnection WebSocket Close: " + evt));
         webSocket.setOnmessage(this::handleMessage);

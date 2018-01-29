@@ -1,11 +1,11 @@
 package com.btxtech.client;
 
-import com.btxtech.common.ClientUrls;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -41,7 +41,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     public void loadWorker(DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
         try {
-            worker = Browser.getWindow().newWorker(ClientUrls.CLIENT_WORKER_SCRIPT);
+            worker = Browser.getWindow().newWorker(CommonUrl.CLIENT_WORKER_SCRIPT);
             worker.setOnmessage(event -> {
                 try {
                     MessageEvent messageEvent = (MessageEvent) event;

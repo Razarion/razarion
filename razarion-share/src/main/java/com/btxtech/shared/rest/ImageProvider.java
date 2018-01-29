@@ -1,5 +1,6 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.ImageGalleryItem;
 
 import javax.ws.rs.Consumes;
@@ -13,13 +14,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-import static com.btxtech.shared.rest.RestUrl.PLANET_MINI_MAP_PATH;
+import static com.btxtech.shared.CommonUrl.PLANET_MINI_MAP_PATH;
 
 /**
  * Created by Beat
  * 17.06.2016.
  */
-@Path(RestUrl.IMAGE_SERVICE_PATH)
+@Path(CommonUrl.IMAGE_SERVICE_PATH)
 public interface ImageProvider {
 
     @GET

@@ -1,7 +1,7 @@
 package com.btxtech.client.dialog.boxcontent;
 
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.rest.RestUrl;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.Image;
@@ -37,7 +37,7 @@ public class InventoryItemComponent implements TakesValue<InventoryItem>, IsElem
     public void setValue(InventoryItem value) {
         inventoryItemValue = value;
         inventoryItemName.setText(I18nHelper.getLocalizedString(value.getI18nName()));
-        inventoryItemImage.setUrl(RestUrl.getImageServiceUrlSafe(value.getImageId()));
+        inventoryItemImage.setUrl(CommonUrl.getImageServiceUrlSafe(value.getImageId()));
     }
 
     @Override

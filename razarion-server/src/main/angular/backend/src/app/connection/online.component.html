@@ -14,14 +14,12 @@
     <td>{{ onlineInfo.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ onlineInfo.duration | duration}}</td>
     <td>
-      <div (click)="onClickUser(onlineInfo)" style="cursor: pointer">
-        {{getUserState(onlineInfo)}}
-      </div>
+      <a routerLink="/humanplayer/{{ onlineInfo.humanPlayerId.playerId }}" target="_blank">{{ getUserState(onlineInfo)
+        }}</a>
     </td>
     <td>
-      <div *ngIf="onlineInfo.sessionId" (click)="onClickSession(onlineInfo)" style="cursor: pointer">{{
-        onlineInfo.sessionId }}
-      </div>
+      <a *ngIf="onlineInfo.sessionId" routerLink="/session/{{ onlineInfo.sessionId }}" target="_blank">{{
+        onlineInfo.sessionId }}</a>
     </td>
     <td>
       <table *ngIf="onlineInfo.multiplayerPlanet">

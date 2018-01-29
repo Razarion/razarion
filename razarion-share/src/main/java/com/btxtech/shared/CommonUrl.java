@@ -1,13 +1,23 @@
-package com.btxtech.shared.rest;
+package com.btxtech.shared;
 
 /**
  * Created by Beat
  * 16.06.2016.
  */
-public class RestUrl {
+public class CommonUrl {
+    // Angular
+    public static final String ANGULAR_BACKEND_PATH = "/backend/";
+    public static final String BACKEND_ANGULAR_HTML_FILE = ANGULAR_BACKEND_PATH + "index.html";
+    public static final String FRONTEND_ANGULAR_HTML_FILE = "index.html";
+    // GWT code path
+    public static final String CLIENT_PATH = "/razarion_client";
+    public static final String CLIENT_WORKER_PATH = "/razarion_client_worker";
+    public static final String CLIENT_WORKER_SCRIPT = CLIENT_WORKER_PATH + "/razarion_client_worker.nocache.js";
+    // Web socket
     public static final String GAME_CONNECTION_WEB_SOCKET_ENDPOINT = "/gameconnection";
     public static final String SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT = "/systemconnection";
-    public static final String APPLICATION_PATH = "rest";
+    // Rest
+    public static final String APPLICATION_PATH = "/rest";
     public static final String G_ZIPPED = "gz"; // Must be configured on the webserver. (Wildfly standalone.xml set gzipFilter)
     public static final String REMOTE_LOGGING = "remote_logging";
     public static final String LOGGING_SIMPLE = "simple";
@@ -52,24 +62,24 @@ public class RestUrl {
 
     public static String getSimpleLoggingUrl() {
         // DOMAIN is needed in the worker. Worker adds always worker JS dir to the path
-        return "/" + APPLICATION_PATH + "/" + REMOTE_LOGGING + "/" + LOGGING_SIMPLE;
+        return APPLICATION_PATH + "/" + REMOTE_LOGGING + "/" + LOGGING_SIMPLE;
     }
 
     public static String getWorkerApplicationRoot() {
         // DOMAIN is needed in the worker. Worker adds always worker JS dir to the path
-        return "/" + APPLICATION_PATH;
+        return APPLICATION_PATH;
     }
 
     public static String loadShape3dBufferUrl() {
-        return "/" + APPLICATION_PATH + "/" + SHAPE_3D_PROVIDER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
+        return APPLICATION_PATH + "/" + SHAPE_3D_PROVIDER + "/" + SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     }
 
     public static String terrainShapeProvider(int planetId) {
-        return "/" + APPLICATION_PATH + "/" + TERRAIN_SHAPE_PROVIDER + "/" + planetId;
+        return APPLICATION_PATH + "/" + TERRAIN_SHAPE_PROVIDER + "/" + planetId;
     }
 
     public static String fbClickTrackingReceiver() {
-        return "https://www.razarion.com/" + APPLICATION_PATH + "/" + MARKETING + "/" + FB_CLICK_TRACKING_TAGS_RECEIVER;
+        return "https://www.razarion.com" + APPLICATION_PATH + "/" + MARKETING + "/" + FB_CLICK_TRACKING_TAGS_RECEIVER;
     }
 
     public static String getImageServiceUrlSafe(Integer id) {
