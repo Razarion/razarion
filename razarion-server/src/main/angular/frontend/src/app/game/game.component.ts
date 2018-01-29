@@ -1,4 +1,6 @@
 ﻿import {Component, OnInit} from '@angular/core';
+import {Router} from "@angular/router";
+import {FrontendService} from "../service/frontend.service";
 
 
 @Component({
@@ -8,9 +10,12 @@
 // TODO avoid add multiple times (meta, scripts)
 
 export class GameComponent implements OnInit {
+  constructor(private frontendService: FrontendService) {
+  }
+
   ngOnInit(): void {
     GameComponent.insertGameScript('window.RAZ_startTime = new Date().getTime();');
-    GameComponent.insertMeta('gwt:property', 'de_DE'); // TODO make language dynamic
+    GameComponent.insertMeta('gwt:property', this.frontendService.getLanguage());
     GameComponent.insertGameScript('erraiBusRemoteCommunicationEnabled = false;');
     GameComponent.insertGameScript('erraiJaxRsJacksonMarshallingActive = true;;');
     GameComponent.loadGameScriptUrl('/NativeRazarion.js');

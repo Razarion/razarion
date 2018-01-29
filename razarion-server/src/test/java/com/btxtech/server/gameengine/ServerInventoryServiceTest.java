@@ -57,7 +57,7 @@ public class ServerInventoryServiceTest extends ArquillianBaseTest {
     public void testLoadInventoryRegistered() throws Exception {
         // Start from ServletContextMonitor.contextInitialized() not working
         serverGameEngineControl.start(null, true);
-        UserContext userContext = userService.handleFacebookUserLogin("0000001");
+        UserContext userContext = handleFacebookUserLogin("0000001");
         int userId = userContext.getHumanPlayerId().getUserId();
         PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(LEVEL_4_ID, Collections.emptyMap(), sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId(), "Test base", new DecimalPosition(100, 100));
         // Verify

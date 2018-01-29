@@ -28,9 +28,4 @@ public interface LoggingProvider {
     @Consumes(MediaType.APPLICATION_JSON)
     @Path(CommonUrl.LOGGING_JSON)
     void jsonLogger(LogRecordInfo logRecordInfo);
-
-    @GET
-    @Path("simpleweb/{e}/{t}/{p}")
-    @Produces({"image/jpeg", "image/png", "image/gif"})
-    Response simpleWebLogger(@PathParam("e") String errorMessage, @PathParam("t") String timestamp, @PathParam("p") String pathName);
 }

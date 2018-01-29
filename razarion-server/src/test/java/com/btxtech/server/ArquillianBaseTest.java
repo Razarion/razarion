@@ -3,7 +3,6 @@ package com.btxtech.server;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.MongoDbService;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
@@ -29,12 +28,15 @@ import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.UserEntity;
+import com.btxtech.server.user.UserService;
 import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -62,16 +64,13 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.quest.BackupComparisionInfo;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
-import org.bson.Document;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -170,7 +169,7 @@ public class ArquillianBaseTest {
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
     @Inject
-    private MongoDbService mongoDbService;
+    private UserService userService;
     @Inject
     private BaseItemService baseItemService;
 
@@ -709,6 +708,14 @@ public class ArquillianBaseTest {
         Collection<SyncBaseItem> activeItemQueue = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService));
         activeItemQueue.removeAll(Arrays.asList(ignores));
         return !activeItems.isEmpty() || !activeItemQueue.isEmpty();
+    }
+
+    protected UserContext handleFacebookUserLogin(String facebookUserId) {
+        return userService.handleFacebookUserLogin(new FbAuthResponse().setUserID(facebookUserId));
+    }
+
+    protected UserContext handleUnregisteredLogin() {
+        return userService.getUserContextFromSession();
     }
 
 }

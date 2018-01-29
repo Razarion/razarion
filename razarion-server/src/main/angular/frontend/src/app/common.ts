@@ -2,19 +2,14 @@ export const LOCALHOST_PREFIX = '';
 // export const LOCALHOST_PREFIX = 'http://localhost:8080';
 export const URL_FRONTEND = LOCALHOST_PREFIX + '/rest/frontend';
 
-export class Common {
-  public static handleError(error: any) {
-    console.log("Error: " + error)
-  }
+export class FrontendLoginState {
+  loggedIn: boolean;
+  language: string;
 }
 
-export class LogonState {
-
-}
-
-export class FrontendUser {
-  id: number;
-  name: string;
-  password: string;
-  email: string;
+export class FbAuthResponse {
+  accessToken: string;
+  expiresIn: number;
+  signedRequest: string;
+  userID: string;
 }

@@ -63,7 +63,7 @@ public class UserServiceTest extends ArquillianBaseTest {
     public void registeredUser() throws Exception {
         setupLevels();
 
-        userService.handleFacebookUserLogin("0000001");
+        handleFacebookUserLogin("0000001");
 
         UserEntity userEntity = userService.getUserForFacebookId("0000001");
 
@@ -127,7 +127,7 @@ public class UserServiceTest extends ArquillianBaseTest {
 //        Collection<Callable<Void>> callables = new ArrayList<>();
 //        callables.add(() -> {
 //            try {
-        userService.handleFacebookUserLogin("0000001");
+        handleFacebookUserLogin("0000001");
 
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
         UserEntity userEntity = userService.getUserForFacebookId("0000001");
@@ -191,7 +191,7 @@ public class UserServiceTest extends ArquillianBaseTest {
         setupPlanetWithSlopes();
 
         // Prepare
-        userService.handleUnregisteredLogin();
+        handleUnregisteredLogin();
 
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
         sessionHolder.getPlayerSession().getUserContext().setXp(32);
@@ -291,7 +291,7 @@ public class UserServiceTest extends ArquillianBaseTest {
                 }
         );
         HumanPlayerId expectedHumanPlayerId = holder.getO();
-        userService.handleUnregisteredLogin();
+        handleUnregisteredLogin();
 
         // Actual test
         RegisterInfo registerInfo = userService.handleInGameFacebookUserLogin(new FbAuthResponse().setUserID("0123456789"));

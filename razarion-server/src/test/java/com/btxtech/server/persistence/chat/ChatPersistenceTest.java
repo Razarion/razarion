@@ -45,7 +45,7 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
 
     @Test
     public void testSendRegistered() throws Exception {
-        UserContext userContext = userService.handleFacebookUserLogin("0000001");
+        UserContext userContext = handleFacebookUserLogin("0000001");
         userService.setName("sdifbj");
 
         TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
@@ -75,7 +75,7 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
 
     @Test
     public void testSendUnnamed() throws Exception {
-        userService.handleFacebookUserLogin("0000001");
+        handleFacebookUserLogin("0000001");
         try {
             chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
             Assert.fail("IllegalStateException expected");
@@ -127,7 +127,7 @@ public class ChatPersistenceTest extends ArquillianBaseTest {
         chatPersistence.fillCacheFromDb();
 
 
-        UserContext userContext = userService.handleFacebookUserLogin("0000001");
+        UserContext userContext = handleFacebookUserLogin("0000001");
         userService.setName("sdifbj");
         TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         chatPersistence.sendLastMessages(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()));

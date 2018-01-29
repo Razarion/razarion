@@ -72,7 +72,7 @@ public class ServerUnlockServiceTest extends ArquillianBaseTest {
 
     @Test
     public void newRegisteredUser() throws Exception {
-        HumanPlayerId humanPlayerId = userService.handleFacebookUserLogin("0000001").getHumanPlayerId();
+        HumanPlayerId humanPlayerId = handleFacebookUserLogin("0000001").getHumanPlayerId();
         runTest(humanPlayerId, crystals -> userService.persistAddCrystals(humanPlayerId.getUserId(), crystals), this::assertRegisteredState);
     }
 

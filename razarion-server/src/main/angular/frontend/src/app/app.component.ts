@@ -15,7 +15,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.frontendService.start().then(loggedIn => {
-      this.router.navigate(['/game']);
+      if (loggedIn) {
+        this.router.navigate(['/game']);
+      }
     });
   }
 }

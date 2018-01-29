@@ -1,30 +1,34 @@
 import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
-import {Common, URL_FRONTEND} from "../common";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {FbAuthResponse, FrontendLoginState, URL_FRONTEND} from "../common";
 
 declare var RAZ_fbScriptLoadedFrontendService: any;
 declare var RAZ_fbScriptLoadedFlag: boolean;
 declare var RAZ_fbScriptLoadedCallback: any;
 
 declare const FB: any;
-
-
-// TODO set timer for facebook fail
-
+const FB_TIMEOUT: number = 5000;
 
 @Injectable()
 export class FrontendService {
+  private language: string;
+  private resolve: any;
+  private fbTimerId: number;
 
   constructor(private http: HttpClient) {
   }
 
   start(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.http.get<boolean>(URL_FRONTEND + '/isloggedin').toPromise().then(value => {
+      this.resolve = resolve;
+      this.http.get<FrontendLoginState>(URL_FRONTEND + '/isloggedin').toPromise().then(loginState => {
         try {
-          if (value) {
-            resolve(value);
+          this.language = loginState.language;
+          if (loginState.loggedIn) {
+            resolve(true);
           } else {
+            // TODO remember me goes here
+            this.fbTimerId = window.setTimeout(() => this.onFbTimeout(), FB_TIMEOUT);
             if (RAZ_fbScriptLoadedFlag) {
               this.checkFbLoginState();
             } else {
@@ -33,51 +37,72 @@ export class FrontendService {
             }
           }
         } catch (err) {
-          Common.handleError(err);
+          this.log(err);
+          resolve(false);
         }
       }).catch(err => {
-        Common.handleError(err);
+        this.log(err);
+        resolve(false);
       });
     });
   }
 
-  checkFbLoginState() {
-    FB.getLoginStatus(response => {
-      if (response.status === 'connected') {
-        let body = {};
-        this.http.post(URL_FRONTEND + '/facebookauthenticated', body).subscribe(
-          data => {
-          },
-          error => {
-            Common.handleError(error);
-          });
-        var uid = response.authResponse.userID;
-        var accessToken = response.authResponse.accessToken;
+  log(message: any): void {
+    this.http.post<FrontendLoginState>(URL_FRONTEND + '/log', JSON.stringify(message), {headers: new HttpHeaders().set('Content-Type', 'text/plain')}).subscribe(value => {
+    });
+  }
 
-        // the user is logged in and has authenticated your
-        // app, and response.authResponse supplies
-        // the user's ID, a valid access token, a signed
-        // request, and the time the access token
-        // and signed request each expire
-      } else if (response.status === 'not_authorized') {
-        this.http.post(URL_FRONTEND + '/facebooknotauthorized', {}).subscribe(
-          data => {
+  getLanguage(): string {
+    return this.language;
+  }
+
+  checkFbLoginState() {
+    FB.getLoginStatus(fbResponse => {
+      if (this.fbTimerId != null) {
+        window.clearInterval(this.fbTimerId);
+        this.fbTimerId = null;
+      }
+      if (fbResponse.status === 'connected') {
+        // the user is logged in and has authenticated your app
+        let fbAuthResponse: FbAuthResponse = new FbAuthResponse();
+        fbAuthResponse.accessToken = fbResponse.authResponse.accessToken;
+        fbAuthResponse.expiresIn = fbResponse.authResponse.expiresIn;
+        fbAuthResponse.signedRequest = fbResponse.authResponse.signedRequest;
+        fbAuthResponse.userID = fbResponse.authResponse.userID;
+        this.http.post<boolean>(URL_FRONTEND + '/facebookauthenticated', fbAuthResponse, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+          loggedIn => {
+            this.resolve(loggedIn);
           },
           error => {
-            Common.handleError(error);
+            this.log(error);
+            this.resolve(false);
           });
+      } else if (fbResponse.status === 'not_authorized') {
+        this.resolve(false);
+        // this.http.post(URL_FRONTEND + '/facebooknotauthorized', {}).subscribe(
+        //   data => {
+        //   },
+        //   error => {
+        //     Common.handleError(error);
+        //   });
       } else {
-        this.http.post(URL_FRONTEND + '/nofacebookuser', {}).subscribe(
-          data => {
-          },
-          error => {
-            Common.handleError(error);
-          });
+        this.resolve(false);
+        // this.http.post(URL_FRONTEND + '/nofacebookuser', {}).subscribe(
+        //   data => {
+        //   },
+        //   error => {
+        //     Common.handleError(error);
+        //   });
       }
     });
   }
 
   static onFbScriptLoaded(frontendService: FrontendService) {
     frontendService.checkFbLoginState();
+  }
+
+  private onFbTimeout() {
+    this.log("Facebook timed out");
+    this.resolve(false);
   }
 }

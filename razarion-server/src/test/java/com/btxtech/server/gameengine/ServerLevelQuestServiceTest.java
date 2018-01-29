@@ -100,7 +100,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
     // Fails due to complex mocking. Use setupPlanetWithSlopes() and real
     public void onLevelUpRegister() throws Exception {
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
-        UserContext userContext = userService.handleFacebookUserLogin("0000001");
+        UserContext userContext = handleFacebookUserLogin("0000001");
 
         assertUser("0000001", LEVEL_1_ID, null);
         Assert.assertTrue(userService.findActiveQuests4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
@@ -265,7 +265,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
         });
         // Setup session
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
-        UserContext userContext = userService.handleFacebookUserLogin("0000001");
+        UserContext userContext = handleFacebookUserLogin("0000001");
         // Setup mocks
         ServerGameEngineControl serverGameEngineControlMock = EasyMock.createStrictMock(ServerGameEngineControl.class);
         serverGameEngineControlMock.onLevelChanged(EasyMock.anyObject(), EasyMock.eq(LEVEL_5_ID));
@@ -376,7 +376,7 @@ public class ServerLevelQuestServiceTest extends ArquillianBaseTest {
     public void activateQuestRegistered() throws Exception {
         // Setup session
         String sessionId = sessionHolder.getPlayerSession().getHttpSessionId();
-        userService.handleFacebookUserLogin("0000001");
+        handleFacebookUserLogin("0000001");
 
         TestClientSystemConnection systemConnection = activateQuest(sessionId);
 

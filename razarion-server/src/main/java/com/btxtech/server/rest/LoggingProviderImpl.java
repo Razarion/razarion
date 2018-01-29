@@ -49,13 +49,6 @@ public class LoggingProviderImpl implements LoggingProvider {
     }
 
     @Override
-    public Response simpleWebLogger(String errorMessage, String timestamp, String pathName) {
-        logger.severe("SimpleWebLogger: SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
-        logger.severe("SimpleWebLogger: errorMessage: " + errorMessage + "\ntimestamp: " + timestamp + "\npathName:" + pathName);
-        return Response.ok(PIXEL_BYTES).build();
-    }
-
-    @Override
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
             LogRecord logRecord = toLogRecord(logRecordInfo);

@@ -50,7 +50,7 @@ public class FacebookAppStart {
             FacebookSignedRequest facebookSignedRequest = FacebookUtil.createAndCheckFacebookSignedRequest(filePropertiesService.getFacebookSecret(), values[0]);
             if (facebookSignedRequest.hasUserId()) {
                 // Is authorized by facebook
-                userService.handleFacebookUserLogin(facebookSignedRequest.getUserId());
+                // TODO userService.handleFacebookUserLogin(facebookSignedRequest.getUserId());
                 pageTrackerBean.trackPage(page);
                 // return GamePageBean.GAME_PAGE;
                 return null;
@@ -70,19 +70,19 @@ public class FacebookAppStart {
         return filePropertiesService.getFacebookAppId();
     }
 
-    public Object fbLoginResponse() {
-        if (StringUtils.isNoneEmpty(fbUserId)) {
-            userService.handleFacebookUserLogin(fbUserId);
-        } else {
-            userService.handleUnregisteredLogin();
-        }
-//        try {
-//            FacesContext.getCurrentInstance().getExternalContext().redirect(GamePageBean.GAME_PAGE);
-//        } catch (IOException e) {
-//            exceptionHandler.handleException(e);
+//    public Object fbLoginResponse() {
+//        if (StringUtils.isNoneEmpty(fbUserId)) {
+//            userService.handleFacebookUserLogin(fbUserId);
+//        } else {
+//            userService.handleUnregisteredLogin();
 //        }
-        return null;
-    }
+////        try {
+////            FacesContext.getCurrentInstance().getExternalContext().redirect(GamePageBean.GAME_PAGE);
+////        } catch (IOException e) {
+////            exceptionHandler.handleException(e);
+////        }
+//        return null;
+//    }
 
     public void setFbUserId(String fbUserId) {
         this.fbUserId = fbUserId;

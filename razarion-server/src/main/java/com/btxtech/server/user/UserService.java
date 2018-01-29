@@ -14,7 +14,6 @@ import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
-import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.ErrorResult;
@@ -51,15 +50,12 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class UserService {
-    private static final int DEBUG_LEVEL_ID = 5;
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
     private Logger logger;
     @Inject
     private SessionHolder sessionHolder;
-    @Inject
-    private FilePropertiesService filePropertiesService;
     @Inject
     private LevelPersistence levelPersistence;
     @Inject
@@ -77,28 +73,37 @@ public class UserService {
     public UserContext getUserContextFromSession() {
         UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
         if (userContext == null) {
-            userContext = createUnregisteredUserContext();
+            logger.warning("UserService: no user in context: " + sessionHolder.getPlayerSession().getHttpSessionId());
+            userContext = createUnexpectedUserContext();
             loginUserContext(userContext, new UnregisteredUser());
         }
         return userContext;
     }
 
+    private UserContext createUnexpectedUserContext() {
+        UserContext userContext = new UserContext();
+        userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
+        userContext.setLevelId(levelPersistence.getStarterLevel().getId());
+        userContext.setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelPersistence.getStartUnlockedItemLimit()));
+        return userContext;
+    }
+
     @Transactional
-    public UserContext handleFacebookUserLogin(String facebookUserId) {
+    public UserContext handleFacebookUserLogin(FbAuthResponse fbAuthResponse) {
         if (sessionHolder.isLoggedIn()) {
             String loggedInFacebookUserId = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId()).getFacebookUserId();
-            if (facebookUserId.equals(loggedInFacebookUserId)) {
+            if (fbAuthResponse.getUserID().equals(loggedInFacebookUserId)) {
                 return sessionHolder.getPlayerSession().getUserContext();
             } else {
-                logger.warning("loggedInFacebookUserId != facebookUserId. loggedInFacebookUserId: " + loggedInFacebookUserId + ". facebookUserId: " + facebookUserId + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+                logger.warning("UserService: loggedInFacebookUserId != facebookUserId. loggedInFacebookUserId: " + loggedInFacebookUserId + ". facebookUserId: " + fbAuthResponse.getUserID() + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
             }
         }
 
         // TODO verify facebook signedRequest
 
-        UserEntity userEntity = getUserForFacebookId(facebookUserId);
+        UserEntity userEntity = getUserForFacebookId(fbAuthResponse.getUserID());
         if (userEntity == null) {
-            userEntity = createUser(facebookUserId);
+            userEntity = createUser(fbAuthResponse.getUserID());
         }
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = userEntity.toUserContext();
@@ -140,23 +145,11 @@ public class UserService {
         return registerInfo;
     }
 
-    @Transactional
-    public void handleUnregisteredLogin() {
-        UserContext userContext = createUnregisteredUserContext();
-        loginUserContext(userContext, new UnregisteredUser());
-    }
-
-    private UserContext createUnregisteredUserContext() {
-        UserContext userContext = new UserContext();
-        userContext.setHumanPlayerId(new HumanPlayerId().setPlayerId(createHumanPlayerId().getId()));
-        // if (filePropertiesService.isDeveloperMode()) {
-        //    userContext.setLevelId(DEBUG_LEVEL_ID);
-        //} else {
-        userContext.setLevelId(levelPersistence.getStarterLevel().getId());
-        userContext.setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelPersistence.getStartUnlockedItemLimit()));
-        //}
-        return userContext;
-    }
+//    @Transactional
+//    public void handleUnregisteredLogin() {
+//        UserContext userContext = createUnexpectedUserContext(); xxx
+//        loginUserContext(userContext, new UnregisteredUser());
+//    }
 
     private UserContext loginUserContext(UserContext userContext, UnregisteredUser unregisteredUser) {
         PlayerSession playerSession = sessionHolder.getPlayerSession();
@@ -188,14 +181,10 @@ public class UserService {
         }
         userEntity.setCrystals(unregisteredUser.getCrystals());
         if (unregisteredUser.getInventoryItemIds() != null) {
-            unregisteredUser.getInventoryItemIds().forEach(inventoryItemId -> {
-                userEntity.addInventoryItem(inventoryPersistence.readInventoryItemEntity(inventoryItemId));
-            });
+            unregisteredUser.getInventoryItemIds().forEach(inventoryItemId -> userEntity.addInventoryItem(inventoryPersistence.readInventoryItemEntity(inventoryItemId)));
         }
         if (unregisteredUser.getLevelUnlockEntityIds() != null) {
-            unregisteredUser.getLevelUnlockEntityIds().forEach(levelUnlockEntityId -> {
-                userEntity.addLevelUnlockEntity(levelPersistence.readLevelUnlockEntity(levelUnlockEntityId));
-            });
+            unregisteredUser.getLevelUnlockEntityIds().forEach(levelUnlockEntityId -> userEntity.addLevelUnlockEntity(levelPersistence.readLevelUnlockEntity(levelUnlockEntityId)));
         }
         entityManager.persist(userEntity);
         return userEntity;
