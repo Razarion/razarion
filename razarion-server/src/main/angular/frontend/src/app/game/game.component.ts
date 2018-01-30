@@ -14,11 +14,11 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(!this.frontendService.isCookieAllowed()) {
+    if (!this.frontendService.isCookieAllowed()) {
       this.router.navigate(['/nocookies']);
       return;
     }
-    this.frontendService.login().then(() => {
+    this.frontendService.login().then(loggedIn => {
       this.startGame();
     });
   }

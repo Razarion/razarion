@@ -9,6 +9,7 @@ import {GameComponent} from "./game/game.component";
 import {RegisterComponent} from "./register/register.component";
 import {GlobalErrorHandler} from "./global.error.fandler";
 import {NoCookies} from "./nocookies/nocookies.component";
+import {FacebookAppStart} from "./facebookappstart/facebook-app-start.component";
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import {NoCookies} from "./nocookies/nocookies.component";
     HomeComponent,
     GameComponent,
     RegisterComponent,
-    NoCookies
+    NoCookies,
+    FacebookAppStart
   ],
   imports: [
     BrowserModule,

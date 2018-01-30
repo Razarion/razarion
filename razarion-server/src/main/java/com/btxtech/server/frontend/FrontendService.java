@@ -38,8 +38,4 @@ public class FrontendService {
         }
         userService.handleFacebookUserLogin(fbAuthResponse);
     }
-
-    public void anonymousLogin() {
-        userService.anonymousLogin();
-    }
 }

@@ -73,7 +73,6 @@ public class UserService {
     public UserContext getUserContextFromSession() {
         UserContext userContext = sessionHolder.getPlayerSession().getUserContext();
         if (userContext == null) {
-            logger.warning("UserService: no user in context: " + sessionHolder.getPlayerSession().getHttpSessionId());
             userContext = createAnonymousUserContext();
             loginUserContext(userContext, new UnregisteredUser());
         }
@@ -143,12 +142,6 @@ public class UserService {
             serverGameEngine.get().updateHumanPlayerId(userContext);
         }
         return registerInfo;
-    }
-
-    @Transactional
-    public void anonymousLogin() {
-        UserContext userContext = createAnonymousUserContext();
-        loginUserContext(userContext, new UnregisteredUser());
     }
 
     private UserContext loginUserContext(UserContext userContext, UnregisteredUser unregisteredUser) {

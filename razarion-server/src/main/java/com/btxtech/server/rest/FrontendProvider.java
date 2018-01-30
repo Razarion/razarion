@@ -60,16 +60,6 @@ public class FrontendProvider {
     }
 
     @POST
-    @Path("anonymouslogin")
-    public void anonymousLogin() {
-        try {
-            frontendService.anonymousLogin();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-    }
-
-    @POST
     @Consumes(MediaType.TEXT_PLAIN)
     @Path("log")
     public void log(String message) {

@@ -3,6 +3,7 @@ import {HomeComponent} from "./home/home.component";
 import {GameComponent} from "./game/game.component";
 import {RegisterComponent} from "./register/register.component";
 import {NoCookies} from "./nocookies/nocookies.component";
+import {FacebookAppStart} from "./facebookappstart/facebook-app-start.component";
 
 
 const appRoutes: Routes = [
@@ -10,8 +11,7 @@ const appRoutes: Routes = [
   {path: 'game', component: GameComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'nocookies', component: NoCookies},
-
-  // otherwise redirect to home
+  {path: 'facebookappstart', component: FacebookAppStart},
   {path: '**', redirectTo: ''}
 ];
 

@@ -20,8 +20,8 @@ export class FrontendService {
   constructor(private http: HttpClient) {
     try {
       let d = new Date();
-      d.setTime(d.getTime() + 100000);
-      document.cookie = "username=testcookie; expires" + d.toUTCString();
+      d.setTime(d.getTime() + 5000);
+      document.cookie = "TestCooiesEnabled=testcookie; expires" + d.toUTCString();
       this.cookieAllowed = document.cookie.indexOf("testcookie") != -1;
       if (!this.cookieAllowed) {
         this.log("Cookie are not allowed");
@@ -78,7 +78,7 @@ export class FrontendService {
     return this.language;
   }
 
-  checkFbLoginState() {
+  private checkFbLoginState() {
     FB.getLoginStatus(fbResponse => {
       if (this.fbTimerId != null) {
         window.clearInterval(this.fbTimerId);
@@ -86,38 +86,34 @@ export class FrontendService {
       }
       if (fbResponse.status === 'connected') {
         // the user is logged in and has authenticated your app
-        let fbAuthResponse: FbAuthResponse = new FbAuthResponse();
-        fbAuthResponse.accessToken = fbResponse.authResponse.accessToken;
-        fbAuthResponse.expiresIn = fbResponse.authResponse.expiresIn;
-        fbAuthResponse.signedRequest = fbResponse.authResponse.signedRequest;
-        fbAuthResponse.userID = fbResponse.authResponse.userID;
-        this.http.post<boolean>(URL_FRONTEND + '/facebookauthenticated', fbAuthResponse, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
-          loggedIn => {
-            this.loggedIn = loggedIn;
-            this.resolve(loggedIn);
-          },
-          error => {
-            this.log("facebookauthenticated catch: " + error);
-            this.loggedIn = false;
-            this.resolve(false);
-          });
+        this.onFbAuthorized(fbResponse.authResponse).then(loggedIn => {
+          this.resolve(loggedIn);
+        });
       } else {
-        this.anonymousLogin();
+        this.loggedIn = false;
+        this.resolve(false);
       }
     });
   }
 
-  private anonymousLogin(): void {
-    this.http.post<void>(URL_FRONTEND + '/anonymouslogin', {}).subscribe(
-      () => {
-        this.loggedIn = false;
-        this.resolve(false);
-      },
-      error => {
-        this.log("anonymouslogin catch: " + error);
-        this.loggedIn = false;
-        this.resolve(false);
-      });
+  onFbAuthorized(authResponse: any) : Promise<boolean> {
+    return new Promise((resolve) => {
+      let fbAuthResponse: FbAuthResponse = new FbAuthResponse();
+      fbAuthResponse.accessToken = authResponse.accessToken;
+      fbAuthResponse.expiresIn = authResponse.expiresIn;
+      fbAuthResponse.signedRequest = authResponse.signedRequest;
+      fbAuthResponse.userID = authResponse.userID;
+      this.http.post<boolean>(URL_FRONTEND + '/facebookauthenticated', fbAuthResponse, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+        loggedIn => {
+          this.loggedIn = loggedIn;
+          resolve(loggedIn);
+        },
+        error => {
+          this.log("facebookauthenticated catch: " + error);
+          this.loggedIn = false;
+          resolve(false);
+        });
+    });
   }
 
   static onFbScriptLoaded(frontendService: FrontendService) {
@@ -126,6 +122,7 @@ export class FrontendService {
 
   private onFbTimeout() {
     this.log("Facebook timed out");
-    this.anonymousLogin();
+    this.loggedIn = false;
+    this.resolve(false);
   }
 }

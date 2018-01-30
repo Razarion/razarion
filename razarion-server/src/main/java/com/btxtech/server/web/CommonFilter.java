@@ -80,6 +80,7 @@ public class CommonFilter implements Filter {
             }
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
+            throw throwable;
         }
     }
 
