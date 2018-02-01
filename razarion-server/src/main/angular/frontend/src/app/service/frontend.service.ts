@@ -134,7 +134,7 @@ export class FrontendService {
           resolve(loggedIn);
         },
         error => {
-          this.log("facebookauthenticated catch: " + error);
+          this.log("register catch: " + error);
           this.loggedIn = false;
           resolve(false);
         });
@@ -144,15 +144,16 @@ export class FrontendService {
   verifyEmail(email: string): Promise<boolean> {
     return new Promise((resolve) => {
       this.http.post<boolean>(URL_FRONTEND + '/verifyemail', {email: email}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
-        loggedIn => {
-          this.loggedIn = loggedIn;
-          resolve(loggedIn);
-        },
-        error => {
-          this.log("facebookauthenticated catch: " + error);
-          this.loggedIn = false;
-          resolve(false);
-        });
+        valid => resolve(valid)
+      );
+    });
+  }
+
+  sendEmailForgotPassword(email: any): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http.post<boolean>(URL_FRONTEND + '/sendemailforgotpassword', {email: email}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+        sent => resolve(sent)
+      )
     });
   }
 }

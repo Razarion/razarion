@@ -12,6 +12,7 @@ const appRoutes: Routes = [
   {path: 'register', component: RegisterComponent},
   {path: 'nocookies', component: NoCookies},
   {path: 'facebookappstart', component: FacebookAppStart},
+  {path: 'resetpassword', component: FacebookAppStart},
   {path: '**', redirectTo: ''}
 ];
 
