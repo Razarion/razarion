@@ -38,4 +38,5 @@ public class FrontendService {
         }
         userService.handleFacebookUserLogin(fbAuthResponse);
     }
+
 }

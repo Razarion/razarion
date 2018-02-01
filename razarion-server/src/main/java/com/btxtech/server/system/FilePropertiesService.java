@@ -24,6 +24,7 @@ public class FilePropertiesService {
     private static final String FACEBOOK_ACCESS_TOKEN = "facebook.access_token";
     private static final String FACEBOOK_MARKETING_ACCOUNT_ID = "facebook.marketing_account_id";
     private static final String DEVELOPER_MODE = "system.dev-mode";
+    private static final String PASSWORD_HASH_SALT = "password-hash-salt";
     private Logger logger = Logger.getLogger(FilePropertiesService.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -65,6 +66,10 @@ public class FilePropertiesService {
 
     public String getFacebookAppPageId() {
         return getPropertyThrows(FACEBOOK_APP_PAGE_ID);
+    }
+
+    public String getPasswordHashSalt() {
+        return getPropertyThrows(PASSWORD_HASH_SALT);
     }
 
     public boolean isDeveloperMode() {

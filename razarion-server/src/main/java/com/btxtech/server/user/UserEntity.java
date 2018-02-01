@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,18 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(length = 190)
-    // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private String email; // Should not be used for facebook email
+    @Column(length = 190)
+    private String passwordHash;
+    @Column(columnDefinition = "DATETIME(3)")
+    private Date verificationStartedDate;
+    @Column(columnDefinition = "DATETIME(3)")
+    private Date verificationDoneDate;
+    @Column(columnDefinition = "DATETIME(3)")
+    private Date verificationTimedOutDate;
+    @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private String verificationId;
+    @Column(nullable = false, length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     private String facebookUserId;
     @Column(columnDefinition = "DATETIME(3)")
     private Date registerDate;
@@ -68,11 +80,28 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user"),
             inverseJoinColumns = @JoinColumn(name = "levelUnlockEntity"))
     private List<LevelUnlockEntity> levelUnlockEntities;
-    @Column(unique=true)
+    @Column(unique = true)
     private String name;
 
     public Integer getId() {
         return id;
+    }
+
+    /**
+     * Should not be used for facebook email
+     *
+     * @return non facebook email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
     public void setName(String name) {
@@ -83,7 +112,24 @@ public class UserEntity {
         return name;
     }
 
+    /**
+     * Should not be used for facebook email
+     *
+     * @param email  Should not be used for facebook email
+     * @param passwordHash passwordHash
+     * @param humanPlayerId humanPlayerId
+     * @param locale locale
+     */
+    public void fromEmailPasswordHash(String email, String passwordHash, HumanPlayerIdEntity humanPlayerId, Locale locale) {
+        registerDate = new Date();
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.humanPlayerIdEntity = humanPlayerId;
+        this.locale = locale;
+    }
+
     public void fromFacebookUserLoginInfo(String facebookUserId, HumanPlayerIdEntity humanPlayerId, Locale locale) {
+        // this.email should not be used for facebook email
         registerDate = new Date();
         this.facebookUserId = facebookUserId;
         this.humanPlayerIdEntity = humanPlayerId;
@@ -214,7 +260,7 @@ public class UserEntity {
     }
 
     public void setLevelUnlockEntities(List<LevelUnlockEntity> levelUnlockEntities) {
-        if(this.levelUnlockEntities == null) {
+        if (this.levelUnlockEntities == null) {
             this.levelUnlockEntities = new ArrayList<>();
         }
         this.levelUnlockEntities.clear();
@@ -223,6 +269,27 @@ public class UserEntity {
 
     public List<LevelUnlockEntity> getLevelUnlockEntities() {
         return levelUnlockEntities;
+    }
+
+    public void startVerification() {
+        verificationStartedDate = new Date();
+        verificationId = UUID.randomUUID().toString().toUpperCase();
+    }
+
+    public void setVerifiedDone() {
+        verificationDoneDate = new Date();
+    }
+
+    public void setVerifiedTimedOut() {
+        verificationTimedOutDate = new Date();
+    }
+
+    public boolean isVerified() {
+        return facebookUserId != null || verificationDoneDate != null;
+    }
+
+    public String getVerificationId() {
+        return verificationId;
     }
 
     @Override

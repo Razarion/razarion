@@ -7,6 +7,8 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.frontend.FrontendLoginState;
 import com.btxtech.server.frontend.FrontendService;
+import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
@@ -15,6 +17,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -32,6 +35,8 @@ public class FrontendProvider {
     private Logger logger;
     @Inject
     private SessionHolder sessionHolder;
+    @Inject
+    private UserService userService;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -72,5 +77,41 @@ public class FrontendProvider {
     public Response noScript() {
         logger.warning("FrontendProvider no script. SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
         return Response.ok(LoggingProviderImpl.PIXEL_BYTES).build();
+    }
+
+    @POST
+    @Path("createunverifieduser")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public LoginResult loginUser(String email, String password) {
+        try {
+            return userService.loginUser(email, password);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @POST
+    @Path("createunverifieduser")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public boolean createUnverifiedUser(String email, String password) {
+        try {
+            return userService.createUnverifiedUserAndLogin(email, password);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @GET
+    @Path("isemailfree")
+    @Produces(MediaType.TEXT_PLAIN)
+    public boolean isEmailFree(String email) {
+        try {
+            return userService.verifyEmail(email) == null;
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw new InternalServerErrorException();
+        }
     }
 }

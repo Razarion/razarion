@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.tracker.ConnectionTrackerEntity;
 import com.btxtech.server.persistence.tracker.ConnectionTrackerEntity_;
+import com.btxtech.server.user.ForgotPasswordEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
@@ -164,6 +165,21 @@ public class HistoryPersistence {
     }
 
     @Transactional
+    public void onForgotPassword(UserEntity userEntity, ForgotPasswordEntity forgotPasswordEntity, ForgotPasswordHistoryEntity.Type type) {
+        try {
+            ForgotPasswordHistoryEntity historyEntity = new ForgotPasswordHistoryEntity();
+            historyEntity.setUserId(userEntity.getId());
+            historyEntity.setHumanPlayerId(userEntity.getHumanPlayerIdEntity().getId());
+            historyEntity.setTimeStamp(new Date());
+            historyEntity.setForgotPasswordEntityId(forgotPasswordEntity.getId());
+            historyEntity.setType(type);
+            entityManager.persist(historyEntity);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
+    @Transactional
     @SecurityCheck
     public List<UserHistoryEntry> readLoginHistory() {
         List<UserHistoryEntity> userHistoryEntities = entityManager.createNativeQuery("select * from HISTORY_USER order by (IFNULL(UNIX_TIMESTAMP(loggedIn), 0) + IFNULL(UNIX_TIMESTAMP(loggedOut), 0)) desc", UserHistoryEntity.class).setMaxResults(100).getResultList();
@@ -245,6 +261,26 @@ public class HistoryPersistence {
                     break;
                 default:
                     gameHistoryEntry.setDescription("Connection unknown type: " + connectionTrackerEntity.getType() + " ???");
+            }
+            history.add(gameHistoryEntry);
+        });
+        readAllHistory(entityManager, ForgotPasswordHistoryEntity.class, playerId, ForgotPasswordHistoryEntity_.humanPlayerId, ForgotPasswordHistoryEntity_.timeStamp).forEach(forgotPasswordHistoryEntity -> {
+            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(forgotPasswordHistoryEntity.getTimeStamp());
+            switch (forgotPasswordHistoryEntity.getType()) {
+                case INITIATED:
+                    gameHistoryEntry.setDescription("Password reset initiated");
+                    break;
+                case TIMED_OUT:
+                    gameHistoryEntry.setDescription("Password reset timed out");
+                    break;
+                case OVERRIDDEN:
+                    gameHistoryEntry.setDescription("Password reset overridden by new password reset");
+                    break;
+                case CHANGED:
+                    gameHistoryEntry.setDescription("Password changed");
+                    break;
+                default:
+                    gameHistoryEntry.setDescription("Password reset unknown type: " + forgotPasswordHistoryEntity.getType() + " ???");
             }
             history.add(gameHistoryEntry);
         });

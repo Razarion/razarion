@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.frontend.LoginResult;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.QuestBackendInfo;
@@ -68,6 +69,8 @@ public class UserService {
     private Instance<HistoryPersistence> historyPersistence;
     @Inject
     private InventoryPersistence inventoryPersistence;
+    @Inject
+    private RegisterService registerService;
 
     @Transactional
     public UserContext getUserContextFromSession() {
@@ -87,6 +90,53 @@ public class UserService {
         return userContext;
     }
 
+
+    @Transactional
+    public LoginResult loginUser(String email, String password) {
+        if (sessionHolder.isLoggedIn()) {
+            throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
+        }
+
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
+        Root<UserEntity> from = criteriaQuery.from(UserEntity.class);
+        criteriaQuery.select(from);
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(from.get(UserEntity_.email), email),
+                criteriaBuilder.isNull(from.get(UserEntity_.verificationTimedOutDate))
+        ));
+        List<UserEntity> users = entityManager.createQuery(criteriaQuery).getResultList();
+        if (users == null || users.isEmpty()) {
+            return LoginResult.WRONG_EMAIL;
+        }
+        if (users.size() != 1) {
+            logger.warning("UserService: more then one user found for email: " + email + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+        }
+        UserEntity userEntity = users.get(0);
+        if (!registerService.verifySHA512SecurePassword(userEntity.getPasswordHash(), password)) {
+            return LoginResult.WRONG_PASSWORD;
+        }
+        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+        loginUserContext(userEntity.toUserContext(), null);
+        return LoginResult.OK;
+    }
+
+    @Transactional
+    public boolean createUnverifiedUserAndLogin(String email, String password) {
+        if (sessionHolder.isLoggedIn()) {
+            throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
+        }
+        if (verifyEmail(email) != null) {
+            return false;
+        }
+        UserEntity userEntity = createUser(email, password);
+        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+        serverGameEngine.get().updateHumanPlayerId(userEntity.toUserContext());
+        // TODO if from inGame, send message to client
+        registerService.startEmailVerifyingProcess(userEntity);
+        loginUserContext(userEntity.toUserContext(), null);
+        return true;
+    }
+
     @Transactional
     public UserContext handleFacebookUserLogin(FbAuthResponse fbAuthResponse) {
         if (sessionHolder.isLoggedIn()) {
@@ -99,24 +149,15 @@ public class UserService {
         }
 
         // TODO verify facebook signedRequest
-
         UserEntity userEntity = getUserForFacebookId(fbAuthResponse.getUserID());
         if (userEntity == null) {
-            userEntity = createUser(fbAuthResponse.getUserID());
+            userEntity = createFacebookUser(fbAuthResponse.getUserID());
         }
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
         UserContext userContext = userEntity.toUserContext();
 
-        HumanPlayerId alreadyLoggerIn = null;
-        if (sessionHolder.getPlayerSession().getUserContext() != null) {
-            alreadyLoggerIn = sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId();
-        }
-        if (alreadyLoggerIn != null && alreadyLoggerIn.getUserId() != null && alreadyLoggerIn.getUserId().equals(userContext.getHumanPlayerId().getUserId())) {
-            return sessionHolder.getPlayerSession().getUserContext();
-        }
         return loginUserContext(userContext, null);
     }
-
 
     @Transactional
     public RegisterInfo handleInGameFacebookUserLogin(FbAuthResponse fbAuthResponse) {
@@ -131,7 +172,7 @@ public class UserService {
         RegisterInfo registerInfo = new RegisterInfo().setUserAlreadyExits(true);
         UserEntity userEntity = getUserForFacebookId(fbAuthResponse.getUserID());
         if (userEntity == null) {
-            userEntity = createUserFromUnregistered(fbAuthResponse.getUserID());
+            userEntity = createFacebookUserFromUnregistered(fbAuthResponse.getUserID());
             registerInfo.setUserAlreadyExits(false);
         }
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
@@ -151,7 +192,23 @@ public class UserService {
         return userContext;
     }
 
-    private UserEntity createUser(String facebookUserId) {
+    private UserEntity createUser(String email, String password) {
+        UserEntity userEntity = new UserEntity();
+        HumanPlayerIdEntity humanPlayerIdEntity;
+        if (sessionHolder.getPlayerSession().getUserContext() != null) {
+            humanPlayerIdEntity = getHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getPlayerId());
+            fromUnregisteredUser(userEntity);
+        } else {
+            humanPlayerIdEntity = createHumanPlayerId();
+            userEntity.setLevel(levelPersistence.getStarterLevel());
+            userEntity.setLevelUnlockEntities(levelPersistence.getStartUnlockedItemLimit());
+        }
+        userEntity.fromEmailPasswordHash(email, registerService.generateSHA512SecurePassword(password), humanPlayerIdEntity, this.sessionHolder.getPlayerSession().getLocale());
+        entityManager.persist(userEntity);
+        return userEntity;
+    }
+
+    private UserEntity createFacebookUser(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, createHumanPlayerId(), sessionHolder.getPlayerSession().getLocale());
         userEntity.setLevel(levelPersistence.getStarterLevel());
@@ -160,11 +217,17 @@ public class UserService {
         return userEntity;
     }
 
-    private UserEntity createUserFromUnregistered(String facebookUserId) {
+    private UserEntity createFacebookUserFromUnregistered(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, getHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getPlayerId()), sessionHolder.getPlayerSession().getLocale());
         userEntity.setXp(sessionHolder.getPlayerSession().getUserContext().getXp());
         userEntity.setLevel(levelPersistence.getLevel4Id(sessionHolder.getPlayerSession().getUserContext().getLevelId()));
+        fromUnregisteredUser(userEntity);
+        entityManager.persist(userEntity);
+        return userEntity;
+    }
+
+    private void fromUnregisteredUser(UserEntity userEntity) {
         UnregisteredUser unregisteredUser = sessionHolder.getPlayerSession().getUnregisteredUser();
         if (unregisteredUser.getCompletedQuestIds() != null) {
             unregisteredUser.getCompletedQuestIds().forEach(completedQuestId -> userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, completedQuestId)));
@@ -179,8 +242,6 @@ public class UserService {
         if (unregisteredUser.getLevelUnlockEntityIds() != null) {
             unregisteredUser.getLevelUnlockEntityIds().forEach(levelUnlockEntityId -> userEntity.addLevelUnlockEntity(levelPersistence.readLevelUnlockEntity(levelUnlockEntityId)));
         }
-        entityManager.persist(userEntity);
-        return userEntity;
     }
 
     @Transactional
@@ -480,6 +541,9 @@ public class UserService {
         }
         UserContext userContext = getUserContextFromSession();
         UserEntity userEntity = entityManager.find(UserEntity.class, userContext.getHumanPlayerId().getUserId());
+        if (!userEntity.isVerified()) {
+            throw new IllegalStateException("User is not verified. Id: " + userEntity.getId());
+        }
         userEntity.setName(name);
         entityManager.merge(userEntity);
         userContext.setName(name);
@@ -509,6 +573,25 @@ public class UserService {
         final Root<UserEntity> from = criteriaQuery.from(UserEntity.class);
         criteriaQuery.select(criteriaBuilder.count(from));
         criteriaQuery.where(criteriaBuilder.equal(from.get(UserEntity_.name), name));
+        TypedQuery<Long> typedQuery = entityManager.createQuery(criteriaQuery);
+        if (typedQuery.getSingleResult() > 0) {
+            return ErrorResult.ALREADY_USED;
+        }
+        return null;
+    }
+
+    @Transactional
+    public ErrorResult verifyEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return ErrorResult.TO_SHORT;
+        }
+        final CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        final CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
+        final Root<UserEntity> from = criteriaQuery.from(UserEntity.class);
+        criteriaQuery.select(criteriaBuilder.count(from));
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(from.get(UserEntity_.email), email),
+                criteriaBuilder.isNull(from.get(UserEntity_.verificationTimedOutDate))
+        ));
         TypedQuery<Long> typedQuery = entityManager.createQuery(criteriaQuery);
         if (typedQuery.getSingleResult() > 0) {
             return ErrorResult.ALREADY_USED;

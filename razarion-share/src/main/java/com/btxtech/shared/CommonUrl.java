@@ -5,10 +5,13 @@ package com.btxtech.shared;
  * 16.06.2016.
  */
 public class CommonUrl {
+    public static final String RAZARION_URL = "https://www.razarion.com";
     // Angular
     public static final String ANGULAR_BACKEND_PATH = "/backend/";
     public static final String BACKEND_ANGULAR_HTML_FILE = ANGULAR_BACKEND_PATH + "index.html";
     public static final String FRONTEND_ANGULAR_HTML_FILE = "/index.html";
+    public static final String EMAIL_VERIFICATION = "/verify-email";
+    public static final String FORGOT_PASSWORD_CHANGE = "/verify-email";
     // GWT code path
     public static final String CLIENT_PATH = "/razarion_client";
     public static final String CLIENT_WORKER_PATH = "/razarion_client_worker";
@@ -79,7 +82,7 @@ public class CommonUrl {
     }
 
     public static String fbClickTrackingReceiver() {
-        return "https://www.razarion.com" + APPLICATION_PATH + "/" + MARKETING + "/" + FB_CLICK_TRACKING_TAGS_RECEIVER;
+        return RAZARION_URL + APPLICATION_PATH + "/" + MARKETING + "/" + FB_CLICK_TRACKING_TAGS_RECEIVER;
     }
 
     public static String getImageServiceUrlSafe(Integer id) {
@@ -93,4 +96,13 @@ public class CommonUrl {
     public static String getAudioServiceUrl(int id) {
         return APPLICATION_PATH + "/" + AUDIO_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/;// TODO image cache
     }
+
+    public static String generateVerificationLink(String verificationId) {
+        return RAZARION_URL + EMAIL_VERIFICATION + "/" + verificationId;
+    }
+
+    public static String generateForgotPasswordLink(String uuid) {
+        return RAZARION_URL + FORGOT_PASSWORD_CHANGE + "/" + uuid;
+    }
+
 }

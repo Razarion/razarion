@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="guest">Guest</entry>
+    <entry key="emailSubject">Razarion - Please confirm your Email address</entry>
+    <entry key="emailVeriGreeting">Hello {0}</entry>
+    <entry key="emailVeriMain">Thank you for registering at Razarion. Please follow the link below to confirm your email address:</entry>
+    <entry key="emailVeriUser">User name: {0}</entry>
+    <entry key="emailVeriClosing">We are pleased to be able to welcome you to Razarion</entry>
+    <entry key="emailVeriRazarionTeam">With kind regards your Razarion team</entry>
+    <entry key="emailForgotPasswordSubject">Razarion - Account password help</entry>
+    <entry key="emailForgotPasswordSubjectMain1">You're receiving this email because you requested a password reset for your Razarion account. If you did not request this change, you can safely ignore this email.</entry>
+    <entry key="emailForgotPasswordSubjectMain2">To choose a new password and complete your request, please follow the link below:</entry>
+    <entry key="baseLost">You lost your base. A new base was created.</entry>
+    <entry key="guildOfferedOnlyRegistered">{0} invited you to his guild. Only registered user can can join guilds.</entry>
+    <entry key="youDefeated">You defeated {0}</entry>
+    <entry key="invitationSubject">{0} wants you to join Razarion</entry>
+    <entry key="invitationTitle">Join Razarion</entry>
+    <entry key="invitationLine1">{0} has recruited you to play Razarion.</entry>
+    <entry key="invitationLine2">{0} thinks you will like Razarion and is sending you this e-mail from: </entry>
+    <entry key="invitationLinkText">Join</entry>
+    <entry key="invitationLine3">Razarion and experience an all-new way to play a massive multiplayer online real-time strategy game.</entry>
+    <entry key="invitationRazarionTeam">With kind regards your Razarion team</entry>
+</properties>

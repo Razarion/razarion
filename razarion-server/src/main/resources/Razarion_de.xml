@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="guest">Gast</entry>
+    <entry key="emailSubject">Razarion - Bestätige deine E-Mail-Adresse</entry>
+    <entry key="emailVeriGreeting">Hallo {0}</entry>
+    <entry key="emailVeriMain">Vielen Dank für die Registrierung bei Razarion. Bitte bestätige deine E-Mail-Adresse, indem du auf den folgenden Link klickst:</entry>
+    <entry key="emailVeriUser">Benutzername: {0}</entry>
+    <entry key="emailVeriClosing">Wir freuen uns darauf, dich bei Razarion begrüssen zu dürfen!</entry>
+    <entry key="emailVeriRazarionTeam">Dein Razarion-Team</entry>
+    <entry key="emailForgotPasswordSubject">Razarion - Konto Passworthilfe</entry>
+    <entry key="emailForgotPasswordSubjectMain1">Du erhältst dieses Email, weil du ein neues Passwort für dein Razarion Konto beantragt hast. Falls Du kein neues Password beantragt hast, kannst du diese Email ignorieren.</entry>
+    <entry key="emailForgotPasswordSubjectMain2">Um den Vorgang abzuschliessen, klicke bitte auf den Link:</entry>
+    <entry key="baseLost">Deine Basis wurde ausgelöscht. Eine neue Basis wurde gestartet.</entry>
+    <entry key="guildOfferedOnlyRegistered">{0} hat dich in seine Gilde eingeladen. Nur registrierte Benutzer können Gilden beitreten.</entry>
+    <entry key="youDefeated">Du hast {0} besiegt</entry>
+    <entry key="invitationSubject">{0} will dass du Razarion spielst</entry>
+    <entry key="invitationTitle">Mach bei Razarion mit</entry>
+    <entry key="invitationLine1">{0} hat dich zum Razarion spielen eingeladen.</entry>
+    <entry key="invitationLine2">{0} glaubt, dass du Razarion magst und sendet dir diese Email von: </entry>
+    <entry key="invitationLinkText">Spiele</entry>
+    <entry key="invitationLine3">Razarion und tauche in eine neue Dimension von massiv Multiplayer online Echtzeit-Strategiespielen ein.</entry>
+    <entry key="invitationRazarionTeam">Dein Razarion-Team</entry>
+
+</properties>
