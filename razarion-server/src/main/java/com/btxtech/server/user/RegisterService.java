@@ -78,28 +78,27 @@ public class RegisterService {
     @PostConstruct
     public void init() {
         cleanupFuture = scheduleExecutor.scheduleAtFixedRate(() -> {
-                    GregorianCalendar gregorianCalendar = new GregorianCalendar();
-                    gregorianCalendar.add(GregorianCalendar.DAY_OF_YEAR, -1);
-                    Date removeIfSmaller = Date.from(LocalDateTime.now().minusDays(1).atZone(ZoneId.systemDefault()).toInstant());
+            GregorianCalendar gregorianCalendar = new GregorianCalendar();
+            gregorianCalendar.add(GregorianCalendar.DAY_OF_YEAR, -1);
+            Date removeIfSmaller = Date.from(LocalDateTime.now().minusDays(1).atZone(ZoneId.systemDefault()).toInstant());
 
-                    // TODO HibernateUtil.openSession4InternalCall(sessionFactory);
-                    try {
-                        removeUnverifiedUsers(removeIfSmaller);
-                    } catch (Throwable throwable) {
-                        exceptionHandler.handleException(throwable);
-                    } finally {
-                        // TODO HibernateUtil.closeSession4InternalCall(sessionFactory);
-                    }
-                    // TODO HibernateUtil.openSession4InternalCall(sessionFactory);
-                    try {
-                        removeOldPasswordForgetEntries(removeIfSmaller);
-                    } catch (Throwable throwable) {
-                        exceptionHandler.handleException(throwable);
-                    } finally {
-                        // TODO HibernateUtil.closeSession4InternalCall(sessionFactory);
-                    }
-                }
-                , CLEANUP_DELAY, CLEANUP_DELAY, TimeUnit.MILLISECONDS);
+            // TODO HibernateUtil.openSession4InternalCall(sessionFactory);
+            try {
+                removeUnverifiedUsers(removeIfSmaller);
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
+            } finally {
+                // TODO HibernateUtil.closeSession4InternalCall(sessionFactory);
+            }
+            // TODO HibernateUtil.openSession4InternalCall(sessionFactory);
+            try {
+                removeOldPasswordForgetEntries(removeIfSmaller);
+            } catch (Throwable throwable) {
+                exceptionHandler.handleException(throwable);
+            } finally {
+                // TODO HibernateUtil.closeSession4InternalCall(sessionFactory);
+            }
+        }, CLEANUP_DELAY, CLEANUP_DELAY, TimeUnit.MILLISECONDS);
     }
 
     @PreDestroy

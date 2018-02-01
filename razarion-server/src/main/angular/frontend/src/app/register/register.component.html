@@ -1,3 +1,47 @@
-﻿<div>
-  <h1>Register</h1>
+﻿<h1>Register</h1>
+
+<div *ngIf="registered==false">
+  Register via facebook
+  <div id="fb-root"></div>
+  <div class="fb-login-button" data-max-rows="1" data-size="large" data-button-type="login_with" data-show-faces="false" data-auto-logout-link="false" data-use-continue-as="false"></div>
+
+  Normal rgister
+  <table>
+    <tr>
+      <td>
+        <div [ngModel]="emailError"></div>
+        <input [(ngModel)]="email" #emailBox (keyup)="onKeyEmail(emailBox.value)" type="email">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div [ngModel]="passwordError"></div>
+        <input [(ngModel)]="password" type="password">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div [ngModel]="passwordConfirmError"></div>
+        <input [(ngModel)]="passwordConfirm" #passwordConfirmBox (keyup)="onKeyEmail(passwordConfirmBox.value)" type="password">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input [(ngModel)]="rememberMe" type="checkbox">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <button (click)="onRegister()">Registrieren</button>
+      </td>
+    </tr>
+  </table>
+  <button (click)="onContinue()">Ohne Registrierung spielen</button>
+</div>
+
+<div *ngIf="registered">
+  <span>Bestätigen sie ihre E-Mail Adresse</span>
+  <span>Eine E-Mail mit dem Aktivierungslink wurde an {{email}} geschickt. Bitte prüfen sie ihren Posteingang oder Spam-Ordner.</span>
+
+  <button (click)="onPlay()">Spielen</button>
 </div>

@@ -96,7 +96,7 @@ export class FrontendService {
     });
   }
 
-  onFbAuthorized(authResponse: any) : Promise<boolean> {
+  onFbAuthorized(authResponse: any): Promise<boolean> {
     return new Promise((resolve) => {
       let fbAuthResponse: FbAuthResponse = new FbAuthResponse();
       fbAuthResponse.accessToken = authResponse.accessToken;
@@ -124,5 +124,35 @@ export class FrontendService {
     this.log("Facebook timed out");
     this.loggedIn = false;
     this.resolve(false);
+  }
+
+  register(email: string, password: string, rememberMe: boolean): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http.post<boolean>(URL_FRONTEND + '/register', {email: email, password: password}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+        loggedIn => {
+          this.loggedIn = loggedIn;
+          resolve(loggedIn);
+        },
+        error => {
+          this.log("facebookauthenticated catch: " + error);
+          this.loggedIn = false;
+          resolve(false);
+        });
+    });
+  }
+
+  verifyEmail(email: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http.post<boolean>(URL_FRONTEND + '/verifyemail', {email: email}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+        loggedIn => {
+          this.loggedIn = loggedIn;
+          resolve(loggedIn);
+        },
+        error => {
+          this.log("facebookauthenticated catch: " + error);
+          this.loggedIn = false;
+          resolve(false);
+        });
+    });
   }
 }
