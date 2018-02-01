@@ -4,6 +4,7 @@ import {GameComponent} from "./game/game.component";
 import {RegisterComponent} from "./register/register.component";
 import {NoCookies} from "./nocookies/nocookies.component";
 import {FacebookAppStart} from "./facebookappstart/facebook-app-start.component";
+import {EmailVerification} from "./emailverification/email-verification.component";
 
 
 const appRoutes: Routes = [
@@ -13,6 +14,8 @@ const appRoutes: Routes = [
   {path: 'nocookies', component: NoCookies},
   {path: 'facebookappstart', component: FacebookAppStart},
   {path: 'resetpassword', component: FacebookAppStart},
+  {path: 'verify-email/:id', component: EmailVerification},
+  {path: 'reset-password/:id', component: FacebookAppStart},
   {path: '**', redirectTo: ''}
 ];
 
