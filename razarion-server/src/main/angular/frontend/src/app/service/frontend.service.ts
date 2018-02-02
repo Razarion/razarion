@@ -212,7 +212,7 @@ export class FrontendService {
 
   verifyEmail(email: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/' + JSON.stringify(email)).subscribe(
+      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/' + encodeURI(email)).subscribe(
         valid => resolve(valid),
         error => {
           this.log("verifyEmail catch", error);

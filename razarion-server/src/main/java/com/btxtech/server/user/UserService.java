@@ -616,8 +616,7 @@ public class UserService {
         criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(from.get(UserEntity_.email), email),
                 criteriaBuilder.isNull(from.get(UserEntity_.verificationTimedOutDate))
         ));
-        TypedQuery<Long> typedQuery = entityManager.createQuery(criteriaQuery);
-        if (typedQuery.getSingleResult() > 0) {
+        if (entityManager.createQuery(criteriaQuery).getSingleResult() > 0) {
             return ErrorResult.ALREADY_USED;
         }
         return null;
