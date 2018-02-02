@@ -179,4 +179,14 @@ public class FrontendProvider {
             return false;
         }
     }
+
+    @POST
+    @Path("logout")
+    public void savePassword() {
+        try {
+            userService.logout();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
+    }
 }

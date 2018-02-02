@@ -5,6 +5,7 @@ import {RegisterComponent} from "./register/register.component";
 import {NoCookies} from "./nocookies/nocookies.component";
 import {FacebookAppStart} from "./facebookappstart/facebook-app-start.component";
 import {EmailVerification} from "./emailverification/email-verification.component";
+import {LogoutComponent} from "./logout/logout.component";
 
 
 const appRoutes: Routes = [
@@ -16,6 +17,7 @@ const appRoutes: Routes = [
   {path: 'resetpassword', component: FacebookAppStart},
   {path: 'verify-email/:id', component: EmailVerification},
   {path: 'reset-password/:id', component: FacebookAppStart},
+  {path: 'logout', component: LogoutComponent},
   {path: '**', redirectTo: ''}
 ];
 

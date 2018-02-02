@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {FbAuthResponse, FrontendLoginState, LoginResult, RegisterResult, URL_FRONTEND} from "../common";
+import {PathLocationStrategy} from "@angular/common";
 
 declare var RAZ_fbScriptLoadedFrontendService: any;
 declare var RAZ_fbScriptLoadedFlag: boolean;
@@ -210,7 +211,7 @@ export class FrontendService {
 
   verifyEmail(email: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/'+JSON.stringify(email)).subscribe(
+      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/' + JSON.stringify(email)).subscribe(
         valid => resolve(valid),
         error => {
           this.log("verifyEmail catch", error);
@@ -264,5 +265,22 @@ export class FrontendService {
         })
     });
 
+  }
+
+  logout() {
+    this.http.post<void>(URL_FRONTEND + '/logout', {}).subscribe(
+      () => {
+        this.loggedIn = false;
+      },
+      error => {
+        this.log("logout catch", error);
+      });
+    try {
+      FB.logout(function (response) {
+        // user is now logged out
+      });
+    } catch (err) {
+      this.log("FB.logout catch", err);
+    }
   }
 }

@@ -35,6 +35,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +54,8 @@ import java.util.stream.Collectors;
 public class UserService {
     @PersistenceContext
     private EntityManager entityManager;
+    @Inject
+    private HttpSession httpSession;
     @Inject
     private Logger logger;
     @Inject
@@ -118,6 +121,10 @@ public class UserService {
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
         loginUserContext(userEntity.toUserContext(), null);
         return LoginResult.OK;
+    }
+
+    public void logout() {
+        httpSession.invalidate();
     }
 
     @Transactional
