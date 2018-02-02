@@ -42,6 +42,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         }
       });
     };
+    this.frontendService.subscribeFbAuthChange(this.facebookEventCallback);
     this.frontendService.parseFbXFBML();
   }
 
@@ -83,7 +84,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
             break;
           case RegisterResult.OK:
             this.registered = true;
-            this.router.navigate(['/game']);
             break;
         }
       });
