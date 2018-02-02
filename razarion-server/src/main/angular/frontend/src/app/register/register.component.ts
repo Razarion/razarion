@@ -88,6 +88,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
     });
   }
 
+  onKeyPasswordConfirm(passwordConfirm: string) {
+    this.passwordConfirmError = "";
+    if(this.password != passwordConfirm) {
+      this.passwordConfirmError = "Passwörter sind nicht identisch"
+    }
+  }
+
   onPlay() {
     this.router.navigate(['/game']);
   }

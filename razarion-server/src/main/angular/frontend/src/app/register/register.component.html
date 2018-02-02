@@ -22,7 +22,7 @@
     <tr>
       <td>
         <div [ngModel]="passwordConfirmError"></div>
-        <input [(ngModel)]="passwordConfirm" #passwordConfirmBox (keyup)="onKeyEmail(passwordConfirmBox.value)" type="password">
+        <input [(ngModel)]="passwordConfirm" #passwordConfirmBox (keyup)="onKeyPasswordConfirm(passwordConfirmBox.value)" type="password">
       </td>
     </tr>
     <tr>

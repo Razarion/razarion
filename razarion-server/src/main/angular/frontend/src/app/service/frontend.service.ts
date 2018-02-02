@@ -155,8 +155,8 @@ export class FrontendService {
         success => {
           if (success) {
             this.loggedIn = true;
-            resolve(true);
           }
+          resolve(success);
         }
       );
     });
@@ -168,5 +168,19 @@ export class FrontendService {
         sent => resolve(sent)
       )
     });
+  }
+
+  savePassword(password: string, uuid: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http.post<boolean>(URL_FRONTEND + '/savepassword', {password: password, uuid: uuid}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+        success => {
+          if (success) {
+            this.loggedIn = true;
+          }
+          resolve(success)
+        }
+      )
+    });
+
   }
 }
