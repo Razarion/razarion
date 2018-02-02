@@ -7,9 +7,9 @@ import {RegisterResult} from "../common";
   templateUrl: 'register.component.html'
 })
 export class RegisterComponent implements OnInit, OnDestroy {
-  email: string = "E-MAil-Adresse";
-  password: string = "Passwort";
-  passwordConfirm: string = "Passwort bestätigen";
+  email: string = "";
+  password: string = "";
+  passwordConfirm: string = "";
   rememberMe: boolean = true;
   private facebookEventCallback: any = null;
   emailError: string = "";
@@ -117,7 +117,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   private static validateEmail(email) {
-    if (email == null) {
+    if (email == null || email == "") {
       return false;
     }
     let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

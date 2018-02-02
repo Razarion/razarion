@@ -7,18 +7,11 @@ export class GlobalErrorHandler implements ErrorHandler {
   constructor(private injector: Injector) {
   }
 
-  handleError(error) {
+  handleError(error: any) {
     const frontendService: FrontendService = this.injector.get(FrontendService);
     const location = this.injector.get(LocationStrategy);
-    const message = error.message ? error.message : error.toString();
     const url = location instanceof PathLocationStrategy ? location.path() : '';
-    let stack:string="";
-    if(error.stack) {
-      stack = " stack: '" + error.stack + "'."
-    }
-
-    frontendService.log("GlobalErrorHandler. message: '" + message + "'. url: '" + url + "'." + stack);
-
+    frontendService.log("GlobalErrorHandler url: '" + url + "'", error);
     throw error;
   }
 

@@ -1,8 +1,8 @@
 package com.btxtech.server.rest;
 
-/**
- * Created by Beat
- * on 27.01.2018.
+/*
+  Created by Beat
+  on 27.01.2018.
  */
 
 import com.btxtech.server.frontend.FrontendLoginState;
@@ -73,10 +73,14 @@ public class FrontendProvider {
     }
 
     @POST
-    @Consumes(MediaType.TEXT_PLAIN)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("log")
-    public void log(String message) {
-        logger.warning("FrontendProvider log for session: " + sessionHolder.getPlayerSession().getHttpSessionId() + ". Message: " + message);
+    public void log(@FormParam("message") String message, @FormParam("error") String error) {
+        String errorString = "";
+        if (error != null) {
+            errorString += "\n error: " + error;
+        }
+        logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext " + sessionHolder.getPlayerSession().getUserContext() + ".\nMessage: " + message + errorString);
     }
 
 
@@ -84,8 +88,7 @@ public class FrontendProvider {
     @Path("simplelog/{e}/{t}/{p}")
     @Produces({"image/jpeg", "image/png", "image/gif"})
     public Response simpleLog(@PathParam("e") String errorMessage, @PathParam("t") String timestamp, @PathParam("p") String pathName) {
-        logger.severe("FrontendProvider: SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
-        logger.severe("FrontendProvider: errorMessage: " + errorMessage + "\ntimestamp: " + timestamp + "\npathName:" + pathName);
+        logger.severe("FrontendProvider simpleLog\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext " + sessionHolder.getPlayerSession().getUserContext() + "\nerrorMessage: " + errorMessage + "\ntimestamp: " + timestamp + "\npathName:" + pathName);
         return Response.ok(PIXEL_BYTES).build();
     }
 
@@ -99,8 +102,9 @@ public class FrontendProvider {
 
     @POST
     @Path("login")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public LoginResult loginUser(String email, String password) {
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public LoginResult loginUser(@FormParam("email") String email, @FormParam("password") String password) {
         try {
             return userService.loginUser(email, password);
         } catch (Throwable t) {
@@ -123,9 +127,9 @@ public class FrontendProvider {
     }
 
     @GET
-    @Path("isemailfree")
+    @Path("isemailfree/{email}")
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean isEmailFree(String email) {
+    public boolean isEmailFree(@PathParam("email") String email) {
         try {
             return userService.verifyEmail(email) == null;
         } catch (Throwable t) {
@@ -136,8 +140,9 @@ public class FrontendProvider {
 
     @POST
     @Path("verifyemaillink")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public boolean verifyEmailLink(String verificationId) {
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public boolean verifyEmailLink(@FormParam("verificationId") String verificationId) {
         try {
             registerService.onEmailVerificationPageCalled(verificationId);
             return true;
@@ -149,8 +154,9 @@ public class FrontendProvider {
 
     @POST
     @Path("sendemailforgotpassword")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public boolean sendEmailForgotPassword(String email) {
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public boolean sendEmailForgotPassword(@FormParam("email") String email) {
         try {
             registerService.onForgotPassword(email);
             return true;
@@ -162,8 +168,9 @@ public class FrontendProvider {
 
     @POST
     @Path("savepassword")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public boolean savePassword(String uuid, String password) {
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public boolean savePassword(@FormParam("uuid") String uuid, @FormParam("password") String password) {
         try {
             registerService.onPasswordReset(uuid, password);
             return true;

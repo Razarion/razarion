@@ -24,10 +24,10 @@ export class FrontendService {
       document.cookie = "TestCooiesEnabled=testcookie; expires" + d.toUTCString();
       this.cookieAllowed = document.cookie.indexOf("testcookie") != -1;
       if (!this.cookieAllowed) {
-        this.log("Cookie are not allowed");
+        this.log("Cookie are not allowed", null);
       }
     } catch (err) {
-      this.log("Cookie check failed: " + err);
+      this.log("Cookie check failed", err);
     }
   }
 
@@ -58,20 +58,24 @@ export class FrontendService {
             }
           }
         } catch (err) {
-          this.log("Handle isloggedin response: " + err);
+          this.log("Handle isloggedin response", err);
           this.loggedIn = false;
           resolve(false);
         }
       }).catch(err => {
-        this.log("isloggedin catch: " + err);
+        this.log("isloggedin catch", err);
         this.loggedIn = false;
         resolve(false);
       });
     });
   }
 
-  log(message: any): void {
-    this.http.post<void>(URL_FRONTEND + '/log', JSON.stringify(message), {headers: new HttpHeaders().set('Content-Type', 'text/plain')}).subscribe();
+  log(message: string, error: any): void {
+    let body = new HttpParams().set(`message`, message);
+    if (error) {
+      body = body.set(`error`, JSON.stringify(error).toString());
+    }
+    this.http.post<void>(URL_FRONTEND + '/log', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe();
   }
 
   getLanguage(): string {
@@ -96,7 +100,7 @@ export class FrontendService {
         }
       });
     } catch (err) {
-      this.log("checkFbLoginState: " + err);
+      this.log("checkFbLoginState", err);
       this.loggedIn = false;
       this.resolve(false);
     }
@@ -115,7 +119,7 @@ export class FrontendService {
           resolve(loggedIn);
         },
         error => {
-          this.log("facebookauthenticated catch: " + error);
+          this.log("facebookauthenticated catch", error);
           this.loggedIn = false;
           resolve(false);
         });
@@ -126,7 +130,7 @@ export class FrontendService {
     try {
       FB.Event.subscribe("auth.statusChange", facebookEventCallback);
     } catch (err) {
-      this.log("subscribeFbAuthChange: " + err);
+      this.log("subscribeFbAuthChange", err);
     }
   }
 
@@ -134,7 +138,7 @@ export class FrontendService {
     try {
       FB.Event.unsubscribe("auth.statusChange", facebookEventCallback);
     } catch (err) {
-      this.log("unsubscribeFbAuthChange: " + err);
+      this.log("unsubscribeFbAuthChange", err);
     }
   }
 
@@ -142,7 +146,7 @@ export class FrontendService {
     try {
       FB.XFBML.parse();
     } catch (err) {
-      this.log("parseFbXFBML: " + err);
+      this.log("parseFbXFBML", err);
     }
   }
 
@@ -150,7 +154,7 @@ export class FrontendService {
     try {
       FB.login(facebookLoginCallback);
     } catch (err) {
-      this.log("fbLogin: " + err);
+      this.log("fbLogin: ", err);
       facebookLoginCallback();
     }
   }
@@ -160,14 +164,15 @@ export class FrontendService {
   }
 
   private onFbTimeout() {
-    this.log("Facebook timed out");
+    this.log("Facebook timed out", null);
     this.loggedIn = false;
     this.resolve(false);
   }
 
   login(email: string, password: string): Promise<LoginResult> {
     return new Promise((resolve) => {
-      this.http.post<LoginResult>(URL_FRONTEND + '/login', {email: email, password: password}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+      const body = new HttpParams().set(`email`, email).set(`password`, password);
+      this.http.post<LoginResult>(URL_FRONTEND + '/login', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
         loginResult => {
           if (loginResult == LoginResult.OK) {
             this.loggedIn = true;
@@ -178,7 +183,7 @@ export class FrontendService {
           }
         },
         error => {
-          this.log("login catch: " + error);
+          this.log("login catch", error);
           this.loggedIn = false;
           resolve(LoginResult.UNKNOWN);
         });
@@ -187,10 +192,8 @@ export class FrontendService {
 
   register(email: string, password: string, rememberMe: boolean): Promise<RegisterResult> {
     return new Promise((resolve) => {
-      const body = new HttpParams()
-        .set(`email`, email)
-        .set(`password`, password);
-      this.http.post<RegisterResult>(URL_FRONTEND + '/createunverifieduser', body.toString(), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded' )}).subscribe(
+      const body = new HttpParams().set(`email`, email).set(`password`, password);
+      this.http.post<RegisterResult>(URL_FRONTEND + '/createunverifieduser', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
         registerResult => {
           if (registerResult == RegisterResult.OK) {
             this.loggedIn = true;
@@ -198,7 +201,7 @@ export class FrontendService {
           resolve(registerResult);
         },
         error => {
-          this.log("register catch: " + error);
+          this.log("register catch", error);
           this.loggedIn = false;
           resolve(RegisterResult.UNKNOWN_ERROR);
         });
@@ -207,43 +210,58 @@ export class FrontendService {
 
   verifyEmail(email: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.post<boolean>(URL_FRONTEND + '/verifyemail', {email: email}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
-        valid => resolve(valid)
-      );
+      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/'+JSON.stringify(email)).subscribe(
+        valid => resolve(valid),
+        error => {
+          this.log("verifyEmail catch", error);
+          resolve(false);
+        });
     });
   }
 
   verifyEmailLink(verificationId: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.post<boolean>(URL_FRONTEND + '/verifyemaillink', {verificationId: verificationId}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+      this.http.post<boolean>(URL_FRONTEND + '/verifyemaillink', new HttpParams().set(`verificationId`, verificationId), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
         success => {
           if (success) {
             this.loggedIn = true;
           }
           resolve(success);
+        },
+        error => {
+          this.log("verifyemaillink catch", error);
+          resolve(false);
         }
       );
     });
   }
 
-  sendEmailForgotPassword(email: any): Promise<boolean> {
+  sendEmailForgotPassword(email: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.post<boolean>(URL_FRONTEND + '/sendemailforgotpassword', {email: email}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
-        sent => resolve(sent)
+      this.http.post<boolean>(URL_FRONTEND + '/sendemailforgotpassword', new HttpParams().set(`email`, email), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
+        sent => resolve(sent),
+        error => {
+          this.log("sendemailforgotpassword catch", error);
+          resolve(false);
+        }
       )
     });
   }
 
   savePassword(password: string, uuid: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.post<boolean>(URL_FRONTEND + '/savepassword', {password: password, uuid: uuid}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+      const body = new HttpParams().set(`password`, password).set(`uuid`, uuid);
+      this.http.post<boolean>(URL_FRONTEND + '/savepassword', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
         success => {
           if (success) {
             this.loggedIn = true;
           }
           resolve(success)
-        }
-      )
+        },
+        error => {
+          this.log("savepassword catch", error);
+          resolve(false);
+        })
     });
 
   }
