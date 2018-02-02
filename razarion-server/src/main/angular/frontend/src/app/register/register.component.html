@@ -9,19 +9,19 @@
   <table>
     <tr>
       <td>
-        <div [ngModel]="emailError"></div>
+        <div>{{emailError}}</div>
         <input [(ngModel)]="email" #emailBox (keyup)="onKeyEmail(emailBox.value)" type="email">
       </td>
     </tr>
     <tr>
       <td>
-        <div [ngModel]="passwordError"></div>
+        <div>{{passwordError}}</div>
         <input [(ngModel)]="password" type="password">
       </td>
     </tr>
     <tr>
       <td>
-        <div [ngModel]="passwordConfirmError"></div>
+        <div>{{passwordConfirmError}}</div>
         <input [(ngModel)]="passwordConfirm" #passwordConfirmBox (keyup)="onKeyPasswordConfirm(passwordConfirmBox.value)" type="password">
       </td>
     </tr>

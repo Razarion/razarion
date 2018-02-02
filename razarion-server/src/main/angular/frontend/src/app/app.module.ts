@@ -37,10 +37,4 @@ import {FormsModule} from "@angular/forms";
   bootstrap: [AppComponent]
 })
 export class AppModule {
-
-  constructor(private frontendService: FrontendService) {
-    window.onerror = function (msg, url, line, col, error) {
-      this.frontendService.log("Gloabl error handler. msg: " + msg + ". url: " + url + ". line: " + line + ". col: " + col + ". error: " + error)
-    };
-  }
 }

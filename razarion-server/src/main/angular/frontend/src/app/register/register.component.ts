@@ -2,9 +2,6 @@
 import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
 
-declare const FB: any;
-
-
 @Component({
   templateUrl: 'register.component.html'
 })
@@ -33,7 +30,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       }
     });
     if (this.facebookEventCallback != null) {
-      FB.Event.unsubscribe("auth.statusChange", this.facebookEventCallback);
+      this.frontendService.unsubscribeFbAuthChange(this.facebookEventCallback);
       this.facebookEventCallback = null;
     }
     this.facebookEventCallback = function (fbResponse) {
@@ -44,13 +41,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
         }
       });
     };
-    FB.Event.subscribe("auth.statusChange", this.facebookEventCallback);
-    FB.XFBML.parse();
+    this.frontendService.parseFbXFBML();
   }
 
   ngOnDestroy(): void {
     if (this.facebookEventCallback != null) {
-      FB.Event.unsubscribe("auth.statusChange", this.facebookEventCallback);
+      this.frontendService.unsubscribeFbAuthChange(this.facebookEventCallback);
       this.facebookEventCallback = null;
     }
   }
@@ -90,7 +86,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   onKeyPasswordConfirm(passwordConfirm: string) {
     this.passwordConfirmError = "";
-    if(this.password != passwordConfirm) {
+    if (this.password != passwordConfirm) {
       this.passwordConfirmError = "Passwörter sind nicht identisch"
     }
   }

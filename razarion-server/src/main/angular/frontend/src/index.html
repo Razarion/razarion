@@ -6,8 +6,11 @@
     var RAZ_fbScriptLoadedFrontendService = null;
     var RAZ_fbScriptLoadedCallback = null;
 
-    function logError(message, file, lineNumber) {
-      var errorMessage = encodeURI("-Frontend-window.onerror\nMessage: " + message + "\nFile: " + file + "\nLinenumber: " + lineNumber);
+    function logError(message, source, lineNumber, columnNumber, error) {
+      var errorMessage = encodeURI("-Frontend-window.onerror\nMessage: " + message + "\nSource: " + source + "\nLinenumber: " + lineNumber + "\ncolumnNumber: " + columnNumber + "\nerror: " + error);
+      if(error && error.stack) {
+        errorMessage += "\nstack: '" + error.stack + "'."
+      }
       errorMessage = errorMessage.replace(/\//g, "-");
       var pathName = encodeURI(window.location.pathname);
       var img = document.createElement('img');
@@ -16,8 +19,8 @@
       return true;
     }
 
-    window.onerror = function (message, file, lineNumber) {
-      logError(message, file, lineNumber);
+    window.onerror = function (message, source, lineNumber, columnNumber, error) {
+      logError(message, source, lineNumber, columnNumber, error);
     };
 
   </script>

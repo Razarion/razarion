@@ -79,21 +79,27 @@ export class FrontendService {
   }
 
   private checkFbLoginState() {
-    FB.getLoginStatus(fbResponse => {
-      if (this.fbTimerId != null) {
-        window.clearInterval(this.fbTimerId);
-        this.fbTimerId = null;
-      }
-      if (fbResponse.status === 'connected') {
-        // the user is logged in and has authenticated your app
-        this.onFbAuthorized(fbResponse.authResponse).then(loggedIn => {
-          this.resolve(loggedIn);
-        });
-      } else {
-        this.loggedIn = false;
-        this.resolve(false);
-      }
-    });
+    try {
+      FB.getLoginStatus(fbResponse => {
+        if (this.fbTimerId != null) {
+          window.clearInterval(this.fbTimerId);
+          this.fbTimerId = null;
+        }
+        if (fbResponse.status === 'connected') {
+          // the user is logged in and has authenticated your app
+          this.onFbAuthorized(fbResponse.authResponse).then(loggedIn => {
+            this.resolve(loggedIn);
+          });
+        } else {
+          this.loggedIn = false;
+          this.resolve(false);
+        }
+      });
+    } catch (err) {
+      this.log("checkFbLoginState: " + err);
+      this.loggedIn = false;
+      this.resolve(false);
+    }
   }
 
   onFbAuthorized(authResponse: any): Promise<boolean> {
@@ -114,6 +120,39 @@ export class FrontendService {
           resolve(false);
         });
     });
+  }
+
+  subscribeFbAuthChange(facebookEventCallback: any) {
+    try {
+      FB.Event.subscribe("auth.statusChange", facebookEventCallback);
+    } catch (err) {
+      this.log("subscribeFbAuthChange: " + err);
+    }
+  }
+
+  unsubscribeFbAuthChange(facebookEventCallback: any) {
+    try {
+      FB.Event.unsubscribe("auth.statusChange", facebookEventCallback);
+    } catch (err) {
+      this.log("unsubscribeFbAuthChange: " + err);
+    }
+  }
+
+  parseFbXFBML() {
+    try {
+      FB.XFBML.parse();
+    } catch (err) {
+      this.log("parseFbXFBML: " + err);
+    }
+  }
+
+  fbLogin(facebookLoginCallback: any) {
+    try {
+      FB.login(facebookLoginCallback);
+    } catch (err) {
+      this.log("fbLogin: " + err);
+      facebookLoginCallback();
+    }
   }
 
   static onFbScriptLoaded(frontendService: FrontendService) {

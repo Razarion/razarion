@@ -2,8 +2,6 @@
 import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
 
-declare const FB: any;
-
 @Component({
   templateUrl: 'facebook-app-start.component.html'
 })
@@ -21,8 +19,8 @@ export class FacebookAppStart implements OnInit {
       if (loggedIn) {
         this.router.navigate(['/game']);
       } else {
-        FB.login(response => {
-          if (response.authResponse) {
+        this.frontendService.fbLogin(response => {
+          if (response && response.authResponse) {
             this.frontendService.onFbAuthorized(response.authResponse).then(() => {
               this.router.navigate(['/game']);
             });

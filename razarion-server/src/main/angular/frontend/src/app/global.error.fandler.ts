@@ -12,8 +12,12 @@ export class GlobalErrorHandler implements ErrorHandler {
     const location = this.injector.get(LocationStrategy);
     const message = error.message ? error.message : error.toString();
     const url = location instanceof PathLocationStrategy ? location.path() : '';
+    let stack:string="";
+    if(error.stack) {
+      stack = " stack: '" + error.stack + "'."
+    }
 
-    frontendService.log("GlobalErrorHandler: " + message);
+    frontendService.log("GlobalErrorHandler. message: '" + message + "'. url: '" + url + "'." + stack);
 
     throw error;
   }
