@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.mail.Message;
@@ -65,14 +66,14 @@ public class RegisterService {
     private FilePropertiesService filePropertiesService;
     @Inject
     private ServerI18nHelper serverI18nHelper;
-    @Resource(mappedName = "java:jboss/mail/MyMail")
+    @Resource(mappedName = "java:/RazarionMail")
     private Session mailSession;
     @Inject
     private Logger logger;
     @Inject
-    private HistoryPersistence historyPersistence;
+    private Instance<HistoryPersistence> historyPersistence;
     @Inject
-    private UserService userService;
+    private Instance<UserService> userService;
     private ScheduledFuture cleanupFuture;
 
     @PostConstruct
@@ -215,7 +216,7 @@ public class RegisterService {
         List<ForgotPasswordEntity> forgots = entityManager.createQuery(criteriaQuery).getResultList();
         if (forgots != null) {
             forgots.forEach(forgotPasswordEntity -> {
-                historyPersistence.onForgotPassword(userEntity, forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.OVERRIDDEN);
+                historyPersistence.get().onForgotPassword(userEntity, forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.OVERRIDDEN);
                 entityManager.remove(forgotPasswordEntity);
             });
         }
@@ -225,7 +226,7 @@ public class RegisterService {
         forgot.setUser(userEntity);
         forgot.setUuid(uuid);
         entityManager.persist(forgot);
-        historyPersistence.onForgotPassword(userEntity, forgot, ForgotPasswordHistoryEntity.Type.INITIATED);
+        historyPersistence.get().onForgotPassword(userEntity, forgot, ForgotPasswordHistoryEntity.Type.INITIATED);
     }
 
     @Transactional
@@ -243,14 +244,14 @@ public class RegisterService {
                 foundCount.setO(foundCount.getO() + 1);
                 email.setO(forgotPasswordEntity.getUser().getEmail());
                 forgotPasswordEntity.getUser().setPasswordHash(generateSHA512SecurePassword(password));
-                historyPersistence.onForgotPassword(forgotPasswordEntity.getUser(), forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.CHANGED);
+                historyPersistence.get().onForgotPassword(forgotPasswordEntity.getUser(), forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.CHANGED);
                 entityManager.remove(forgotPasswordEntity);
             });
         }
         if (foundCount.getO() != 1) {
             logger.warning("Unexpected ForgotPasswordEntity count '" + foundCount.getO() + "' for uuid: " + uuid);
         }
-        LoginResult loginResult = userService.loginUser(email.getO(), password);
+        LoginResult loginResult = userService.get().loginUser(email.getO(), password);
         if (loginResult != LoginResult.OK) {
             throw new IllegalArgumentException("Can not login user with email '" + email.getO() + "'.  LoginResult: " + loginResult);
         }
@@ -314,7 +315,7 @@ public class RegisterService {
         List<ForgotPasswordEntity> forgots = entityManager.createQuery(criteriaQuery).getResultList();
         if (forgots != null) {
             forgots.forEach(forgotPasswordEntity -> {
-                historyPersistence.onForgotPassword(forgotPasswordEntity.getUser(), forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.TIMED_OUT);
+                historyPersistence.get().onForgotPassword(forgotPasswordEntity.getUser(), forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.TIMED_OUT);
                 entityManager.remove(forgotPasswordEntity);
             });
         }

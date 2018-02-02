@@ -10,6 +10,8 @@ import {RegisterComponent} from "./register/register.component";
 import {GlobalErrorHandler} from "./global.error.fandler";
 import {NoCookies} from "./nocookies/nocookies.component";
 import {FacebookAppStart} from "./facebookappstart/facebook-app-start.component";
+import {EmailVerification} from "./emailverification/email-verification.component";
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -19,11 +21,13 @@ import {FacebookAppStart} from "./facebookappstart/facebook-app-start.component"
     GameComponent,
     RegisterComponent,
     NoCookies,
-    FacebookAppStart
+    FacebookAppStart,
+    EmailVerification
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
+    FormsModule,
     routing
   ],
   providers: [FrontendService, {

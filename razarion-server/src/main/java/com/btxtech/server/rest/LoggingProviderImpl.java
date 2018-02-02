@@ -31,7 +31,6 @@ public class LoggingProviderImpl implements LoggingProvider {
 //    private final static String MODULE_NAME = "com.btxtech.Razarion-Client";
 //    private final static String SIMPLE_MODULE_NAME = "razarion_client";
     private Logger logger = Logger.getLogger(LoggingProviderImpl.class.getName());
-    public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
     @Inject
     private SessionHolder sessionHolder;
     @Inject

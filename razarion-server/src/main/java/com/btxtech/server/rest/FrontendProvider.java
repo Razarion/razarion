@@ -21,13 +21,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Base64;
 import java.util.logging.Logger;
 
 @Path(CommonUrl.FRONTEND_PATH)
 public class FrontendProvider {
+    public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
     @Inject
     private FrontendService frontendService;
     @Inject
@@ -74,12 +77,23 @@ public class FrontendProvider {
         logger.warning("FrontendProvider log for session: " + sessionHolder.getPlayerSession().getHttpSessionId() + ". Message: " + message);
     }
 
+
+    @GET
+    @Path("simplelog/{e}/{t}/{p}")
+    @Produces({"image/jpeg", "image/png", "image/gif"})
+    public Response simpleLog(@PathParam("e") String errorMessage, @PathParam("t") String timestamp, @PathParam("p") String pathName) {
+        logger.severe("FrontendProvider: SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
+        logger.severe("FrontendProvider: errorMessage: " + errorMessage + "\ntimestamp: " + timestamp + "\npathName:" + pathName);
+        return Response.ok(PIXEL_BYTES).build();
+    }
+
+
     @GET
     @Path("noscript")
     @Produces({"image/jpeg", "image/png", "image/gif"})
     public Response noScript() {
         logger.warning("FrontendProvider no script. SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
-        return Response.ok(LoggingProviderImpl.PIXEL_BYTES).build();
+        return Response.ok(PIXEL_BYTES).build();
     }
 
     @POST

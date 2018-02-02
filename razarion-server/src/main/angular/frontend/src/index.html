@@ -5,6 +5,21 @@
     var RAZ_fbScriptLoadedFlag = false;
     var RAZ_fbScriptLoadedFrontendService = null;
     var RAZ_fbScriptLoadedCallback = null;
+
+    function logError(message, file, lineNumber) {
+      var errorMessage = encodeURI("-Frontend-window.onerror\nMessage: " + message + "\nFile: " + file + "\nLinenumber: " + lineNumber);
+      errorMessage = errorMessage.replace(/\//g, "-");
+      var pathName = encodeURI(window.location.pathname);
+      var img = document.createElement('img');
+      img.src = '/rest/frontend/simplelog/' + errorMessage + '/' + new Date().getTime() + '/' + pathName.replace(/\//g, "-");
+      document.body.appendChild(img);
+      return true;
+    }
+
+    window.onerror = function (message, file, lineNumber) {
+      logError(message, file, lineNumber);
+    };
+
   </script>
   <meta charset="utf-8">
   <title>Razarion</title>

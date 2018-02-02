@@ -21,10 +21,13 @@
     </tr>
     <tr>
       <td>
-        <button (click)="onLogin()">Anmelden</button>
+        Angemeldet bleiben <button (click)="onLogin()">Anmelden</button>
       </td>
     </tr>
   </table>
+
+  <p><a [routerLink]="['/register']">Register</a></p>
+
 
   <div *ngIf="loginError">{{loginError}}</div>
 </div>
