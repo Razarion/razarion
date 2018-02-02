@@ -11,7 +11,7 @@ public class CommonUrl {
     public static final String BACKEND_ANGULAR_HTML_FILE = ANGULAR_BACKEND_PATH + "index.html";
     public static final String FRONTEND_ANGULAR_HTML_FILE = "/index.html";
     public static final String EMAIL_VERIFICATION = "/verify-email";
-    public static final String FORGOT_PASSWORD_CHANGE = "/reset-password";
+    public static final String FORGOT_PASSWORD_CHANGE = "/change-password";
     // GWT code path
     public static final String CLIENT_PATH = "/razarion_client";
     public static final String CLIENT_WORKER_PATH = "/razarion_client_worker";

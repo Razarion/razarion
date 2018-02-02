@@ -14,6 +14,7 @@ import {EmailVerification} from "./emailverification/email-verification.componen
 import {FormsModule} from "@angular/forms";
 import {ResetPasswordComponent} from "./resetpassword/reset-password.component";
 import {LogoutComponent} from "./logout/logout.component";
+import {ChangePasswordComponent} from "./resetpassword/change-password.component";
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {LogoutComponent} from "./logout/logout.component";
     FacebookAppStart,
     EmailVerification,
     ResetPasswordComponent,
+    ChangePasswordComponent,
     LogoutComponent
   ],
   imports: [

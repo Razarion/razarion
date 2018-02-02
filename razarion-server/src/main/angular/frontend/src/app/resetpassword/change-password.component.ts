@@ -4,9 +4,9 @@ import {ActivatedRoute, Router} from "@angular/router";
 
 
 @Component({
-  templateUrl: 'reset-password-link.component.html'
+  templateUrl: 'cahnge-password.component.html'
 })
-export class RegisterComponent {
+export class ChangePasswordComponent {
   password: string = "Passwort";
   passwordConfirm: string = "Passwort bestätigen";
   passwordError: string = "";
