@@ -75,7 +75,23 @@ export class FrontendService {
     let body = new HttpParams().set(`message`, message);
     body = body.set(`url`, JSON.stringify(this.router.url).toString());
     if (error) {
-      body = body.set(`error`, JSON.stringify(error).toString());
+      try {
+        let cache = [];
+        let jsonError = JSON.stringify(error, (key, value) => {
+          if (typeof value === 'object' && value !== null) {
+            if (cache.indexOf(value) !== -1) {
+              // Circular reference found, discard key
+              return;
+            }
+            // Store value in our collection
+            cache.push(value);
+          }
+          return value;
+        });
+        body = body.set(`error`, jsonError);
+      } catch (innerErr) {
+        body = body.set(`error`, "Error handling error: '" + innerErr.toString() + "' Original error '" + error.toString() + "'");
+      }
     }
     this.http.post<void>(URL_FRONTEND + '/log', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe();
   }

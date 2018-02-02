@@ -39,7 +39,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -206,11 +205,11 @@ public class RegisterService {
         criteriaQuery.select(from);
         criteriaQuery.where(criteriaBuilder.equal(from.get(UserEntity_.email), email));
         List<UserEntity> users = entityManager.createQuery(criteriaQuery).getResultList();
-        if (users == null) {
+        if (users == null || users.isEmpty()) {
             throw new IllegalArgumentException("No user found for email: " + email);
         }
         if (users.size() != 1) {
-            logger.warning("onForgotPassword: more than one user found for email: " + email);
+            logger.warning("onForgotPassword: wrong users count (" + users.size() + ") found for email: " + email);
         }
         UserEntity userEntity = users.get(0);
         String uuid = UUID.randomUUID().toString().toUpperCase();

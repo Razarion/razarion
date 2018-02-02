@@ -1,5 +1,6 @@
 ﻿import {Component} from '@angular/core';
 import {FrontendService} from "../service/frontend.service";
+import {RegisterComponent} from "../register/register.component";
 
 
 @Component({
@@ -13,17 +14,20 @@ export class ResetPasswordComponent {
   constructor(private frontendService: FrontendService) {
   }
 
-  onPlay() {
+  onReset() {
     this.emailError = "";
-    if (this.email != "") {
-      this.frontendService.sendEmailForgotPassword(this.email).then(success => {
-        if(success) {
-          this.passwordResetInitiated = true;
-        }
-      });
-    } else {
-      this.emailError = "Bitte gib eine gültige E-Mail Adresse ein";
+    if (!RegisterComponent.validateEmail(this.email)) {
+      this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
+      return;
     }
+
+    this.frontendService.sendEmailForgotPassword(this.email).then(success => {
+      if (success) {
+        this.passwordResetInitiated = true;
+      } else {
+        this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
+      }
+    });
   }
 
 }
