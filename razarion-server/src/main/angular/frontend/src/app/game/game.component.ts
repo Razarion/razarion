@@ -18,7 +18,7 @@ export class GameComponent implements OnInit {
       this.router.navigate(['/nocookies']);
       return;
     }
-    this.frontendService.login().then(loggedIn => {
+    this.frontendService.autoLogin().then(loggedIn => {
       this.startGame();
     });
   }

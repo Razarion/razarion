@@ -1,4 +1,30 @@
 ﻿<div>
   <h1>Home</h1>
   <p><a [routerLink]="['/game']">Game</a></p>
+
+  Login
+  <table>
+    <tr>
+      <td>
+        <input [(ngModel)]="email" type="email">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input [(ngModel)]="password" type="password">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input [(ngModel)]="rememberMe" type="checkbox">
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <button (click)="onLogin()">Anmelden</button>
+      </td>
+    </tr>
+  </table>
+
+  <div *ngIf="loginError">{{loginError}}</div>
 </div>

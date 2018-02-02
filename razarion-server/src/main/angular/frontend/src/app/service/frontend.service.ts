@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {FbAuthResponse, FrontendLoginState, URL_FRONTEND} from "../common";
+import {FbAuthResponse, FrontendLoginState, LoginResult, URL_FRONTEND} from "../common";
 
 declare var RAZ_fbScriptLoadedFrontendService: any;
 declare var RAZ_fbScriptLoadedFlag: boolean;
@@ -35,7 +35,7 @@ export class FrontendService {
     return this.cookieAllowed;
   }
 
-  login(): Promise<boolean> {
+  autoLogin(): Promise<boolean> {
     if (this.loggedIn != null) {
       return Promise.resolve(this.loggedIn);
     }
@@ -124,6 +124,26 @@ export class FrontendService {
     this.log("Facebook timed out");
     this.loggedIn = false;
     this.resolve(false);
+  }
+
+  login(email: string, password: string): Promise<LoginResult> {
+    return new Promise((resolve) => {
+      this.http.post<LoginResult>(URL_FRONTEND + '/login', {email: email, password: password}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
+        loginResult => {
+          if (loginResult == LoginResult.OK) {
+            this.loggedIn = true;
+            resolve(loginResult);
+          } else {
+            this.loggedIn = false;
+            resolve(loginResult);
+          }
+        },
+        error => {
+          this.log("login catch: " + error);
+          this.loggedIn = false;
+          resolve(LoginResult.UNKNOWN);
+        });
+    });
   }
 
   register(email: string, password: string, rememberMe: boolean): Promise<boolean> {

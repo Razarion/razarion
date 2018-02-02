@@ -83,7 +83,7 @@ public class FrontendProvider {
     }
 
     @POST
-    @Path("createunverifieduser")
+    @Path("login")
     @Consumes(MediaType.TEXT_PLAIN)
     public LoginResult loginUser(String email, String password) {
         try {

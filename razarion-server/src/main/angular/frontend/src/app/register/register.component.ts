@@ -27,7 +27,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       this.router.navigate(['/nocookies']);
       return;
     }
-    this.frontendService.login().then(loggedIn => {
+    this.frontendService.autoLogin().then(loggedIn => {
       if (loggedIn) {
         this.router.navigate(['/game']);
       }

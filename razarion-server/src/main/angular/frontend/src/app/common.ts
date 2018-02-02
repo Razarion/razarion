@@ -13,3 +13,10 @@ export class FbAuthResponse {
   signedRequest: string;
   userID: string;
 }
+
+export enum LoginResult {
+  WRONG_PASSWORD = 'WRONG_PASSWORD',
+  WRONG_EMAIL = 'WRONG_EMAIL',
+  OK = 'OK',
+  UNKNOWN = 'UNKNOWN'
+}
