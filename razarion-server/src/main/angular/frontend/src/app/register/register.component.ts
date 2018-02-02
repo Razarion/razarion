@@ -1,6 +1,7 @@
 ﻿import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
+import {RegisterResult} from "../common";
 
 @Component({
   templateUrl: 'register.component.html'
@@ -52,29 +53,49 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   onRegister() {
-    this.password = "";
+    this.emailError = "";
     this.passwordError = "";
+    this.passwordConfirmError = "";
 
-    if (this.password == "") {
+    if (!RegisterComponent.validateEmail(this.email)) {
+      this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
+    } else if (this.password == "") {
       this.passwordError = "Passwort is leer"
     } else if (this.password != this.passwordConfirm) {
       this.passwordConfirmError = "Passwörter sind nicht identisch"
     } else {
-      this.frontendService.register(this.email, this.password, this.rememberMe).then(success => {
-        if (success) {
-          this.registered = true;
-        } else {
-          this.emailError = "Diese Email-Adresse wurde bereits verwendet";
+      this.frontendService.register(this.email, this.password, this.rememberMe).then(registerResult => {
+        switch (registerResult) {
+          case RegisterResult.USER_ALREADY_LOGGED_IN:
+            this.emailError = "Du bist bereits eingeloggt";
+            break;
+          case RegisterResult.INVALID_EMAIL:
+            this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
+            break;
+          case RegisterResult.EMAIL_ALREADY_USED:
+            this.emailError = "Diese Email-Adresse wurde bereits verwendet";
+            break;
+          case RegisterResult.INVALID_PASSWORD:
+            this.passwordError = "Das Passwort ist ungültig";
+            break;
+          case RegisterResult.UNKNOWN_ERROR:
+            this.emailError = "Unbekannter Fehler";
+            break;
+          case RegisterResult.OK:
+            this.registered = true;
+            this.router.navigate(['/game']);
+            break;
         }
       });
     }
   }
 
-  onContinue() {
-    this.router.navigate(['/game']);
-  }
-
   onKeyEmail(email: string) {
+    this.emailError = "";
+    if (!RegisterComponent.validateEmail(email)) {
+      this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
+      return;
+    }
     this.frontendService.verifyEmail(email).then(success => {
       if (success) {
         this.emailError = "";
@@ -94,4 +115,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
   onPlay() {
     this.router.navigate(['/game']);
   }
+
+  private static validateEmail(email) {
+    if (email == null) {
+      return false;
+    }
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
 }

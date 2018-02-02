@@ -1,6 +1,8 @@
 <html>
 <body>
+<#--
 <h3>${greeting},</h3>
+-->
 
 <div>
     ${main}
@@ -8,7 +10,9 @@
     <a href="${link}">${link}</a>
     <br>
     <br>
+<#--
     ${user}
+-->
     <br>
     <br>
     ${closing}

@@ -8,6 +8,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.frontend.FrontendLoginState;
 import com.btxtech.server.frontend.FrontendService;
 import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.server.user.RegisterResult;
 import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
@@ -17,6 +18,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
@@ -87,7 +89,6 @@ public class FrontendProvider {
         return Response.ok(PIXEL_BYTES).build();
     }
 
-
     @GET
     @Path("noscript")
     @Produces({"image/jpeg", "image/png", "image/gif"})
@@ -110,13 +111,14 @@ public class FrontendProvider {
 
     @POST
     @Path("createunverifieduser")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public boolean createUnverifiedUser(String email, String password) {
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public RegisterResult createUnverifiedUser(@FormParam("email") String email, @FormParam("password") String password) {
         try {
             return userService.createUnverifiedUserAndLogin(email, password);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            throw new InternalServerErrorException();
+            return RegisterResult.UNKNOWN_ERROR;
         }
     }
 

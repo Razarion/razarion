@@ -12,6 +12,6 @@ import java.util.ResourceBundle;
 public class ServerI18nHelper {
 
     public String getString(String key, Locale locale) {
-        return ResourceBundle.getBundle("Razarion", locale).getString(key);
+        return ResourceBundle.getBundle("/Razarion", locale).getString(key);
     }
 }

@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {FbAuthResponse, FrontendLoginState, LoginResult, URL_FRONTEND} from "../common";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
+import {FbAuthResponse, FrontendLoginState, LoginResult, RegisterResult, URL_FRONTEND} from "../common";
 
 declare var RAZ_fbScriptLoadedFrontendService: any;
 declare var RAZ_fbScriptLoadedFlag: boolean;
@@ -185,17 +185,22 @@ export class FrontendService {
     });
   }
 
-  register(email: string, password: string, rememberMe: boolean): Promise<boolean> {
+  register(email: string, password: string, rememberMe: boolean): Promise<RegisterResult> {
     return new Promise((resolve) => {
-      this.http.post<boolean>(URL_FRONTEND + '/register', {email: email, password: password}, {headers: new HttpHeaders().set('Content-Type', 'application/json')}).subscribe(
-        loggedIn => {
-          this.loggedIn = loggedIn;
-          resolve(loggedIn);
+      const body = new HttpParams()
+        .set(`email`, email)
+        .set(`password`, password);
+      this.http.post<RegisterResult>(URL_FRONTEND + '/createunverifieduser', body.toString(), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded' )}).subscribe(
+        registerResult => {
+          if (registerResult == RegisterResult.OK) {
+            this.loggedIn = true;
+          }
+          resolve(registerResult);
         },
         error => {
           this.log("register catch: " + error);
           this.loggedIn = false;
-          resolve(false);
+          resolve(RegisterResult.UNKNOWN_ERROR);
         });
     });
   }

@@ -8,9 +8,9 @@ import com.btxtech.server.system.ServerI18nHelper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.system.ExceptionHandler;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateExceptionHandler;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -29,17 +29,22 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +79,8 @@ public class RegisterService {
     private Instance<HistoryPersistence> historyPersistence;
     @Inject
     private Instance<UserService> userService;
+    @Inject
+    private ServletContext servletContext;
     private ScheduledFuture cleanupFuture;
 
     @PostConstruct
@@ -140,19 +147,24 @@ public class RegisterService {
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(userEntity.getEmail()));
             msg.setSubject(serverI18nHelper.getString("emailSubject", userEntity.getLocale()));
             // Setup template
-            VelocityEngine ve = new VelocityEngine();
-            ve.setProperty(VelocityEngine.RUNTIME_LOG_NAME, "VelocityEngineLog");
-            ve.init();
-            Template template = ve.getTemplate("/templates/registration-confirmation.vm");
-            VelocityContext context = new VelocityContext();
-            // context.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
-            context.put("main", serverI18nHelper.getString("emailVeriMain", userEntity.getLocale()));
-            context.put("link", CommonUrl.generateVerificationLink(userEntity.getVerificationId()));
-            // context.put("user", serverI18nHelper.getString("emailVeriUser", new Object[]{user.getUsername()}));
-            context.put("closing", serverI18nHelper.getString("emailVeriClosing", userEntity.getLocale()));
-            context.put("razarionTeam", serverI18nHelper.getString("emailVeriRazarionTeam", userEntity.getLocale()));
-            StringWriter stringWriter = new StringWriter();
-            template.merge(context, stringWriter);
+            // Free marker Template
+            Configuration cfg = new Configuration();
+            //Assume that the template is available under /src/main/resources/templates
+            cfg.setClassForTemplateLoading(getClass(), "/templates/");
+            cfg.setDefaultEncoding("UTF-8");
+            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+            Template template = cfg.getTemplate("registration-confirmation.ftl");
+
+            //Pass custom param values
+            Map paramMap = new HashMap();
+            // paramMap.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
+            paramMap.put("main", serverI18nHelper.getString("emailVeriMain", userEntity.getLocale()));
+            paramMap.put("link", CommonUrl.generateVerificationLink(userEntity.getVerificationId()));
+            // paramMap.put("user", serverI18nHelper.getString("emailVeriUser", new Object[]{user.getUsername()}));
+            paramMap.put("closing", serverI18nHelper.getString("emailVeriClosing", userEntity.getLocale()));
+            paramMap.put("razarionTeam", serverI18nHelper.getString("emailVeriRazarionTeam", userEntity.getLocale()));
+            Writer stringWriter = new StringWriter();
+            template.process(paramMap, stringWriter);
 
             msg.setText(stringWriter.toString(), "UTF-8", "html");
             msg.saveChanges();
@@ -258,32 +270,32 @@ public class RegisterService {
     }
 
     private void sendEmailForgotPassword(UserEntity userEntity, String link) {
-        try {
-            MimeMessage msg = new MimeMessage(mailSession);
-            msg.setFrom(new InternetAddress(NO_REPLY_EMAIL, PERSONAL_NAME));
-            msg.addRecipient(Message.RecipientType.TO, new InternetAddress(userEntity.getEmail()));
-            msg.setSubject(serverI18nHelper.getString("emailForgotPasswordSubject", userEntity.getLocale()));
-            // Setup template
-            VelocityEngine ve = new VelocityEngine();
-            ve.setProperty(VelocityEngine.RUNTIME_LOG_NAME, "VelocityEngineLog");
-            ve.init();
-            Template template = ve.getTemplate("/templates/forgot-password.vm");
-            VelocityContext context = new VelocityContext();
-            // falls vorhanden context.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
-            context.put("main1", serverI18nHelper.getString("emailForgotPasswordSubjectMain1", userEntity.getLocale()));
-            context.put("main2", serverI18nHelper.getString("emailForgotPasswordSubjectMain2", userEntity.getLocale()));
-            context.put("link", link);
-            context.put("razarionTeam", serverI18nHelper.getString("emailVeriRazarionTeam", userEntity.getLocale()));
-
-            StringWriter stringWriter = new StringWriter();
-            template.merge(context, stringWriter);
-
-            msg.setText(stringWriter.toString(), "UTF-8", "html");
-            msg.saveChanges();
-            Transport.send(msg);
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
+//        try {
+//            MimeMessage msg = new MimeMessage(mailSession);
+//            msg.setFrom(new InternetAddress(NO_REPLY_EMAIL, PERSONAL_NAME));
+//            msg.addRecipient(Message.RecipientType.TO, new InternetAddress(userEntity.getEmail()));
+//            msg.setSubject(serverI18nHelper.getString("emailForgotPasswordSubject", userEntity.getLocale()));
+//            // Setup template
+//            VelocityEngine ve = new VelocityEngine();
+//            ve.setProperty(VelocityEngine.RUNTIME_LOG_NAME, "VelocityEngineLog");
+//            ve.init();
+//            Template template = ve.getTemplate("/forgot-password.ftl");
+//            VelocityContext context = new VelocityContext();
+//            // falls vorhanden context.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
+//            context.put("main1", serverI18nHelper.getString("emailForgotPasswordSubjectMain1", userEntity.getLocale()));
+//            context.put("main2", serverI18nHelper.getString("emailForgotPasswordSubjectMain2", userEntity.getLocale()));
+//            context.put("link", link);
+//            context.put("razarionTeam", serverI18nHelper.getString("emailVeriRazarionTeam", userEntity.getLocale()));
+//
+//            StringWriter stringWriter = new StringWriter();
+//            template.merge(context, stringWriter);
+//
+//            msg.setText(stringWriter.toString(), "UTF-8", "html");
+//            msg.saveChanges();
+//            Transport.send(msg);
+//        } catch (Throwable t) {
+//            throw new RuntimeException(t);
+//        }
     }
 
     private void removeUnverifiedUsers(Date removeIfSmaller) {

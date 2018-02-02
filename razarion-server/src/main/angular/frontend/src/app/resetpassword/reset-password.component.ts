@@ -5,7 +5,7 @@ import {FrontendService} from "../service/frontend.service";
 @Component({
   templateUrl: 'reset-password.component.html'
 })
-export class RegisterComponent {
+export class ResetPasswordComponent {
   passwordResetInitiated: boolean = false;
   emailError: string = "";
   email: string = "";

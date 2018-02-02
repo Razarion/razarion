@@ -121,12 +121,29 @@ public class UserService {
     }
 
     @Transactional
-    public boolean createUnverifiedUserAndLogin(String email, String password) {
-        if (sessionHolder.isLoggedIn()) {
-            throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
+    public RegisterResult createUnverifiedUserAndLogin(String email, String password) {
+        if (email == null || email.isEmpty()) {
+            return RegisterResult.INVALID_EMAIL;
         }
-        if (verifyEmail(email) != null) {
-            return false;
+        if (password == null || password.isEmpty()) {
+            return RegisterResult.INVALID_PASSWORD;
+        }
+        if (sessionHolder.isLoggedIn()) {
+            logger.warning("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext() + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
+            return RegisterResult.USER_ALREADY_LOGGED_IN;
+        }
+        ErrorResult errorResult = verifyEmail(email);
+        if (errorResult != null) {
+            switch (errorResult) {
+                case TO_SHORT:
+                    return RegisterResult.INVALID_EMAIL;
+                case ALREADY_USED:
+                    return RegisterResult.EMAIL_ALREADY_USED;
+                case UNKNOWN_ERROR:
+                    return RegisterResult.UNKNOWN_ERROR;
+                default:
+                    logger.warning("verifyEmail(email): " + email + ". Unknown result: " + errorResult);
+            }
         }
         UserEntity userEntity = createUser(email, password);
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
@@ -134,7 +151,7 @@ public class UserService {
         // TODO if from inGame, send message to client
         registerService.startEmailVerifyingProcess(userEntity);
         loginUserContext(userEntity.toUserContext(), null);
-        return true;
+        return RegisterResult.OK;
     }
 
     @Transactional

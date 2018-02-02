@@ -12,6 +12,7 @@ import {NoCookies} from "./nocookies/nocookies.component";
 import {FacebookAppStart} from "./facebookappstart/facebook-app-start.component";
 import {EmailVerification} from "./emailverification/email-verification.component";
 import {FormsModule} from "@angular/forms";
+import {ResetPasswordComponent} from "./resetpassword/reset-password.component";
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import {FormsModule} from "@angular/forms";
     RegisterComponent,
     NoCookies,
     FacebookAppStart,
-    EmailVerification
+    EmailVerification,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
