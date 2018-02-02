@@ -8,6 +8,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.frontend.FrontendLoginState;
 import com.btxtech.server.frontend.FrontendService;
 import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
@@ -29,6 +30,8 @@ import java.util.logging.Logger;
 public class FrontendProvider {
     @Inject
     private FrontendService frontendService;
+    @Inject
+    private RegisterService registerService;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -112,6 +115,45 @@ public class FrontendProvider {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw new InternalServerErrorException();
+        }
+    }
+
+    @POST
+    @Path("verifyemaillink")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public boolean verifyEmailLink(String verificationId) {
+        try {
+            registerService.onEmailVerificationPageCalled(verificationId);
+            return true;
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            return false;
+        }
+    }
+
+    @POST
+    @Path("sendemailforgotpassword")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public boolean sendEmailForgotPassword(String email) {
+        try {
+            registerService.onForgotPassword(email);
+            return true;
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            return false;
+        }
+    }
+
+    @POST
+    @Path("savepassword")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public boolean savePassword(String uuid, String password) {
+        try {
+            registerService.onPasswordReset(uuid, password);
+            return true;
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            return false;
         }
     }
 }
