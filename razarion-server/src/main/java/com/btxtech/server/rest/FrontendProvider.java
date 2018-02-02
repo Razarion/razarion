@@ -75,12 +75,15 @@ public class FrontendProvider {
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("log")
-    public void log(@FormParam("message") String message, @FormParam("error") String error) {
-        String errorString = "";
-        if (error != null) {
-            errorString += "\n error: " + error;
+    public void log(@FormParam("message") String message, @FormParam("url") String url, @FormParam("error") String error) {
+        String aditionalString = "";
+        if (url != null) {
+            aditionalString += "\nUrl: " + url;
         }
-        logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext " + sessionHolder.getPlayerSession().getUserContext() + ".\nMessage: " + message + errorString);
+        if (error != null) {
+            aditionalString += "\nError: " + error;
+        }
+        logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext " + sessionHolder.getPlayerSession().getUserContext() + ".\nMessage: " + message + aditionalString);
     }
 
 

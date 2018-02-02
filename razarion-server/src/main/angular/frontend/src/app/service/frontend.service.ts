@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {FbAuthResponse, FrontendLoginState, LoginResult, RegisterResult, URL_FRONTEND} from "../common";
-import {PathLocationStrategy} from "@angular/common";
+import {Router} from "@angular/router";
 
 declare var RAZ_fbScriptLoadedFrontendService: any;
 declare var RAZ_fbScriptLoadedFlag: boolean;
@@ -18,7 +18,7 @@ export class FrontendService {
   private loggedIn: boolean = null;
   private cookieAllowed: boolean = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router) {
     try {
       let d = new Date();
       d.setTime(d.getTime() + 5000);
@@ -73,6 +73,7 @@ export class FrontendService {
 
   log(message: string, error: any): void {
     let body = new HttpParams().set(`message`, message);
+    body = body.set(`url`, JSON.stringify(this.router.url).toString());
     if (error) {
       body = body.set(`error`, JSON.stringify(error).toString());
     }
