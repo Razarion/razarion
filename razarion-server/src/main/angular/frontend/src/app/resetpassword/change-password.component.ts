@@ -17,7 +17,6 @@ export class ChangePasswordComponent {
   constructor(private frontendService: FrontendService, private route: ActivatedRoute, private router: Router) {
   }
 
-
   onKeyPasswordConfirm(passwordConfirm: string) {
     this.passwordConfirmError = "";
     if (this.password != passwordConfirm) {
@@ -26,8 +25,11 @@ export class ChangePasswordComponent {
   }
 
   onSave() {
+    this.passwordError = "";
     this.passwordConfirmError = "";
-    if (this.password != this.passwordConfirm) {
+    if (this.password == null || this.password == "") {
+      this.passwordError = "Bitte gib ein gültiges Passwort ein";
+    } else if (this.password != this.passwordConfirm) {
       this.passwordConfirmError = "Passwörter sind nicht identisch"
     } else {
       let uuid = this.route.snapshot.paramMap.get('id');
