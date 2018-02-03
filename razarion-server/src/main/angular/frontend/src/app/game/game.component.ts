@@ -7,8 +7,6 @@ import {Router} from "@angular/router";
   templateUrl: 'game.component.html'
 })
 
-// TODO avoid add multiple times (meta, scripts)
-
 export class GameComponent implements OnInit {
   constructor(private frontendService: FrontendService, private router: Router) {
   }
@@ -27,12 +25,20 @@ export class GameComponent implements OnInit {
     GameComponent.insertGameScript('window.RAZ_startTime = new Date().getTime();');
     GameComponent.insertMeta('gwt:property', this.frontendService.getLanguage());
     GameComponent.insertGameScript('erraiBusRemoteCommunicationEnabled = false;');
-    GameComponent.insertGameScript('erraiJaxRsJacksonMarshallingActive = true;;');
+    GameComponent.insertGameScript('erraiJaxRsJacksonMarshallingActive = true;');
     GameComponent.loadGameScriptUrl('/NativeRazarion.js');
     GameComponent.loadGameScriptUrl('/razarion_client/razarion_client.nocache.js');
   }
 
   private static loadGameScriptUrl(url: string) {
+    // Check if exits
+    let scriptsElements = document.getElementsByTagName('script');
+    for (let i = scriptsElements.length; i--;) {
+      if (scriptsElements[i].src == url) {
+        return;
+      }
+    }
+    // Add
     let scriptObject = document.createElement('script');
     // scriptObject.src = 'http://localhost:8080' + url;
     scriptObject.src = url;
