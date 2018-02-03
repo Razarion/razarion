@@ -7,13 +7,12 @@ import {ActivatedRoute, Router} from "@angular/router";
   templateUrl: 'cahnge-password.component.html'
 })
 export class ChangePasswordComponent {
-  password: string = "Passwort";
-  passwordConfirm: string = "Passwort bestätigen";
+  password: string = "";
+  passwordConfirm: string = "";
   passwordError: string = "";
   passwordConfirmError: string = "";
-  success: boolean = true;
-  failed: boolean = true;
-  sent: boolean = true;
+  success: boolean = false;
+  failed: boolean = false;
 
   constructor(private frontendService: FrontendService, private route: ActivatedRoute, private router: Router) {
   }
@@ -35,7 +34,6 @@ export class ChangePasswordComponent {
       this.frontendService.savePassword(this.password, uuid).then(success => {
         this.success = success;
         this.failed = !success;
-        this.sent = true;
       });
     }
   }

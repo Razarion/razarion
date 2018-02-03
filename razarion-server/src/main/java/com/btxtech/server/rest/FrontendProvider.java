@@ -83,7 +83,7 @@ public class FrontendProvider {
         if (error != null) {
             aditionalString += "\nError: " + error;
         }
-        logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext " + sessionHolder.getPlayerSession().getUserContext() + ".\nMessage: " + message + aditionalString);
+        logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext: " + sessionHolder.getPlayerSession().getUserContext() + "\nMessage: " + message + aditionalString);
     }
 
 

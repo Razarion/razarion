@@ -76,19 +76,16 @@ export class FrontendService {
     body = body.set(`url`, JSON.stringify(this.router.url).toString());
     if (error) {
       try {
-        let cache = [];
-        let jsonError = JSON.stringify(error, (key, value) => {
-          if (typeof value === 'object' && value !== null) {
-            if (cache.indexOf(value) !== -1) {
-              // Circular reference found, discard key
-              return;
-            }
-            // Store value in our collection
-            cache.push(value);
+        let errorMessage: string = "";
+        if (error) {
+          if (error.message) {
+            errorMessage += 'message: ' + error.message;
           }
-          return value;
-        });
-        body = body.set(`error`, jsonError);
+          if (error.stack) {
+            errorMessage += '\nstack: ' + error.stack;
+          }
+        }
+        body = body.set(`error`, errorMessage);
       } catch (innerErr) {
         body = body.set(`error`, "Error handling error: '" + innerErr.toString() + "' Original error '" + error.toString() + "'");
       }

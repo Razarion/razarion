@@ -31,6 +31,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -146,16 +147,8 @@ public class RegisterService {
             msg.addRecipient(Message.RecipientType.TO, new InternetAddress(userEntity.getEmail()));
             msg.setSubject(serverI18nHelper.getString("emailSubject", userEntity.getLocale()));
             // Setup template
-            // Free marker Template
-            Configuration cfg = new Configuration();
-            //Assume that the template is available under /src/main/resources/templates
-            cfg.setClassForTemplateLoading(getClass(), "/templates/");
-            cfg.setDefaultEncoding("UTF-8");
-            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-            Template template = cfg.getTemplate("registration-confirmation.ftl");
-
-            //Pass custom param values
-            Map paramMap = new HashMap();
+            Template template = createTemplate("registration-confirmation.ftl");
+            Map<String, String> paramMap = new HashMap<>();
             // paramMap.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
             paramMap.put("main", serverI18nHelper.getString("emailVeriMain", userEntity.getLocale()));
             paramMap.put("link", CommonUrl.generateVerificationLink(userEntity.getVerificationId()));
@@ -269,32 +262,28 @@ public class RegisterService {
     }
 
     private void sendEmailForgotPassword(UserEntity userEntity, String link) {
-//        try {
-//            MimeMessage msg = new MimeMessage(mailSession);
-//            msg.setFrom(new InternetAddress(NO_REPLY_EMAIL, PERSONAL_NAME));
-//            msg.addRecipient(Message.RecipientType.TO, new InternetAddress(userEntity.getEmail()));
-//            msg.setSubject(serverI18nHelper.getString("emailForgotPasswordSubject", userEntity.getLocale()));
-//            // Setup template
-//            VelocityEngine ve = new VelocityEngine();
-//            ve.setProperty(VelocityEngine.RUNTIME_LOG_NAME, "VelocityEngineLog");
-//            ve.init();
-//            Template template = ve.getTemplate("/forgot-password.ftl");
-//            VelocityContext context = new VelocityContext();
-//            // falls vorhanden context.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
-//            context.put("main1", serverI18nHelper.getString("emailForgotPasswordSubjectMain1", userEntity.getLocale()));
-//            context.put("main2", serverI18nHelper.getString("emailForgotPasswordSubjectMain2", userEntity.getLocale()));
-//            context.put("link", link);
-//            context.put("razarionTeam", serverI18nHelper.getString("emailVeriRazarionTeam", userEntity.getLocale()));
-//
-//            StringWriter stringWriter = new StringWriter();
-//            template.merge(context, stringWriter);
-//
-//            msg.setText(stringWriter.toString(), "UTF-8", "html");
-//            msg.saveChanges();
-//            Transport.send(msg);
-//        } catch (Throwable t) {
-//            throw new RuntimeException(t);
-//        }
+        try {
+            MimeMessage msg = new MimeMessage(mailSession);
+            msg.setFrom(new InternetAddress(NO_REPLY_EMAIL, PERSONAL_NAME));
+            msg.addRecipient(Message.RecipientType.TO, new InternetAddress(userEntity.getEmail()));
+            msg.setSubject(serverI18nHelper.getString("emailForgotPasswordSubject", userEntity.getLocale()));
+            // Setup template
+            Template template = createTemplate("forgot-password.ftl");
+            Map<String, String> paramMap = new HashMap<>();
+            // falls vorhanden context.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
+            paramMap.put("main1", serverI18nHelper.getString("emailForgotPasswordSubjectMain1", userEntity.getLocale()));
+            paramMap.put("main2", serverI18nHelper.getString("emailForgotPasswordSubjectMain2", userEntity.getLocale()));
+            paramMap.put("link", link);
+            paramMap.put("razarionTeam", serverI18nHelper.getString("emailVeriRazarionTeam", userEntity.getLocale()));
+            Writer stringWriter = new StringWriter();
+            template.process(paramMap, stringWriter);
+
+            msg.setText(stringWriter.toString(), "UTF-8", "html");
+            msg.saveChanges();
+            Transport.send(msg);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 
     private void removeUnverifiedUsers(Date removeIfSmaller) {
@@ -330,5 +319,14 @@ public class RegisterService {
                 entityManager.remove(forgotPasswordEntity);
             });
         }
+    }
+
+    private Template createTemplate(String name) throws IOException {
+        Configuration cfg = new Configuration(Configuration.getVersion());
+        //Assume that the template is available under /src/main/resources/templates
+        cfg.setClassForTemplateLoading(getClass(), "/templates/");
+        cfg.setDefaultEncoding("UTF-8");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+        return cfg.getTemplate(name);
     }
 }

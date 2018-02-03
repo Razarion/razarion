@@ -14,7 +14,7 @@
       errorMessage = errorMessage.replace(/\//g, "-");
       var pathName = encodeURI(window.location.pathname);
       var img = document.createElement('img');
-      img.src = '/rest/frontend/simplelog/' + errorMessage + '/' + new Date().getTime() + '/' + pathName.replace(/\//g, "-");
+      img.src = '/rest/frontend/simplelog/' + encodeURI(errorMessage) + '/' + new Date().getTime() + '/' + pathName.replace(/\//g, "-");
       document.body.appendChild(img);
       return true;
     }
