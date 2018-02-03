@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
   }
 
   onLogin() {
-    this.frontendService.login(this.email, this.password).then(loginResult => {
+    this.frontendService.login(this.email, this.password, this.rememberMe).then(loginResult => {
       switch (loginResult) {
         case LoginResult.OK:
           this.router.navigate(['/game']);

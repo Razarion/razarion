@@ -1,8 +1,10 @@
 package com.btxtech.server.frontend;
 
+import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,14 +20,31 @@ public class FrontendService {
     private SessionHolder sessionHolder;
     @Inject
     private UserService userService;
+    @Inject
+    private RegisterService registerService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
 
-    public FrontendLoginState isLoggedIn() {
-        FrontendLoginState frontendLoginState = new FrontendLoginState();
+    public InternalLoginState isLoggedIn(String loginCookieValue) {
+        InternalLoginState internalLoginState = new InternalLoginState();
+        internalLoginState.setFrontendLoginState(new FrontendLoginState());
         if (sessionHolder.isLoggedIn()) {
-            frontendLoginState.setLoggedIn(true);
+            internalLoginState.getFrontendLoginState().setLoggedIn(true);
+        } else {
+            if (loginCookieValue != null) {
+                try {
+                    String newLoginCookieValue = registerService.cookieLogin(loginCookieValue);
+                    if (newLoginCookieValue != null) {
+                        internalLoginState.getFrontendLoginState().setLoggedIn(true);
+                        internalLoginState.setLoginCookieValue(newLoginCookieValue);
+                    }
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                }
+            }
         }
-        frontendLoginState.setLanguage(sessionHolder.getPlayerSession().getLocale().toString());
-        return frontendLoginState;
+        internalLoginState.getFrontendLoginState().setLanguage(sessionHolder.getPlayerSession().getLocale().toString());
+        return internalLoginState;
     }
 
     public FrontendLoginState createErrorFrontendLoginState() {

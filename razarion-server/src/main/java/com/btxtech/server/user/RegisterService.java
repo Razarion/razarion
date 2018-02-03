@@ -60,6 +60,7 @@ import java.util.logging.Logger;
 public class RegisterService {
     public static final String NO_REPLY_EMAIL = "no-reply@razarion.com";
     public static final String PERSONAL_NAME = "Razarion";
+    private static final String COOKIE_DELIMITER = ";";
     private static long CLEANUP_DELAY = 24 * 60 * 60 * 1000; // Is used in test cases
     @Resource(name = "DefaultManagedScheduledExecutorService")
     private ManagedScheduledExecutorService scheduleExecutor;
@@ -328,5 +329,60 @@ public class RegisterService {
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         return cfg.getTemplate(name);
+    }
+
+    /**
+     * Inspired by: http://jaspan.com/improved_persistent_login_cookie_best_practice
+     * Cookie stealing protection not implemented
+     *
+     * @param cookieValue cookei value
+     */
+    @Transactional
+    public String cookieLogin(String cookieValue) {
+        String composite = new String(Base64.getDecoder().decode(cookieValue));
+        String[] parts = composite.split(COOKIE_DELIMITER);
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Unable to split decoded cookieValue: " + composite);
+        }
+        String email = new String(Base64.getDecoder().decode(parts[0]));
+        String token = new String(Base64.getDecoder().decode(parts[1]));
+        if (!removeLoginCookieEntry(email, token)) {
+            return null;
+        }
+        userService.get().autoLoginUser(email);
+        return setupLoginCookieEntry(email);
+    }
+
+    private boolean removeLoginCookieEntry(String email, String token) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<LoginCookieEntity> criteriaQuery = criteriaBuilder.createQuery(LoginCookieEntity.class);
+        Root<LoginCookieEntity> from = criteriaQuery.from(LoginCookieEntity.class);
+        criteriaQuery.select(from);
+        criteriaQuery.where(criteriaBuilder.and(criteriaBuilder.equal(from.get(LoginCookieEntity_.user).get(UserEntity_.email), email),
+                criteriaBuilder.equal(from.get(LoginCookieEntity_.token), token)));
+        List<LoginCookieEntity> loginCookieEntities = entityManager.createQuery(criteriaQuery).getResultList();
+        if (loginCookieEntities == null || loginCookieEntities.isEmpty()) {
+            return false;
+        }
+        if (loginCookieEntities.size() != 1) {
+            logger.warning("More the one LoginCookieEntity for email: " + email + " token: " + token);
+        }
+        loginCookieEntities.forEach(loginCookieEntity -> entityManager.remove(loginCookieEntity));
+        return true;
+    }
+
+    @Transactional
+    public String setupLoginCookieEntry(String email) {
+        String token = UUID.randomUUID().toString();
+        // Save in DB
+        LoginCookieEntity loginCookieEntity = new LoginCookieEntity();
+        loginCookieEntity.setTimeStamp(new Date());
+        loginCookieEntity.setUser(userService.get().getUserEntity4Email(email));
+        loginCookieEntity.setToken(token);
+        entityManager.persist(loginCookieEntity);
+        //  Encode
+        String part0 = new String(Base64.getEncoder().encode(email.getBytes()));
+        String part1 = new String(Base64.getEncoder().encode(token.getBytes()));
+        return new String(Base64.getEncoder().encode((part0 + COOKIE_DELIMITER + part1).getBytes()));
     }
 }

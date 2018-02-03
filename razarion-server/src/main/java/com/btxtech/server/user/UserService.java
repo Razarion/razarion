@@ -93,13 +93,41 @@ public class UserService {
         return userContext;
     }
 
-
     @Transactional
     public LoginResult loginUser(String email, String password) {
         if (sessionHolder.isLoggedIn()) {
             throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
         }
 
+        UserEntity userEntity = getUserEntity4Email(email);
+        if (userEntity == null) {
+            return LoginResult.WRONG_EMAIL;
+        }
+
+        if (!registerService.verifySHA512SecurePassword(userEntity.getPasswordHash(), password)) {
+            return LoginResult.WRONG_PASSWORD;
+        }
+        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+        loginUserContext(userEntity.toUserContext(), null);
+        return LoginResult.OK;
+    }
+
+    @Transactional
+    public void autoLoginUser(String email) {
+        if (sessionHolder.isLoggedIn()) {
+            throw new IllegalStateException("User is already logged in: " + sessionHolder.getPlayerSession().getUserContext());
+        }
+
+        UserEntity userEntity = getUserEntity4Email(email);
+        if (userEntity == null) {
+            throw new IllegalArgumentException("No user for email: " + email);
+        }
+
+        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
+        loginUserContext(userEntity.toUserContext(), null);
+    }
+
+    public UserEntity getUserEntity4Email(String email) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<UserEntity> criteriaQuery = criteriaBuilder.createQuery(UserEntity.class);
         Root<UserEntity> from = criteriaQuery.from(UserEntity.class);
@@ -109,18 +137,12 @@ public class UserService {
         ));
         List<UserEntity> users = entityManager.createQuery(criteriaQuery).getResultList();
         if (users == null || users.isEmpty()) {
-            return LoginResult.WRONG_EMAIL;
+            return null;
         }
         if (users.size() != 1) {
             logger.warning("UserService: more then one user found for email: " + email + ". SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
         }
-        UserEntity userEntity = users.get(0);
-        if (!registerService.verifySHA512SecurePassword(userEntity.getPasswordHash(), password)) {
-            return LoginResult.WRONG_PASSWORD;
-        }
-        historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
-        loginUserContext(userEntity.toUserContext(), null);
-        return LoginResult.OK;
+        return users.get(0);
     }
 
     public void logout() {

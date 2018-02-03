@@ -49,7 +49,6 @@ export class FrontendService {
             this.loggedIn = true;
             resolve(true);
           } else {
-            // TODO remember me goes here
             this.fbTimerId = window.setTimeout(() => this.onFbTimeout(), FB_TIMEOUT);
             if (RAZ_fbScriptLoadedFlag) {
               this.checkFbLoginState();
@@ -184,9 +183,9 @@ export class FrontendService {
     this.resolve(false);
   }
 
-  login(email: string, password: string): Promise<LoginResult> {
+  login(email: string, password: string, rememberMe: boolean): Promise<LoginResult> {
     return new Promise((resolve) => {
-      const body = new HttpParams().set(`email`, email).set(`password`, password);
+      const body = new HttpParams().set('email', email).set('password', password).set('rememberMe', rememberMe.toString());
       this.http.post<LoginResult>(URL_FRONTEND + '/login', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
         loginResult => {
           if (loginResult == LoginResult.OK) {
@@ -207,7 +206,7 @@ export class FrontendService {
 
   register(email: string, password: string, rememberMe: boolean): Promise<RegisterResult> {
     return new Promise((resolve) => {
-      const body = new HttpParams().set(`email`, email).set(`password`, password);
+      const body = new HttpParams().set(`email`, email).set(`password`, password).set('rememberMe', rememberMe.toString());
       this.http.post<RegisterResult>(URL_FRONTEND + '/createunverifieduser', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
         registerResult => {
           if (registerResult == RegisterResult.OK) {

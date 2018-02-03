@@ -5,8 +5,8 @@ package com.btxtech.server.rest;
   on 27.01.2018.
  */
 
-import com.btxtech.server.frontend.FrontendLoginState;
 import com.btxtech.server.frontend.FrontendService;
+import com.btxtech.server.frontend.InternalLoginState;
 import com.btxtech.server.frontend.LoginResult;
 import com.btxtech.server.user.RegisterResult;
 import com.btxtech.server.user.RegisterService;
@@ -18,6 +18,7 @@ import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
@@ -26,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
 import java.util.logging.Logger;
@@ -33,6 +35,8 @@ import java.util.logging.Logger;
 @Path(CommonUrl.FRONTEND_PATH)
 public class FrontendProvider {
     public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
+    private static final String LOGIN_COOKIE_NAME = "LoginToken";
+    private static final int LOGIN_COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
     @Inject
     private FrontendService frontendService;
     @Inject
@@ -49,12 +53,17 @@ public class FrontendProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("isloggedin")
-    public FrontendLoginState isLoggedIn() {
+    public Response isLoggedIn(@CookieParam(LOGIN_COOKIE_NAME) String loginCookieValue) {
         try {
-            return frontendService.isLoggedIn();
+            InternalLoginState internalLoginState = frontendService.isLoggedIn(loginCookieValue);
+            Response.ResponseBuilder responseBuilder = Response.ok(internalLoginState.getFrontendLoginState());
+            if (internalLoginState.getLoginCookieValue() != null) {
+                responseBuilder = responseBuilder.cookie(generateLoginCookie(internalLoginState.getLoginCookieValue()));
+            }
+            return responseBuilder.build();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            return frontendService.createErrorFrontendLoginState();
+            return Response.ok(frontendService.createErrorFrontendLoginState()).build();
         }
     }
 
@@ -107,9 +116,14 @@ public class FrontendProvider {
     @Path("login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public LoginResult loginUser(@FormParam("email") String email, @FormParam("password") String password) {
+    public Response loginUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe) {
         try {
-            return userService.loginUser(email, password);
+            LoginResult loginResult = userService.loginUser(email, password);
+            Response.ResponseBuilder responseBuilder = Response.ok(loginResult);
+            if (loginResult == LoginResult.OK && rememberMe) {
+                responseBuilder = responseBuilder.cookie(generateLoginCookie(registerService.setupLoginCookieEntry(email)));
+            }
+            return responseBuilder.build();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw new InternalServerErrorException();
@@ -120,12 +134,17 @@ public class FrontendProvider {
     @Path("createunverifieduser")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public RegisterResult createUnverifiedUser(@FormParam("email") String email, @FormParam("password") String password) {
+    public Response createUnverifiedUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe) {
         try {
-            return userService.createUnverifiedUserAndLogin(email, password);
+            RegisterResult registerResult = userService.createUnverifiedUserAndLogin(email, password);
+            Response.ResponseBuilder responseBuilder = Response.ok(registerResult);
+            if (registerResult == RegisterResult.OK && rememberMe) {
+                responseBuilder = responseBuilder.cookie(generateLoginCookie(registerService.setupLoginCookieEntry(email)));
+            }
+            return responseBuilder.build();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            return RegisterResult.UNKNOWN_ERROR;
+            return Response.ok(RegisterResult.UNKNOWN_ERROR).build();
         }
     }
 
@@ -191,5 +210,9 @@ public class FrontendProvider {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
+    }
+
+    private NewCookie generateLoginCookie(String value) {
+        return new NewCookie(LOGIN_COOKIE_NAME, value, null, null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
     }
 }
