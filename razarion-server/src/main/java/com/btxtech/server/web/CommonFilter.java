@@ -1,5 +1,6 @@
 package com.btxtech.server.web;
 
+import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -22,19 +23,21 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 28.01.2018.
  */
-@WebFilter(filterName = "razarion-common-filter", urlPatterns = {"/*"})
+@WebFilter(filterName = "razarion-common-filter", urlPatterns = {"/*", "/"})
 public class CommonFilter implements Filter {
     public enum AngularType {
         FRONTEND,
         BACKEND,
         NONE
     }
-
+    private static final String FRONTEND_FILE = CommonUrl.FRONTEND_ANGULAR_HTML_FILE.toUpperCase();
     private static final String BACKEND = CommonUrl.ANGULAR_BACKEND_PATH.toUpperCase();
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private Logger logger;
+    @Inject
+    private TrackerPersistence trackerPersistence;
     private Collection<String> excludePaths = convertFilterStrings(
             CommonUrl.APPLICATION_PATH,
             CommonUrl.CLIENT_PATH,
@@ -66,6 +69,7 @@ public class CommonFilter implements Filter {
             // logger.warning(servletRequest.getRequestURI() + ": " + extractAngularType(servletRequest));
             switch (extractAngularType(servletRequest)) {
                 case FRONTEND:
+                    trackerPersistence.onPage("Frontend", servletRequest);
                     request.getRequestDispatcher(CommonUrl.FRONTEND_ANGULAR_HTML_FILE).forward(request, response);
                     break;
                 case BACKEND:
@@ -91,6 +95,9 @@ public class CommonFilter implements Filter {
 
     private AngularType extractAngularType(HttpServletRequest req) {
         String requestPath = req.getServletPath().toUpperCase();
+        if(requestPath.startsWith(FRONTEND_FILE)) {
+            return AngularType.FRONTEND;
+        }
         if (requestPath.startsWith(BACKEND)) {
             if (isKnownType(requestPath)) {
                 return AngularType.NONE;
