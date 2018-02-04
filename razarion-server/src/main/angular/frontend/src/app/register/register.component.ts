@@ -116,6 +116,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.router.navigate(['/game']);
   }
 
+  onContinue() {
+    this.router.navigate(['/game']);
+  }
+
   static validateEmail(email) {
     if (email == null || email == "") {
       return false;

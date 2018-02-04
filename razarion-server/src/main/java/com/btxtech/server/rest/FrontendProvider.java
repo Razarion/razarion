@@ -8,6 +8,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.frontend.FrontendService;
 import com.btxtech.server.frontend.InternalLoginState;
 import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.user.RegisterResult;
 import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
@@ -49,6 +50,8 @@ public class FrontendProvider {
     private SessionHolder sessionHolder;
     @Inject
     private UserService userService;
+    @Inject
+    private TrackerPersistence trackerPersistence;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -207,6 +210,17 @@ public class FrontendProvider {
     public void savePassword() {
         try {
             userService.logout();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
+    }
+
+    @POST
+    @Path("tracknavigation")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public void trackNavigation(@FormParam("url") String url) {
+        try {
+            trackerPersistence.onFrontendNavigation(url, sessionHolder.getPlayerSession().getHttpSessionId());
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

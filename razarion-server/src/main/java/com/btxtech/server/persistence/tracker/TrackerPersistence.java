@@ -176,6 +176,15 @@ public class TrackerPersistence {
         }
     }
 
+    @Transactional
+    public void onFrontendNavigation(String url, String sessionId) {
+        FrontendNavigationEntity frontendNavigationEntity = new FrontendNavigationEntity();
+        frontendNavigationEntity.setSessionId(sessionId);
+        frontendNavigationEntity.setTimeStamp(new Date());
+        frontendNavigationEntity.setUrl(url);
+        entityManager.persist(frontendNavigationEntity);
+    }
+
     public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) throws JsonProcessingException {
         trackingContainerMongoDb.storeTrackingStart(httpSessionId, trackingStart);
     }

@@ -296,4 +296,13 @@ export class FrontendService {
       this.log("FB.logout catch", err);
     }
   }
+
+  trackNavigation(url: string) {
+    this.http.post<boolean>(URL_FRONTEND + '/tracknavigation', new HttpParams().set(`url`, url), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
+      () => {},
+      error => {
+        this.log("verifyemaillink catch", error);
+      }
+    );
+  }
 }

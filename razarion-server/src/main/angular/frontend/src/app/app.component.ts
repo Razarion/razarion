@@ -1,4 +1,6 @@
 import {Component} from '@angular/core';
+import {NavigationStart, Router} from "@angular/router";
+import {FrontendService} from "./service/frontend.service";
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,17 @@ import {Component} from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'Razarion';
+
+  constructor(private router: Router, private frontendService: FrontendService) {
+    router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        frontendService.trackNavigation(event.url);
+      }
+      // NavigationEnd
+      // NavigationCancel
+      // NavigationError
+      // RoutesRecognized
+    });
+  }
+
 }
