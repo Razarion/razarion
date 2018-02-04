@@ -17,6 +17,7 @@ export class FrontendService {
   private fbTimerId: number;
   private loggedIn: boolean = null;
   private cookieAllowed: boolean = null;
+  private fbScriptLoadedCallbacks: any[] = [];
 
   constructor(private http: HttpClient, private router: Router) {
     try {
@@ -50,12 +51,7 @@ export class FrontendService {
             resolve(true);
           } else {
             this.fbTimerId = window.setTimeout(() => this.onFbTimeout(), FB_TIMEOUT);
-            if (RAZ_fbScriptLoadedFlag) {
-              this.checkFbLoginState();
-            } else {
-              RAZ_fbScriptLoadedFrontendService = this;
-              RAZ_fbScriptLoadedCallback = FrontendService.onFbScriptLoaded;
-            }
+            this.fbScriptLoaded().then(() => this.checkFbLoginState());
           }
         } catch (err) {
           this.log("Handle isloggedin response", err);
@@ -173,8 +169,26 @@ export class FrontendService {
     }
   }
 
+  fbScriptLoaded(): Promise<void> {
+    if (RAZ_fbScriptLoadedFlag) {
+      return Promise.resolve();
+    } else {
+      RAZ_fbScriptLoadedFrontendService = this;
+      RAZ_fbScriptLoadedCallback = FrontendService.onFbScriptLoaded;
+      return new Promise((resolve) => {
+        this.fbScriptLoadedCallbacks.push(resolve);
+      });
+    }
+  }
+
   static onFbScriptLoaded(frontendService: FrontendService) {
-    frontendService.checkFbLoginState();
+    for (let i = 0; i < frontendService.fbScriptLoadedCallbacks.length; i++) {
+      try {
+        frontendService.fbScriptLoadedCallbacks[i]();
+      } catch (err) {
+        frontendService.log("rontendService.fbScriptLoadedCallbacks failed", err);
+      }
+    }
   }
 
   private onFbTimeout() {
@@ -289,7 +303,7 @@ export class FrontendService {
         this.log("logout catch", error);
       });
     try {
-      FB.logout(function (response) {
+      FB.logout((response) => {
         // user is now logged out
       });
     } catch (err) {
@@ -299,7 +313,8 @@ export class FrontendService {
 
   trackNavigation(url: string) {
     this.http.post<boolean>(URL_FRONTEND + '/tracknavigation', new HttpParams().set(`url`, url), {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe(
-      () => {},
+      () => {
+      },
       error => {
         this.log("verifyemaillink catch", error);
       }

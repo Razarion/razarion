@@ -1,4 +1,4 @@
-﻿import {Component, OnDestroy, OnInit} from '@angular/core';
+﻿import {AfterViewChecked, Component, OnDestroy, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
 import {RegisterResult} from "../common";
@@ -6,7 +6,7 @@ import {RegisterResult} from "../common";
 @Component({
   templateUrl: 'register.component.html'
 })
-export class RegisterComponent implements OnInit, OnDestroy {
+export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
   email: string = "";
   password: string = "";
   passwordConfirm: string = "";
@@ -16,6 +16,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   passwordError: string = "";
   passwordConfirmError: string = "";
   registered: boolean = false;
+  bouncingStopper: boolean = false;
 
   constructor(private frontendService: FrontendService, private router: Router) {
   }
@@ -30,20 +31,31 @@ export class RegisterComponent implements OnInit, OnDestroy {
         this.router.navigate(['/game']);
       }
     });
-    if (this.facebookEventCallback != null) {
-      this.frontendService.unsubscribeFbAuthChange(this.facebookEventCallback);
-      this.facebookEventCallback = null;
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.bouncingStopper) {
+      return;
     }
-    this.facebookEventCallback = function (fbResponse) {
-      this.frontendService.onFbAuthorized().then(success => {
-        if (success) {
-          this.registered = true;
-          this.router.navigate(['/game']);
+    this.bouncingStopper = true;
+    this.frontendService.fbScriptLoaded().then(() => {
+      if (this.facebookEventCallback != null) {
+        this.frontendService.unsubscribeFbAuthChange(this.facebookEventCallback);
+        this.facebookEventCallback = null;
+      }
+      this.facebookEventCallback = (fbResponse) => {
+        if (fbResponse.status === "connected") {
+          this.frontendService.onFbAuthorized(fbResponse.authResponse).then(success => {
+            if (success) {
+              this.registered = true;
+              this.router.navigate(['/game']);
+            }
+          });
         }
-      });
-    };
-    this.frontendService.subscribeFbAuthChange(this.facebookEventCallback);
-    this.frontendService.parseFbXFBML();
+      };
+      this.frontendService.subscribeFbAuthChange(this.facebookEventCallback);
+      this.frontendService.parseFbXFBML();
+    });
   }
 
   ngOnDestroy(): void {
