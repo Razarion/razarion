@@ -1,4 +1,4 @@
-﻿import {Component, OnInit} from '@angular/core';
+﻿import {Component, NgZone, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
 
@@ -7,7 +7,7 @@ import {FrontendService} from "../service/frontend.service";
 })
 
 export class FacebookAppStart implements OnInit {
-  constructor(private frontendService: FrontendService, private router: Router) {
+  constructor(private frontendService: FrontendService, private router: Router, private zone: NgZone) {
   }
 
   ngOnInit(): void {
@@ -22,10 +22,12 @@ export class FacebookAppStart implements OnInit {
         this.frontendService.fbLogin(response => {
           if (response && response.authResponse) {
             this.frontendService.onFbAuthorized(response.authResponse).then(() => {
-              this.router.navigate(['/game']);
+              // Angular problem with 3rd part library (Facebook) and routing https://github.com/angular/angular/issues/18254
+              this.zone.run(() => this.router.navigate(['/game']));
             });
           } else {
-            this.router.navigate(['/game']);
+            // Angular problem with 3rd part library (Facebook) and routing https://github.com/angular/angular/issues/18254
+            this.zone.run(() => this.router.navigate(['/game']));
           }
         });
 

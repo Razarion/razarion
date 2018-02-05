@@ -1,4 +1,4 @@
-﻿import {AfterViewChecked, Component, OnDestroy, OnInit} from '@angular/core';
+﻿import {AfterViewChecked, Component, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
 import {RegisterResult} from "../common";
@@ -18,7 +18,7 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
   registered: boolean = false;
   bouncingStopper: boolean = false;
 
-  constructor(private frontendService: FrontendService, private router: Router) {
+  constructor(private frontendService: FrontendService, private router: Router, private zone: NgZone) {
   }
 
   ngOnInit(): void {
@@ -48,7 +48,8 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.frontendService.onFbAuthorized(fbResponse.authResponse).then(success => {
             if (success) {
               this.registered = true;
-              this.router.navigate(['/game']);
+              // Angular problem with 3rd part library (Facebook) and routing https://github.com/angular/angular/issues/18254
+              this.zone.run(() => this.router.navigate(['/game']));
             }
           });
         }
