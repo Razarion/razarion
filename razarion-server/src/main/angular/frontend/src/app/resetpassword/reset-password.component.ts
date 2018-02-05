@@ -17,7 +17,7 @@ export class ResetPasswordComponent {
 
   onReset() {
     this.emailError = "";
-    if (!RegisterComponent.validateEmail(this.email)) {
+    if (!FrontendService.validateEmail(this.email)) {
       this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
       return;
     }

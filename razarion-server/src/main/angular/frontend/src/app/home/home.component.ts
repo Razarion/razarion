@@ -5,7 +5,8 @@ import {LoginResult} from "../common";
 
 
 @Component({
-  templateUrl: 'home.component.html'
+  templateUrl: 'home.component.html',
+  styleUrls: ['./home.component.css']
 })
 
 export class HomeComponent implements OnInit {
@@ -30,6 +31,11 @@ export class HomeComponent implements OnInit {
   }
 
   onLogin() {
+    if (!FrontendService.validateEmail(this.email)) {
+      this.loginError = "Bitte gib eine gültige E-Mail Adresse an";
+      return;
+    }
+
     this.frontendService.login(this.email, this.password, this.rememberMe).then(loginResult => {
       switch (loginResult) {
         case LoginResult.OK:

@@ -72,7 +72,7 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.passwordError = "";
     this.passwordConfirmError = "";
 
-    if (!RegisterComponent.validateEmail(this.email)) {
+    if (!FrontendService.validateEmail(this.email)) {
       this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
     } else if (this.password == "") {
       this.passwordError = "Passwort is leer"
@@ -108,7 +108,7 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   onKeyEmail(email: string) {
     this.emailError = "";
-    if (!RegisterComponent.validateEmail(email)) {
+    if (!FrontendService.validateEmail(email)) {
       this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
       return;
     }
@@ -135,13 +135,4 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
   onContinue() {
     this.router.navigate(['/game']);
   }
-
-  static validateEmail(email) {
-    if (email == null || email == "") {
-      return false;
-    }
-    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  }
-
 }

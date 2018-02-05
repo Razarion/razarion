@@ -1,34 +1,75 @@
-﻿<div>
-  <h1>Home</h1>
-  <p><a [routerLink]="['/game']">Game</a></p>
+﻿<div class="main">
+  <div class="middle">
 
-  Login
-  <table>
-    <tr>
-      <td>
-        <input [(ngModel)]="email" type="email">
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <input [(ngModel)]="password" type="password">
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <input [(ngModel)]="rememberMe" type="checkbox">Angemeldet bleiben
-      </td>
-    </tr>
-    <tr>
-      <td>
-        Angemeldet bleiben <button (click)="onLogin()">Anmelden</button>
-      </td>
-    </tr>
-  </table>
-  <p><a [routerLink]="['/reset-password']">Passwort vergessen</a></p>
+    <div class="middleCenter">
+      <div class="info">
+        <ul>
+          <li>
+            <h2>ECHTZEIT ACTION STRATEGIE</h2>
+            <p>Befehlige ein riesiges Arsenal von Einheiten und Gebäuden. Erlebe actiongeladene Schlachten komplett in Echtzeit.</p>
+          </li>
+          <li>
+            <h2>RIESIGE MULTISPIELER KARTEN</h2>
+            <p>Spiele gegen andere Spieler oder verbünde Dich mit Ihnen und bestehe hunderte von Aufgaben auf verschiedenen Planeten.</p>
+          </li>
+          <li>
+            <h2>ERHALTE ERFAHRUNGSPUNKTE UND STEIGERE DEINEN LEVEL</h2>
+            <p>Schalte stärkere Einheiten frei, sammle Beute und setze in der Werkstatt einzigartige Waffen zusammen.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="login">
 
-  <p><a [routerLink]="['/register']">Register</a></p>
+        <table>
+          <tr>
+            <td colspan="3">
+              <a [routerLink]="['/register']">Register</a>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <div *ngIf="loginError" class="loginError">{{loginError}}</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="emailField">E-Mail Adresse</label>
+            </td>
+            <td>
+              <label for="passwordField">Passwort</label>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input [(ngModel)]="email" type="email" id="emailField">
+            </td>
+            <td>
+              <input [(ngModel)]="password" type="password" id="passwordField">
+            </td>
+            <td>
+              <button (click)="onLogin()">Anmelden</button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <input [(ngModel)]="rememberMe" type="checkbox" id="rememberMeCheckbox"><label for="rememberMeCheckbox">Angemeldet bleiben</label>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <a [routerLink]="['/reset-password']">Passwort vergessen</a>
+            </td>
+          </tr>
+        </table>
+      </div>
 
+      <a [routerLink]="['/game']" class="play_btn">
+        <div>
+          <p class="big">Spielen</p>
+          <p class="small">Ohne Registrierung</p>
+        </div>
+      </a>
 
-  <div *ngIf="loginError">{{loginError}}</div>
+    </div>
+  </div>
 </div>
