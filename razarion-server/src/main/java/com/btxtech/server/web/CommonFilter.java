@@ -48,7 +48,8 @@ public class CommonFilter implements Filter {
             "/images",
             "/marketinghist",
             "/resources",
-            "/faces"
+            "/faces",
+            "/assets"
     );
     private Collection<String> excludeTypes = convertFilterStrings(
             ".js",

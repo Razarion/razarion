@@ -17,6 +17,7 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
   passwordConfirmError: string = "";
   registered: boolean = false;
   bouncingStopper: boolean = false;
+  working: boolean = false;
 
   constructor(private frontendService: FrontendService, private router: Router, private zone: NgZone) {
   }
@@ -78,7 +79,9 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
     } else if (this.password != this.passwordConfirm) {
       this.passwordConfirmError = "Passwörter sind nicht identisch"
     } else {
+      this.working = true;
       this.frontendService.register(this.email, this.password, this.rememberMe).then(registerResult => {
+        this.working = false;
         switch (registerResult) {
           case RegisterResult.USER_ALREADY_LOGGED_IN:
             this.emailError = "Du bist bereits eingeloggt";

@@ -10,6 +10,7 @@ export class ResetPasswordComponent {
   passwordResetInitiated: boolean = false;
   emailError: string = "";
   email: string = "";
+  working: boolean = false;
 
   constructor(private frontendService: FrontendService) {
   }
@@ -21,7 +22,9 @@ export class ResetPasswordComponent {
       return;
     }
 
+    this.working = true;
     this.frontendService.sendEmailForgotPassword(this.email).then(success => {
+      this.working = false;
       if (success) {
         this.passwordResetInitiated = true;
       } else {
