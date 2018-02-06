@@ -1,4 +1,4 @@
-.main {
+.homePageMain {
   display: table;
   height: 100%;
   width: 100%;
@@ -6,13 +6,13 @@
   margin: 0;
 }
 
-.middle {
+.homePageMiddle {
   display: table-cell;
   vertical-align: middle;
   background: url('/assets/HomePage.jpg') center no-repeat;
 }
 
-.middleCenter {
+.homePageMiddleCenter {
   width: 1000px;
   height: 400px;
   margin: auto;
