@@ -4,7 +4,8 @@ import {FrontendService} from "../service/frontend.service";
 import {RegisterResult} from "../common";
 
 @Component({
-  templateUrl: 'register.component.html'
+  templateUrl: 'register.component.html',
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
   email: string = "";
@@ -121,6 +122,13 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
+  onKeyPassword(password: string) {
+    this.passwordError = "";
+    if (password == "") {
+      this.passwordError = "Passwort is leer";
+    }
+  }
+
   onKeyPasswordConfirm(passwordConfirm: string) {
     this.passwordConfirmError = "";
     if (this.password != passwordConfirm) {
@@ -129,10 +137,6 @@ export class RegisterComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   onPlay() {
-    this.router.navigate(['/game']);
-  }
-
-  onContinue() {
     this.router.navigate(['/game']);
   }
 }
