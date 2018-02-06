@@ -1,0 +1,28 @@
+﻿.emailVerification {
+  left: 185px;
+  /*top: -145px;*/
+  top: 25px;
+  width: 380px;
+  height: 100px;
+  position: absolute;
+  border: 8px solid transparent;
+  background-image: url('/images/DialogBackground.png');
+  border-image-source: url('/images/Border.png');
+  border-image-slice: 8;
+  border-image-repeat: repeat;
+  box-shadow: 3px 3px 15px 1px #000;
+}
+
+.emailVerification p {
+  font-weight: normal;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #CCC;
+  font-size: 15px;
+  margin: 0;
+}
+
+.emailVerification div{
+  padding-top: 20px;
+  display: table;
+  margin: 0 auto;
+}

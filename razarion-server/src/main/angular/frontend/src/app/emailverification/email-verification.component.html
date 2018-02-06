@@ -1,9 +1,18 @@
-﻿<div *ngIf="success">
-  <div>Deine E-Mail Adresse wurde bestätigt</div>
-  <button (click)="onPlay()" class="homePageButton">Spielen</button>
-</div>
+﻿<div class="homePageMain">
+  <div class="homePageMiddle">
+    <div class="homePageMiddleCenter">
 
-<div *ngIf="fail">
-  <div>Bestätigung der E-Mail Adresse fehlgeschlagen</div>
-</div>
+      <div *ngIf="success" class="emailVerification">
+        <p>Deine E-Mail Adresse wurde bestätigt</p>
+        <div>
+          <button (click)="onPlay()" class="homePageButton">Spielen</button>
+        </div>
+      </div>
 
+      <div *ngIf="fail" class="emailVerification">
+        <p>Bestätigung der E-Mail Adresse fehlgeschlagen</p>
+      </div>
+
+    </div>
+  </div>
+</div>

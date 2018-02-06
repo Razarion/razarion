@@ -4,7 +4,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 
 
 @Component({
-  templateUrl: 'email-verification.component.html'
+  templateUrl: 'email-verification.component.html',
+  styleUrls: ['./email-verification.component.css']
 })
 export class EmailVerification implements OnInit {
   success: boolean = false;
