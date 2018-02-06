@@ -1,6 +1,6 @@
 ﻿import {Component, OnInit} from '@angular/core';
 import {FrontendService} from "../service/frontend.service";
-import {Router} from "@angular/router";
+import {NavigationStart, Router} from "@angular/router";
 
 
 @Component({
@@ -12,6 +12,13 @@ export class GameComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Prevent running game in the background if someone press the browser history navigation button
+    // Proper solution is to stop the game
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        window.location.href = event.url;
+      }
+    });
     if (!this.frontendService.isCookieAllowed()) {
       this.router.navigate(['/nocookies']);
       return;
@@ -23,7 +30,7 @@ export class GameComponent implements OnInit {
 
   private startGame(): void {
     GameComponent.insertGameScript('window.RAZ_startTime = new Date().getTime();');
-    GameComponent.insertMeta('gwt:property', this.frontendService.getLanguage());
+    GameComponent.insertMeta('gwt:property', "locale=" + this.frontendService.getLanguage());
     GameComponent.insertGameScript('erraiBusRemoteCommunicationEnabled = false;');
     GameComponent.insertGameScript('erraiJaxRsJacksonMarshallingActive = true;');
     GameComponent.loadGameScriptUrl('/NativeRazarion.js');

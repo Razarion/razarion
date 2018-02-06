@@ -5,6 +5,7 @@ import com.btxtech.server.persistence.history.ForgotPasswordHistoryEntity;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.system.ServerI18nHelper;
+import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -29,7 +30,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.servlet.ServletContext;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -81,7 +81,7 @@ public class RegisterService {
     @Inject
     private Instance<UserService> userService;
     @Inject
-    private ServletContext servletContext;
+    private SessionHolder sessionHolder;
     private ScheduledFuture cleanupFuture;
 
     @PostConstruct
@@ -240,25 +240,28 @@ public class RegisterService {
         CriteriaQuery<ForgotPasswordEntity> criteriaQuery = criteriaBuilder.createQuery(ForgotPasswordEntity.class);
         Root<ForgotPasswordEntity> from = criteriaQuery.from(ForgotPasswordEntity.class);
         criteriaQuery.select(from);
-        criteriaQuery.where(criteriaBuilder.lessThanOrEqualTo(from.get(ForgotPasswordEntity_.uuid), uuid));
+        criteriaQuery.where(criteriaBuilder.equal(from.get(ForgotPasswordEntity_.uuid), uuid));
         List<ForgotPasswordEntity> forgots = entityManager.createQuery(criteriaQuery).getResultList();
-        SingleHolder<Integer> foundCount = new SingleHolder<>(1);
+        SingleHolder<Integer> foundCount = new SingleHolder<>(0);
         SingleHolder<String> email = new SingleHolder<>();
-        if (forgots != null) {
-            forgots.forEach(forgotPasswordEntity -> {
-                foundCount.setO(foundCount.getO() + 1);
-                email.setO(forgotPasswordEntity.getUser().getEmail());
-                forgotPasswordEntity.getUser().setPasswordHash(generateSHA512SecurePassword(password));
-                historyPersistence.get().onForgotPassword(forgotPasswordEntity.getUser(), forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.CHANGED);
-                entityManager.remove(forgotPasswordEntity);
-            });
+        if (forgots == null || forgots.isEmpty()) {
+            throw new IllegalArgumentException("No ForgotPasswordEntity found for uuid: " + uuid);
         }
+        forgots.forEach(forgotPasswordEntity -> {
+            foundCount.setO(foundCount.getO() + 1);
+            email.setO(forgotPasswordEntity.getUser().getEmail());
+            forgotPasswordEntity.getUser().setPasswordHash(generateSHA512SecurePassword(password));
+            historyPersistence.get().onForgotPassword(forgotPasswordEntity.getUser(), forgotPasswordEntity, ForgotPasswordHistoryEntity.Type.CHANGED);
+            entityManager.remove(forgotPasswordEntity);
+        });
         if (foundCount.getO() != 1) {
             logger.warning("Unexpected ForgotPasswordEntity count '" + foundCount.getO() + "' for uuid: " + uuid);
         }
-        LoginResult loginResult = userService.get().loginUser(email.getO(), password);
-        if (loginResult != LoginResult.OK) {
-            throw new IllegalArgumentException("Can not login user with email '" + email.getO() + "'.  LoginResult: " + loginResult);
+        if (!sessionHolder.isLoggedIn()) {
+            LoginResult loginResult = userService.get().loginUser(email.getO(), password);
+            if (loginResult != LoginResult.OK) {
+                throw new IllegalArgumentException("Can not login user with email '" + email.getO() + "'.  LoginResult: " + loginResult);
+            }
         }
     }
 
