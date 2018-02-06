@@ -1,0 +1,20 @@
+.main {
+  display: table;
+  height: 100%;
+  width: 100%;
+  background: url('/assets/BackGround.jpg');
+  margin: 0;
+}
+
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+  background: url('/assets/HomePage.jpg') center no-repeat;
+}
+
+.middleCenter {
+  width: 1000px;
+  height: 400px;
+  margin: auto;
+  position: relative;
+}
