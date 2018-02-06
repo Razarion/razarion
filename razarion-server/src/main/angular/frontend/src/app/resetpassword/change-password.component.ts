@@ -4,7 +4,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 
 
 @Component({
-  templateUrl: 'cahnge-password.component.html'
+  templateUrl: 'cahnge-password.component.html',
+  styleUrls: ['./change-password.component.css']
 })
 export class ChangePasswordComponent {
   password: string = "";
@@ -15,6 +16,13 @@ export class ChangePasswordComponent {
   failed: boolean = false;
 
   constructor(private frontendService: FrontendService, private route: ActivatedRoute, private router: Router) {
+  }
+
+  onKeyPassword(password: string) {
+    this.passwordError = "";
+    if (password == "") {
+      this.passwordError = "Bitte gib ein gültiges Passwort ein";
+    }
   }
 
   onKeyPasswordConfirm(passwordConfirm: string) {

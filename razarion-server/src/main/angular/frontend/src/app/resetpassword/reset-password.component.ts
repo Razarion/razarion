@@ -1,10 +1,10 @@
 ﻿import {Component} from '@angular/core';
 import {FrontendService} from "../service/frontend.service";
-import {RegisterComponent} from "../register/register.component";
 
 
 @Component({
-  templateUrl: 'reset-password.component.html'
+  templateUrl: 'reset-password.component.html',
+  styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent {
   passwordResetInitiated: boolean = false;
@@ -13,6 +13,14 @@ export class ResetPasswordComponent {
   working: boolean = false;
 
   constructor(private frontendService: FrontendService) {
+  }
+
+  onKeyEmail(email: string) {
+    this.emailError = "";
+    if (!FrontendService.validateEmail(email)) {
+      this.emailError = "Bitte gib eine gültige E-Mail Adresse an";
+      return;
+    }
   }
 
   onReset() {
