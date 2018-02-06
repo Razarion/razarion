@@ -11,10 +11,76 @@
     <span>registerText</span>
     <br>
     <br>
-    <div id="fb-root"></div>
-    <div class="register-dialog-fb-wrapper">
-        <!-- razarion-server/src/main/angular/frontend/src/app/register/register.component.html -->
-        <div class="fb-login-button" data-size="large" data-button-type="continue_with"></div>
+    <div class="registerGroup">
+        <h3>registerFacebook</h3>
+        <div id="fb-root"></div>
+        <div class="register-dialog-fb-wrapper">
+            <!-- razarion-server/src/main/angular/frontend/src/app/register/register.component.html -->
+            <div class="fb-login-button" data-size="large" data-button-type="continue_with"></div>
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="registerGroup">
+        <h3>registerEmailPassword</h3>
+        <table>
+            <tr>
+                <td>
+                    <p class="errorLabel" data-field="emailErrorLabel"></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="emailField">emailField</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="emailField" type="email">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p class="errorLabel" data-field="passwordErrorLabel"></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="passwordField">passwordField</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="passwordField" type="password">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <p class="errorLabel" data-field="passwordConfirmErrorLabel"></p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="passwordConfirmField">passwordConfirmField</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="passwordConfirmField" type="password">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="rememberMe" type="checkbox"><label for="rememberMe">rememberMe</label>
+                </td>
+            </tr>
+            <tr>
+                <td style="padding-top: 10px">
+                    <button data-field="emailRegisterButton">registerButton</button>
+                    <img data-field="progressImage" src="images/inprogress.svg" style="display: none"/>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
 

@@ -18,6 +18,7 @@ import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
+import javax.servlet.http.Cookie;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -226,7 +227,16 @@ public class FrontendProvider {
         }
     }
 
-    private NewCookie generateLoginCookie(String value) {
+    public static NewCookie generateLoginCookie(String value) {
         return new NewCookie(LOGIN_COOKIE_NAME, value, null, null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
+    }
+
+    public static javax.servlet.http.Cookie generateLoginServletCookie(String value) {
+        javax.servlet.http.Cookie cookie = new Cookie(LOGIN_COOKIE_NAME, value);
+        cookie.setMaxAge(LOGIN_COOKIE_MAX_AGE);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setVersion(NewCookie.DEFAULT_VERSION);
+        return cookie;
     }
 }

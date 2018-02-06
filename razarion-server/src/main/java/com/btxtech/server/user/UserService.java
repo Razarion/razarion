@@ -266,8 +266,6 @@ public class UserService {
     private UserEntity createFacebookUserFromUnregistered(String facebookUserId) {
         UserEntity userEntity = new UserEntity();
         userEntity.fromFacebookUserLoginInfo(facebookUserId, getHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getPlayerId()), sessionHolder.getPlayerSession().getLocale());
-        userEntity.setXp(sessionHolder.getPlayerSession().getUserContext().getXp());
-        userEntity.setLevel(levelPersistence.getLevel4Id(sessionHolder.getPlayerSession().getUserContext().getLevelId()));
         fromUnregisteredUser(userEntity);
         entityManager.persist(userEntity);
         return userEntity;
@@ -288,6 +286,8 @@ public class UserService {
         if (unregisteredUser.getLevelUnlockEntityIds() != null) {
             unregisteredUser.getLevelUnlockEntityIds().forEach(levelUnlockEntityId -> userEntity.addLevelUnlockEntity(levelPersistence.readLevelUnlockEntity(levelUnlockEntityId)));
         }
+        userEntity.setXp(sessionHolder.getPlayerSession().getUserContext().getXp());
+        userEntity.setLevel(levelPersistence.getLevel4Id(sessionHolder.getPlayerSession().getUserContext().getLevelId()));
     }
 
     @Transactional

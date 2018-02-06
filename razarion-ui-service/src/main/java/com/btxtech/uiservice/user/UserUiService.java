@@ -145,7 +145,7 @@ public class UserUiService {
         return userContext.checkName();
     }
 
-    public void onUserRegistered(HumanPlayerId humanPlayerId) {
+    public void onUserRegistered(HumanPlayerId humanPlayerId, boolean emailVerificationNeeded) {
         userContext.setHumanPlayerId(humanPlayerId);
         clearRegisterTimer();
         if (gameUiControlInstance.get().getGameEngineMode() == GameEngineMode.SLAVE) {

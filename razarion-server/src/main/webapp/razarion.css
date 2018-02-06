@@ -558,6 +558,7 @@ a:active {
     background-color: #6c6b6b;
     border: 1px solid #FFF;
 }
+
 /** -------------------------- COCKPIT ENDS -------------------------- */
 
 /** -------------------------- DIALOG FRAMEWORK -------------------------- */
@@ -634,6 +635,24 @@ a:active {
     margin-top: 10px;
 }
 
+.register-dialog .errorLabel {
+    color: red;
+    margin: 0;
+    font-weight: bolder;
+}
+
+.register-dialog .registerGroup {
+    border: 1px solid #3289bd5c;
+    background-color: #025cff2e;
+}
+
+.register-dialog h3 {
+    font-size: 15px;
+    color: #3289bd;
+    margin: 2px 0 15px 2px;
+    padding: 0;
+}
+
 /** -------------------------- DIALOG REGISTER ENDS -------------------------- */
 
 /** -------------------------- DIALOG UNREGISTERED  -------------------------- */
@@ -645,6 +664,7 @@ a:active {
     display: flex;
     justify-content: center;
 }
+
 /** -------------------------- DIALOG UNREGISTERED ENDS -------------------------- */
 
 /** -------------------------- DIALOG UNNAMED  -------------------------- */
@@ -659,7 +679,6 @@ a:active {
 
 /** -------------------------- DIALOG UNNAMED ENDS -------------------------- */
 
-
 /** -------------------------- DIALOG SET NAME  -------------------------- */
 .set-name-dialog {
     max-width: 30em;
@@ -672,8 +691,8 @@ a:active {
     font-size: 85%;
     font-weight: bolder;
 }
-/** -------------------------- DIALOG SET NAME ENDS -------------------------- */
 
+/** -------------------------- DIALOG SET NAME ENDS -------------------------- */
 
 /** -------------------------- DIALOG INVENTORY  -------------------------- */
 .inventory-item-table {

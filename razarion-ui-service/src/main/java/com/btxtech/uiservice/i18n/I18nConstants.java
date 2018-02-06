@@ -227,11 +227,13 @@ public interface I18nConstants {
 
     String registrationEmailMatch();
 
-    String registrationEmail(String email);
+    String registrationEmail();
 
     String registrationUser();
 
     String setName();
+
+    String registrationPasswordNotValid();
 
     // Side Cockpit
     String tooltipEnergy();

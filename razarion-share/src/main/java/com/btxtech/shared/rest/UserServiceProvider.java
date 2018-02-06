@@ -4,6 +4,7 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
+import com.btxtech.shared.dto.EmailPasswordInfo;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -26,6 +27,12 @@ public interface UserServiceProvider {
     RegisterInfo inGameFacebookRegister(FbAuthResponse fbAuthResponse);
 
     @POST
+    @Path("createunverifieduser")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    RegisterInfo createUnverifiedUser(EmailPasswordInfo emailPasswordInfo);
+
+    @POST
     @Path("setname/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     SetNameResult setName(@PathParam("name") String name);
@@ -35,4 +42,8 @@ public interface UserServiceProvider {
     @Produces(MediaType.APPLICATION_JSON)
     SetNameResult verifySetName(@PathParam("name") String name); // Top level enum as return type not allowed
 
+    @GET
+    @Path("isemailfree/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    boolean isEmailFree(@PathParam("email") String email);
 }
