@@ -137,7 +137,7 @@ public class UserEntity {
     }
 
     public UserContext toUserContext() {
-        return new UserContext().setName(name).setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities)).setAdmin(admin).setXp(xp);
+        return new UserContext().setName(name).setHumanPlayerId(createHumanPlayerId()).setLevelId(level.getId()).setUnlockedItemLimit(ServerUnlockService.convertUnlockedItemLimit(levelUnlockEntities)).setAdmin(admin).setXp(xp).setEmailNotVerified(!isVerified());
     }
 
     public HumanPlayerId createHumanPlayerId() {

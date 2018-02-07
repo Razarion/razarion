@@ -1,8 +1,8 @@
 package com.btxtech.client.system;
 
 import com.btxtech.common.WebSocketHelper;
-import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
@@ -61,7 +61,11 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
 
     @Override
     protected Object fromJson(String jsonString, SystemConnectionPacket packet) {
-        return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
+        if (packet.getTheClass() == Void.class) {
+            return null;
+        } else {
+            return MarshallingWrapper.fromJSON(jsonString, packet.getTheClass());
+        }
     }
 
     @Override

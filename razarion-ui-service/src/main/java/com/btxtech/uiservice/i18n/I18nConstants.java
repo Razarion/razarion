@@ -235,6 +235,8 @@ public interface I18nConstants {
 
     String registrationPasswordNotValid();
 
+    String setNameFailedNotVerifiedText();
+
     // Side Cockpit
     String tooltipEnergy();
 

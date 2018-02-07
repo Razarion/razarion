@@ -14,6 +14,7 @@ import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
+import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -141,6 +142,10 @@ public class UserUiService {
         return userContext.checkRegistered();
     }
 
+    public boolean isEmailNotVerified() {
+        return userContext.isEmailNotVerified();
+    }
+
     public boolean isRegisteredAndNamed() {
         return userContext.checkName();
     }
@@ -162,6 +167,12 @@ public class UserUiService {
             userRegistrationCallback.accept(userContext);
         }
         clearSetUserNameTimer();
+    }
+
+
+    public void onEmailVerified() {
+        userContext.setEmailNotVerified(false);
+        modalDialogManager.showMessageDialog(I18nHelper.getConstants().registerThanks(), I18nHelper.getConstants().registerThanksLong());
     }
 
     public void clearSetUserNameTimer() {

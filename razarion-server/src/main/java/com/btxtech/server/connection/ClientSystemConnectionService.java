@@ -115,6 +115,10 @@ public class ClientSystemConnectionService {
         sendToClient(playerSession, SystemConnectionPacket.CHAT_RECEIVE_MESSAGE, chatMessage);
     }
 
+    public void sendEmailVerifiedToClient(PlayerSession playerSession) {
+        sendToClient(playerSession, SystemConnectionPacket.EMAIL_VERIFIED, null);
+    }
+
     private void sendToClient(PlayerSession playerSession, SystemConnectionPacket packet, Object object) {
         Collection<ClientSystemConnection> clientSystemConnections;
         synchronized (systemGameConnections) {
@@ -137,7 +141,12 @@ public class ClientSystemConnectionService {
 
     private void sendToClient(SystemConnectionPacket packet, Object object, Collection<ClientSystemConnection> clientSystemConnections) {
         try {
-            String text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+            String text;
+            if (packet.getTheClass() == Void.class) {
+                text = ConnectionMarshaller.marshall(packet, null);
+            } else {
+                text = ConnectionMarshaller.marshall(packet, mapper.writeValueAsString(object));
+            }
             clientSystemConnections.forEach(clientSystemConnection -> {
                 try {
                     clientSystemConnection.sendToClient(text);

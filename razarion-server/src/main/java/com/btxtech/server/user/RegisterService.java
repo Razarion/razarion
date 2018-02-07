@@ -1,5 +1,6 @@
 package com.btxtech.server.user;
 
+import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.frontend.LoginResult;
 import com.btxtech.server.persistence.history.ForgotPasswordHistoryEntity;
 import com.btxtech.server.persistence.history.HistoryPersistence;
@@ -82,6 +83,8 @@ public class RegisterService {
     private Instance<UserService> userService;
     @Inject
     private SessionHolder sessionHolder;
+    @Inject
+    private ClientSystemConnectionService clientSystemConnectionService;
     private ScheduledFuture cleanupFuture;
 
     @PostConstruct
@@ -187,8 +190,14 @@ public class RegisterService {
         UserEntity userEntity = users.get(0);
         userEntity.setVerifiedDone();
         entityManager.merge(userEntity);
-        // TODO update session
-        // TODO send to client
+
+        if (sessionHolder.isLoggedIn()) {
+            sessionHolder.getPlayerSession().setUserContext(userEntity.toUserContext());
+        } else {
+            userService.get().autoLoginUser(userEntity.getEmail());
+        }
+
+        clientSystemConnectionService.sendEmailVerifiedToClient(sessionHolder.getPlayerSession());
     }
 
     @Transactional

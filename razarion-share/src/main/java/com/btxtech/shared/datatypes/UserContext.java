@@ -13,6 +13,7 @@ public class UserContext {
     private HumanPlayerId humanPlayerId;
     private String name;
     private boolean admin;
+    private boolean emailNotVerified;
     private int levelId;
     private Map<Integer, Integer> unlockedItemLimit;
     private int xp;
@@ -41,6 +42,15 @@ public class UserContext {
 
     public UserContext setAdmin(boolean admin) {
         this.admin = admin;
+        return this;
+    }
+
+    public boolean isEmailNotVerified() {
+        return emailNotVerified;
+    }
+
+    public UserContext setEmailNotVerified(boolean emailNotVerified) {
+        this.emailNotVerified = emailNotVerified;
         return this;
     }
 
@@ -85,6 +95,7 @@ public class UserContext {
                 "humanPlayerId=" + humanPlayerId +
                 ", name='" + name + '\'' +
                 ", admin=" + admin +
+                ", emailNotVerified=" + emailNotVerified +
                 ", levelId=" + levelId +
                 ", unlockedItemLimit=" + unlockedItemLimit +
                 ", xp=" + xp +

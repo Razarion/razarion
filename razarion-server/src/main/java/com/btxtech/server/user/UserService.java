@@ -176,10 +176,10 @@ public class UserService {
         }
         UserEntity userEntity = createUser(email, password);
         historyPersistence.get().onUserLoggedIn(userEntity, sessionHolder.getPlayerSession().getHttpSessionId());
-        serverGameEngine.get().updateHumanPlayerId(userEntity.toUserContext());
-        // TODO if from inGame, send message to client
         registerService.startEmailVerifyingProcess(userEntity);
-        loginUserContext(userEntity.toUserContext(), null);
+        UserContext userContext = userEntity.toUserContext();
+        loginUserContext(userContext, null);
+        serverGameEngine.get().updateHumanPlayerId(userContext);
         return RegisterResult.OK;
     }
 
@@ -609,6 +609,9 @@ public class UserService {
         UserContext userContext = getUserContextFromSession();
         if (!userContext.checkRegistered()) {
             throw new IllegalStateException("Only registered user chan set a name: " + userContext);
+        }
+        if (!userContext.isEmailNotVerified()) {
+            throw new IllegalStateException("Only email verified user can set a name: " + userContext);
         }
         if (userContext.checkName()) {
             throw new IllegalStateException("The name has already been set: " + userContext);

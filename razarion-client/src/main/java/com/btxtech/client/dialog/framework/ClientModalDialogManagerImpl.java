@@ -118,6 +118,10 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         if (userUiServicesInstance.get().isRegisteredAndNamed()) {
             throw new IllegalStateException("User is already registered and named");
         }
+        if (userUiServicesInstance.get().isEmailNotVerified()) {
+            showMessageDialog(I18nHelper.getConstants().setName(), I18nHelper.getConstants().setNameFailedNotVerifiedText());
+            return;
+        }
         show(I18nHelper.getConstants().setName(), Type.QUEUE_ABLE, SetUserNameDialog.class, null, null, null, DialogButton.Button.CANCEL);
     }
 

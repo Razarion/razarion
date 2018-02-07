@@ -58,6 +58,9 @@ public class ChatPersistence {
         if (!userContext.checkRegistered()) {
             throw new IllegalStateException("User is not registered. Session id:" + playerSession.getHttpSessionId());
         }
+        if (!userContext.isEmailNotVerified()) {
+            throw new IllegalStateException("Only email verified user can use the chat: " + userContext);
+        }
         if (!userContext.checkName()) {
             throw new IllegalStateException("User has no name: " + userContext);
         }

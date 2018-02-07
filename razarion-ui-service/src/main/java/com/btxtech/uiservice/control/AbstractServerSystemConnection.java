@@ -89,6 +89,9 @@ public abstract class AbstractServerSystemConnection {
             case CHAT_RECEIVE_MESSAGE:
                 chatUiService.onMessage((ChatMessage) param);
                 break;
+            case EMAIL_VERIFIED:
+                userUiService.onEmailVerified();
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
         }
