@@ -228,7 +228,7 @@ public class FrontendProvider {
     }
 
     public static NewCookie generateLoginCookie(String value) {
-        return new NewCookie(LOGIN_COOKIE_NAME, value, null, null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
+        return new NewCookie(LOGIN_COOKIE_NAME, value, "/", null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
     }
 
     public static javax.servlet.http.Cookie generateLoginServletCookie(String value) {
@@ -237,6 +237,7 @@ public class FrontendProvider {
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setVersion(NewCookie.DEFAULT_VERSION);
+        cookie.setPath("/");
         return cookie;
     }
 }
