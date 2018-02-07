@@ -44,12 +44,13 @@ public class CommonFilter implements Filter {
             CommonUrl.CLIENT_WORKER_PATH,
             CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT,
             CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT,
-            "/debug",
+            "/debug", // Source maps
+            "/test", // Arquillian test
             "/images",
             "/marketinghist",
             "/resources",
             "/faces",
-            "/assets"
+            "/assets" // Frontend
     );
     private Collection<String> excludeTypes = convertFilterStrings(
             ".js",
@@ -95,7 +96,7 @@ public class CommonFilter implements Filter {
     }
 
     private AngularType extractAngularType(HttpServletRequest req) {
-        String requestPath = req.getServletPath().toUpperCase();
+        String requestPath = req.getRequestURI().toUpperCase();
         if(requestPath.startsWith(FRONTEND_FILE)) {
             return AngularType.FRONTEND;
         }
