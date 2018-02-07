@@ -4,6 +4,7 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
+import com.btxtech.shared.datatypes.UserAccountInfo;
 import com.btxtech.shared.dto.EmailPasswordInfo;
 
 import javax.ws.rs.Consumes;
@@ -46,4 +47,14 @@ public interface UserServiceProvider {
     @Path("isemailfree/{email}")
     @Produces(MediaType.APPLICATION_JSON)
     boolean isEmailFree(@PathParam("email") String email);
+
+    @GET
+    @Path("useraccountinfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    UserAccountInfo userAccountInfo();
+
+    @POST
+    @Path("useraccountinfo")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void setRememberMe(boolean rememberMe);
 }

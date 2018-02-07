@@ -37,7 +37,6 @@ import java.util.logging.Logger;
 @Path(CommonUrl.FRONTEND_PATH)
 public class FrontendProvider {
     public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
-    private static final String LOGIN_COOKIE_NAME = "LoginToken";
     private static final int LOGIN_COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
     @Inject
     private FrontendService frontendService;
@@ -57,7 +56,7 @@ public class FrontendProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("isloggedin")
-    public Response isLoggedIn(@CookieParam(LOGIN_COOKIE_NAME) String loginCookieValue) {
+    public Response isLoggedIn(@CookieParam(CommonUrl.LOGIN_COOKIE_NAME) String loginCookieValue) {
         try {
             InternalLoginState internalLoginState = frontendService.isLoggedIn(loginCookieValue);
             Response.ResponseBuilder responseBuilder = Response.ok(internalLoginState.getFrontendLoginState());
@@ -228,12 +227,22 @@ public class FrontendProvider {
     }
 
     public static NewCookie generateLoginCookie(String value) {
-        return new NewCookie(LOGIN_COOKIE_NAME, value, "/", null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
+        return new NewCookie(CommonUrl.LOGIN_COOKIE_NAME, value, "/", null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
     }
 
     public static javax.servlet.http.Cookie generateLoginServletCookie(String value) {
-        javax.servlet.http.Cookie cookie = new Cookie(LOGIN_COOKIE_NAME, value);
+        javax.servlet.http.Cookie cookie = new Cookie(CommonUrl.LOGIN_COOKIE_NAME, value);
         cookie.setMaxAge(LOGIN_COOKIE_MAX_AGE);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setVersion(NewCookie.DEFAULT_VERSION);
+        cookie.setPath("/");
+        return cookie;
+    }
+
+    public static javax.servlet.http.Cookie generateExpiredLoginServletCookie() {
+        javax.servlet.http.Cookie cookie = new Cookie(CommonUrl.LOGIN_COOKIE_NAME, "");
+        cookie.setMaxAge(-1);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
         cookie.setVersion(NewCookie.DEFAULT_VERSION);

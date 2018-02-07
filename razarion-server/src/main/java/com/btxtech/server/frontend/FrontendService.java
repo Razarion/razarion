@@ -31,7 +31,7 @@ public class FrontendService {
         if (sessionHolder.isLoggedIn()) {
             internalLoginState.getFrontendLoginState().setLoggedIn(true);
         } else {
-            if (loginCookieValue != null) {
+            if (loginCookieValue != null && !loginCookieValue.trim().isEmpty()) {
                 try {
                     String newLoginCookieValue = registerService.cookieLogin(loginCookieValue);
                     if (newLoginCookieValue != null) {

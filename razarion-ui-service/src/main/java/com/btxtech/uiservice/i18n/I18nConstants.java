@@ -126,7 +126,7 @@ public interface I18nConstants {
 
     String logout();
 
-    String logoutText(String name);
+    String logoutQuestion();
 
     String logoutTextFacebook(String name);
 
@@ -872,6 +872,9 @@ public interface I18nConstants {
     String levelUpDialogTitle();
 
     String youReachedLevel(int level);
+
+    // User account dialog
+    String userAccountDialogTitle();
 
     // System
     String serverRebootTitle();

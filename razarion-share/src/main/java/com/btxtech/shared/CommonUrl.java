@@ -12,6 +12,7 @@ public class CommonUrl {
     public static final String FRONTEND_ANGULAR_HTML_FILE = "/index.html";
     public static final String EMAIL_VERIFICATION = "/verify-email";
     public static final String FORGOT_PASSWORD_CHANGE = "/change-password";
+    public static final String LOGOUT_PAGE = "/logout";
     // GWT code path
     public static final String CLIENT_PATH = "/razarion_client";
     public static final String CLIENT_WORKER_PATH = "/razarion_client_worker";
@@ -54,6 +55,8 @@ public class CommonUrl {
     public static final String UNLOCK_PROVIDER_PATH = "unlockprovider";
     public static final String USER_SERVICE_PROVIDER_PATH = "userserviceprovider";
     public static final String FRONTEND_PATH = "frontend";
+    // Cookiez
+    public static final String LOGIN_COOKIE_NAME = "LoginToken";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache

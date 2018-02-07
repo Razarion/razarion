@@ -19,7 +19,7 @@ export class FrontendService {
     try {
       let d = new Date();
       d.setTime(d.getTime() + 5000);
-      document.cookie = "TestCooiesEnabled=testcookie; expires" + d.toUTCString();
+      document.cookie = "TestCooiesEnabled=testcookie;path=/;expires=" + d.toUTCString();
       this.cookieAllowed = document.cookie.indexOf("testcookie") != -1;
       if (!this.cookieAllowed) {
         this.log("Cookie are not allowed", null);

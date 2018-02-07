@@ -1,5 +1,5 @@
 ﻿import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import {NavigationStart, Router} from "@angular/router";
 import {FrontendService} from "../service/frontend.service";
 
 
@@ -9,6 +9,11 @@ import {FrontendService} from "../service/frontend.service";
 })
 export class LogoutComponent implements OnInit {
   constructor(private frontendService: FrontendService, private router: Router) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        window.location.replace('/');
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -16,6 +21,6 @@ export class LogoutComponent implements OnInit {
   }
 
   onLogin(): void {
-    this.router.navigate(['/']);
+    window.location.replace('/');
   }
 }

@@ -22,6 +22,7 @@ import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
+import com.btxtech.shared.datatypes.UserAccountInfo;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -610,7 +611,7 @@ public class UserService {
         if (!userContext.checkRegistered()) {
             throw new IllegalStateException("Only registered user chan set a name: " + userContext);
         }
-        if (!userContext.isEmailNotVerified()) {
+        if (userContext.isEmailNotVerified()) {
             throw new IllegalStateException("Only email verified user can set a name: " + userContext);
         }
         if (userContext.checkName()) {
@@ -655,5 +656,16 @@ public class UserService {
         Root<UserEntity> from = userQuery.from(UserEntity.class);
         userQuery.orderBy(criteriaBuilder.desc(from.get(UserEntity_.registerDate)));
         return entityManager.createQuery(userQuery).setMaxResults(20).getResultList().stream().map(userEntity -> new NewUser().setId(userEntity.getId()).setName(userEntity.getName()).setDate(userEntity.getRegisterDate()).setPlayerId(userEntity.getHumanPlayerIdEntity().getId()).setSessionId(entityManager.find(HumanPlayerIdEntity.class, userEntity.getHumanPlayerIdEntity().getId()).getSessionId())).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserAccountInfo getUserAccountInfo() {
+        UserAccountInfo userAccountInfo = new UserAccountInfo();
+        if (!sessionHolder.isLoggedIn()) {
+            throw new IllegalArgumentException("User is not logged in: " + sessionHolder.getPlayerSession().getHttpSessionId());
+        }
+        UserEntity userEntity = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId());
+        userAccountInfo.setEmail(userEntity.getEmail());
+        return userAccountInfo;
     }
 }

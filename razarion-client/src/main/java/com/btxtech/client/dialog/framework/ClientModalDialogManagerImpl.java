@@ -8,6 +8,7 @@ import com.btxtech.client.dialog.common.MessageImageDialog;
 import com.btxtech.client.dialog.common.RegisterDialog;
 import com.btxtech.client.dialog.common.ScrollTipDialog;
 import com.btxtech.client.dialog.common.SetUserNameDialog;
+import com.btxtech.client.dialog.common.UserAccountDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
 import com.btxtech.client.dialog.unlock.UnlockDialog;
 import com.btxtech.shared.datatypes.LevelUpPacket;
@@ -124,6 +125,14 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         }
         show(I18nHelper.getConstants().setName(), Type.QUEUE_ABLE, SetUserNameDialog.class, null, null, null, DialogButton.Button.CANCEL);
     }
+
+    public void showUserAccountDialog() {
+        if (!userUiServicesInstance.get().isRegistered()) {
+            throw new IllegalStateException("User is not registered");
+        }
+        show(I18nHelper.getConstants().userAccountDialogTitle(), Type.QUEUE_ABLE, UserAccountDialog.class, null, null, null, DialogButton.Button.CLOSE);
+    }
+
 
     @Override
     public void showMessageDialog(String title, String message) {

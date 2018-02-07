@@ -63,6 +63,9 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @DataField
     private Button unlockButton;
     @Inject
+    @DataField
+    private Button userAccountButton;
+    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @DataField
@@ -103,12 +106,6 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     @Inject
     @DataField
     private Button setNameButton;
-    @Inject
-    @DataField
-    private TableRow userTr;
-    @Inject
-    @DataField
-    private Span userNameSpan;
 
     @PostConstruct
     public void init() {
@@ -172,6 +169,11 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
         modalDialogManager.showSetUserNameDialog();
     }
 
+    @EventHandler("userAccountButton")
+    private void onUserAccountButtonClick(ClickEvent event) {
+        modalDialogManager.showUserAccountDialog();
+    }
+
     @Override
     public void displayResources(int resources) {
         resourceLabel.setTextContent(Integer.toString(resources));
@@ -210,16 +212,16 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     private void displayUserRegistration(UserContext userContext) {
         registerTr.getStyle().setProperty("display", "none");
         setNameTr.getStyle().setProperty("display", "none");
-        userTr.getStyle().setProperty("display", "none");
+        userAccountButton.getElement().getStyle().setDisplay(Style.Display.NONE);
         if (!userUiService.isRegistered()) {
             registerTr.getStyle().setProperty("display", "table-row");
             registerButton.setText(I18nHelper.getConstants().register());
         } else if (!userUiService.isRegisteredAndNamed()) {
             setNameTr.getStyle().setProperty("display", "table-row");
             setNameButton.setText(I18nHelper.getConstants().setName());
+            userAccountButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         } else {
-            userTr.getStyle().setProperty("display", "table-row");
-            userNameSpan.setTextContent(userContext.getName());
+            userAccountButton.getElement().getStyle().setDisplay(Style.Display.INLINE_BLOCK);
         }
     }
 
