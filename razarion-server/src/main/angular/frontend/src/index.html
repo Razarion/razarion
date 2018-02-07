@@ -2,10 +2,6 @@
 <html lang="en">
 <head>
   <script>
-    var RAZ_fbScriptLoadedFlag = false;
-    var RAZ_fbScriptLoadedFrontendService = null;
-    var RAZ_fbScriptLoadedCallback = null;
-
     function logError(message, source, lineNumber, columnNumber, error) {
       var errorMessage = encodeURI("-Frontend-window.onerror\nMessage: " + message + "\nSource: " + source + "\nLinenumber: " + lineNumber + "\ncolumnNumber: " + columnNumber + "\nerror: " + error);
       if(error && error.stack) {
@@ -42,32 +38,6 @@
     </div>
   </div>
 </noscript>
-<script>
-  window.fbAsyncInit = function () {
-    FB.init({
-      appId: '321838644575219',
-      cookie: true,
-      xfbml: true,
-      version: 'v2.11'
-    });
-    RAZ_fbScriptLoadedFlag = true;
-    if (RAZ_fbScriptLoadedCallback != null) {
-      RAZ_fbScriptLoadedCallback(RAZ_fbScriptLoadedFrontendService);
-    }
-  };
-
-  (function (d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) {
-      return;
-    }
-    js = d.createElement(s);
-    js.id = id;
-    js.src = "https://connect.facebook.net/de_DE/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-</script>
-
 <app-root></app-root>
 </body>
 </html>

@@ -3,10 +3,6 @@ import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {FbAuthResponse, FrontendLoginState, LoginResult, RegisterResult, URL_FRONTEND} from "../common";
 import {Router} from "@angular/router";
 
-declare var RAZ_fbScriptLoadedFrontendService: any;
-declare var RAZ_fbScriptLoadedFlag: boolean;
-declare var RAZ_fbScriptLoadedCallback: any;
-
 declare const FB: any;
 const FB_TIMEOUT: number = 8000;
 
@@ -170,11 +166,11 @@ export class FrontendService {
   }
 
   fbScriptLoaded(): Promise<void> {
-    if (RAZ_fbScriptLoadedFlag) {
+    if ((<any>window).RAZ_fbScriptLoadedFlag) {
       return Promise.resolve();
     } else {
-      RAZ_fbScriptLoadedFrontendService = this;
-      RAZ_fbScriptLoadedCallback = FrontendService.onFbScriptLoaded;
+      (<any>window).RAZ_fbScriptLoadedFrontendService = this;
+      (<any>window).RAZ_fbScriptLoadedCallback = FrontendService.onFbScriptLoaded;
       return new Promise((resolve) => {
         this.fbScriptLoadedCallbacks.push(resolve);
       });

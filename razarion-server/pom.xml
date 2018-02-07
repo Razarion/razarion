@@ -164,6 +164,7 @@
                             <arguments>
                                 <argument>build</argument>
                                 <argument>--env=prod</argument>
+                                <!--<argument>&#45;&#45;env=dev</argument>-->
                                 <argument>--output-path=${project.build.directory}/ROOT</argument>
                                 <argument>--base-href=/</argument>
                             </arguments>
