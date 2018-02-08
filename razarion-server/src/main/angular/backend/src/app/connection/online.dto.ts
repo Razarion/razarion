@@ -1,4 +1,4 @@
-import {HumanPlayerId} from "../Common";
+import {HumanPlayerId} from "../common";
 
 export enum OnlineInfoType {
   NORMAL,

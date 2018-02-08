@@ -44,11 +44,10 @@ public class CommonUrl {
     public static final String ITEM_TYPE_PROVIDER = "itemtypeprovider";
     public static final String TRACKER_PATH = "tracker";
     public static final String LEVEL_EDITOR_PROVIDER_PATH = "leveleditorprovider";
-    public static final String TRACKER_BACKEND_PATH = "trackerbackend";
+    public static final String BACKEND_PATH = "backend";
     public static final String MARKETING = "marketing";
     public static final String FB_CLICK_TRACKING_TAGS_RECEIVER = "clicktrackerreceiver";
     public static final String SERVER_GAME_ENGINE_MGMT_PATH = "servergameenginemgmt";
-    public static final String SERVER_MGMT_PROVIDER_PATH = "servermgmtprovider";
     public static final String COMMON_EDITOR_PROVIDER_PATH = "commoneditorprovider";
     public static final String INVENTORY_PROVIDER_PATH = "inventoryprovider";
     public static final String INVENTORY_EDITOR_PROVIDER_PATH = "inventoryeditorprovider";

@@ -2,7 +2,7 @@ import {Component, OnInit} from "@angular/core";
 import {ActivatedRoute, Params} from "@angular/router";
 import {UserService} from "./user.service";
 import {UnlockedBackendInfo, UserBackendInfo} from "./user.dto";
-import {QuestBackendInfo} from "../Common";
+import {QuestBackendInfo} from "../common";
 import "rxjs/add/operator/switchMap";
 import "rxjs/add/operator/toPromise";
 

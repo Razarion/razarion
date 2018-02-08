@@ -1,4 +1,4 @@
-import {HumanPlayerId, QuestBackendInfo} from "../Common";
+import {HumanPlayerId, QuestBackendInfo} from "../common";
 
 export class UserBackendInfo {
   humanPlayerId: HumanPlayerId;

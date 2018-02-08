@@ -1,4 +1,4 @@
-import {SimpleUserBackend} from "../Common";
+import {SimpleUserBackend} from "../common";
 
 export class SearchConfig {
   fromDate: Date;

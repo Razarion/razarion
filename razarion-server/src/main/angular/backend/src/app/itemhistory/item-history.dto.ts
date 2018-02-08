@@ -1,4 +1,4 @@
-import {DecimalPosition} from "../Common";
+import {DecimalPosition} from "../common";
 
 export class ItemTracking {
   timeStamp: Date;

@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Http} from "@angular/http";
-import {URL_SERVER_MGMT} from "../Common";
+import {URL_BACKEND_PROVIDER} from "../common";
 import {OnlineInfo} from "./online.dto";
 
 @Injectable()
@@ -9,7 +9,7 @@ export class OnlineService {
   }
 
   loadAllOnlines(): Promise<OnlineInfo[]> {
-    return this.http.get(URL_SERVER_MGMT + '/loadallonlines')
+    return this.http.get(URL_BACKEND_PROVIDER + '/loadallonlines')
       .toPromise()
       .then(response => {
         return response.json();

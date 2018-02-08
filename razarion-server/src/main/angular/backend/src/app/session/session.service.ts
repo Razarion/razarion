@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Headers, Http} from "@angular/http";
 import {SearchConfig, SessionTracker, SessionDetail} from "./session-dto";
 import "rxjs/add/operator/toPromise";
-import {Common, URL_TRACKING} from "../Common";
+import {Common, URL_BACKEND_PROVIDER} from "../common";
 
 @Injectable()
 export class SessionService {
@@ -11,7 +11,7 @@ export class SessionService {
 
   getSessions(searchConfig: SearchConfig): Promise<SessionTracker[]> {
 
-    return this.http.post(URL_TRACKING + '/sessions', JSON.stringify(searchConfig), {headers: new Headers({'Content-Type': 'application/json'})})
+    return this.http.post(URL_BACKEND_PROVIDER + '/sessions', JSON.stringify(searchConfig), {headers: new Headers({'Content-Type': 'application/json'})})
       .toPromise()
       .then(response => {
         return response.json();
@@ -20,7 +20,7 @@ export class SessionService {
   }
 
   getSessionDetail(id: string): Promise<SessionDetail> {
-    return this.http.get(URL_TRACKING + '/sessiondetail/' + id)
+    return this.http.get(URL_BACKEND_PROVIDER + '/sessiondetail/' + id)
       .toPromise()
       .then(response => {
         return response.json();

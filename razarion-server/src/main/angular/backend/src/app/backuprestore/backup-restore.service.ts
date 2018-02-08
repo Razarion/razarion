@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Headers, Http} from "@angular/http";
 import {BackupPlanetOverview} from "./backup-restore.dto";
-import {Common, URL_PLANET_MGMT} from "../Common";
+import {Common, URL_PLANET_MGMT} from "../common";
 
 @Injectable()
 export class BackupRestoreService {
