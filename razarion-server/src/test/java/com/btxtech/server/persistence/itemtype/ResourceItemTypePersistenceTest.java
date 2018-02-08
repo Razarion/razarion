@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,7 +14,7 @@ import java.util.List;
  * Created by Beat
  * 19.05.2017.
  */
-public class ResourceItemTypePersistenceTest extends ArquillianBaseTest {
+public class ResourceItemTypePersistenceTest extends ServerArquillianBaseTest {
     @Inject
     private ItemTypePersistence itemTypePersistence;
 

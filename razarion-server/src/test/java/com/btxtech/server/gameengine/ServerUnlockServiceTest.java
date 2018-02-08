@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 21.09.2017.
  */
-public class ServerUnlockServiceTest extends ArquillianBaseTest {
+public class ServerUnlockServiceTest extends ServerArquillianBaseTest {
     @Inject
     private UserService userService;
     @Inject

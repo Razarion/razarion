@@ -1,252 +1,93 @@
 package com.btxtech.server.rest;
 
-/*
-  Created by Beat
-  on 27.01.2018.
- */
-
-import com.btxtech.server.frontend.FrontendService;
-import com.btxtech.server.frontend.InternalLoginState;
-import com.btxtech.server.frontend.LoginResult;
-import com.btxtech.server.persistence.tracker.TrackerPersistence;
-import com.btxtech.server.user.RegisterResult;
-import com.btxtech.server.user.RegisterService;
-import com.btxtech.server.user.UserService;
-import com.btxtech.server.web.SessionHolder;
+import com.btxtech.server.frontend.FrontendLoginState;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
-import com.btxtech.shared.system.ExceptionHandler;
 
-import javax.inject.Inject;
-import javax.servlet.http.Cookie;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
-import java.util.Base64;
-import java.util.logging.Logger;
 
+/**
+ * Created by Beat
+ * on 08.02.2018.
+ */
 @Path(CommonUrl.FRONTEND_PATH)
-public class FrontendProvider {
-    public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
-    private static final int LOGIN_COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
-    @Inject
-    private FrontendService frontendService;
-    @Inject
-    private RegisterService registerService;
-    @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
-    private Logger logger;
-    @Inject
-    private SessionHolder sessionHolder;
-    @Inject
-    private UserService userService;
-    @Inject
-    private TrackerPersistence trackerPersistence;
-
+public interface FrontendProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("isloggedin")
-    public Response isLoggedIn(@CookieParam(CommonUrl.LOGIN_COOKIE_NAME) String loginCookieValue) {
-        try {
-            InternalLoginState internalLoginState = frontendService.isLoggedIn(loginCookieValue);
-            Response.ResponseBuilder responseBuilder = Response.ok(internalLoginState.getFrontendLoginState());
-            if (internalLoginState.getLoginCookieValue() != null) {
-                responseBuilder = responseBuilder.cookie(generateLoginCookie(internalLoginState.getLoginCookieValue()));
-            }
-            return responseBuilder.build();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            return Response.ok(frontendService.createErrorFrontendLoginState()).build();
-        }
-    }
+    FrontendLoginState isLoggedIn(@CookieParam(CommonUrl.LOGIN_COOKIE_NAME) String loginCookieValue);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     @Path("facebookauthenticated")
-    public boolean facebookAuthenticated(FbAuthResponse fbAuthResponse) {
-        try {
-            frontendService.facebookAuthenticated(fbAuthResponse);
-            return true;
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-        return false;
-    }
+    boolean facebookAuthenticated(FbAuthResponse fbAuthResponse);
 
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("log")
-    public void log(@FormParam("message") String message, @FormParam("url") String url, @FormParam("error") String error) {
-        String aditionalString = "";
-        if (url != null) {
-            aditionalString += "\nUrl: " + url;
-        }
-        if (error != null) {
-            aditionalString += "\nError: " + error;
-        }
-        logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext: " + sessionHolder.getPlayerSession().getUserContext() + "\nMessage: " + message + aditionalString);
-    }
-
+    void log(@FormParam("message") String message, @FormParam("url") String url, @FormParam("error") String error);
 
     @GET
     @Path("simplelog/{e}/{t}/{p}")
     @Produces({"image/jpeg", "image/png", "image/gif"})
-    public Response simpleLog(@PathParam("e") String errorMessage, @PathParam("t") String timestamp, @PathParam("p") String pathName) {
-        logger.severe("FrontendProvider simpleLog\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext " + sessionHolder.getPlayerSession().getUserContext() + "\nerrorMessage: " + errorMessage + "\ntimestamp: " + timestamp + "\npathName:" + pathName);
-        return Response.ok(PIXEL_BYTES).build();
-    }
+    Response simpleLog(@PathParam("e") String errorMessage, @PathParam("t") String timestamp, @PathParam("p") String pathName);
 
     @GET
     @Path("noscript")
     @Produces({"image/jpeg", "image/png", "image/gif"})
-    public Response noScript() {
-        logger.warning("FrontendProvider no script. SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
-        return Response.ok(PIXEL_BYTES).build();
-    }
+    Response noScript();
 
     @POST
     @Path("login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response loginUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe) {
-        try {
-            LoginResult loginResult = userService.loginUser(email, password);
-            Response.ResponseBuilder responseBuilder = Response.ok(loginResult);
-            if (loginResult == LoginResult.OK && rememberMe) {
-                responseBuilder = responseBuilder.cookie(generateLoginCookie(registerService.setupLoginCookieEntry(email)));
-            }
-            return responseBuilder.build();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw new InternalServerErrorException();
-        }
-    }
+    Response loginUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe);
 
     @POST
     @Path("createunverifieduser")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createUnverifiedUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe) {
-        try {
-            RegisterResult registerResult = userService.createUnverifiedUserAndLogin(email, password);
-            Response.ResponseBuilder responseBuilder = Response.ok(registerResult);
-            if (registerResult == RegisterResult.OK && rememberMe) {
-                responseBuilder = responseBuilder.cookie(generateLoginCookie(registerService.setupLoginCookieEntry(email)));
-            }
-            return responseBuilder.build();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            return Response.ok(RegisterResult.UNKNOWN_ERROR).build();
-        }
-    }
+    Response createUnverifiedUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe);
 
     @GET
     @Path("isemailfree/{email}")
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean isEmailFree(@PathParam("email") String email) {
-        try {
-            return userService.verifyEmail(email) == null;
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw new InternalServerErrorException();
-        }
-    }
+    boolean isEmailFree(@PathParam("email") String email);
 
     @POST
     @Path("verifyemaillink")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean verifyEmailLink(@FormParam("verificationId") String verificationId) {
-        try {
-            registerService.onEmailVerificationPageCalled(verificationId);
-            return true;
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            return false;
-        }
-    }
+    boolean verifyEmailLink(@FormParam("verificationId") String verificationId);
 
     @POST
     @Path("sendemailforgotpassword")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean sendEmailForgotPassword(@FormParam("email") String email) {
-        try {
-            registerService.onForgotPassword(email);
-            return true;
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            return false;
-        }
-    }
+    boolean sendEmailForgotPassword(@FormParam("email") String email);
 
     @POST
     @Path("savepassword")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.TEXT_PLAIN)
-    public boolean savePassword(@FormParam("uuid") String uuid, @FormParam("password") String password) {
-        try {
-            registerService.onPasswordReset(uuid, password);
-            return true;
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            return false;
-        }
-    }
+    boolean savePassword(@FormParam("uuid") String uuid, @FormParam("password") String password);
 
     @POST
     @Path("logout")
-    public void savePassword() {
-        try {
-            userService.logout();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-    }
+    void logout();
 
     @POST
     @Path("tracknavigation")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public void trackNavigation(@FormParam("url") String url) {
-        try {
-            trackerPersistence.onFrontendNavigation(url, sessionHolder.getPlayerSession().getHttpSessionId());
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
-    }
-
-    public static NewCookie generateLoginCookie(String value) {
-        return new NewCookie(CommonUrl.LOGIN_COOKIE_NAME, value, "/", null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
-    }
-
-    public static javax.servlet.http.Cookie generateLoginServletCookie(String value) {
-        javax.servlet.http.Cookie cookie = new Cookie(CommonUrl.LOGIN_COOKIE_NAME, value);
-        cookie.setMaxAge(LOGIN_COOKIE_MAX_AGE);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setVersion(NewCookie.DEFAULT_VERSION);
-        cookie.setPath("/");
-        return cookie;
-    }
-
-    public static javax.servlet.http.Cookie generateExpiredLoginServletCookie() {
-        javax.servlet.http.Cookie cookie = new Cookie(CommonUrl.LOGIN_COOKIE_NAME, "");
-        cookie.setMaxAge(-1);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setVersion(NewCookie.DEFAULT_VERSION);
-        cookie.setPath("/");
-        return cookie;
-    }
+    void trackNavigation(@FormParam("url") String url);
 }

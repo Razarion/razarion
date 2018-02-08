@@ -1,6 +1,6 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.server.ClientGameConnectionServiceTestHelper;
 import com.btxtech.server.TestClientGameConnection;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 05.05.2017.
  */
-public class UserServiceTest extends ArquillianBaseTest {
+public class UserServiceTest extends ServerArquillianBaseTest {
     @Inject
     private Logger logger;
     @Inject

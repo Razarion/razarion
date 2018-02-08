@@ -58,7 +58,7 @@ public class UserServiceProviderImpl implements UserServiceProvider {
                 registerInfo.setUserAlreadyExits(true);
             } else if (registerResult == RegisterResult.OK) {
                 if (emailPasswordInfo.isRememberMe()) {
-                    httpServletResponse.addCookie(FrontendProvider.generateLoginServletCookie(registerService.setupLoginCookieEntry(emailPasswordInfo.getEmail())));
+                    httpServletResponse.addCookie(FrontendProviderImpl.generateLoginServletCookie(registerService.setupLoginCookieEntry(emailPasswordInfo.getEmail())));
                 }
                 registerInfo.setHumanPlayerId(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId());
             }
@@ -122,9 +122,9 @@ public class UserServiceProviderImpl implements UserServiceProvider {
                 throw new IllegalStateException("The user is not a email/password user" + sessionHolder.getPlayerSession().getUserContext() + " SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId());
             }
             if (rememberMe) {
-                httpServletResponse.addCookie(FrontendProvider.generateLoginServletCookie(registerService.setupLoginCookieEntry(userAccountInfo.getEmail())));
+                httpServletResponse.addCookie(FrontendProviderImpl.generateLoginServletCookie(registerService.setupLoginCookieEntry(userAccountInfo.getEmail())));
             } else {
-                httpServletResponse.addCookie(FrontendProvider.generateExpiredLoginServletCookie());
+                httpServletResponse.addCookie(FrontendProviderImpl.generateExpiredLoginServletCookie());
             }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

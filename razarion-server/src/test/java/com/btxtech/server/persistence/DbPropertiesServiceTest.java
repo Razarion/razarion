@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.server.RazAssertTestHelper;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DbPropertyKey;
@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 15.05.2017.
  */
-public class DbPropertiesServiceTest extends ArquillianBaseTest {
+public class DbPropertiesServiceTest extends ServerArquillianBaseTest {
     @Inject
     private DbPropertiesService dbPropertiesService;
 

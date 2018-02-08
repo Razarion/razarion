@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import java.util.Locale;
  * Created by Beat
  * 25.05.2017.
  */
-public class PlanetPersistenceTest extends ArquillianBaseTest {
+public class PlanetPersistenceTest extends ServerArquillianBaseTest {
     @Inject
     private PlanetPersistence planetPersistence;
     @Inject

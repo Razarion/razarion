@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.level;
 
-import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
@@ -22,7 +22,7 @@ import java.util.Map;
  * Created by Beat
  * 05.05.2017.
  */
-public class LevelPersistenceTest extends ArquillianBaseTest {
+public class LevelPersistenceTest extends ServerArquillianBaseTest {
     @Inject
     private LevelPersistence levelPersistence;
     @PersistenceContext

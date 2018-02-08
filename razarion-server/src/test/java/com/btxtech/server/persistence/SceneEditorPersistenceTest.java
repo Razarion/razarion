@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.ArquillianBaseTest;
+import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
@@ -49,7 +49,7 @@ import java.util.Map;
  * Created by Beat
  * 16.05.2017.
  */
-public class SceneEditorPersistenceTest extends ArquillianBaseTest {
+public class SceneEditorPersistenceTest extends ServerArquillianBaseTest {
     private static final int NPC_BOT_OUTPOST_AUX = 11;
     private static final int NPC_BOT_OUTPOST_2_AUX = 22;
     private static final int ENEMY_BOT_AUX = 33;

@@ -55,6 +55,7 @@ public class CommonUrl {
     public static final String UNLOCK_PROVIDER_PATH = "unlockprovider";
     public static final String USER_SERVICE_PROVIDER_PATH = "userserviceprovider";
     public static final String FRONTEND_PATH = "frontend";
+    public static final String SERVER_TEST_HELPER = "servertesthelper";
     // Cookiez
     public static final String LOGIN_COOKIE_NAME = "LoginToken";
 
