@@ -74,10 +74,16 @@ public class ClientArquillianBaseTest {
                 if (responseContext.getCookies().containsKey("JSESSIONID")) {
                     restContext.setSessionCookie(responseContext.getCookies().get("JSESSIONID"));
                 }
+                if (responseContext.getCookies().containsKey("LoginToken")) {
+                    restContext.setLoginTokenCookie(responseContext.getCookies().get("LoginToken"));
+                }
             });
             client.register((ClientRequestFilter) (requestContext) -> {
                 if (restContext.getSessionCookie() != null) {
                     requestContext.getCookies().put("JSESSIONID", restContext.getSessionCookie());
+                }
+                if (restContext.getLoginTokenCookie() != null) {
+                    requestContext.getCookies().put("LoginToken", restContext.getLoginTokenCookie());
                 }
             });
             restContext.setTarget(target);
@@ -124,6 +130,7 @@ public class ClientArquillianBaseTest {
     public static class RestContext {
         private String acceptLanguage;
         private Cookie sessionCookie;
+        private Cookie loginTokenCookie;
         private ResteasyWebTarget target;
 
         public String getAcceptLanguage() {
@@ -141,6 +148,14 @@ public class ClientArquillianBaseTest {
 
         private void setSessionCookie(Cookie sessionCookie) {
             this.sessionCookie = sessionCookie;
+        }
+
+        public Cookie getLoginTokenCookie() {
+            return loginTokenCookie;
+        }
+
+        public void setLoginTokenCookie(Cookie loginTokenCookie) {
+            this.loginTokenCookie = loginTokenCookie;
         }
 
         private void setTarget(ResteasyWebTarget target) {
