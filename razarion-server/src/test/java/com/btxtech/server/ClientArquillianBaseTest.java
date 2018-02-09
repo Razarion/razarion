@@ -123,6 +123,10 @@ public class ClientArquillianBaseTest {
         return setupRestServerTestHelperAccess().getEmailVerificationUuid(email);
     }
 
+    protected String getForgotPasswordUuid(String email) {
+        return setupRestServerTestHelperAccess().getForgotPasswordUuid(email);
+    }
+
     protected ColdGameUiControlConfig getColdGameUiControlConfig(RestContext restContext) {
         return setupClient(GameUiControlProvider.class, restContext).loadGameUiControlConfig(new GameUiControlInput());
     }

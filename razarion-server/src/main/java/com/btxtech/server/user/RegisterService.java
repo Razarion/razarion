@@ -282,7 +282,6 @@ public class RegisterService {
             // Setup template
             Template template = createTemplate("forgot-password.ftl");
             Map<String, String> paramMap = new HashMap<>();
-            // falls vorhanden context.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
             paramMap.put("main1", serverI18nHelper.getString("emailForgotPasswordSubjectMain1", userEntity.getLocale()));
             paramMap.put("main2", serverI18nHelper.getString("emailForgotPasswordSubjectMain2", userEntity.getLocale()));
             paramMap.put("link", link);

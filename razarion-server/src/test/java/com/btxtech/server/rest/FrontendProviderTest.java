@@ -27,8 +27,6 @@ import java.util.List;
  */
 @RunAsClient
 public class FrontendProviderTest extends ClientArquillianBaseTest {
-    protected static String REST_URL = "http://192.168.99.100:32778/test/rest/";
-
     @Before
     public void before() {
         setupPlanets();
@@ -98,7 +96,7 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
     }
 
     @Test
-    public void testEmailUserJapan() {
+    public void testEmailUserJp() {
         testEmailUser("ja-JP", "ja_JP", "Razarion - Please confirm your Email address",
                 "<html><body><h3>HelloandwelcometoRazarion</h3><div>ThankyouforregisteringatRazarion.Pleasefollowthelinkbelowtoconfirmyouremailaddress:<br><ahref=\"https://www.razarion.com/verify-email/",
                 "\">https://www.razarion.com/verify-email/",
@@ -233,5 +231,86 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         restContext.setLoginTokenCookie(loginCookie2);
         Assert.assertTrue(frontendProvider.isLoggedIn(loginCookie2.getValue()).isLoggedIn());
         Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+    }
+
+    @Test
+    public void testPasswordResetDe() {
+        testPasswordReset("de-DE", "Razarion - Konto Passworthilfe",
+                "<html><body><div>DuerhältstdiesesEmail,weildueinneuesPasswortfürdeinRazarionKontobeantragthast.FallsDukeinneuesPasswordbeantragthast,kannstdudieseEmailignorieren.<br><br>UmdenVorgangabzuschliessen,klickebitteaufdenLink:<br><ahref=\"https://www.razarion.com/change-password/",
+                "\">https://www.razarion.com/change-password/",
+                "</a><br><br><br>DeinRazarion-Team</div></body></html>");
+    }
+
+    @Test
+    public void testPasswordResetEn() {
+        testPasswordReset("en-US", "Razarion - Account password help",
+                "<html><body><div>You'rereceivingthisemailbecauseyourequestedapasswordresetforyourRazarionaccount.Ifyoudidnotrequestthischange,youcansafelyignorethisemail.<br><br>Tochooseanewpasswordandcompleteyourrequest,pleasefollowthelinkbelow:<br><ahref=\"https://www.razarion.com/change-password/",
+                "\">https://www.razarion.com/change-password/",
+                "</a><br><br><br>WithkindregardsyourRazarionteam</div></body></html>");
+    }
+
+    @Test
+    public void testPasswordResetJp() {
+        testPasswordReset("ja-JP", "Razarion - Account password help",
+                "<html><body><div>You'rereceivingthisemailbecauseyourequestedapasswordresetforyourRazarionaccount.Ifyoudidnotrequestthischange,youcansafelyignorethisemail.<br><br>Tochooseanewpasswordandcompleteyourrequest,pleasefollowthelinkbelow:<br><ahref=\"https://www.razarion.com/change-password/",
+                "\">https://www.razarion.com/change-password/",
+                "</a><br><br><br>WithkindregardsyourRazarionteam</div></body></html>");
+    }
+
+    @Test
+    public void testPasswordResetUnknwon() {
+        testPasswordReset("wwwwwww", "Razarion - Account password help",
+                "<html><body><div>You'rereceivingthisemailbecauseyourequestedapasswordresetforyourRazarionaccount.Ifyoudidnotrequestthischange,youcansafelyignorethisemail.<br><br>Tochooseanewpasswordandcompleteyourrequest,pleasefollowthelinkbelow:<br><ahref=\"https://www.razarion.com/change-password/",
+                "\">https://www.razarion.com/change-password/",
+                "</a><br><br><br>WithkindregardsyourRazarionteam</div></body></html>");
+    }
+
+    public void testPasswordReset(String languageIn, String subject, String messageBodyPart1, String messageBodyPart2, String messageBodyPart3) {
+        startFakeMailServer();
+        // Register
+        RestContext restContext = new RestContext().setAcceptLanguage(languageIn);
+        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, restContext);
+        RegisterResult registerResult = frontendProvider.createUnverifiedUser("xxx@yyy.com", "123456789", false);
+        Assert.assertEquals(RegisterResult.OK, registerResult);
+        getMessagesAndClear().size();
+        frontendProvider.logout();
+        // Wrong password reset
+        Assert.assertFalse(frontendProvider.sendEmailForgotPassword("xxx@yy11.com"));
+        Assert.assertEquals(0, getMessagesAndClear().size());
+        // Password reset
+        Assert.assertTrue(frontendProvider.sendEmailForgotPassword("xxx@yyy.com"));
+        List<FakeEmailDto> mails = getMessagesAndClear();
+        Assert.assertEquals(1, mails.size());
+        Assert.assertEquals("xxx@yyy.com", mails.get(0).getEnvelopeReceiver());
+        Assert.assertEquals("no-reply@razarion.com", mails.get(0).getEnvelopeSender());
+        Assert.assertEquals(subject, mails.get(0).getSubject());
+        Assert.assertEquals("text/html; charset=UTF-8", mails.get(0).getContentType());
+        String uuid = getForgotPasswordUuid("xxx@yyy.com");
+        Assert.assertEquals(messageBodyPart1 + uuid + messageBodyPart2 + uuid + messageBodyPart3, mails.get(0).getContent().replaceAll("\\s", ""));
+        // Check wrong uuid
+        Assert.assertFalse(frontendProvider.savePassword(uuid+"qefdewfdswf", "asdasdasdasd"));
+        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+        // Login with new password
+        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendProvider.loginUser("xxx@yyy.com", "asdasdasdasd", false));
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+        // Change password
+        Assert.assertTrue(frontendProvider.savePassword(uuid, "987654321"));
+        Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+        // Logout
+        frontendProvider.logout();
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+        // Login with old password
+        Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendProvider.loginUser("xxx@yyy.com", "123456789", false));
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+        // Login with new password
+        Assert.assertEquals(LoginResult.OK, frontendProvider.loginUser("xxx@yyy.com", "987654321", false));
+        Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+        // Logout
+        frontendProvider.logout();
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
+        // Check old uuid
+        Assert.assertFalse(frontendProvider.savePassword(uuid, "qwerwerqwr"));
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
     }
 }

@@ -90,4 +90,14 @@ public class RestServerTestHelperAccessImpl implements RestServerTestHelperAcces
             throw new RuntimeException(t);
         }
     }
+
+    @Override
+    public String getForgotPasswordUuid(String email) {
+        try {
+            return serverTestHelper.getForgotPasswordUuid(email);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw new RuntimeException(t);
+        }
+    }
 }

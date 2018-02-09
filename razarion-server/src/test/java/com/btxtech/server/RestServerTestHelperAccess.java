@@ -47,5 +47,12 @@ public interface RestServerTestHelperAccess {
     @Path("getmessagesandclear/{email}")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.TEXT_PLAIN)
-    String getEmailVerificationUuid(@PathParam("email")String email);
+    String getEmailVerificationUuid(@PathParam("email") String email);
+
+    @GET
+    @Path("getforgotpassworduuid/{email}")
+    @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
+    String getForgotPasswordUuid(@PathParam("email") String email);
+
 }

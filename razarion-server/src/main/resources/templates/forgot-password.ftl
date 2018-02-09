@@ -1,7 +1,5 @@
 <html>
 <body>
-<#--<h3>${greeting},</h3>-->
-
 <div>
     ${main1}
     <br>

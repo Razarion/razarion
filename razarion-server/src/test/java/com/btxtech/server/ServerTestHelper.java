@@ -706,4 +706,8 @@ public class ServerTestHelper {
     public String getEmailVerificationUuid(String email) throws Exception {
         return runInTransactionAndReturn(em -> (String) em.createQuery("SELECT u.verificationId FROM UserEntity u where u.email=:email").setParameter("email", email).getSingleResult());
     }
+
+    public String getForgotPasswordUuid(String email) throws Exception {
+        return runInTransactionAndReturn(em -> (String) em.createQuery("SELECT p.uuid FROM ForgotPasswordEntity p where p.user.email=:email").setParameter("email", email).getSingleResult());
+    }
 }
