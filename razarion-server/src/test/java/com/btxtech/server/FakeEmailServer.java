@@ -27,7 +27,7 @@ public class FakeEmailServer {
 
     public void stopFakeMailServer() {
         if (wiser == null) {
-            throw new IllegalStateException("Fake email server is not running");
+            return;
         }
         wiser.stop();
         wiser = null;

@@ -42,27 +42,32 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
     @Test
     public void testFacebookUser() {
         // Test not logged in
-        FrontendProvider frontendProvider = setupClient(FrontendProvider.class);
+        RestContext restContext = new RestContext().setAcceptLanguage("en-US");
+        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, restContext);
         FrontendLoginState frontendLoginState = frontendProvider.isLoggedIn("");
-        frontendProvider.isLoggedIn("");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
         Assert.assertEquals("en_US", frontendLoginState.getLanguage());
+        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login facebook
         Assert.assertTrue(frontendProvider.facebookAuthenticated(new FbAuthResponse().setUserID("000000012")));
-        frontendLoginState = (FrontendLoginState) frontendProvider.isLoggedIn("");
+        frontendLoginState = frontendProvider.isLoggedIn("");
         Assert.assertTrue(frontendLoginState.isLoggedIn());
         Assert.assertEquals("en_US", frontendLoginState.getLanguage());
+        Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Logout
         frontendProvider.logout();
         // Test not logged in
-        frontendLoginState = (FrontendLoginState) frontendProvider.isLoggedIn("");
+        frontendLoginState = frontendProvider.isLoggedIn("");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
         Assert.assertEquals("en_US", frontendLoginState.getLanguage());
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login same user facebook
         Assert.assertTrue(frontendProvider.facebookAuthenticated(new FbAuthResponse().setUserID("000000012")));
         frontendLoginState = (FrontendLoginState) frontendProvider.isLoggedIn("");
         Assert.assertTrue(frontendLoginState.isLoggedIn());
         Assert.assertEquals("en_US", frontendLoginState.getLanguage());
+        Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Logout
         frontendProvider.logout();
         // Verify
@@ -84,11 +89,12 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         FrontendLoginState frontendLoginState = frontendProvider.isLoggedIn("");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
         Assert.assertEquals("de_DE", frontendLoginState.getLanguage());
+        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
+        Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Register
         RegisterResult registerResult = frontendProvider.createUnverifiedUser("xxx@yyy.com", "123456789", true);
         Assert.assertEquals(RegisterResult.OK, registerResult);
         // Verify UserContext
-        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
         UserContext userContext = gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
         Assert.assertTrue(userContext.checkRegistered());
         Assert.assertTrue(userContext.isEmailNotVerified());
