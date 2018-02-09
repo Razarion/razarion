@@ -80,15 +80,46 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
     }
 
     @Test
-    public void testEmailUser() {
+    public void testEmailUserDe() {
+        testEmailUser("de-DE", "de_DE", "Razarion - Please confirm your Email address",
+                "<html><body><h3>HalloundherzlichwillkommenbeiRazarion</h3><div>VielenDankfürdieRegistrierungbeiRazarion.BittebestätigedeineE-Mail-Adresse,indemduaufdenfolgendenLinkklickst:<br><ahref=\"https://www.razarion.com/verify-email/",
+                "\">https://www.razarion.com/verify-email/",
+                "</a><br><br><br>Wirfreuenunsdarauf,dichbeiRazarionbegrüssenzudürfen!<br><br>DeinRazarion-Team</div></body></html>");
+    }
+
+    @Test
+    public void testEmailUserEn() {
+        testEmailUser("en-Us", "en_US", "Razarion - Please confirm your Email address",
+                "<html><body><h3>HelloandwelcometoRazarion</h3><div>ThankyouforregisteringatRazarion.Pleasefollowthelinkbelowtoconfirmyouremailaddress:<br><ahref=\"https://www.razarion.com/verify-email/",
+                "\">https://www.razarion.com/verify-email/",
+                "</a><br><br><br>WearepleasedtobeabletowelcomeyoutoRazarion<br><br>WithkindregardsyourRazarionteam</div></body></html>");
+    }
+
+    @Test
+    public void testEmailUserJapan() {
+        testEmailUser("ja-JP", "ja_JP", "Razarion - Please confirm your Email address",
+                "<html><body><h3>HelloandwelcometoRazarion</h3><div>ThankyouforregisteringatRazarion.Pleasefollowthelinkbelowtoconfirmyouremailaddress:<br><ahref=\"https://www.razarion.com/verify-email/",
+                "\">https://www.razarion.com/verify-email/",
+                "</a><br><br><br>WearepleasedtobeabletowelcomeyoutoRazarion<br><br>WithkindregardsyourRazarionteam</div></body></html>");
+    }
+
+    @Test
+    public void testEmailUserUnknown() {
+        testEmailUser("xxx", "xxx", "Razarion - Please confirm your Email address",
+                "<html><body><h3>HelloandwelcometoRazarion</h3><div>ThankyouforregisteringatRazarion.Pleasefollowthelinkbelowtoconfirmyouremailaddress:<br><ahref=\"https://www.razarion.com/verify-email/",
+                "\">https://www.razarion.com/verify-email/",
+                "</a><br><br><br>WearepleasedtobeabletowelcomeyoutoRazarion<br><br>WithkindregardsyourRazarionteam</div></body></html>");
+    }
+
+    private void testEmailUser(String languageIn, String languageExpected, String subject, String messageBodyPart1, String messageBodyPart2, String messageBodyPart3) {
         startFakeMailServer();
 
         // Test not logged in
-        RestContext restContext = new RestContext().setAcceptLanguage("de-DE");
+        RestContext restContext = new RestContext().setAcceptLanguage(languageIn);
         FrontendProvider frontendProvider = setupClient(FrontendProvider.class, restContext);
         FrontendLoginState frontendLoginState = frontendProvider.isLoggedIn("");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
-        Assert.assertEquals("de_DE", frontendLoginState.getLanguage());
+        Assert.assertEquals(languageExpected, frontendLoginState.getLanguage());
         GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Register
@@ -103,10 +134,10 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         Assert.assertEquals(1, mails.size());
         Assert.assertEquals("xxx@yyy.com", mails.get(0).getEnvelopeReceiver());
         Assert.assertEquals("no-reply@razarion.com", mails.get(0).getEnvelopeSender());
-        // TODO why das this not work? Assert.assertEquals("Razarion - Please confirm your Email address", mails.get(0).getSubject());
+        // TODO why das this not work? Assert.assertEquals(subject, mails.get(0).getSubject());
         Assert.assertEquals("text/html; charset=UTF-8", mails.get(0).getContentType());
         String uuid = getEmailVerificationUuid("xxx@yyy.com");
-        Assert.assertEquals("<html><body><h3>HalloundherzlichwillkommenbeiRazarion</h3><div>VielenDankfürdieRegistrierungbeiRazarion.BittebestätigedeineE-Mail-Adresse,indemduaufdenfolgendenLinkklickst:<br><ahref=\"https://www.razarion.com/verify-email/" + uuid + "\">https://www.razarion.com/verify-email/" + uuid + "</a><br><br><br>Wirfreuenunsdarauf,dichbeiRazarionbegrüssenzudürfen!<br><br>DeinRazarion-Team</div></body></html>", mails.get(0).getContent().replaceAll("\\s", ""));
+        Assert.assertEquals(messageBodyPart1 + uuid + messageBodyPart2 + uuid + messageBodyPart3, mails.get(0).getContent().replaceAll("\\s", ""));
         // Click wrong activation link
         Assert.assertFalse(frontendProvider.verifyEmailLink(uuid + "xxxxxxx"));
         // Verify UserContext
