@@ -3,6 +3,7 @@ package com.btxtech.server.user;
 import com.btxtech.server.FakeEmailServer;
 import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.shared.datatypes.ErrorResult;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +28,7 @@ public class RegisterServiceTest extends ServerArquillianBaseTest {
 
     @Before
     public void before() throws Exception {
+        fakeEmailServer.startFakeMailServer();
         setupPlanets();
     }
 
@@ -39,10 +41,6 @@ public class RegisterServiceTest extends ServerArquillianBaseTest {
 
     @Test
     public void testRemoveOldEmailVerification() throws Exception {
-        setupPlanets();
-
-        fakeEmailServer.startFakeMailServer();
-
         userService.createUnverifiedUserAndLogin("xxx@yyy.com", "123345789");
         sessionHolder.getPlayerSession().setUserContext(null); // Logout
         userService.createUnverifiedUserAndLogin("xxx@yy1.com", "123345789");
@@ -67,10 +65,6 @@ public class RegisterServiceTest extends ServerArquillianBaseTest {
 
     @Test
     public void testRemoveOldForgotPassword() throws Exception {
-        setupPlanets();
-
-        fakeEmailServer.startFakeMailServer();
-
         userService.createUnverifiedUserAndLogin("xxx@yyy.com", "123345789");
         sessionHolder.getPlayerSession().setUserContext(null); // Logout
         userService.createUnverifiedUserAndLogin("xxx@yy1.com", "123345789");
@@ -96,4 +90,23 @@ public class RegisterServiceTest extends ServerArquillianBaseTest {
         });
     }
 
+
+    @Test
+    public void isEmailFree() throws Exception {
+        userService.createUnverifiedUserAndLogin("xxx@yyy.com", "123345789");
+        sessionHolder.getPlayerSession().setUserContext(null); // Logout
+        userService.createUnverifiedUserAndLogin("xxx@yy1.com", "123345789");
+        sessionHolder.getPlayerSession().setUserContext(null); // Logout
+        runInTransaction(em -> {
+            UserEntity userEntity = em.createQuery("select u from UserEntity u where u.email = 'xxx@yy1.com'", UserEntity.class).getSingleResult();
+            userEntity.setVerifiedTimedOut();
+            em.persist(userEntity);
+        });
+
+        Assert.assertEquals(ErrorResult.TO_SHORT,userService.verifyEmail(null));
+        Assert.assertEquals(ErrorResult.TO_SHORT,userService.verifyEmail(""));
+        Assert.assertEquals(ErrorResult.ALREADY_USED,userService.verifyEmail("xxx@yyy.com"));
+        Assert.assertNull(userService.verifyEmail("xxx@yyy.co"));
+        Assert.assertNull(userService.verifyEmail("xxx@yy1.com"));
+    }
 }
