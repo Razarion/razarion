@@ -23,6 +23,7 @@ RUN /opt/jboss/wildfly/bin/add-user.sh admin Admin#007 --silent
 COPY container-files/mariadb /
 COPY container-files/wildfly/run-wildfly.sh /
 COPY container-files/mongodb/run-mongodb.sh /
+COPY container-files/razarion/razarion.properties /root
 
 RUN mkdir -p /data/db/
 

@@ -34,6 +34,7 @@ public class ServerArquillianBaseTest extends ServerTestHelper {
                     .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                     .addAsResource("mongodb/PlanetBackup.json", "mongodb/PlanetBackup.json")
                     .addAsResource("mongodb/ServerItemTracking.json", "mongodb/ServerItemTracking.json")
+                    .addAsResource("templates", "templates")
                     .addAsLibraries(libraries);
             System.out.println(webArchive.toString(true));
             return webArchive;

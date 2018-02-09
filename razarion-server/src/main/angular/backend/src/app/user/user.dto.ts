@@ -4,6 +4,7 @@ export class UserBackendInfo {
   humanPlayerId: HumanPlayerId;
   registerDate: Date;
   facebookId: string;
+  email: string;
   name: string;
   activeQuest: QuestBackendInfo;
   completedQuests: QuestBackendInfo[];

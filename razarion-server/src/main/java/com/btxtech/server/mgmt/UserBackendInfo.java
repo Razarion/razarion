@@ -13,6 +13,7 @@ public class UserBackendInfo {
     private HumanPlayerId humanPlayerId;
     private Date registerDate;
     private String facebookId;
+    private String email;
     private String name;
     private QuestBackendInfo activeQuest;
     private List<QuestBackendInfo> completedQuests;
@@ -47,6 +48,15 @@ public class UserBackendInfo {
 
     public UserBackendInfo setFacebookId(String facebookId) {
         this.facebookId = facebookId;
+        return this;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public UserBackendInfo setEmail(String email) {
+        this.email = email;
         return this;
     }
 

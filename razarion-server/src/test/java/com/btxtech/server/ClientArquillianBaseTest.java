@@ -1,5 +1,8 @@
 package com.btxtech.server;
 
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.GameUiControlInput;
+import com.btxtech.shared.rest.GameUiControlProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -13,7 +16,11 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestFilter;
+import javax.ws.rs.client.ClientResponseFilter;
+import javax.ws.rs.core.Cookie;
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -28,7 +35,7 @@ public class ClientArquillianBaseTest {
     public static Archive<?> createDeployment() {
         try {
             // Do not ad weld-core dependency for deproxy
-            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve("org.unitils:unitils-core:4.0-SNAPSHOT", "org.easymock:easymock:3.4").withTransitivity().asFile();
+            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve("org.unitils:unitils-core:4.0-SNAPSHOT", "org.easymock:easymock:3.4", "org.subethamail:subethasmtp:3.1.7").withTransitivity().asFile();
 
             WebArchive webArchive = ShrinkWrap.create(WebArchive.class, "test.war")
                     .addPackages(true, "com.btxtech.server")
@@ -38,6 +45,9 @@ public class ClientArquillianBaseTest {
                     .addAsResource("test-persistence.xml", "META-INF/persistence.xml")
                     .addAsResource("mongodb/PlanetBackup.json", "mongodb/PlanetBackup.json")
                     .addAsResource("mongodb/ServerItemTracking.json", "mongodb/ServerItemTracking.json")
+                    .addAsResource("templates", "templates")
+                    .addAsResource("Razarion.properties", "Razarion.properties")
+                    .addAsResource("Razarion_de.properties", "Razarion_de.properties")
                     .addAsLibraries(libraries);
             System.out.println(webArchive.toString(true));
             return webArchive;
@@ -52,22 +62,94 @@ public class ClientArquillianBaseTest {
     }
 
     protected <T> T setupClient(Class<T> clazz) {
+        return setupClient(clazz, null);
+    }
+
+    protected <T> T setupClient(Class<T> clazz, RestContext restContext) {
         Client client = ClientBuilder.newClient();
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST_URL);
+        if (restContext != null) {
+            client.register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Accept-Language", restContext.getAcceptLanguage()));
+            client.register((ClientResponseFilter) (requestContext, responseContext) -> {
+                if (responseContext.getCookies().containsKey("JSESSIONID")) {
+                    restContext.setSessionCookie(responseContext.getCookies().get("JSESSIONID"));
+                }
+            });
+            client.register((ClientRequestFilter) (requestContext) -> {
+                if (restContext.getSessionCookie() != null) {
+                    requestContext.getCookies().put("JSESSIONID", restContext.getSessionCookie());
+                }
+            });
+            restContext.setTarget(target);
+        }
         return target.proxy(clazz);
     }
 
+    protected RestServerTestHelperAccess setupRestServerTestHelperAccess() {
+        return setupClient(RestServerTestHelperAccess.class);
+    }
+
     protected void setupPlanets() {
-        setupClient(RestServerTestHelperAccess.class).setupPlanets();
+        setupRestServerTestHelperAccess().setupPlanets();
     }
 
     protected void cleanUsers() {
-        setupClient(RestServerTestHelperAccess.class).cleanUsers();
+        setupRestServerTestHelperAccess().cleanUsers();
     }
 
     protected void cleanPlanets() {
-        setupClient(RestServerTestHelperAccess.class).cleanPlanets();
+        setupRestServerTestHelperAccess().cleanPlanets();
     }
 
+    protected void startFakeMailServer() {
+        setupRestServerTestHelperAccess().startFakeMailServer();
+    }
+
+    protected void stopFakeMailServer() {
+        setupRestServerTestHelperAccess().stopFakeMailServer();
+    }
+
+    protected List<FakeEmailDto> getMessagesAndClear() {
+        return setupRestServerTestHelperAccess().getMessagesAndClear();
+    }
+
+    protected String getEmailVerificationUuid(String email) {
+        return setupRestServerTestHelperAccess().getEmailVerificationUuid(email);
+    }
+
+    protected ColdGameUiControlConfig getColdGameUiControlConfig(RestContext restContext) {
+        return setupClient(GameUiControlProvider.class, restContext).loadGameUiControlConfig(new GameUiControlInput());
+    }
+
+    public static class RestContext {
+        private String acceptLanguage;
+        private Cookie sessionCookie;
+        private ResteasyWebTarget target;
+
+        public String getAcceptLanguage() {
+            return acceptLanguage;
+        }
+
+        public RestContext setAcceptLanguage(String acceptLanguage) {
+            this.acceptLanguage = acceptLanguage;
+            return this;
+        }
+
+        public Cookie getSessionCookie() {
+            return sessionCookie;
+        }
+
+        private void setSessionCookie(Cookie sessionCookie) {
+            this.sessionCookie = sessionCookie;
+        }
+
+        private void setTarget(ResteasyWebTarget target) {
+            this.target = target;
+        }
+
+        public <T> T proxy(Class<T> proxyInterface) {
+            return target.proxy(proxyInterface);
+        }
+    }
 }
 

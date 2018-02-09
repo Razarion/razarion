@@ -1,6 +1,8 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.frontend.FrontendLoginState;
+import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.server.user.RegisterResult;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 
@@ -51,13 +53,13 @@ public interface FrontendProvider {
     @Path("login")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    Response loginUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe);
+    LoginResult loginUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe);
 
     @POST
     @Path("createunverifieduser")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    Response createUnverifiedUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe);
+    RegisterResult createUnverifiedUser(@FormParam("email") String email, @FormParam("password") String password, @FormParam("rememberMe") boolean rememberMe);
 
     @GET
     @Path("isemailfree/{email}")

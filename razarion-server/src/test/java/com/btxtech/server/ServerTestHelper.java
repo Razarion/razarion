@@ -27,6 +27,8 @@ import com.btxtech.server.persistence.surface.SlopeShapeEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
+import com.btxtech.server.user.ForgotPasswordEntity;
+import com.btxtech.server.user.LoginCookieEntity;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.util.DateUtil;
@@ -67,6 +69,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.Function;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.client.FindIterable;
@@ -160,7 +163,6 @@ public class ServerTestHelper {
     private UserService userService;
     @Inject
     private BaseItemService baseItemService;
-
 
     protected EntityManager getEntityManager() {
         return em;
@@ -278,6 +280,15 @@ public class ServerTestHelper {
         em.joinTransaction();
         consumer.accept(em);
         utx.commit();
+    }
+
+
+    protected <T> T runInTransactionAndReturn(Function<EntityManager, T> function) throws Exception {
+        utx.begin();
+        em.joinTransaction();
+        T result = function.apply(em);
+        utx.commit();
+        return result;
     }
 
     protected void runInTransactionSave(Consumer<EntityManager> consumer) throws Exception {
@@ -572,6 +583,8 @@ public class ServerTestHelper {
     }
 
     protected void cleanUsers() throws Exception {
+        cleanTable(ForgotPasswordEntity.class);
+        cleanTable(LoginCookieEntity.class);
         cleanTable(UserHistoryEntity.class);
         cleanTableNative("USER_COMPLETED_QUEST");
         cleanTable(UserEntity.class);
@@ -690,4 +703,7 @@ public class ServerTestHelper {
         return userService.getUserContextFromSession();
     }
 
+    public String getEmailVerificationUuid(String email) throws Exception {
+        return runInTransactionAndReturn(em -> (String) em.createQuery("SELECT u.verificationId FROM UserEntity u where u.email=:email").setParameter("email", email).getSingleResult());
+    }
 }

@@ -497,7 +497,7 @@ public class UserService {
         if (userEntity == null) {
             return null;
         }
-        UserBackendInfo userBackendInfo = new UserBackendInfo().setName(userEntity.getName()).setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId());
+        UserBackendInfo userBackendInfo = new UserBackendInfo().setName(userEntity.getName()).setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId()).setEmail(userEntity.getEmail());
         userBackendInfo.setHumanPlayerId(userEntity.createHumanPlayerId()).setLevelNumber(userEntity.getLevel().getNumber()).setXp(userEntity.getXp()).setCrystals(userEntity.getCrystals());
         if (userEntity.getActiveQuest() != null) {
             userBackendInfo.setActiveQuest(new QuestBackendInfo().setId(userEntity.getActiveQuest().getId()).setInternalName(userEntity.getActiveQuest().getInternalName()));

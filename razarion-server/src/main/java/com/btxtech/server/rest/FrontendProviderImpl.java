@@ -98,32 +98,30 @@ public class FrontendProviderImpl implements FrontendProvider {
     }
 
     @Override
-    public Response loginUser(String email, String password, boolean rememberMe) {
+    public LoginResult loginUser(String email, String password, boolean rememberMe) {
         try {
             LoginResult loginResult = userService.loginUser(email, password);
-            Response.ResponseBuilder responseBuilder = Response.ok(loginResult);
             if (loginResult == LoginResult.OK && rememberMe) {
-                responseBuilder = responseBuilder.cookie(generateLoginCookie(registerService.setupLoginCookieEntry(email)));
+                httpServletResponse.addCookie(generateLoginServletCookie(registerService.setupLoginCookieEntry(email)));
             }
-            return responseBuilder.build();
+            return loginResult;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            throw new InternalServerErrorException();
+            throw t;
         }
     }
 
     @Override
-    public Response createUnverifiedUser(String email, String password, boolean rememberMe) {
+    public RegisterResult createUnverifiedUser(String email, String password, boolean rememberMe) {
         try {
             RegisterResult registerResult = userService.createUnverifiedUserAndLogin(email, password);
-            Response.ResponseBuilder responseBuilder = Response.ok(registerResult);
             if (registerResult == RegisterResult.OK && rememberMe) {
-                responseBuilder = responseBuilder.cookie(generateLoginCookie(registerService.setupLoginCookieEntry(email)));
+                httpServletResponse.addCookie(generateLoginServletCookie(registerService.setupLoginCookieEntry(email)));
             }
-            return responseBuilder.build();
+            return registerResult;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            return Response.ok(RegisterResult.UNKNOWN_ERROR).build();
+            return RegisterResult.UNKNOWN_ERROR;
         }
     }
 
@@ -186,10 +184,6 @@ public class FrontendProviderImpl implements FrontendProvider {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
-    }
-
-    public static NewCookie generateLoginCookie(String value) {
-        return new NewCookie(CommonUrl.LOGIN_COOKIE_NAME, value, "/", null, NewCookie.DEFAULT_VERSION, null, LOGIN_COOKIE_MAX_AGE, null, true, true);
     }
 
     public static javax.servlet.http.Cookie generateLoginServletCookie(String value) {

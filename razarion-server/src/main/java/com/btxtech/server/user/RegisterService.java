@@ -153,10 +153,9 @@ public class RegisterService {
             // Setup template
             Template template = createTemplate("registration-confirmation.ftl");
             Map<String, String> paramMap = new HashMap<>();
-            // paramMap.put("greeting", serverI18nHelper.getString("emailVeriGreeting", new Object[]{user.getUsername()}));
+            paramMap.put("greeting", serverI18nHelper.getString("emailVeriGreeting", userEntity.getLocale()));
             paramMap.put("main", serverI18nHelper.getString("emailVeriMain", userEntity.getLocale()));
             paramMap.put("link", CommonUrl.generateVerificationLink(userEntity.getVerificationId()));
-            // paramMap.put("user", serverI18nHelper.getString("emailVeriUser", new Object[]{user.getUsername()}));
             paramMap.put("closing", serverI18nHelper.getString("emailVeriClosing", userEntity.getLocale()));
             paramMap.put("razarionTeam", serverI18nHelper.getString("emailVeriRazarionTeam", userEntity.getLocale()));
             Writer stringWriter = new StringWriter();
