@@ -195,11 +195,13 @@ public class RegisterService {
         entityManager.merge(userEntity);
 
         if (sessionHolder.isLoggedIn()) {
+            // TODO check for wrong user logged in
             sessionHolder.getPlayerSession().setUserContext(userEntity.toUserContext());
         } else {
             userService.get().autoLoginUser(userEntity.getEmail());
         }
 
+        // TODO check for wrong user logged in
         clientSystemConnectionService.sendEmailVerifiedToClient(sessionHolder.getPlayerSession());
     }
 
