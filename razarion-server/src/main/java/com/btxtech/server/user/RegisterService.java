@@ -32,6 +32,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import javax.transaction.UserTransaction;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -62,11 +63,13 @@ public class RegisterService {
     public static final String NO_REPLY_EMAIL = "no-reply@razarion.com";
     public static final String PERSONAL_NAME = "Razarion";
     private static final String COOKIE_DELIMITER = ";";
-    private static long CLEANUP_DELAY = 24 * 60 * 60 * 1000; // Is used in test cases
+    public static long CLEANUP_DELAY = 24 * 60 * 60 * 1000; // Is used in test cases
     @Resource(name = "DefaultManagedScheduledExecutorService")
     private ManagedScheduledExecutorService scheduleExecutor;
     @PersistenceContext
     private EntityManager entityManager;
+    @Inject
+    private UserTransaction utx;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
@@ -93,24 +96,25 @@ public class RegisterService {
             GregorianCalendar gregorianCalendar = new GregorianCalendar();
             gregorianCalendar.add(GregorianCalendar.DAY_OF_YEAR, -1);
             Date removeIfSmaller = Date.from(LocalDateTime.now().minusDays(1).atZone(ZoneId.systemDefault()).toInstant());
-
-            // TODO HibernateUtil.openSession4InternalCall(sessionFactory);
-            try {
-                removeUnverifiedUsers(removeIfSmaller);
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException(throwable);
-            } finally {
-                // TODO HibernateUtil.closeSession4InternalCall(sessionFactory);
-            }
-            // TODO HibernateUtil.openSession4InternalCall(sessionFactory);
-            try {
-                removeOldPasswordForgetEntries(removeIfSmaller);
-            } catch (Throwable throwable) {
-                exceptionHandler.handleException(throwable);
-            } finally {
-                // TODO HibernateUtil.closeSession4InternalCall(sessionFactory);
-            }
+            runInTransaction(() -> removeUnverifiedUsers(removeIfSmaller));
+            runInTransaction(() -> removeOldPasswordForgetEntries(removeIfSmaller));
         }, CLEANUP_DELAY, CLEANUP_DELAY, TimeUnit.MILLISECONDS);
+    }
+
+    private void runInTransaction(Runnable runnable) {
+        try {
+            utx.begin();
+            entityManager.joinTransaction();
+            runnable.run();
+            utx.commit();
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+            try {
+                utx.rollback();
+            } catch (Throwable throwableInner) {
+                exceptionHandler.handleException(throwableInner);
+            }
+        }
     }
 
     @PreDestroy

@@ -10,7 +10,6 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Vetoed;
 import java.io.File;
 
 /**
@@ -24,7 +23,7 @@ public class ServerArquillianBaseTest extends ServerTestHelper {
     public static Archive<?> createDeployment() {
         try {
             // Do not ad weld-core dependency for deproxy
-            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve("org.unitils:unitils-core:4.0-SNAPSHOT", "org.easymock:easymock:3.4").withTransitivity().asFile();
+            File[] libraries = Maven.resolver().loadPomFromFile("./pom.xml").importRuntimeDependencies().resolve("org.unitils:unitils-core:4.0-SNAPSHOT", "org.easymock:easymock:3.4", "org.subethamail:subethasmtp:3.1.7").withTransitivity().asFile();
 
             WebArchive webArchive = ShrinkWrap.create(WebArchive.class, "test.war")
                     .addPackages(true, "com.btxtech.server")
@@ -35,6 +34,8 @@ public class ServerArquillianBaseTest extends ServerTestHelper {
                     .addAsResource("mongodb/PlanetBackup.json", "mongodb/PlanetBackup.json")
                     .addAsResource("mongodb/ServerItemTracking.json", "mongodb/ServerItemTracking.json")
                     .addAsResource("templates", "templates")
+                    .addAsResource("Razarion.properties", "Razarion.properties")
+                    .addAsResource("Razarion_de.properties", "Razarion_de.properties")
                     .addAsLibraries(libraries);
             System.out.println(webArchive.toString(true));
             return webArchive;

@@ -276,6 +276,14 @@ public class UserEntity {
         verificationId = UUID.randomUUID().toString().toUpperCase();
     }
 
+    /**
+     * Only used in test
+     * @param verificationStartedDate date
+     */
+    public void setVerificationStartedDate(Date verificationStartedDate) {
+        this.verificationStartedDate = verificationStartedDate;
+    }
+
     public void setVerifiedDone() {
         verificationDoneDate = new Date();
     }
@@ -290,6 +298,10 @@ public class UserEntity {
 
     public String getVerificationId() {
         return verificationId;
+    }
+
+    public Date getVerificationTimedOutDate() {
+        return verificationTimedOutDate;
     }
 
     @Override
