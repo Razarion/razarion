@@ -1,20 +1,14 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.ClientGameConnectionServiceTestHelper;
 import com.btxtech.server.FakeEmailServer;
 import com.btxtech.server.ServerArquillianBaseTest;
-import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.web.SessionHolder;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import java.util.Date;
 
 /**
@@ -28,16 +22,6 @@ public class RegisterServiceTest extends ServerArquillianBaseTest {
     private UserService userService;
     @Inject
     private SessionHolder sessionHolder;
-    @Inject
-    private BaseItemService baseItemService;
-    @Inject
-    private ServerLevelQuestService serverLevelQuestService;
-    @Inject
-    private ClientGameConnectionServiceTestHelper clientGameConnectionServiceTestHelper;
-    @Resource(name = "DefaultManagedScheduledExecutorService")
-    private ManagedScheduledExecutorService scheduleExecutor;
-    @Inject
-    private HttpSession session;
     @Inject
     private FakeEmailServer fakeEmailServer;
 
