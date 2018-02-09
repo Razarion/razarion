@@ -46,7 +46,7 @@ public class RegisterServiceTest extends ServerArquillianBaseTest {
         userService.createUnverifiedUserAndLogin("xxx@yy1.com", "123345789");
         runInTransaction(em -> {
             UserEntity userEntity = em.createQuery("select u from UserEntity u where u.email = 'xxx@yy1.com'", UserEntity.class).getSingleResult();
-            userEntity.setVerificationStartedDate(new Date(System.currentTimeMillis() - 86400005));
+            userEntity.setVerificationStartedDate(new Date(System.currentTimeMillis() - 90000000L));
             em.persist(userEntity);
         });
 
@@ -75,7 +75,7 @@ public class RegisterServiceTest extends ServerArquillianBaseTest {
 
         runInTransaction(em -> {
             ForgotPasswordEntity forgotPasswordEntity = em.createQuery("select f from ForgotPasswordEntity f where f.user.email = 'xxx@yy1.com'", ForgotPasswordEntity.class).getSingleResult();
-            forgotPasswordEntity.setDate(new Date(System.currentTimeMillis() - 86400005));
+            forgotPasswordEntity.setDate(new Date(System.currentTimeMillis() - 90000000L));
             em.persist(forgotPasswordEntity);
         });
 
