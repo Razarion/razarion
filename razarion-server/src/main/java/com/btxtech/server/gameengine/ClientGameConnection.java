@@ -71,7 +71,7 @@ public class ClientGameConnection {
     public void open(Session session, EndpointConfig config) {
         time = new Date();
         async = session.getAsyncRemote();
-        httpSessionId = ((HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY)).getId();
+        httpSessionId = (String) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         clientGameConnectionService.onOpen(this, getHumanPlayerId());
     }
 

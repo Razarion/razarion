@@ -1,7 +1,7 @@
 package com.btxtech.server.connection;
 
-import com.btxtech.server.gameengine.WebSocketEndpointConfigAware;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
+import com.btxtech.server.gameengine.WebSocketEndpointConfigAware;
 import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
@@ -62,7 +62,7 @@ public class ClientSystemConnection {
     public void open(Session session, EndpointConfig config) {
         time = new Date();
         async = session.getAsyncRemote();
-        httpSessionId = ((HttpSession) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY)).getId() ;
+        httpSessionId = (String) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         clientSystemConnectionService.onOpen(this);
         chatPersistence.sendLastMessages(getSession());
     }
@@ -84,10 +84,10 @@ public class ClientSystemConnection {
                 serverLevelQuestService.onClientLevelUpdate(httpSessionId, (int) param);
                 break;
             case SET_GAME_SESSION_UUID:
-                gameSessionUuid = (String)param;
+                gameSessionUuid = (String) param;
                 break;
             case CHAT_SEND_MESSAGE:
-                chatPersistence.onMessage(getSession(), (String)param);
+                chatPersistence.onMessage(getSession(), (String) param);
                 break;
             default:
                 throw new IllegalArgumentException("ClientSystemConnection Unknown Packet: " + packet);
@@ -116,5 +116,14 @@ public class ClientSystemConnection {
 
     public int getDuration() {
         return (int) (System.currentTimeMillis() - time.getTime());
+    }
+
+    @Override
+    public String toString() {
+        return "ClientSystemConnection{" +
+                "time=" + time +
+                ", gameSessionUuid='" + gameSessionUuid + '\'' +
+                ", httpSessionId='" + httpSessionId + '\'' +
+                '}';
     }
 }

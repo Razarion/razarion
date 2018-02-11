@@ -47,7 +47,7 @@ public class HistoryPersistence {
     @Inject
     private InventoryPersistence inventoryPersistence;
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onLevelUp(HumanPlayerId humanPlayerId, LevelEntity newLevel) {
         try {
             LevelHistoryEntity levelHistoryEntity = new LevelHistoryEntity();
@@ -61,7 +61,7 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onQuest(HumanPlayerId humanPlayerId, QuestConfig questConfig, QuestHistoryEntity.Type type) {
         try {
             QuestHistoryEntity questHistoryEntity = new QuestHistoryEntity();
@@ -76,7 +76,7 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
         try {
             Date date = new Date();
@@ -104,7 +104,7 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onInventoryItemUsed(HumanPlayerId humanPlayerId, int inventoryItemId) {
         try {
             Date date = new Date();
@@ -121,7 +121,7 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onLevelUnlockEntityUsedViaCrystals(HumanPlayerId humanPlayerId, int levelUnlockEntityId) {
         try {
             Date date = new Date();
@@ -138,7 +138,7 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onUserLoggedIn(UserEntity userEntity, String httpSessionId) {
         try {
             UserHistoryEntity userHistoryEntity = new UserHistoryEntity();
@@ -151,7 +151,7 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onUserLoggedOut(int userId, String httpSessionId) {
         try {
             UserHistoryEntity userHistoryEntity = new UserHistoryEntity();
@@ -164,7 +164,7 @@ public class HistoryPersistence {
         }
     }
 
-    @Transactional
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void onForgotPassword(UserEntity userEntity, ForgotPasswordEntity forgotPasswordEntity, ForgotPasswordHistoryEntity.Type type) {
         try {
             ForgotPasswordHistoryEntity historyEntity = new ForgotPasswordHistoryEntity();

@@ -5,7 +5,6 @@ import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.uiservice.i18n.I18nHelper;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -38,10 +37,10 @@ public class QuestPassedDialog extends Composite implements ModalDialogContent<Q
 
     @Override
     public void init(QuestDescriptionConfig questDescriptionConfig) {
-        if (questDescriptionConfig.getPassedMessage() != null) {
+        if (questDescriptionConfig.getPassedMessage() != null && !questDescriptionConfig.getPassedMessage().trim().isEmpty()) {
             questPassedLabel.setText(questDescriptionConfig.getPassedMessage());
         } else {
-            questPassedLabel.getElement().getStyle().setDisplay(Style.Display.NONE);
+            questPassedLabel.setText(I18nHelper.getConstants().youPassedQuest(questDescriptionConfig.getTitle()));
         }
         rewardLabel.setText(I18nHelper.getConstants().reward());
         DisplayUtils.divDisplayState(rewardXpLabel, questDescriptionConfig.getXp() > 0);

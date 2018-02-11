@@ -257,8 +257,6 @@ public interface I18nConstants {
     // Quests
     String questBotBasesText(String botBases);
 
-    String quests();
-
     String nextPlanet();
 
     String tooltipNextPlanet();
@@ -290,6 +288,8 @@ public interface I18nConstants {
     String questOverview(int questsDone, int totalQuests);
 
     String missionOverview(int missionsDone, int totalMissions);
+
+    String youPassedQuest(String questTitle);
 
     String noMoreQuests();
 

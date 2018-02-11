@@ -150,8 +150,9 @@ public class UserUiService {
         return userContext.checkName();
     }
 
-    public void onUserRegistered(HumanPlayerId humanPlayerId, boolean emailVerificationNeeded) {
+    public void onUserRegistered(HumanPlayerId humanPlayerId, boolean emailNotVerified) {
         userContext.setHumanPlayerId(humanPlayerId);
+        userContext.setEmailNotVerified(emailNotVerified);
         clearRegisterTimer();
         if (gameUiControlInstance.get().getGameEngineMode() == GameEngineMode.SLAVE) {
             activateSetUserNameTimer();

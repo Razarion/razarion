@@ -38,18 +38,18 @@ public class ClientSystemConnectionService {
     @Inject
     private ConnectionTrackingPersistence connectionTrackingPersistence;
     private ObjectMapper mapper = new ObjectMapper();
-    private final MapCollection<PlayerSession, ClientSystemConnection> systemGameConnections = new MapCollection<>();
+    private final MapCollection<PlayerSession, ClientSystemConnection> systemConnections = new MapCollection<>();
 
     public void onOpen(ClientSystemConnection clientSystemConnection) {
-        synchronized (systemGameConnections) {
-            systemGameConnections.put(clientSystemConnection.getSession(), clientSystemConnection);
+        synchronized (systemConnections) {
+            systemConnections.put(clientSystemConnection.getSession(), clientSystemConnection);
         }
         connectionTrackingPersistence.onSystemConnectionOpened(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
 
     public void onClose(ClientSystemConnection clientSystemConnection) {
-        synchronized (systemGameConnections) {
-            systemGameConnections.remove(clientSystemConnection.getSession(), clientSystemConnection);
+        synchronized (systemConnections) {
+            systemConnections.remove(clientSystemConnection.getSession(), clientSystemConnection);
         }
         connectionTrackingPersistence.onSystemConnectionClosed(clientSystemConnection.getSession().getHttpSessionId(), clientSystemConnection.getSession());
     }
@@ -121,8 +121,8 @@ public class ClientSystemConnectionService {
 
     private void sendToClient(PlayerSession playerSession, SystemConnectionPacket packet, Object object) {
         Collection<ClientSystemConnection> clientSystemConnections;
-        synchronized (systemGameConnections) {
-            clientSystemConnections = systemGameConnections.get(playerSession);
+        synchronized (systemConnections) {
+            clientSystemConnections = systemConnections.get(playerSession);
             if (clientSystemConnections == null) {
                 return;
             }
@@ -133,8 +133,8 @@ public class ClientSystemConnectionService {
 
     private void sendToClients(SystemConnectionPacket packet, Object object) {
         Collection<ClientSystemConnection> clientSystemConnections;
-        synchronized (systemGameConnections) {
-            clientSystemConnections = systemGameConnections.getAll();
+        synchronized (systemConnections) {
+            clientSystemConnections = systemConnections.getAll();
         }
         sendToClient(packet, object, clientSystemConnections);
     }
@@ -160,8 +160,8 @@ public class ClientSystemConnectionService {
     }
 
     public Collection<ClientSystemConnection> getClientSystemConnections() {
-        synchronized (systemGameConnections) {
-            return systemGameConnections.getAll();
+        synchronized (systemConnections) {
+            return systemConnections.getAll();
         }
     }
 }

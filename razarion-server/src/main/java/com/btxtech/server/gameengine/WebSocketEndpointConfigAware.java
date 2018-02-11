@@ -10,12 +10,12 @@ import javax.websocket.server.ServerEndpointConfig;
  * 21.04.2017.
  */
 public class WebSocketEndpointConfigAware extends ServerEndpointConfig.Configurator {
-    public static final String HTTP_SESSION_KEY = "httpSession";
+    public static final String HTTP_SESSION_KEY = "RAZ_httpSession";
 
     @Override
     public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
         HttpSession httpSession = (HttpSession) request.getHttpSession();
-        config.getUserProperties().put(HTTP_SESSION_KEY, httpSession);
+        config.getUserProperties().put(HTTP_SESSION_KEY, httpSession.getId());
     }
 
 }

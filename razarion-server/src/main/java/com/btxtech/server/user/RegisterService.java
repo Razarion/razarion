@@ -7,6 +7,7 @@ import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.system.FilePropertiesService;
 import com.btxtech.server.system.ServerI18nHelper;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -88,6 +89,8 @@ public class RegisterService {
     private SessionHolder sessionHolder;
     @Inject
     private ClientSystemConnectionService clientSystemConnectionService;
+    @Inject
+    private SessionService sessionService;
     private ScheduledFuture cleanupFuture;
 
     @PostConstruct
@@ -194,15 +197,13 @@ public class RegisterService {
         userEntity.setVerifiedDone();
         entityManager.merge(userEntity);
 
-        if (sessionHolder.isLoggedIn()) {
-            // TODO check for wrong user logged in
-            sessionHolder.getPlayerSession().setUserContext(userEntity.toUserContext());
-        } else {
+        PlayerSession playerSession = sessionService.findPlayerSession(userEntity.toUserContext().getHumanPlayerId());
+        if (playerSession != null) {
+            playerSession.setUserContext(userEntity.toUserContext());
+            clientSystemConnectionService.sendEmailVerifiedToClient(playerSession);
+        } else if (!sessionHolder.isLoggedIn()) {
             userService.get().autoLoginUser(userEntity.getEmail());
         }
-
-        // TODO check for wrong user logged in
-        clientSystemConnectionService.sendEmailVerifiedToClient(sessionHolder.getPlayerSession());
     }
 
     @Transactional

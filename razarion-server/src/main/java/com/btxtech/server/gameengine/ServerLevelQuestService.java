@@ -91,8 +91,8 @@ public class ServerLevelQuestService implements QuestListener {
             }
             if (newQuest != null) {
                 historyPersistence.get().onQuest(userContext.getHumanPlayerId(), newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
-                questService.activateCondition(userContext.getHumanPlayerId(), newQuest);
                 clientSystemConnectionService.onQuestActivated(userContext.getHumanPlayerId(), newQuest);
+                questService.activateCondition(userContext.getHumanPlayerId(), newQuest);
                 clientSystemConnectionService.onQuestProgressInfo(userContext.getHumanPlayerId(), questService.getQuestProgressInfo(userContext.getHumanPlayerId()));
             }
         }
@@ -157,8 +157,8 @@ public class ServerLevelQuestService implements QuestListener {
         }
         if (newQuest != null) {
             historyPersistence.get().onQuest(humanPlayerId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
-            questService.activateCondition(humanPlayerId, newQuest);
             clientSystemConnectionService.onQuestActivated(humanPlayerId, newQuest);
+            questService.activateCondition(humanPlayerId, newQuest);
             clientSystemConnectionService.onQuestProgressInfo(humanPlayerId, questService.getQuestProgressInfo(humanPlayerId));
         }
     }
@@ -184,6 +184,7 @@ public class ServerLevelQuestService implements QuestListener {
         return ignoredQuests;
     }
 
+    @Transactional // Needs to be @Transactional if a quest if fulfilled during activation and a new quest is activated
     public void activateQuest(UserContext userContext, int questId, Locale locale) {
         HumanPlayerId humanPlayerId = userContext.getHumanPlayerId();
         boolean registered = humanPlayerId.getUserId() != null;
@@ -212,8 +213,8 @@ public class ServerLevelQuestService implements QuestListener {
             sessionService.findPlayerSession(humanPlayerId).getUnregisteredUser().setActiveQuest(newQuest);
         }
         historyPersistence.get().onQuest(humanPlayerId, newQuest, QuestHistoryEntity.Type.QUEST_ACTIVATED);
-        questService.activateCondition(humanPlayerId, newQuest);
         clientSystemConnectionService.onQuestActivated(humanPlayerId, newQuest);
+        questService.activateCondition(humanPlayerId, newQuest);
         clientSystemConnectionService.onQuestProgressInfo(humanPlayerId, questService.getQuestProgressInfo(humanPlayerId));
     }
 }
