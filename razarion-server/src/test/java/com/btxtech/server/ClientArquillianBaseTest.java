@@ -1,5 +1,6 @@
 package com.btxtech.server;
 
+import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiControlProvider;
@@ -18,7 +19,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
-import javax.ws.rs.core.Cookie;
 import java.io.File;
 import java.util.List;
 
@@ -29,7 +29,9 @@ import java.util.List;
 @Ignore
 @RunWith(Arquillian.class)
 public class ClientArquillianBaseTest {
-    private static String REST_URL = "http://192.168.99.100:32778/test/rest/";
+    public static String HOST_PORT = "192.168.99.100:32778";
+    public static String URL = "http://" + HOST_PORT + "/test";
+    public static String REST_URL = URL + "/rest/";
 
     @Deployment
     public static Archive<?> createDeployment() {
@@ -65,28 +67,28 @@ public class ClientArquillianBaseTest {
         return setupClient(clazz, null);
     }
 
-    protected <T> T setupClient(Class<T> clazz, RestContext restContext) {
+    protected <T> T setupClient(Class<T> clazz, TestSessionContext testSessionContext) {
         Client client = ClientBuilder.newClient();
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST_URL);
-        if (restContext != null) {
-            client.register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Accept-Language", restContext.getAcceptLanguage()));
+        if (testSessionContext != null) {
+            client.register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Accept-Language", testSessionContext.getAcceptLanguage()));
             client.register((ClientResponseFilter) (requestContext, responseContext) -> {
                 if (responseContext.getCookies().containsKey("JSESSIONID")) {
-                    restContext.setSessionCookie(responseContext.getCookies().get("JSESSIONID"));
+                    testSessionContext.setSessionCookie(responseContext.getCookies().get("JSESSIONID"));
                 }
                 if (responseContext.getCookies().containsKey("LoginToken")) {
-                    restContext.setLoginTokenCookie(responseContext.getCookies().get("LoginToken"));
+                    testSessionContext.setLoginTokenCookie(responseContext.getCookies().get("LoginToken"));
                 }
             });
             client.register((ClientRequestFilter) (requestContext) -> {
-                if (restContext.getSessionCookie() != null) {
-                    requestContext.getCookies().put("JSESSIONID", restContext.getSessionCookie());
+                if (testSessionContext.getSessionCookie() != null) {
+                    requestContext.getCookies().put("JSESSIONID", testSessionContext.getSessionCookie());
                 }
-                if (restContext.getLoginTokenCookie() != null) {
-                    requestContext.getCookies().put("LoginToken", restContext.getLoginTokenCookie());
+                if (testSessionContext.getLoginTokenCookie() != null) {
+                    requestContext.getCookies().put("LoginToken", testSessionContext.getLoginTokenCookie());
                 }
             });
-            restContext.setTarget(target);
+            testSessionContext.setTarget(target);
         }
         return target.proxy(clazz);
     }
@@ -127,48 +129,9 @@ public class ClientArquillianBaseTest {
         return setupRestServerTestHelperAccess().getForgotPasswordUuid(email);
     }
 
-    protected ColdGameUiControlConfig getColdGameUiControlConfig(RestContext restContext) {
-        return setupClient(GameUiControlProvider.class, restContext).loadGameUiControlConfig(new GameUiControlInput());
+    protected ColdGameUiControlConfig getColdGameUiControlConfig(TestSessionContext testSessionContext) {
+        return setupClient(GameUiControlProvider.class, testSessionContext).loadGameUiControlConfig(new GameUiControlInput());
     }
 
-    public static class RestContext {
-        private String acceptLanguage;
-        private Cookie sessionCookie;
-        private Cookie loginTokenCookie;
-        private ResteasyWebTarget target;
-
-        public String getAcceptLanguage() {
-            return acceptLanguage;
-        }
-
-        public RestContext setAcceptLanguage(String acceptLanguage) {
-            this.acceptLanguage = acceptLanguage;
-            return this;
-        }
-
-        public Cookie getSessionCookie() {
-            return sessionCookie;
-        }
-
-        private void setSessionCookie(Cookie sessionCookie) {
-            this.sessionCookie = sessionCookie;
-        }
-
-        public Cookie getLoginTokenCookie() {
-            return loginTokenCookie;
-        }
-
-        public void setLoginTokenCookie(Cookie loginTokenCookie) {
-            this.loginTokenCookie = loginTokenCookie;
-        }
-
-        private void setTarget(ResteasyWebTarget target) {
-            this.target = target;
-        }
-
-        public <T> T proxy(Class<T> proxyInterface) {
-            return target.proxy(proxyInterface);
-        }
-    }
 }
 

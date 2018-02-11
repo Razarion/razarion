@@ -1,12 +1,17 @@
-package com.btxtech.server.rest;
+package com.btxtech.server.user;
 
 import com.btxtech.server.ClientArquillianBaseTest;
 import com.btxtech.server.FakeEmailDto;
+import com.btxtech.server.clienthelper.TestSessionContext;
+import com.btxtech.server.clienthelper.WebsocketTestHelper;
 import com.btxtech.server.frontend.FrontendLoginState;
 import com.btxtech.server.frontend.LoginResult;
 import com.btxtech.server.mgmt.UserBackendInfo;
+import com.btxtech.server.rest.BackendProvider;
+import com.btxtech.server.rest.FrontendProvider;
 import com.btxtech.server.user.NewUser;
 import com.btxtech.server.user.RegisterResult;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlInput;
@@ -42,12 +47,12 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
     @Test
     public void testFacebookUser() {
         // Test not logged in
-        RestContext restContext = new RestContext().setAcceptLanguage("en-US");
-        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, restContext);
+        TestSessionContext testSessionContext = new TestSessionContext().setAcceptLanguage("en-US");
+        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, testSessionContext);
         FrontendLoginState frontendLoginState = frontendProvider.isLoggedIn("");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
         Assert.assertEquals("en_US", frontendLoginState.getLanguage());
-        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
+        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login facebook
         Assert.assertTrue(frontendProvider.facebookAuthenticated(new FbAuthResponse().setUserID("000000012")));
@@ -115,17 +120,17 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         startFakeMailServer();
 
         // Test not logged in
-        RestContext restContext = new RestContext().setAcceptLanguage(languageIn);
-        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, restContext);
+        TestSessionContext testSessionContext = new TestSessionContext().setAcceptLanguage(languageIn);
+        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, testSessionContext);
         FrontendLoginState frontendLoginState = frontendProvider.isLoggedIn("");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
         Assert.assertEquals(languageExpected, frontendLoginState.getLanguage());
-        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
+        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Register
         RegisterResult registerResult = frontendProvider.createUnverifiedUser("xxx@yyy.com", "123456789", false);
         Assert.assertEquals(RegisterResult.OK, registerResult);
-        Assert.assertNull(restContext.getLoginTokenCookie());
+        Assert.assertNull(testSessionContext.getLoginTokenCookie());
         // Verify UserContext
         UserContext userContext = gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
         Assert.assertTrue(userContext.checkRegistered());
@@ -160,17 +165,17 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendProvider.loginUser("xxx@yyy.com", "qwerttzz", false));
         Assert.assertFalse(frontendProvider.isLoggedIn("").isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
-        Assert.assertNull(restContext.getLoginTokenCookie());
+        Assert.assertNull(testSessionContext.getLoginTokenCookie());
         // Login wrong email
         Assert.assertEquals(LoginResult.WRONG_EMAIL, frontendProvider.loginUser("qqqq@yyy.com", "qwerttzz", false));
         Assert.assertFalse(frontendProvider.isLoggedIn("").isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
-        Assert.assertNull(restContext.getLoginTokenCookie());
+        Assert.assertNull(testSessionContext.getLoginTokenCookie());
         // Login
         Assert.assertEquals(LoginResult.OK, frontendProvider.loginUser("xxx@yyy.com", "123456789", false));
         Assert.assertTrue(frontendProvider.isLoggedIn("").isLoggedIn());
         Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
-        Assert.assertNull(restContext.getLoginTokenCookie());
+        Assert.assertNull(testSessionContext.getLoginTokenCookie());
         // Logout
         frontendProvider.logout();
         // Verify
@@ -183,52 +188,90 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
     }
 
     @Test
+    public void testEmailActivationWrongUser() {
+        // TODO Fails due to websocket and httpSessionId problem. Fix sending httpsessionid over WebSocket
+        startFakeMailServer();
+
+        // Register user 1
+        TestSessionContext testSessionContext1 = new TestSessionContext().setAcceptLanguage("en-Us");
+        FrontendProvider frontendProvider1 = setupClient(FrontendProvider.class, testSessionContext1);
+        Assert.assertEquals(RegisterResult.OK, frontendProvider1.createUnverifiedUser("xxx@yyy.com", "123456789", false));
+        WebsocketTestHelper websocketTestHelper1 = new WebsocketTestHelper(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, testSessionContext1);
+        // Register user 2
+        TestSessionContext testSessionContext2 = new TestSessionContext().setAcceptLanguage("en-Us");
+        FrontendProvider frontendProvider2 = setupClient(FrontendProvider.class, testSessionContext2);
+        Assert.assertEquals(RegisterResult.OK, frontendProvider2.createUnverifiedUser("xx1@yyy.com", "123456789", false));
+        WebsocketTestHelper websocketTestHelper2 = new WebsocketTestHelper(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, testSessionContext2);
+
+        System.out.println("testSessionContext1: " + testSessionContext1);
+        System.out.println("testSessionContext2: " + testSessionContext2);
+
+        // User 1 login and activate user 2
+        Assert.assertTrue(frontendProvider1.isLoggedIn("").isLoggedIn());
+        Assert.assertTrue(frontendProvider1.verifyEmailLink(getEmailVerificationUuid("xx1@yyy.com")));
+        UserContext userContext1 = testSessionContext1.proxy(GameUiControlProvider.class).loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
+        Assert.assertTrue(userContext1.checkRegistered());
+        Assert.assertTrue(userContext1.isEmailNotVerified());
+        // User 2 login and activate user 2
+        Assert.assertTrue(frontendProvider2.isLoggedIn("").isLoggedIn());
+        UserContext userContext2 = testSessionContext2.proxy(GameUiControlProvider.class).loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
+        Assert.assertTrue(userContext2.checkRegistered());
+        Assert.assertFalse(userContext2.isEmailNotVerified());
+
+        websocketTestHelper2.waitForDelivery();
+        websocketTestHelper2.getWebsocketMessageHelper().assertMessageSent(0, "EMAIL_VERIFIED#null");
+        websocketTestHelper1.assertNoDelivery(5000);
+
+        Assert.fail("... TODO ...");
+    }
+
+    @Test
     public void testLoginToken() {
         startFakeMailServer();
         // Register
-        RestContext restContext = new RestContext().setAcceptLanguage("de_DE");
-        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, restContext);
+        TestSessionContext testSessionContext = new TestSessionContext().setAcceptLanguage("de_DE");
+        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, testSessionContext);
         RegisterResult registerResult = frontendProvider.createUnverifiedUser("xxx@yyy.com", "123456789", true);
         Assert.assertEquals(RegisterResult.OK, registerResult);
         // Verify login token cookie
-        Assert.assertNotNull(restContext.getLoginTokenCookie());
-        Cookie loginCookie1 = restContext.getLoginTokenCookie();
-        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
+        Assert.assertNotNull(testSessionContext.getLoginTokenCookie());
+        Cookie loginCookie1 = testSessionContext.getLoginTokenCookie();
+        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
         Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Logout
         frontendProvider.logout();
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login with no login token cookie
-        restContext.setLoginTokenCookie(null);
+        testSessionContext.setLoginTokenCookie(null);
         Assert.assertFalse(frontendProvider.isLoggedIn("").isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login with wrong login token cookie
         NewCookie wrongCookie = new NewCookie(loginCookie1.getName(), "xxxxxxxx" + loginCookie1.getValue(), loginCookie1.getPath(), loginCookie1.getDomain(), loginCookie1.getVersion(), null, -1, false);
-        restContext.setLoginTokenCookie(wrongCookie);
+        testSessionContext.setLoginTokenCookie(wrongCookie);
         Assert.assertFalse(frontendProvider.isLoggedIn("xxxxxxxx" + loginCookie1.getValue()).isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login with login token cookie
-        restContext.setLoginTokenCookie(loginCookie1);
+        testSessionContext.setLoginTokenCookie(loginCookie1);
         Assert.assertTrue(frontendProvider.isLoggedIn(loginCookie1.getValue()).isLoggedIn());
         Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Logout
         frontendProvider.logout();
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login with same login token cookie
-        restContext.setLoginTokenCookie(loginCookie1);
+        testSessionContext.setLoginTokenCookie(loginCookie1);
         Assert.assertFalse(frontendProvider.isLoggedIn(loginCookie1.getValue()).isLoggedIn());
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login email & password
-        restContext.setLoginTokenCookie(null);
+        testSessionContext.setLoginTokenCookie(null);
         Assert.assertEquals(LoginResult.OK, frontendProvider.loginUser("xxx@yyy.com", "123456789", true));
         Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
-        Assert.assertNotNull(restContext.getLoginTokenCookie());
-        Cookie loginCookie2 = restContext.getLoginTokenCookie();
+        Assert.assertNotNull(testSessionContext.getLoginTokenCookie());
+        Cookie loginCookie2 = testSessionContext.getLoginTokenCookie();
         // Logout
         frontendProvider.logout();
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login with login token cookie
-        restContext.setLoginTokenCookie(loginCookie2);
+        testSessionContext.setLoginTokenCookie(loginCookie2);
         Assert.assertTrue(frontendProvider.isLoggedIn(loginCookie2.getValue()).isLoggedIn());
         Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
     }
@@ -268,8 +311,8 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
     public void testPasswordReset(String languageIn, String subject, String messageBodyPart1, String messageBodyPart2, String messageBodyPart3) {
         startFakeMailServer();
         // Register
-        RestContext restContext = new RestContext().setAcceptLanguage(languageIn);
-        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, restContext);
+        TestSessionContext testSessionContext = new TestSessionContext().setAcceptLanguage(languageIn);
+        FrontendProvider frontendProvider = setupClient(FrontendProvider.class, testSessionContext);
         RegisterResult registerResult = frontendProvider.createUnverifiedUser("xxx@yyy.com", "123456789", false);
         Assert.assertEquals(RegisterResult.OK, registerResult);
         getMessagesAndClear().size();
@@ -288,8 +331,8 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         String uuid = getForgotPasswordUuid("xxx@yyy.com");
         Assert.assertEquals(messageBodyPart1 + uuid + messageBodyPart2 + uuid + messageBodyPart3, mails.get(0).getContent().replaceAll("\\s", ""));
         // Check wrong uuid
-        Assert.assertFalse(frontendProvider.savePassword(uuid+"qefdewfdswf", "asdasdasdasd"));
-        GameUiControlProvider gameUiControlProvider = restContext.proxy(GameUiControlProvider.class);
+        Assert.assertFalse(frontendProvider.savePassword(uuid + "qefdewfdswf", "asdasdasdasd"));
+        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login with new password
         Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendProvider.loginUser("xxx@yyy.com", "asdasdasdasd", false));

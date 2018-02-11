@@ -51,10 +51,10 @@ public class ChatPersistenceTest extends ServerArquillianBaseTest {
         TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
 
         chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef");
-        testClientSystemConnection.assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("auishfd ahfuauihf aohfhae nafoihjeqaofjpo0 qoewhfjoifwjbnef"));
 
         chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "asdf kll wssxdvbhnmhjhki   äöpoöoöpo");
-        testClientSystemConnection.assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("asdf kll wssxdvbhnmhjhki   äöpoöoöpo"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("asdf kll wssxdvbhnmhjhki   äöpoöoöpo"));
 
         assertCount(2, ChatMessageEntity.class);
 
@@ -132,34 +132,34 @@ public class ChatPersistenceTest extends ServerArquillianBaseTest {
         TestClientSystemConnection testClientSystemConnection = systemConnectionService.connectClient(sessionHolder.getPlayerSession());
         chatPersistence.sendLastMessages(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()));
         // Verify (order with the correct milliseconds in DB)
-        testClientSystemConnection.assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx3"));
-        testClientSystemConnection.assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx4"));
-        testClientSystemConnection.assertMessageSent(2, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx5"));
-        testClientSystemConnection.assertMessageSent(3, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx6"));
-        testClientSystemConnection.assertMessageSent(4, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx7"));
-        testClientSystemConnection.assertMessageSent(5, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx8"));
-        testClientSystemConnection.assertMessageSent(6, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx9"));
-        testClientSystemConnection.assertMessageSent(7, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx10"));
-        testClientSystemConnection.assertMessageSent(8, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx11"));
-        testClientSystemConnection.assertMessageSent(9, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx12"));
-        testClientSystemConnection.assertMessageSent(10, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx13"));
-        testClientSystemConnection.assertMessageSent(11, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx14"));
-        testClientSystemConnection.assertMessageSent(12, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx15"));
-        testClientSystemConnection.assertMessageSent(13, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx16"));
-        testClientSystemConnection.assertMessageSent(14, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx17"));
-        testClientSystemConnection.assertMessageSent(15, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx18"));
-        testClientSystemConnection.assertMessageSent(16, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx19"));
-        testClientSystemConnection.assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("zuri ouhbdf ndswokijui"));
-        testClientSystemConnection.assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
-        testClientSystemConnection.assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(0, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx3"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(1, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx4"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(2, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx5"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(3, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx6"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(4, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx7"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(5, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx8"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(6, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx9"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(7, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx10"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(8, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx11"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(9, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx12"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(10, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx13"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(11, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx14"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(12, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx15"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(13, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx16"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(14, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx17"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(15, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx18"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(16, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("xxxx19"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("zuri ouhbdf ndswokijui"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
         // Send message
         chatPersistence.onMessage(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()), "frghstehllool");
         testClientSystemConnection.clear();
         chatPersistence.sendLastMessages(sessionService.getSession(sessionHolder.getPlayerSession().getHttpSessionId()));
         // Verify
-        testClientSystemConnection.assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
-        testClientSystemConnection.assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
-        testClientSystemConnection.assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("frghstehllool"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(17, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity2.getId()).setUserName("name2").setMessage("asd gfrfsagh ewrfwrfew"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(18, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userEntity1.getId()).setUserName("name1").setMessage("asdfsdfsdaf"));
+        testClientSystemConnection.getWebsocketMessageHelper().assertMessageSent(19, "CHAT_RECEIVE_MESSAGE", ChatMessage.class, new ChatMessage().setUserId(userContext.getHumanPlayerId().getUserId()).setUserName("sdifbj").setMessage("frghstehllool"));
 
 
         cleanTable(ChatMessageEntity.class);

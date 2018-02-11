@@ -163,10 +163,10 @@ public class ServerUnlockServiceTest extends ServerArquillianBaseTest {
         assertHelper.assertState(humanPlayerId, 2, LEVEL_UNLOCK_ID_L4_1, LEVEL_UNLOCK_ID_L5_1, LEVEL_UNLOCK_ID_L5_2);
         assertAvailableUnlocks();
 
-        systemConnection.assertMessageSentCount(3);
-        systemConnection.assertMessageSent(0, "UNLOCKED_ITEM_LIMIT", expectedItemLimit1);
-        systemConnection.assertMessageSent(1, "UNLOCKED_ITEM_LIMIT", expectedItemLimit2);
-        systemConnection.assertMessageSent(2, "UNLOCKED_ITEM_LIMIT", expectedItemLimit3);
+        systemConnection.getWebsocketMessageHelper().assertMessageSentCount(3);
+        systemConnection.getWebsocketMessageHelper().assertMessageSent(0, "UNLOCKED_ITEM_LIMIT", expectedItemLimit1);
+        systemConnection.getWebsocketMessageHelper().assertMessageSent(1, "UNLOCKED_ITEM_LIMIT", expectedItemLimit2);
+        systemConnection.getWebsocketMessageHelper().assertMessageSent(2, "UNLOCKED_ITEM_LIMIT", expectedItemLimit3);
 
         EasyMock.verify(baseItemServiceMock);
         assertCount(3, LevelUnlockHistoryEntry.class);

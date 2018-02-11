@@ -148,7 +148,7 @@ public class UserServiceTest extends ServerArquillianBaseTest {
         Assert.assertNull(playerBase.getName());
         Assert.assertNull(userService.getUserContextFromSession().getName());
         runInTransaction(entityManager -> Assert.assertNull(entityManager.find(UserEntity.class, userEntity.getId()).toUserContext().getName()));
-        testClientGameConnection.assertPacketStringSent("BASE_NAME_CHANGED", 0);
+        testClientGameConnection.getWebsocketMessageHelper().assertPacketStringSent("BASE_NAME_CHANGED", 0);
         // Set name
         SetNameResult setNameResult = userService.setName("USER 1 NAME");
         // Verify
@@ -157,9 +157,9 @@ public class UserServiceTest extends ServerArquillianBaseTest {
         Assert.assertEquals("USER 1 NAME", playerBase.getName());
         Assert.assertEquals("USER 1 NAME", userService.getUserContextFromSession().getName());
         runInTransaction(entityManager -> Assert.assertEquals("USER 1 NAME", entityManager.find(UserEntity.class, userEntity.getId()).toUserContext().getName()));
-        testClientGameConnection.assertPacketStringSent("BASE_NAME_CHANGED", 1);
-        int index = testClientGameConnection.findFirstPacketStringSentIndex("BASE_NAME_CHANGED");
-        testClientGameConnection.assertMessageSent(index, "BASE_NAME_CHANGED", PlayerBaseInfo.class, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName("USER 1 NAME"));
+        testClientGameConnection.getWebsocketMessageHelper().assertPacketStringSent("BASE_NAME_CHANGED", 1);
+        int index = testClientGameConnection.getWebsocketMessageHelper().findFirstPacketStringSentIndex("BASE_NAME_CHANGED");
+        testClientGameConnection.getWebsocketMessageHelper().assertMessageSent(index, "BASE_NAME_CHANGED", PlayerBaseInfo.class, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setName("USER 1 NAME"));
         // Set again -> fail
         try {
             userService.setName("USER xxx NAME");
@@ -173,7 +173,7 @@ public class UserServiceTest extends ServerArquillianBaseTest {
         Assert.assertEquals("USER 1 NAME", playerBase.getName());
         Assert.assertEquals("USER 1 NAME", userService.getUserContextFromSession().getName());
         runInTransaction(entityManager -> Assert.assertEquals("USER 1 NAME", entityManager.find(UserEntity.class, userEntity.getId()).toUserContext().getName()));
-        testClientGameConnection.assertPacketStringSent("BASE_NAME_CHANGED", 1);
+        testClientGameConnection.getWebsocketMessageHelper().assertPacketStringSent("BASE_NAME_CHANGED", 1);
 
 //            } catch (Throwable t) {
 //                logger.log(Level.SEVERE, "", t);
@@ -256,8 +256,8 @@ public class UserServiceTest extends ServerArquillianBaseTest {
         Assert.assertEquals(newUserContext.getHumanPlayerId().getPlayerId(), playerBase.getHumanPlayerId().getPlayerId());
         Assert.assertEquals(userEntityId, (int) playerBase.getHumanPlayerId().getUserId());
         // Assert connection
-        testClientGameConnection.assertMessageSentCount(1);
-        testClientGameConnection.assertMessageSent(0, "BASE_HUMAN_PLAYER_ID_CHANGED", PlayerBaseInfo.class, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setHumanPlayerId(newHumanPlayerId));
+        testClientGameConnection.getWebsocketMessageHelper().assertMessageSentCount(1);
+        testClientGameConnection.getWebsocketMessageHelper().assertMessageSent(0, "BASE_HUMAN_PLAYER_ID_CHANGED", PlayerBaseInfo.class, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setHumanPlayerId(newHumanPlayerId));
 
         cleanUsers();
         cleanPlanetWithSlopes();

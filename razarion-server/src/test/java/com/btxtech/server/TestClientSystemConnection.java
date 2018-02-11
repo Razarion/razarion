@@ -21,24 +21,28 @@ import java.util.Map;
  */
 public class TestClientSystemConnection extends ClientSystemConnection {
     private PlayerSession playerSession;
-    private List<String> messagesSent = new ArrayList<>();
+    private WebsocketMessageHelper websocketMessageHelper = new WebsocketMessageHelper();
 
     public TestClientSystemConnection(PlayerSession playerSession) {
         this.playerSession = playerSession;
     }
 
     public void clear() {
-        messagesSent.clear();
+        websocketMessageHelper.clear();
     }
 
     @Override
     public void sendToClient(String text) {
-        messagesSent.add(text);
+        websocketMessageHelper.add(text);
     }
 
     @Override
     public PlayerSession getSession() {
         return playerSession;
+    }
+
+    public WebsocketMessageHelper getWebsocketMessageHelper() {
+        return websocketMessageHelper;
     }
 
     @Override
@@ -59,38 +63,5 @@ public class TestClientSystemConnection extends ClientSystemConnection {
     @Override
     public void close(Session session, CloseReason reason) {
         throw new UnsupportedOperationException();
-    }
-
-    public void assertMessageSent(int index, String expectedMessage) {
-        String actualMessage = messagesSent.get(index);
-        Assert.assertEquals(expectedMessage, actualMessage);
-    }
-
-    public String assertAndExtractBody(int index, String packetString) {
-        String actualMessage = messagesSent.get(index);
-        Assert.assertTrue("Message does not start with: " + packetString + "#" + ". Message: " + actualMessage, actualMessage.startsWith(packetString + "#"));
-        return actualMessage.substring(packetString.length() + 1, actualMessage.length());
-    }
-
-    public <T> void assertMessageSent(int index, String packetString, Map<Integer, Integer> expected) throws IOException {
-        UnlockedItemPacket actual = new ObjectMapper().readValue(assertAndExtractBody(index, packetString), UnlockedItemPacket.class);
-        ReflectionAssert.assertReflectionEquals(new UnlockedItemPacket().setUnlockedItemLimit(expected), actual);
-    }
-
-    public <T> void assertMessageSent(int index, String packetString, Class<T> expectedClass, T expected) throws IOException {
-        Object actual = new ObjectMapper().readValue(assertAndExtractBody(index, packetString), expectedClass);
-        ReflectionAssert.assertReflectionEquals(expected, actual);
-    }
-
-    public void assertMessageSentCount(int expectedCount) {
-        Assert.assertEquals("Messages sent", expectedCount, messagesSent.size());
-    }
-
-    public void printMessagesSent() {
-        System.out.println("-------------------------------------------------------------------");
-        for (String message : messagesSent) {
-            System.out.println(message);
-        }
-        System.out.println("-------------------------------------------------------------------");
     }
 }
