@@ -220,8 +220,6 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         websocketTestHelper2.waitForDelivery();
         websocketTestHelper2.getWebsocketMessageHelper().assertMessageSent(0, "EMAIL_VERIFIED#null");
         websocketTestHelper1.assertNoDelivery(5000);
-
-        Assert.fail("... TODO ...");
     }
 
     @Test
