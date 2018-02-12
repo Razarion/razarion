@@ -1,7 +1,7 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.connection.ClientSystemConnectionService;
-import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.server.persistence.history.ForgotPasswordHistoryEntity;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.system.FilePropertiesService;

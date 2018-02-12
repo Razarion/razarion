@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.user.RegisterResult;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;

@@ -382,13 +382,6 @@ public class WebGlEmulatorController implements Initializable {
         renderServiceInstance.get().setShowNorm(showNormCheckBox.isSelected());
     }
 
-    public void getJsonButtonClicked() {
-        System.out.println("---------- Start loading JSON from server ----------");
-        jsonProviderEmulator.fromServerToFile();
-        jsonProviderEmulator.fromServerToFileVertexContainerBuffer();
-        System.out.println("---------- JSON loaded ----------");
-    }
-
     public Pane getItemCockpitPanel() {
         return itemCockpitPanel;
     }

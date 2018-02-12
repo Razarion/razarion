@@ -1,6 +1,6 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.QuestBackendInfo;
@@ -25,6 +25,7 @@ import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserAccountInfo;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 import javax.enterprise.inject.Instance;

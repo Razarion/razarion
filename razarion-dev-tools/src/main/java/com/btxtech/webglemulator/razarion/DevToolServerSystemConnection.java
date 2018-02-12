@@ -1,7 +1,8 @@
 package com.btxtech.webglemulator.razarion;
 
-import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
@@ -15,6 +16,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 
 /**
@@ -25,13 +27,15 @@ import java.io.IOException;
 public class DevToolServerSystemConnection extends AbstractServerSystemConnection implements DevToolConnectionDefault {
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private JsonProviderEmulator jsonProviderEmulator;
     private RemoteEndpoint remoteEndpoint;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void init() {
         try {
-            init("ws://localhost:8080" + CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, this);
+            init("ws://" + JsonProviderEmulator.HOST_PORT + CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, this);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -92,5 +96,11 @@ public class DevToolServerSystemConnection extends AbstractServerSystemConnectio
     @Override
     protected void onLifecyclePacket(LifecyclePacket lifecyclePacket) {
         throw new UnsupportedOperationException("LifecyclePacket not supported on DevTools");
+    }
+
+
+    @Override
+    public NewCookie getSessionCookie() {
+        return jsonProviderEmulator.getSessionCookie();
     }
 }

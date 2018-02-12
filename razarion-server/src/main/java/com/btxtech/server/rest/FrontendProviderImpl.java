@@ -1,16 +1,17 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.frontend.FrontendLoginState;
+import com.btxtech.shared.dto.FrontendLoginState;
 import com.btxtech.server.frontend.FrontendService;
 import com.btxtech.server.frontend.InternalLoginState;
-import com.btxtech.server.frontend.LoginResult;
+import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
-import com.btxtech.server.user.RegisterResult;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.rest.FrontendProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;

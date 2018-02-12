@@ -1,6 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.persistence.JsonProviderEmulator;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nConstants;
@@ -42,13 +43,10 @@ public class RazarionEmulator {
     private DevToolShape3DUiService devToolShape3DUiService;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private boolean showRenderTime;
-    private HttpConnectionEmu httpConnectionEmu;
 
     public void run() {
         try {
-            // gameUiControl.setColdGameUiControlConfig(jsonProviderEmulator.readFromFile(false));
-            httpConnectionEmu = jsonProviderEmulator.fromServer();
-            gameUiControl.setColdGameUiControlConfig(httpConnectionEmu.getColdGameUiControlConfig());
+            gameUiControl.setColdGameUiControlConfig(jsonProviderEmulator.readColdGameUiControlConfig());
             gameUiControl.init();
             gameEngineControl.init(gameUiControl.getColdGameUiControlConfig(), null);
             devToolShape3DUiService.loadBuffer();
@@ -84,9 +82,5 @@ public class RazarionEmulator {
                 throwable.printStackTrace();
             }
         }), RENDER_DELAY, RENDER_DELAY, TimeUnit.MILLISECONDS);
-    }
-
-    public HttpConnectionEmu getHttpConnectionEmu() {
-        return httpConnectionEmu;
     }
 }

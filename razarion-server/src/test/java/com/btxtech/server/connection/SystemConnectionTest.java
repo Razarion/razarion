@@ -5,8 +5,8 @@ import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.server.clienthelper.WebsocketTestHelper;
 import com.btxtech.server.mgmt.OnlineInfo;
 import com.btxtech.server.rest.BackendProvider;
-import com.btxtech.server.rest.FrontendProvider;
-import com.btxtech.server.user.RegisterResult;
+import com.btxtech.shared.rest.FrontendProvider;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.CommonUrl;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.After;
@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -47,7 +47,8 @@ public class RealGameScenarioSuite extends ScenarioSuite {
         addScenario(new Scenario("Bot attack") {
             @Override
             public StaticGameConfig setupGameEngineConfig() {
-                return new JsonProviderEmulator().readFromFile(false).getStaticGameConfig();
+                throw new UnsupportedOperationException("readFromFile() Has been removed from JsonProviderEmulator");
+                // return new JsonProviderEmulator().readFromFile(false).getStaticGameConfig();
             }
 
             @Override

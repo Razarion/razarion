@@ -552,12 +552,4 @@ public class ServerLevelQuestServiceTest extends ServerArquillianBaseTest {
         }
     }
 
-    private QuestConfig readQuestConfig(int questId) throws Exception {
-        SingleHolder<QuestConfig> holder = new SingleHolder<>();
-        runInTransaction(entityManager -> {
-            holder.setO(entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(Locale.US));
-        });
-        return holder.getO();
-    }
-
 }

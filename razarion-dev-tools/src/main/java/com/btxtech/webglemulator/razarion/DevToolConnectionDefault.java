@@ -16,12 +16,13 @@ import java.net.URI;
 public interface DevToolConnectionDefault {
     default WebSocketClient init(String destUri, Object websocket) throws Exception {
         WebSocketClient client = new WebSocketClient();
-        NewCookie newCookie = HttpConnectionEmu.getInstance().getSessionCookie();
         CookieStore cookieStore = new HttpCookieStore();
-        cookieStore.add(new URI(destUri), new HttpCookie(newCookie.getName(), newCookie.getValue()));
+        cookieStore.add(new URI(destUri), new HttpCookie(getSessionCookie().getName(), getSessionCookie().getValue()));
         client.setCookieStore(cookieStore);
         client.start();
         client.connect(websocket, new URI(destUri), new ClientUpgradeRequest());
         return client;
     }
+
+    NewCookie getSessionCookie();
 }

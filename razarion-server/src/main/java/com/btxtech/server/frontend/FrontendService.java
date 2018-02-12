@@ -4,6 +4,7 @@ import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.dto.FrontendLoginState;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;

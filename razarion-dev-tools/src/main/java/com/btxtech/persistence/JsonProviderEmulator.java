@@ -1,37 +1,35 @@
 package com.btxtech.persistence;
 
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShape;
-import com.btxtech.shared.CommonUrl;
-import com.btxtech.webglemulator.razarion.HttpConnectionEmu;
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.btxtech.shared.rest.FrontendProvider;
+import com.btxtech.shared.rest.GameUiControlProvider;
+import com.btxtech.shared.rest.PlanetEditorProvider;
+import com.btxtech.shared.rest.Shape3DProvider;
+import com.btxtech.shared.rest.TerrainShapeProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.NewCookie;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -40,164 +38,66 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class JsonProviderEmulator {
-    private static final String RAZARION_TMP_DIR = "C:\\dev\\projects\\razarion\\code\\tmp";
-    private static final String FILE_NAME_TUTORIAL = "GameUiControlConfigTutorial.json";
-    private static final String FILE_NAME_MULTI_PLAYER = "GameUiControlConfigMultiplayer.json";
-    private static final String VERTEX_CONTAINER_BUFFERS_FILE_NAME = "VertexContainerBuffers.json";
-    private static final String TMP_FILE_NAME = "TmpGameUiControlConfig.json";
-    public static final String HTTP_LOCALHOST_8080 = "http://localhost:8080";
+    public static final String HOST_PORT = "192.168.99.100:32778/test";
+    // public static final String HOST_PORT = "localhost:8080";
+    public static final String HTTP_LOCALHOST_8080 = "http://" + HOST_PORT;
+    public static final String REST = HTTP_LOCALHOST_8080 + "/rest/";
     private static final String PLANET_EDITOR_READ_SLOPS = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.PLANET_EDITOR_SERVICE_PATH + "/readTerrainSlopePositions";
     private static final String URL_GAME_UI_CONTROL = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.GAME_UI_CONTROL_PATH + "/" + CommonUrl.COLD;
-    private static final String URL_LOGIN = HTTP_LOCALHOST_8080;
-    private static final String URL_TERRAIN_SHAPE = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.TERRAIN_SHAPE_PROVIDER + "/";
-    private static final String URL_SLOPES_PROVIDER = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.PLANET_EDITOR_SERVICE_PATH + "/" + "readTerrainSlopePositions/";
-    private static final String URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.SHAPE_3D_PROVIDER + "/" + CommonUrl.SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER;
     private static final String GAME_UI_CONTROL_INPUT = "{\"playbackGameSessionUuid\": null, \"playbackSessionUuid\": null}";
     private static final String FB_USER_ID_TEST = "100003634094139";
+    private NewCookie sessionCookie;
+    private Shape3DProvider shape3DProvider;
+    private GameUiControlProvider coldGameUiControlConfig;
+    private TerrainShapeProvider terrainShapeProvider;
+    private PlanetEditorProvider planetEditorProvider;
 
-    public ColdGameUiControlConfig readFromServer() {
-        return ClientBuilder.newClient().target(URL_GAME_UI_CONTROL).request(MediaType.APPLICATION_JSON).get(ColdGameUiControlConfig.class);
+    public JsonProviderEmulator() {
+        Client client = ClientBuilder.newClient();
+        ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST);
+        client.register((ClientResponseFilter) (requestContext, responseContext) -> {
+            if (responseContext.getCookies().containsKey("JSESSIONID")) {
+                sessionCookie = responseContext.getCookies().get("JSESSIONID");
+            }
+//            System.out.println("Request----------------------");
+//            System.out.println("URI: " + requestContext.getUri());
+//            System.out.println("Cookies: " + requestContext.getCookies());
+//            System.out.println("Method: " + requestContext.getMethod());
+//            System.out.println("Headers: " + requestContext.getStringHeaders());
+//            System.out.println("Response----------------------");
+//            System.out.println("Status: " + responseContext.getStatus());
+//            System.out.println("----------------------");
+        });
+        client.register((ClientRequestFilter) (requestContext) -> {
+            if (sessionCookie != null) {
+                requestContext.getCookies().put("JSESSIONID", sessionCookie);
+            }
+        });
+        target.proxy(FrontendProvider.class).loginUser("test", "test", false);
+        shape3DProvider = target.proxy(Shape3DProvider.class);
+        coldGameUiControlConfig = target.proxy(GameUiControlProvider.class);
+        terrainShapeProvider = target.proxy(TerrainShapeProvider.class);
+        planetEditorProvider = target.proxy(PlanetEditorProvider.class);
     }
 
-    public ColdGameUiControlConfig readFromFile(boolean tutorial) {
-        try {
-            String string = new String(Files.readAllBytes(getFile(tutorial ? FILE_NAME_TUTORIAL : FILE_NAME_MULTI_PLAYER).toPath()));
-            return new ObjectMapper().readValue(string, ColdGameUiControlConfig.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public List<VertexContainerBuffer> readVertexContainerBuffers() {
+        return shape3DProvider.getVertexBuffer();
     }
 
-    public List<VertexContainerBuffer> readVertexContainerBuffersFromFile() {
-        try {
-            String string = new String(Files.readAllBytes(getFile(VERTEX_CONTAINER_BUFFERS_FILE_NAME).toPath()));
-            return new ObjectMapper().readValue(string, new TypeReference<List<VertexContainerBuffer>>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<VertexContainerBuffer> readVertexContainerBuffersFromServer() {
-        try {
-            String string =ClientBuilder.newClient().target(URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME).request(MediaType.APPLICATION_JSON).get(String.class);
-            return new ObjectMapper().readValue(string, new TypeReference<List<VertexContainerBuffer>>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public StaticGameConfig readGameEngineConfigFromFile(String filename) {
-        try {
-            String string = new String(Files.readAllBytes(new File(filename).toPath()));
-            return new ObjectMapper().readValue(string, StaticGameConfig.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void fromServerToFilePost(String fileName, String url, String fbLogin) {
-        try {
-            Client client = ClientBuilder.newClient();
-            String text = client.target(url).request(MediaType.APPLICATION_JSON).post(Entity.entity(fbLogin, MediaType.APPLICATION_JSON_TYPE), String.class);
-            Files.write(getFile(fileName).toPath(), text.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public HttpConnectionEmu fromServer() {
-        try {
-            HttpConnectionEmu emu = new HttpConnectionEmu();
-            Client client = ClientBuilder.newClient();
-            client.register((ClientResponseFilter) (requestContext, responseContext) -> {
-                for (Map.Entry<String, NewCookie> entry : responseContext.getCookies().entrySet()) {
-                    if (entry.getKey().equals(HttpConnectionEmu.SESSION_KEY)) {
-                        if (emu.getSessionCookie() == null) {
-                            emu.setSessionCookie(entry.getValue());
-                        }
-                    }
-                }
-            });
-            // client.register(new LoggingFilter(Logger.getLogger(JsonProviderEmulator.class.getName()), true));
-            // Execute Get Page to read JSF form javax.faces.ViewState
-            String homePage = client.target(URL_LOGIN).request(MediaType.TEXT_HTML).get(String.class);
-            Document doc = Jsoup.parse(homePage);
-            Element formFiled = doc.getElementById("j_id1:javax.faces.ViewState:0");
-            String FormValueViewState = formFiled.attr("value");
-            // Execute Login with jsession cookie and javax.faces.ViewState from above
-            Form formData = new Form();
-            formData.param("helperForm", "helperForm");
-            formData.param("helperForm:fbUserIdField", FB_USER_ID_TEST);
-            formData.param("helperForm:fbResponseFormButton", "Submit");
-            formData.param("javax.faces.ViewState", FormValueViewState);
-            client.target(URL_LOGIN).request(MediaType.TEXT_HTML).cookie(emu.getSessionCookie()).post(Entity.entity(formData, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
-            // Execute Get with jsession cookie and GAME_UI_CONTROL
-            String string = client.target(URL_GAME_UI_CONTROL).request(MediaType.APPLICATION_JSON).cookie(emu.getSessionCookie()).post(Entity.entity(GAME_UI_CONTROL_INPUT, MediaType.APPLICATION_JSON_TYPE), String.class);
-            emu.setColdGameUiControlConfig(new ObjectMapper().readValue(string, ColdGameUiControlConfig.class));
-            return emu;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public ColdGameUiControlConfig readColdGameUiControlConfig() {
+        return coldGameUiControlConfig.loadGameUiControlConfig(new GameUiControlInput());
     }
 
     public NativeTerrainShape nativeTerrainShapeServer(int planetId) {
-        try {
-            Client client = ClientBuilder.newClient();
-            String string = client.target(URL_TERRAIN_SHAPE + planetId).request(MediaType.APPLICATION_JSON).get(String.class);
-            return new ObjectMapper().readValue(string, NativeTerrainShape.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return terrainShapeProvider.getTerrainShape(planetId);
     }
 
     public List<TerrainSlopePosition> readSlopes(int planetId) {
-        try {
-            Client client = ClientBuilder.newClient();
-            String string = client.target(URL_SLOPES_PROVIDER + planetId).request(MediaType.APPLICATION_JSON).get(String.class);
-            return new ObjectMapper().readValue(string, new TypeReference<List<TerrainSlopePosition>>() {
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return planetEditorProvider.readTerrainEditorLoad(planetId).getSlopes();
     }
 
-    public void fromServerToFileGet(String fileName, String url) {
-        try {
-            Client client = ClientBuilder.newClient();
-            String text = client.target(url).request(MediaType.APPLICATION_JSON).get(String.class);
-            Files.write(getFile(fileName).toPath(), text.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void toFile(String fileName, Object object) {
-        try {
-            File file = getFile(fileName);
-            new ObjectMapper().writeValue(file, object);
-            System.out.println("Written config to: " + file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void gameUiControlConfigToTmpFile(Object object) {
-        toFile(TMP_FILE_NAME, object);
-    }
-
-    public void fromServerToFile() {
-        fromServerToFilePost(FILE_NAME_MULTI_PLAYER, URL_GAME_UI_CONTROL, GAME_UI_CONTROL_INPUT);
-        fromServerToFilePost(FILE_NAME_TUTORIAL, URL_GAME_UI_CONTROL, GAME_UI_CONTROL_INPUT);
-    }
-
-    public void fromServerToFileVertexContainerBuffer() {
-        fromServerToFileGet(VERTEX_CONTAINER_BUFFERS_FILE_NAME, URL_VERTEX_CONTAINER_BUFFERS_FILE_NAME);
-    }
-
-    private File getFile(String fileName) {
-        return new File(RAZARION_TMP_DIR, fileName);
+    public NewCookie getSessionCookie() {
+        return sessionCookie;
     }
 
     public static void dumpSlope(int planetId, DecimalPosition containingPosition) throws IOException {
@@ -212,7 +112,6 @@ public class JsonProviderEmulator {
         String string = client.target(URL_GAME_UI_CONTROL).request(MediaType.APPLICATION_JSON).post(Entity.entity(GAME_UI_CONTROL_INPUT, MediaType.APPLICATION_JSON_TYPE), String.class);
         ColdGameUiControlConfig coldGameUiControlConfig = new ObjectMapper().readValue(string, ColdGameUiControlConfig.class);
         SlopeSkeletonConfig slopeSkeletonConfig = coldGameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs().stream().filter(config -> config.getId() == terrainSlopePosition.getSlopeConfigId()).findFirst().orElseThrow(() -> new IllegalArgumentException("SlopeSkeletonConfig not found for id: " + terrainSlopePosition.getSlopeConfigId()));
-        ;
         // Dump
         System.out.println("// SlopeId: " + terrainSlopePosition.getId());
         System.out.println("// SlopeConfigId: " + terrainSlopePosition.getSlopeConfigId());

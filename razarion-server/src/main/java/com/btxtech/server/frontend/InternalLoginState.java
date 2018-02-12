@@ -1,5 +1,7 @@
 package com.btxtech.server.frontend;
 
+import com.btxtech.shared.dto.FrontendLoginState;
+
 /**
  * Created by Beat
  * on 03.02.2018.

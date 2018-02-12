@@ -311,7 +311,7 @@ public class ScenarioService implements QuestListener {
             });
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            jsonProviderEmulator.gameUiControlConfigToTmpFile(staticGameConfig);
+            // TODO does not exist jsonProviderEmulator.gameUiControlConfigToTmpFile(staticGameConfig);
         }
     }
 

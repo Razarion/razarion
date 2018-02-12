@@ -1,8 +1,9 @@
 package com.btxtech.webglemulator.razarion;
 
+import com.btxtech.persistence.JsonProviderEmulator;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,7 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 
 import javax.inject.Inject;
+import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 
 /**
@@ -24,13 +26,15 @@ import java.io.IOException;
 public class DevToolServerGameConnection extends AbstractServerGameConnection implements DevToolConnectionDefault {
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private JsonProviderEmulator jsonProviderEmulator;
     private RemoteEndpoint remoteEndpoint;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public void init() {
         try {
-            init("ws://localhost:8080" + CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT, this);
+            init("ws://" + JsonProviderEmulator.HOST_PORT + CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT, this);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -86,5 +90,10 @@ public class DevToolServerGameConnection extends AbstractServerGameConnection im
     @Override
     public void close() {
         remoteEndpoint = null;
+    }
+
+    @Override
+    public NewCookie getSessionCookie() {
+        return jsonProviderEmulator.getSessionCookie();
     }
 }

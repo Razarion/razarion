@@ -3,6 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -46,6 +47,8 @@ public class ViewService {
     private NativeMatrixFactory nativeMatrixFactory;
     @Inject
     private TerrainUiService terrainUiService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private NativeMatrix viewMatrix;
     private NativeMatrix viewNormMatrix;
     private NativeMatrix perspectiveMatrix;
@@ -112,7 +115,13 @@ public class ViewService {
         shadowLookupTransformationListeners.forEach(listeners -> listeners.onShadowLookupTransformationChanged(shadowLookupMatrix));
         terrainUiService.onViewChanged(currentViewField, currentAabb);
         // Prevent concurrent exception with scene, tip etc
-        new ArrayList<>(viewFieldListeners).forEach(viewFieldListener -> viewFieldListener.onViewChanged(currentViewField, currentAabb));
+        new ArrayList<>(viewFieldListeners).forEach(viewFieldListener -> {
+            try {
+                viewFieldListener.onViewChanged(currentViewField, currentAabb);
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        });
     }
 
     private void updateTransformationMatrices() {

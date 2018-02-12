@@ -2,6 +2,7 @@ package com.btxtech.server;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
+import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.PlanetPersistence;
@@ -21,6 +22,7 @@ import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.GroundHeightEntity;
+import com.btxtech.server.persistence.surface.GroundSplattingEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeNodeEntity;
 import com.btxtech.server.persistence.surface.SlopeShapeEntity;
@@ -38,11 +40,13 @@ import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -65,6 +69,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.TurretType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -91,6 +96,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -108,6 +114,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
  * on 08.02.2018.
  */
 public class ServerTestHelper {
+    public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
     // Item types
     public static int BASE_ITEM_TYPE_BULLDOZER_ID;
     public static int BASE_ITEM_TYPE_HARVESTER_ID;
@@ -145,6 +152,8 @@ public class ServerTestHelper {
     // SlopeConfigEntity
     public static int SLOPE_LAND_CONFIG_ENTITY_1;
     public static int SLOPE_WATER_CONFIG_ENTITY_2;
+    // Image
+    public static int onePixelImageId;
     @PersistenceContext
     private EntityManager em;
     @Inject
@@ -175,10 +184,15 @@ public class ServerTestHelper {
     }
 
     protected void setupItemTypes() throws Exception {
+        BaseItemType factory = new BaseItemType();
+        factory.setPrice(1).setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setInternalName("Factory");
+        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5).setTerrainType(TerrainType.LAND));
+        BASE_ITEM_TYPE_FACTORY_ID = createBaseItemTypeEntity(factory);
+
         BaseItemType builder = new BaseItemType();
         builder.setHealth(100).setSpawnDurationMillis(1000).setBoxPickupRange(2).setBuildup(10).setInternalName("Builder");
         builder.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(2.78).setSpeed(17.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
-        builder.setBuilderType(new BuilderType().setProgress(1).setRange(3)/*.setAbleToBuildIds(Collections.singletonList(FACTORY_ITEM_TYPE.getId()))*/);
+        builder.setBuilderType(new BuilderType().setProgress(1).setRange(3).setAbleToBuildIds(Collections.singletonList(BASE_ITEM_TYPE_FACTORY_ID)));
         BASE_ITEM_TYPE_BULLDOZER_ID = createBaseItemTypeEntity(builder);
 
         BaseItemType harvester = new BaseItemType();
@@ -192,11 +206,6 @@ public class ServerTestHelper {
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(40.0).setSpeed(10.0).setAngularVelocity(Math.toRadians(30)).setRadius(2));
         attacker.setWeaponType(new WeaponType().setProjectileSpeed(17.0).setRange(20).setReloadTime(0.3).setDamage(1).setTurretType(new TurretType().setTorrentCenter(new Vertex(1, 0, 0)).setMuzzlePosition(new Vertex(1, 0, 1)).setAngleVelocity(Math.toRadians(120))));
         BASE_ITEM_TYPE_ATTACKER_ID = createBaseItemTypeEntity(attacker);
-
-        BaseItemType factory = new BaseItemType();
-        factory.setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setInternalName("Factory");
-        factory.setPhysicalAreaConfig(new PhysicalAreaConfig().setRadius(5));
-        BASE_ITEM_TYPE_FACTORY_ID = createBaseItemTypeEntity(factory);
 
         BaseItemType tower = new BaseItemType();
         tower.setHealth(100).setSpawnDurationMillis(1000).setBuildup(10).setInternalName("Tower");
@@ -381,6 +390,13 @@ public class ServerTestHelper {
     }
 
     public void setupPlanets() throws Exception {
+        runInTransaction(em -> {
+            ImageLibraryEntity imageLibraryEntity = new ImageLibraryEntity();
+            imageLibraryEntity.setData(PIXEL_BYTES);
+            em.persist(imageLibraryEntity);
+            onePixelImageId = imageLibraryEntity.getId();
+        });
+
         setupLevels();
 
         utx.begin();
@@ -404,6 +420,7 @@ public class ServerTestHelper {
         planetEntity2.setPlayGround(new Rectangle2D(50, 50, 1500, 1500));
         planetEntity2.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
         planetEntity2.setItemTypeLimitation(setupPlanet2Limitation());
+        planetEntity2.setStartRazarion(100);
         em.persist(planetEntity2);
         PLANET_2_ID = planetEntity2.getId();
 
@@ -480,6 +497,11 @@ public class ServerTestHelper {
         serverGameEngineControl.start(null, true);
     }
 
+    protected void setupPlanetFastTickGameEngine() throws Exception {
+        PlanetService.TICK_TIME_MILLI_SECONDS = 1;
+        setupPlanetWithSlopes();
+    }
+
     protected void setupSlopeConfigEntities() throws Exception {
         runInTransaction(em -> {
             SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
@@ -535,16 +557,25 @@ public class ServerTestHelper {
     private Map<BaseItemTypeEntity, Integer> setupPlanet2Limitation() {
         Map<BaseItemTypeEntity, Integer> limitation = new HashMap<>();
         limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_FACTORY_ID), 1);
         return limitation;
     }
 
-    private GroundConfig setupGroundConfig() {
+    private GroundConfig setupGroundConfig() throws Exception {
         GroundConfig groundConfig = new GroundConfig();
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         groundSkeletonConfig.setLightConfig(new LightConfig().setDiffuse(Color.fromHtmlColor("#000000")).setAmbient(Color.fromHtmlColor("#000000")));
         groundSkeletonConfig.setHeightXCount(1);
         groundSkeletonConfig.setHeightYCount(1);
         groundSkeletonConfig.setHeights(new double[][]{{0}});
+        groundSkeletonConfig.setSplattingXCount(1);
+        groundSkeletonConfig.setSplattingYCount(1);
+        groundSkeletonConfig.setSplattings(new double[][]{{0}});
+        groundSkeletonConfig.setSplattingId(onePixelImageId);
+        groundSkeletonConfig.setBottomBmId(onePixelImageId);
+        groundSkeletonConfig.setTopBmId(onePixelImageId);
+        groundSkeletonConfig.setBottomTextureId(onePixelImageId);
+        groundSkeletonConfig.setTopTextureId(onePixelImageId);
         groundConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         return groundConfig;
     }
@@ -554,11 +585,14 @@ public class ServerTestHelper {
         cleanTableNative("SERVER_QUEST");
         cleanTable(QuestConfigEntity.class);
         cleanTable(ConditionConfigEntity.class);
+        cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
+        cleanTableNative("QUEST_COMPARISON_BOT");
         cleanTable(ComparisonConfigEntity.class);
         cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
 
         cleanTable(WaterConfigEntity.class);
         cleanTable(GroundHeightEntity.class);
+        cleanTable(GroundSplattingEntity.class);
         cleanTable(GroundConfigEntity.class);
         cleanTable(GameUiControlConfigEntity.class);
         cleanTable(ServerGameEngineConfigEntity.class);
@@ -571,6 +605,11 @@ public class ServerTestHelper {
         cleanSlopeEntities();
 
         cleanPlanets();
+    }
+
+    protected void cleanPlanetFastTickGameEngine() throws Exception {
+        PlanetService.TICK_TIME_MILLI_SECONDS = PlanetService.DEFAULT_TICK_TIME_MILLI_SECONDS;
+        cleanPlanetWithSlopes();
     }
 
     protected void cleanSlopeEntities() throws Exception {
@@ -703,6 +742,14 @@ public class ServerTestHelper {
         return userService.getUserContextFromSession();
     }
 
+    protected UserContext handleNewUnverifiedUser(String email, String passwor) {
+        RegisterResult registerResult = userService.createUnverifiedUserAndLogin(email, passwor);
+        if (registerResult != RegisterResult.OK) {
+            throw new IllegalStateException("createUnverifiedUserAndLogin failed: " + registerResult);
+        }
+        return userService.getUserContextFromSession();
+    }
+
     public String getEmailVerificationUuid(String email) throws Exception {
         return runInTransactionAndReturn(em -> (String) em.createQuery("SELECT u.verificationId FROM UserEntity u where u.email=:email").setParameter("email", email).getSingleResult());
     }
@@ -710,4 +757,13 @@ public class ServerTestHelper {
     public String getForgotPasswordUuid(String email) throws Exception {
         return runInTransactionAndReturn(em -> (String) em.createQuery("SELECT p.uuid FROM ForgotPasswordEntity p where p.user.email=:email").setParameter("email", email).getSingleResult());
     }
+
+    protected QuestConfig readQuestConfig(int questId) throws Exception {
+        SingleHolder<QuestConfig> holder = new SingleHolder<>();
+        runInTransaction(entityManager -> {
+            holder.setO(entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(Locale.US));
+        });
+        return holder.getO();
+    }
+
 }

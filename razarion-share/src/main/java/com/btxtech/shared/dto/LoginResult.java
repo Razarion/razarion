@@ -1,4 +1,4 @@
-package com.btxtech.server.frontend;
+package com.btxtech.shared.dto;
 
 /**
  * Created by Beat

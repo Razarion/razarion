@@ -1,10 +1,10 @@
-package com.btxtech.server.rest;
+package com.btxtech.shared.rest;
 
-import com.btxtech.server.frontend.FrontendLoginState;
-import com.btxtech.server.frontend.LoginResult;
-import com.btxtech.server.user.RegisterResult;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.dto.FrontendLoginState;
+import com.btxtech.shared.dto.LoginResult;
+import com.btxtech.shared.dto.RegisterResult;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
