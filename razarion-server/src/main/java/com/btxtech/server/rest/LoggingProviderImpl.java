@@ -1,5 +1,6 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.persistence.ServerDebugHelper;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
@@ -11,10 +12,8 @@ import com.google.gwt.core.server.StackTraceDeobfuscator;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,8 @@ public class LoggingProviderImpl implements LoggingProvider {
     private SessionHolder sessionHolder;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ServerDebugHelper serverDebugDbLogger;
     @Context
     private ServletContext context;
     // @Inject
@@ -55,6 +56,15 @@ public class LoggingProviderImpl implements LoggingProvider {
             logger.log(logRecord);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Logging from client failed. LogRecordInfo: " + logRecordInfo, throwable);
+        }
+    }
+
+    @Override
+    public void jsonDebugDbLogger(String debugMessage) {
+        try {
+            serverDebugDbLogger.debugToDb(debugMessage, "Client", sessionHolder.getPlayerSession().getHttpSessionId());
+        } catch (Throwable throwable) {
+            logger.log(Level.SEVERE, "Debug client failed. debugMessage: " + debugMessage);
         }
     }
 

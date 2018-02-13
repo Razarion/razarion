@@ -26,6 +26,7 @@ public class CommonUrl {
     public static final String REMOTE_LOGGING = "remote_logging";
     public static final String LOGGING_SIMPLE = "simple";
     public static final String LOGGING_JSON = "json";
+    public static final String LOGGING_JSON_DEBUG_DB = "debugdb";
     public static final String IMAGE_SERVICE_PATH = "image";
     public static final String PLANET_MINI_MAP_PATH = "minimap";
     public static final String AUDIO_SERVICE_PATH = "audio";

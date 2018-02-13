@@ -83,6 +83,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.junit.Assert;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -173,6 +174,11 @@ public class ServerTestHelper {
     @Inject
     private BaseItemService baseItemService;
     private MongoClient mongoClient;
+
+    @PreDestroy
+    public void preDestroy() {
+        closeMongoDb();
+    }
 
     protected EntityManager getEntityManager() {
         return em;

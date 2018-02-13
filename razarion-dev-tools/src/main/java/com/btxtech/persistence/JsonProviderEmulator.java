@@ -39,8 +39,8 @@ import java.util.stream.Collectors;
 @Singleton
 public class JsonProviderEmulator {
     // public static final String HOST_PORT = "192.168.99.100:32778/test";
-    public static final String HOST_PORT = "www.razarion.com";
-    // public static final String HOST_PORT = "localhost:8080";
+    // public static final String HOST_PORT = "www.razarion.com";
+    public static final String HOST_PORT = "localhost:8080";
     public static final String HTTP_LOCALHOST_8080 = "http://" + HOST_PORT;
     public static final String REST = HTTP_LOCALHOST_8080 + "/rest/";
     private static final String PLANET_EDITOR_READ_SLOPS = HTTP_LOCALHOST_8080 + CommonUrl.APPLICATION_PATH + "/" + CommonUrl.PLANET_EDITOR_SERVICE_PATH + "/readTerrainSlopePositions";
@@ -74,7 +74,7 @@ public class JsonProviderEmulator {
                 requestContext.getCookies().put("JSESSIONID", sessionCookie);
             }
         });
-        target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "", false);
+        // target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "", false);
         shape3DProvider = target.proxy(Shape3DProvider.class);
         coldGameUiControlConfig = target.proxy(GameUiControlProvider.class);
         terrainShapeProvider = target.proxy(TerrainShapeProvider.class);

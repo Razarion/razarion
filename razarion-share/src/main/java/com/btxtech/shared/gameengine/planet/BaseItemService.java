@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainTypeNotAllowedException;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.event.Observes;
@@ -75,6 +76,8 @@ public class BaseItemService {
     private TerrainService terrainService;
     @Inject
     private GuardingItemService guardingItemService;
+    @Inject
+    private DebugHelper debugHelper;
     private final Map<Integer, PlayerBase> bases = new HashMap<>();
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
@@ -329,7 +332,7 @@ public class BaseItemService {
 
     public void onSlaveSyncBaseItemDeleted(SyncBaseItem syncBaseItem, SyncItemDeletedInfo syncItemDeletedInfo) {
         syncBaseItem.clearHealth();
-        logger.severe("onSlaveSyncBaseItemDeleted: " + syncBaseItem); // TODO remove, just for debugging
+        debugHelper.debugToDb("onSlaveSyncBaseItemDeleted: " + syncBaseItem); // TODO remove, just for debugging
         syncItemContainerService.destroySyncItem(syncBaseItem);
         energyService.onBaseItemRemoved(syncBaseItem);
         if (syncItemDeletedInfo.isExplode()) {
