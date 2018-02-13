@@ -366,6 +366,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             playerBase = baseItemService.updateHumanPlayerId(playerBase.getBaseId(), userContext.getHumanPlayerId());
             clientGameConnectionService.onBaseHumanPlayerIdChanged(playerBase);
         }
+        questService.updateHumanPlayerId(userContext.getHumanPlayerId());
     }
 
     @Override

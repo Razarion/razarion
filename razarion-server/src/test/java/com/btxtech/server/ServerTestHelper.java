@@ -172,6 +172,7 @@ public class ServerTestHelper {
     private UserService userService;
     @Inject
     private BaseItemService baseItemService;
+    private MongoClient mongoClient;
 
     protected EntityManager getEntityManager() {
         return em;
@@ -676,13 +677,23 @@ public class ServerTestHelper {
     }
 
     protected void clearMongoDb() {
-        new MongoClient().getDatabase("razarion").drop();
+        MongoClient mongoClient = new MongoClient();
+        mongoClient.getDatabase("razarion").drop();
+        mongoClient.close();
     }
 
     protected <T> MongoCollection<T> getMongoCollection(String collectionName, Class<T> theClass) {
+        closeMongoDb();
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(), fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        MongoClient mongoClient = new MongoClient("localhost", MongoClientOptions.builder().codecRegistry(pojoCodecRegistry).build());
+        mongoClient = new MongoClient("localhost", MongoClientOptions.builder().codecRegistry(pojoCodecRegistry).build());
         return mongoClient.getDatabase("razarion").getCollection(collectionName, theClass);
+    }
+
+    protected void closeMongoDb() {
+       if(mongoClient != null) {
+           mongoClient.close();
+           mongoClient = null;
+       }
     }
 
     protected <T> void fillBackupInfoMongoDb(String collectionName, String fileName, Class<T> theClass) {
@@ -703,6 +714,7 @@ public class ServerTestHelper {
             for (T entry : entries) {
                 mongoCollection.insertOne(entry);
             }
+            closeMongoDb();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -713,6 +725,7 @@ public class ServerTestHelper {
         FindIterable<T> findIterable = mongoCollection.find();
         List<T> result = new ArrayList<>();
         findIterable.forEach((Consumer<T>) result::add);
+        closeMongoDb();
         return result;
     }
 

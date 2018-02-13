@@ -153,6 +153,37 @@ public class ServerLevelQuestServiceRealTest extends ServerArquillianBaseTest {
         Assert.assertTrue(unregisteredUser.getCompletedQuestIds().contains(BEFORE_FULFILLED_QUEST));
     }
 
+    @Test
+    public void registerDuringQuest() throws Exception {
+        runInTransaction(em -> {
+            ServerLevelQuestEntity serverLevelQuestEntityL4 = em.createQuery("select s from ServerLevelQuestEntity s where s.minimalLevel=:minLevel", ServerLevelQuestEntity.class).setParameter("minLevel", em.find(LevelEntity.class, LEVEL_4_ID)).getSingleResult();
+            QuestConfigEntity questConfigEntity = new QuestConfigEntity();
+            Map<Integer, Integer> typeCount = new HashMap<>();
+            typeCount.put(BASE_ITEM_TYPE_FACTORY_ID, 1);
+            questConfigEntity.fromQuestConfig(itemTypePersistence, new QuestConfig().setInternalName("Start quest").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setAddExisting(true))), Locale.US);
+            serverLevelQuestEntityL4.getQuestConfigs().add(0, questConfigEntity);
+            em.merge(serverLevelQuestEntityL4);
+            BEFORE_FULFILLED_QUEST = serverLevelQuestEntityL4.getQuestConfigs().get(0).getId();
+        });
+        UserContext userContext = handleUnregisteredLogin();
+
+        serverLevelQuestService.onClientLevelUpdate(sessionHolder.getPlayerSession().getHttpSessionId(), LEVEL_4_ID);
+        PlayerBaseFull playerBaseFull = baseItemService.createHumanBaseWithBaseItem(userContext.getLevelId(), userContext.getUnlockedItemLimit(), userContext.getHumanPlayerId(), userContext.getName(), new DecimalPosition(1000, 1000));
+        userService.createUnverifiedUserAndLogin("test", "test");
+        waitForBaseServiceIdle();
+        systemConnectionService.connectClient(sessionHolder.getPlayerSession());
+        commandService.build(CollectionUtils.getFirst(playerBaseFull.getItems()).getId(), new DecimalPosition(1020, 1000), BASE_ITEM_TYPE_FACTORY_ID);
+        waitForBaseServiceIdle();
+
+        // Verify
+        runInTransaction(entityManager -> {
+            UserEntity userEntity = userService.getUserEntity4Email("test");
+            Assert.assertEquals(SERVER_QUEST_ID_L4_1, (int) userEntity.getActiveQuest().getId());
+            Assert.assertTrue(userEntity.getCompletedQuestIds().contains(BEFORE_FULFILLED_QUEST));
+        });
+    }
+
+
     private void manualActivateFulfilledQuest(UserContext userContext) throws Exception {
         runInTransaction(em -> {
             ServerLevelQuestEntity serverLevelQuestEntityL5 = em.createQuery("select s from ServerLevelQuestEntity s where s.minimalLevel=:minLevel", ServerLevelQuestEntity.class).setParameter("minLevel", em.find(LevelEntity.class, LEVEL_5_ID)).getSingleResult();

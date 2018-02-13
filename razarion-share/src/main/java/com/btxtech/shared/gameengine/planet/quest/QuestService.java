@@ -314,4 +314,14 @@ public class QuestService {
             });
         }
     }
+
+    public void updateHumanPlayerId(HumanPlayerId humanPlayerId) {
+        synchronized (progressMap) {
+            AbstractConditionProgress abstractConditionProgress = progressMap.remove(humanPlayerId);
+            if (abstractConditionProgress != null) {
+                abstractConditionProgress.setHumanPlayerId(humanPlayerId);
+                progressMap.put(humanPlayerId, abstractConditionProgress);
+            }
+        }
+    }
 }
