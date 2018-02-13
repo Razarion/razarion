@@ -282,7 +282,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public NativeVertexDto setupInterpolatableVelocity() {
-        if (velocity == null) {
+        if (velocity == null || velocity.equals(DecimalPosition.NULL)) {
             return null;
         }
         Vertex originalVelocity = new Vertex(velocity, 0);

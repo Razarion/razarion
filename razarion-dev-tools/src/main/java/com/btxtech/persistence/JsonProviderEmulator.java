@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class JsonProviderEmulator {
-    public static final String HOST_PORT = "192.168.99.100:32778/test";
+    // public static final String HOST_PORT = "192.168.99.100:32778/test";
+    public static final String HOST_PORT = "www.razarion.com";
     // public static final String HOST_PORT = "localhost:8080";
     public static final String HTTP_LOCALHOST_8080 = "http://" + HOST_PORT;
     public static final String REST = HTTP_LOCALHOST_8080 + "/rest/";
@@ -73,7 +74,7 @@ public class JsonProviderEmulator {
                 requestContext.getCookies().put("JSESSIONID", sessionCookie);
             }
         });
-        target.proxy(FrontendProvider.class).loginUser("test", "test", false);
+        target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "", false);
         shape3DProvider = target.proxy(Shape3DProvider.class);
         coldGameUiControlConfig = target.proxy(GameUiControlProvider.class);
         terrainShapeProvider = target.proxy(TerrainShapeProvider.class);
