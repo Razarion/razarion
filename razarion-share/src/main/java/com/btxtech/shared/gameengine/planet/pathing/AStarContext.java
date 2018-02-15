@@ -20,6 +20,7 @@ public class AStarContext {
     private boolean startSuck;
     private final Map<PathingNodeWrapper, Collection<PathingNodeWrapper>> cache = new HashMap<>();
     private DecimalPosition startPosition;
+    private DecimalPosition destination;
     private double maxStuckDistance;
 
     public AStarContext(TerrainType terrainType, List<Index> subNodeIndexScope) {
@@ -69,6 +70,14 @@ public class AStarContext {
 
     public DecimalPosition getStartPosition() {
         return startPosition;
+    }
+
+    public DecimalPosition getDestination() {
+        return destination;
+    }
+
+    public void setDestination(DecimalPosition destination) {
+        this.destination = destination;
     }
 
     public double getMaxStuckDistance() {

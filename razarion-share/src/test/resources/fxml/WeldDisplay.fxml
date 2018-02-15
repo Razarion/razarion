@@ -38,6 +38,8 @@
                 <TextField fx:id="zMinField" onAction="#onMinZChanged" prefWidth="50.0" />
                 <Label text="Z max" />
                 <TextField fx:id="zMaxField" onAction="#onMaxZChanged" prefWidth="50.0" />
+                <Separator orientation="VERTICAL" />
+                <Button mnemonicParsing="false" onAction="#onTestGenerationButton" text="gen Test" />
             </items>
         </ToolBar>
     </top>

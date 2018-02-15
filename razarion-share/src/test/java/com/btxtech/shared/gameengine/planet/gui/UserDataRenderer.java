@@ -41,12 +41,16 @@ public class UserDataRenderer {
 
     private void render(PositionMarker positionMarker) {
         positionMarker.getCircles().forEach(circle -> weldTestRenderer.strokeCircle(circle, AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.RED));
-        weldTestRenderer.drawPositions(positionMarker.getPositions(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.RED);
+        weldTestRenderer.drawPositions(positionMarker.getPositions(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.PINK);
         if (positionMarker.getLine() != null) {
-            weldTestRenderer.strokeLine(positionMarker.getLine(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.BLUE, true);
+            weldTestRenderer.strokeLine(positionMarker.getLine(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.BLUEVIOLET, true);
         }
+        positionMarker.getSyncItems().forEach(syncItem -> {
+            weldTestRenderer.fillCircle(syncItem.getCircle2D(), syncItem.getColor());
+        });
         positionMarker.getPolygon2Ds().forEach(polygon2D -> weldTestRenderer.strokePolygon(polygon2D.getCorners(), AbstractTerrainTestRenderer.FAT_LINE_WIDTH, Color.GREEN, true));
         positionMarker.getRectangle2Ds().forEach(rectangle -> weldTestRenderer.fillRectangle(rectangle.getRectangle2D(), rectangle.getColor()));
+        positionMarker.getCircleColors().forEach(circle -> weldTestRenderer.fillCircle(circle.getCircle2D(), circle.getColor()));
     }
 
     private void render(SimplePath simplePath) {

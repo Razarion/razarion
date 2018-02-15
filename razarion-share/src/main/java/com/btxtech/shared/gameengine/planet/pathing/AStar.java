@@ -52,7 +52,7 @@ public class AStar {
         handleAllSuccessorNodes(current);
         closedList.put(current.getPathingNodeWrapper(), current);
         if (closedList.size() > MAX_CLOSED_LIST_SIZE) {
-            throw new IllegalStateException("AStar max closed list size reached. startNode: " + startNode + " destinationTile: " + destinationNode.getPathingNodeWrapper());
+            throw new IllegalStateException("AStar max closed list size reached. Destination: " + aStarContext.getDestination() + " startNode: " + startNode + " destinationTile: " + destinationNode.getPathingNodeWrapper());
         }
     }
 

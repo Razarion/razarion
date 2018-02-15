@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.gui;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
+import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
@@ -68,6 +69,7 @@ public class WeldTestController extends AbstractTerrainTestController {
     private CheckBox shapeTerrainObjectCheck;
     private Object[] userObjects;
     private MouseMoveCallback mouseMoveCallback;
+    private TestCaseGenerator testCaseGenerator;
 
     @Override
     protected AbstractTerrainTestRenderer setupRenderer() {
@@ -107,6 +109,8 @@ public class WeldTestController extends AbstractTerrainTestController {
         for (Object userObject : userObjects) {
             if (userObject instanceof MouseMoveCallback) {
                 mouseMoveCallback = (MouseMoveCallback) userObject;
+            } else if (userObject instanceof TestCaseGenerator) {
+                testCaseGenerator = (TestCaseGenerator) userObject;
             } else {
                 userObjectsCopy.add(userObject);
             }
@@ -220,5 +224,14 @@ public class WeldTestController extends AbstractTerrainTestController {
     public void onTickButton(ActionEvent actionEvent) {
         planetService.run();
         getAbstractTerrainTestRenderer().render();
+    }
+
+    public void onTestGenerationButton(ActionEvent actionEvent) {
+        if (testCaseGenerator != null) {
+            if(getMousePosition() == null) {
+                throw new IllegalStateException("No mouse position available. Move the mouse before press the test case generation button.");
+            }
+            testCaseGenerator.onTestGenerationButton(getMousePosition());
+        }
     }
 }

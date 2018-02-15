@@ -831,6 +831,11 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         getGc().strokeOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2.0 * circle2D.getRadius(), 2.0 * circle2D.getRadius());
     }
 
+    public void fillCircle(Circle2D circle2D, Color color) {
+        getGc().setFill(color);
+        getGc().fillOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2.0 * circle2D.getRadius(), 2.0 * circle2D.getRadius());
+    }
+
     public void drawPosition(DecimalPosition position, double radius, Color color) {
         getGc().setFill(color);
         getGc().fillOval(position.getX() - radius, position.getY() - radius, radius * 2.0, radius * 2.0);

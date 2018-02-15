@@ -1,6 +1,8 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingAccess;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -15,6 +17,7 @@ import java.util.Set;
  * on 28.09.2017.
  */
 public class DestinationFinder {
+    private DecimalPosition destination;
     private PathingNodeWrapper destinationNode;
     private TerrainType terrainType;
     private List<Index> subNodeIndexScope;
@@ -24,7 +27,8 @@ public class DestinationFinder {
     private Set<PathingNodeWrapper> openList = new HashSet<>();
     private Set<PathingNodeWrapper> closeList = new HashSet<>();
 
-    public DestinationFinder(PathingNodeWrapper destinationNode, TerrainType terrainType, List<Index> subNodeIndexScope, PathingAccess pathingAccess) {
+    public DestinationFinder(DecimalPosition destination, PathingNodeWrapper destinationNode, TerrainType terrainType, List<Index> subNodeIndexScope, PathingAccess pathingAccess) {
+        this.destination = destination;
         this.destinationNode = destinationNode;
         this.terrainType = terrainType;
         this.subNodeIndexScope = subNodeIndexScope;
@@ -66,17 +70,19 @@ public class DestinationFinder {
         if (successor.isFree(terrainType)) {
             openList.add(successor);
             if (isFree(successor)) {
-                found = successor;
+                if (found == null) {
+                    found = successor;
+                } else if (successor.getCenter().getDistance(destination) < found.getCenter().getDistance(destination)) {
+                    found = successor;
+                }
             }
         }
     }
 
     private boolean isFree(PathingNodeWrapper pathingNodeWrapper) {
-        if (pathingNodeWrapper.getTerrainShapeSubNode() != null) {
-            for (Index index : subNodeIndexScope) {
-                if (!pathingAccess.isTerrainTypeAllowed(terrainType, pathingNodeWrapper.getSubNodePosition().add(index.getX(), index.getY()))) {
-                    return false;
-                }
+        for (Index index : subNodeIndexScope) {
+            if (!pathingAccess.isTerrainTypeAllowed(terrainType, pathingNodeWrapper.getCenter().add(TerrainUtil.smallestSubNodeCenter(index)))) {
+                return false;
             }
         }
         return true;

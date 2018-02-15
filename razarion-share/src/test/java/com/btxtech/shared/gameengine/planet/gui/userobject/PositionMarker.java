@@ -19,10 +19,12 @@ public class PositionMarker {
     private Collection<Circle2D> circles = new ArrayList<>();
     private List<DecimalPosition> line;
     private List<Polygon2D> polygon2Ds = new ArrayList<>();
+    private List<SyncItem> syncItems = new ArrayList<>();
     private List<RectColor> rectangle2Ds = new ArrayList<>();
+    private List<CircleColor> circleColors = new ArrayList<>();
 
-    public PositionMarker addPosition(DecimalPosition positions) {
-        positions.add(positions);
+    public PositionMarker addPosition(DecimalPosition position) {
+        positions.add(position);
         return this;
     }
 
@@ -57,13 +59,67 @@ public class PositionMarker {
         return polygon2Ds;
     }
 
+    public List<SyncItem> getSyncItems() {
+        return syncItems;
+    }
+
+    public PositionMarker addSyncItem(com.btxtech.shared.gameengine.planet.model.SyncItem syncItem, Color color) {
+        syncItems.add(new SyncItem(syncItem, color));
+        return this;
+    }
+
+    public List<CircleColor> getCircleColors() {
+        return circleColors;
+    }
+
+    public PositionMarker addCircleColor(Circle2D circle2D, Color color) {
+        circleColors.add(new CircleColor(circle2D, color));
+        return this;
+    }
+
     public List<RectColor> getRectangle2Ds() {
         return rectangle2Ds;
     }
 
-    public PositionMarker addRectangle2Ds(Rectangle2D rectangle2D, Color color) {
+    public PositionMarker addRectangle2D(Rectangle2D rectangle2D, Color color) {
         rectangle2Ds.add(new RectColor(rectangle2D, color));
         return this;
+    }
+
+    public static class SyncItem {
+        private Circle2D circle2D;
+        private Color color;
+
+        public SyncItem(com.btxtech.shared.gameengine.planet.model.SyncItem syncItem, Color color) {
+            circle2D = new Circle2D(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalMovable().getRadius());
+            this.color = color;
+        }
+
+        public Circle2D getCircle2D() {
+            return circle2D;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+    }
+
+    public static class CircleColor {
+        private Circle2D circle2D;
+        private Color color;
+
+        public CircleColor(Circle2D circle2D, Color color) {
+            this.circle2D = circle2D;
+            this.color = color;
+        }
+
+        public Circle2D getCircle2D() {
+            return circle2D;
+        }
+
+        public Color getColor() {
+            return color;
+        }
     }
 
     public static class RectColor {

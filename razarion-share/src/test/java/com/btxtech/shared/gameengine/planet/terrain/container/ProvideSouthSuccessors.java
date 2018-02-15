@@ -112,10 +112,10 @@ public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
     private void displayPathingNodeWrapper(PathingNodeWrapper pathingNodeWrapper, PositionMarker positionMarker, Color color) {
         if (pathingNodeWrapper.getNodeIndex() != null) {
             Rectangle2D currentNode = TerrainUtil.toAbsoluteNodeRectangle(pathingNodeWrapper.getNodeIndex());
-            positionMarker.addRectangle2Ds(currentNode, color);
+            positionMarker.addRectangle2D(currentNode, color);
         } else if (pathingNodeWrapper.getSubNodePosition() != null) {
             double length = TerrainUtil.calculateSubNodeLength(pathingNodeWrapper.getTerrainShapeSubNode().getDepth());
-            positionMarker.addRectangle2Ds(new Rectangle2D(pathingNodeWrapper.getSubNodePosition().getX(), pathingNodeWrapper.getSubNodePosition().getY(), length, length), color);
+            positionMarker.addRectangle2D(new Rectangle2D(pathingNodeWrapper.getSubNodePosition().getX(), pathingNodeWrapper.getSubNodePosition().getY(), length, length), color);
         }
     }
 }

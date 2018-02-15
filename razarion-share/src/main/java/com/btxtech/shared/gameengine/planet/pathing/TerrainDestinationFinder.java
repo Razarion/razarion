@@ -44,25 +44,21 @@ public class TerrainDestinationFinder {
         calculatePosition(pathingAccess, distance, destination, radius, terrainType, position -> {
             if (result.getO1() == null) {
                 result.setO1(position);
-                result.setO2(position.getDistance(this.position));
+                result.setO2(position.getDistance(this.destination));
             } else {
-                double distance = position.getDistance(this.position);
+                double distance = position.getDistance(this.destination);
                 if (distance < result.getO2()) {
                     result.setO1(position);
                     result.setO2(distance);
                 }
             }
-            return false;
+            return true;
         });
         if (result.getO1() == null) {
             throw new IllegalArgumentException("TerrainDestinationFinder.find(): no reachable terrain destination found");
         }
         reachableDestination = result.getO1();
         pathingNodeWrapper = pathingAccess.getPathingNodeWrapper(reachableDestination);
-    }
-
-    public DecimalPosition getReachableDestination() {
-        return reachableDestination;
     }
 
     public PathingNodeWrapper getReachableNode() {
@@ -96,11 +92,14 @@ public class TerrainDestinationFinder {
         }
 
         for (DecimalPosition allowedPosition : allowedPositions) {
-            if (pathingAccess.isTerrainTypeAllowed(terrainType, allowedPosition, radius)) {
-                if (!callback.test(allowedPosition)) {
-                    return;
+            PathingNodeWrapper pathingNodeWrapper = pathingAccess.getPathingNodeWrapper(allowedPosition);
+            if (pathingNodeWrapper.isFree(terrainType)) {
+                DecimalPosition aStarPosition = pathingNodeWrapper.getCenter();
+                if (pathingAccess.isTerrainTypeAllowed(terrainType, aStarPosition, radius)) {
+                    if (!callback.test(aStarPosition)) {
+                        return;
+                    }
                 }
-                return;
             }
         }
     }

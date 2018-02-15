@@ -189,7 +189,7 @@ public class PathingNodeWrapper {
 
     private Consumer<PathingNodeWrapper> checkScopeAdapter(AStarContext aStarContext, Consumer<PathingNodeWrapper> northNodeHandler) {
         return pathingNodeWrapper -> {
-            if(aStarContext.isStartSuck()) {
+            if (aStarContext.isStartSuck()) {
                 double distance = pathingNodeWrapper.getCenter().getDistance(aStarContext.getStartPosition());
                 if (distance < aStarContext.getMaxStuckDistance()) {
                     northNodeHandler.accept(pathingNodeWrapper);
@@ -205,7 +205,7 @@ public class PathingNodeWrapper {
         if (aStarContext.hasSubNodeIndexScope()) {
             if (getTerrainShapeSubNode() != null) {
                 for (Index index : aStarContext.getSubNodeIndexScope()) {
-                    DecimalPosition scanPosition = getSubNodePosition().add(TerrainUtil.smallestSubNodeCenter(index));
+                    DecimalPosition scanPosition = getCenter().add(TerrainUtil.smallestSubNodeCenter(index));
                     if (!aStarContext.isAllowed(pathingAccess.getTerrainType(scanPosition))) {
                         return true;
                     }

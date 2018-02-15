@@ -30,6 +30,7 @@ public abstract class AbstractTerrainTestController implements Initializable {
     @FXML
     private TextField mouseLabel;
     private AbstractTerrainTestRenderer abstractTerrainTestRenderer;
+    private DecimalPosition mousePosition;
 
     protected abstract AbstractTerrainTestRenderer setupRenderer();
 
@@ -82,6 +83,7 @@ public abstract class AbstractTerrainTestController implements Initializable {
     public void onMouseMoved(Event event) {
         DecimalPosition position = abstractTerrainTestRenderer.convertMouseToModel(event);
         mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
+        mousePosition = position;
         onMouseMoved(position);
     }
 
@@ -101,5 +103,9 @@ public abstract class AbstractTerrainTestController implements Initializable {
 
     protected AbstractTerrainTestRenderer getAbstractTerrainTestRenderer() {
         return abstractTerrainTestRenderer;
+    }
+
+    public DecimalPosition getMousePosition() {
+        return mousePosition;
     }
 }
