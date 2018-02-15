@@ -304,6 +304,11 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
+    public void onSyncBaseItemStopped(SyncBaseItem syncBaseItem) {
+        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
+    }
+
+    @Override
     public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
         clientGameConnectionService.sendSyncBaseItem(syncItem);
     }

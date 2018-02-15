@@ -207,6 +207,10 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemIdle(syncBaseItem));
     }
 
+    public void onSyncBaseItemStopped(SyncBaseItem syncBaseItem) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemStopped(syncBaseItem));
+    }
+
     public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
         gameLogicListener.ifPresent(listener -> listener.onQuestProgressUpdate(humanPlayerId, questProgressInfo));
     }

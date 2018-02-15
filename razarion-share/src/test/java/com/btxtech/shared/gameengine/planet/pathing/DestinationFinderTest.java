@@ -102,7 +102,7 @@ public class DestinationFinderTest extends AStarBaseTest {
     @Test
     public void land9() {
         DecimalPosition correctedPosition = testBody(new DecimalPosition(199.500, 117.429), 3.0, TerrainType.LAND);
-        Assert.assertEquals(new DecimalPosition(196.000, 204.000), correctedPosition);
+        Assert.assertEquals(new DecimalPosition(204.0, 108.0), correctedPosition);
     }
 
     @Test

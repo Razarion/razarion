@@ -21,6 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -51,6 +52,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private TerrainService terrainService;
     @Inject
     private Instance<Path> instancePath;
+    @Inject
+    private GameLogicService gameLogicService;
     private final static int LOOK_AHEAD_TICKS_ITEM = 20;
     private final static int LOOK_AHEAD_TICKS_TERRAIN = 3;
     private double lookAheadItemDistance;
@@ -148,10 +151,12 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         double acceleration = this.acceleration * PlanetService.TICK_FACTOR;
         if (acceleration >= magnitude) {
             velocity = null;
+            gameLogicService.onSyncBaseItemStopped((SyncBaseItem) getSyncItem());
         } else {
             velocity = velocity.normalize(magnitude - acceleration);
             if (velocity.equalsDeltaZero()) {
                 velocity = null;
+                gameLogicService.onSyncBaseItemStopped((SyncBaseItem) getSyncItem());
             }
         }
     }
