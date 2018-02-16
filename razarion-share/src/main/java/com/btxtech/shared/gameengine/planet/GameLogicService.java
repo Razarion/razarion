@@ -222,4 +222,8 @@ public class GameLogicService {
     public void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         gameLogicListener.ifPresent(listener -> listener.onResourcesBalanceChanged(playerBase, resources));
     }
+
+    public void onWeaponNewPath(SyncBaseItem syncBaseItem) {
+        gameLogicListener.ifPresent(listener -> listener.onWeaponNewPath(syncBaseItem));
+    }
 }

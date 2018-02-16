@@ -99,4 +99,8 @@ public interface GameLogicListener {
 
     default void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
     }
+
+    default void onWeaponNewPath(SyncBaseItem syncBaseItem) {
+
+    }
 }

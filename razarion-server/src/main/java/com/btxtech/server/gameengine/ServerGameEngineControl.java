@@ -353,6 +353,11 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         clientGameConnectionService.sendSyncBaseItem(contained);
     }
 
+    @Override
+    public void onWeaponNewPath(SyncBaseItem syncBaseItem) {
+        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
+    }
+
     public PlanetConfig getPlanetConfig() {
         return planetService.getPlanetConfig();
     }
