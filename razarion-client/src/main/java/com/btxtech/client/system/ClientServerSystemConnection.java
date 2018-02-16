@@ -32,12 +32,16 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
     @Override
     public void init() {
         webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT));
-        webSocket.setOnerror(evt -> logger.severe("ClientServerSystemConnection WebSocket OnError: " + evt));
-        webSocket.setOnclose(evt -> logger.severe("ClientServerSystemConnection WebSocket Close: " + evt));
-        webSocket.setOnmessage(this::handleMessage);
-        webSocket.setOnopen(evt -> {
-            sendGameSessionUuid();
+        webSocket.setOnerror(evt -> {
+            logger.severe("ClientServerSystemConnection WebSocket OnError: " + evt);
+            lifecycleService.handleServerRestart();
         });
+        webSocket.setOnclose(evt -> {
+            logger.severe("ClientServerSystemConnection WebSocket Close: " + evt);
+            lifecycleService.handleServerRestart();
+        });
+        webSocket.setOnmessage(this::handleMessage);
+        webSocket.setOnopen(evt -> sendGameSessionUuid());
     }
 
     private void handleMessage(Event event) {

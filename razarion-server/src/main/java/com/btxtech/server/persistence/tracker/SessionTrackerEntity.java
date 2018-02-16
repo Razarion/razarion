@@ -43,6 +43,9 @@ public class SessionTrackerEntity {
     @Column(length = 10000)
     private String userAgent;
     private String language;
+    @Lob
+    @Column(length = 1000)
+    private String acceptLanguage;
     private String remoteHost;
     private String remoteAddr;
     @Lob
@@ -79,6 +82,14 @@ public class SessionTrackerEntity {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getAcceptLanguage() {
+        return acceptLanguage;
+    }
+
+    public void setAcceptLanguage(String acceptLanguage) {
+        this.acceptLanguage = acceptLanguage;
     }
 
     public String getRemoteHost() {

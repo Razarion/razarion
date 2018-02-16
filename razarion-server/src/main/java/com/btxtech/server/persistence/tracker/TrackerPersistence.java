@@ -67,20 +67,25 @@ public class TrackerPersistence {
 
     @Transactional
     public void onNewSession(HttpServletRequest request) {
-        SessionTrackerEntity sessionTrackerEntity = new SessionTrackerEntity();
-        sessionTrackerEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
-        sessionTrackerEntity.setUserAgent(request.getHeader("user-agent"));
-        sessionTrackerEntity.setRemoteAddr(request.getRemoteAddr());
-        sessionTrackerEntity.setReferer(request.getHeader("Referer"));
-        sessionTrackerEntity.setLanguage(request.getHeader("Accept-Language"));
-        sessionTrackerEntity.setTimeStamp(new Date());
         try {
-            InetAddress inetAddress = InetAddress.getByName(request.getRemoteAddr());
-            sessionTrackerEntity.setRemoteHost(inetAddress.getHostName());
-        } catch (UnknownHostException e) {
-            exceptionHandler.handleException(e);
+            SessionTrackerEntity sessionTrackerEntity = new SessionTrackerEntity();
+            sessionTrackerEntity.setSessionId(sessionHolder.getPlayerSession().getHttpSessionId());
+            sessionTrackerEntity.setUserAgent(request.getHeader("user-agent"));
+            sessionTrackerEntity.setRemoteAddr(request.getRemoteAddr());
+            sessionTrackerEntity.setReferer(request.getHeader("Referer"));
+            sessionTrackerEntity.setLanguage(request.getLocale().toString());
+            sessionTrackerEntity.setAcceptLanguage(request.getHeader("Accept-Language"));
+            sessionTrackerEntity.setTimeStamp(new Date());
+            try {
+                InetAddress inetAddress = InetAddress.getByName(request.getRemoteAddr());
+                sessionTrackerEntity.setRemoteHost(inetAddress.getHostName());
+            } catch (UnknownHostException e) {
+                exceptionHandler.handleException(e);
+            }
+            entityManager.persist(sessionTrackerEntity);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        entityManager.persist(sessionTrackerEntity);
     }
 
     @Transactional
@@ -319,6 +324,8 @@ public class TrackerPersistence {
         SessionDetail sessionDetail = new SessionDetail().setId(sessionTrackerEntity.getSessionId()).setTime(sessionTrackerEntity.getTimeStamp()).setUserAgent(sessionTrackerEntity.getUserAgent()).setReferer(sessionTrackerEntity.getReferer());
         sessionDetail.setFbAdRazTrack(getFbAdRazTrack(sessionId));
         sessionDetail.setRemoteAddr(sessionTrackerEntity.getRemoteAddr()).setRemoteHost(sessionTrackerEntity.getRemoteHost());
+        sessionDetail.setLanguage(sessionTrackerEntity.getLanguage());
+        sessionDetail.setAcceptLanguage(sessionTrackerEntity.getAcceptLanguage());
         sessionDetail.setGameSessionDetails(readGameSessionDetails(sessionId));
         sessionDetail.setPageDetails(readPageDetails(sessionId));
         return sessionDetail;

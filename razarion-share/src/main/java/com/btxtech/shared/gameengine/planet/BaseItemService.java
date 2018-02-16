@@ -415,7 +415,7 @@ public class BaseItemService {
     }
 
     private void sellItem(int syncBaseItemId, PlayerBase playerBase) throws ItemDoesNotExistException, NotYourBaseException {
-        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemId);
+        SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(syncBaseItemId);
         if (!syncBaseItem.getBase().equals(playerBase)) {
             throw new NotYourBaseException(playerBase, syncBaseItem.getBase());
         }

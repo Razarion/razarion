@@ -14,6 +14,8 @@ public class SessionDetail {
     private String userAgent;
     private String remoteHost;
     private String remoteAddr;
+    private String language;
+    private String acceptLanguage;
     private String referer;
     private List<GameSessionDetail> gameSessionDetails;
     private List<PageDetail> pageDetails;
@@ -74,6 +76,24 @@ public class SessionDetail {
 
     public String getRemoteAddr() {
         return remoteAddr;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public SessionDetail setLanguage(String language) {
+        this.language = language;
+        return this;
+    }
+
+    public String getAcceptLanguage() {
+        return acceptLanguage;
+    }
+
+    public SessionDetail setAcceptLanguage(String acceptLanguage) {
+        this.acceptLanguage = acceptLanguage;
+        return this;
     }
 
     public SessionDetail setRemoteAddr(String remoteAddr) {

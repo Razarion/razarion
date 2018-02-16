@@ -139,10 +139,7 @@ public class LifecycleService {
                 }
                 break;
             case RESTART:
-                clearAndHold(null);
-                gameUiControl.closeConnection();
-                modalDialogManager.showSingleNoClosableServerRestartDialog();
-                startRestartWatchdog();
+                handleServerRestart();
                 break;
             case PLANET_RESTART_WARM:
                 screenCover.fadeInLoadingCover();
@@ -154,6 +151,13 @@ public class LifecycleService {
             default:
                 throw new IllegalArgumentException("LifecycleService.onLifecyclePacket() Unknown type: " + lifecyclePacket.getType());
         }
+    }
+
+    public void handleServerRestart() {
+        clearAndHold(null);
+        gameUiControl.closeConnection();
+        modalDialogManager.showSingleNoClosableServerRestartDialog();
+        startRestartWatchdog();
     }
 
     public void clearAndHold(DeferredStartup deferredStartup) {

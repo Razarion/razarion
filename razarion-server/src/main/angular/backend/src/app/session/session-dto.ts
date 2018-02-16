@@ -25,6 +25,8 @@ export class SessionDetail {
   userAgent: string;
   remoteHost: string;
   remoteAddr: string;
+  language: string;
+  acceptLanguage: string;
   referer: string;
   gameSessionDetails: GameSessionDetail[];
   pageDetails: PageDetail[];
