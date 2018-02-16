@@ -26,7 +26,9 @@ public interface SimpleExecutorService {
         TIP_SPAWN(PerfmonEnum.TIP_SPAWN),
         TIP_GUI_POINTING(PerfmonEnum.TIP_GUI_POINTING),
         REGISTER(PerfmonEnum.REGISTER),
-        USER_SET_NAME(PerfmonEnum.USER_SET_NAME);
+        USER_SET_NAME(PerfmonEnum.USER_SET_NAME),
+        SERVER_RESTART_WATCHDOG(PerfmonEnum.SERVER_RESTART_WATCHDOG),
+        RELOAD_CLIENT_WRONG_INTERFACE_VERSION(PerfmonEnum.RELOAD_CLIENT_WRONG_INTERFACE_VERSION);
 
         private PerfmonEnum perfmonEnum;
 

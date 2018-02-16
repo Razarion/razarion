@@ -1,6 +1,7 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -21,6 +22,8 @@ public class ServletContextMonitor implements ServletContextListener {
     private ChatPersistence chatPersistence;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ServerMgmt serverMgmt;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -34,10 +37,13 @@ public class ServletContextMonitor implements ServletContextListener {
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }
+        serverMgmt.setRunning(true);
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        serverMgmt.setRunning(false);
         gameEngineService.shutdown();
     }
+
 }

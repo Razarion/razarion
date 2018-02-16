@@ -879,8 +879,6 @@ public interface I18nConstants {
     // System
     String serverRebootTitle();
 
-    String serverRebootMessage(int rebootInSeconds, int downTimeInMinutes);
-
     String serverRebootMissionNotSaved();
 
     String serverRebootNotRegistered();
@@ -892,4 +890,12 @@ public interface I18nConstants {
     String oldBrowserDialogTitle();
 
     String oldBrowserDialogMessage();
+
+    String serverRestartTitle();
+
+    String restarting();
+
+    String startingPlanet();
+
+    String running();
 }

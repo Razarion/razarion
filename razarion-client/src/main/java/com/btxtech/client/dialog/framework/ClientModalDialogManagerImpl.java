@@ -7,6 +7,7 @@ import com.btxtech.client.dialog.common.MessageImage;
 import com.btxtech.client.dialog.common.MessageImageDialog;
 import com.btxtech.client.dialog.common.RegisterDialog;
 import com.btxtech.client.dialog.common.ScrollTipDialog;
+import com.btxtech.client.dialog.common.ServerRestartDialog;
 import com.btxtech.client.dialog.common.SetUserNameDialog;
 import com.btxtech.client.dialog.common.UserAccountDialog;
 import com.btxtech.client.dialog.levelup.LevelUpDialog;
@@ -151,6 +152,11 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
     public void showSingleNoClosableDialog(String title, String message) {
         closeAll();
         show(title, Type.PROMPTLY, MessageDialog.class, message, null, null);
+    }
+
+    public void showSingleNoClosableServerRestartDialog() {
+        closeAll();
+        show(I18nHelper.getConstants().serverRestartTitle(), Type.PROMPTLY, ServerRestartDialog.class, null, null, null);
     }
 
     public void showQuestionDialog(String title, String question, Runnable okCallback, Runnable cancelCallback) {

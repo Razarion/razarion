@@ -1,0 +1,36 @@
+package com.btxtech.server.rest;
+
+import com.btxtech.server.mgmt.ServerMgmt;
+import com.btxtech.shared.Constants;
+import com.btxtech.shared.rest.ServerMgmtProvider;
+import com.btxtech.shared.system.ExceptionHandler;
+
+import javax.inject.Inject;
+
+/**
+ * Created by Beat
+ * on 16.02.2018.
+ */
+public class ServerMgmtProviderImpl implements ServerMgmtProvider {
+    @Inject
+    private ServerMgmt serverMgmt;
+    @Inject
+    private ExceptionHandler exceptionHandler;
+
+    @Override
+    public boolean getServerStatus() {
+        try {
+            return serverMgmt.isRunning();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            return false;
+        }
+    }
+
+    @Override
+    public int getInterfaceVersion() {
+        return Constants.INTERFACE_VERSION;
+    }
+
+
+}

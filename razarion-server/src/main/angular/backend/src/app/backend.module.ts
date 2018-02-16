@@ -23,6 +23,8 @@ import {NewUserService} from "./newusers/new-user.service";
 import {UserHistoryService} from "./userloginhistory/user-login-history.service";
 import {ItemHistoryComponent} from "./itemhistory/item-history.component";
 import {ItemHistoryService} from "./itemhistory/item-history.service";
+import {ServerMgmt} from "./servermgmt/server-mgmt.component";
+import {ServerMgmtService} from "./servermgmt/server-mgmt.service";
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import {ItemHistoryService} from "./itemhistory/item-history.service";
     UserComponent,
     UserLoginHistory,
     NewUserHistory,
-    ItemHistoryComponent
+    ItemHistoryComponent,
+    ServerMgmt
   ],
   imports: [
     BrowserModule,
@@ -45,7 +48,7 @@ import {ItemHistoryService} from "./itemhistory/item-history.service";
     AppRoutingModule,
     // InMemoryWebApiModule.forRoot(InMemoryDataService, {apiBase: "rest/servermgmtprovider"})
   ],
-  providers: [SessionService, BackupRestoreService, OnlineService, UserService, NewUserService, UserHistoryService, ItemHistoryService],
+  providers: [SessionService, BackupRestoreService, OnlineService, UserService, NewUserService, UserHistoryService, ItemHistoryService, ServerMgmtService],
   bootstrap: [MainWindow]
 })
 export class Backend {

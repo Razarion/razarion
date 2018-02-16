@@ -5,8 +5,10 @@ import {SessionDetails} from "./session/session-detail.component";
 import {BackupRestoreComponent} from "./backuprestore/backup-restore.component";
 import {UserComponent} from "./user/user.component";
 import {ItemHistoryComponent} from "./itemhistory/item-history.component";
+import {ServerMgmt} from "./servermgmt/server-mgmt.component";
 
 const routes: Routes = [
+  {path: 'servermgmt', component: ServerMgmt},
   {path: 'dashboard', component: Dashboard},
   {path: 'session/:id', component: SessionDetails},
   {path: 'backuprestore', component: BackupRestoreComponent},

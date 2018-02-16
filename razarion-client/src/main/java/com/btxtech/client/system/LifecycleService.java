@@ -8,12 +8,16 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.rest.ServerMgmtProvider;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.effects.TrailService;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -28,11 +32,15 @@ import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.google.gwt.user.client.Window;
 import elemental.client.Browser;
+import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.function.Consumer;
 
 /**
  * Created by Beat
@@ -40,6 +48,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class LifecycleService {
+    private static final int WATCHDOG_DELAY = 5000;
     @Inject
     private ClientRunner clientRunner;
     @Inject
@@ -87,7 +96,15 @@ public class LifecycleService {
     @Inject
     private LeftSideBarManager leftSideBarManager;
     @Inject
+    private GameUiControl gameUiControl;
+    @Inject
     private SelectionHandler selectionHandler;
+    @Inject
+    private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private Caller<ServerMgmtProvider> serverMgmt;
+    private Consumer<ServerState> serverRestartCallback;
+    private SimpleScheduledFuture simpleScheduledFuture;
 
     @PostConstruct
     public void postConstruct() {
@@ -121,16 +138,17 @@ public class LifecycleService {
                     modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().planetRestartTitle(), I18nHelper.getConstants().planetRestartMessage());
                 }
                 break;
-            case SHUTDOWN:
-                // clearAndHold(null);
-                // gameUiControl.closeConnection();
-                // break;
-                throw new UnsupportedOperationException("LifecycleService.onLifecyclePacket() SHUTDOWN not implemented");
-            case RESTART_WARM:
+            case RESTART:
+                clearAndHold(null);
+                gameUiControl.closeConnection();
+                modalDialogManager.showSingleNoClosableServerRestartDialog();
+                startRestartWatchdog();
+                break;
+            case PLANET_RESTART_WARM:
                 screenCover.fadeInLoadingCover();
                 startWarm();
                 break;
-            case RESTART_COLD:
+            case PLANET_RESTART_COLD:
                 Browser.getWindow().getLocation().reload();
                 break;
             default:
@@ -160,5 +178,33 @@ public class LifecycleService {
         audioService.muteTerrainLoopAudio();
         terrainScrollHandler.cleanup();
         leftSideBarManager.close();
+    }
+
+    private void startRestartWatchdog() {
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(WATCHDOG_DELAY, true, serverMgmt.call((RemoteCallback<Boolean>) running -> {
+            if (running) {
+                if (simpleScheduledFuture != null) {
+                    simpleScheduledFuture.cancel();
+                    simpleScheduledFuture = null;
+                }
+                if (serverRestartCallback != null) {
+                    serverRestartCallback.accept(ServerState.RUNNING);
+                }
+                Window.Location.replace("/");
+            } else {
+                if (serverRestartCallback != null) {
+                    serverRestartCallback.accept(ServerState.STARTING_PLANET);
+                }
+            }
+        }, (message, throwable) -> {
+            if (serverRestartCallback != null) {
+                serverRestartCallback.accept(ServerState.RESTARTING);
+            }
+            return false;
+        })::getServerStatus, SimpleExecutorService.Type.SERVER_RESTART_WATCHDOG);
+    }
+
+    public void setServerRestartCallback(Consumer<ServerState> serverRestartCallback) {
+        this.serverRestartCallback = serverRestartCallback;
     }
 }

@@ -89,4 +89,8 @@ public interface BackendProvider {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     List<ItemTracking> itemHistory(ItemTrackingSearch itemTrackingSearch);
+
+    @POST
+    @Path("sendrestartlifecycle")
+    void sendRestartLifecycle();
 }

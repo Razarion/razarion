@@ -297,6 +297,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     public void stop() {
         try {
+            workerTrackerHandlerInstance.get().stop();
             perfmonService.stop();
             botService.killAllBots();
             planetService.stop();

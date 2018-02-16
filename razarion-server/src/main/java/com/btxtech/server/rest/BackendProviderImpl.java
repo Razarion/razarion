@@ -15,6 +15,7 @@ import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.server.user.NewUser;
 import com.btxtech.server.user.SecurityException;
 import com.btxtech.server.user.UserService;
+import com.btxtech.shared.Constants;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -155,6 +156,16 @@ public class BackendProviderImpl implements BackendProvider {
     public List<ItemTracking> itemHistory(ItemTrackingSearch itemTrackingSearch) {
         try {
             return itemTrackerAccess.read(itemTrackingSearch);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public void sendRestartLifecycle() {
+        try {
+            serverMgmt.sendRestartLifecycle();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

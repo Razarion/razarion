@@ -7,10 +7,11 @@ package com.btxtech.shared.datatypes;
 public class LifecyclePacket {
     public enum Type {
         HOLD,        // All timers, rest consumers, connection etc stop. Only SystemConnection open. Show dialog (blocking) to user (E.g. Server warm restarting)
-        SHUTDOWN,    // Everything stopped. Show dialog (blocking) to user. (E.g. other connection opened)
-        RESTART_WARM, // Warm restart
-        RESTART_COLD // Cold restart (reload)
+        RESTART,    // Everything stopped. Show dialog (blocking) to user. (E.g. other connection opened)
+        PLANET_RESTART_WARM, // Warm restart
+        PLANET_RESTART_COLD // Cold restart (reload)
     }
+
     public enum Dialog {
         PLANET_RESTART
     }

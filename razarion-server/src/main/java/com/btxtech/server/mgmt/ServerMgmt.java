@@ -14,6 +14,7 @@ import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -53,6 +54,15 @@ public class ServerMgmt {
     private ExceptionHandler exceptionHandler;
     @Inject
     private HistoryPersistence historyPersistence;
+    private boolean running;
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
 
     @SecurityCheck
     public List<OnlineInfo> loadAllOnlines() {
@@ -200,5 +210,10 @@ public class ServerMgmt {
             }
         }
         return loadBackendUserInfo(playerId);
+    }
+
+    public void sendRestartLifecycle() {
+        running = false;
+        clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.RESTART));
     }
 }

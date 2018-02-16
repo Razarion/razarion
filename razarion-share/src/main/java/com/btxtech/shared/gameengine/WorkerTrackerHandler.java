@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -29,13 +30,21 @@ public abstract class WorkerTrackerHandler {
     private SimpleExecutorService simpleExecutorService;
     private TrackingContainer trackingContainer;
     private String gameSessionUuid;
+    private SimpleScheduledFuture simpleScheduledFuture;
 
     protected abstract void sendToServer(TrackingContainer tmpTrackingContainer);
 
     public void start(String gameSessionUuid) {
         this.gameSessionUuid = gameSessionUuid;
         createTrackingContainer();
-        simpleExecutorService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(DETAILED_TRACKING_DELAY, true, this::sendEventTrackerItems, SimpleExecutorService.Type.DETAILED_TRACKING);
+    }
+
+    public void stop() {
+        if (simpleScheduledFuture != null) {
+            simpleScheduledFuture.cancel();
+            simpleScheduledFuture = null;
+        }
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {

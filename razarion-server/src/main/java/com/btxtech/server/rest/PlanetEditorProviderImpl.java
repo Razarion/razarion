@@ -77,12 +77,12 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
 
     @Override
     public void restartPlanetWarm(int planetId) {
-        restartPlanet(planetId, LifecyclePacket.Type.RESTART_WARM);
+        restartPlanet(planetId, LifecyclePacket.Type.PLANET_RESTART_WARM);
     }
 
     @Override
     public void restartPlanetCold(int planetId) {
-        restartPlanet(planetId, LifecyclePacket.Type.RESTART_COLD);
+        restartPlanet(planetId, LifecyclePacket.Type.PLANET_RESTART_COLD);
     }
 
     private void restartPlanet(int planetId, LifecyclePacket.Type type) {
