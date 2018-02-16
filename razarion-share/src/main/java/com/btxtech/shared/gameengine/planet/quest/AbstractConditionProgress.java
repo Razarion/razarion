@@ -82,4 +82,15 @@ public class AbstractConditionProgress {
     public void restore(BackupComparisionInfo backupComparisionInfo) {
         abstractComparison.restoreFromGenericComparisonValue(backupComparisionInfo);
     }
+
+    @Override
+    public String toString() {
+        return "AbstractConditionProgress{" +
+                "conditionTrigger=" + conditionTrigger +
+                ", abstractComparison=" + abstractComparison +
+                ", fulfilled=" + fulfilled +
+                ", humanPlayerId=" + humanPlayerId +
+                ", questConfig=" + questConfig +
+                '}';
+    }
 }

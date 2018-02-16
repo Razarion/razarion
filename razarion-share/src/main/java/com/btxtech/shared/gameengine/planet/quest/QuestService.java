@@ -27,6 +27,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -54,6 +55,8 @@ public class QuestService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private Instance<AbstractComparison> instance;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<HumanPlayerId, AbstractConditionProgress> progressMap = new HashMap<>();
 
@@ -288,7 +291,11 @@ public class QuestService {
         synchronized (progressMap) {
             progressMap.forEach((humanPlayerId, abstractConditionProgress) -> {
                 if (humanPlayerId.getUserId() != null) {
-                    backupComparisionInfos.add(abstractConditionProgress.generateBackupComparisionInfo());
+                    try {
+                        backupComparisionInfos.add(abstractConditionProgress.generateBackupComparisionInfo());
+                    } catch(Throwable t) {
+                        exceptionHandler.handleException("Could not backup quest " + abstractConditionProgress, t);
+                    }
                 }
             });
         }
@@ -301,16 +308,20 @@ public class QuestService {
         }
         synchronized (progressMap) {
             backupPlanetInfo.getBackupComparisionInfos().forEach(backupComparisionInfo -> {
-                AbstractConditionProgress abstractConditionProgress = progressMap.get(backupComparisionInfo.getHumanPlayerId());
-                if (abstractConditionProgress == null) {
-                    logger.warning("QuestService.restore() No AbstractConditionProgress for HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId());
-                    return;
+                try {
+                    AbstractConditionProgress abstractConditionProgress = progressMap.get(backupComparisionInfo.getHumanPlayerId());
+                    if (abstractConditionProgress == null) {
+                        logger.warning("QuestService.restore() No AbstractConditionProgress for HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId());
+                        return;
+                    }
+                    if (abstractConditionProgress.getQuestConfig().getId() != backupComparisionInfo.getQuestId()) {
+                        logger.warning("QuestService.restore() different quest. HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId() + ". Quest in backup: " + backupComparisionInfo.getQuestId() + ". Active quest: " + abstractConditionProgress.getQuestConfig());
+                        return;
+                    }
+                    abstractConditionProgress.restore(backupComparisionInfo);
+                } catch(Throwable t) {
+                    exceptionHandler.handleException("Could not restore quest " + backupComparisionInfo, t);
                 }
-                if (abstractConditionProgress.getQuestConfig().getId() != backupComparisionInfo.getQuestId()) {
-                    logger.warning("QuestService.restore() different quest. HumanPlayerId: " + backupComparisionInfo.getHumanPlayerId() + ". Quest in backup: " + backupComparisionInfo.getQuestId() + ". Active quest: " + abstractConditionProgress.getQuestConfig());
-                    return;
-                }
-                abstractConditionProgress.restore(backupComparisionInfo);
             });
         }
     }

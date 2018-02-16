@@ -89,4 +89,15 @@ public class BackupComparisionInfo {
     public Integer getRemainingMilliSeconds() {
         return remainingMilliSeconds;
     }
+
+    @Override
+    public String toString() {
+        return "BackupComparisionInfo{" +
+                "questId=" + questId +
+                ", humanPlayerId=" + humanPlayerId +
+                ", remainingCount=" + remainingCount +
+                ", remainingMilliSeconds=" + remainingMilliSeconds +
+                ", remainingItemTypes=" + remainingItemTypes +
+                '}';
+    }
 }
