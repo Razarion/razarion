@@ -93,7 +93,7 @@
         </tr>
         </thead>
         <tr *ngFor="let gameHistoryEntry of userBackendInfo.gameHistoryEntries">
-          <td>{{gameHistoryEntry.date | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+          <td>{{gameHistoryEntry.date | date:'dd.MM.yyyy HH:mm:ss.SSS'}}</td>
           <td>{{gameHistoryEntry.description}}</td>
         </tr>
       </table>
