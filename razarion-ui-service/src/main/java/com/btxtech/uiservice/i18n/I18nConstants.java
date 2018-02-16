@@ -172,6 +172,10 @@ public interface I18nConstants {
 
     String startTutorialFinished();
 
+    String questPassed();
+
+    String boxPicked();
+
     // Connection
     String connectionFailed();
 

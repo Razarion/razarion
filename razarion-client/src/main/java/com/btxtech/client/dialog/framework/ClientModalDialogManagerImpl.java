@@ -64,7 +64,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     protected void showQuestPassed(QuestDescriptionConfig questDescriptionConfig, Runnable closeListener) {
-        show("Quest bestanden", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnQuestPassed(), DialogButton.Button.CLOSE);
+        show(I18nHelper.getConstants().questPassed(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, QuestPassedDialog.class, questDescriptionConfig, (button, value) -> closeListener.run(), null, audioService.getAudioConfig().getOnQuestPassed(), DialogButton.Button.CLOSE);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
 
     @Override
     public void showBoxPicked(BoxContent boxContent) {
-        show("Box gesammelt", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, null, audioService.getAudioConfig().getOnBoxPicked(), DialogButton.Button.CLOSE);
+        show(I18nHelper.getConstants().boxPicked(), ClientModalDialogManagerImpl.Type.QUEUE_ABLE, BoxContentDialog.class, boxContent, null, null, audioService.getAudioConfig().getOnBoxPicked(), DialogButton.Button.CLOSE);
     }
 
     @Override
