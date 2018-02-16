@@ -30,10 +30,9 @@ public class CommonFilter implements Filter {
         BACKEND,
         NONE
     }
+
     private static final String FRONTEND_FILE = CommonUrl.FRONTEND_ANGULAR_HTML_FILE.toUpperCase();
     private static final String BACKEND = CommonUrl.ANGULAR_BACKEND_PATH.toUpperCase();
-    @Inject
-    private ExceptionHandler exceptionHandler;
     @Inject
     private Logger logger;
     @Inject
@@ -66,27 +65,22 @@ public class CommonFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        try {
-            HttpServletRequest servletRequest = (HttpServletRequest) request;
-            // logger.warning(servletRequest.getRequestURI() + ": " + extractAngularType(servletRequest));
-            switch (extractAngularType(servletRequest)) {
-                case FRONTEND:
-                    trackerPersistence.onPage("Frontend", servletRequest);
-                    request.getRequestDispatcher(CommonUrl.FRONTEND_ANGULAR_HTML_FILE).forward(request, response);
-                    break;
-                case BACKEND:
-                    request.getRequestDispatcher(CommonUrl.BACKEND_ANGULAR_HTML_FILE).forward(request, response);
-                    break;
-                case NONE:
-                    chain.doFilter(request, response);
-                    break;
-                default:
-                    logger.warning("CommonFilter can not handle: " + servletRequest.getServletPath());
-                    chain.doFilter(request, response);
-            }
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException(throwable);
-            throw throwable;
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        // logger.warning(servletRequest.getRequestURI() + ": " + extractAngularType(servletRequest));
+        switch (extractAngularType(servletRequest)) {
+            case FRONTEND:
+                trackerPersistence.onPage("Frontend", servletRequest);
+                request.getRequestDispatcher(CommonUrl.FRONTEND_ANGULAR_HTML_FILE).forward(request, response);
+                break;
+            case BACKEND:
+                request.getRequestDispatcher(CommonUrl.BACKEND_ANGULAR_HTML_FILE).forward(request, response);
+                break;
+            case NONE:
+                chain.doFilter(request, response);
+                break;
+            default:
+                logger.warning("CommonFilter can not handle: " + servletRequest.getServletPath());
+                chain.doFilter(request, response);
         }
     }
 
@@ -97,7 +91,7 @@ public class CommonFilter implements Filter {
 
     private AngularType extractAngularType(HttpServletRequest req) {
         String requestPath = req.getRequestURI().toUpperCase();
-        if(requestPath.startsWith(FRONTEND_FILE)) {
+        if (requestPath.startsWith(FRONTEND_FILE)) {
             return AngularType.FRONTEND;
         }
         if (requestPath.startsWith(BACKEND)) {
