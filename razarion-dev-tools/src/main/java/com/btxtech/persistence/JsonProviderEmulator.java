@@ -74,7 +74,8 @@ public class JsonProviderEmulator {
                 requestContext.getCookies().put("JSESSIONID", sessionCookie);
             }
         });
-        // target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "", false);
+        // target.proxy(FrontendProvider.class).loginUser("anton@btxtech.com", "test", false);
+        target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "test", false);
         shape3DProvider = target.proxy(Shape3DProvider.class);
         coldGameUiControlConfig = target.proxy(GameUiControlProvider.class);
         terrainShapeProvider = target.proxy(TerrainShapeProvider.class);
