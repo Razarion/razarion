@@ -3,6 +3,7 @@ import {HumanPlayerId} from "../common";
 export enum OnlineInfoType {
   NORMAL,
   ORPHAN,
+  EXCEPTION,
   UNKNOWN
 }
 

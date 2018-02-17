@@ -12,6 +12,7 @@ public class OnlineInfo {
     public enum Type {
         NORMAL,
         ORPHAN,
+        EXCEPTION,
         UNKNOWN
     }
     private Date time;

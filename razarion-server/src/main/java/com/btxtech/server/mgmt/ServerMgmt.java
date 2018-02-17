@@ -16,7 +16,6 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,6 +24,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class ServerMgmt {
-    // private Logger logger = Logger.getLogger(ServerMgmt.class.getName());
+    private Logger logger = Logger.getLogger(ServerMgmt.class.getName());
     @Inject
     private ClientSystemConnectionService clientSystemConnectionService;
     @Inject
@@ -50,8 +50,6 @@ public class ServerMgmt {
     private QuestPersistence questPersistence;
     @Inject
     private ServerUnlockService serverUnlockService;
-    @Inject
-    private ExceptionHandler exceptionHandler;
     @Inject
     private HistoryPersistence historyPersistence;
     private boolean running;
@@ -85,7 +83,8 @@ public class ServerMgmt {
                     onlineInfo.setName(clientSystemConnection.getSession().getUserContext().getName()).setHumanPlayerId(clientSystemConnection.getSession().getUserContext().getHumanPlayerId());
                 }
             } catch (Exception e) {
-                exceptionHandler.handleException(e);
+                logger.warning("ServerMgmt clientSystemConnection.getSession(): " + e.getMessage());
+                onlineInfo.setType(OnlineInfo.Type.EXCEPTION);
             }
             ClientGameConnection clientGameConnection = gameSessionUuids.remove(clientSystemConnection.getGameSessionUuid());
             if (clientGameConnection != null) {

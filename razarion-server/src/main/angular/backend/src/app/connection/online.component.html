@@ -14,7 +14,7 @@
     <td>{{ onlineInfo.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>{{ onlineInfo.duration | duration}}</td>
     <td>
-      <a routerLink="/humanplayer/{{ onlineInfo.humanPlayerId.playerId }}" target="_blank">{{ getUserState(onlineInfo)
+      <a *ngIf="onlineInfo.humanPlayerId" routerLink="/humanplayer/{{ onlineInfo.humanPlayerId.playerId }}" target="_blank">{{ getUserState(onlineInfo)
         }}</a>
     </td>
     <td>
@@ -34,6 +34,7 @@
       <div [ngSwitch]="onlineInfo.type">
         <div *ngSwitchCase="'NORMAL'"></div>
         <div *ngSwitchCase="'ORPHAN'" style="background-color: #ffb8b8">No system connection found</div>
+        <div *ngSwitchCase="'EXCEPTION'" style="background-color: #ffb8b8">Exception</div>
         <div *ngSwitchCase="'UNKNOWN'" style="background-color: #ffb8b8">No game session id</div>
         <div *ngSwitchDefault style="background-color: #ffb8b8">Unknown type: {{ onlineInfo.type}}</div>
       </div>
