@@ -1,4 +1,4 @@
-importScripts('/NativeRazarion.js');
+importScripts('/NativeRazarion.js?t=' + new Date().getTime());
 // Window and document redirection to WorkerGlobalScope
 self.$wnd = self;
 self.$doc = self;

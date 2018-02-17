@@ -41,7 +41,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     public void loadWorker(DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
         try {
-            worker = Browser.getWindow().newWorker(CommonUrl.CLIENT_WORKER_SCRIPT);
+            worker = Browser.getWindow().newWorker(CommonUrl.getWorkerScriptUrl());
             worker.setOnmessage(event -> {
                 try {
                     MessageEvent messageEvent = (MessageEvent) event;

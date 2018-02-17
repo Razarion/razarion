@@ -41,14 +41,14 @@ export class GameComponent implements OnInit {
     // Check if exits
     let scriptsElements = document.getElementsByTagName('script');
     for (let i = scriptsElements.length; i--;) {
-      if (scriptsElements[i].src == url) {
+      if (scriptsElements[i].src.startsWith(url)) {
         return;
       }
     }
     // Add
     let scriptObject = document.createElement('script');
     // scriptObject.src = 'http://localhost:8080' + url;
-    scriptObject.src = url;
+    scriptObject.src = url + '?t=' + new Date().getTime();
     scriptObject.type = 'text/javascript';
     scriptObject.charset = 'utf-8';
     document.getElementsByTagName('head')[0].appendChild(scriptObject);

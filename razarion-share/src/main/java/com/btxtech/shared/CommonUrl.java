@@ -90,6 +90,10 @@ public class CommonUrl {
         return RAZARION_URL + APPLICATION_PATH + "/" + MARKETING + "/" + FB_CLICK_TRACKING_TAGS_RECEIVER;
     }
 
+    public static String getWorkerScriptUrl() {
+        return CLIENT_WORKER_SCRIPT + "?t=" + System.currentTimeMillis();
+    }
+
     public static String getImageServiceUrlSafe(Integer id) {
         if (id != null) {
             return getImageServiceUrl(id);
