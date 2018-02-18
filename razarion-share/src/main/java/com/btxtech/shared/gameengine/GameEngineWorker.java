@@ -655,7 +655,9 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
 
     @Override
     public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
-        sendToClient(GameEngineControlPackage.Command.QUEST_PROGRESS, questProgressInfo);
+        if (questProgressInfo != null) {
+            sendToClient(GameEngineControlPackage.Command.QUEST_PROGRESS, questProgressInfo);
+        }
     }
 
     @Override
