@@ -109,7 +109,6 @@ public class QuestService {
             for (AbstractConditionProgress abstractConditionProgress : progressMap.values()) {
                 if (abstractConditionProgress.getConditionTrigger().equals(ConditionTrigger.SYNC_ITEM_POSITION)) {
                     playerBases.add(baseItemService.getPlayerBase4HumanPlayerId(abstractConditionProgress.getHumanPlayerId()));
-                    break;
                 }
             }
         }
