@@ -41,7 +41,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
                 GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData(), nativeMatrixFactory);
                 dispatch(controlPackage);
             } catch (Throwable t) {
-                exceptionHandler.handleException("Exception processing package on worker. Data: " + data, t);
+                exceptionHandler.handleException("ClientGameEngineWorker: exception processing package on worker. Data: " + data, t);
             }
         });
         sendToClient(GameEngineControlPackage.Command.LOADED);

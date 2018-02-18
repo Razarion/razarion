@@ -1,11 +1,11 @@
 package com.btxtech.client;
 
 import com.btxtech.common.WorkerMarshaller;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -43,15 +43,17 @@ public class ClientGameEngineControl extends GameEngineControl {
         try {
             worker = Browser.getWindow().newWorker(CommonUrl.getWorkerScriptUrl());
             worker.setOnmessage(event -> {
+                Object data = null;
                 try {
                     MessageEvent messageEvent = (MessageEvent) event;
-                    GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData(), nativeMatrixFactory);
+                    data = messageEvent.getData();
+                    GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(data, nativeMatrixFactory);
                     dispatch(controlPackage);
                     if (queueStatistics != null) {
                         queueStatistics.received(controlPackage.getCommand());
                     }
                 } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
+                    exceptionHandler.handleException("ClientGameEngineControl: exception processing package on client. Data: " + data, t);
                 }
             });
             worker.setOnerror(event -> handleErrors((ErrorEvent) event));
