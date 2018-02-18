@@ -62,10 +62,16 @@ public abstract class AbstractQuestServiceTest extends BaseBasicTest {
         assetQuestProgressTypeCount(expectedBotBasesInformation, questProgressInfo, expected);
     }
 
+    /**
+     *
+     * @param expectedBotBasesInformation bot
+     * @param actual actual QuestProgressInfo
+     * @param expected pair with  baseItemTypeId1, count1, baseItemTypeId1, count2 ...
+     */
     protected void assetQuestProgressTypeCount(String expectedBotBasesInformation, QuestProgressInfo actual, int... expected) {
         Assert.assertEquals(expected.length / 2, actual.getTypeCount().size());
         for (int i = 0; i < expected.length; i += 2) {
-            Assert.assertEquals(expected[i + 1], (int) actual.getTypeCount().get(expected[i]));
+            Assert.assertEquals("BaseItemTypeId: " + expected[i], expected[i + 1], (int) actual.getTypeCount().get(expected[i]));
         }
         Assert.assertNull(actual.getTime());
         Assert.assertNull(actual.getCount());

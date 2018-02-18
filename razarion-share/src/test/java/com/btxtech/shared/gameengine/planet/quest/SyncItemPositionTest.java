@@ -7,6 +7,8 @@ import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Test;
 
+import java.util.Collections;
+
 /**
  * Created by Beat
  * on 12.10.2017.
@@ -33,6 +35,7 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         // Start quest
         getQuestService().addQuestListener(createQuestListener());
         getQuestService().activateCondition(playerBaseFull.getHumanPlayerId(), GameTestContent.createNoPositionAddExistingQuest());
+        assetQuestProgressTypeCountDownload(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 3);
         // Verify tick does not trigger unfulfilled quest
         for (int i = 0; i < 100; i++) {
             getQuestService().tick();
@@ -41,9 +44,17 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         // Create 3 attacker
         for (int i = 0; i < 3; i++) {
             fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40 + 10 * i, 168), playerBaseFull);
+            assetQuestProgressTypeCountDownload(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 4 + i);
+            // TODO assetQuestProgressTypeCountGameLogicListener(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 3);
             assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         }
+        // Remove one builder
+        getBaseItemService().sellItems(Collections.singletonList(findSyncBaseItemHighestId(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID).getId()),playerBaseFull );
+        assetQuestProgressTypeCountDownload(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 5);
+        assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
+        // Build last and pass test
         fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 184), playerBaseFull);
+        fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 204), playerBaseFull);
         assertQuestPassed(playerBaseFull.getHumanPlayerId());
     }
 
