@@ -332,9 +332,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             NativeTickInfo nativeTickInfo = new NativeTickInfo();
             List<NativeSyncBaseItemTickInfo> tmp = new ArrayList<>();
             syncItemContainerService.iterateOverItems(true, true, null, syncItem -> {
-                if (syncItem instanceof SyncBaseItem) {
-                    SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
-                    tmp.add(syncBaseItem.createNativeSyncBaseItemTickInfo());
+                try {
+                    if (syncItem instanceof SyncBaseItem) {
+                        SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
+                        tmp.add(syncBaseItem.createNativeSyncBaseItemTickInfo());
+                    }
+                } catch (Throwable t) {
+                    exceptionHandler.handleException("onPostTick failed syncItem: " + syncItem, t);
                 }
                 return null;
             });

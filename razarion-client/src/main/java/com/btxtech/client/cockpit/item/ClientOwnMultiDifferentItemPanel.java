@@ -63,12 +63,12 @@ public class ClientOwnMultiDifferentItemPanel extends Composite implements OwnMu
 
     @EventHandler("leftArrowButton")
     private void leftArrowButtonClick(ClickEvent event) {
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
     }
 
     @EventHandler("rightArrowButton")
     private void rightArrowButtonClick(ClickEvent event) {
-        throw new UnsupportedOperationException();
+        // throw new UnsupportedOperationException();
     }
 
     @EventHandler("sellButton")

@@ -109,7 +109,7 @@ public class SyncItemContainer extends SyncBaseAbility {
             return;
         }
         containedItems.removeIf(contained -> {
-            if (allowedUnload(unloadPos)) {
+            if (allowedUnload()) {
                 contained.clearContained(unloadPos);
                 gameLogicService.onSyncItemUnloaded(contained);
                 return true;
@@ -154,8 +154,8 @@ public class SyncItemContainer extends SyncBaseAbility {
         }
     }
 
-    private boolean allowedUnload(DecimalPosition position) throws ItemDoesNotExistException {
-        return getSyncPhysicalArea().isInRange(getRange(), unloadPos) && terrainService.getPathingAccess().isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, position, maxContainingRadius);
+    private boolean allowedUnload() throws ItemDoesNotExistException {
+        return getSyncPhysicalArea().isInRange(getRange(), unloadPos) && terrainService.getPathingAccess().isTerrainTypeAllowed(DEFAULT_UNLOAD_TERRAIN_TYPE, unloadPos, maxContainingRadius);
     }
 
     private void setupMaxContainingRadius() {

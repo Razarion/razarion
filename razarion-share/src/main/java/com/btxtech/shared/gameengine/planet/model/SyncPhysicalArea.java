@@ -14,7 +14,6 @@ import com.btxtech.shared.nativejs.NativeMatrixDto;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -231,8 +230,17 @@ public class SyncPhysicalArea {
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        DecimalPosition oldPosition2d = position2d;
+        double oldAngle = angle;
         position2d = syncPhysicalAreaInfo.getPosition();
         angle = syncPhysicalAreaInfo.getAngle();
+        if (position2d != null) {
+            if (oldPosition2d == null || !oldPosition2d.equals(position2d) || oldAngle != angle) {
+                setupPosition3d();
+            }
+        } else {
+            position3d = null;
+        }
     }
 
     public SyncPhysicalAreaInfo getSyncPhysicalAreaInfo() {

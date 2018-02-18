@@ -565,6 +565,10 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     public void setContained(SyncBaseItem itemContainer) {
         this.containedIn = itemContainer;
         getSyncPhysicalArea().setPosition2d(null);
+        if(getSyncPhysicalArea().canMove()) {
+            getSyncPhysicalMovable().setVelocity(null);
+            getSyncPhysicalMovable().stop();
+        }
     }
 
     public void clearContained(DecimalPosition position) {

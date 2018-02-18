@@ -48,6 +48,7 @@ public class SyncBaseItemState extends SyncItemState {
     @Override
     public void update(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, NativeVertexDto interpolatableVelocity) {
         super.update(nativeSyncBaseItemTickInfo, interpolatableVelocity);
+        this.nativeSyncBaseItemTickInfo = nativeSyncBaseItemTickInfo;
 
         if (health != nativeSyncBaseItemTickInfo.health) {
             health = nativeSyncBaseItemTickInfo.health;
