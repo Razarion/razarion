@@ -27,7 +27,7 @@ public class DevToolOtherInfoPanel extends VBox implements OtherInfoPanel {
 
     @Override
     public void init(SyncItemSimpleDto otherSelection) {
-        getChildren().add(new Label("OwnInfoPanel"));
+        getChildren().add(new Label("OtherInfoPanel"));
         if (otherSelection instanceof SyncBaseItemSimpleDto) {
             BaseItemType baseItemType = itemTypeService.getBaseItemType(otherSelection.getItemTypeId());
             getChildren().add(new Label("Type: " + baseItemType.getInternalName()));
