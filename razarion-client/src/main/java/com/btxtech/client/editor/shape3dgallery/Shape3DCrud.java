@@ -96,6 +96,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     public void updateCollada(Shape3D originalShape3D, String colladaText) {
         caller.call((RemoteCallback<Shape3DComposite>) shape3DComposite -> {
             Shape3DUtils.saveTextureIds(originalShape3D, shape3DComposite.getShape3D());
+            Shape3DUtils.saveCharacterRepresentings(originalShape3D, shape3DComposite.getShape3D());
             Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3DComposite.getShape3D());
             addChangesCollada(originalShape3D.getDbId(), colladaText);
             shape3DUiService.override(shape3DComposite);

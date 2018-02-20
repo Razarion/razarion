@@ -99,6 +99,16 @@ public class Shape3DUtils {
         }
     }
 
+    public static void saveCharacterRepresentings(Shape3D source, Shape3D target) {
+        Map<String, Boolean> characterRepresentings = new HashMap<>();
+        for (VertexContainer vertexContainer : getAllVertexContainers(source)) {
+            characterRepresentings.put(vertexContainer.getMaterialId(), vertexContainer.isCharacterRepresenting());
+        }
+        for (VertexContainer vertexContainer : getAllVertexContainers(target)) {
+            vertexContainer.setCharacterRepresenting(characterRepresentings.get(vertexContainer.getMaterialId()));
+        }
+    }
+
     public static void replaceTextureId(Shape3D shape3D, String materialId, Integer newImageId) {
         boolean found = false;
         for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
