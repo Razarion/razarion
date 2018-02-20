@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.DisplayUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -25,41 +26,35 @@ import java.util.function.Consumer;
 @Templated("ImageItemWidget.html#imageItemWidget")
 public class ImageItemWidget extends Composite implements ImageUiService.ImageGalleryListener {
     // private Logger logger = Logger.getLogger(ImageItemWidget.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ImageUiService imageUiService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Image image;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label dimension;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label size;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label type;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label id;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Label internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Button galleryButton;
-    private int imageId;
+    @Inject
+    @DataField
+    private Button deleteButton;
+    private Integer imageId;
     private Consumer<Integer> imageItemWidgetListener;
 
     public void setImageId(Integer imageId, Consumer<Integer> imageItemWidgetListener) {
@@ -80,19 +75,37 @@ public class ImageItemWidget extends Composite implements ImageUiService.ImageGa
     @Override
     protected void onUnload() {
         super.onUnload();
-        imageUiService.removeListener(imageId, this);
+        if (imageId != null) {
+            imageUiService.removeListener(imageId, this);
+        }
     }
 
     @EventHandler("galleryButton")
     private void galleryButtonClicked(ClickEvent event) {
         modalDialogManager.show("Image Gallery", ClientModalDialogManagerImpl.Type.STACK_ABLE, ImageSelectorDialog.class, imageId, (button, id1) -> {
-            if (button == DialogButton.Button.APPLY) {
-                imageUiService.removeListener(imageId, this);
-                imageId = id1;
-                imageUiService.requestImage(imageId, this);
-                imageItemWidgetListener.accept(id1);
-            }
+                if (button == DialogButton.Button.APPLY) {
+                    if (imageId != null) {
+                        imageUiService.removeListener(imageId, this);
+                    }
+                    imageId = id1;
+                    imageUiService.requestImage(imageId, this);
+                    imageItemWidgetListener.accept(id1);
+                }
         }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+    }
+
+    @EventHandler("deleteButton")
+    private void deleteButtonClicked(ClickEvent event) {
+        if (imageId != null) {
+            imageUiService.removeListener(imageId, this);
+        }
+        imageItemWidgetListener.accept(null);
+        imageId = null;
+        id.setText("");
+        dimension.setText("");
+        size.setText("");
+        type.setText("");
+        internalName.setText("");
     }
 
     @Override

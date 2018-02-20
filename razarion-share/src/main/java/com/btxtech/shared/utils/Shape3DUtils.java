@@ -99,11 +99,24 @@ public class Shape3DUtils {
         }
     }
 
-    public static void replaceTextureId(Shape3D shape3D, String materialId, int newImageId) {
+    public static void replaceTextureId(Shape3D shape3D, String materialId, Integer newImageId) {
         boolean found = false;
         for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
             if (vertexContainer.getMaterialId() != null && vertexContainer.getMaterialId().equals(materialId)) {
                 vertexContainer.setTextureId(newImageId);
+                found = true;
+            }
+        }
+        if (!found) {
+            throw new IllegalArgumentException("MaterialId not found: " + materialId);
+        }
+    }
+
+    public static void updateCharacterRepresenting(Shape3D shape3D, String materialId, boolean characterRepresenting) {
+        boolean found = false;
+        for (VertexContainer vertexContainer : getAllVertexContainers(shape3D)) {
+            if (vertexContainer.getMaterialId() != null && vertexContainer.getMaterialId().equals(materialId)) {
+                vertexContainer.setCharacterRepresenting(characterRepresenting);
                 found = true;
             }
         }

@@ -5,9 +5,9 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 
 /**
  * Created by Beat
@@ -26,21 +26,22 @@ public class ModelMatrices {
     private Color bgColor;
 
     public ModelMatrices(NativeMatrix matrix) {
-        this(matrix, null, 0);
+        this(matrix, null, 0, null);
     }
 
     public ModelMatrices(NativeMatrix matrix, double progress) {
-        this(matrix, null, progress);
+        this(matrix, null, progress, null);
     }
 
-    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity) {
-        this(matrix, interpolatableVelocity, 0);
+    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, Color color) {
+        this(matrix, interpolatableVelocity, 0, color);
     }
 
-    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, double progress) {
+    public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, double progress, Color color) {
         this.matrix = matrix;
         this.interpolatableVelocity = interpolatableVelocity;
         this.progress = progress;
+        this.color = color;
     }
 
     public ModelMatrices(Matrix4 model, NativeMatrixFactory nativeMatrixFactory) {

@@ -75,7 +75,8 @@ public class JsonProviderEmulator {
             }
         });
         // target.proxy(FrontendProvider.class).loginUser("anton@btxtech.com", "test", false);
-        target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "test", false);
+        // target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "test", false);
+        target.proxy(FrontendProvider.class).loginUser("beat.keller@btxtech.com", "test", false);
         shape3DProvider = target.proxy(Shape3DProvider.class);
         coldGameUiControlConfig = target.proxy(GameUiControlProvider.class);
         terrainShapeProvider = target.proxy(TerrainShapeProvider.class);

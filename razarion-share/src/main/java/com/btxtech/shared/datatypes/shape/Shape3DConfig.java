@@ -10,6 +10,7 @@ public class Shape3DConfig {
     private int dbId;
     private String colladaString;
     private Map<String, Integer> textures;
+    private Map<String, Boolean> characterRepresentings;
     private Map<String, AnimationTrigger> animations;
 
     public int getDbId() {
@@ -36,6 +37,15 @@ public class Shape3DConfig {
 
     public Shape3DConfig setTextures(Map<String, Integer> textures) {
         this.textures = textures;
+        return this;
+    }
+
+    public Map<String, Boolean> getCharacterRepresentings() {
+        return characterRepresentings;
+    }
+
+    public Shape3DConfig setCharacterRepresentings(Map<String, Boolean> characterRepresentings) {
+        this.characterRepresentings = characterRepresentings;
         return this;
     }
 

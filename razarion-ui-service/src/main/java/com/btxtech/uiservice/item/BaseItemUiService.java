@@ -1,5 +1,6 @@
 package com.btxtech.uiservice.item;
 
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -18,6 +19,7 @@ import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.item.ItemCockpitService;
@@ -167,6 +169,7 @@ public class BaseItemUiService {
                 boolean isBuildup = nativeSyncBaseItemTickInfo.buildup >= 1.0;
                 boolean isHealthy = nativeSyncBaseItemTickInfo.health >= 1.0;
 
+
                 if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
                     tmpItemCount++;
                     usedHouseSpace += baseItemType.getConsumingHouseSpace();
@@ -197,11 +200,12 @@ public class BaseItemUiService {
                     attackAble = false;
                     buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup));
                 }
+                Color color = color4SyncBaseItem(nativeSyncBaseItemTickInfo);
                 // Alive
                 if (!isSpawning && isBuildup && isHealthy) {
-                    aliveModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                    aliveModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, color));
                     if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
-                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity, color));
                     }
                 }
                 if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
@@ -217,13 +221,13 @@ public class BaseItemUiService {
 
                 // Demolition
                 if (!isSpawning && isBuildup && !isHealthy) {
-                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.health);
+                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, nativeSyncBaseItemTickInfo.health, color);
                     demolitionModelMatrices.put(baseItemType, modelMatrices);
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                         effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
                     }
                     if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
-                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity));
+                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity, color));
                     }
                 }
 
@@ -565,6 +569,16 @@ public class BaseItemUiService {
 
     public boolean hasRadar() {
         return hasRadar;
+    }
+
+    public Color color4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
+        if (isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
+            return Colors.OWN;
+        } else if (isMyEnemy(nativeSyncBaseItemTickInfo)) {
+            return Colors.ENEMY;
+        } else {
+            return Colors.FRIEND;
+        }
     }
 
 }

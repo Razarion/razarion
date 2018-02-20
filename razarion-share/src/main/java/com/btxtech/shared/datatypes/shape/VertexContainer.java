@@ -1,11 +1,6 @@
 package com.btxtech.shared.datatypes.shape;
 
 import com.btxtech.shared.datatypes.Color;
-import com.btxtech.shared.datatypes.TextureCoordinate;
-import com.btxtech.shared.datatypes.Vertex;
-
-import javax.enterprise.context.Dependent;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -22,6 +17,7 @@ public class VertexContainer {
     private Color specular;
     private Color emission;
     private Integer textureId;
+    private boolean characterRepresenting;
 
     public String getKey() {
         return key;
@@ -76,6 +72,11 @@ public class VertexContainer {
         return this;
     }
 
+    public VertexContainer setCharacterRepresenting(boolean characterRepresenting) {
+        this.characterRepresenting = characterRepresenting;
+        return this;
+    }
+
     public Color getAmbient() {
         return ambient;
     }
@@ -116,6 +117,10 @@ public class VertexContainer {
         return verticesCount;
     }
 
+    public boolean isCharacterRepresenting() {
+        return characterRepresenting;
+    }
+
     @Override
     public String toString() {
         return "VertexContainer{" +
@@ -127,6 +132,7 @@ public class VertexContainer {
                 ", specular=" + specular +
                 ", emission=" + emission +
                 ", textureId=" + textureId +
+                ", characterRepresenting=" + characterRepresenting +
                 '}';
     }
 }

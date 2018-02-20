@@ -52,7 +52,7 @@ public class Shape3DPersistence {
         for (ColladaEntity colladaEntity : readColladaEntities()) {
             try {
                 shape3Ds.add(ColladaConverter.createShape3DBuilder(colladaEntity.getColladaString(), colladaEntity).createShape3D(colladaEntity.getId()));
-            } catch(Exception e) {
+            } catch (Exception e) {
                 exceptionHandler.handleException(e);
             }
         }
@@ -102,6 +102,9 @@ public class Shape3DPersistence {
                 imageLibraryEntityMap.put(entry.getKey(), imagePersistence.getImageLibraryEntity(entry.getValue()));
             }
             colladaEntity.setTextures(imageLibraryEntityMap);
+        }
+        if (shape3DConfig.getCharacterRepresentings() != null) {
+            colladaEntity.setCharacterRepresentings(shape3DConfig.getCharacterRepresentings());
         }
         if (shape3DConfig.getAnimations() != null) {
             Map<String, AnimationTrigger> animations = new HashMap<>();

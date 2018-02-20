@@ -24,8 +24,6 @@ public class MiniItemView extends AbstractGameCoordinates {
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
-    private ItemUiService itemUiService;
-    @Inject
     private SimpleExecutorService simpleExecutorService;
     private SimpleScheduledFuture simpleScheduledFuture;
 
@@ -42,7 +40,7 @@ public class MiniItemView extends AbstractGameCoordinates {
             if (!rectangle2D.contains(position)) {
                 continue;
             }
-            getCtx().setFillStyle(itemUiService.color4SyncBaseItem(nativeSyncBaseItemTickInfo).toHtmlColor());
+            getCtx().setFillStyle(baseItemUiService.color4SyncBaseItem(nativeSyncBaseItemTickInfo).toHtmlColor());
             getCtx().fillRect((float) position.getX(), (float) position.getY(), (float) width, (float) width);
         }
     }

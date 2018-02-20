@@ -13,9 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.utils.Shape3DUtils;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.effects.EffectVisualizationService;
-import com.btxtech.uiservice.effects.TrailService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
@@ -63,19 +61,14 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     private TerrainTypeService terrainTypeService;
     @Inject
     private TerrainObjectRenderTask terrainObjectRenderTask;
-    @Inject
-    private EffectVisualizationService effectVisualizationService;
     private Map<Integer, Shape3DConfig> changes = new HashMap<>();
 
     @Override
     public void create() {
-        caller.call(new RemoteCallback<Shape3D>() {
-            @Override
-            public void callback(Shape3D shape3D) {
-                shape3DUiService.override(shape3D);
-                fire();
-                fireSelection(shape3D.createObjectNameId());
-            }
+        caller.call((RemoteCallback<Shape3D>) shape3D -> {
+            shape3DUiService.override(shape3D);
+            fire();
+            fireSelection(shape3D.createObjectNameId());
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.create failed: " + message, throwable);
             return false;
@@ -84,14 +77,11 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
 
     @Override
     public void reload() {
-        caller.call(new RemoteCallback<List<Shape3D>>() {
-            @Override
-            public void callback(List<Shape3D> shape3Ds) {
-                changes.clear();
-                shape3DUiService.setShapes3Ds(shape3Ds);
-                fire();
-                fireChange(shape3Ds);
-            }
+        caller.call((RemoteCallback<List<Shape3D>>) shape3Ds -> {
+            changes.clear();
+            shape3DUiService.setShapes3Ds(shape3Ds);
+            fire();
+            fireChange(shape3Ds);
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
             return false;
@@ -104,28 +94,36 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
     }
 
     public void updateCollada(Shape3D originalShape3D, String colladaText) {
-        caller.call(new RemoteCallback<Shape3DComposite>() {
-            @Override
-            public void callback(Shape3DComposite shape3DComposite) {
-                Shape3DUtils.saveTextureIds(originalShape3D, shape3DComposite.getShape3D());
-                Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3DComposite.getShape3D());
-                addChangesCollada(originalShape3D.getDbId(), colladaText);
-                shape3DUiService.override(shape3DComposite);
-                fireChange(shape3DComposite.getShape3D());
-            }
+        caller.call((RemoteCallback<Shape3DComposite>) shape3DComposite -> {
+            Shape3DUtils.saveTextureIds(originalShape3D, shape3DComposite.getShape3D());
+            Shape3DUtils.saveAnimationTriggers(originalShape3D, shape3DComposite.getShape3D());
+            addChangesCollada(originalShape3D.getDbId(), colladaText);
+            shape3DUiService.override(shape3DComposite);
+            fireChange(shape3DComposite.getShape3D());
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
             return false;
         }).colladaConvert(originalShape3D.getDbId(), colladaText);
     }
 
-    public void updateTexture(Shape3D shape3D, String materialId, int imageId) {
+    public void updateTexture(Shape3D shape3D, String materialId, Integer imageId) {
         Shape3DUtils.replaceTextureId(shape3D, materialId, imageId);
         // Update changes set
         Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
         Map<String, Integer> textureMap = new HashMap<>();
         Shape3DUtils.getAllVertexContainers(shape3D).stream().filter(vertexContainer -> vertexContainer.getTextureId() != null).forEach(vertexContainer -> textureMap.put(vertexContainer.getMaterialId(), vertexContainer.getTextureId()));
         shape3DConfig.setTextures(textureMap);
+        shape3DUiService.override(shape3D);
+        fireChange(shape3D);
+    }
+
+    public void updateCharacterRepresenting(Shape3D shape3D, String materialId, boolean characterRepresenting) {
+        Shape3DUtils.updateCharacterRepresenting(shape3D, materialId, characterRepresenting);
+        // Update changes set
+        Shape3DConfig shape3DConfig = getChangedShape3DConfig(shape3D.getDbId());
+        Map<String, Boolean> characterRepresentings = new HashMap<>();
+        Shape3DUtils.getAllVertexContainers(shape3D).forEach(vertexContainer -> characterRepresentings.put(vertexContainer.getMaterialId(), vertexContainer.isCharacterRepresenting()));
+        shape3DConfig.setCharacterRepresentings(characterRepresentings);
         shape3DUiService.override(shape3D);
         fireChange(shape3D);
     }

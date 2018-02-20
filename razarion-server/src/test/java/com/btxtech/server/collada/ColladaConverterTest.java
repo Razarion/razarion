@@ -427,6 +427,11 @@ public class ColladaConverterTest {
         }
 
         @Override
+        public boolean isCharacterRepresenting(String materialId) {
+            return false; // TODO
+        }
+
+        @Override
         public AnimationTrigger getAnimationTrigger(String animationId) {
             if (animationTriggers != null) {
                 return animationTriggers.get(animationId);

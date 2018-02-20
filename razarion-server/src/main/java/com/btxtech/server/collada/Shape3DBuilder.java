@@ -55,6 +55,7 @@ public class Shape3DBuilder {
                     if (materialId != null) {
                         vertexContainer.setTextureId(colladaConverterMapper.getTextureId(materialId));
                     }
+                    vertexContainer.setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
                 }
             }
         }

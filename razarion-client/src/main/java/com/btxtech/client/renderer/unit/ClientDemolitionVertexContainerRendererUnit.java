@@ -44,6 +44,8 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
     private WebGLUniformLocation uLightingDirection;
     private WebGLUniformLocation uLightingDiffuse;
     private WebGLUniformLocation uHealth;
+    private WebGLUniformLocation characterRepresenting;
+    private WebGLUniformLocation characterRepresentingColor;
 
     @PostConstruct
     public void init() {
@@ -73,6 +75,9 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
 
         ambient = vertexContainer.getAmbient();
         diffuse = vertexContainer.getDiffuse();
+
+        characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
+        characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
     }
 
     @Override
@@ -100,6 +105,12 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
         webGlFacade.uniformMatrix4fv(modelNormMatrix, modelMatrices.getNorm());
         webGlFacade.uniform1f(uHealth, health);
+        if (modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting()) {
+            webGlFacade.uniform1b(characterRepresenting, true);
+            webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
+        } else {
+            webGlFacade.uniform1b(characterRepresenting, false);
+        }
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

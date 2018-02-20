@@ -54,15 +54,4 @@ public class ItemUiService {
             throw new IllegalArgumentException("Don't know how to handle: " + syncItem);
         }
     }
-
-    public Color color4SyncBaseItem(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo) {
-        if (baseItemUiService.isMyOwnProperty(nativeSyncBaseItemTickInfo)) {
-            return Colors.OWN;
-        } else if (baseItemUiService.isMyEnemy(nativeSyncBaseItemTickInfo)) {
-            return Colors.ENEMY;
-        } else {
-            return Colors.FRIEND;
-        }
-    }
-
 }

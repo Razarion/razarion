@@ -42,6 +42,8 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     private WebGLUniformLocation uLightingDiffuse;
     private WebGLUniformLocation uModelMatrix;
     private WebGLUniformLocation uModelNormMatrix;
+    private WebGLUniformLocation characterRepresenting;
+    private WebGLUniformLocation characterRepresentingColor;
 
     @PostConstruct
     public void init() {
@@ -56,6 +58,9 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
 
         uModelMatrix = webGlFacade.getUniformLocation(WebGlFacade.U_MODEL_MATRIX);
         uModelNormMatrix = webGlFacade.getUniformLocation("uNMMatrix");
+
+        characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
+        characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
     }
 
     @Override
@@ -95,6 +100,12 @@ public class ClientVertexContainerRendererUnit extends AbstractVertexContainerRe
     protected void draw(ModelMatrices modelMatrices) {
         webGlFacade.uniformMatrix4fv(uModelMatrix, modelMatrices.getModel());
         webGlFacade.uniformMatrix4fv(uModelNormMatrix, modelMatrices.getNorm());
+        if (modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting()) {
+            webGlFacade.uniform1b(characterRepresenting, true);
+            webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
+        } else {
+            webGlFacade.uniform1b(characterRepresenting, false);
+        }
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

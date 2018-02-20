@@ -899,7 +899,8 @@ a:active {
 .gallery-parent {
     overflow-x: hidden;
     overflow-y: scroll;
-    height: 200px;
+    height: 600px;
+    width: 1230px;
 }
 
 .gallery-child {

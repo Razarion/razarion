@@ -77,11 +77,16 @@ public class ModalDialogPanel<T> extends Composite {
             Button button = (Button) Window.getDocument().createElement("button");
             button.setTextContent(dialogButton.getText());
             button.addEventListener("click", event -> {
-                modalDialogManager.close(ModalDialogPanel.this);
-                if (listener != null) {
-                    listener.onPressed(dialogButton, applyValue);
-                }
-            }, false);
+                        try {
+                            modalDialogManager.close(ModalDialogPanel.this);
+                            if (listener != null) {
+                                listener.onPressed(dialogButton, applyValue);
+                            }
+                        } catch (Throwable t) {
+                            exceptionHandler.handleException(t);
+                        }
+                    }
+                    , false);
             buttonDiv.appendChild(button);
         }
     }

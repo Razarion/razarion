@@ -34,6 +34,10 @@ public class ColladaEntity implements ColladaConverterMapper {
     @CollectionTable(name = "COLLADA_TEXTURES")
     private Map<String, ImageLibraryEntity> textures;
     @ElementCollection
+    @CollectionTable(name = "COLLADA_CHARACTER_REPRESENTING")
+    @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private Map<String, Boolean> characterRepresentings;
+    @ElementCollection
     @CollectionTable(name = "COLLADA_ANIMATIONS")
     @MapKeyColumn(length = 180) // Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
     @Enumerated(EnumType.STRING)
@@ -62,6 +66,12 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
+    public boolean isCharacterRepresenting(String materialId) {
+        Boolean characterRepresenting = characterRepresentings.get(materialId);
+        return characterRepresenting != null && characterRepresenting;
+    }
+
+    @Override
     public AnimationTrigger getAnimationTrigger(String animationId) {
         return animations.get(animationId);
     }
@@ -69,6 +79,13 @@ public class ColladaEntity implements ColladaConverterMapper {
     public void setTextures(Map<String, ImageLibraryEntity> textures) {
         this.textures.clear();
         this.textures.putAll(textures);
+    }
+
+    public void setCharacterRepresentings(Map<String, Boolean> characterRepresentings) {
+        this.characterRepresentings.clear();
+        if (characterRepresentings != null) {
+            this.characterRepresentings.putAll(characterRepresentings);
+        }
     }
 
     public void setAnimations(Map<String, AnimationTrigger> animations) {

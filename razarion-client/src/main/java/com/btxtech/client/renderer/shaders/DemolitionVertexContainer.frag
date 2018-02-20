@@ -15,6 +15,8 @@ uniform float uHealth;
 varying vec4 vShadowCoord;
 uniform float uShadowAlpha;
 uniform sampler2D uShadowTexture;
+uniform bool characterRepresenting;
+uniform vec3 characterRepresentingColor;
 
 const float DELTA_HEALTH = 0.75;
 
@@ -30,20 +32,27 @@ float calculateShadowFactor() {
 
 void main(void) {
     vec4 textureColor = texture2D(uSampler, vTextureCoord.st);
-    if(textureColor.a < 0.5) {
+    if(!characterRepresenting && textureColor.a < 0.5) {
         discard;
     } else {
+        vec3 color;
+        if(characterRepresenting) {
+            color = mix(characterRepresentingColor, textureColor.rgb, textureColor.a);
+        } else {
+            color = textureColor.rgb;
+        }
+
         vec4 cuttingColor = texture2D(uDemolitionSampler, vTextureCoord.st);
         float healthFactor = uHealth * (DELTA_HEALTH -1.0) + 1.0 - DELTA_HEALTH;
         float demoltionTextureFactor = cuttingColor.r * -2.0 + 1.0;
         float burned = clamp(healthFactor + demoltionTextureFactor, 0.0, 1.0);
-        textureColor = clamp(textureColor - burned, 0.0, 1.0);
+        color = clamp(color - burned, 0.0, 1.0);
 
         vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightingDirection, 1.0)).xyz);
         float shadowFactor = calculateShadowFactor();
 
-        vec3 ambient = uLightingAmbient * textureColor.rgb;
-        vec3 diffuse = max(dot(vVertexNormal, -correctedLightDirection), 0.0) * uLightingDiffuse * textureColor.rgb;
+        vec3 ambient = uLightingAmbient * color;
+        vec3 diffuse = max(dot(vVertexNormal, -correctedLightDirection), 0.0) * uLightingDiffuse * color;
         gl_FragColor = vec4(ambient + diffuse * shadowFactor, 1.0);
     }
 }

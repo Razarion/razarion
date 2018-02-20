@@ -116,6 +116,12 @@ public class Shape3DPropertyPanel extends AbstractPropertyPanel<Shape3D> {
         }
     }
 
+    public void characterRepresentingChanged(TexturePanel texturePanel) {
+        if (Shape3DUtils.getAllVertexContainers(shape3D).contains(texturePanel.getValue())) {
+            shape3DCrud.updateCharacterRepresenting(shape3D, texturePanel.getValue().getMaterialId(), texturePanel.isCharacterRepresenting());
+        }
+    }
+
     public void animationPanelChanged(AnimationPanel animationPanel) {
         if (shape3D.getModelMatrixAnimations().contains(animationPanel.getValue())) {
             shape3DCrud.updateAnimation(shape3D, animationPanel.getValue().getId(), animationPanel.getNewAnimationTrigger());
