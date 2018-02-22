@@ -10,7 +10,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,25 +72,33 @@ public class PerfmonService {
     }
 
     public void onEntered(PerfmonEnum perfmonEnum) {
-        if (!perfmonEnum.isFps()) {
-            return;
+        try {
+            if (!perfmonEnum.isFps()) {
+                return;
+            }
+            if (enterTimes.containsKey(perfmonEnum)) {
+                logger.warning("PerfmonService.onEntered(): onEntered has already been called for " + perfmonEnum);
+            }
+            enterTimes.put(perfmonEnum, System.currentTimeMillis());
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        if (enterTimes.containsKey(perfmonEnum)) {
-            logger.warning("PerfmonService.onEntered(): onEntered has already been called for " + perfmonEnum);
-        }
-        enterTimes.put(perfmonEnum, System.currentTimeMillis());
     }
 
     public void onLeft(PerfmonEnum perfmonEnum) {
-        if (!perfmonEnum.isFps()) {
-            return;
+        try {
+            if (!perfmonEnum.isFps()) {
+                return;
+            }
+            Long startTime = enterTimes.remove(perfmonEnum);
+            if (startTime == null) {
+                logger.warning("PerfmonService.onLeft(): onEntered was not called before " + perfmonEnum);
+                return;
+            }
+            sampleEntries.add(new SampleEntry(perfmonEnum, startTime));
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        Long startTime = enterTimes.remove(perfmonEnum);
-        if (startTime == null) {
-            logger.warning("PerfmonService.onLeft(): onEntered was not called before " + perfmonEnum);
-            return;
-        }
-        sampleEntries.add(new SampleEntry(perfmonEnum, startTime));
     }
 
     public List<PerfmonStatistic> peekClientPerfmonStatistics() {

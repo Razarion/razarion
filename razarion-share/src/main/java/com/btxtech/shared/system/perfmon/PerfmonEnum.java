@@ -8,6 +8,7 @@ package com.btxtech.shared.system.perfmon;
 public enum PerfmonEnum {
     RENDERER(true),
     GAME_ENGINE(true),
+    CLIENT_GAME_ENGINE_UPDATE(true),
     BOT_TICKER(true),
     BOT_TIMER(true),
     DETAILED_TRACKING(true),

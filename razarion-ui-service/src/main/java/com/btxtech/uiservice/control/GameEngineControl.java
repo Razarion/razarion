@@ -31,6 +31,8 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncItemSimpleDtoUtils;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.perfmon.PerfmonEnum;
+import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.audio.AudioService;
@@ -86,6 +88,8 @@ public abstract class GameEngineControl {
     private ClientRunner clientRunner;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private PerfmonService perfmonService;
     private Consumer<Collection<PerfmonStatistic>> perfmonConsumer;
     private DeferredStartup deferredStartup;
     private Runnable stopCallback;
@@ -232,6 +236,7 @@ public abstract class GameEngineControl {
     }
 
     private void onTickUpdate(NativeTickInfo nativeTickInfo) {
+        perfmonService.onEntered(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
         try {
             baseItemUiService.updateSyncBaseItems(nativeTickInfo.updatedNativeSyncBaseItemTickInfos);
             gameUiControl.setGameInfo(nativeTickInfo);
@@ -247,6 +252,7 @@ public abstract class GameEngineControl {
             exceptionHandler.handleException(t);
         }
         sendToWorker(GameEngineControlPackage.Command.TICK_UPDATE_REQUEST);
+        perfmonService.onLeft(PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE);
     }
 
     private void onTickUpdateFailed() {
