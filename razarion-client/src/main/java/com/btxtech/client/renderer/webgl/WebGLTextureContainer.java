@@ -65,15 +65,21 @@ public class WebGLTextureContainer {
     }
 
     private void setupTexture(int imageId, ImageElement imageElement) {
-        WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
+        WebGLTexture webGLTexture = textures.get(imageId);
+        if (webGLTexture == null) {
+            webGLTexture = gameCanvas.getCtx3d().createTexture();
+            textures.put(imageId, webGLTexture);
+        }
         bindTexture(imageElement, webGLTexture);
-        textures.put(imageId, webGLTexture);
     }
 
     protected void setupTextureForBumpMap(int imageId, ImageElement imageElement) {
-        WebGLTexture webGLTexture = gameCanvas.getCtx3d().createTexture();
+        WebGLTexture webGLTexture = bumpTextures.get(imageId);
+        if (webGLTexture == null) {
+            webGLTexture = gameCanvas.getCtx3d().createTexture();
+            bumpTextures.put(imageId, webGLTexture);
+        }
         bindTextureForBumpMap(imageElement, webGLTexture);
-        bumpTextures.put(imageId, webGLTexture);
     }
 
     private void bindTexture(ImageElement imageElement, WebGLTexture webGLTexture) {

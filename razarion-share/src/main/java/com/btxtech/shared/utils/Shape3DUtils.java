@@ -105,7 +105,10 @@ public class Shape3DUtils {
             characterRepresentings.put(vertexContainer.getMaterialId(), vertexContainer.isCharacterRepresenting());
         }
         for (VertexContainer vertexContainer : getAllVertexContainers(target)) {
-            vertexContainer.setCharacterRepresenting(characterRepresentings.get(vertexContainer.getMaterialId()));
+            Boolean characterRepresenting = characterRepresentings.get(vertexContainer.getMaterialId());
+            if(characterRepresenting != null) {
+                vertexContainer.setCharacterRepresenting(characterRepresenting);
+            }
         }
     }
 

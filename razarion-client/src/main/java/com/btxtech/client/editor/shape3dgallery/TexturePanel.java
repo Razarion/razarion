@@ -1,5 +1,6 @@
 package com.btxtech.client.editor.shape3dgallery;
 
+import com.btxtech.client.editor.widgets.ColorRoWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -37,6 +38,12 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     @Inject
     @DataField
     private CheckboxInput characterRepresentingCheckbox;
+    @Inject
+    @DataField
+    private ColorRoWidget ambient;
+    @Inject
+    @DataField
+    private ColorRoWidget diffuse;
     private VertexContainer vertexContainer;
     private Integer newImageId;
     private Shape3DPropertyPanel shape3DPropertyPanel;
@@ -61,6 +68,8 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
             }
         });
         characterRepresentingCheckbox.setChecked(vertexContainer.isCharacterRepresenting());
+        ambient.init(vertexContainer.getAmbient());
+        diffuse.init(vertexContainer.getDiffuse());
     }
 
     @Override
