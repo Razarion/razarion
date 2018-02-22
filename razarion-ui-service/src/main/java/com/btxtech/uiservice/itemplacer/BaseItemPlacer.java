@@ -6,9 +6,10 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.uiservice.Colors;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ViewService;
 
 import javax.enterprise.context.Dependent;
@@ -91,7 +92,7 @@ public class BaseItemPlacer {
     public List<ModelMatrices> provideItemModelMatrices() {
         List<ModelMatrices> result = new ArrayList<>();
         for (DecimalPosition position : setupAbsolutePositions()) {
-            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ(), nativeMatrixFactory));
+            result.add(ModelMatrices.createFromPosition(position.getX(), position.getY(), this.position.getZ(), Colors.OWN, nativeMatrixFactory));
         }
         return result;
     }

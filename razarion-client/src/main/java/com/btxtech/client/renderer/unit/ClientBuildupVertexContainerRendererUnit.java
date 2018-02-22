@@ -50,6 +50,8 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     private WebGLUniformLocation uLightingDirection;
     private WebGLUniformLocation uLightingDiffuse;
     private WebGLUniformLocation progressZUniformLocation;
+    private WebGLUniformLocation characterRepresenting;
+    private WebGLUniformLocation characterRepresentingColor;
 
     @PostConstruct
     public void init() {
@@ -81,6 +83,9 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
 
         ambient = vertexContainer.getAmbient();
         diffuse = vertexContainer.getDiffuse();
+
+        characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
+        characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
     }
 
     @Override
@@ -109,6 +114,13 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
         webGlFacade.uniformMatrix4fv(modelNormMatrix, modelMatrices.getNorm());
         webGlFacade.uniform1f(progressZUniformLocation, progressZ);
+
+        if (modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting()) {
+            webGlFacade.uniform1b(characterRepresenting, true);
+            webGlFacade.uniform3fNoAlpha(characterRepresentingColor, modelMatrices.getColor());
+        } else {
+            webGlFacade.uniform1b(characterRepresenting, false);
+        }
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

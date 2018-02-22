@@ -29,8 +29,12 @@ public class ModelMatrices {
         this(matrix, null, 0, null);
     }
 
-    public ModelMatrices(NativeMatrix matrix, double progress) {
-        this(matrix, null, progress, null);
+    public ModelMatrices(NativeMatrix matrix, Color color) {
+        this(matrix, null, 0, color);
+    }
+
+    public ModelMatrices(NativeMatrix matrix, double progress, Color color) {
+        this(matrix, null, progress, color);
     }
 
     public ModelMatrices(NativeMatrix matrix, NativeVertexDto interpolatableVelocity, Color color) {
@@ -172,7 +176,7 @@ public class ModelMatrices {
     }
 
     public static ModelMatrices create4Particle(Vertex position, double scale, double progress, int particleXColorRampOffsetIndex, NativeMatrixFactory nativeMatrixFactory) {
-        ModelMatrices modelMatrices = new ModelMatrices(matrixFromPositionAndScale(position, scale, nativeMatrixFactory), progress);
+        ModelMatrices modelMatrices = new ModelMatrices(matrixFromPositionAndScale(position, scale, nativeMatrixFactory), progress, null);
         modelMatrices.progress = progress;
         modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
         return modelMatrices;
@@ -183,11 +187,11 @@ public class ModelMatrices {
     }
 
     public static ModelMatrices createFromPosition(Vertex position, NativeMatrixFactory nativeMatrixFactory) {
-        return createFromPosition(position.getX(), position.getY(), position.getZ(), nativeMatrixFactory);
+        return createFromPosition(position.getX(), position.getY(), position.getZ(), null, nativeMatrixFactory);
     }
 
-    public static ModelMatrices createFromPosition(double x, double y, double z, NativeMatrixFactory nativeMatrixFactory) {
-        return new ModelMatrices(nativeMatrixFactory.createTranslation(x, y, z));
+    public static ModelMatrices createFromPosition(double x, double y, double z, Color color, NativeMatrixFactory nativeMatrixFactory) {
+        return new ModelMatrices(nativeMatrixFactory.createTranslation(x, y, z), color);
     }
 
     public static ModelMatrices createFromPositionAndZRotation(double x, double y, double z, double zRotation, NativeMatrixFactory nativeMatrixFactory) {

@@ -16,6 +16,8 @@ uniform float progressZ;
 varying vec4 vShadowCoord;
 uniform float uShadowAlpha;
 uniform sampler2D uShadowTexture;
+uniform bool characterRepresenting;
+uniform vec3 characterRepresentingColor;
 
 float calculateShadowFactor() {
     float zMap = texture2D(uShadowTexture, vShadowCoord.st).r;
@@ -31,11 +33,19 @@ void main(void) {
     vec4 textureColor;
     if(buildupZ > progressZ) {
         textureColor = texture2D(uBuildupTextureSampler, vTextureCoord.st);
+        if(textureColor.a < 0.5) {
+            discard;
+        }
     } else {
-       textureColor = texture2D(uFinishTextureSampler, vTextureCoord.st);
-    }
-    if(textureColor.a < 0.5) {
-       discard;
+         vec4 finishedColor = texture2D(uFinishTextureSampler, vTextureCoord.st);
+         if(characterRepresenting) {
+             textureColor = mix(vec4(characterRepresentingColor, 1.0), finishedColor, finishedColor.a);
+         } else {
+             textureColor = finishedColor;
+             if(textureColor.a < 0.5) {
+                 discard;
+             }
+         }
     }
 
     vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightingDirection, 1.0)).xyz);

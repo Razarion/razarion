@@ -181,6 +181,7 @@ public class BaseItemUiService {
                 if (nativeSyncBaseItemTickInfo.contained) {
                     continue;
                 }
+                Color color = color4SyncBaseItem(nativeSyncBaseItemTickInfo);
                 NativeMatrix modelMatrix = nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.model);
                 if (viewService.getCurrentAabb() == null || !viewService.getCurrentAabb().adjoinsCircleExclusive(position2d, baseItemType.getPhysicalAreaConfig().getRadius())) {
                     // TODO move to worker
@@ -193,14 +194,13 @@ public class BaseItemUiService {
                 // Spawning
                 if (isSpawning && isBuildup) {
                     attackAble = false;
-                    spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning));
+                    spawningModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.spawning, null));
                 }
                 // Buildup
                 if (!isSpawning && !isBuildup) {
                     attackAble = false;
-                    buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup));
+                    buildupModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.buildup, color));
                 }
-                Color color = color4SyncBaseItem(nativeSyncBaseItemTickInfo);
                 // Alive
                 if (!isSpawning && isBuildup && isHealthy) {
                     aliveModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, color));
