@@ -110,7 +110,7 @@ public class BaseItemRenderTask extends AbstractRenderTask<BaseItemType> {
                     CommonRenderComposite<AbstractBuildupVertexContainerRenderUnit, VertexContainer> compositeRenderer = modelRenderer.create();
                     compositeRenderer.init(vertexContainer);
                     compositeRenderer.setRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ).setBaseItemBuildupImageId(baseItemType.getBuildupTextureId());
-                    compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ);
+                    compositeRenderer.setDepthBufferRenderUnit(AbstractBuildupVertexContainerRenderUnit.class).setMaxZ(maxZ).setBaseItemBuildupImageId(baseItemType.getBuildupTextureId());
                     compositeRenderer.setupNoAnimation(vertexContainer.getShapeTransform());
                     modelRenderer.add(RenderUnitControl.ITEMS, compositeRenderer);
                     if (fillBuffer) {

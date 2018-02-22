@@ -9,9 +9,7 @@ import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import elemental.html.WebGLRenderingContext;
@@ -32,10 +30,6 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
-    private VisualUiService visualUiService;
-    @Inject
-    private BaseItemUiService baseItemUiService;
-    @Inject
     private ClientShape3DUiService shape3DUiService;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec2Float32ArrayShaderAttribute textureCoordinate;
@@ -44,6 +38,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     private WebGLUniformLocation modelMatrix;
     private WebGLUniformLocation buildupMatrixUniformLocation;
     private WebGLUniformLocation progressZUniformLocation;
+    private WebGLUniformLocation characterRepresenting;
 
     @PostConstruct
     public void init() {
@@ -65,6 +60,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
         textureCoordinate.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
         finishTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), "uFinishTextureSampler");
         buildupTexture = webGlFacade.createWebGLTexture(buildupTextureId, "uBuildupTextureSampler");
+        characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
     }
 
     @Override
@@ -83,6 +79,7 @@ public class ClientBuildupVertexContainerDepthBufferRendererUnit extends Abstrac
     protected void draw(ModelMatrices modelMatrices, double progressZ) {
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
         webGlFacade.uniform1f(progressZUniformLocation, progressZ);
+        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting());
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

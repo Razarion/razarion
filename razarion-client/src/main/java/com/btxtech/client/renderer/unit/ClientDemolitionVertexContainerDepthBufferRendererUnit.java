@@ -34,6 +34,7 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
     private Vec2Float32ArrayShaderAttribute textureCoordinate;
     private WebGlUniformTexture webGLTexture;
     private WebGLUniformLocation modelMatrix;
+    private WebGLUniformLocation characterRepresenting;
 
     @PostConstruct
     public void init() {
@@ -52,6 +53,7 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
         positions.fillFloat32Array(shape3DUiService.getVertexFloat32Array(vertexContainer));
         textureCoordinate.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
         webGLTexture = webGlFacade.createWebGLTexture(vertexContainer.getTextureId(), WebGlFacade.U_TEXTURE);
+        characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
     }
 
     @Override
@@ -66,6 +68,8 @@ public class ClientDemolitionVertexContainerDepthBufferRendererUnit extends Abst
     @Override
     protected void draw(ModelMatrices modelMatrices, double health) {
         webGlFacade.uniformMatrix4fv(modelMatrix, modelMatrices.getModel());
+        webGlFacade.uniform1b(characterRepresenting, modelMatrices.getColor() != null && getRenderData().isCharacterRepresenting());
+
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
 
