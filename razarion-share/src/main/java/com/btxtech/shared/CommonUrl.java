@@ -57,8 +57,9 @@ public class CommonUrl {
     public static final String USER_SERVICE_PROVIDER_PATH = "userserviceprovider";
     public static final String FRONTEND_PATH = "frontend";
     public static final String SERVER_TEST_HELPER = "servertesthelper";
-    // Cookiez
+    // Cookies
     public static final String LOGIN_COOKIE_NAME = "LoginToken";
+    public static final String RAZARION_COOKIE_NAME = "RazarionToken";
 
     public static String getImageServiceUrl(int id) {
         return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + Integer.toString(id)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache

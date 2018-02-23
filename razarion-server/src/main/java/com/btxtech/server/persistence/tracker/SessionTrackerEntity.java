@@ -51,6 +51,8 @@ public class SessionTrackerEntity {
     @Lob
     @Column(length = 50000)
     private String referer;
+    @Column(length = 190)// Only 767 bytes are as key allowed in MariaDB. If character set is utf8mb4 one character uses 4 bytes
+    private String razarionCookie;
 
     public Date getTimeStamp() {
         return timeStamp;
@@ -118,6 +120,14 @@ public class SessionTrackerEntity {
 
     public SessionTracker toSessionTracker() {
         return new SessionTracker().setId(sessionId).setTime(timeStamp).setRemoteHost(remoteHost).setUserAgent(userAgent);
+    }
+
+    public String getRazarionCookie() {
+        return razarionCookie;
+    }
+
+    public void setRazarionCookie(String razarionCookie) {
+        this.razarionCookie = razarionCookie;
     }
 
     @Override

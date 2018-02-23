@@ -59,4 +59,10 @@ public class FrontendService {
         userService.handleFacebookUserLogin(fbAuthResponse);
     }
 
+    public String handleRazarionCookie(String razarionCookie) {
+        if (razarionCookie == null || razarionCookie.trim().length() == 0) {
+            return sessionHolder.getPlayerSession().getHttpSessionId();
+        }
+        return null;
+    }
 }

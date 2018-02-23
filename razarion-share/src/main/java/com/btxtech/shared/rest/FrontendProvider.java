@@ -26,7 +26,7 @@ public interface FrontendProvider {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("isloggedin")
-    FrontendLoginState isLoggedIn(@CookieParam(CommonUrl.LOGIN_COOKIE_NAME) String loginCookieValue);
+    FrontendLoginState isLoggedIn(@CookieParam(CommonUrl.LOGIN_COOKIE_NAME) String loginCookieValue, @CookieParam(CommonUrl.RAZARION_COOKIE_NAME) String razarionCookie);
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

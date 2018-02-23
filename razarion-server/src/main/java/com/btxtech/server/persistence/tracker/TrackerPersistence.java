@@ -8,6 +8,7 @@ import com.btxtech.server.user.HumanPlayerIdEntity;
 import com.btxtech.server.user.HumanPlayerIdEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.web.SessionHolder;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.datatypes.tracking.TrackingStart;
 import com.btxtech.shared.dto.GameUiControlInput;
@@ -32,11 +33,13 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
@@ -82,6 +85,7 @@ public class TrackerPersistence {
             } catch (UnknownHostException e) {
                 exceptionHandler.handleException(e);
             }
+            sessionTrackerEntity.setRazarionCookie(Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(CommonUrl.RAZARION_COOKIE_NAME)).map(Cookie::getValue).findFirst().orElse(null));
             entityManager.persist(sessionTrackerEntity);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

@@ -78,7 +78,7 @@ public class SystemConnectionTest extends ClientArquillianBaseTest {
     private WebsocketTestHelper createConnection(int i) {
         TestSessionContext testSessionContext = new TestSessionContext().setAcceptLanguage("en-Us");
         FrontendProvider frontendProvider = setupClient(FrontendProvider.class, testSessionContext);
-        Assert.assertFalse(frontendProvider.isLoggedIn("").isLoggedIn());
+        Assert.assertFalse(frontendProvider.isLoggedIn("", "").isLoggedIn());
         Assert.assertEquals(RegisterResult.OK, frontendProvider.createUnverifiedUser("xxxx" + i + "@yyyy.com", "0123456789", false));
         return new WebsocketTestHelper(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT, testSessionContext);
     }

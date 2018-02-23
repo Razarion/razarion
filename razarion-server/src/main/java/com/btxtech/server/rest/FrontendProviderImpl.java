@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 public class FrontendProviderImpl implements FrontendProvider {
     public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
     private static final int LOGIN_COOKIE_MAX_AGE = 365 * 24 * 60 * 60;
+    private static final int RAZARION_COOKIE_MAX_AGE = 10 * 365 * 24 * 60 * 60;
     @Inject
     private FrontendService frontendService;
     @Inject
@@ -49,11 +50,15 @@ public class FrontendProviderImpl implements FrontendProvider {
     private HttpServletResponse httpServletResponse;
 
     @Override
-    public FrontendLoginState isLoggedIn(String loginCookieValue) {
+    public FrontendLoginState isLoggedIn(String loginCookieValue, String razarionCookie) {
         try {
             InternalLoginState internalLoginState = frontendService.isLoggedIn(loginCookieValue);
             if (internalLoginState.getLoginCookieValue() != null) {
                 httpServletResponse.addCookie(generateLoginServletCookie(internalLoginState.getLoginCookieValue()));
+            }
+            String razarionCookieValue = frontendService.handleRazarionCookie(razarionCookie);
+            if(razarionCookieValue != null) {
+                httpServletResponse.addCookie(generateRazarionServletCookie(razarionCookieValue));
             }
             return internalLoginState.getFrontendLoginState();
         } catch (Throwable t) {
@@ -192,6 +197,15 @@ public class FrontendProviderImpl implements FrontendProvider {
         cookie.setMaxAge(LOGIN_COOKIE_MAX_AGE);
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
+        cookie.setVersion(NewCookie.DEFAULT_VERSION);
+        cookie.setPath("/");
+        return cookie;
+    }
+
+    public static javax.servlet.http.Cookie generateRazarionServletCookie(String value) {
+        javax.servlet.http.Cookie cookie = new Cookie(CommonUrl.RAZARION_COOKIE_NAME, value);
+        cookie.setMaxAge(RAZARION_COOKIE_MAX_AGE);
+        cookie.setHttpOnly(true);
         cookie.setVersion(NewCookie.DEFAULT_VERSION);
         cookie.setPath("/");
         return cookie;
