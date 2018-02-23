@@ -144,7 +144,7 @@ public interface GameTestContent {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(20).setBuildup(8).setId(ATTACKER_ITEM_TYPE_ID).setInternalName("Attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(1.0).setAngularVelocity(Math.toRadians(30)).setRadius(2).setSpeed(20.0));
-        attacker.setWeaponType(new WeaponType().setDamage(5).setRange(10).setProjectileSpeed(20.0).setReloadTime(2).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTorrentCenter(new Vertex(0, 0, 1))));
+        attacker.setWeaponType(new WeaponType().setDamage(5).setRange(10).setProjectileSpeed(20.0).setReloadTime(2).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
     }
 
@@ -152,7 +152,7 @@ public interface GameTestContent {
         BaseItemType attacker = new BaseItemType();
         attacker.setHealth(30).setBuildup(12).setId(SHIP_ATTACKER_ITEM_TYPE_ID).setInternalName("Ship attacker test");
         attacker.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.WATER).setAcceleration(0.5).setAngularVelocity(Math.toRadians(30)).setRadius(3).setSpeed(10.0));
-        attacker.setWeaponType(new WeaponType().setDamage(5).setRange(15).setProjectileSpeed(20.0).setReloadTime(2).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTorrentCenter(new Vertex(0, 0, 1))));
+        attacker.setWeaponType(new WeaponType().setDamage(5).setRange(15).setProjectileSpeed(20.0).setReloadTime(2).setTurretType(new TurretType().setAngleVelocity(Math.toRadians(40)).setMuzzlePosition(new Vertex(2, 0, 1)).setTurretCenter(new Vertex(0, 0, 1))));
         baseItemTypes.add(attacker);
     }
 

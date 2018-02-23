@@ -38,12 +38,12 @@ public class TurretTypeEntity {
     private String shape3dMaterialId;
 
     public TurretType toTurretType() {
-        return new TurretType().setAngleVelocity(angleVelocity).setTorrentCenter(torrentCenter).setMuzzlePosition(muzzlePosition).setShape3dMaterialId(shape3dMaterialId);
+        return new TurretType().setAngleVelocity(angleVelocity).setTurretCenter(torrentCenter).setMuzzlePosition(muzzlePosition).setShape3dMaterialId(shape3dMaterialId);
     }
 
     public void fromTurretType(TurretType turretType) {
         angleVelocity = turretType.getAngleVelocity();
-        torrentCenter = turretType.getTorrentCenter();
+        torrentCenter = turretType.getTurretCenter();
         muzzlePosition = turretType.getMuzzlePosition();
         shape3dMaterialId = turretType.getShape3dMaterialId();
     }

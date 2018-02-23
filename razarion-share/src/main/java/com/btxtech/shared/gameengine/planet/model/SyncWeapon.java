@@ -253,6 +253,7 @@ public class SyncWeapon extends SyncBaseAbility {
         return getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix());
     }
 
+    @Deprecated
     public NativeMatrixDto createTurretMatrix4Shape3D() {
         return nativeMatrixFactory.createNativeMatrixDtoColumnMajorArray(getSyncBaseItem().getModelMatrices().multiply(syncTurret.createMatrix4Shape3D()).toWebGlArray());
     }

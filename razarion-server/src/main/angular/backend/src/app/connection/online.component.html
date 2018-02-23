@@ -5,6 +5,7 @@
     <th>Duration</th>
     <th>User</th>
     <th>Session</th>
+    <th>Session time</th>
     <th>Multiplayer Planet</th>
     <th>Error</th>
   </tr>
@@ -21,6 +22,7 @@
       <a *ngIf="onlineInfo.sessionId" routerLink="/session/{{ onlineInfo.sessionId }}" target="_blank">{{
         onlineInfo.sessionId }}</a>
     </td>
+    <td>{{ onlineInfo.sessionTime | date:'dd.MM.yyyy HH:mm:ss'}}</td>
     <td>
       <table *ngIf="onlineInfo.multiplayerPlanet">
         <tr>
@@ -35,6 +37,7 @@
         <div *ngSwitchCase="'NORMAL'"></div>
         <div *ngSwitchCase="'ORPHAN'" style="background-color: #ffb8b8">No system connection found</div>
         <div *ngSwitchCase="'EXCEPTION'" style="background-color: #ffb8b8">Exception</div>
+        <div *ngSwitchCase="'NO_SESSION'" style="background-color: #ffb8b8">No http session</div>
         <div *ngSwitchCase="'UNKNOWN'" style="background-color: #ffb8b8">No game session id</div>
         <div *ngSwitchDefault style="background-color: #ffb8b8">Unknown type: {{ onlineInfo.type}}</div>
       </div>

@@ -42,6 +42,12 @@ public class SessionService {
         return playerSession;
     }
 
+    public boolean checkSession(String sessionId) {
+        synchronized (sessions) {
+            return sessions.containsKey(sessionId);
+        }
+    }
+
     public PlayerSession findPlayerSession(HumanPlayerId humanPlayerId) {
         synchronized (sessions) {
             for (PlayerSession playerSession : sessions.values()) {

@@ -203,9 +203,10 @@ public class BaseItemUiService {
                 }
                 // Alive
                 if (!isSpawning && isBuildup && isHealthy) {
-                    aliveModelMatrices.put(baseItemType, new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, color));
-                    if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
-                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity, color));
+                    ModelMatrices modelMatrices = new ModelMatrices(modelMatrix, nativeSyncBaseItemTickInfo.interpolatableVelocity, color);
+                    aliveModelMatrices.put(baseItemType, modelMatrices);
+                    if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
+                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
                     }
                 }
                 if (syncBaseItemSetPositionMonitor != null && viewService.getCurrentAabb() != null && attackAble && isMyEnemy(nativeSyncBaseItemTickInfo)) {
@@ -226,8 +227,8 @@ public class BaseItemUiService {
                     if (!baseItemType.getPhysicalAreaConfig().fulfilledMovable() && baseItemType.getDemolitionStepEffects() != null) {
                         effectVisualizationService.updateBuildingDemolitionEffect(nativeSyncBaseItemTickInfo, position3d, baseItemType);
                     }
-                    if (nativeSyncBaseItemTickInfo.weaponTurret != null) {
-                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(nativeMatrixFactory.createFromNativeMatrixDto(nativeSyncBaseItemTickInfo.weaponTurret), nativeSyncBaseItemTickInfo.interpolatableVelocity, color));
+                    if (baseItemType.getWeaponType() != null && baseItemType.getWeaponType().getTurretType() != null) {
+                        weaponTurretModelMatrices.put(baseItemType, new ModelMatrices(modelMatrices, nativeSyncBaseItemTickInfo.turretAngle));
                     }
                 }
 

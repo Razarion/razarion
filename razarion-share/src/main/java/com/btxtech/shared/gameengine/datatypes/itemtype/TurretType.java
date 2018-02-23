@@ -8,7 +8,7 @@ import com.btxtech.shared.datatypes.Vertex;
  */
 public class TurretType {
     private double angleVelocity;
-    private Vertex torrentCenter;
+    private Vertex turretCenter;
     private Vertex muzzlePosition;
     private String shape3dMaterialId;
 
@@ -21,12 +21,12 @@ public class TurretType {
         return this;
     }
 
-    public Vertex getTorrentCenter() {
-        return torrentCenter;
+    public Vertex getTurretCenter() {
+        return turretCenter;
     }
 
-    public TurretType setTorrentCenter(Vertex torrentCenter) {
-        this.torrentCenter = torrentCenter;
+    public TurretType setTurretCenter(Vertex turretCenter) {
+        this.turretCenter = turretCenter;
         return this;
     }
 

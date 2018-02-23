@@ -565,7 +565,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
     public void setContained(SyncBaseItem itemContainer) {
         this.containedIn = itemContainer;
         getSyncPhysicalArea().setPosition2d(null);
-        if(getSyncPhysicalArea().canMove()) {
+        if (getSyncPhysicalArea().canMove()) {
             getSyncPhysicalMovable().setVelocity(null);
             getSyncPhysicalMovable().stop();
         }
@@ -680,7 +680,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
         if (containedIn == null) {
             nativeSyncBaseItemTickInfo.model = getSyncPhysicalArea().getModelNativeMatrixDto();
             if (syncWeapon != null && syncWeapon.getSyncTurret() != null) {
-                nativeSyncBaseItemTickInfo.weaponTurret = syncWeapon.createTurretMatrix4Shape3D();
+                nativeSyncBaseItemTickInfo.turretAngle = syncWeapon.getSyncTurret().getAngle();
             }
             Vertex position3d = getSyncPhysicalArea().getPosition3d();
             nativeSyncBaseItemTickInfo.x = position3d.getX();

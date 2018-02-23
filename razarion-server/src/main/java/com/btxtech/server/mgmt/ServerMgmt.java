@@ -16,6 +16,7 @@ import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,7 +25,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class ServerMgmt {
-    private Logger logger = Logger.getLogger(ServerMgmt.class.getName());
+    // private Logger logger = Logger.getLogger(ServerMgmt.class.getName());
     @Inject
     private ClientSystemConnectionService clientSystemConnectionService;
     @Inject
@@ -52,6 +52,8 @@ public class ServerMgmt {
     private ServerUnlockService serverUnlockService;
     @Inject
     private HistoryPersistence historyPersistence;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private boolean running;
 
     public boolean isRunning() {
@@ -79,12 +81,17 @@ public class ServerMgmt {
         clientSystemConnectionService.getClientSystemConnections().forEach(clientSystemConnection -> {
             OnlineInfo onlineInfo = new OnlineInfo().setType(OnlineInfo.Type.NORMAL).setSessionId(clientSystemConnection.getHttpSessionId()).setTime(clientSystemConnection.getTime()).setDuration(clientSystemConnection.getDuration());
             try {
-                if (clientSystemConnection.getSession().getUserContext() != null) {
-                    onlineInfo.setName(clientSystemConnection.getSession().getUserContext().getName()).setHumanPlayerId(clientSystemConnection.getSession().getUserContext().getHumanPlayerId());
+                if (sessionService.checkSession(clientSystemConnection.getHttpSessionId())) {
+                    PlayerSession playerSession = sessionService.getSession(clientSystemConnection.getHttpSessionId());
+                    if (playerSession.getUserContext() != null) {
+                        onlineInfo.setName(playerSession.getUserContext().getName()).setHumanPlayerId(playerSession.getUserContext().getHumanPlayerId());
+                    }
+                    onlineInfo.setSessionTime(playerSession.getTime());
+                } else {
+                    onlineInfo.setType(OnlineInfo.Type.NO_SESSION);
                 }
             } catch (Exception e) {
-                logger.warning("ServerMgmt clientSystemConnection.getSession(): " + e.getMessage());
-                onlineInfo.setType(OnlineInfo.Type.EXCEPTION);
+                exceptionHandler.handleException(e);
             }
             ClientGameConnection clientGameConnection = gameSessionUuids.remove(clientSystemConnection.getGameSessionUuid());
             if (clientGameConnection != null) {

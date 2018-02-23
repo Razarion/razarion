@@ -4,9 +4,9 @@ import com.btxtech.shared.datatypes.shape.Element3D;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
-import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.uiservice.datatypes.ModelMatrices;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -78,7 +78,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
         modelMatrix = modelMatrix.interpolateVelocity(interpolationFactor);
 
         if (shapeTransform == null) {
-            return modelMatrix;
+            return modelMatrix.calculateFromTurretAngle();
         }
 
         if (progressAnimations == null) {
@@ -86,9 +86,9 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                 if (staticShapeTransformCache == null) {
                     staticShapeTransformCache = nativeMatrixFactory.createFromColumnMajorArray(shapeTransform.getStaticMatrix().toWebGlArray());
                 }
-                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache);
+                return modelMatrix.multiplyStaticShapeTransform(staticShapeTransformCache).calculateFromTurretAngle();
             } else {
-                return modelMatrix.multiplyShapeTransform(shapeTransform);
+                return modelMatrix.multiplyShapeTransform(shapeTransform).calculateFromTurretAngle();
             }
         } else {
             ShapeTransform shapeTransformTRS = shapeTransform.copyTRS();
@@ -108,7 +108,7 @@ public abstract class AbstractRenderComposite<U extends AbstractRenderUnit<D>, D
                         throw new IllegalArgumentException("Unknown animation trigger '" + progressAnimation.getAnimationTrigger());
                 }
             }
-            return modelMatrix.multiplyShapeTransform(shapeTransformTRS);
+            return modelMatrix.multiplyShapeTransform(shapeTransformTRS).calculateFromTurretAngle();
         }
     }
 

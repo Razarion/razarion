@@ -24,6 +24,7 @@ public class ModelMatrices {
     private double radius;
     private Color color;
     private Color bgColor;
+    private Double turretAngle;
 
     public ModelMatrices(NativeMatrix matrix) {
         this(matrix, null, 0, null);
@@ -46,6 +47,18 @@ public class ModelMatrices {
         this.interpolatableVelocity = interpolatableVelocity;
         this.progress = progress;
         this.color = color;
+    }
+
+    public ModelMatrices(ModelMatrices modelMatrices, double turretAngle) {
+        this.matrix = modelMatrices.matrix;
+        this.norm = modelMatrices.norm;
+        this.progress = modelMatrices.progress;
+        this.interpolatableVelocity = modelMatrices.interpolatableVelocity;
+        this.particleXColorRampOffsetIndex = modelMatrices.particleXColorRampOffsetIndex;
+        this.radius = modelMatrices.radius;
+        this.color = modelMatrices.color;
+        this.bgColor = modelMatrices.bgColor;
+        this.turretAngle = turretAngle;
     }
 
     public ModelMatrices(Matrix4 model, NativeMatrixFactory nativeMatrixFactory) {
@@ -114,6 +127,10 @@ public class ModelMatrices {
         return particleXColorRampOffsetIndex;
     }
 
+    public Double getTurretAngle() {
+        return turretAngle;
+    }
+
     public ModelMatrices interpolateVelocity(double factor) {
         if (interpolatableVelocity != null && factor != 0.0) {
             ModelMatrices modelMatrices = new ModelMatrices(matrix.getNativeMatrixFactory().createTranslation(interpolatableVelocity.x * factor, interpolatableVelocity.y * factor, interpolatableVelocity.z * factor).multiply(matrix));
@@ -123,6 +140,7 @@ public class ModelMatrices {
             modelMatrices.radius = radius;
             modelMatrices.color = color;
             modelMatrices.bgColor = bgColor;
+            modelMatrices.turretAngle = turretAngle;
             return modelMatrices;
         } else {
             return this;
@@ -138,6 +156,7 @@ public class ModelMatrices {
         modelMatrices.radius = radius;
         modelMatrices.color = color;
         modelMatrices.bgColor = bgColor;
+        modelMatrices.turretAngle = turretAngle;
         return modelMatrices;
     }
 
@@ -148,6 +167,34 @@ public class ModelMatrices {
         newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createXRotation(shapeTransform.getRotateX()));
         newMatrix = newMatrix.multiply(matrix.getNativeMatrixFactory().createScale(shapeTransform.getScaleX(), shapeTransform.getScaleY(), shapeTransform.getScaleZ()));
 
+        ModelMatrices modelMatrices = new ModelMatrices(newMatrix);
+        modelMatrices.progress = progress;
+        modelMatrices.interpolatableVelocity = interpolatableVelocity;
+        modelMatrices.particleXColorRampOffsetIndex = particleXColorRampOffsetIndex;
+        modelMatrices.radius = radius;
+        modelMatrices.color = color;
+        modelMatrices.bgColor = bgColor;
+        modelMatrices.turretAngle = turretAngle;
+        return modelMatrices;
+    }
+
+    public NativeMatrix getNorm() {
+        if (norm == null) {
+            NativeMatrix inverse = matrix.invert();
+            if (inverse != null) {
+                norm = inverse.transpose();
+            } else {
+                norm = matrix;
+            }
+        }
+        return norm;
+    }
+
+    public ModelMatrices calculateFromTurretAngle() {
+        if(turretAngle == null) {
+            return this;
+        }
+        NativeMatrix newMatrix = matrix.multiply(matrix.getNativeMatrixFactory().createZRotation(turretAngle));
         ModelMatrices modelMatrices = new ModelMatrices(newMatrix);
         modelMatrices.progress = progress;
         modelMatrices.interpolatableVelocity = interpolatableVelocity;
@@ -225,17 +272,5 @@ public class ModelMatrices {
     private static NativeMatrix matrixFromPositionAndScale(Vertex position, double scale, NativeMatrixFactory nativeMatrixFactory) {
         NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(position.getX(), position.getY(), position.getZ());
         return newMatrix.multiply(nativeMatrixFactory.createScale(scale, scale, scale));
-    }
-
-    public NativeMatrix getNorm() {
-        if (norm == null) {
-            NativeMatrix inverse = matrix.invert();
-            if (inverse != null) {
-                norm = inverse.transpose();
-            } else {
-                norm = matrix;
-            }
-        }
-        return norm;
     }
 }

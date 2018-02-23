@@ -17,7 +17,9 @@ public class NativeSyncBaseItemTickInfo {
     public double z;
     public NativeMatrixDto model;
     public int baseId;
+    @Deprecated
     public NativeMatrixDto weaponTurret;
+    public double turretAngle;
     public double spawning;
     public double buildup;
     public double health;

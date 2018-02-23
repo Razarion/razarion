@@ -32,7 +32,7 @@ public class TurretTypePanel extends Composite implements TakesValue<TurretType>
     @Inject
     @Bound
     @DataField
-    private VertexBox torrentCenter;
+    private VertexBox turretCenter;
     @Inject
     @Bound
     @DataField

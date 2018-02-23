@@ -5,13 +5,13 @@ import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.quest.QuestSelectionDialog;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
@@ -77,15 +77,13 @@ public class QuestSidebar extends Composite {
     private CheckboxInput questVisualizationCheckbox;
     @Inject
     @DataField
-    private org.jboss.errai.common.client.dom.Label questVisualizationLabel;
+    private Div questVisualizationDiv;
     private QuestConfig activeQuest;
 
     @PostConstruct
     public void init() {
         inGameQuestVisualizationService.setVisibleCallback(questVisualizationCheckbox::setChecked);
-        inGameQuestVisualizationService.setSuppressCallback(suppressed -> {
-            questVisualizationLabel.getStyle().setProperty("display", suppressed ? "none" : "inline");
-        });
+        inGameQuestVisualizationService.setSuppressCallback(suppressed -> questVisualizationDiv.getStyle().setProperty("display", suppressed ? "none" : "block"));
         questVisualizationCheckbox.setChecked(inGameQuestVisualizationService.isVisible());
         getElement().getStyle().setZIndex(ZIndexConstants.QUEST_SIDE_BAR);
         GwtUtils.preventContextMenu(this);

@@ -3,6 +3,7 @@ package com.btxtech.server.user;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -14,6 +15,7 @@ public class PlayerSession {
     private UserContext userContext;
     private Locale locale;
     private UnregisteredUser unregisteredUser;
+    private Date time = new Date();
 
     public PlayerSession(String httpSessionId, Locale locale) {
         this.httpSessionId = httpSessionId;
@@ -44,11 +46,16 @@ public class PlayerSession {
         this.unregisteredUser = unregisteredUser;
     }
 
+    public Date getTime() {
+        return time;
+    }
+
     @Override
     public String toString() {
         return "SessionHolder{" +
                 "id='" + httpSessionId + '\'' +
                 ", userContext=" + userContext +
+                ", time=" + time +
                 '}';
     }
 

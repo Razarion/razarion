@@ -48,9 +48,19 @@
     <div class="quest-sidebar-container">
         <div class="quest-sidebar-footer">
             <hr class="modal-dialog-hr">
-            <label for="questVisualizationCheckbox" class="quest-sidebar-footer-text" data-field="questVisualizationLabel">Visualisation</label>
-            <input id="questVisualizationCheckbox" type="checkbox" name="name" value="true" style="vertical-align: middle;">
-            <button type="button" data-field="questDialogButton">Quests</button>
+            <table>
+                <tr>
+                    <td>
+                        <div data-field="questVisualizationDiv">
+                            <label for="questVisualizationCheckbox" class="quest-sidebar-footer-text" data-field="questVisualizationLabel">Visualisation</label>
+                            <input id="questVisualizationCheckbox" type="checkbox" name="name" value="true" style="vertical-align: middle;">
+                        </div>
+                    </td>
+                    <td>
+                        <button type="button" data-field="questDialogButton">Quests</button>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

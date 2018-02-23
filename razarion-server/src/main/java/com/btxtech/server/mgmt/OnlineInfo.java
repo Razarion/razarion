@@ -13,6 +13,7 @@ public class OnlineInfo {
         NORMAL,
         ORPHAN,
         EXCEPTION,
+        NO_SESSION,
         UNKNOWN
     }
     private Date time;
@@ -20,6 +21,7 @@ public class OnlineInfo {
     private HumanPlayerId humanPlayerId;
     private String name;
     private String sessionId;
+    private Date sessionTime;
     private String multiplayerPlanet;
     private Date multiplayerDate;
     private Integer multiplayerDuration;
@@ -67,6 +69,15 @@ public class OnlineInfo {
 
     public OnlineInfo setSessionId(String sessionId) {
         this.sessionId = sessionId;
+        return this;
+    }
+
+    public Date getSessionTime() {
+        return sessionTime;
+    }
+
+    public OnlineInfo setSessionTime(Date sessionTime) {
+        this.sessionTime = sessionTime;
         return this;
     }
 
