@@ -85,7 +85,9 @@ public class TrackerPersistence {
             } catch (UnknownHostException e) {
                 exceptionHandler.handleException(e);
             }
-            sessionTrackerEntity.setRazarionCookie(Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(CommonUrl.RAZARION_COOKIE_NAME)).map(Cookie::getValue).findFirst().orElse(null));
+            if (request.getCookies() != null) {
+                sessionTrackerEntity.setRazarionCookie(Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(CommonUrl.RAZARION_COOKIE_NAME)).map(Cookie::getValue).findFirst().orElse(null));
+            }
             entityManager.persist(sessionTrackerEntity);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

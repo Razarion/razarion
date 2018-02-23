@@ -1,6 +1,5 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
@@ -10,6 +9,7 @@ import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserAccountInfo;
 import com.btxtech.shared.dto.EmailPasswordInfo;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.rest.UserServiceProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -104,7 +104,10 @@ public class UserServiceProviderImpl implements UserServiceProvider {
         try {
             UserAccountInfo userAccountInfo = userService.getUserAccountInfo();
             if (userAccountInfo.getEmail() != null) {
-                Cookie logonTokenCookie = Arrays.stream(httpServletRequest.getCookies()).filter(cookie -> cookie.getName().equals(CommonUrl.LOGIN_COOKIE_NAME)).findFirst().orElse(null);
+                Cookie logonTokenCookie = null;
+                if (httpServletRequest.getCookies() != null) {
+                    logonTokenCookie = Arrays.stream(httpServletRequest.getCookies()).filter(cookie -> cookie.getName().equals(CommonUrl.LOGIN_COOKIE_NAME)).findFirst().orElse(null);
+                }
                 userAccountInfo.setRememberMe(logonTokenCookie != null && !logonTokenCookie.getValue().trim().isEmpty());
             }
             return userAccountInfo;
