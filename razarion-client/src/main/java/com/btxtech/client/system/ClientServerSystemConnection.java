@@ -7,6 +7,8 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
 import elemental.client.Browser;
+import elemental.events.CloseEvent;
+import elemental.events.ErrorEvent;
 import elemental.events.Event;
 import elemental.events.MessageEvent;
 import elemental.html.WebSocket;
@@ -33,12 +35,22 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
     public void init() {
         webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT));
         webSocket.setOnerror(evt -> {
-            logger.severe("ClientServerSystemConnection WebSocket OnError: " + evt);
-            lifecycleService.handleServerRestart();
+            try {
+                ErrorEvent errorEvent = (ErrorEvent) evt;
+                logger.severe("ClientServerSystemConnection WebSocket OnError. Message " + errorEvent.getMessage());
+                lifecycleService.handleServerRestart();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
         });
         webSocket.setOnclose(evt -> {
-            logger.severe("ClientServerSystemConnection WebSocket Close: " + evt);
-            lifecycleService.handleServerRestart();
+            try {
+                CloseEvent closeEvent = (CloseEvent) evt;
+                logger.severe("ClientServerSystemConnection WebSocket Close. Code: " + closeEvent.getCode() + " Reason: " + closeEvent.getReason() + " WasClean: " + closeEvent.getReason());
+                lifecycleService.handleServerRestart();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
         });
         webSocket.setOnmessage(this::handleMessage);
         webSocket.setOnopen(evt -> sendGameSessionUuid());
