@@ -1,6 +1,5 @@
 package com.btxtech.gameengine;
 
-import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
@@ -30,13 +29,15 @@ public class ClientEmulator {
             aliveModelMatrices.clear();
             syncItemContainerService.iterateOverItems(false, false, null, syncItem -> {
                 if (syncItem instanceof SyncBaseItem) {
-                    throw new UnsupportedOperationException("NativeSyncBaseItemTickInfo has been introduced");
-//                    SyncBaseItemSimpleDto simpleDto = ((SyncBaseItem) syncItem).createNativeSyncBaseItemTickInfo();
-//                    // Alive
-//                    if (!simpleDto.checkSpawning() && simpleDto.checkBuildup() && simpleDto.checkHealth()) {
-//                        aliveModelMatrices.add(new ModelMatrices(simpleDto.getModel(), simpleDto.getInterpolatableVelocity(), nativeMatrixFactory));
-//                    }
-
+                    SyncBaseItem syncBaseItem = (SyncBaseItem) syncItem;
+                    // Alive
+                    if (!syncBaseItem.isSpawning() && syncBaseItem.isBuildup() && syncBaseItem.isHealthy()) {
+                        if (syncBaseItem.getSyncPhysicalArea().canMove()) {
+                            aliveModelMatrices.add(new ModelMatrices(syncBaseItem.getSyncPhysicalArea().getModelMatrices(), syncBaseItem.getSyncPhysicalMovable().setupInterpolatableVelocity(), nativeMatrixFactory));
+                        } else {
+                            aliveModelMatrices.add(new ModelMatrices(syncBaseItem.getSyncPhysicalArea().getModelMatrices(), nativeMatrixFactory));
+                        }
+                    }
                 }
                 return null;
             });

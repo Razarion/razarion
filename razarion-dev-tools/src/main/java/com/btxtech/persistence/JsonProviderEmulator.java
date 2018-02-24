@@ -53,7 +53,7 @@ public class JsonProviderEmulator {
     private TerrainShapeProvider terrainShapeProvider;
     private PlanetEditorProvider planetEditorProvider;
 
-    public JsonProviderEmulator() {
+    public void connect() {
         Client client = ClientBuilder.newClient();
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST);
         client.register((ClientResponseFilter) (requestContext, responseContext) -> {

@@ -46,6 +46,7 @@ public class RazarionEmulator {
 
     public void run() {
         try {
+            jsonProviderEmulator.connect();
             gameUiControl.setColdGameUiControlConfig(jsonProviderEmulator.readColdGameUiControlConfig());
             gameUiControl.init();
             gameEngineControl.init(gameUiControl.getColdGameUiControlConfig(), null);
