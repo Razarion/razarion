@@ -5,6 +5,7 @@ import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.TerrainShapeService;
 import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorLoad;
@@ -76,15 +77,18 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     }
 
     @Override
+    @SecurityCheck
     public void restartPlanetWarm(int planetId) {
         restartPlanet(planetId, LifecyclePacket.Type.PLANET_RESTART_WARM);
     }
 
     @Override
+    @SecurityCheck
     public void restartPlanetCold(int planetId) {
         restartPlanet(planetId, LifecyclePacket.Type.PLANET_RESTART_COLD);
     }
 
+    // Move to ServerMgmt
     private void restartPlanet(int planetId, LifecyclePacket.Type type) {
         try {
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
