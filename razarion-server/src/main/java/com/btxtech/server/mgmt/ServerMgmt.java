@@ -218,6 +218,7 @@ public class ServerMgmt {
         return loadBackendUserInfo(playerId);
     }
 
+    @SecurityCheck
     public void sendRestartLifecycle() {
         running = false;
         clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.RESTART));
