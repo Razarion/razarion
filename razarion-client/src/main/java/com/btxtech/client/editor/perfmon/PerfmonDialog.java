@@ -98,7 +98,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
                     break;
                 case GAME_ENGINE:
                     expectedFrequency = 12;
-                    expectedDuration = 0.03;
+                    expectedDuration = 0.1;
                     break;
             }
             displayCurve(y, perfmonEnum, perfmonStatistic, expectedFrequency, expectedDuration);
