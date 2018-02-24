@@ -19,11 +19,13 @@ import elemental.svg.SVGTitleElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,9 +36,8 @@ import java.util.Set;
 public class PerfmonDialog extends Composite implements ModalDialogContent<Void> {
     private static final int WIDTH = 1000;
     private static final int HEIGHT = 300;
-    private static final double MAX_AVG_FREQUENCY = 60;
-    private static final double MAX_AVG_DURATION = 0.1;
-    private static final Set<PerfmonEnum> FILTER = new HashSet<>(Arrays.asList(PerfmonEnum.RENDERER, PerfmonEnum.GAME_ENGINE, PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE));
+    private static final int BAR_WIDTH = (WIDTH / PerfmonService.COUNT) / 2;
+    private static final Set<PerfmonEnum> FILTER = new HashSet<>(Arrays.asList(PerfmonEnum.RENDERER, PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE, PerfmonEnum.GAME_ENGINE));
     // private Logger logger = Logger.getLogger(PerfmonDialog.class.getName());
     @Inject
     private PerfmonService perfmonService;
@@ -44,6 +45,13 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
     private GameEngineControl gameEngineControl;
     @DataField
     private Element svgElement = (Element) Browser.getDocument().createSVGElement();
+    private SVGSVGElement svg;
+
+    @PostConstruct
+    public void postConstruct() {
+        svg = (SVGSVGElement) svgElement;
+    }
+
 
     @Override
     public void customize(ModalDialogPanel<Void> modalDialogPanel) {
@@ -56,11 +64,8 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
     }
 
     private void display() {
-        SVGSVGElement svg = (SVGSVGElement) svgElement;
-        while (svg.hasChildNodes()) {
-            svg.removeChild(svg.getFirstChild());
-        }
         if (gameEngineControl.isStarted()) {
+            drawBar(null);
             gameEngineControl.perfmonRequest(this::drawBar);
         } else {
             drawBar(null);
@@ -68,69 +73,91 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
     }
 
     private void drawBar(Collection<PerfmonStatistic> workerPerfmonStatistics) {
-        Collection<PerfmonStatistic> allStatistics = new ArrayList<>(perfmonService.peekClientPerfmonStatistics());
+        while (svg.hasChildNodes()) {
+            svg.removeChild(svg.getFirstChild());
+        }
+        Map<PerfmonEnum, PerfmonStatistic> allStatistics = new HashMap<>();
+        perfmonService.peekClientPerfmonStatistics().forEach(perfmonStatistic -> allStatistics.put(perfmonStatistic.getPerfmonEnum(), perfmonStatistic));
         if (workerPerfmonStatistics != null) {
-            allStatistics.addAll(workerPerfmonStatistics);
+            workerPerfmonStatistics.forEach(perfmonStatistic -> allStatistics.put(perfmonStatistic.getPerfmonEnum(), perfmonStatistic));
         }
 
-        SVGSVGElement svg = (SVGSVGElement) svgElement;
-
-        int barPairWidth = WIDTH / PerfmonService.COUNT;
-        int barWidth = barPairWidth / 2;
         int y = 0;
-        for (PerfmonStatistic perfmonStatistic : allStatistics) {
-            if (!FILTER.contains(perfmonStatistic.getPerfmonEnum())) {
-                continue;
+        for (PerfmonEnum perfmonEnum : FILTER) {
+            PerfmonStatistic perfmonStatistic = allStatistics.get(perfmonEnum);
+            double expectedFrequency = 60;
+            double expectedDuration = 100;
+            switch (perfmonEnum) {
+                case RENDERER:
+                    expectedFrequency = 65;
+                    expectedDuration = 0.06;
+                    break;
+                case CLIENT_GAME_ENGINE_UPDATE:
+                    expectedFrequency = 12;
+                    expectedDuration = 0.020;
+                    break;
+                case GAME_ENGINE:
+                    expectedFrequency = 12;
+                    expectedDuration = 0.03;
+                    break;
             }
-            // Text
-            SVGTextElement descr = Browser.getDocument().createSVGTextElement();
-            descr.setTextContent(perfmonStatistic.getPerfmonEnum().toString());
-            descr.setAttribute("x", "10px");
-            descr.setAttribute("y", y + 20 + "px");
-            descr.getStyle().setProperty("fill", "rgb(142, 142, 243)");
-            descr.getStyle().setFontSize(15, CSSStyleDeclaration.Unit.PX);
-            svg.appendChild(descr);
-            // Bars
-            for (int index = 0; index < perfmonStatistic.getPerfmonStatisticEntries().size(); index++) {
-                PerfmonStatisticEntry perfmonStatisticEntry = perfmonStatistic.getPerfmonStatisticEntries().get(index);
-                // First bar is frequency
-                SVGRectElement frequencyBar = Browser.getDocument().createSVGRectElement();
-                frequencyBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, 0));
-                frequencyBar.getAnimatedWidth().getBaseVal().setValue(barWidth);
-                double frequency = perfmonStatisticEntry.getFrequency();
-                if (Double.isFinite(frequency) && !Double.isNaN(frequency)) {
-                    float heightValue = (float) (HEIGHT / 2.0 * frequency / MAX_AVG_FREQUENCY);
-                    frequencyBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
-                    frequencyBar.getAnimatedHeight().getBaseVal().setValue(heightValue);
-                    SVGTitleElement tooltip = Browser.getDocument().createSVGTitleElement();
-                    tooltip.setTextContent("[blue] Frequency: " + DisplayUtils.handleDouble2(frequency) + "hz");
-                    frequencyBar.appendChild(tooltip);
-                } else {
-                    frequencyBar.getY().getBaseVal().setValue(y + HEIGHT / 2);
-                    frequencyBar.getAnimatedHeight().getBaseVal().setValue(0);
-                }
-                frequencyBar.getStyle().setProperty("fill", "blue");
-                svg.appendChild(frequencyBar);
-                // Second bar is avg duration
-                SVGRectElement durationBar = Browser.getDocument().createSVGRectElement();
-                durationBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, barWidth));
-                durationBar.getAnimatedWidth().getBaseVal().setValue(barWidth);
-                double avgDuration = perfmonStatisticEntry.getAvgDuration();
-                if (Double.isFinite(avgDuration) && !Double.isNaN(avgDuration)) {
-                    float heightValue = (float) (HEIGHT / 2.0 * avgDuration / MAX_AVG_DURATION);
-                    durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
-                    durationBar.getAnimatedHeight().getBaseVal().setValue(heightValue);
-                    SVGTitleElement tooltip = Browser.getDocument().createSVGTitleElement();
-                    tooltip.setTextContent("[red] avg Duration: " + DisplayUtils.handleDouble3(avgDuration) + "s");
-                    durationBar.appendChild(tooltip);
-                } else {
-                    durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2);
-                    durationBar.getAnimatedHeight().getBaseVal().setValue(0);
-                }
-                durationBar.getStyle().setProperty("fill", "red");
-                svg.appendChild(durationBar);
-            }
+            displayCurve(y, perfmonEnum, perfmonStatistic, expectedFrequency, expectedDuration);
+
             y += HEIGHT / 2;
+        }
+    }
+
+    private void displayCurve(int y, PerfmonEnum perfmonEnum, PerfmonStatistic perfmonStatistic, double expectedFrequency, double expectedDuration) {
+        // Text
+        SVGTextElement descr = Browser.getDocument().createSVGTextElement();
+        descr.setTextContent(perfmonEnum.toString());
+        descr.setAttribute("x", "10px");
+        descr.setAttribute("y", y + 20 + "px");
+        descr.getStyle().setProperty("fill", "rgb(142, 142, 243)");
+        descr.getStyle().setFontSize(15, CSSStyleDeclaration.Unit.PX);
+        svg.appendChild(descr);
+        if (perfmonStatistic == null) {
+            return;
+        }
+        // Bars
+        for (int index = 0; index < perfmonStatistic.getPerfmonStatisticEntries().size(); index++) {
+            PerfmonStatisticEntry perfmonStatisticEntry = perfmonStatistic.getPerfmonStatisticEntries().get(index);
+            // First bar is frequency
+            SVGRectElement frequencyBar = Browser.getDocument().createSVGRectElement();
+            frequencyBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, 0));
+            frequencyBar.getAnimatedWidth().getBaseVal().setValue(BAR_WIDTH);
+            double frequency = perfmonStatisticEntry.getFrequency();
+            if (Double.isFinite(frequency) && !Double.isNaN(frequency)) {
+                float heightValue = (float) (HEIGHT / 2.0 * frequency / expectedFrequency);
+                frequencyBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
+                frequencyBar.getAnimatedHeight().getBaseVal().setValue(heightValue);
+                SVGTitleElement tooltip = Browser.getDocument().createSVGTitleElement();
+                tooltip.setTextContent("[blue] Frequency: " + DisplayUtils.handleDouble2(frequency) + "hz");
+                frequencyBar.appendChild(tooltip);
+            } else {
+                frequencyBar.getY().getBaseVal().setValue(y + HEIGHT / 2);
+                frequencyBar.getAnimatedHeight().getBaseVal().setValue(0);
+            }
+            frequencyBar.getStyle().setProperty("fill", "blue");
+            svg.appendChild(frequencyBar);
+            // Second bar is avg duration
+            SVGRectElement durationBar = Browser.getDocument().createSVGRectElement();
+            durationBar.getX().getBaseVal().setValue(setupX(index, perfmonStatistic, BAR_WIDTH));
+            durationBar.getAnimatedWidth().getBaseVal().setValue(BAR_WIDTH);
+            double avgDuration = perfmonStatisticEntry.getAvgDuration();
+            if (Double.isFinite(avgDuration) && !Double.isNaN(avgDuration)) {
+                float heightValue = (float) (HEIGHT / 2.0 * avgDuration / expectedDuration);
+                durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2 - heightValue);
+                durationBar.getAnimatedHeight().getBaseVal().setValue(heightValue);
+                SVGTitleElement tooltip = Browser.getDocument().createSVGTitleElement();
+                tooltip.setTextContent("[red] avg Duration: " + DisplayUtils.handleDouble3(avgDuration) + "s");
+                durationBar.appendChild(tooltip);
+            } else {
+                durationBar.getY().getBaseVal().setValue(y + HEIGHT / 2);
+                durationBar.getAnimatedHeight().getBaseVal().setValue(0);
+            }
+            durationBar.getStyle().setProperty("fill", "red");
+            svg.appendChild(durationBar);
         }
     }
 
