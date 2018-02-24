@@ -36,7 +36,7 @@ public class PerfmonDialog extends Composite implements ModalDialogContent<Void>
     private static final int HEIGHT = 300;
     private static final double MAX_AVG_FREQUENCY = 60;
     private static final double MAX_AVG_DURATION = 0.1;
-    private static final Set<PerfmonEnum> FILTER = new HashSet<>(Arrays.asList(PerfmonEnum.RENDERER, PerfmonEnum.GAME_ENGINE));
+    private static final Set<PerfmonEnum> FILTER = new HashSet<>(Arrays.asList(PerfmonEnum.RENDERER, PerfmonEnum.GAME_ENGINE, PerfmonEnum.CLIENT_GAME_ENGINE_UPDATE));
     // private Logger logger = Logger.getLogger(PerfmonDialog.class.getName());
     @Inject
     private PerfmonService perfmonService;
