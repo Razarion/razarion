@@ -3,6 +3,7 @@ package com.btxtech.gameengine.scenarios;
 import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Rectangle;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
@@ -171,11 +172,11 @@ public class ScenarioService implements QuestListener {
         factory.setFactoryType(new FactoryType().setProgress(4).setAbleToBuildIds(Arrays.asList(BUILDER_ITEM_TYPE.getId(), HARVESTER_ITEM_TYPE.getId())));
 
         ResourceItemType resource = new ResourceItemType();
-        resource.setRadius(2).setAmount(1000).setId(++itemId);
+        resource.setRadius(2).setAmount(1000).setTerrainType(TerrainType.LAND).setId(++itemId);
         RESOURCE_ITEM_TYPE = resource;
 
         ResourceItemType resourceLittle = new ResourceItemType();
-        resourceLittle.setRadius(2).setAmount(3).setId(++itemId);
+        resourceLittle.setRadius(2).setAmount(3).setTerrainType(TerrainType.LAND).setId(++itemId);
         RESOURCE_LITTLE_ITEM_TYPE = resourceLittle;
 
         InventoryItem inventoryItem = new InventoryItem();
@@ -185,6 +186,7 @@ public class ScenarioService implements QuestListener {
         BoxItemType box = new BoxItemType();
         box.setRadius(1);
         box.setId(++itemId);
+        box.setTerrainType(TerrainType.LAND);
         box.setBoxItemTypePossibilities(Collections.singletonList(new BoxItemTypePossibility().setPossibility(1.0).setInventoryItemId(INVENTORY_ITEM.getId())));
         BOX_ITEM_TYPE = box;
     }
@@ -284,6 +286,7 @@ public class ScenarioService implements QuestListener {
         currentScenario.setupTerrain(slopePositions, terrainObjectPositions);
         devToolNativeTerrainShapeAccess.setPlanetConfig(planetConfig);
         devToolNativeTerrainShapeAccess.setTerrainSlopePositions(slopePositions);
+        devToolNativeTerrainShapeAccess.setTerrainObjectPositions(terrainObjectPositions);
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
         currentScenario.setupResourceRegionConfig(resourceRegionConfigs);
         masterPlanetConfig.setResourceRegionConfigs(resourceRegionConfigs);
@@ -343,7 +346,7 @@ public class ScenarioService implements QuestListener {
     private List<SlopeSkeletonConfig> setupSlopeSkeletonConfigs() {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(1).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(3).setWidth(8);
+        slopeSkeletonConfig.setId(SLOPE_ID).setRows(2).setSegments(1).setHeight(1).setType(SlopeSkeletonConfig.Type.LAND).setVerticalSpace(3).setWidth(8).setOuterLineGameEngine(1).setInnerLineGameEngine(7);
         slopeSkeletonConfig.setSlopeNodes(new SlopeNode[][]{{new SlopeNode().setPosition(new Vertex(0, 0, 0)), new SlopeNode().setPosition(new Vertex(8, 0, 10))}});
         slopeSkeletonConfigs.add(slopeSkeletonConfig);
         return slopeSkeletonConfigs;
@@ -364,6 +367,7 @@ public class ScenarioService implements QuestListener {
     private PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(-7, -7, 14, 14)).setHouseSpace(1000).setStartRazarion(100);
+        planetConfig.setPlayGround(new Rectangle2D(-1000, -1000, 2000, 2000));
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         itemTypeLimitation.put(SIMPLE_MOVABLE_ITEM_TYPE.getId(), 1000);
         itemTypeLimitation.put(SIMPLE_FAST_ACCELERATION_MOVABLE_ITEM_TYPE.getId(), 1000);

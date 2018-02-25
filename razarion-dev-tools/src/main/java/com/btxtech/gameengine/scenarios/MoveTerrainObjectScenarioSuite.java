@@ -25,7 +25,7 @@ public class MoveTerrainObjectScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(ScenarioService.TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(10, 0)));
+                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(ScenarioService.TERRAIN_OBJECT_ID).setScale(1).setPosition(new DecimalPosition(10, 0)));
             }
         });
         addScenario(new Scenario("Not frontal") {
@@ -36,7 +36,7 @@ public class MoveTerrainObjectScenarioSuite extends ScenarioSuite {
 
             @Override
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
-                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(ScenarioService.TERRAIN_OBJECT_ID).setPosition(new DecimalPosition(10, 5)));
+                terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(ScenarioService.TERRAIN_OBJECT_ID).setScale(1).setPosition(new DecimalPosition(10, 5)));
             }
         });
     }

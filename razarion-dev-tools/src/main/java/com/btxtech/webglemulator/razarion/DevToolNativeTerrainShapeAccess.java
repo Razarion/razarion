@@ -1,6 +1,7 @@
 package com.btxtech.webglemulator.razarion;
 
 import com.btxtech.persistence.JsonProviderEmulator;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -24,12 +25,13 @@ public class DevToolNativeTerrainShapeAccess implements NativeTerrainShapeAccess
     @Inject
     private TerrainTypeService terrainTypeService;
     private List<TerrainSlopePosition> terrainSlopePositions;
+    private  List<TerrainObjectPosition> terrainObjectPositions;
     private PlanetConfig planetConfig;
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        if (terrainSlopePositions != null && planetConfig != null) {
-            TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, null);
+        if ((terrainSlopePositions != null || terrainObjectPositions != null) && planetConfig != null) {
+            TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, terrainObjectPositions);
             loadedCallback.accept(terrainShape.toNativeTerrainShape());
         } else {
             loadedCallback.accept(jsonProviderEmulator.nativeTerrainShapeServer(planetId));
@@ -38,6 +40,10 @@ public class DevToolNativeTerrainShapeAccess implements NativeTerrainShapeAccess
 
     public void setTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions) {
         this.terrainSlopePositions = terrainSlopePositions;
+    }
+
+    public void setTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
+        this.terrainObjectPositions = terrainObjectPositions;
     }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {

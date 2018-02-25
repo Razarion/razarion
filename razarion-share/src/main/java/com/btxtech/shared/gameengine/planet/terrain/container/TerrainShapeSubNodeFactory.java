@@ -150,7 +150,13 @@ public class TerrainShapeSubNodeFactory {
     }
 
     private boolean equalsHeight(Double h1, Double h2) {
-        return Objects.equals(h1, h2) || h1 == null && h2 == 0.0 || h1 == 0.0 && h2 == null;
+        if (Objects.equals(h1, h2)) {
+            return true;
+        }
+        if (h1 == null) {
+            return h2 == 0.0;
+        }
+        return h2 == null && h1 == 0.0;
     }
 
     private void setDefault(TerrainShapeSubNode[] terrainShapeSubNodes, TerrainType defaultTerrainType, Double defaultHeight) {

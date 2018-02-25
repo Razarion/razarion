@@ -41,11 +41,6 @@ public class MoveStopScenarioSuite extends ScenarioSuite {
                 createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, -10), 0, direction);
                 createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(0, 10), 0, direction);
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
         addScenario(new Scenario("Destination inside group") {
             @Override
