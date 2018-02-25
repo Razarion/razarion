@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet;
+package com.btxtech.shared.gameengine.planet.pathing;
 
 import java.util.Date;
 import java.util.logging.Logger;
@@ -7,24 +7,24 @@ import java.util.logging.Logger;
  * Created by Beat
  * on 29.09.2017.
  */
-public class PlanetServiceTracker {
-    private Logger logger = Logger.getLogger(PlanetServiceTracker.class.getName());
+public class PathingServiceTracker {
+    private Logger logger = Logger.getLogger(PathingServiceTracker.class.getName());
     private static final int TICKS_FOR_DUMP = 1000;
     private long startPeriodTimeStamp;
     private long startTimeStamp;
     private long startTickTimeStamp;
     private int tickCount = TICKS_FOR_DUMP;
     private int totalTickTime;
-    private int questServiceTime;
-    private int pathingServiceTime;
-    private int projectileServiceTime;
-    private int energyServiceTime;
-    private int baseItemServiceTime;
-    private int boxServiceTime;
-    private int afterTickListenerTime;
+    private int preparationTime;
+    private int findContactsTime;
+    private int solveVelocityTime;
+    private int implementPositionTime;
+    private int solvePositionTime;
+    private int checkDestinationTime;
+    private int finalizationTime;
     private boolean running;
 
-    public void setRunning(boolean running) {
+    public PathingServiceTracker(boolean running) {
         this.running = running;
     }
 
@@ -35,13 +35,13 @@ public class PlanetServiceTracker {
         startPeriodTimeStamp = System.currentTimeMillis();
         tickCount = 0;
         totalTickTime = 0;
-        questServiceTime = 0;
-        pathingServiceTime = 0;
-        projectileServiceTime = 0;
-        energyServiceTime = 0;
-        baseItemServiceTime = 0;
-        boxServiceTime = 0;
-        afterTickListenerTime = 0;
+        preparationTime = 0;
+        findContactsTime = 0;
+        solveVelocityTime = 0;
+        implementPositionTime = 0;
+        solvePositionTime = 0;
+        checkDestinationTime = 0;
+        finalizationTime = 0;
     }
 
     public void startTick() {
@@ -53,54 +53,54 @@ public class PlanetServiceTracker {
         tickCount++;
     }
 
-    public void afterQuestService() {
+    public void afterPreparation() {
         if (!running) {
             return;
         }
-        questServiceTime += calculateDifAndReload();
-    }
-
-    public void afterPathingService() {
-        if (!running) {
-            return;
-        }
-        pathingServiceTime += calculateDifAndReload();
-    }
-
-    public void afterProjectileService() {
-        if (!running) {
-            return;
-        }
-        projectileServiceTime += calculateDifAndReload();
-    }
-
-    public void afterEnergyService() {
-        if (!running) {
-            return;
-        }
-        energyServiceTime += calculateDifAndReload();
-    }
-
-    public void afterBaseItemService() {
-        if (!running) {
-            return;
-        }
-        baseItemServiceTime += calculateDifAndReload();
-    }
-
-    public void afterBoxService() {
-        if (!running) {
-            return;
-        }
-        boxServiceTime += calculateDifAndReload();
+        preparationTime += calculateDifAndReload();
     }
 
 
-    public void afterTickListener() {
+    public void afterFindContacts() {
         if (!running) {
             return;
         }
-        afterTickListenerTime += calculateDifAndReload();
+        findContactsTime += calculateDifAndReload();
+    }
+
+    public void afterSolveVelocity() {
+        if (!running) {
+            return;
+        }
+        solveVelocityTime += calculateDifAndReload();
+    }
+
+    public void afterImplementPosition() {
+        if (!running) {
+            return;
+        }
+        implementPositionTime += calculateDifAndReload();
+    }
+
+    public void afterSolvePosition() {
+        if (!running) {
+            return;
+        }
+        solvePositionTime += calculateDifAndReload();
+    }
+
+    public void afterCheckDestination() {
+        if (!running) {
+            return;
+        }
+       checkDestinationTime += calculateDifAndReload();
+    }
+
+    public void afterFinalization() {
+        if (!running) {
+            return;
+        }
+        finalizationTime += calculateDifAndReload();
     }
 
     public void endTick() {
@@ -125,19 +125,19 @@ public class PlanetServiceTracker {
         double periodTime = (System.currentTimeMillis() - startPeriodTimeStamp) / 1000.0;
         double ticksPerSecond = tickCount / periodTime;
         double factor = 1.0 / tickCount / 1000;
-        logger.warning("\nPlanetServiceTracker----------------------------\n" +
+        logger.warning("\nPathingServiceTracker----------------------------\n" +
                 "start time: " + new Date(startPeriodTimeStamp) + "s\n" +
                 "periodTime: " + periodTime + "s\n" +
                 "tickCount: " + tickCount + "\n" +
                 "ticksPerSecond: " + ticksPerSecond + "\n" +
                 "totalTickTime: " + totalTickTime * factor + "s\n" +
-                "questServiceTime: " + questServiceTime * factor + "s\n" +
-                "pathingServiceTime: " + pathingServiceTime * factor + "s\n" +
-                "projectileServiceTime: " + projectileServiceTime * factor + "s\n" +
-                "energyServiceTime: " + energyServiceTime * factor + "s\n" +
-                "baseItemServiceTime: " + baseItemServiceTime * factor + "s\n" +
-                "boxServiceTime: " + boxServiceTime * factor + "s\n" +
-                "afterTickListenerTime: " + afterTickListenerTime * factor + "s\n" +
+                "preparationTime: " + preparationTime * factor + "s\n" +
+                "findContactsTime: " + findContactsTime * factor + "s\n" +
+                "solveVelocityTime: " + solveVelocityTime * factor + "s\n" +
+                "implementPositionTime: " + implementPositionTime * factor + "s\n" +
+                "solvePositionTime: " + solvePositionTime * factor + "s\n" +
+                "checkDestinationTime: " + checkDestinationTime * factor + "s\n" +
+                "finalizationTime: " + finalizationTime * factor + "s\n" +
                 "-------------------------------------------------");
     }
 }

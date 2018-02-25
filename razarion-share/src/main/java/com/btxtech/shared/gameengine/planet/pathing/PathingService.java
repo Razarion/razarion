@@ -33,6 +33,7 @@ public class PathingService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
+    private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, syncItem.getSyncPhysicalArea().getTerrainType(), destination, 0);
@@ -94,7 +95,7 @@ public class PathingService {
             positions.add(pathingNodeWrapper.getCenter());
         }
         // logger.severe("Time for Pathing: " + (System.currentTimeMillis() - time) + " CloseListSize: " + aStar.getCloseListSize());
-        if(additionPathElement != null) {
+        if (additionPathElement != null) {
             positions.add(additionPathElement);
         }
         positions.add(destination);
@@ -104,15 +105,24 @@ public class PathingService {
     }
 
     public void tick() {
+        pathingServiceTracker.startTick();
         preparation();
+        pathingServiceTracker.afterPreparation();
 
         Collection<Contact> contacts = findContacts();
+        pathingServiceTracker.afterFindContacts();
         solveVelocity(contacts);
+        pathingServiceTracker.afterSolveVelocity();
         implementPosition();
+        pathingServiceTracker.afterImplementPosition();
         solvePosition();
+        pathingServiceTracker.afterSolvePosition();
         checkDestination();
+        pathingServiceTracker.afterCheckDestination();
 
         finalization();
+        pathingServiceTracker.afterFinalization();
+        pathingServiceTracker.endTick();
     }
 
     private void preparation() {
