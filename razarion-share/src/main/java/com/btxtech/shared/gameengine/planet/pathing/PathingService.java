@@ -169,7 +169,7 @@ public class PathingService {
     }
 
     private void findItemContacts(SyncBaseItem syncBaseItem, Collection<SyncPhysicalArea> alreadyAddedItems, Collection<Contact> contacts) {
-        syncItemContainerService.iterateOverItems(false, false, syncBaseItem, null, otherSyncItem -> {
+        syncItemContainerService.iterateOverItems(false, false, syncBaseItem, syncBaseItem, otherSyncItem -> {
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
 
             if (alreadyAddedItems.contains(other)) {
@@ -328,7 +328,7 @@ public class PathingService {
                 return null;
             }
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
-            if (syncPhysicalMovable.hasDestination() && syncPhysicalMovable.checkDestinationReached(syncItemContainerService)) {
+            if (syncPhysicalMovable.hasDestination() && syncPhysicalMovable.checkDestinationReached()) {
                 syncPhysicalMovable.stop();
             }
             return null;

@@ -22,13 +22,13 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
 import com.btxtech.shared.gameengine.planet.pathing.Contact;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -36,6 +36,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: beat
@@ -56,6 +57,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private GameLogicService gameLogicService;
     private final static int LOOK_AHEAD_TICKS_ITEM = 20;
     private final static int LOOK_AHEAD_TICKS_TERRAIN = 3;
+    private final static int JAMMING_COUNT = 20;
+    private final static double MAX_JAMMING_FACTOR = 0.6;
     private double lookAheadItemDistance;
     private double lookAheadTerrainDistance;
     private double acceleration; // Meter per square second
@@ -63,6 +66,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private double angularVelocity; // Rad per second
     private Path path;
     private DecimalPosition velocity;
+    private DecimalPosition desiredVelocity;
+    private DecimalPosition oldPosition;
+    private List<Double> jammingCounts = new ArrayList<>();
 
     public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle, DecimalPosition velocity) {
         super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.getFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, angle);
@@ -76,6 +82,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setupForTick() {
         if (path != null) {
+            oldPosition = getPosition2d();
             path.setupCurrentWayPoint(this);
             double distance;
             if (path.isLastWayPoint()) {
@@ -138,12 +145,14 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             double speed = Math.min(maxSpeed, desiredSpeed);
             speed = Math.max(0.0, speed);
             velocity = DecimalPosition.createVector(getAngle(), speed);
+            this.desiredVelocity = velocity;
         } else {
             stopNoDestination();
         }
     }
 
     private void stopNoDestination() {
+        desiredVelocity = null;
         if (velocity == null) {
             return;
         }
@@ -215,17 +224,18 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         return DecimalPosition.createVector(direction, desiredVelocity.magnitude());
     }
 
-    public boolean checkDestinationReached(SyncItemContainerService syncItemContainerService) {
+    public boolean checkDestinationReached() {
         // 1) Position reached directly
-        if (path.isLastWayPoint() && getPosition2d().getDistance(path.getCurrentWayPoint()) < 2.0 * PathingService.STOP_DETECTION_DISTANCE) {
+        double distance = getPosition2d().getDistance(path.getCurrentWayPoint());
+        if (distance < 2.0 * PathingService.STOP_DETECTION_DISTANCE) {
             return true;
         }
-        // 2) None moving neighbor reached destination
-        if (isDirectNeighborInDestination(syncItemContainerService, path.getCurrentWayPoint())) {
-            return true;
+        double jammingFactor = calculateJammedFactor();
+        jammingCounts.add(jammingFactor);
+        if (jammingCounts.size() > JAMMING_COUNT) {
+            jammingCounts.remove(0);
         }
-        // 3) Indirect contact via at least 2 other units to a unit which stand on the destination
-        return isIndirectNeighborInDestination(syncItemContainerService, new ArrayList<>(), path.getCurrentWayPoint());
+        return jammingCounts.size() >= JAMMING_COUNT && avgJamming() > MAX_JAMMING_FACTOR;
     }
 
     @Override
@@ -234,6 +244,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setPath(SimplePath path) {
+        jammingCounts.clear();
         this.path = instancePath.get();
         this.path.init(path);
     }
@@ -261,6 +272,19 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setVelocity(DecimalPosition velocity) {
         this.velocity = velocity;
+    }
+
+    public double calculateJammedFactor() {
+        if (oldPosition == null || desiredVelocity == null) {
+            return 0.0;
+        }
+        DecimalPosition moved = getPosition2d().sub(oldPosition);
+        DecimalPosition actualVelocity = moved.divide(PlanetService.TICK_FACTOR);
+        return 1.0 - MathHelper.clamp(actualVelocity.magnitude() / desiredVelocity.magnitude(), 0, 1.0);
+    }
+
+    public double avgJamming() {
+        return jammingCounts.stream().mapToDouble(value -> value).average().orElse(0);
     }
 
     public Contact hasContact(SyncPhysicalArea other) {
@@ -317,5 +341,4 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
         return syncPhysicalAreaInfo;
     }
-
 }

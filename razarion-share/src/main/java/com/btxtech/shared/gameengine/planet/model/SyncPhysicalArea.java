@@ -6,8 +6,6 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixDto;
@@ -16,8 +14,6 @@ import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by Beat
@@ -177,56 +173,6 @@ public class SyncPhysicalArea {
 
     public void stop() {
 
-    }
-
-    private Collection<SyncPhysicalArea> getNeighbors(SyncItemContainerService syncItemContainerService) {
-        java.util.Collection<SyncPhysicalArea> neighbors = new ArrayList<>();
-
-        syncItemContainerService.iterateOverItems(false, false, getSyncItem(), null, syncItem -> {
-            SyncPhysicalArea neighbor = syncItem.getSyncPhysicalArea();
-            if (getDistance(neighbor) > PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
-                return null;
-            }
-            neighbors.add(neighbor);
-            return null;
-        });
-        return neighbors;
-    }
-
-    boolean isDirectNeighborInDestination(SyncItemContainerService syncItemContainerService, DecimalPosition destination) {
-        for (SyncPhysicalArea neighbor : getNeighbors(syncItemContainerService)) {
-            if (neighbor.canMove() && neighbor.hasDestination()) {
-                continue;
-            }
-
-            if (neighbor.position2d.getDistance(destination) < neighbor.getRadius() + PathingService.STOP_DETECTION_NEIGHBOUR_DISTANCE) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    boolean isIndirectNeighborInDestination(SyncItemContainerService syncItemContainerService, Collection<SyncPhysicalArea> expandedUnits, DecimalPosition destination) {
-        Collection<SyncPhysicalArea> neighbors = getNeighbors(syncItemContainerService);
-        for (SyncPhysicalArea neighbor : neighbors) {
-            if (neighbor.isDirectNeighborInDestination(syncItemContainerService, destination)) {
-                return true;
-            }
-        }
-        expandedUnits.add(this);
-        int count = 0;
-        for (SyncPhysicalArea neighbor : neighbors) {
-            if (expandedUnits.contains(neighbor)) {
-                continue;
-            }
-            if (neighbor.isIndirectNeighborInDestination(syncItemContainerService, expandedUnits, destination)) {
-                count++;
-                if (count >= 2) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {

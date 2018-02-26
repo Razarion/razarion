@@ -34,11 +34,6 @@ public class PickBoxScenarioSuite extends ScenarioSuite {
             public QuestConfig setupQuest() {
                 return new QuestConfig().setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1)));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
         addScenario(new Scenario("Pick box quest north") {
             @Override

@@ -93,7 +93,7 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
                 DecimalPosition destination = new DecimalPosition(80, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, destination);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6 * x, 6 * y), 0, destination);
                     }
                 }
             }
@@ -102,6 +102,11 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
             public void setupTerrain(List<TerrainSlopePosition> slopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 25, 12, 20, 15));
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 25, -27, 20, 15));
+            }
+
+            @Override
+            public boolean isStart() {
+                return true;
             }
         });
     }

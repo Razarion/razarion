@@ -60,7 +60,7 @@ public class MoveStopScenarioSuite extends ScenarioSuite {
                 DecimalPosition direction = new DecimalPosition(50, 0);
                 for (int x = -2; x < 3; x++) {
                     for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(4 * x, 4 * y), 0, direction);
+                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6 * x, 6 * y), 0, direction);
                     }
                 }
             }
