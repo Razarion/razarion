@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 @Dependent
 public class BotItemContainer {
     private static final int KILL_ITERATION_MAXIMUM = 100;
-    // private Logger logger = Logger.getLogger(BotItemContainer.class.getName());
+    private Logger logger = Logger.getLogger(BotItemContainer.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
@@ -73,7 +73,6 @@ public class BotItemContainer {
     private ExceptionHandler exceptionHandler;
     private final HashMap<SyncBaseItem, BotSyncBaseItem> botItems = new HashMap<>();
     private Need need;
-    private Logger log = Logger.getLogger(BotItemContainer.class.getName());
     private String botName;
     private PlaceConfig realm;
     private CurrentItemBuildup currentItemBuildup = new CurrentItemBuildup();
@@ -97,7 +96,7 @@ public class BotItemContainer {
         try {
             internalKillAllItems(playerBase);
         } catch (Exception e) {
-            log.log(Level.SEVERE, "bot killAllItems failed " + botName, e);
+            logger.log(Level.SEVERE, "bot killAllItems failed " + botName, e);
         }
     }
 
@@ -174,9 +173,9 @@ public class BotItemContainer {
                 try {
                     createItem(entry.getKey(), playerBase);
                 } catch (PositionCanNotBeFoundException t) {
-                    log.warning(botName + ": " + t.getMessage());
+                    logger.warning("Can not find free place for BaseItemTypeId: " +entry.getKey().getBaseItemTypeId() + ". Bot: " +  botName + ". Exception: " + t);
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, botName, e);
+                    logger.log(Level.SEVERE, botName, e);
                 }
             }
         }
