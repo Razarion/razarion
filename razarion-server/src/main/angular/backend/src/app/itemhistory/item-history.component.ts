@@ -13,6 +13,7 @@ export class ItemHistoryComponent implements OnInit {
   itemTrackings: ItemTracking[];
   searchFromDateString: string;
   searchToDateString: string;
+  humanPlayerId: number;
   searchCount: number;
   actualCount: number = 0;
 
@@ -27,6 +28,7 @@ export class ItemHistoryComponent implements OnInit {
     let itemTrackingSearch: ItemTrackingSearch = new ItemTrackingSearch();
     itemTrackingSearch.from = new Date(this.searchFromDateString);
     itemTrackingSearch.to = new Date(this.searchToDateString);
+    itemTrackingSearch.humanPlayerId = this.humanPlayerId;
     itemTrackingSearch.count = this.searchCount;
 
     this.itemHistoryService.getItemHistory(itemTrackingSearch).then(itemTrackings => {

@@ -40,6 +40,14 @@ public class ItemTrackerAccess {
                 filter = Filters.and(filter, lte);
             }
         }
+        if(itemTrackingSearch.getHumanPlayerId() != null) {
+            Bson lte = Filters.or(Filters.eq("actorHumanPlayerId", itemTrackingSearch.getHumanPlayerId()), Filters.eq("targetHumanPlayerId", itemTrackingSearch.getHumanPlayerId()));
+            if (filter == null) {
+                filter = lte;
+            } else {
+                filter = Filters.and(filter, lte);
+            }
+        }
         FindIterable<ItemTracking> findIterable;
         if (filter != null) {
             findIterable = dbCollection.find(filter);

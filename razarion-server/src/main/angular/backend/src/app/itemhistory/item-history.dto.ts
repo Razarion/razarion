@@ -18,6 +18,7 @@ export class ItemTracking {
 export class ItemTrackingSearch {
   from: Date;
   to: Date;
+  humanPlayerId:number;
   count: number;
 }
 

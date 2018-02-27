@@ -9,6 +9,7 @@ import java.util.Date;
 public class ItemTrackingSearch {
     private Date from;
     private Date to;
+    private Integer humanPlayerId;
     private Integer count;
 
     public Date getFrom() {
@@ -26,6 +27,15 @@ public class ItemTrackingSearch {
 
     public ItemTrackingSearch setTo(Date to) {
         this.to = to;
+        return this;
+    }
+
+    public Integer getHumanPlayerId() {
+        return humanPlayerId;
+    }
+
+    public ItemTrackingSearch setHumanPlayerId(Integer humanPlayerId) {
+        this.humanPlayerId = humanPlayerId;
         return this;
     }
 
