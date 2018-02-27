@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -54,6 +55,8 @@ public class SyncItemContainerService {
     private TerrainService terrainService;
     @Inject
     private Instance<GuardingItemService> guardingItemServiceInstanceInstance;
+    @Inject
+    private Instance<BotService> botServices;
 
     public void clear() {
         items.clear();
@@ -350,13 +353,19 @@ public class SyncItemContainerService {
         return result;
     }
 
-    public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, PlaceConfig placeConfig) {
+    public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig) {
         Polygon2D polygon = placeConfig.getPolygon2D();
         if (polygon == null) {
             throw new IllegalArgumentException("To find a random place, a polygon must be set");
         }
 
-        return GeometricUtil.findFreeRandomPosition(polygon, decimalPosition -> isFree(terrainType, decimalPosition, radius));
+        return GeometricUtil.findFreeRandomPosition(polygon, decimalPosition -> {
+            if(excludeBotRealm) {
+                return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+            } else {
+                return isFree(terrainType, decimalPosition, radius);
+            }
+        });
     }
 
     private boolean isFree(TerrainType terrainType, DecimalPosition position, double radius) {

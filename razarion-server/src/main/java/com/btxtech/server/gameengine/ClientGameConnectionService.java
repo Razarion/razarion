@@ -74,6 +74,9 @@ public class ClientGameConnectionService {
     }
 
     public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
+        if(!syncBaseItem.isAlive()) {
+            return;
+        }
         SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
         sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
     }

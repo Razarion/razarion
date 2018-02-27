@@ -124,7 +124,7 @@ public class BotItemContainer {
         Collection<BotSyncBaseItem> idleAttackers = new ArrayList<>();
         synchronized (botItems) {
             for (BotSyncBaseItem botSyncBaseItem : botItems.values()) {
-                if (botSyncBaseItem.isIdle()) {
+                if (botSyncBaseItem.isIdle() && botSyncBaseItem.isAlive()) {
                     idleAttackers.add(botSyncBaseItem);
                 }
             }
@@ -211,9 +211,9 @@ public class BotItemContainer {
 
     private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
         if (placeConfig == null) {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), realm);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, realm);
         } else if (placeConfig.getPolygon2D() != null) {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), placeConfig);
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig);
         } else if (placeConfig.getPosition() != null) {
             return placeConfig.getPosition();
         } else {
@@ -224,7 +224,7 @@ public class BotItemContainer {
     private BotSyncBaseItem getFirstIdleBuilder(BaseItemType toBeBuilt) {
         synchronized (botItems) {
             for (BotSyncBaseItem botSyncBaseItem : botItems.values()) {
-                if (botSyncBaseItem.isIdle() && botSyncBaseItem.isAbleToBuild(toBeBuilt)) {
+                if (botSyncBaseItem.isIdle() && botSyncBaseItem.isAlive() && botSyncBaseItem.isAbleToBuild(toBeBuilt)) {
                     return botSyncBaseItem;
                 }
             }

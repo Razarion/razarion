@@ -178,7 +178,7 @@ public class SyncWeapon extends SyncBaseAbility {
 
     @Override
     public void fillSyncItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
-        if (target != null) {
+        if (target != null && target.isAlive()) {
             syncBaseItemInfo.setTarget(target.getId());
         }
         syncBaseItemInfo.setFollowTarget(followTarget);

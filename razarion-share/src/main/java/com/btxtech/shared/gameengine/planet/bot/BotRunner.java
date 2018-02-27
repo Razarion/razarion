@@ -145,7 +145,7 @@ public class BotRunner {
     }
 
     boolean isInRealm(DecimalPosition position) {
-        return botConfig.getRealm().checkInside(position);
+        return botConfig.getRealm() != null && botConfig.getRealm().checkInside(position);
     }
 
     void enrageOnKill(SyncBaseItem syncBaseItem, PlayerBase actor) {

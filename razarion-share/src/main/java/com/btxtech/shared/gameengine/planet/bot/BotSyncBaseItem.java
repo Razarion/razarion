@@ -137,7 +137,7 @@ public class BotSyncBaseItem {
 
     public void move(PlaceConfig region) {
         try {
-            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), region);
+            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getTerrainType(), syncBaseItem.getBaseItemType().getPhysicalAreaConfig().getRadius(), false, region);
             commandService.move(syncBaseItem, position);
             clearIdle();
         } catch (Exception e) {

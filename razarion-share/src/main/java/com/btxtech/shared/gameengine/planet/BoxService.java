@@ -226,7 +226,7 @@ public class BoxService {
     private void dropRegionBoxes(BoxRegion boxRegion) {
         BoxItemType boxItemType = itemTypeService.getBoxItemType(boxRegion.getBoxRegionConfig().getBoxItemTypeId());
         for (int i = 0; i < boxRegion.getBoxRegionConfig().getCount(); i++) {
-            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(boxItemType.getTerrainType(), boxItemType.getRadius() + boxRegion.getBoxRegionConfig().getMinDistanceToItems(), boxRegion.getBoxRegionConfig().getRegion());
+            DecimalPosition position = syncItemContainerService.getFreeRandomPosition(boxItemType.getTerrainType(), boxItemType.getRadius() + boxRegion.getBoxRegionConfig().getMinDistanceToItems(), true, boxRegion.getBoxRegionConfig().getRegion());
             dropBox(boxItemType.getId(), position, MathHelper.getRandomAngle());
         }
     }
