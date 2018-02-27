@@ -54,6 +54,39 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         AssertTerrainShape.assertTerrainShape(getClass(), "testSingleChildShape1.json", getTerrainShape());
     }
 
+    @Test
+    public void testSingleChildDriveway() {
+        List<TerrainSlopePosition> children = new ArrayList<>();
+
+        TerrainSlopePosition child = new TerrainSlopePosition();
+        child.setId(2);
+        child.setSlopeConfigId(SKELETON_CONFIG_ID_1);
+        child.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(100, 90, null), GameTestHelper.createTerrainSlopeCorner(170, 90, null),
+                GameTestHelper.createTerrainSlopeCorner(170, 130, DRIVEWAY_ID_1), GameTestHelper.createTerrainSlopeCorner(170, 200, DRIVEWAY_ID_1),
+                GameTestHelper.createTerrainSlopeCorner(170, 240, null), GameTestHelper.createTerrainSlopeCorner(100, 240, null)));
+        children.add(child);
+
+        TerrainSlopePosition parent = new TerrainSlopePosition();
+        parent.setId(1);
+        parent.setSlopeConfigId(SKELETON_CONFIG_ID_1);
+        parent.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(320, 40, null), GameTestHelper.createTerrainSlopeCorner(320, 300, null), GameTestHelper.createTerrainSlopeCorner(50, 300, null)));
+        parent.setChildren(children);
+
+        setup(parent);
+        // showDisplay();
+
+        Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSingleChildDrivewayTile1.json");
+        AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testSingleChildDrivewayTile1.json");
+        assertTerrainTile.assertEquals(terrainTiles);
+
+        // AssertShapeAccess.saveShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(240, 240), "testSingleChildDrivewayShapeHNT1.json");
+        AssertShapeAccess.assertShape(getTerrainService(), new DecimalPosition(0, 0), new DecimalPosition(240, 240), getClass(), "testSingleChildDrivewayShapeHNT1.json");
+
+        // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testSingleChildDrivewayShape1.json");
+        AssertTerrainShape.assertTerrainShape(getClass(), "testSingleChildDrivewayShape1.json", getTerrainShape());
+    }
+
     private void setup(TerrainSlopePosition terrainSlopePosition) {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();

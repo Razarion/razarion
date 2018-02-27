@@ -23,9 +23,9 @@ public class MoveTest extends BaseBasicTest {
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
         getCommandService().move(builder, new DecimalPosition(152, 32));
         tickPlanetServiceBaseServiceActive();
+        // TODO this test fails. That's bad. Has maybe something to do with in sight only one beam in the middle
         TestHelper.assertDecimalPosition(null, new DecimalPosition(152, 32), builder.getSyncPhysicalArea().getPosition2d(), 0.5);
         TestHelper.assertDecimalPosition(null, new DecimalPosition(0, 0), builder.getSyncPhysicalMovable().getVelocity(), 1);
-        // showDisplay();
     }
 
 }

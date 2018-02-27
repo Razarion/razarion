@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  * on 25.09.2017.
  */
 public class WeldTerrainServiceTestBase extends WeldBaseTest {
+    public static int DRIVEWAY_ID_1 = 1;
 
     protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
@@ -43,7 +44,7 @@ public class WeldTerrainServiceTestBase extends WeldBaseTest {
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();
-        drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(20)));
+        drivewayConfigs.add(new DrivewayConfig().setId(DRIVEWAY_ID_1).setAngle(Math.toRadians(20)));
         staticGameConfig.setDrivewayConfigs(drivewayConfigs);
         if (planetConfig == null) {
             planetConfig = GameTestContent.setupPlanetConfig();
