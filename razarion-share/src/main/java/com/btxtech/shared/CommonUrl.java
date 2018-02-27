@@ -66,7 +66,7 @@ public class CommonUrl {
     }
 
     public static String getMiniMapPlanetUrl(int planetId) {
-        return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + PLANET_MINI_MAP_PATH + "/" + Integer.toString(planetId)/* + "?t=" + System.currentTimeMillis()*/; // TODO image cache
+        return APPLICATION_PATH + "/" + IMAGE_SERVICE_PATH + "/" + PLANET_MINI_MAP_PATH + "/" + Integer.toString(planetId) + "?t=" + System.currentTimeMillis();
     }
 
     public static String getSimpleLoggingUrl() {
