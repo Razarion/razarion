@@ -32,7 +32,10 @@ import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
+import com.btxtech.shared.gameengine.planet.pathing.PathingServiceUpdateListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,7 +44,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -49,7 +54,7 @@ import java.util.logging.Logger;
  * 18.04.2017.
  */
 @ApplicationScoped
-public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider {
+public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PathingServiceUpdateListener {
     private Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
@@ -87,13 +92,19 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private ExceptionHandler exceptionHandler;
     @Inject
     private ItemTrackerPersistence itemTrackerPersistence;
+    @Inject
+    private PathingService pathingService;
+    @Inject
+    private PathingChangesDisruptor pathingChangesDisruptor;
     private final Object reloadLook = new Object();
+    private Set<SyncBaseItem> changedPathings = new HashSet<>();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         PlanetConfig planetConfig = serverGameEnginePersistence.readPlanetConfig();
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
         terrainShapeService.start();
+        pathingService.setPathingServiceUpdateListener(this);
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null, () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
@@ -103,7 +114,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
             botService.startBots(serverGameEnginePersistence.readBotConfigs());
-            //planetService.enableTracking(true);
+            planetService.enableTracking(false);
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
         if (activateQuests) {
             activateQuests(finaBackupPlanetInfo);
@@ -402,5 +413,17 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
         }
         return userService.getUserContextTransactional(playerBaseInfo.getHumanPlayerId()).getName();
+    }
+
+    @Override
+    public void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable) {
+        changedPathings.add((SyncBaseItem) syncPhysicalMovable.getSyncItem());
+    }
+
+    @Override
+    public void onPathingTickFinished() {
+        Set<SyncBaseItem> tmp = changedPathings;
+        changedPathings = new HashSet<>();
+        pathingChangesDisruptor.onChanges(tmp);
     }
 }

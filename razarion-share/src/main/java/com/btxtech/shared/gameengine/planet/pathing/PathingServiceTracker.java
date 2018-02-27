@@ -22,6 +22,7 @@ public class PathingServiceTracker {
     private int solvePositionTime;
     private int checkDestinationTime;
     private int finalizationTime;
+    private int updateListenerTime;
     private boolean running;
 
     public PathingServiceTracker(boolean running) {
@@ -42,6 +43,7 @@ public class PathingServiceTracker {
         solvePositionTime = 0;
         checkDestinationTime = 0;
         finalizationTime = 0;
+        updateListenerTime = 0;
     }
 
     public void startTick() {
@@ -93,7 +95,7 @@ public class PathingServiceTracker {
         if (!running) {
             return;
         }
-       checkDestinationTime += calculateDifAndReload();
+        checkDestinationTime += calculateDifAndReload();
     }
 
     public void afterFinalization() {
@@ -101,6 +103,13 @@ public class PathingServiceTracker {
             return;
         }
         finalizationTime += calculateDifAndReload();
+    }
+
+    public void afterUpdateListener() {
+        if (!running) {
+            return;
+        }
+        updateListenerTime += calculateDifAndReload();
     }
 
     public void endTick() {
@@ -138,6 +147,7 @@ public class PathingServiceTracker {
                 "solvePositionTime: " + solvePositionTime * factor + "s\n" +
                 "checkDestinationTime: " + checkDestinationTime * factor + "s\n" +
                 "finalizationTime: " + finalizationTime * factor + "s\n" +
+                "updateListenerTime: " + updateListenerTime * factor + "s\n" +
                 "-------------------------------------------------");
     }
 }

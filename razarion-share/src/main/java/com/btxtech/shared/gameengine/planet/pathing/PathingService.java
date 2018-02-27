@@ -34,6 +34,11 @@ public class PathingService {
     @Inject
     private TerrainService terrainService;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
+    private PathingServiceUpdateListener pathingServiceUpdateListener;
+
+    public void setPathingServiceUpdateListener(PathingServiceUpdateListener pathingServiceUpdateListener) {
+        this.pathingServiceUpdateListener = pathingServiceUpdateListener;
+    }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, syncItem.getSyncPhysicalArea().getTerrainType(), destination, 0);
@@ -122,6 +127,10 @@ public class PathingService {
 
         finalization();
         pathingServiceTracker.afterFinalization();
+        if (pathingServiceUpdateListener != null) {
+            pathingServiceUpdateListener.onPathingTickFinished();
+        }
+        pathingServiceTracker.afterUpdateListener();
         pathingServiceTracker.endTick();
     }
 
@@ -213,6 +222,8 @@ public class PathingService {
                 }
                 DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1));
                 item2.setVelocity(newVelocity2);
+                onPathingChanged(item1);
+                onPathingChanged(item2);
             } else {
                 DecimalPosition velocity = item1.getVelocity();
                 double projection = contact.getNormal().dotProduct(velocity);
@@ -220,6 +231,7 @@ public class PathingService {
                     DecimalPosition pushAway = contact.getNormal().multiply(-projection);
                     DecimalPosition newVelocity = velocity.add(pushAway);
                     item1.setVelocity(newVelocity);
+                    onPathingChanged(item1);
                 }
             }
         }
@@ -261,9 +273,12 @@ public class PathingService {
                     DecimalPosition pushAway = item1.getPosition2d().sub(item2.getPosition2d()).normalize(penetration / 2.0);
                     item1.addToPosition2d(pushAway);
                     item2.addToPosition2d(pushAway.multiply(-1.0));
+                    onPathingChanged(item1);
+                    onPathingChanged(item2);
                 } else {
                     DecimalPosition pushAway = item1.getPosition2d().sub(item2.getPosition2d()).normalize(penetration);
                     item1.addToPosition2d(pushAway);
+                    onPathingChanged(item1);
                 }
             }
         }
@@ -289,6 +304,7 @@ public class PathingService {
                 }
                 DecimalPosition pushAway = syncPhysicalMovable.getPosition2d().sub(projection).normalize(penetration);
                 syncPhysicalMovable.addToPosition2d(pushAway);
+                onPathingChanged(syncPhysicalMovable);
             }
 
             return null;
@@ -330,6 +346,7 @@ public class PathingService {
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
             if (syncPhysicalMovable.hasDestination() && syncPhysicalMovable.checkDestinationReached()) {
                 syncPhysicalMovable.stop();
+                onPathingChanged(syncPhysicalMovable);
             }
             return null;
         });
@@ -345,6 +362,12 @@ public class PathingService {
 
             return null;
         });
+    }
+
+    private void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable) {
+        if (pathingServiceUpdateListener != null) {
+            pathingServiceUpdateListener.onPathingChanged(syncPhysicalMovable);
+        }
     }
 }
 
