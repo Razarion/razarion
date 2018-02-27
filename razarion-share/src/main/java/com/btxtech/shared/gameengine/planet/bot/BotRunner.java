@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 
@@ -51,6 +52,8 @@ public class BotRunner {
     private Instance<IntruderHandler> intruderHandlerInstance;
     @Inject
     private SimpleExecutorService simpleExecutorService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private BotConfig botConfig;
     private PlayerBaseFull base;
     private BotEnragementState botEnragementState;
@@ -128,8 +131,12 @@ public class BotRunner {
     }
 
     void kill() {
-        killTimer();
-        killBot();
+        try {
+            killTimer();
+            killBot();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     private void killTimer() {
