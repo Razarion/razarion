@@ -2,7 +2,7 @@ package com.btxtech.server.web;
 
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.utils.ExceptionUtil;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -14,6 +14,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.nio.channels.ClosedChannelException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -65,22 +66,31 @@ public class CommonFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest servletRequest = (HttpServletRequest) request;
-        // logger.warning(servletRequest.getRequestURI() + ": " + extractAngularType(servletRequest));
-        switch (extractAngularType(servletRequest)) {
-            case FRONTEND:
-                trackerPersistence.onPage("Frontend", servletRequest);
-                request.getRequestDispatcher(CommonUrl.FRONTEND_ANGULAR_HTML_FILE).forward(request, response);
-                break;
-            case BACKEND:
-                request.getRequestDispatcher(CommonUrl.BACKEND_ANGULAR_HTML_FILE).forward(request, response);
-                break;
-            case NONE:
-                chain.doFilter(request, response);
-                break;
-            default:
-                logger.warning("CommonFilter can not handle: " + servletRequest.getServletPath());
-                chain.doFilter(request, response);
+        try {
+            HttpServletRequest servletRequest = (HttpServletRequest) request;
+            // logger.warning(servletRequest.getRequestURI() + ": " + extractAngularType(servletRequest));
+            switch (extractAngularType(servletRequest)) {
+                case FRONTEND:
+                    trackerPersistence.onPage("Frontend", servletRequest);
+                    request.getRequestDispatcher(CommonUrl.FRONTEND_ANGULAR_HTML_FILE).forward(request, response);
+                    break;
+                case BACKEND:
+                    request.getRequestDispatcher(CommonUrl.BACKEND_ANGULAR_HTML_FILE).forward(request, response);
+                    break;
+                case NONE:
+                    chain.doFilter(request, response);
+                    break;
+                default:
+                    logger.warning("CommonFilter can not handle: " + servletRequest.getServletPath());
+                    chain.doFilter(request, response);
+            }
+        } catch (Throwable t) {
+            Throwable mostInnerThrowable = ExceptionUtil.getMostInnerThrowable(t);
+            if (mostInnerThrowable instanceof ClosedChannelException) {
+                log("ClosedChannelException", request);
+            } else {
+                throw t;
+            }
         }
     }
 
@@ -124,5 +134,16 @@ public class CommonFilter implements Filter {
 
     private Collection<String> convertFilterStrings(String... strings) {
         return Arrays.stream(strings).map(String::toUpperCase).collect(Collectors.toList());
+    }
+
+    private void log(String description, ServletRequest request) {
+        HttpServletRequest servletRequest = (HttpServletRequest) request;
+        String queryString = servletRequest.getQueryString();
+        if (queryString != null && !queryString.trim().isEmpty()) {
+            queryString = "&X&" + queryString;
+        } else {
+            queryString = "";
+        }
+        logger.severe(description + " path: " + servletRequest.getRequestURI() + queryString + ". SessionId: " + servletRequest.getSession().getId());
     }
 }

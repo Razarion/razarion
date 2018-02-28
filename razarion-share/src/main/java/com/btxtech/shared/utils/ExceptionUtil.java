@@ -35,4 +35,14 @@ public class ExceptionUtil {
         builder.append(throwable.toString());
     }
 
+    public static Throwable getMostInnerThrowable(Throwable t) {
+        if (t.getCause() == null) {
+            return t;
+        } else if (t.getCause() == t) {
+            return t;
+        } else {
+            return getMostInnerThrowable(t.getCause());
+        }
+    }
+
 }
