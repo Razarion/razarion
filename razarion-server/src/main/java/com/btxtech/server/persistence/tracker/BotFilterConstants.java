@@ -17,6 +17,7 @@ public interface BotFilterConstants {
         botStrings.add("%+http://www.google.com/mobile/adsbot.html%");
         botStrings.add("%+http://www.uptime.com/uptimebot%");
         botStrings.add("%http://mj12bot.com/%");
+        botStrings.add("%Mozilla/5.0 (compatible; DotBot/1.1; http://www.opensiteexplorer.org/dotbot, help@moz.com)%");
         return botStrings;
     }
 

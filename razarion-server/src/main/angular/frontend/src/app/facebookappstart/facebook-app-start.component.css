@@ -1,0 +1,20 @@
+.fbButton {
+  left: 50%;
+  top: 50%;
+  position: absolute;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  border: 8px solid transparent;
+  background-image: url(/images/DialogBackground.png);
+  border-image-source: url(/images/Border.png);
+  border-image-slice: 8;
+  border-image-repeat: repeat;
+  -webkit-box-shadow: 3px 3px 15px 1px #000;
+  box-shadow: 3px 3px 15px 1px #000;
+}
+
+.cell {
+  text-align: center;
+  padding: 15px;
+}
