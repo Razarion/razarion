@@ -1,7 +1,6 @@
 package com.btxtech.common.system;
 
 import com.btxtech.shared.rest.TrackerProvider;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonService;
@@ -30,7 +29,7 @@ public class ClientPerformanceTrackerService {
     @Inject
     private PerfmonService perfmonService;
     @Inject
-    private ExceptionHandler exceptionHandler;
+    private ClientExceptionHandlerImpl exceptionHandler;
     private SimpleScheduledFuture simpleScheduledFuture;
     private int sendingPerformanceTrackerCount;
 
@@ -64,11 +63,7 @@ public class ClientPerformanceTrackerService {
                 sendingPerformanceTrackerCount++;
                 providerCaller.call(response -> {
                     sendingPerformanceTrackerCount--;
-                }, (message, throwable) -> {
-                    sendingPerformanceTrackerCount--;
-                    logger.log(Level.SEVERE, "TrackerProvider.performanceTracker() failed: " + message, throwable);
-                    return false;
-                }).performanceTracker(perfmonStatistic);
+                }, exceptionHandler.restErrorHandler("TrackerProvider.performanceTracker()")).performanceTracker(perfmonStatistic);
             }
         }
         List<TerrainTileStatistic> terrainTileStatistics = perfmonService.flushTerrainTileStatistics();

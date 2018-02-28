@@ -2,9 +2,9 @@ package com.btxtech.client;
 
 import com.btxtech.client.clientI18n.ClientI18nConstants;
 import com.btxtech.client.system.LifecycleService;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.LocaleInfo;
@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class Client {
     private Logger logger = Logger.getLogger(Client.class.getName());
     @Inject
-    private ExceptionHandler exceptionHandler;
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private LifecycleService lifecycleService;
 
@@ -44,6 +44,7 @@ public class Client {
 
     @PostConstruct
     public void postConstruct() {
+        exceptionHandler.registerWindowCloseHandler();
         try {
             I18nHelper.setLanguage(I18nString.convert(LocaleInfo.getCurrentLocale().getLocaleName()));
             I18nHelper.setConstants(GWT.create(ClientI18nConstants.class));

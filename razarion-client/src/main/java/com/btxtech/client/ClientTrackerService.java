@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -22,7 +23,6 @@ import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.rest.TrackerProvider;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.uiservice.SelectionEvent;
@@ -75,7 +75,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     @Inject
     private GameCanvas gameCanvas;
     @Inject
-    private ExceptionHandler exceptionHandler;
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private ViewService viewService;
     @Inject
@@ -322,10 +322,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         TrackingContainer tmpTrackingContainer = trackingContainer;
         createTrackingContainer();
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "detailedTracking failed: " + message, throwable);
-            return false;
-        }).detailedTracking(tmpTrackingContainer);
+        }, exceptionHandler.restErrorHandler("TrackerProvider.detailedTracking()")).detailedTracking(tmpTrackingContainer);
     }
 
     private void createTrackingContainer() {

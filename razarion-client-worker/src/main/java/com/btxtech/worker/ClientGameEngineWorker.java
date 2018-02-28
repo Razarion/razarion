@@ -2,12 +2,12 @@ package com.btxtech.worker;
 
 
 import com.btxtech.common.WorkerMarshaller;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.system.ExceptionHandler;
 import elemental.events.MessageEvent;
 import elemental.js.html.JsDedicatedWorkerGlobalScope;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
@@ -24,7 +24,7 @@ import javax.inject.Inject;
 public class ClientGameEngineWorker extends GameEngineWorker {
     // private Logger logger = Logger.getLogger(ClientGameEngineWorker.class.getName());
     @Inject
-    private ExceptionHandler exceptionHandler;
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private ClientPerformanceTrackerService clientPerformanceTrackerService;
     @Inject
@@ -32,6 +32,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
 
     @PostConstruct
     public void onModuleLoad() {
+        exceptionHandler.registerWindowCloseHandler();
         RestClient.setApplicationRoot(CommonUrl.getWorkerApplicationRoot());
         getDedicatedWorkerGlobalScope().setOnmessage(evt -> {
             Object data = null;
