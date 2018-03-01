@@ -46,8 +46,13 @@ public class ClientExceptionHandlerImpl implements ExceptionHandler {
         try {
             if (throwable instanceof ResponseException) {
                 ResponseException responseException = (ResponseException) throwable;
-                if (responseException.getResponse().getStatusCode() == 0 && windowClosing) {
-                    return;
+                if (responseException.getResponse().getStatusCode() == 0) {
+                    if(windowClosing) {
+                        return;
+                    } else {
+                        logger.log(Level.SEVERE, "StatusCode code == 0. " + restService + ": " + message + ". Throwable: " + throwable);
+                        return;
+                    }
                 }
             }
             logger.log(Level.SEVERE, restService + ": " + message, throwable);

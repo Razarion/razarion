@@ -86,8 +86,8 @@ public class CommonFilter implements Filter {
             }
         } catch (Throwable t) {
             Throwable mostInnerThrowable = ExceptionUtil.getMostInnerThrowable(t);
-            if (mostInnerThrowable instanceof ClosedChannelException) {
-                log("ClosedChannelException", request);
+            if (mostInnerThrowable instanceof IOException) {
+                log(mostInnerThrowable, request);
             } else {
                 throw t;
             }
@@ -136,7 +136,7 @@ public class CommonFilter implements Filter {
         return Arrays.stream(strings).map(String::toUpperCase).collect(Collectors.toList());
     }
 
-    private void log(String description, ServletRequest request) {
+    private void log(Throwable t, ServletRequest request) {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         String queryString = servletRequest.getQueryString();
         if (queryString != null && !queryString.trim().isEmpty()) {
@@ -144,6 +144,6 @@ public class CommonFilter implements Filter {
         } else {
             queryString = "";
         }
-        logger.severe(description + " path: " + servletRequest.getRequestURI() + queryString + ". SessionId: " + servletRequest.getSession().getId());
+        logger.severe(t + " path: " + servletRequest.getRequestURI() + queryString + ". SessionId: " + servletRequest.getSession().getId());
     }
 }
