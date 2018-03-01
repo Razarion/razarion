@@ -8,8 +8,9 @@ import {FrontendService} from "../service/frontend.service";
 })
 
 export class FacebookAppStart implements OnInit, AfterViewChecked {
-  bouncingStopper: boolean = false;
+  private bouncingStopper: boolean = false;
   private facebookEventCallback: any = null;
+  private fbLoginBouncingStopper: boolean = false;
 
   constructor(private frontendService: FrontendService, private router: Router, private zone: NgZone) {
   }
@@ -25,6 +26,10 @@ export class FacebookAppStart implements OnInit, AfterViewChecked {
       } else {
         this.frontendService.fbLogin(response => {
           if (response && response.authResponse) {
+            if (this.fbLoginBouncingStopper) {
+              return;
+            }
+            this.fbLoginBouncingStopper = true;
             this.frontendService.onFbAuthorized(response.authResponse).then(() => {
               // Angular problem with 3rd part library (Facebook) and routing https://github.com/angular/angular/issues/18254
               this.zone.run(() => this.router.navigate(['/game']));
@@ -51,6 +56,10 @@ export class FacebookAppStart implements OnInit, AfterViewChecked {
       }
       this.facebookEventCallback = (fbResponse) => {
         if (fbResponse.status === "connected") {
+          if (this.fbLoginBouncingStopper) {
+            return;
+          }
+          this.fbLoginBouncingStopper = true;
           this.frontendService.onFbAuthorized(fbResponse.authResponse).then(success => {
             // Angular problem with 3rd part library (Facebook) and routing https://github.com/angular/angular/issues/18254
             this.zone.run(() => this.router.navigate(['/game']));
