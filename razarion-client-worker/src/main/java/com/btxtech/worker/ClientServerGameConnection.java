@@ -1,5 +1,6 @@
 package com.btxtech.worker;
 
+import com.btxtech.common.GwtCommonUtils;
 import com.btxtech.common.WebSocketHelper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineWorker;
@@ -9,7 +10,6 @@ import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental.client.Browser;
 import elemental.events.CloseEvent;
-import elemental.events.ErrorEvent;
 import elemental.events.Event;
 import elemental.events.MessageEvent;
 import elemental.html.WebSocket;
@@ -37,8 +37,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
         webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT));
         webSocket.setOnerror(evt -> {
             try {
-                ErrorEvent errorEvent = (ErrorEvent) evt;
-                logger.severe("ClientServerGameConnection WebSocket OnError. Message " + errorEvent.getMessage());
+                logger.severe("ClientServerGameConnection WebSocket OnError: " + GwtCommonUtils.jsonStringify(evt));
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
@@ -46,15 +45,13 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
         webSocket.setOnclose(evt -> {
             try {
                 CloseEvent closeEvent = (CloseEvent) evt;
-                logger.severe("ClientServerGameConnection WebSocket Close. Code: " + closeEvent.getCode() + " Reason: " + closeEvent.getReason() + " WasClean: " + closeEvent.getReason());
+                logger.severe("ClientServerGameConnection WebSocket Close. Code: " + closeEvent.getCode() + " Reason: " + closeEvent.getReason() + " WasClean: " + closeEvent.isWasClean());
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }
         });
         webSocket.setOnmessage(this::handleMessage);
-        webSocket.setOnopen(evt -> {
-            sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SET_GAME_SESSION_UUID, toJson(gameEngineWorker.getGameSessionUuid())));
-        });
+        webSocket.setOnopen(evt -> sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SET_GAME_SESSION_UUID, toJson(gameEngineWorker.getGameSessionUuid()))));
     }
 
     private void handleMessage(Event event) {
