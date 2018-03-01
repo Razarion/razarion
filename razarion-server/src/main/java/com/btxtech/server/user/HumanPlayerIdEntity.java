@@ -57,4 +57,12 @@ public class HumanPlayerIdEntity {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
 
+    @Override
+    public String toString() {
+        return "HumanPlayerIdEntity{" +
+                "id=" + id +
+                ", timeStamp=" + timeStamp +
+                ", sessionId='" + sessionId + '\'' +
+                '}';
+    }
 }

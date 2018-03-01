@@ -303,7 +303,7 @@ public class TrackerPersistence {
             return null;
         }
         if (humanPlayerIdEntities.size() > 1) {
-            logger.warning("More the one HumanPlayerIdEntity found for session id: " + sessionId);
+            logger.warning("More the one HumanPlayerIdEntity found for session id: " + sessionId + " HumanPlayerId: " + humanPlayerIdEntities);
         }
         return humanPlayerIdEntities.get(0).getId();
     }

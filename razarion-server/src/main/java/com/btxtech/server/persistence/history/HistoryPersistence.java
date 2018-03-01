@@ -201,7 +201,7 @@ public class HistoryPersistence {
             return null;
         }
         if (userEntities.size() > 1) {
-            logger.warning("More the one entry for UserHistoryEntity found for session id: " + sessionId);
+            logger.warning("More the one entry for UserHistoryEntity found for session id: " + sessionId + " userEntities: " + userEntities);
         }
         UserEntity userEntity = userEntities.get(0);
         return new SimpleUserBackend().setName(userEntity.getName()).setHumanPlayerId(userEntity.createHumanPlayerId());
