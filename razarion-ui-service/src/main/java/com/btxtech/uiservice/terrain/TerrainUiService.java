@@ -207,6 +207,9 @@ public class TerrainUiService {
     public double calculateMousePositionGroundMesh(DecimalPosition groundPosition) {
         Index terrainTile = TerrainUtil.toTile(groundPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
+        if (uiTerrainTile == null) {
+            throw new IllegalStateException("TerrainUiService.calculateMousePositionGroundMesh(DecimalPosition) UiTerrainTile not loaded: " + terrainTile);
+        }
         return uiTerrainTile.interpolateDisplayHeight(groundPosition);
     }
 
