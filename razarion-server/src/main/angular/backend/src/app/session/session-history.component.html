@@ -32,7 +32,7 @@
     </td>
     <td>{{ sessionTracker.remoteHost }}</td>
     <td>{{ sessionTracker.pageHits }}</td>
-    <td>{{ (sessionTracker.userAgent | slice:0:130) + (sessionTracker.userAgent.length > 130 ? '...' : '')}}</td>
+    <td><span *ngIf="sessionTracker.userAgent">{{ (sessionTracker.userAgent | slice:0:130) + (sessionTracker.userAgent.length > 130 ? '...' : '')}}</span></td>
   </tr>
   </tbody>
 </table>
