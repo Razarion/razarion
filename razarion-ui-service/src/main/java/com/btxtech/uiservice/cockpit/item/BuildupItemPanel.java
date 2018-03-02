@@ -12,6 +12,8 @@ import com.btxtech.uiservice.audio.AudioService;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
+import com.btxtech.uiservice.item.SyncBaseItemMonitor;
+import com.btxtech.uiservice.item.SyncItemMonitor;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
 
 import javax.enterprise.inject.Instance;
@@ -44,6 +46,7 @@ public abstract class BuildupItemPanel {
     private Group selectedGroup;
     private Map<Integer, BuildupItem> buildupItems = new HashMap<>();
     private boolean hasItemsToBuild;
+    private SyncBaseItemMonitor syncBaseItemMonitor;
 
     protected abstract void clear();
 
@@ -67,6 +70,18 @@ public abstract class BuildupItemPanel {
             selectedGroup = group;
             setupBuildupItemsFactory(group);
         }
+        releaseMonitors();
+        syncBaseItemMonitor = baseItemUiService.monitorSyncItem(syncBaseItem.getId());
+        syncBaseItemMonitor.setConstructingChangeListener(syncItemMonitor -> {
+            buildupItems.forEach((constructingBaseItemTypeId, buildupItem) -> {
+                SyncBaseItemMonitor syncBaseItemMonitor = (SyncBaseItemMonitor) syncItemMonitor;
+                if (syncBaseItemMonitor.getConstructingBaseItemTypeId() != null && constructingBaseItemTypeId.equals(syncBaseItemMonitor.getConstructingBaseItemTypeId())) {
+                    buildupItem.setConstructing(syncBaseItemMonitor.getConstructing());
+                } else {
+                    buildupItem.setConstructing(null);
+                }
+            });
+        });
     }
 
     void display(Group selectedGroup) {
@@ -113,7 +128,7 @@ public abstract class BuildupItemPanel {
             BaseItemType itemType = itemTypeService.getBaseItemType(itemTypeId);
             buildupItems.add(setupBuildupBlock(itemType, () -> {
                 audioService.onCommandSent();
-                gameEngineControl.fabricateCmd(factories._getItems(), itemType);
+                factories.getSyncBaseItemsMonitors().stream().filter(syncBaseItemMonitor -> syncBaseItemMonitor.getConstructingBaseItemTypeId() == null).map(SyncItemMonitor::getSyncItemId).findFirst().ifPresent(factoryId -> gameEngineControl.fabricateCmd(factoryId, itemType));
             }));
         }
         setBuildupItem(buildupItems);
@@ -139,5 +154,12 @@ public abstract class BuildupItemPanel {
             throw new IllegalArgumentException("No BuildupItem for: " + baseItemTypeId);
         }
         return getBuildButtonLocation(buildupItem);
+    }
+
+    public void releaseMonitors() {
+        if (syncBaseItemMonitor != null) {
+            syncBaseItemMonitor.release();
+            syncBaseItemMonitor = null;
+        }
     }
 }

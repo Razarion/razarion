@@ -149,6 +149,10 @@ public class SyncFactory extends SyncBaseAbility {
         return buildup;
     }
 
+    public BaseItemType getToBeBuiltType() {
+        return toBeBuiltType;
+    }
+
     private void setupRallyPoint() {
         if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
             double maxToBeBuiltItemRadius = Double.MIN_VALUE;

@@ -28,6 +28,7 @@ import javax.inject.Named;
  */
 @Templated("ClientBuildupItemPanel.html#buildItemTd")
 public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
+    private static final int WIDTH = 40;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -48,6 +49,9 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
     @Inject
     @DataField
     private Span disableSpawn;
+    @Inject
+    @DataField
+    private Span progressSpawn;
     private BuildupItem buildupItem;
     private int itemCount;
     private int itemLimit;
@@ -107,6 +111,7 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         image.setUrl(CommonUrl.getImageServiceUrlSafe(buildupItem.getItemType().getThumbnail()));
         discoverEnableState();
         priceLabel.setText(Integer.toString(buildupItem.getItemType().getPrice()));
+        buildupItem.setConstructingConsumer(this::constructingChanged);
         displayEnableState();
     }
 
@@ -159,5 +164,13 @@ public class ClientBuildupItem implements TakesValue<BuildupItem>, IsElement {
         buildItemTd.setTitle(enableState.getToolTip(buildupItem.getItemType()));
         itemLimitLabel.setTextContent(itemCount + "/" + itemLimit);
         disableSpawn.getStyle().setProperty("visibility", enableState.isEnabled() ? "hidden" : "visible");
+    }
+
+    private void constructingChanged(Double constructingProgress) {
+        if (constructingProgress != null) {
+            progressSpawn.getStyle().setProperty("width", Integer.toString((int) (constructingProgress * WIDTH)) + "px");
+        } else {
+            progressSpawn.getStyle().setProperty("width", "0");
+        }
     }
 }

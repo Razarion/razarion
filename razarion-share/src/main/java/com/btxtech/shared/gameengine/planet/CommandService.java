@@ -112,12 +112,9 @@ public class CommandService { // Is part of the Base service
         }
     }
 
-    public void fabricate(Collection<Integer> factoryIds, int itemTypeToBuildId) {
+    public void fabricate(int factoryId, int itemTypeToBuildId) {
         BaseItemType toBuild = itemTypeService.getBaseItemType(itemTypeToBuildId);
-        for (int factoryId : factoryIds) {
-            SyncBaseItem factory = syncItemContainerService.getSyncBaseItemSave(factoryId);
-            fabricate(factory, toBuild);
-        }
+        fabricate(syncItemContainerService.getSyncBaseItemSave(factoryId), toBuild);
     }
 
     public void fabricate(SyncBaseItem factory, BaseItemType itemTypeToBuild) {

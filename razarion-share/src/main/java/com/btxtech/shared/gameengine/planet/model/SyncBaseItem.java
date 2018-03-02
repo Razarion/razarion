@@ -692,9 +692,13 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             if (syncBuilder != null && syncBuilder.isBuilding()) {
                 nativeSyncBaseItemTickInfo.buildingPosition = NativeUtil.toNativeVertex(syncBuilder.getCurrentBuildup().getSyncPhysicalArea().getPosition3d());
                 nativeSyncBaseItemTickInfo.constructing = syncBuilder.getCurrentBuildup().getBuildup();
+                nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncBuilder.getCurrentBuildup().getBaseItemType().getId();
             }
             if (syncFactory != null && syncFactory.isActive()) {
                 nativeSyncBaseItemTickInfo.constructing = syncFactory.getBuildup();
+                if (syncFactory.getToBeBuiltType() != null) {
+                    nativeSyncBaseItemTickInfo.constructingBaseItemTypeId = syncFactory.getToBeBuiltType().getId();
+                }
             }
             if (getSyncPhysicalArea().canMove()) {
                 nativeSyncBaseItemTickInfo.interpolatableVelocity = getSyncPhysicalMovable().setupInterpolatableVelocity();

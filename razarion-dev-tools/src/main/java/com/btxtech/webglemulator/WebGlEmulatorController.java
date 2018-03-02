@@ -136,7 +136,7 @@ public class WebGlEmulatorController implements Initializable {
                 canvas.setWidth(width.doubleValue());
                 projectionTransformation.setAspectRatio(getAspectRatio());
                 aspectRatioLabel.setText(Double.toString(projectionTransformation.getAspectRatio()));
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalStateException | IllegalArgumentException e) {
                 // Catch ugly initialization bug
             }
         });

@@ -22,6 +22,7 @@ public class NativeSyncBaseItemTickInfo {
     public double buildup;
     public double health;
     public double constructing;
+    public int constructingBaseItemTypeId; // Id or > 0. Integer is not possible
     public NativeVertexDto harvestingResourcePosition;
     public NativeVertexDto buildingPosition;
     public NativeVertexDto interpolatableVelocity;

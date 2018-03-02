@@ -201,8 +201,8 @@ public abstract class GameEngineControl {
         gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FINALIZE_BUILD).setToBeFinalizedId(toBeFinalized.getId()));
     }
 
-    public void fabricateCmd(Collection<SyncBaseItemSimpleDto> factories, BaseItemType toBeBuild) {
-        sendToWorker(GameEngineControlPackage.Command.COMMAND_FABRICATE, SyncItemSimpleDtoUtils.toIds(factories), toBeBuild.getId());
+    public void fabricateCmd(int factoryId, BaseItemType toBeBuild) {
+        sendToWorker(GameEngineControlPackage.Command.COMMAND_FABRICATE, factoryId, toBeBuild.getId());
         gameTipService.onCommandSent(new CommandInfo(CommandInfo.Type.FABRICATE).setToBeBuiltId(toBeBuild.getId()));
     }
 

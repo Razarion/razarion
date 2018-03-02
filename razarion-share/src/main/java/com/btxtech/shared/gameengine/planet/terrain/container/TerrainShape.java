@@ -143,6 +143,9 @@ public class TerrainShape {
     }
 
     public TerrainShapeTile getTerrainShapeTile(Index terrainTileIndex) {
+        if(tileOffset == null) {
+            throw new IllegalStateException("TerrainShape is not initialized");
+        }
         Index fieldIndex = terrainTileIndex.sub(tileOffset);
         if (fieldIndex.getX() < 0 || fieldIndex.getY() < 0 || fieldIndex.getX() >= tileXCount || fieldIndex.getY() >= tileYCount) {
             return null;

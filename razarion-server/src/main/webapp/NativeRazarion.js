@@ -895,6 +895,7 @@ com = {
                         this.buildup = 0;
                         this.health = 0;
                         this.constructing = 0;
+                        this.constructingBaseItemTypeId = -1;
                         this.harvestingResourcePosition = null;
                         this.buildingPosition = null;
                         this.interpolatableVelocity = null;

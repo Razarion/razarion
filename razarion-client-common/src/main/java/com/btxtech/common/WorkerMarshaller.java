@@ -221,7 +221,7 @@ public class WorkerMarshaller {
                 data.add(fromJson(array.getString(DATA_OFFSET_2), Integer.class));
                 break;
             case COMMAND_FABRICATE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
                 break;
             case COMMAND_HARVEST:

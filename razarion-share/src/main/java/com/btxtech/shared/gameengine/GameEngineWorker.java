@@ -174,7 +174,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 commandService.build((int) controlPackage.getData(0), (DecimalPosition) controlPackage.getData(1), (int) controlPackage.getData(2));
                 break;
             case COMMAND_FABRICATE:
-                commandService.fabricate((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));
+                commandService.fabricate((int) controlPackage.getData(0), (int) controlPackage.getData(1));
                 break;
             case COMMAND_HARVEST:
                 commandService.harvest((List<Integer>) controlPackage.getData(0), (int) controlPackage.getData(1));

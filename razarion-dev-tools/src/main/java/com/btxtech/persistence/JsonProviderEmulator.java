@@ -20,6 +20,7 @@ import com.btxtech.shared.rest.TerrainShapeProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -53,6 +54,7 @@ public class JsonProviderEmulator {
     private TerrainShapeProvider terrainShapeProvider;
     private PlanetEditorProvider planetEditorProvider;
 
+    @PostConstruct
     public void connect() {
         Client client = ClientBuilder.newClient();
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST);

@@ -23,6 +23,10 @@ public class SyncBaseItemMonitor extends SyncItemMonitor {
         return ((SyncBaseItemState) getSyncItemState()).getConstructing();
     }
 
+    public Integer getConstructingBaseItemTypeId() {
+        return ((SyncBaseItemState) getSyncItemState()).getConstructingBaseItemTypeId();
+    }
+
     public boolean checkConstructing() {
         return ((SyncBaseItemState) getSyncItemState()).checkConstructing();
     }

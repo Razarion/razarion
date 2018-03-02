@@ -37,6 +37,9 @@ public class ItemCockpitService {
         switch (selectionEvent.getType()) {
             case CLEAR:
                 itemCockpitPanel.cleanPanels();
+                if(buildupItemPanel != null) {
+                    buildupItemPanel.releaseMonitors();
+                }
                 if (isActive) {
                     isActive = false;
                     itemCockpitPanel.showPanel(false);

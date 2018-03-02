@@ -1,9 +1,10 @@
 package com.btxtech.uiservice.item;
 
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeSyncBaseItemTickInfo;
-import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
+import com.btxtech.shared.nativejs.NativeVertexDto;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -14,12 +15,16 @@ public class SyncBaseItemState extends SyncItemState {
     private double health;
     private double constructing;
     private boolean contained;
+    private Integer constructingBaseItemTypeId;
     private NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo;
 
     public SyncBaseItemState(NativeSyncBaseItemTickInfo nativeSyncBaseItemTickInfo, double radius, Consumer<SyncItemState> releaseMonitorCallback) {
         super(nativeSyncBaseItemTickInfo, nativeSyncBaseItemTickInfo.interpolatableVelocity, radius, releaseMonitorCallback);
         health = nativeSyncBaseItemTickInfo.health;
         constructing = nativeSyncBaseItemTickInfo.constructing;
+        if (nativeSyncBaseItemTickInfo.constructingBaseItemTypeId > -1) {
+            constructingBaseItemTypeId = nativeSyncBaseItemTickInfo.constructingBaseItemTypeId;
+        }
         contained = nativeSyncBaseItemTickInfo.contained;
         this.nativeSyncBaseItemTickInfo = nativeSyncBaseItemTickInfo;
     }
@@ -38,7 +43,11 @@ public class SyncBaseItemState extends SyncItemState {
     }
 
     public boolean checkConstructing() {
-        return constructing > 0.0;
+        return constructingBaseItemTypeId != null;
+    }
+
+    public Integer getConstructingBaseItemTypeId() {
+        return constructingBaseItemTypeId;
     }
 
     public SyncBaseItemSimpleDto getSyncBaseItem() {
@@ -59,6 +68,17 @@ public class SyncBaseItemState extends SyncItemState {
 
         if (constructing != nativeSyncBaseItemTickInfo.constructing) {
             constructing = nativeSyncBaseItemTickInfo.constructing;
+            for (SyncItemMonitor monitor : getMonitors()) {
+                ((SyncBaseItemMonitor) monitor).onConstructingChanged();
+            }
+        }
+
+        Integer tmpConstructingBaseItemTypeId = null;
+        if (nativeSyncBaseItemTickInfo.constructingBaseItemTypeId > -1) {
+            tmpConstructingBaseItemTypeId = nativeSyncBaseItemTickInfo.constructingBaseItemTypeId;
+        }
+        if (!Objects.equals(constructingBaseItemTypeId, tmpConstructingBaseItemTypeId)) {
+            constructingBaseItemTypeId = tmpConstructingBaseItemTypeId;
             for (SyncItemMonitor monitor : getMonitors()) {
                 ((SyncBaseItemMonitor) monitor).onConstructingChanged();
             }
