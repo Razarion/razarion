@@ -4,7 +4,7 @@ import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.guielements.DecimalPositionBox;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;

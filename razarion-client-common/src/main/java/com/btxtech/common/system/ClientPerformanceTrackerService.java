@@ -1,5 +1,6 @@
 package com.btxtech.common.system;
 
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.rest.TrackerProvider;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -63,7 +64,7 @@ public class ClientPerformanceTrackerService {
                 sendingPerformanceTrackerCount++;
                 providerCaller.call(response -> {
                     sendingPerformanceTrackerCount--;
-                }, exceptionHandler.restErrorHandler("TrackerProvider.performanceTracker()")).performanceTracker(perfmonStatistic);
+                }, exceptionHandler.restErrorHandler("TrackerProvider.performanceTracker(). TimeStamp: " + DisplayUtils.formatDateMillis(perfmonStatistic.getTimeStamp()) + " PerfmonEnum: " + perfmonStatistic.getPerfmonEnum())).performanceTracker(perfmonStatistic);
             }
         }
         List<TerrainTileStatistic> terrainTileStatistics = perfmonService.flushTerrainTileStatistics();

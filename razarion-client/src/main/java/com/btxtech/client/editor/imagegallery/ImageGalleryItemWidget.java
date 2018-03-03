@@ -3,7 +3,7 @@ package com.btxtech.client.editor.imagegallery;
 import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.utils.ControlUtils;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.user.client.TakesValue;

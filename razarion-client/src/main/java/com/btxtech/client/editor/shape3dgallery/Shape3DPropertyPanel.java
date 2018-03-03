@@ -3,7 +3,7 @@ package com.btxtech.client.editor.shape3dgallery;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.utils.ControlUtils;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.shape.ModelMatrixAnimation;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;

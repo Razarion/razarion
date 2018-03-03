@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.widgets;
 
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.client.utils.HtmlColor2ColorConverter;
 import com.btxtech.shared.dto.LightConfig;

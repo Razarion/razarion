@@ -1,5 +1,6 @@
 package com.btxtech.client.utils;
 
+import com.btxtech.common.DisplayUtils;
 import org.jboss.errai.databinding.client.api.Converter;
 
 /**

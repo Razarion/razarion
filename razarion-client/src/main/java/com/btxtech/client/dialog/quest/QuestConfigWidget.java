@@ -2,7 +2,7 @@ package com.btxtech.client.dialog.quest;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.QuestProvider;
 import com.btxtech.uiservice.control.GameUiControl;

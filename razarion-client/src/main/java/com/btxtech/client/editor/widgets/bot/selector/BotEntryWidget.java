@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.widgets.bot.selector;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.rest.CommonEditorProvider;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;

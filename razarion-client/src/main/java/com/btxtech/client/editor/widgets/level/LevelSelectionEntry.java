@@ -1,7 +1,6 @@
 package com.btxtech.client.editor.widgets.level;
 
-import com.btxtech.client.utils.DisplayUtils;
-import com.btxtech.shared.datatypes.shape.Shape3D;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;

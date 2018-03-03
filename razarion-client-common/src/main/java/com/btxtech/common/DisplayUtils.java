@@ -1,4 +1,4 @@
-package com.btxtech.client.utils;
+package com.btxtech.common;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
@@ -23,6 +23,7 @@ public class DisplayUtils {
     public static final NumberFormat NUMBER_FORMATTER_X_XXX = NumberFormat.getFormat("#.###");
     public static final NumberFormat NUMBER_FORMATTER_X_XXXX = NumberFormat.getFormat("#.####");
     public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
+    public static final DateTimeFormat DATE_TIME_FORMATTER_MILLIS = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss.SSS");
     public static final DateTimeFormat MINUTE_TIME_FORMATTER = DateTimeFormat.getFormat("mm:ss");
     public static final DateTimeFormat SECOND_TIME_FORMATTER = DateTimeFormat.getFormat("ss");
 
@@ -32,6 +33,10 @@ public class DisplayUtils {
 
     public static String formatDate(Date date) {
         return DATE_TIME_FORMATTER.format(date);
+    }
+
+    public static String formatDateMillis(Date date) {
+        return DATE_TIME_FORMATTER_MILLIS.format(date);
     }
 
     public static String formatHourTimeStamp(long timeStamp) {

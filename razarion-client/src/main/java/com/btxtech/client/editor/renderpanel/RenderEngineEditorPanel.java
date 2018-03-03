@@ -2,7 +2,7 @@ package com.btxtech.client.editor.renderpanel;
 
 import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;

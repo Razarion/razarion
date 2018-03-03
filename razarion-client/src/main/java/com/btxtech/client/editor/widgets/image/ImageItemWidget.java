@@ -2,9 +2,8 @@ package com.btxtech.client.editor.widgets.image;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.imageservice.ImageUiService;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.dto.ImageGalleryItem;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;

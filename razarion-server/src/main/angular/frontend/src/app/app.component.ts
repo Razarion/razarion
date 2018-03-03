@@ -10,6 +10,11 @@ import {FrontendService} from "./service/frontend.service";
 export class AppComponent {
 
   constructor(private router: Router, private frontendService: FrontendService) {
+    window.addEventListener("beforeunload", event => {
+      let date: Date = new Date();
+      frontendService.log("On windows closed. Time: " + date.toString() + "." + date.getMilliseconds() + " event: " + JSON.stringify(event), null);
+    });
+
     router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         frontendService.trackNavigation(event.url);

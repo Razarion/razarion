@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.widgets.shape3dwidget;
 
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;

@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.widgets;
 
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.Color;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Div;

@@ -1,7 +1,7 @@
 package com.btxtech.client.playback;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.uiservice.control.PlaybackControl;
 import com.google.gwt.event.dom.client.ClickEvent;

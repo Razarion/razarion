@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.widgets.itemtype.inventoryitem;
 
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.TakesValue;

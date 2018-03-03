@@ -1,7 +1,7 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;

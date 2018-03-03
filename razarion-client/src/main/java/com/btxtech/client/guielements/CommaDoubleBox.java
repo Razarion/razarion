@@ -1,6 +1,6 @@
 package com.btxtech.client.guielements;
 
-import com.btxtech.client.utils.DisplayUtils;
+import com.btxtech.common.DisplayUtils;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.text.shared.Renderer;
 import com.google.gwt.user.client.ui.ValueBox;
