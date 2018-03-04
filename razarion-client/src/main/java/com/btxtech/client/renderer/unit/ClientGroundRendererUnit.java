@@ -44,6 +44,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private WebGLUniformLocation uBottomBmDepth;
     private WebGlUniformTexture terrainMarkerTexture;
     private WebGLUniformLocation terrainMarker2DPoints;
+    private WebGLUniformLocation terrainMarkerAnimation;
 
     @PostConstruct
     public void init() {
@@ -57,6 +58,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         uBottomBmDepth = webGlFacade.getUniformLocation("uBottomBmDepth");
         terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
         terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
+        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
     }
 
     @Override
@@ -105,6 +107,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
             terrainMarkerTexture.activate();
             webGlFacade.uniform4f(terrainMarker2DPoints, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getPlaceConfigBoundary());
+            webGlFacade.uniform1f(terrainMarkerAnimation, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getAnimation());
         } else {
             webGlFacade.uniform4f(terrainMarker2DPoints, 0, 0, 0, 0);
         }

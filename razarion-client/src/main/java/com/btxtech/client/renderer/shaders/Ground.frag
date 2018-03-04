@@ -34,6 +34,7 @@ uniform float uBottomBmOnePixel;
 uniform float uBottomBmDepth;
 uniform sampler2D uTerrainMarkerTexture;
 uniform vec4 uTerrainMarker2DPoints;
+uniform float uTerrainMarkerAnimation;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 const float BIAS = 0.001;
@@ -80,6 +81,21 @@ vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
      return vec4(SPECULAR_LIGHT_COLOR * factor, 1.0);
 }
 
+vec4 setupTerrainMarker() {
+    vec4 terrainMarkerColor = vec4(0.0, 0.0, 0.0, 0.0);
+    if(uTerrainMarker2DPoints != vec4(0.0, 0.0, 0.0, 0.0)) {
+        if(vVertexPositionCoord.x > uTerrainMarker2DPoints.x && vVertexPositionCoord.y > uTerrainMarker2DPoints.y && vVertexPositionCoord.x < uTerrainMarker2DPoints.z && vVertexPositionCoord.y < uTerrainMarker2DPoints.w) {
+            float xLookup = (vVertexPositionCoord.x - uTerrainMarker2DPoints.x) / (uTerrainMarker2DPoints.z - uTerrainMarker2DPoints.x);
+            float yLookup = (vVertexPositionCoord.y - uTerrainMarker2DPoints.y) / (uTerrainMarker2DPoints.w - uTerrainMarker2DPoints.y);
+            vec4 lookupMarker = texture2D(uTerrainMarkerTexture, vec2(xLookup, yLookup));
+            if(lookupMarker.r > 0.5) {
+                terrainMarkerColor = vec4(0.0, uTerrainMarkerAnimation * 0.3, 0.0, 0.0);
+            }
+        }
+    }
+    return terrainMarkerColor;
+}
+
 void main(void) {
     float shadowFactor = calculateShadowFactor();
     vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
@@ -117,20 +133,7 @@ void main(void) {
     vec4 diffuse = vec4(max(dot(norm, -correctedLightDirection), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
     vec4 specular = setupSpecularLight(correctedLightDirection, norm, uLightSpecularIntensity, uLightSpecularHardness);
 
-    // Terrain marker
-    vec4 terrainMarkerColor = vec4(0.0, 0.0, 0.0, 0.0);
-    if(uTerrainMarker2DPoints != vec4(0.0, 0.0, 0.0, 0.0)) {
-        if(vVertexPositionCoord.x > uTerrainMarker2DPoints.x && vVertexPositionCoord.y > uTerrainMarker2DPoints.y && vVertexPositionCoord.x < uTerrainMarker2DPoints.z && vVertexPositionCoord.y < uTerrainMarker2DPoints.w) {
-            float xLookup = (vVertexPositionCoord.x - uTerrainMarker2DPoints.x) / (uTerrainMarker2DPoints.z - uTerrainMarker2DPoints.x);
-            float yLookup = (vVertexPositionCoord.y - uTerrainMarker2DPoints.y) / (uTerrainMarker2DPoints.w - uTerrainMarker2DPoints.y);
-            vec4 lookupMarker = texture2D(uTerrainMarkerTexture, vec2(xLookup, yLookup));
-            if(lookupMarker.r > 0.5) {
-                terrainMarkerColor = vec4(0.0, 0.3, 0.0, 0.0);
-            }
-        }
-    }
-
-    gl_FragColor = ambient + diffuse * shadowFactor + specular * shadowFactor + terrainMarkerColor;
+    gl_FragColor = ambient + diffuse * shadowFactor + specular * shadowFactor + setupTerrainMarker();
 }
 
 

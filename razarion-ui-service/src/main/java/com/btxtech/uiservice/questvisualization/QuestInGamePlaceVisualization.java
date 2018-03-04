@@ -6,6 +6,8 @@ import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
+import com.btxtech.shared.utils.InterpolationUtils;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ViewService;
 
@@ -20,6 +22,7 @@ import java.util.List;
  */
 @Dependent
 public class QuestInGamePlaceVisualization {
+    private static final long ANIMATION_PERIOD_MILLIS = 2000;
     @Inject
     private ViewService viewService;
     @Inject
@@ -75,4 +78,10 @@ public class QuestInGamePlaceVisualization {
             return null;
         }
     }
+
+    public double getAnimation() {
+        double sinValue = Math.sin(((System.currentTimeMillis() % ANIMATION_PERIOD_MILLIS) / (double) ANIMATION_PERIOD_MILLIS) * MathHelper.ONE_RADIANT);
+        return InterpolationUtils.interpolate(0, 1, -1, 1, sinValue);
+    }
+
 }
