@@ -20,6 +20,10 @@ uniform float uBmDepth;
 uniform float uBmOnePixel;
 uniform float animation;
 uniform float animation2;
+// Terrain marker
+uniform sampler2D uTerrainMarkerTexture;
+uniform vec4 uTerrainMarker2DPoints;
+uniform float uTerrainMarkerAnimation;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 const vec3 WATER_COLOR = vec3(0.05, 0.32, 0.63);
@@ -49,6 +53,21 @@ vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float 
      return SPECULAR_LIGHT_COLOR * factor;
 }
 
+vec4 setupTerrainMarker() {
+    vec4 terrainMarkerColor = vec4(0.0, 0.0, 0.0, 0.0);
+    if(uTerrainMarker2DPoints != vec4(0.0, 0.0, 0.0, 0.0)) {
+        if(vWorldVertexPosition.x > uTerrainMarker2DPoints.x && vWorldVertexPosition.y > uTerrainMarker2DPoints.y && vWorldVertexPosition.x < uTerrainMarker2DPoints.z && vWorldVertexPosition.y < uTerrainMarker2DPoints.w) {
+            float xLookup = (vWorldVertexPosition.x - uTerrainMarker2DPoints.x) / (uTerrainMarker2DPoints.z - uTerrainMarker2DPoints.x);
+            float yLookup = (vWorldVertexPosition.y - uTerrainMarker2DPoints.y) / (uTerrainMarker2DPoints.w - uTerrainMarker2DPoints.y);
+            vec4 lookupMarker = texture2D(uTerrainMarkerTexture, vec2(xLookup, yLookup));
+            if(lookupMarker.r > 0.5) {
+                terrainMarkerColor = vec4(0.0, uTerrainMarkerAnimation * 0.3, 0.0, 0.0);
+            }
+        }
+    }
+    return terrainMarkerColor;
+}
+
 void main(void) {
     vec3 norm = bumpMapNorm(uBmScale);
     vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
@@ -56,6 +75,6 @@ void main(void) {
     vec3 ambient = uLightAmbient * WATER_COLOR;
     vec3 diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0)* uLightDiffuse * WATER_COLOR /* * shadowFactor */ ;
     vec3 specular = setupSpecularLight(correctedLigtDirection, norm, uLightSpecularIntensity, uLightSpecularHardness) /* * shadowFactor */;
-    gl_FragColor = vec4(ambient + diffuse + specular, uTransparency);
+    gl_FragColor = vec4(ambient + diffuse + specular, uTransparency) + setupTerrainMarker();
 }
 

@@ -7,6 +7,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
@@ -27,6 +28,8 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     // private static Logger logger = Logger.getLogger(ClientSlopeRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
+    @Inject
+    private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute vertices;
     private Vec3Float32ArrayShaderAttribute normals;
     private Vec3Float32ArrayShaderAttribute tangents;
@@ -48,6 +51,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private WebGLUniformLocation uHasWater;
     private WebGLUniformLocation uWaterLevel;
     private WebGLUniformLocation uWaterGround;
+    private WebGlUniformTexture terrainMarkerTexture;
+    private WebGLUniformLocation terrainMarker2DPoints;
+    private WebGLUniformLocation terrainMarkerAnimation;
 
     @PostConstruct
     public void init() {
@@ -66,6 +72,9 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         uHasWater = webGlFacade.getUniformLocation("uHasWater");
         uWaterLevel = webGlFacade.getUniformLocation("uWaterLevel");
         uWaterGround = webGlFacade.getUniformLocation("uWaterGround");
+        terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
+        terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
+        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
     }
 
     @Override
@@ -129,6 +138,14 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         groundBottomBm.activate();
 
         webGlFacade.activateReceiveShadow();
+
+        if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
+            terrainMarkerTexture.activate();
+            webGlFacade.uniform4f(terrainMarker2DPoints, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getPlaceConfigBoundary());
+            webGlFacade.uniform1f(terrainMarkerAnimation, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getAnimation());
+        } else {
+            webGlFacade.uniform4f(terrainMarker2DPoints, 0, 0, 0, 0);
+        }
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

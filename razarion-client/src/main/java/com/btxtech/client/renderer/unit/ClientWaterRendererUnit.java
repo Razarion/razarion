@@ -6,6 +6,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.water.AbstractWaterRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainWaterTile;
@@ -26,6 +27,8 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     // private Logger logger = Logger.getLogger(ClientWaterRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
+    @Inject
+    private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
     private WebGlUniformTexture bumpMap;
     private LightUniforms lightUniforms;
@@ -33,6 +36,9 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private WebGLUniformLocation uBmDepth;
     private WebGLUniformLocation animation;
     private WebGLUniformLocation animation2;
+    private WebGlUniformTexture terrainMarkerTexture;
+    private WebGLUniformLocation terrainMarker2DPoints;
+    private WebGLUniformLocation terrainMarkerAnimation;
 
     @PostConstruct
     public void init() {
@@ -43,6 +49,9 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         uBmDepth = webGlFacade.getUniformLocation("uBmDepth");
         animation = webGlFacade.getUniformLocation("animation");
         animation2 = webGlFacade.getUniformLocation("animation2");
+        terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
+        terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
+        terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
     }
 
     @Override
@@ -70,6 +79,14 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         bumpMap.overrideScale(uiTerrainWaterTile.getWaterConfig().getBmScale());
         bumpMap.activate();
+
+        if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
+            terrainMarkerTexture.activate();
+            webGlFacade.uniform4f(terrainMarker2DPoints, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getPlaceConfigBoundary());
+            webGlFacade.uniform1f(terrainMarkerAnimation, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getAnimation());
+        } else {
+            webGlFacade.uniform4f(terrainMarker2DPoints, 0, 0, 0, 0);
+        }
 
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }

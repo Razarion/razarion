@@ -32,6 +32,7 @@ uniform sampler2D uBottomBm;
 uniform float uBottomBmScale;
 uniform float uBottomBmOnePixel;
 uniform float uBottomBmDepth;
+// Terrain marker
 uniform sampler2D uTerrainMarkerTexture;
 uniform vec4 uTerrainMarker2DPoints;
 uniform float uTerrainMarkerAnimation;
