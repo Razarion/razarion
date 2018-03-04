@@ -62,6 +62,7 @@ public class ViewService {
     private Collection<ViewFieldListener> viewFieldListeners = new ArrayList<>();
     private ViewField currentViewField;
     private Rectangle2D currentAabb;
+    private Rectangle2D currentInnerAabb;
 
     public Runnable addAndCallTransformationListener(TransformationListener listener) {
         transformationListeners.add(listener);
@@ -137,6 +138,7 @@ public class ViewService {
         shadowLookupMatrix = nativeMatrixFactory.createFromColumnMajorArray(shadowUiService.getShadowLookupTransformation().toWebGlArray());
         currentViewField = projectionTransformation.calculateViewField(0);
         currentAabb = currentViewField.calculateAabbRectangle();
+        currentInnerAabb = currentViewField.calculateInnerAabbRectangle();
     }
 
     public ViewField getCurrentViewField() {
@@ -145,5 +147,9 @@ public class ViewService {
 
     public Rectangle2D getCurrentAabb() {
         return currentAabb;
+    }
+
+    public Rectangle2D getCurrentInnerAabb() {
+        return currentInnerAabb;
     }
 }

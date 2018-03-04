@@ -1,7 +1,9 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.InsideCheckResult;
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 
 /**
@@ -38,6 +40,20 @@ public class PlaceConfig {
     public PlaceConfig setRadius(Double radius) {
         this.radius = radius;
         return this;
+    }
+
+    public Rectangle2D toAabb() {
+        if (position != null) {
+            if (radius != null) {
+                return new Rectangle2D(position.getX() - radius, position.getY() - radius, radius * 2, radius * 2);
+            } else {
+                return null;
+            }
+        } else if (polygon2D != null) {
+            return polygon2D.toAabb();
+        } else {
+            throw new IllegalStateException("Invalid PlaceConfig");
+        }
     }
 
     /**
@@ -88,6 +104,20 @@ public class PlaceConfig {
             return this.position.equalsDelta(position);
         } else if (polygon2D != null) {
             return polygon2D.isInside(position);
+        } else {
+            throw new IllegalStateException("Invalid PlaceConfig");
+        }
+    }
+
+    public boolean checkAdjoins(Rectangle2D rectangle2D) {
+        if (position != null) {
+            if (radius != null) {
+                return rectangle2D.adjoinsCircleExclusive(position, radius);
+            } else {
+                return rectangle2D.contains(position);
+            }
+        } else if (polygon2D != null) {
+            return polygon2D.checkInside(rectangle2D) != InsideCheckResult.OUTSIDE;
         } else {
             throw new IllegalStateException("Invalid PlaceConfig");
         }

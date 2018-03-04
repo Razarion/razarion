@@ -160,6 +160,10 @@ public class ViewField {
         return new Rectangle2D(newBottomLeft, newTopRight);
     }
 
+    public Rectangle2D calculateInnerAabbRectangle() {
+        return new Rectangle2D(bottomLeft.getX(), bottomLeft.getY(), bottomLeft.getDistance(bottomRight), Math.abs(bottomRight.getY() - topRight.getY()));
+    }
+
     public boolean isInside(Rectangle2D rectangle2D) {
         Polygon2D viewPolygon = new Polygon2D(toList());
         return viewPolygon.isInside(rectangle2D.toCorners());

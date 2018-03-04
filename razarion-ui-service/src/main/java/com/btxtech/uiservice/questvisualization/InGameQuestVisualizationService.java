@@ -3,6 +3,7 @@ package com.btxtech.uiservice.questvisualization;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
+import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -16,6 +17,8 @@ import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRender
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -40,13 +43,17 @@ public class InGameQuestVisualizationService {
     @Inject
     private BoxUiService boxUiService;
     @Inject
-    private Instance<QuestInGameItemVisualization> instance;
+    private Instance<QuestInGameItemVisualization> instanceQuestInGameItemVisualization;
+    @Inject
+    private Instance<QuestInGamePlaceVisualization> instanceQuestInGamePlaceVisualization;
     private QuestInGameItemVisualization questInGameItemVisualization;
+    private QuestInGamePlaceVisualization questInGamePlaceVisualization;
     private QuestConfig quest;
     private Set<Integer> itemTypeFilter;
     private boolean visible = true;
     private Consumer<Boolean> visibleCallback;
     private Consumer<Boolean> suppressCallback;
+    private Collection<Runnable> placeConfigCallback = new ArrayList<>();
 
     public void onQuestActivated(QuestConfig quest) {
         stop();
@@ -116,7 +123,7 @@ public class InGameQuestVisualizationService {
                 setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getHarvestColor(), resourceUiService.createSyncItemSetPositionMonitor());
                 break;
             case SYNC_ITEM_POSITION:
-                // TODO
+                setupVisualization(quest.getConditionConfig().getComparisonConfig().getPlaceConfig());
                 break;
             case BOX_PICKED:
                 setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getPickColor(), boxUiService.createSyncItemSetPositionMonitor());
@@ -126,12 +133,26 @@ public class InGameQuestVisualizationService {
 
     private void setupVisualization(Color color, AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor) {
         InGameQuestVisualConfig inGameQuestVisualConfig = gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig();
-        questInGameItemVisualization = instance.get();
+        questInGameItemVisualization = instanceQuestInGameItemVisualization.get();
         questInGameItemVisualization.init(color, inGameQuestVisualConfig, syncItemSetPositionMonitor);
         itemVisualizationRenderTask.activate(questInGameItemVisualization);
     }
 
+    private void setupVisualization(PlaceConfig placeConfig) {
+        if (placeConfig != null) {
+            questInGamePlaceVisualization = instanceQuestInGamePlaceVisualization.get();
+            questInGamePlaceVisualization.init(placeConfig, gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig());
+            placeConfigCallback.forEach(Runnable::run);
+            itemVisualizationRenderTask.activate(questInGamePlaceVisualization);
+        }
+    }
+
     private void hideVisualization() {
+        if (questInGamePlaceVisualization != null) {
+            questInGamePlaceVisualization = null;
+            itemVisualizationRenderTask.deactivate();
+            placeConfigCallback.forEach(Runnable::run);
+        }
         if (questInGameItemVisualization != null) {
             questInGameItemVisualization.releaseMonitor();
             itemVisualizationRenderTask.deactivate();
@@ -160,5 +181,17 @@ public class InGameQuestVisualizationService {
         } else {
             showVisualization();
         }
+    }
+
+    public boolean isQuestInGamePlaceVisualization() {
+        return questInGamePlaceVisualization != null;
+    }
+
+    public QuestInGamePlaceVisualization getQuestInGamePlaceVisualization() {
+        return questInGamePlaceVisualization;
+    }
+
+    public void addPlaceConfigCallback(Runnable runnable) {
+        placeConfigCallback.add(runnable);
     }
 }

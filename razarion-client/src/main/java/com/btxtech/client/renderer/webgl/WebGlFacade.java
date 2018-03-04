@@ -15,8 +15,9 @@ import com.btxtech.client.renderer.engine.shaderattribute.VertexShaderAttribute;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.nativejs.NativeMatrix;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLUniformLocation;
@@ -176,6 +177,10 @@ public class WebGlFacade {
         uniform4f(uniformLocation, color.getR(), color.getG(), color.getB(), color.getA());
     }
 
+    public void uniform4f(WebGLUniformLocation uniformLocation, Vertex4 vertex4) {
+        uniform4f(uniformLocation, vertex4.getX(), vertex4.getY(), vertex4.getZ(), vertex4.getW());
+    }
+
     public WebGlUniformTexture createWebGLTexture(int imageId, String samplerUniformName) {
         return createWebGLTexture(imageId, samplerUniformName, null, null);
     }
@@ -194,6 +199,12 @@ public class WebGlFacade {
         WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), scaleUniformLocation, scale, onePixelUniformLocation);
         webGlUniformTexture.setWebGLTexture(textureContainer.getTextureForBumpMap(imageId));
         textureContainer.handleImageSize(imageId, webGlUniformTexture::onImageSizeReceived);
+        return webGlUniformTexture;
+    }
+
+    public WebGlUniformTexture createTerrainMarkerWebGLTexture(String samplerUniformName) {
+        WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
+        webGlUniformTexture.setWebGLTexture(textureContainer.getTerrainMarkerTexture());
         return webGlUniformTexture;
     }
 

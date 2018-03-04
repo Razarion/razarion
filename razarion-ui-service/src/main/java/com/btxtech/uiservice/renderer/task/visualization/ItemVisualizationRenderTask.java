@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.datatypes.InGameItemVisualization;
+import com.btxtech.uiservice.questvisualization.QuestInGamePlaceVisualization;
 import com.btxtech.uiservice.renderer.AbstractRenderTask;
 import com.btxtech.uiservice.renderer.AbstractVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.CommonRenderComposite;
@@ -28,6 +29,7 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
     private boolean active;
     private InGameItemVisualization gameItemVisualization;
     private InGameDirectionVisualization inGameDirectionVisualization;
+    private QuestInGamePlaceVisualization questInGameOutOfViewVisualization;
 
     @Override
     public boolean isActive() {
@@ -52,11 +54,19 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
         active = true;
     }
 
+    public void activate(QuestInGamePlaceVisualization questInGameOutOfViewVisualization) {
+        deactivate();
+        this.questInGameOutOfViewVisualization = questInGameOutOfViewVisualization;
+        setupQuestInGameOutOfViewShape3D();
+        active = true;
+    }
+
     public void deactivate() {
         active = false;
         clear();
         gameItemVisualization = null;
         inGameDirectionVisualization = null;
+        questInGameOutOfViewVisualization = null;
     }
 
     @Override
@@ -86,19 +96,7 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
         ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
         modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideShape3DModelMatrices());
 
-        Shape3D shape3D = shape3DUiService.getShape3D(gameItemVisualization.getShape3DId());
-        for (Element3D element3D : shape3D.getElement3Ds()) {
-            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
-                renderComposite.init(vertexContainer);
-                renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_IMAGE, renderComposite);
-                renderComposite.fillBuffers();
-            }
-        }
-        add(modelRenderer);
+        setupRenderer(modelRenderer, gameItemVisualization.getShape3DId());
     }
 
 
@@ -111,19 +109,7 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
         ModelRenderer<InGameItemVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
         modelRenderer.init(gameItemVisualization, timeStamp -> gameItemVisualization.provideOutOfViewShape3DModelMatrices());
 
-        Shape3D shape3D = shape3DUiService.getShape3D(gameItemVisualization.getOutOfViewShape3DId());
-        for (Element3D element3D : shape3D.getElement3Ds()) {
-            for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
-                CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();
-                renderComposite.init(vertexContainer);
-                renderComposite.setRenderUnit(AbstractVertexContainerRenderUnit.class);
-                renderComposite.setupAnimation(shape3D, element3D, vertexContainer.getShapeTransform());
-                renderComposite.setNormRenderUnit(AbstractVertexContainerRenderUnit.class);
-                modelRenderer.add(RenderUnitControl.TERRAIN_ITEM_VISUALIZATION_IMAGE, renderComposite);
-                renderComposite.fillBuffers();
-            }
-        }
-        add(modelRenderer);
+        setupRenderer(modelRenderer, gameItemVisualization.getOutOfViewShape3DId());
     }
 
 
@@ -136,7 +122,23 @@ public class ItemVisualizationRenderTask extends AbstractRenderTask<InGameItemVi
         ModelRenderer<InGameDirectionVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
         modelRenderer.init(inGameDirectionVisualization, timeStamp -> inGameDirectionVisualization.provideDModelMatrices());
 
-        Shape3D shape3D = shape3DUiService.getShape3D(inGameDirectionVisualization.getShape3DId());
+        setupRenderer(modelRenderer, inGameDirectionVisualization.getShape3DId());
+    }
+
+    private void setupQuestInGameOutOfViewShape3D() {
+        if (questInGameOutOfViewVisualization.getOutOfViewShape3DId() == null) {
+            logger.warning("ItemVisualizationRenderTask: no getOutOfViewShape3DId for QuestInGamePlaceVisualization: " + questInGameOutOfViewVisualization);
+            return;
+        }
+
+        ModelRenderer<QuestInGamePlaceVisualization, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer = create();
+        modelRenderer.init(questInGameOutOfViewVisualization, timeStamp -> questInGameOutOfViewVisualization.provideOutOfViewModelMatrices());
+
+        setupRenderer(modelRenderer, questInGameOutOfViewVisualization.getOutOfViewShape3DId());
+    }
+
+    private void setupRenderer(ModelRenderer<?, CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer>, AbstractVertexContainerRenderUnit, VertexContainer> modelRenderer, int shape3DId) {
+        Shape3D shape3D = shape3DUiService.getShape3D(shape3DId);
         for (Element3D element3D : shape3D.getElement3Ds()) {
             for (VertexContainer vertexContainer : element3D.getVertexContainers()) {
                 CommonRenderComposite<AbstractVertexContainerRenderUnit, VertexContainer> renderComposite = modelRenderer.create();

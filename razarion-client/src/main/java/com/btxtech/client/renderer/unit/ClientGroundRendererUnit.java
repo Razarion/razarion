@@ -7,6 +7,7 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
+import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainTile;
@@ -27,6 +28,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     // private Logger logger = Logger.getLogger(ClientGroundRendererUnit.class.getName());
     @Inject
     private WebGlFacade webGlFacade;
+    @Inject
+    private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute vertices;
     private Vec3Float32ArrayShaderAttribute normals;
     private Vec3Float32ArrayShaderAttribute tangents;
@@ -39,6 +42,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private LightUniforms lightUniforms;
     private WebGLUniformLocation uTopBmDepth;
     private WebGLUniformLocation uBottomBmDepth;
+    private WebGlUniformTexture terrainMarkerTexture;
+    private WebGLUniformLocation terrainMarker2DPoints;
 
     @PostConstruct
     public void init() {
@@ -50,6 +55,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         lightUniforms = new LightUniforms(null, webGlFacade);
         uTopBmDepth = webGlFacade.getUniformLocation("uTopBmDepth");
         uBottomBmDepth = webGlFacade.getUniformLocation("uBottomBmDepth");
+        terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
+        terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
     }
 
     @Override
@@ -95,7 +102,12 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         bottomTexture.activate();
         bottomBm.overrideScale(uiTerrainTile.getBottomBmScale());
         bottomBm.activate();
-
+        if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
+            terrainMarkerTexture.activate();
+            webGlFacade.uniform4f(terrainMarker2DPoints, inGameQuestVisualizationService.getQuestInGamePlaceVisualization().getPlaceConfigBoundary());
+        } else {
+            webGlFacade.uniform4f(terrainMarker2DPoints, 0, 0, 0, 0);
+        }
         // Draw
         webGlFacade.drawArrays(WebGLRenderingContext.TRIANGLES);
     }
