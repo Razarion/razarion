@@ -2,6 +2,7 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
@@ -12,13 +13,11 @@ import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
-import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -51,7 +50,6 @@ public class ClientGameConnection {
     private ServerInventoryService serverInventoryService;
     private ObjectMapper mapper = new ObjectMapper();
     private RemoteEndpoint.Async async;
-    private Session session;
     private Date time;
     private String gameSessionUuid;
     private String httpSessionId;
@@ -71,7 +69,6 @@ public class ClientGameConnection {
     @OnOpen
     public void open(Session session, EndpointConfig config) {
         time = new Date();
-        this.session = session;
         async = session.getAsyncRemote();
         httpSessionId = (String) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         clientGameConnectionService.onOpen(this, getHumanPlayerId());

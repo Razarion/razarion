@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 @Dependent
 public class WebSocketWrapper {
     private static final int MAX_RETRIES = 5;
-    private static final int MAX_ESTABLISH_CONNECTION_TIMEOUT = 2000;
+    private static final int MAX_ESTABLISH_CONNECTION_TIMEOUT = 5000;
     private Logger logger = Logger.getLogger(WebSocketWrapper.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
