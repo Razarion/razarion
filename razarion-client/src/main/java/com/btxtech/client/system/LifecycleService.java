@@ -8,6 +8,7 @@ import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
 import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.rest.ServerMgmtProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
@@ -32,15 +33,18 @@ import com.btxtech.uiservice.system.boot.ClientRunner;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.terrain.TerrainUiService;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
 import elemental.client.Browser;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.jboss.errai.enterprise.client.jaxrs.api.ResponseException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * Created by Beat
@@ -185,24 +189,36 @@ public class LifecycleService {
     }
 
     private void startRestartWatchdog() {
-        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(WATCHDOG_DELAY, true, serverMgmt.call((RemoteCallback<Boolean>) running -> {
-            if (running) {
-                if (simpleScheduledFuture != null) {
-                    simpleScheduledFuture.cancel();
-                    simpleScheduledFuture = null;
+        simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(WATCHDOG_DELAY, true, serverMgmt.call((RemoteCallback<String>) serverStateString -> {
+            try {
+                ServerState serverState = ServerState.valueOf(serverStateString);
+                if (serverState == ServerState.RUNNING) {
+                    if (simpleScheduledFuture != null) {
+                        simpleScheduledFuture.cancel();
+                        simpleScheduledFuture = null;
+                    }
+                    if (serverRestartCallback != null) {
+                        serverRestartCallback.accept(ServerState.RUNNING);
+                    }
+                    Window.Location.replace("/");
+                } else {
+                    if (serverRestartCallback != null) {
+                        serverRestartCallback.accept(serverState);
+                    }
                 }
-                if (serverRestartCallback != null) {
-                    serverRestartCallback.accept(ServerState.RUNNING);
-                }
-                Window.Location.replace("/");
-            } else {
-                if (serverRestartCallback != null) {
-                    serverRestartCallback.accept(ServerState.STARTING_PLANET);
-                }
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
             }
         }, (message, throwable) -> {
             if (serverRestartCallback != null) {
-                serverRestartCallback.accept(ServerState.RESTARTING);
+                if (throwable instanceof ResponseException) {
+                    ResponseException responseException = (ResponseException) throwable;
+                    if (responseException.getResponse().getStatusCode() == Response.SC_NOT_FOUND) {
+                        serverRestartCallback.accept(ServerState.STARTING);
+                        return false;
+                    }
+                }
+                serverRestartCallback.accept(ServerState.SHUTTING_DOWN);
             }
             return false;
         })::getServerStatus, SimpleExecutorService.Type.SERVER_RESTART_WATCHDOG);

@@ -15,6 +15,7 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LifecyclePacket;
+import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -54,14 +55,14 @@ public class ServerMgmt {
     private HistoryPersistence historyPersistence;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private boolean running;
+    private ServerState serverState = ServerState.UNKNOWN;
 
-    public boolean isRunning() {
-        return running;
+    public ServerState getServerState() {
+        return serverState;
     }
 
-    public void setRunning(boolean running) {
-        this.running = running;
+    public void setServerState(ServerState serverState) {
+        this.serverState = serverState;
     }
 
     @SecurityCheck
@@ -220,7 +221,7 @@ public class ServerMgmt {
 
     @SecurityCheck
     public void sendRestartLifecycle() {
-        running = false;
+        serverState = ServerState.SHUTTING_DOWN;
         clientSystemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.RESTART));
     }
 }

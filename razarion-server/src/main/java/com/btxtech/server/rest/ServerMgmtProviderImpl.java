@@ -2,6 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.shared.Constants;
+import com.btxtech.shared.datatypes.ServerState;
 import com.btxtech.shared.rest.ServerMgmtProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -18,12 +19,13 @@ public class ServerMgmtProviderImpl implements ServerMgmtProvider {
     private ExceptionHandler exceptionHandler;
 
     @Override
-    public boolean getServerStatus() {
+    // Enum as return value not working. Not proper JSON. Too many quotation marks.
+    public String getServerStatus() {
         try {
-            return serverMgmt.isRunning();
+            return serverMgmt.getServerState().toString();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
-            return false;
+            return ServerState.UNKNOWN.toString();
         }
     }
 

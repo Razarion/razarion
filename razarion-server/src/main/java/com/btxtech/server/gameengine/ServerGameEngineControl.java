@@ -219,10 +219,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void shutdown() {
         try {
             planetBackupMongoDb.saveBackup(planetService.backup(false));
-        } catch (JsonProcessingException e) {
-            exceptionHandler.handleException(e);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        stop();
+        try {
+            stop();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public void onLevelChanged(HumanPlayerId humanPlayerId, int levelId) {

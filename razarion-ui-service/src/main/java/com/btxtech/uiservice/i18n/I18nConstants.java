@@ -897,9 +897,11 @@ public interface I18nConstants {
 
     String serverRestartTitle();
 
-    String restarting();
+    String serverShuttingDown();
 
-    String startingPlanet();
+    String serverStarting();
 
-    String running();
+    String serverRunning();
+
+    String unknown();
 }

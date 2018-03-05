@@ -25,17 +25,20 @@ public class ServerRestartDialog extends Composite implements ModalDialogContent
 
     @Override
     public void init(Void ignore) {
+        stateSpan.setTextContent(I18nHelper.getConstants().serverShuttingDown());
         lifecycleService.setServerRestartCallback(serverState -> {
             switch (serverState) {
-                case RESTARTING:
-                    stateSpan.setTextContent(I18nHelper.getConstants().restarting());
+                case SHUTTING_DOWN:
+                    stateSpan.setTextContent(I18nHelper.getConstants().serverShuttingDown());
                     break;
-                case STARTING_PLANET:
-                    stateSpan.setTextContent(I18nHelper.getConstants().startingPlanet());
+                case STARTING:
+                    stateSpan.setTextContent(I18nHelper.getConstants().serverStarting());
                     break;
                 case RUNNING:
-                    stateSpan.setTextContent(I18nHelper.getConstants().running());
+                    stateSpan.setTextContent(I18nHelper.getConstants().serverRunning());
                     break;
+                    default:
+                        stateSpan.setTextContent(I18nHelper.getConstants().unknown());
             }
         });
     }
