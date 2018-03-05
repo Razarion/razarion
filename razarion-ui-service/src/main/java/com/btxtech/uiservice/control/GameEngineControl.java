@@ -104,6 +104,8 @@ public abstract class GameEngineControl {
 
     protected abstract NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object singleData);
 
+    protected abstract void onConnectionLost();
+
     public void enableTracking() {
     }
 
@@ -384,6 +386,9 @@ public abstract class GameEngineControl {
                 break;
             case QUEST_PROGRESS:
                 gameUiControl.onQuestProgress((QuestProgressInfo) controlPackage.getData(0));
+                break;
+            case CONNECTION_LOST:
+                onConnectionLost();
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

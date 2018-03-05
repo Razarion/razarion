@@ -51,6 +51,7 @@ public class ClientGameConnection {
     private ServerInventoryService serverInventoryService;
     private ObjectMapper mapper = new ObjectMapper();
     private RemoteEndpoint.Async async;
+    private Session session;
     private Date time;
     private String gameSessionUuid;
     private String httpSessionId;
@@ -70,6 +71,7 @@ public class ClientGameConnection {
     @OnOpen
     public void open(Session session, EndpointConfig config) {
         time = new Date();
+        this.session = session;
         async = session.getAsyncRemote();
         httpSessionId = (String) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         clientGameConnectionService.onOpen(this, getHumanPlayerId());

@@ -20,6 +20,7 @@ public class GameEngineControlPackage {
         TICK_UPDATE_RESPONSE_FAIL,
         PERFMON_REQUEST,
         PERFMON_RESPONSE,
+        CONNECTION_LOST,
         // Bot
         START_BOTS,
         EXECUTE_BOT_COMMANDS,

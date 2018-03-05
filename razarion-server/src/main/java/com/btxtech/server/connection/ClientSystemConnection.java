@@ -11,8 +11,8 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
 import javax.websocket.CloseReason;
 import javax.websocket.EndpointConfig;
 import javax.websocket.OnClose;
@@ -22,7 +22,9 @@ import javax.websocket.OnOpen;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -40,8 +42,11 @@ public class ClientSystemConnection {
     private SessionService sessionService;
     @Inject
     private ChatPersistence chatPersistence;
+    @Inject
+    private Logger logger;
     private ObjectMapper mapper = new ObjectMapper();
     private RemoteEndpoint.Async async;
+    private Session session;
     private Date time;
     private String gameSessionUuid;
     private String httpSessionId;
@@ -61,6 +66,7 @@ public class ClientSystemConnection {
     @OnOpen
     public void open(Session session, EndpointConfig config) {
         time = new Date();
+        this.session = session;
         async = session.getAsyncRemote();
         httpSessionId = (String) config.getUserProperties().get(WebSocketEndpointConfigAware.HTTP_SESSION_KEY);
         clientSystemConnectionService.onOpen(this);

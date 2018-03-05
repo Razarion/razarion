@@ -28,7 +28,9 @@ public enum PerfmonEnum {
     REGISTER(true),
     USER_SET_NAME(true),
     SERVER_RESTART_WATCHDOG(true),
-    RELOAD_CLIENT_WRONG_INTERFACE_VERSION(true);
+    RELOAD_CLIENT_WRONG_INTERFACE_VERSION(true),
+    ESTABLISH_CONNECTION(true),
+    WAIT_RESTART(true);
 
     private boolean fps;
 

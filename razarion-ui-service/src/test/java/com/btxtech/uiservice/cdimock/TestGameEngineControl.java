@@ -38,4 +38,9 @@ public class TestGameEngineControl extends GameEngineControl {
     protected NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object singleData) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected void onConnectionLost() {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -45,4 +45,9 @@ public class DevToolGameEngineControl extends GameEngineControl {
     protected NativeSyncBaseItemTickInfo castToNativeSyncBaseItemTickInfo(Object javaScriptObject) {
         return (NativeSyncBaseItemTickInfo) javaScriptObject;
     }
+
+    @Override
+    protected void onConnectionLost() {
+        throw new UnsupportedOperationException();
+    }
 }

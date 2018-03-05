@@ -1,22 +1,17 @@
 package com.btxtech.client.system;
 
-import com.btxtech.common.GwtCommonUtils;
-import com.btxtech.common.WebSocketHelper;
+import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SystemConnectionPacket;
 import com.btxtech.uiservice.control.AbstractServerSystemConnection;
-import elemental.client.Browser;
-import elemental.events.CloseEvent;
 import elemental.events.Event;
 import elemental.events.MessageEvent;
-import elemental.html.WebSocket;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -28,32 +23,19 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
     private LifecycleService lifecycleService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private Logger logger = Logger.getLogger(ClientServerSystemConnection.class.getName());
-    private WebSocket webSocket;
+    @Inject
+    private WebSocketWrapper webSocketWrapper;
 
     @Override
     public void init() {
-        webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT));
-        webSocket.setOnerror(evt -> {
-            try {
-                logger.severe("ClientServerSystemConnection WebSocket OnError: " + GwtCommonUtils.jsonStringify(evt));
-                lifecycleService.handleServerRestart();
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-            }
-        });
-        webSocket.setOnclose(evt -> {
-            try {
-                CloseEvent closeEvent = (CloseEvent) evt;
-                logger.severe("ClientServerSystemConnection WebSocket Close. Code: " + closeEvent.getCode() + " Reason: " + closeEvent.getReason() + " WasClean: " + closeEvent.isWasClean());
-                lifecycleService.handleServerRestart();
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-            }
-        });
-        webSocket.setOnmessage(this::handleMessage);
-        webSocket.setOnopen(evt -> sendGameSessionUuid());
+        webSocketWrapper.start(CommonUrl.SYSTEM_CONNECTION_WEB_SOCKET_ENDPOINT,
+                () -> {
+                    openCallback();
+                    sendGameSessionUuid();
+                }, this::handleMessage, lifecycleService::handleServerRestart,
+                () -> lifecycleService.onConnectionLost("ClientServerSystemConnection"));
     }
+
 
     private void handleMessage(Event event) {
         try {
@@ -66,7 +48,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
 
     @Override
     protected void sendToServer(String text) {
-        webSocket.send(text);
+        webSocketWrapper.send(text);
     }
 
     @Override
@@ -85,12 +67,7 @@ public class ClientServerSystemConnection extends AbstractServerSystemConnection
 
     @Override
     public void close() {
-        try {
-            webSocket.close();
-            webSocket = null;
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException("ClientServerSystemConnection.close()", throwable);
-        }
+        webSocketWrapper.close();
     }
 
     @Override

@@ -44,7 +44,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.function.Consumer;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -53,6 +53,8 @@ import java.util.logging.Level;
 @Singleton
 public class LifecycleService {
     private static final int WATCHDOG_DELAY = 5000;
+    private static final int RESTART_DELAY = 3000;
+    private Logger logger = Logger.getLogger(LifecycleService.class.getName());
     @Inject
     private ClientRunner clientRunner;
     @Inject
@@ -109,11 +111,13 @@ public class LifecycleService {
     private Caller<ServerMgmtProvider> serverMgmt;
     private Consumer<ServerState> serverRestartCallback;
     private SimpleScheduledFuture simpleScheduledFuture;
+    private boolean beforeUnload;
 
     @PostConstruct
     public void postConstruct() {
         clientRunner.addStartupProgressListener(clientTrackerService);
         clientRunner.addStartupProgressListener(clientScreenCover);
+        Browser.getDocument().addEventListener("beforeunload", evt -> beforeUnload = true);
     }
 
     public void startCold() {
@@ -158,6 +162,9 @@ public class LifecycleService {
     }
 
     public void handleServerRestart() {
+        if (beforeUnload) {
+            return;
+        }
         clearAndHold(null);
         gameUiControl.closeConnection();
         modalDialogManager.showSingleNoClosableServerRestartDialog();
@@ -226,5 +233,25 @@ public class LifecycleService {
 
     public void setServerRestartCallback(Consumer<ServerState> serverRestartCallback) {
         this.serverRestartCallback = serverRestartCallback;
+    }
+
+    public void onConnectionLost(String websocketName) {
+        logger.severe("Connection lost on websocket: '" + websocketName + "'. Restarting browser");
+        serverMgmt.call((RemoteCallback<String>) serverStateString -> {
+            try {
+                ServerState serverState = ServerState.valueOf(serverStateString);
+                if (serverState == ServerState.RUNNING) {
+                    modalDialogManager.showSingleNoClosableDialog(I18nHelper.getConstants().connectionFailed(), I18nHelper.getConstants().connectionLost());
+                    simpleExecutorService.schedule(RESTART_DELAY, () -> Window.Location.replace("/"), SimpleExecutorService.Type.WAIT_RESTART);
+                } else {
+                    handleServerRestart();
+                }
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        }, (message, throwable) -> {
+            handleServerRestart();
+            return false;
+        }).getServerStatus();
     }
 }

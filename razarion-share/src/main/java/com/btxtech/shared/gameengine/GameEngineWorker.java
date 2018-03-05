@@ -667,6 +667,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
+    public void onConnectionLost() {
+        sendToClient(GameEngineControlPackage.Command.CONNECTION_LOST);
+    }
+
     public void updateResourceSlave(Integer resources) {
         if (playerBase != null) {
             playerBase.setResources(resources);

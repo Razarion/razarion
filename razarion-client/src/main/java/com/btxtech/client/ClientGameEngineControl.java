@@ -1,5 +1,6 @@
 package com.btxtech.client;
 
+import com.btxtech.client.system.LifecycleService;
 import com.btxtech.common.WorkerMarshaller;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
@@ -15,6 +16,7 @@ import elemental.events.MessageEvent;
 import elemental.html.Worker;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
@@ -29,6 +31,8 @@ public class ClientGameEngineControl extends GameEngineControl {
     private ExceptionHandler exceptionHandler;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private Instance<LifecycleService> lifecycleService;
     private Worker worker;
     private DeferredStartup deferredStartup;
     private QueueStatistics queueStatistics;
@@ -88,6 +92,11 @@ public class ClientGameEngineControl extends GameEngineControl {
     @Override
     public void enableTracking() {
         queueStatistics = new QueueStatistics();
+    }
+
+    @Override
+    protected void onConnectionLost() {
+        lifecycleService.get().onConnectionLost("ClientServerGameConnection");
     }
 
     @Override

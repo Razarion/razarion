@@ -1,23 +1,18 @@
 package com.btxtech.worker;
 
-import com.btxtech.common.GwtCommonUtils;
-import com.btxtech.common.WebSocketHelper;
+import com.btxtech.common.system.WebSocketWrapper;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.planet.connection.AbstractServerGameConnection;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
-import elemental.client.Browser;
-import elemental.events.CloseEvent;
 import elemental.events.Event;
 import elemental.events.MessageEvent;
-import elemental.html.WebSocket;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -29,29 +24,17 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
     private ExceptionHandler exceptionHandler;
     @Inject
     private GameEngineWorker gameEngineWorker;
-    private Logger logger = Logger.getLogger(ClientServerGameConnection.class.getName());
-    private WebSocket webSocket;
+    @Inject
+    private WebSocketWrapper webSocketWrapper;
 
     @Override
     public void init() {
-        webSocket = Browser.getWindow().newWebSocket(WebSocketHelper.getUrl(CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT));
-        webSocket.setOnerror(evt -> {
-            try {
-                logger.severe("ClientServerGameConnection WebSocket OnError: " + GwtCommonUtils.jsonStringify(evt));
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-            }
-        });
-        webSocket.setOnclose(evt -> {
-            try {
-                CloseEvent closeEvent = (CloseEvent) evt;
-                logger.severe("ClientServerGameConnection WebSocket Close. Code: " + closeEvent.getCode() + " Reason: " + closeEvent.getReason() + " WasClean: " + closeEvent.isWasClean());
-            } catch (Throwable t) {
-                exceptionHandler.handleException(t);
-            }
-        });
-        webSocket.setOnmessage(this::handleMessage);
-        webSocket.setOnopen(evt -> sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SET_GAME_SESSION_UUID, toJson(gameEngineWorker.getGameSessionUuid()))));
+        webSocketWrapper.start(CommonUrl.GAME_CONNECTION_WEB_SOCKET_ENDPOINT,
+                () -> sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.SET_GAME_SESSION_UUID, toJson(gameEngineWorker.getGameSessionUuid()))),
+                this::handleMessage,
+                () -> {
+                },
+                () -> gameEngineWorker.onConnectionLost());
     }
 
     private void handleMessage(Event event) {
@@ -65,7 +48,7 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
 
     @Override
     protected void sendToServer(String text) {
-        webSocket.send(text);
+        webSocketWrapper.send(text);
     }
 
     @Override
@@ -80,11 +63,6 @@ public class ClientServerGameConnection extends AbstractServerGameConnection {
 
     @Override
     public void close() {
-        try {
-            webSocket.close();
-            webSocket = null;
-        } catch (Throwable throwable) {
-            exceptionHandler.handleException("ClientServerGameConnection.close()", throwable);
-        }
+        webSocketWrapper.close();
     }
 }

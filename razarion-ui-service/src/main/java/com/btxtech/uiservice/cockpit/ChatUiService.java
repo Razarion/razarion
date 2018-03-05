@@ -37,4 +37,11 @@ public class ChatUiService {
             chatCockpit.displayMessages(chatMessages);
         }
     }
+
+    public void clear() {
+        chatMessages.clear();
+        if (chatCockpit != null) {
+            chatCockpit.displayMessages(chatMessages);
+        }
+    }
 }

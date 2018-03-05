@@ -45,6 +45,10 @@ public abstract class AbstractServerSystemConnection {
 
     public abstract void close();
 
+    protected void openCallback() {
+        chatUiService.clear();
+    }
+
     public void sendGameSessionUuid() {
         sendToServer(ConnectionMarshaller.marshall(SystemConnectionPacket.SET_GAME_SESSION_UUID, toJson(clientRunner.getGameSessionUuid())));
     }

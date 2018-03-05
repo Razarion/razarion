@@ -61,6 +61,7 @@ public class WorkerMarshaller {
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
+            case CONNECTION_LOST:
                 break;
             // Single JSON data
             case START_BOTS:
@@ -164,6 +165,7 @@ public class WorkerMarshaller {
             case TICK_UPDATE_REQUEST:
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
+            case CONNECTION_LOST:
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), StaticGameConfig.class));
