@@ -45,7 +45,7 @@ public interface TrackerProvider {
     @POST
     @Path("performanceTracker")
     @Consumes(MediaType.APPLICATION_JSON)
-    void performanceTracker(PerfmonStatistic perfmonStatistic);
+    void performanceTracker(List<PerfmonStatistic> perfmonStatistics);
 
     @POST
     @Path("terrainTileStatisticsTracker")

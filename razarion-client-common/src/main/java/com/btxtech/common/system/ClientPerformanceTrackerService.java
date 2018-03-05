@@ -32,7 +32,6 @@ public class ClientPerformanceTrackerService {
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
     private SimpleScheduledFuture simpleScheduledFuture;
-    private int sendingPerformanceTrackerCount;
 
     public void start() {
         if (simpleScheduledFuture != null) {
@@ -43,7 +42,6 @@ public class ClientPerformanceTrackerService {
     }
 
     public void stop() {
-        sendingPerformanceTrackerCount = 0;
         try {
             if (simpleScheduledFuture != null) {
                 simpleScheduledFuture.cancel();
@@ -58,14 +56,11 @@ public class ClientPerformanceTrackerService {
     }
 
     private void sendToClient() {
-        if (sendingPerformanceTrackerCount <= 0) {
-            List<PerfmonStatistic> perfmonStatistics = perfmonService.pullServerPerfmonStatistics();
-            for (PerfmonStatistic perfmonStatistic : perfmonStatistics) {
-                sendingPerformanceTrackerCount++;
-                providerCaller.call(response -> {
-                    sendingPerformanceTrackerCount--;
-                }, exceptionHandler.restErrorHandler("TrackerProvider.performanceTracker(). TimeStamp: " + DisplayUtils.formatDateMillis(perfmonStatistic.getTimeStamp()) + " PerfmonEnum: " + perfmonStatistic.getPerfmonEnum())).performanceTracker(perfmonStatistic);
-            }
+        List<PerfmonStatistic> perfmonStatistics = perfmonService.pullServerPerfmonStatistics();
+        if (perfmonStatistics.size() > 0) {
+            providerCaller.call(response -> {
+                    }, exceptionHandler.restErrorHandler("TrackerProvider.performanceTracker()")
+            ).performanceTracker(perfmonStatistics);
         }
         List<TerrainTileStatistic> terrainTileStatistics = perfmonService.flushTerrainTileStatistics();
         if (!terrainTileStatistics.isEmpty()) {

@@ -72,9 +72,9 @@ public class TrackerProviderImpl implements TrackerProvider {
     }
 
     @Override
-    public void performanceTracker(PerfmonStatistic perfmonStatistic) {
+    public void performanceTracker(List<PerfmonStatistic> perfmonStatistics) {
         try {
-            trackerPersistence.onPerformanceTracker(perfmonStatistic);
+            trackerPersistence.onPerformanceTracker(perfmonStatistics);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

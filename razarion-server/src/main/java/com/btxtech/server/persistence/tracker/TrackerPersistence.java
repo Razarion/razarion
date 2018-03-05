@@ -170,10 +170,12 @@ public class TrackerPersistence {
     }
 
     @Transactional
-    public void onPerformanceTracker(PerfmonStatistic perfmonStatistic) {
-        PerfmonStatisticEntity fromPerfmonStatistic = new PerfmonStatisticEntity();
-        fromPerfmonStatistic.fromPerfmonStatistic(sessionHolder.getPlayerSession().getHttpSessionId(), new Date(), perfmonStatistic);
-        entityManager.persist(fromPerfmonStatistic);
+    public void onPerformanceTracker(List<PerfmonStatistic> perfmonStatistics) {
+        perfmonStatistics.forEach(perfmonStatistic -> {
+            PerfmonStatisticEntity fromPerfmonStatistic = new PerfmonStatisticEntity();
+            fromPerfmonStatistic.fromPerfmonStatistic(sessionHolder.getPlayerSession().getHttpSessionId(), new Date(), perfmonStatistic);
+            entityManager.persist(fromPerfmonStatistic);
+        });
     }
 
     @Transactional
