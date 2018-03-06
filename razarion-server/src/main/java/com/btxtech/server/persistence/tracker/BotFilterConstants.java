@@ -21,6 +21,7 @@ public interface BotFilterConstants {
         botStrings.add("%Mozilla/5.0 (compatible; AhrefsBot/5.2; +http://ahrefs.com/robot/)%");
         botStrings.add("%Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)%");
         botStrings.add("%masscan/1.0 (https://github.com/robertdavidgraham/masscan)%");
+        botStrings.add("%facebookexternalhit/1.1%");
         return botStrings;
     }
 
