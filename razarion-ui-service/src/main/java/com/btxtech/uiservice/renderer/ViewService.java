@@ -109,6 +109,9 @@ public class ViewService {
     }
 
     public void onViewChanged() {
+        if(!terrainUiService.isLoaded()) {
+            return;
+        }
         updateTransformationMatrices();
         transformationListeners.forEach(listeners -> listeners.onTransformationChanged(viewMatrix, perspectiveMatrix));
         transformationNormListeners.forEach(listeners -> listeners.onTransformationChanged(viewMatrix, viewNormMatrix, perspectiveMatrix));

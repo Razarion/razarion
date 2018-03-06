@@ -54,6 +54,7 @@ public class TerrainUiService {
     private Map<Index, UiTerrainTile> displayTerrainTiles = new HashMap<>();
     private Map<Index, UiTerrainTile> cacheTerrainTiles = new HashMap<>();
     private Map<Index, Consumer<TerrainTile>> terrainTileConsumers = new HashMap<>();
+    private boolean loaded;
 
     public TerrainUiService() {
         highestPointInView = HIGHEST_POINT_IN_VIEW;
@@ -61,12 +62,13 @@ public class TerrainUiService {
     }
 
     public void clear() {
+        loaded = false;
         terrainObjectConfigModelMatrices.clear();
         terrainZConsumers.clear();
         clearTerrainTiles();
     }
 
-    public void clearTerrainTiles() {
+    private void clearTerrainTiles() {
         for (UiTerrainTile uiTerrainTile : displayTerrainTiles.values()) {
             uiTerrainTile.dispose();
         }
@@ -259,5 +261,13 @@ public class TerrainUiService {
         terrainTypeService.overrideSlopeSkeletonConfig(slopeSkeletonConfig);
         displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeSkeletonConfig));
         cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeSkeletonConfig));
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    public void setLoaded() {
+        loaded = true;
     }
 }
