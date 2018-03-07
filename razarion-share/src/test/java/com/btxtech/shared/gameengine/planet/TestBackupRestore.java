@@ -15,7 +15,6 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.energy.EnergyServiceTest;
@@ -32,7 +31,6 @@ import org.unitils.reflectionassert.ReflectionAssert;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -361,36 +359,6 @@ public class TestBackupRestore extends WeldMasterBaseTest {
             }
         }
         throw new IllegalArgumentException("No BackupComparisionInfo found for HumanPlayerId: " + playerBase1.getHumanPlayerId());
-    }
-
-    private class TestBaseRestoreProvider implements BaseRestoreProvider {
-        private Collection<UserContext> userContexts = new ArrayList<>();
-
-        public void addUserContext(UserContext userContext) {
-            userContexts.add(userContext);
-        }
-
-        @Override
-        public Integer getLevel(PlayerBaseInfo playerBaseInfo) {
-            return getUserContext(playerBaseInfo).getLevelId();
-        }
-
-        @Override
-        public Map<Integer, Integer> getUnlockedItemLimit(PlayerBaseInfo playerBaseInfo) {
-            return getUserContext(playerBaseInfo).getUnlockedItemLimit();
-        }
-
-        @Override
-        public String getName(PlayerBaseInfo playerBaseInfo) {
-            return getUserContext(playerBaseInfo).getName();
-        }
-
-        private UserContext getUserContext(PlayerBaseInfo playerBaseInfo) {
-            if (playerBaseInfo.getHumanPlayerId() == null) {
-                throw new IllegalStateException("Can not restore base with id: " + playerBaseInfo.getBaseId() + " name: " + playerBaseInfo.getName() + " may be this is a bot");
-            }
-            return userContexts.stream().filter(userContext -> userContext.getHumanPlayerId().equals(playerBaseInfo.getHumanPlayerId())).findFirst().orElseThrow(() -> new IllegalArgumentException("No Context for: " + playerBaseInfo.getHumanPlayerId()));
-        }
     }
 
 }

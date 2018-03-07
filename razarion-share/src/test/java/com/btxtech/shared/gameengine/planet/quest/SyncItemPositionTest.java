@@ -2,9 +2,11 @@ package com.btxtech.shared.gameengine.planet.quest;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.TestBaseRestoreProvider;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Test;
 
@@ -98,7 +100,6 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         assertQuestPassed(playerBaseFull.getHumanPlayerId());
     }
 
-
     @Test
     public void positionTime() {
         setup();
@@ -133,9 +134,9 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), 57, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
         assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), 60, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
-        for(int i = 0; i < 300; i++) {
+        for (int i = 0; i < 300; i++) {
             getQuestService().tick();
-            if(i != 0 && i % 50 == 0) {
+            if (i != 0 && i % 50 == 0) {
                 assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), 55 - (i / PlanetService.TICKS_PER_SECONDS), 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
             }
         }
@@ -157,23 +158,73 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), 50, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
         assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), 60, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
-        for(int i = 0; i < 300; i++) {
+        for (int i = 0; i < 300; i++) {
             getQuestService().tick();
-            if(i != 0 && i % 50 == 0) {
+            if (i != 0 && i % 50 == 0) {
                 assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), 55 - (i / PlanetService.TICKS_PER_SECONDS), 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
             }
         }
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), 30, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
         assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), 30, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
-        for(int i = 0; i < 300; i++) {
+        for (int i = 0; i < 300; i++) {
             getQuestService().tick();
-            if(i != 0 && i % 50 == 0) {
+            if (i != 0 && i % 50 == 0) {
                 assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), 30 - (i / PlanetService.TICKS_PER_SECONDS), 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
             }
         }
         assertQuestProgressPositionGameLogicListenerNone(playerBaseFull.getHumanPlayerId());
         assertQuestPassed(playerBaseFull.getHumanPlayerId());
+    }
+
+    @Test
+    public void positionTimeBackupRestore() {
+        setup();
+        // Create user
+        UserContext userContext = createLevel1UserContext(1);
+        // Create base
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext);
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        // Start quest
+        getQuestService().addQuestListener(createQuestListener());
+        getQuestService().activateCondition(playerBaseFull.getHumanPlayerId(), GameTestContent.createPositionTimeQuest());
+        // Create factory
+        getCommandService().build(builder.getId(), new DecimalPosition(20, 40), GameTestContent.FACTORY_ITEM_TYPE_ID);
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        // Create 3 attacker
+        SyncBaseItem attacker1 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 160), playerBaseFull);
+        SyncBaseItem attacker2 = fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(60, 160), playerBaseFull);
+        // Move first to position not passed
+        getCommandService().move(attacker1, new DecimalPosition(180, 150));
+        tickPlanetServiceBaseServiceActive();
+        // Move second to position not passed due to time
+        getCommandService().move(attacker2, new DecimalPosition(140, 150));
+        tickPlanetServiceBaseServiceActive();
+        for (int i = 0; i < 300; i++) {
+            getQuestService().tick();
+        }
+        assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
+        assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), 30, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
+        // Backup
+        BackupPlanetInfo backupPlanetInfo = getPlanetService().backup(false);
+        for (int i = 0; i < 150; i++) {
+            getQuestService().tick();
+        }
+        assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
+        assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), 15, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
+        // Restore
+        TestBaseRestoreProvider testBaseRestoreProvider = new TestBaseRestoreProvider();
+        testBaseRestoreProvider.addUserContext(userContext);
+        getPlanetService().restoreBases(backupPlanetInfo, testBaseRestoreProvider);
+        getQuestService().clean();
+        getQuestService().activateCondition(userContext.getHumanPlayerId(), GameTestContent.createPositionTimeQuest());
+        getQuestService().restore(backupPlanetInfo);
+        getQuestService().tick();
+        // Verify
+        assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
+        assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), 30, 10, GameTestContent.ATTACKER_ITEM_TYPE_ID, 2);
     }
 
 }
