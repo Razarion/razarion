@@ -519,46 +519,50 @@ public class BaseItemService {
     }
 
     public void tick() {
-        synchronized (activeItems) {
-            synchronized (activeItemQueue) {
-                activeItems.addAll(activeItemQueue);
-                activeItemQueue.clear();
-            }
-            Iterator<SyncBaseItem> iterator = activeItems.iterator();
-            while (iterator.hasNext()) {
-                SyncBaseItem activeItem = iterator.next();
-                if (!activeItem.isAlive()) {
-                    iterator.remove();
-                    continue;
+        try {
+            synchronized (activeItems) {
+                synchronized (activeItemQueue) {
+                    activeItems.addAll(activeItemQueue);
+                    activeItemQueue.clear();
                 }
-                if (activeItem.isIdle()) {
-                    iterator.remove();
-                    if (!guardingItemService.add(activeItem)) {
+                Iterator<SyncBaseItem> iterator = activeItems.iterator();
+                while (iterator.hasNext()) {
+                    SyncBaseItem activeItem = iterator.next();
+                    if (!activeItem.isAlive()) {
+                        iterator.remove();
+                        continue;
+                    }
+                    if (activeItem.isIdle()) {
+                        iterator.remove();
+                        if (!guardingItemService.add(activeItem)) {
+                            gameLogicService.onSyncBaseItemIdle(activeItem);
+                        }
+                        continue;
+                    }
+                    try {
+                        if (!activeItem.tick()) {
+                            try {
+                                activeItem.stop();
+                                iterator.remove();
+                                if (!guardingItemService.add(activeItem)) {
+                                    gameLogicService.onSyncBaseItemIdle(activeItem);
+                                }
+                            } catch (Throwable t) {
+                                exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
+                            }
+                        }
+                    } catch (Throwable t) {
+                        activeItem.stop();
+                        exceptionHandler.handleException(t);
+                        iterator.remove();
                         gameLogicService.onSyncBaseItemIdle(activeItem);
                     }
-                    continue;
-                }
-                try {
-                    if (!activeItem.tick()) {
-                        try {
-                            activeItem.stop();
-                            iterator.remove();
-                            if (!guardingItemService.add(activeItem)) {
-                                gameLogicService.onSyncBaseItemIdle(activeItem);
-                            }
-                        } catch (Throwable t) {
-                            exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
-                        }
-                    }
-                } catch (Throwable t) {
-                    activeItem.stop();
-                    exceptionHandler.handleException(t);
-                    iterator.remove();
-                    gameLogicService.onSyncBaseItemIdle(activeItem);
                 }
             }
+            guardingItemService.tick();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        guardingItemService.tick();
     }
 
     public void addToActiveItemQueue(SyncBaseItem activeItem) {

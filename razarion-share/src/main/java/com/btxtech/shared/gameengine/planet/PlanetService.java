@@ -158,7 +158,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     private void notifyTickListeners() {
         for (PlanetTickListener tickListener : tickListeners) {
-            tickListener.onPostTick();
+            try {
+                tickListener.onPostTick();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
         }
     }
 

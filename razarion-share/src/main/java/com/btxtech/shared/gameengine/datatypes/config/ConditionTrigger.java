@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.planet.quest.AbstractComparison;
 import com.btxtech.shared.gameengine.planet.quest.AbstractConditionProgress;
 import com.btxtech.shared.gameengine.planet.quest.BaseItemConditionProgress;
 import com.btxtech.shared.gameengine.planet.quest.InventoryItemConditionProgress;
+import com.btxtech.shared.gameengine.planet.quest.TickConditionProgress;
 import com.btxtech.shared.gameengine.planet.quest.ValueConditionProgress;
 
 /**
@@ -65,7 +66,7 @@ public enum ConditionTrigger {
     SYNC_ITEM_POSITION(true) {
         @Override
         public AbstractConditionProgress createConditionProgress(AbstractComparison abstractComparison) {
-            return new BaseItemConditionProgress(this, abstractComparison);
+            return new TickConditionProgress(this, abstractComparison);
         }
     },
     //    CRYSTALS_INCREASED(true) {

@@ -16,7 +16,7 @@ import java.util.Collections;
 public class SyncItemPositionTest extends AbstractQuestServiceTest {
 
     @Test
-    public void noPositionAddExisting() {
+    public void noPosition() {
         setup();
         // Create user
         UserContext userContext = createLevel1UserContext();
@@ -34,8 +34,10 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         }
         // Start quest
         getQuestService().addQuestListener(createQuestListener());
-        getQuestService().activateCondition(playerBaseFull.getHumanPlayerId(), GameTestContent.createNoPositionAddExistingQuest());
-        assetQuestProgressTypeCountDownload(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 3);
+        getQuestService().activateCondition(playerBaseFull.getHumanPlayerId(), GameTestContent.createNoPositionQuest());
+        getQuestService().tick();
+        assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), GameTestContent.BUILDER_ITEM_TYPE_ID, 1, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.ATTACKER_ITEM_TYPE_ID, 3);
+        assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), GameTestContent.BUILDER_ITEM_TYPE_ID, 1, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.ATTACKER_ITEM_TYPE_ID, 3);
         // Verify tick does not trigger unfulfilled quest
         for (int i = 0; i < 100; i++) {
             getQuestService().tick();
@@ -44,13 +46,15 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         // Create 3 attacker
         for (int i = 0; i < 3; i++) {
             fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40 + 10 * i, 168), playerBaseFull);
-            assetQuestProgressTypeCountDownload(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 4 + i);
-            // TODO assetQuestProgressTypeCountGameLogicListener(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 3);
+            assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), GameTestContent.BUILDER_ITEM_TYPE_ID, 1, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.ATTACKER_ITEM_TYPE_ID, 4 + i);
+            assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), GameTestContent.BUILDER_ITEM_TYPE_ID, 1, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.ATTACKER_ITEM_TYPE_ID, 4 + i);
             assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         }
         // Remove one builder
-        getBaseItemService().sellItems(Collections.singletonList(findSyncBaseItemHighestId(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID).getId()),playerBaseFull );
-        assetQuestProgressTypeCountDownload(playerBaseFull.getHumanPlayerId(), null, GameTestContent.BUILDER_ITEM_TYPE_ID, 1,GameTestContent.FACTORY_ITEM_TYPE_ID, 1,GameTestContent.ATTACKER_ITEM_TYPE_ID, 5);
+        getBaseItemService().sellItems(Collections.singletonList(findSyncBaseItemHighestId(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID).getId()), playerBaseFull);
+        getQuestService().tick();
+        assertQuestProgressPositionDownload(playerBaseFull.getHumanPlayerId(), GameTestContent.BUILDER_ITEM_TYPE_ID, 1, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.ATTACKER_ITEM_TYPE_ID, 5);
+        assertQuestProgressPositionGameLogicListener(playerBaseFull.getHumanPlayerId(), GameTestContent.BUILDER_ITEM_TYPE_ID, 1, GameTestContent.FACTORY_ITEM_TYPE_ID, 1, GameTestContent.ATTACKER_ITEM_TYPE_ID, 5);
         assertQuestNotPassed(playerBaseFull.getHumanPlayerId());
         // Build last and pass test
         fabricateAndMove(factory, GameTestContent.ATTACKER_ITEM_TYPE_ID, new DecimalPosition(40, 184), playerBaseFull);
@@ -69,7 +73,7 @@ public class SyncItemPositionTest extends AbstractQuestServiceTest {
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
         // Start quest
         getQuestService().addQuestListener(createQuestListener());
-        getQuestService().activateCondition(playerBaseFull.getHumanPlayerId(), GameTestContent.createPositionAddExistingQuest());
+        getQuestService().activateCondition(playerBaseFull.getHumanPlayerId(), GameTestContent.createPositionQuest());
         // Create factory
         getCommandService().build(builder.getId(), new DecimalPosition(20, 40), GameTestContent.FACTORY_ITEM_TYPE_ID);
         tickPlanetServiceBaseServiceActive();

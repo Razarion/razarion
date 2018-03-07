@@ -16,11 +16,14 @@ public abstract class AbstractUpdatingComparison implements AbstractComparison {
     private GameLogicService gameLogicService;
     private long lastProgressSendTime;
     private boolean hasUpdateToSend;
+    private boolean minSendDelayEnabled;
 
     protected void onProgressChanged() {
-        if (lastProgressSendTime + MIN_SEND_DELAY > System.currentTimeMillis()) {
-            hasUpdateToSend = true;
-            return;
+        if (minSendDelayEnabled) {
+            if (lastProgressSendTime + MIN_SEND_DELAY > System.currentTimeMillis()) {
+                hasUpdateToSend = true;
+                return;
+            }
         }
         if (getAbstractConditionProgress() != null) {
             // Causes problem in devtool, works in web mode -> magical
@@ -37,4 +40,7 @@ public abstract class AbstractUpdatingComparison implements AbstractComparison {
         }
     }
 
+    public void setMinSendDelayEnabled(boolean minSendDelayEnabled) {
+        this.minSendDelayEnabled = minSendDelayEnabled;
+    }
 }

@@ -27,7 +27,6 @@ public class ComparisonConfig {
     private Integer count;
     private Map<Integer, Integer> typeCount;
     private Integer time;
-    private Boolean addExisting;
     private PlaceConfig placeConfig;
     private List<Integer> botIds;
 
@@ -55,15 +54,6 @@ public class ComparisonConfig {
 
     public ComparisonConfig setTime(Integer time) {
         this.time = time;
-        return this;
-    }
-
-    public Boolean getAddExisting() {
-        return addExisting;
-    }
-
-    public ComparisonConfig setAddExisting(Boolean addExisting) {
-        this.addExisting = addExisting;
         return this;
     }
 

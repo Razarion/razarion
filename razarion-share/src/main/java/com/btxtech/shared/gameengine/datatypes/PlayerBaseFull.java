@@ -47,7 +47,7 @@ public class PlayerBaseFull extends PlayerBase {
     }
 
     public Collection<SyncBaseItem> findItemsInPlace(PlaceConfig placeConfig) {
-        return items.stream().filter(placeConfig::checkInside).collect(Collectors.toCollection(ArrayList::new));
+        return items.stream().filter(syncBaseItem -> !syncBaseItem.isContainedIn()).filter(placeConfig::checkInside).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public int getUsedHouseSpace() {

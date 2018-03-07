@@ -17,7 +17,6 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
@@ -25,6 +24,7 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -46,6 +46,7 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class QuestService {
+    private static final int TICKS_TO_SEND_DEFERRED = PlanetService.TICKS_PER_SECONDS * 2;
     private Logger logger = Logger.getLogger(QuestService.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
@@ -59,6 +60,7 @@ public class QuestService {
     private ExceptionHandler exceptionHandler;
     private Collection<QuestListener> questListeners = new ArrayList<>();
     private final Map<HumanPlayerId, AbstractConditionProgress> progressMap = new HashMap<>();
+    private int tickCount;
 
     public void activateCondition(HumanPlayerId humanPlayerId, QuestConfig questConfig) {
         AbstractComparison abstractComparison = null;
@@ -104,24 +106,31 @@ public class QuestService {
     }
 
     public void tick() {
-        Collection<PlayerBase> playerBases = new ArrayList<>();
-        synchronized (progressMap) {
-            for (AbstractConditionProgress abstractConditionProgress : progressMap.values()) {
-                if (abstractConditionProgress.getConditionTrigger().equals(ConditionTrigger.SYNC_ITEM_POSITION)) {
-                    playerBases.add(baseItemService.getPlayerBase4HumanPlayerId(abstractConditionProgress.getHumanPlayerId()));
+        try {
+            Collection<AbstractConditionProgress> fulfilled = new ArrayList<>();
+            synchronized (progressMap) {
+                for (AbstractConditionProgress abstractConditionProgress : progressMap.values()) {
+                    if (abstractConditionProgress instanceof TickConditionProgress) {
+                        ((TickConditionProgress) abstractConditionProgress).tick();
+                        if (abstractConditionProgress.isFulfilled()) {
+                            fulfilled.add(abstractConditionProgress);
+                        }
+                    }
                 }
             }
-        }
-        if (playerBases.isEmpty()) {
-            return;
-        }
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            if (!playerBases.contains(syncBaseItem.getBase())) {
-                return null;
+            fulfilled.forEach(this::conditionPassed);
+            tickCount++;
+            if (tickCount > TICKS_TO_SEND_DEFERRED) {
+                synchronized (progressMap) {
+                    for (AbstractConditionProgress abstractConditionProgress : progressMap.values()) {
+                        abstractConditionProgress.getAbstractComparison().handleDeferredUpdate();
+                    }
+                }
+                tickCount = 0;
             }
-            triggerSyncItem(syncBaseItem.getBase().getHumanPlayerId(), ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
-            return null;
-        });
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
     }
 
     public void onSyncItemBuilt(SyncBaseItem syncBaseItem) {
@@ -130,7 +139,6 @@ public class QuestService {
             return;
         }
         triggerSyncItem(humanPlayerId, ConditionTrigger.SYNC_ITEM_CREATED, syncBaseItem);
-        triggerSyncItem(humanPlayerId, ConditionTrigger.SYNC_ITEM_POSITION, syncBaseItem);
     }
 
     public void onSyncItemKilled(SyncBaseItem target, SyncBaseItem actor) {
@@ -193,6 +201,7 @@ public class QuestService {
                 if (comparisonConfig.getCount() != null) {
                     CountComparison countComparison = instance.select(CountComparison.class).get();
                     countComparison.init(comparisonConfig.getCount());
+                    countComparison.setMinSendDelayEnabled(conditionTrigger == ConditionTrigger.HARVEST);
                     return countComparison;
                 } else {
                     throw new UnsupportedOperationException();
@@ -220,7 +229,7 @@ public class QuestService {
                 }
             case SYNC_ITEM_POSITION:
                 BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
-                baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), comparisonConfig.getAddExisting(), humanPlayerId);
+                baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), humanPlayerId);
                 return baseItemPositionComparison;
             default:
                 throw new IllegalArgumentException("QuestService.createAbstractComparison() Unknown conditionTrigger: " + conditionTrigger);
@@ -292,7 +301,7 @@ public class QuestService {
                 if (humanPlayerId.getUserId() != null) {
                     try {
                         backupComparisionInfos.add(abstractConditionProgress.generateBackupComparisionInfo());
-                    } catch(Throwable t) {
+                    } catch (Throwable t) {
                         exceptionHandler.handleException("Could not backup quest " + abstractConditionProgress, t);
                     }
                 }
@@ -318,7 +327,7 @@ public class QuestService {
                         return;
                     }
                     abstractConditionProgress.restore(backupComparisionInfo);
-                } catch(Throwable t) {
+                } catch (Throwable t) {
                     exceptionHandler.handleException("Could not restore quest " + backupComparisionInfo, t);
                 }
             });

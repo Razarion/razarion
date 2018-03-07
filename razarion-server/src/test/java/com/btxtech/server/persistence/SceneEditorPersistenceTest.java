@@ -435,7 +435,7 @@ public class SceneEditorPersistenceTest extends ServerArquillianBaseTest {
     private void setUserMoveScene(SceneConfig sceneConfig) {
         Map<Integer, Integer> itemTypeCount = new HashMap<>();
         itemTypeCount.put(BASE_ITEM_TYPE_BULLDOZER_ID, 1);
-        ComparisonConfig comparisonConfig = new ComparisonConfig().setTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(175, 103, 10, 10))).setAddExisting(true);
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setTypeCount(itemTypeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(175, 103, 10, 10)));
         ConditionConfig conditionConfig = new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(comparisonConfig);
         // Tip
         GameTipConfig gameTipConfig = new GameTipConfig();

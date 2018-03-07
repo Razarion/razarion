@@ -25,18 +25,20 @@ import com.btxtech.shared.utils.TimeDateUtil;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * User: beat Date: 18.07.2010 Time: 21:06:41
  */
 @Dependent
-public class BaseItemPositionComparison extends AbstractBaseItemComparison /*implements TimeAware*/ {
+public class BaseItemPositionComparison extends AbstractTickComparison /*implements TimeAware*/ {
     @Inject
     private BaseItemService baseItemService;
+    private AbstractConditionProgress abstractConditionProgress;
     private Map<BaseItemType, Integer> itemTypes;
     private PlaceConfig placeConfig;
     private Integer time;
@@ -45,49 +47,44 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
     private final Collection<SyncBaseItem> fulfilledItems = new HashSet<>();
     private Long fulfilledTimeStamp;
 
-    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer time, Boolean addExistingItems, HumanPlayerId humanPlayerId) {
+    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer time, HumanPlayerId humanPlayerId) {
         this.itemTypes = itemTypes;
         this.placeConfig = placeConfig;
         this.time = time;
         this.humanPlayerId = humanPlayerId;
-        if (addExistingItems != null && addExistingItems) {
-            addInitial();
-            checkFulfilled();
-        }
     }
 
     @Override
-    protected void privateOnSyncBaseItem(SyncBaseItem syncBaseItem) {
-        if (isFulfilled) {
+    public void tick() {
+        Collection<SyncBaseItem> fulfilledItems = setupFulfilled();
+        if (compareWithFulfilled(fulfilledItems)) {
+            // TODO handle time if fulfilled
             return;
         }
-        if (itemTypes == null || !itemTypes.containsKey(syncBaseItem.getBaseItemType())) {
-            return;
+        synchronized (this.fulfilledItems) {
+            this.fulfilledItems.clear();
+            this.fulfilledItems.addAll(fulfilledItems);
         }
-        if (!checkRegion(syncBaseItem)) {
-            onProgressChanged();
-            return;
-        }
-        synchronized (fulfilledItems) {
-            fulfilledItems.add(syncBaseItem);
-            checkFulfilled();
-        }
+        checkFulfilled();
+    }
+
+    private boolean compareWithFulfilled(Collection<SyncBaseItem> fulfilledItems) {
+        return fulfilledItems.size() == this.fulfilledItems.size() && this.fulfilledItems.containsAll(fulfilledItems);
     }
 
     private void checkFulfilled() {
         if (isTimerNeeded()) {
             checkIfTimeFulfilled();
         } else {
-            verifyFulfilledItems();
-            isFulfilled = areItemsComplete();
+            isFulfilled = checkItemsComplete();
             onProgressChanged();
         }
     }
 
-    private void addInitial() {
+    private Collection<SyncBaseItem> setupFulfilled() {
         PlayerBaseFull playerBase = baseItemService.getPlayerBaseFull4HumanPlayerId(humanPlayerId);
         if (playerBase == null) {
-            return;
+            return Collections.emptyList();
         }
 
         Collection<SyncBaseItem> items;
@@ -96,12 +93,22 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
         } else {
             items = playerBase.getItems();
         }
-        fulfilledItems.addAll(items);
+        return items.stream().filter(syncBaseItem -> syncBaseItem.isAlive() && syncBaseItem.isBuildup()).collect(Collectors.toList());
     }
 
     @Override
     public boolean isFulfilled() {
         return isFulfilled;
+    }
+
+    @Override
+    public AbstractConditionProgress getAbstractConditionProgress() {
+        return abstractConditionProgress;
+    }
+
+    @Override
+    public void setAbstractConditionProgress(AbstractConditionProgress abstractConditionProgress) {
+        this.abstractConditionProgress = abstractConditionProgress;
     }
 
 //    @Override
@@ -122,21 +129,8 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
         return false;
     }
 
-    private void verifyFulfilledItems() {
-        for (Iterator<SyncBaseItem> iterator = fulfilledItems.iterator(); iterator.hasNext(); ) {
-            SyncBaseItem fulfilledItem = iterator.next();
-            if (!fulfilledItem.isAlive()) {
-                iterator.remove();
-            }
-            if (!checkRegion(fulfilledItem)) {
-                iterator.remove();
-            }
-        }
-    }
-
     private void checkIfTimeFulfilled() {
-        verifyFulfilledItems();
-        if (areItemsComplete()) {
+        if (checkItemsComplete()) {
             if (fulfilledTimeStamp == null) {
                 fulfilledTimeStamp = System.currentTimeMillis();
             } else {
@@ -148,26 +142,24 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
         onProgressChanged();
     }
 
-    private boolean checkRegion(SyncBaseItem syncBaseItem) {
-        return placeConfig == null || placeConfig.checkInside(syncBaseItem);
-    }
-
-    private boolean areItemsComplete() {
+    private boolean checkItemsComplete() {
         if (itemTypes == null) {
             return true;
         }
         Map<BaseItemType, Integer> tmpItemTypes = new HashMap<>(itemTypes);
-        for (SyncBaseItem fulfilledItem : fulfilledItems) {
-            BaseItemType fulfilledItemType = fulfilledItem.getBaseItemType();
-            Integer count = tmpItemTypes.get(fulfilledItemType);
-            if (count == null) {
-                continue;
-            }
-            count--;
-            if (count == 0) {
-                tmpItemTypes.remove(fulfilledItemType);
-            } else {
-                tmpItemTypes.put(fulfilledItemType, count);
+        synchronized (fulfilledItems) {
+            for (SyncBaseItem fulfilledItem : fulfilledItems) {
+                BaseItemType fulfilledItemType = fulfilledItem.getBaseItemType();
+                Integer count = tmpItemTypes.get(fulfilledItemType);
+                if (count == null) {
+                    continue;
+                }
+                count--;
+                if (count == 0) {
+                    tmpItemTypes.remove(fulfilledItemType);
+                } else {
+                    tmpItemTypes.put(fulfilledItemType, count);
+                }
             }
         }
         return tmpItemTypes.isEmpty();
@@ -183,8 +175,9 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
 
     @Override
     public void restoreFromGenericComparisonValue(BackupComparisionInfo backupComparisionInfo) {
-        fulfilledItems.clear();
-        addInitial();
+        synchronized (fulfilledItems) {
+            fulfilledItems.clear();
+        }
 
         if (backupComparisionInfo.hasRemainingMilliSeconds()) {
             long remainingTime = (long) backupComparisionInfo.getRemainingMilliSeconds();
@@ -210,9 +203,6 @@ public class BaseItemPositionComparison extends AbstractBaseItemComparison /*imp
             questProgressInfo.setTime(timeCount);
         }
         // Items
-        synchronized (fulfilledItems) {
-            verifyFulfilledItems();
-        }
         Map<Integer, Integer> typeCount = new HashMap<>();
         for (BaseItemType baseItemType : itemTypes.keySet()) {
             typeCount.put(baseItemType.getId(), getCount(baseItemType));

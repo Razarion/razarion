@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
@@ -33,6 +34,8 @@ public class PathingService {
     private SyncItemContainerService syncItemContainerService;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
     private PathingServiceUpdateListener pathingServiceUpdateListener;
 
@@ -110,28 +113,32 @@ public class PathingService {
     }
 
     public void tick() {
-        pathingServiceTracker.startTick();
-        preparation();
-        pathingServiceTracker.afterPreparation();
+        try {
+            pathingServiceTracker.startTick();
+            preparation();
+            pathingServiceTracker.afterPreparation();
 
-        Collection<Contact> contacts = findContacts();
-        pathingServiceTracker.afterFindContacts();
-        solveVelocity(contacts);
-        pathingServiceTracker.afterSolveVelocity();
-        implementPosition();
-        pathingServiceTracker.afterImplementPosition();
-        solvePosition();
-        pathingServiceTracker.afterSolvePosition();
-        checkDestination();
-        pathingServiceTracker.afterCheckDestination();
+            Collection<Contact> contacts = findContacts();
+            pathingServiceTracker.afterFindContacts();
+            solveVelocity(contacts);
+            pathingServiceTracker.afterSolveVelocity();
+            implementPosition();
+            pathingServiceTracker.afterImplementPosition();
+            solvePosition();
+            pathingServiceTracker.afterSolvePosition();
+            checkDestination();
+            pathingServiceTracker.afterCheckDestination();
 
-        finalization();
-        pathingServiceTracker.afterFinalization();
-        if (pathingServiceUpdateListener != null) {
-            pathingServiceUpdateListener.onPathingTickFinished();
+            finalization();
+            pathingServiceTracker.afterFinalization();
+            if (pathingServiceUpdateListener != null) {
+                pathingServiceUpdateListener.onPathingTickFinished();
+            }
+            pathingServiceTracker.afterUpdateListener();
+            pathingServiceTracker.endTick();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        pathingServiceTracker.afterUpdateListener();
-        pathingServiceTracker.endTick();
     }
 
     private void preparation() {

@@ -189,7 +189,7 @@ public class ItemContainerTest extends BaseBasicTest {
         getCommandService().move(transporter, new DecimalPosition(116, 352));
         tickPlanetServiceBaseServiceActive();
         // Verify killed
-        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(transporter.getId()));
+        Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(transporter.getId())); // TODO Failed on 07.03.2018
         Assert.assertNull(getSyncItemContainerService().getSyncBaseItem(humanBaseContext.getBuilder().getId()));
         // Verify base deleted
         try {

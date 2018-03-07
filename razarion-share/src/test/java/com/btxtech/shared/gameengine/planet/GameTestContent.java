@@ -344,15 +344,15 @@ public interface GameTestContent {
         return new QuestConfig().setId(QUEST_CONFIG_3_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
     }
 
-    static QuestConfig createNoPositionAddExistingQuest() {
+    static QuestConfig createNoPositionQuest() {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(BUILDER_ITEM_TYPE_ID, 1);
         typeCount.put(FACTORY_ITEM_TYPE_ID, 1);
         typeCount.put(ATTACKER_ITEM_TYPE_ID, 7);
-        return new QuestConfig().setId(QUEST_CONFIG_4_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setAddExisting(true)));
+        return new QuestConfig().setId(QUEST_CONFIG_4_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
     }
 
-    static QuestConfig createPositionAddExistingQuest() {
+    static QuestConfig createPositionQuest() {
         Map<Integer, Integer> typeCount = new HashMap<>();
         typeCount.put(ATTACKER_ITEM_TYPE_ID, 3);
         return new QuestConfig().setId(QUEST_CONFIG_5_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(130, 130, 100, 40)))));

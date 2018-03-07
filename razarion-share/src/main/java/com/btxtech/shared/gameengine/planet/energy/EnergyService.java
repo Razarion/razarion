@@ -5,6 +5,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncConsumer;
 import com.btxtech.shared.gameengine.planet.model.SyncGenerator;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -23,6 +24,8 @@ import java.util.Set;
 public class EnergyService {
     @Inject
     private Instance<BaseEnergy> baseEnergyInstance;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private final MapCollection<PlayerBase, SyncConsumer> changedSyncConsumers = new MapCollection<>();
     private final MapCollection<PlayerBase, SyncGenerator> changedSyncGenerators = new MapCollection<>();
     private final Set<PlayerBase> removedBases = new HashSet<>();
@@ -60,42 +63,46 @@ public class EnergyService {
     }
 
     public void tick() {
-        Collection<PlayerBase> changedBases = new ArrayList<>();
-        synchronized (changedSyncConsumers) {
-            changedSyncConsumers.iterate((playerBase, syncConsumer) -> {
-                if (!removedBases.contains(playerBase)) {
-                    changedBases.add(playerBase);
-                    if (syncConsumer.getSyncBaseItem().isAlive()) {
-                        getBaseEnergy(syncConsumer.getSyncBaseItem()).consumerActivated(syncConsumer);
-                    } else {
-                        getBaseEnergy(syncConsumer.getSyncBaseItem()).consumerDeactivated(syncConsumer);
+        try {
+            Collection<PlayerBase> changedBases = new ArrayList<>();
+            synchronized (changedSyncConsumers) {
+                changedSyncConsumers.iterate((playerBase, syncConsumer) -> {
+                    if (!removedBases.contains(playerBase)) {
+                        changedBases.add(playerBase);
+                        if (syncConsumer.getSyncBaseItem().isAlive()) {
+                            getBaseEnergy(syncConsumer.getSyncBaseItem()).consumerActivated(syncConsumer);
+                        } else {
+                            getBaseEnergy(syncConsumer.getSyncBaseItem()).consumerDeactivated(syncConsumer);
+                        }
                     }
-                }
-                return true;
-            });
-            changedSyncConsumers.clear();
-        }
-        synchronized (changedSyncGenerators) {
-            changedSyncGenerators.iterate((playerBase, syncGenerator) -> {
-                if (!removedBases.contains(playerBase)) {
-                    changedBases.add(playerBase);
-                    if (syncGenerator.getSyncBaseItem().isAlive()) {
-                        getBaseEnergy(syncGenerator.getSyncBaseItem()).generatorActivated(syncGenerator);
-                    } else {
-                        getBaseEnergy(syncGenerator.getSyncBaseItem()).generatorDeactivated(syncGenerator);
-                    }
-                }
-                return true;
-            });
-            changedSyncGenerators.clear();
-        }
-        synchronized (removedBases) {
-            synchronized (baseEnergies) {
-                removedBases.forEach(baseEnergies::remove);
+                    return true;
+                });
+                changedSyncConsumers.clear();
             }
-            removedBases.clear();
+            synchronized (changedSyncGenerators) {
+                changedSyncGenerators.iterate((playerBase, syncGenerator) -> {
+                    if (!removedBases.contains(playerBase)) {
+                        changedBases.add(playerBase);
+                        if (syncGenerator.getSyncBaseItem().isAlive()) {
+                            getBaseEnergy(syncGenerator.getSyncBaseItem()).generatorActivated(syncGenerator);
+                        } else {
+                            getBaseEnergy(syncGenerator.getSyncBaseItem()).generatorDeactivated(syncGenerator);
+                        }
+                    }
+                    return true;
+                });
+                changedSyncGenerators.clear();
+            }
+            synchronized (removedBases) {
+                synchronized (baseEnergies) {
+                    removedBases.forEach(baseEnergies::remove);
+                }
+                removedBases.clear();
+            }
+            changedBases.forEach(playerBase -> getBaseEnergy(playerBase).recalculate());
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        changedBases.forEach(playerBase -> getBaseEnergy(playerBase).recalculate());
     }
 
     public void clean() {

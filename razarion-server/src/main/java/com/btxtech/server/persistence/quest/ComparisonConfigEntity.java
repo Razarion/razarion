@@ -42,7 +42,6 @@ public class ComparisonConfigEntity {
     @CollectionTable(name = "QUEST_COMPARISON_BASE_ITEM")
     private Map<BaseItemTypeEntity, Integer> typeCount;
     private Integer time;
-    private Boolean addExisting;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity placeConfig;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -52,7 +51,7 @@ public class ComparisonConfigEntity {
     private List<BotConfigEntity> bots;
 
     public ComparisonConfig toComparisonConfig() {
-        ComparisonConfig comparisonConfig = new ComparisonConfig().setCount(count).setTime(time).setAddExisting(addExisting);
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setCount(count).setTime(time);
         if (typeCount != null && !typeCount.isEmpty()) {
             comparisonConfig.setTypeCount(typeCount.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b)));
         }
@@ -68,7 +67,6 @@ public class ComparisonConfigEntity {
     public void fromComparisonConfig(ItemTypePersistence itemTypePersistence, ComparisonConfig comparisonConfig) {
         count = comparisonConfig.getCount();
         time = comparisonConfig.getTime();
-        addExisting = comparisonConfig.getAddExisting();
         if (comparisonConfig.getPlaceConfig() != null) {
             if (placeConfig == null) {
                 placeConfig = new PlaceConfigEntity();

@@ -193,23 +193,27 @@ public class BoxService {
     }
 
     public void tick() {
-        if (boxRegion == null) {
-            return;
+        try {
+            if (boxRegion == null) {
+                return;
+            }
+            ticksSinceLastCheck++;
+            if (ticksSinceLastCheck < TICK_TO_SLEEP_MS) {
+                return;
+            }
+            ticksSinceLastCheck = 0;
+            Collection<SyncBoxItem> boxesToRemove;
+            synchronized (boxes) {
+                boxesToRemove = boxes.values().stream().filter(syncBoxItem -> !syncBoxItem.tickTtl((int) TICK_TO_SLEEP_MS)).collect(Collectors.toList());
+            }
+            boxesToRemove.forEach(syncBoxItem -> {
+                removeSyncBox(syncBoxItem);
+                gameLogicService.onBoxDeleted(syncBoxItem);
+            });
+            boxRegion.forEach(this::handleBoxRegion);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
-        ticksSinceLastCheck++;
-        if (ticksSinceLastCheck < TICK_TO_SLEEP_MS) {
-            return;
-        }
-        ticksSinceLastCheck = 0;
-        Collection<SyncBoxItem> boxesToRemove;
-        synchronized (boxes) {
-            boxesToRemove = boxes.values().stream().filter(syncBoxItem -> !syncBoxItem.tickTtl((int) TICK_TO_SLEEP_MS)).collect(Collectors.toList());
-        }
-        boxesToRemove.forEach(syncBoxItem -> {
-            removeSyncBox(syncBoxItem);
-            gameLogicService.onBoxDeleted(syncBoxItem);
-        });
-        boxRegion.forEach(this::handleBoxRegion);
     }
 
     private void handleBoxRegion(BoxRegion boxRegion) {

@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetActivationEvent;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -30,6 +31,8 @@ public class ProjectileService {
     private GameLogicService gameLogicService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private final Collection<Projectile> projectiles = new ArrayList<>();
 
     public void onPlanetActivation(@Observes PlanetActivationEvent ignore) {
@@ -55,14 +58,18 @@ public class ProjectileService {
     }
 
     public void tick() {
-        synchronized (projectiles) {
-            for (Iterator<Projectile> iterator = projectiles.iterator(); iterator.hasNext(); ) {
-                Projectile projectile = iterator.next();
-                if (!projectile.tick()) {
-                    iterator.remove();
-                    projectileDetonation(projectile);
+        try {
+            synchronized (projectiles) {
+                for (Iterator<Projectile> iterator = projectiles.iterator(); iterator.hasNext(); ) {
+                    Projectile projectile = iterator.next();
+                    if (!projectile.tick()) {
+                        iterator.remove();
+                        projectileDetonation(projectile);
+                    }
                 }
             }
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
         }
     }
 

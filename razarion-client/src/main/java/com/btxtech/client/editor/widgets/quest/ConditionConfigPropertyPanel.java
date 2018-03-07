@@ -52,13 +52,6 @@ public class ConditionConfigPropertyPanel extends Composite {
     @DataField
     private TableRow timeTr;
     @Inject
-    // @Bound
-    @DataField
-    private CheckboxInput addExisting;
-    @Inject
-    @DataField
-    private TableRow addExistingTr;
-    @Inject
     @DataField
     private TableRow botIdsTr;
     @Inject
@@ -96,13 +89,6 @@ public class ConditionConfigPropertyPanel extends Composite {
         }
         conditionTrigger.setAcceptableValues(Arrays.asList(ConditionTrigger.values()));
         conditionTrigger.addValueChangeHandler(this::onConditionTriggerChanged);
-    }
-
-    @EventHandler("addExisting")
-    private void addExistingClick(ClickEvent event) {
-        if (conditionConfig != null && conditionConfig.getComparisonConfig() != null) {
-            conditionConfig.getComparisonConfig().setAddExisting(addExisting.getChecked());
-        }
     }
 
     private void onConditionTriggerChanged(ValueChangeEvent<ConditionTrigger> conditionTriggerValueChangeEvent) {
@@ -148,8 +134,6 @@ public class ConditionConfigPropertyPanel extends Composite {
                     baseItemTypeCount.init(conditionConfig.getComparisonConfig().getTypeCount(), itemTypeCount -> conditionConfig.getComparisonConfig().setTypeCount(itemTypeCount));
                     botIds.init(conditionConfig.getComparisonConfig().getBotIds(), botIds -> conditionConfig.getComparisonConfig().setBotIds(botIds));
                     placeConfigTr.getStyle().setProperty("display", "table-row");
-                    addExistingTr.getStyle().setProperty("display", "table-row");
-                    addExisting.setChecked(conditionConfig.getComparisonConfig().getAddExisting() != null && conditionConfig.getComparisonConfig().getAddExisting());
                     break;
                 case BOX_PICKED:
                     countTr.getStyle().setProperty("display", "table-row");
@@ -166,7 +150,6 @@ public class ConditionConfigPropertyPanel extends Composite {
     private void hideAllConditionConfigFields() {
         countTr.getStyle().setProperty("display", "none");
         timeTr.getStyle().setProperty("display", "none");
-        addExistingTr.getStyle().setProperty("display", "none");
         baseItemTypeCountTr.getStyle().setProperty("display", "none");
         botIdsTr.getStyle().setProperty("display", "none");
         placeConfigTr.getStyle().setProperty("display", "none");
