@@ -155,7 +155,7 @@ public class QuestSidebar extends Composite {
                 fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questMinutesPast());
                 break;
             case BOX_PICKED:
-                fillBaseItemCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questBoxesPicked());
+                fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questBoxesPicked());
                 break;
             case INVENTORY_ITEM_PLACED:
                 logger.severe("QuestSidebar.setupProgressTableModels() TODO INVENTORY_ITEM_PLACED");
