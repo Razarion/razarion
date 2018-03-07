@@ -16,7 +16,7 @@ public class BackupComparisionInfo {
     private int questId;
     private HumanPlayerId humanPlayerId;
     private Integer remainingCount;
-    private Integer remainingMilliSeconds;
+    private Integer passedSeconds;
     private Map<String, Integer> remainingItemTypes; // MongoDb org.bson.codecs.configuration.CodecConfigurationException: Invalid Map type. Maps MUST have string keys, found class java.lang.Integer instead.
 
     public int getQuestId() {
@@ -78,16 +78,16 @@ public class BackupComparisionInfo {
         });
     }
 
-    public void setRemainingMilliSeconds(Integer remainingMilliSeconds) {
-        this.remainingMilliSeconds = remainingMilliSeconds;
+    public void setPassedSeconds(Integer passedSeconds) {
+        this.passedSeconds = passedSeconds;
     }
 
-    public boolean hasRemainingMilliSeconds() {
-        return remainingMilliSeconds != null;
+    public boolean hasPassedSeconds() {
+        return passedSeconds != null;
     }
 
-    public Integer getRemainingMilliSeconds() {
-        return remainingMilliSeconds;
+    public Integer getPassedSeconds() {
+        return passedSeconds;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class BackupComparisionInfo {
                 "questId=" + questId +
                 ", humanPlayerId=" + humanPlayerId +
                 ", remainingCount=" + remainingCount +
-                ", remainingMilliSeconds=" + remainingMilliSeconds +
+                ", passedSeconds=" + passedSeconds +
                 ", remainingItemTypes=" + remainingItemTypes +
                 '}';
     }

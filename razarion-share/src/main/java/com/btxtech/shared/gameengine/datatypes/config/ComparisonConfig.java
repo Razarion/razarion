@@ -26,7 +26,7 @@ import java.util.Set;
 public class ComparisonConfig {
     private Integer count;
     private Map<Integer, Integer> typeCount;
-    private Integer time;
+    private Integer timeSeconds;
     private PlaceConfig placeConfig;
     private List<Integer> botIds;
 
@@ -48,12 +48,12 @@ public class ComparisonConfig {
         return this;
     }
 
-    public Integer getTime() {
-        return time;
+    public Integer getTimeSeconds() {
+        return timeSeconds;
     }
 
-    public ComparisonConfig setTime(Integer time) {
-        this.time = time;
+    public ComparisonConfig setTimeSeconds(Integer timeSeconds) {
+        this.timeSeconds = timeSeconds;
         return this;
     }
 

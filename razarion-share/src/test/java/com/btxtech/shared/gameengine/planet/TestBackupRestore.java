@@ -330,7 +330,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         // Player 1
         BackupComparisionInfo backupComparisionInfo1 = findBackupComparisionInfo(backupComparisionInfos, playerBase1);
         Assert.assertEquals(GameTestContent.QUEST_CONFIG_1_ID, backupComparisionInfo1.getQuestId());
-        Assert.assertFalse(backupComparisionInfo1.hasRemainingMilliSeconds());
+        Assert.assertFalse(backupComparisionInfo1.hasPassedSeconds());
         backupComparisionInfo1.checkRemainingCount();
         Assert.assertEquals(6, (int) backupComparisionInfo1.getRemainingCount());
         Assert.assertNull(backupComparisionInfo1.getRemainingItemTypes());
@@ -348,7 +348,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         // Player 1
         BackupComparisionInfo backupComparisionInfo1 = findBackupComparisionInfo(backupComparisionInfos, playerBase1);
         Assert.assertEquals(GameTestContent.QUEST_CONFIG_1_ID, backupComparisionInfo1.getQuestId());
-        Assert.assertFalse(backupComparisionInfo1.hasRemainingMilliSeconds());
+        Assert.assertFalse(backupComparisionInfo1.hasPassedSeconds());
         backupComparisionInfo1.checkRemainingCount();
         Assert.assertEquals(6, (int) backupComparisionInfo1.getRemainingCount());
         Assert.assertNull(backupComparisionInfo1.getRemainingItemTypes());

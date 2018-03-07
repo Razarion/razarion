@@ -9,7 +9,7 @@ import java.util.Map;
 public class QuestProgressInfo {
     private Integer count;
     private Map<Integer, Integer> typeCount;
-    private Integer time;
+    private Integer secondsRemaining;
     private String botBasesInformation;
 
     public Integer getCount() {
@@ -30,12 +30,12 @@ public class QuestProgressInfo {
         return this;
     }
 
-    public Integer getTime() {
-        return time;
+    public Integer getSecondsRemaining() {
+        return secondsRemaining;
     }
 
-    public QuestProgressInfo setTime(Integer time) {
-        this.time = time;
+    public QuestProgressInfo setSecondsRemaining(Integer secondsRemaining) {
+        this.secondsRemaining = secondsRemaining;
         return this;
     }
 

@@ -357,4 +357,10 @@ public interface GameTestContent {
         typeCount.put(ATTACKER_ITEM_TYPE_ID, 3);
         return new QuestConfig().setId(QUEST_CONFIG_5_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(130, 130, 100, 40)))));
     }
+
+    static QuestConfig createPositionTimeQuest() {
+        Map<Integer, Integer> typeCount = new HashMap<>();
+        typeCount.put(ATTACKER_ITEM_TYPE_ID, 2);
+        return new QuestConfig().setId(QUEST_CONFIG_5_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_POSITION).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount).setPlaceConfig(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(130, 130, 100, 40))).setTimeSeconds(60)));
+    }
 }

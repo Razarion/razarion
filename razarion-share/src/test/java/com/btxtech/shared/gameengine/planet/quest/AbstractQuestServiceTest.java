@@ -43,7 +43,7 @@ public abstract class AbstractQuestServiceTest extends BaseBasicTest {
     }
 
     protected void assetQuestProgressCount(int expectedCount, String expectedBotBasesInformation, QuestProgressInfo actual) {
-        Assert.assertNull(actual.getTime());
+        Assert.assertNull(actual.getSecondsRemaining());
         Assert.assertNull(actual.getTypeCount());
         Assert.assertEquals(expectedCount, (int) actual.getCount());
         Assert.assertEquals(expectedBotBasesInformation, actual.getBotBasesInformation());
@@ -62,21 +62,36 @@ public abstract class AbstractQuestServiceTest extends BaseBasicTest {
         assetQuestProgressTypeCount(expectedBotBasesInformation, questProgressInfo, expected);
     }
 
-    protected void assertQuestProgressPositionDownload(HumanPlayerId humanPlayerId, int... expected) {
+    protected void assertQuestProgressPositionDownload(HumanPlayerId humanPlayerId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
         QuestProgressInfo questProgressInfo = getQuestService().getQuestProgressInfo(humanPlayerId);
         Assert.assertNotNull(questProgressInfo);
-        assertQuestProgressPosition(questProgressInfo, expected);
+        assertQuestProgressPosition(questProgressInfo, secondsRemaining, secondsRemainingDelta, expected);
     }
 
-    protected void assertQuestProgressPositionGameLogicListener(HumanPlayerId humanPlayerId, int... expected) {
+    protected void assertQuestProgressPositionGameLogicListener(HumanPlayerId humanPlayerId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
         List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
         Assert.assertEquals(1, questProgressInfos.size());
-        assertQuestProgressPosition(questProgressInfos.get(0), expected);
+        assertQuestProgressPosition(questProgressInfos.get(0), secondsRemaining, secondsRemainingDelta, expected);
         getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId);
     }
 
-    protected void assertQuestProgressPosition(QuestProgressInfo actual, int... expected) {
-        Assert.assertNull(actual.getTime());
+    protected void assertQuestProgressPositionGameLogicListenerFirst(HumanPlayerId humanPlayerId, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+        assertQuestProgressPosition(questProgressInfos.get(0), secondsRemaining, secondsRemainingDelta, expected);
+        getTestGameLogicListener().getQuestProgresses().remove(humanPlayerId, questProgressInfos.get(0));
+    }
+
+    protected void assertQuestProgressPositionGameLogicListenerNone(HumanPlayerId humanPlayerId) {
+        List<QuestProgressInfo> questProgressInfos = getTestGameLogicListener().getQuestProgresses().get(humanPlayerId);
+        Assert.assertTrue(questProgressInfos == null || questProgressInfos.isEmpty());
+    }
+
+    protected void assertQuestProgressPosition(QuestProgressInfo actual, Integer secondsRemaining, Integer secondsRemainingDelta, int... expected) {
+        if (secondsRemaining != null) {
+            Assert.assertEquals(secondsRemaining, actual.getSecondsRemaining(), secondsRemainingDelta != null ? secondsRemainingDelta : 0);
+        } else {
+            Assert.assertNull(actual.getSecondsRemaining());
+        }
         Assert.assertNull(actual.getCount());
         Assert.assertNull(actual.getBotBasesInformation());
         Assert.assertEquals(expected.length / 2, actual.getTypeCount().size());
@@ -95,7 +110,7 @@ public abstract class AbstractQuestServiceTest extends BaseBasicTest {
         for (int i = 0; i < expected.length; i += 2) {
             Assert.assertEquals("BaseItemTypeId: " + expected[i], expected[i + 1], (int) actual.getTypeCount().get(expected[i]));
         }
-        Assert.assertNull(actual.getTime());
+        Assert.assertNull(actual.getSecondsRemaining());
         Assert.assertNull(actual.getCount());
         Assert.assertEquals(expectedBotBasesInformation, actual.getBotBasesInformation());
     }

@@ -19,8 +19,8 @@ import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.utils.TimeDateUtil;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -35,22 +35,24 @@ import java.util.stream.Collectors;
  * User: beat Date: 18.07.2010 Time: 21:06:41
  */
 @Dependent
-public class BaseItemPositionComparison extends AbstractTickComparison /*implements TimeAware*/ {
+public class BaseItemPositionComparison extends AbstractTickComparison {
+    private static final int MIN_TIME_TICK_DELAY = PlanetService.TICKS_PER_SECONDS * 5;
     @Inject
     private BaseItemService baseItemService;
     private AbstractConditionProgress abstractConditionProgress;
     private Map<BaseItemType, Integer> itemTypes;
     private PlaceConfig placeConfig;
-    private Integer time;
+    private Integer timeSeconds;
     private HumanPlayerId humanPlayerId;
-    private boolean isFulfilled = false;
+    private boolean isFulfilled;
+    private boolean isItemFulfilled;
+    private Integer fulfilledTickCount;
     private final Collection<SyncBaseItem> fulfilledItems = new HashSet<>();
-    private Long fulfilledTimeStamp;
 
-    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer time, HumanPlayerId humanPlayerId) {
+    public void init(Map<BaseItemType, Integer> itemTypes, PlaceConfig placeConfig, Integer timeSeconds, HumanPlayerId humanPlayerId) {
         this.itemTypes = itemTypes;
         this.placeConfig = placeConfig;
-        this.time = time;
+        this.timeSeconds = timeSeconds;
         this.humanPlayerId = humanPlayerId;
     }
 
@@ -58,26 +60,49 @@ public class BaseItemPositionComparison extends AbstractTickComparison /*impleme
     public void tick() {
         Collection<SyncBaseItem> fulfilledItems = setupFulfilled();
         if (compareWithFulfilled(fulfilledItems)) {
-            // TODO handle time if fulfilled
+            if (isItemFulfilled && timeSeconds != null) {
+                tickTimer();
+            }
             return;
         }
         synchronized (this.fulfilledItems) {
             this.fulfilledItems.clear();
             this.fulfilledItems.addAll(fulfilledItems);
         }
-        checkFulfilled();
+        isItemFulfilled = checkItemsFulfilled();
+        if (isItemFulfilled) {
+            if (timeSeconds != null) {
+                tickTimer();
+            } else {
+                onProgressChanged();
+                isFulfilled = true;
+            }
+        } else {
+            isFulfilled = false;
+            if (timeSeconds != null) {
+                fulfilledTickCount = null;
+            }
+            onProgressChanged();
+        }
+    }
+
+    private void tickTimer() {
+        int timeSecondsTicks = toTicks(timeSeconds);
+        if (fulfilledTickCount != null) {
+            fulfilledTickCount++;
+            if (fulfilledTickCount != 0 && fulfilledTickCount < timeSecondsTicks && fulfilledTickCount % MIN_TIME_TICK_DELAY == 0) {
+                onProgressChanged();
+            }
+        } else {
+            fulfilledTickCount = 0;
+            onProgressChanged();
+        }
+        isFulfilled = fulfilledTickCount >= timeSecondsTicks;
     }
 
     private boolean compareWithFulfilled(Collection<SyncBaseItem> fulfilledItems) {
-        return fulfilledItems.size() == this.fulfilledItems.size() && this.fulfilledItems.containsAll(fulfilledItems);
-    }
-
-    private void checkFulfilled() {
-        if (isTimerNeeded()) {
-            checkIfTimeFulfilled();
-        } else {
-            isFulfilled = checkItemsComplete();
-            onProgressChanged();
+        synchronized (this.fulfilledItems) {
+            return fulfilledItems.size() == this.fulfilledItems.size() && this.fulfilledItems.containsAll(fulfilledItems);
         }
     }
 
@@ -111,38 +136,7 @@ public class BaseItemPositionComparison extends AbstractTickComparison /*impleme
         this.abstractConditionProgress = abstractConditionProgress;
     }
 
-//    @Override
-//    public void onTimer() {
-//        if (!isFulfilled) {
-//            synchronized (fulfilledItems) {
-//                checkIfTimeFulfilled();
-//            }
-//            if (isFulfilled) {
-//                getAbstractConditionTrigger().setFulfilled();
-//            }
-//        }
-//    }
-
-    // @Override
-    public boolean isTimerNeeded() {
-        // return time != null && time > 0;
-        return false;
-    }
-
-    private void checkIfTimeFulfilled() {
-        if (checkItemsComplete()) {
-            if (fulfilledTimeStamp == null) {
-                fulfilledTimeStamp = System.currentTimeMillis();
-            } else {
-                isFulfilled = fulfilledTimeStamp + time < System.currentTimeMillis();
-            }
-        } else {
-            fulfilledTimeStamp = null;
-        }
-        onProgressChanged();
-    }
-
-    private boolean checkItemsComplete() {
+    private boolean checkItemsFulfilled() {
         if (itemTypes == null) {
             return true;
         }
@@ -167,9 +161,8 @@ public class BaseItemPositionComparison extends AbstractTickComparison /*impleme
 
     @Override
     public void fillGenericComparisonValues(BackupComparisionInfo backupComparisionInfo) {
-        if (fulfilledTimeStamp != null) {
-            long remainingTime = time - (System.currentTimeMillis() - fulfilledTimeStamp);
-            backupComparisionInfo.setRemainingMilliSeconds((int) remainingTime);
+        if (fulfilledTickCount != null) {
+            backupComparisionInfo.setPassedSeconds(toSeconds(fulfilledTickCount));
         }
     }
 
@@ -179,9 +172,8 @@ public class BaseItemPositionComparison extends AbstractTickComparison /*impleme
             fulfilledItems.clear();
         }
 
-        if (backupComparisionInfo.hasRemainingMilliSeconds()) {
-            long remainingTime = (long) backupComparisionInfo.getRemainingMilliSeconds();
-            fulfilledTimeStamp = remainingTime + System.currentTimeMillis() - time;
+        if (backupComparisionInfo.hasPassedSeconds()) {
+            fulfilledTickCount = toTicks(backupComparisionInfo.getPassedSeconds());
         }
     }
 
@@ -190,17 +182,8 @@ public class BaseItemPositionComparison extends AbstractTickComparison /*impleme
         QuestProgressInfo questProgressInfo = new QuestProgressInfo();
 
         // Add time
-        if (time != null) {
-            int timeCount = 0;
-            if (fulfilledTimeStamp != null) {
-                long longAmount = System.currentTimeMillis() - fulfilledTimeStamp;
-                if (longAmount > TimeDateUtil.MILLIS_IN_MINUTE) {
-                    timeCount = (int) (longAmount / TimeDateUtil.MILLIS_IN_MINUTE);
-                } else {
-                    timeCount = 1;
-                }
-            }
-            questProgressInfo.setTime(timeCount);
+        if (fulfilledTickCount != null) {
+            questProgressInfo.setSecondsRemaining(timeSeconds - toSeconds(fulfilledTickCount));
         }
         // Items
         Map<Integer, Integer> typeCount = new HashMap<>();
@@ -221,5 +204,14 @@ public class BaseItemPositionComparison extends AbstractTickComparison /*impleme
             }
         }
         return count;
+    }
+
+    private int toSeconds(int ticks) {
+        return Math.max(0, ticks / PlanetService.TICKS_PER_SECONDS);
+
+    }
+
+    private int toTicks(int seconds) {
+        return Math.max(0, seconds * PlanetService.TICKS_PER_SECONDS);
     }
 }

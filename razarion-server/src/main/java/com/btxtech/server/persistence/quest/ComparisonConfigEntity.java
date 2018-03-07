@@ -41,7 +41,7 @@ public class ComparisonConfigEntity {
     @MapKeyJoinColumn(name = "baseItemTypeEntityId")
     @CollectionTable(name = "QUEST_COMPARISON_BASE_ITEM")
     private Map<BaseItemTypeEntity, Integer> typeCount;
-    private Integer time;
+    private Integer time; // In seconds
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private PlaceConfigEntity placeConfig;
     @ManyToMany(fetch = FetchType.LAZY)
@@ -51,7 +51,7 @@ public class ComparisonConfigEntity {
     private List<BotConfigEntity> bots;
 
     public ComparisonConfig toComparisonConfig() {
-        ComparisonConfig comparisonConfig = new ComparisonConfig().setCount(count).setTime(time);
+        ComparisonConfig comparisonConfig = new ComparisonConfig().setCount(count).setTimeSeconds(time);
         if (typeCount != null && !typeCount.isEmpty()) {
             comparisonConfig.setTypeCount(typeCount.entrySet().stream().collect(Collectors.toMap(entry -> entry.getKey().getId(), Map.Entry::getValue, (a, b) -> b)));
         }
@@ -66,7 +66,7 @@ public class ComparisonConfigEntity {
 
     public void fromComparisonConfig(ItemTypePersistence itemTypePersistence, ComparisonConfig comparisonConfig) {
         count = comparisonConfig.getCount();
-        time = comparisonConfig.getTime();
+        time = comparisonConfig.getTimeSeconds();
         if (comparisonConfig.getPlaceConfig() != null) {
             if (placeConfig == null) {
                 placeConfig = new PlaceConfigEntity();

@@ -229,7 +229,7 @@ public class QuestService {
                 }
             case SYNC_ITEM_POSITION:
                 BaseItemPositionComparison baseItemPositionComparison = instance.select(BaseItemPositionComparison.class).get();
-                baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTime(), humanPlayerId);
+                baseItemPositionComparison.init(convertItemCount(comparisonConfig.getTypeCount()), comparisonConfig.getPlaceConfig(), comparisonConfig.getTimeSeconds(), humanPlayerId);
                 return baseItemPositionComparison;
             default:
                 throw new IllegalArgumentException("QuestService.createAbstractComparison() Unknown conditionTrigger: " + conditionTrigger);

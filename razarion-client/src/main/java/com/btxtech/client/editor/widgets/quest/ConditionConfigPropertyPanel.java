@@ -47,7 +47,7 @@ public class ConditionConfigPropertyPanel extends Composite {
     @Inject
     @Bound
     @DataField
-    private NumberInput time;
+    private NumberInput timeSeconds;
     @Inject
     @DataField
     private TableRow timeTr;
