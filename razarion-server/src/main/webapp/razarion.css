@@ -365,6 +365,11 @@ a:active {
     margin-bottom: 10px;
 }
 
+.quest-selection-dialog {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
 .quest-selection-dialog-description {
     width: 250px;
 }

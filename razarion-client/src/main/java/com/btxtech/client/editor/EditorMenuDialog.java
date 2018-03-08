@@ -28,6 +28,7 @@ import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.client.editor.water.WaterSidebar;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -48,6 +49,8 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private LeftSideBarManager leftSideBarManager;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     @Inject
     @DataField
     private Button perfmonButton;
@@ -277,7 +280,13 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     }
 
     private void openEditor(Class<? extends LeftSideBarContent> editorPanelClass) {
-        modalDialogPanel.close();
-        leftSideBarManager.show(editorPanelClass);
+        try {
+            modalDialogPanel.close();
+            leftSideBarManager.show(editorPanelClass);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            modalDialogManager.showMessageDialog("Error open Editor", t.getMessage());
+            leftSideBarManager.close();
+        }
     }
 }
