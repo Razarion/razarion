@@ -309,6 +309,10 @@ public interface I18nConstants {
 
     String questResourcesCollected();
 
+    String questTimeRemaining();
+
+    String questTimeNotFulfilled();
+
     String questBuilt();
 
     String questUnitStructuresBuilt();

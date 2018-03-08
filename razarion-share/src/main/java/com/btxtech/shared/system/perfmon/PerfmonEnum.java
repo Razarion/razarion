@@ -30,7 +30,8 @@ public enum PerfmonEnum {
     SERVER_RESTART_WATCHDOG(true),
     RELOAD_CLIENT_WRONG_INTERFACE_VERSION(true),
     ESTABLISH_CONNECTION(true),
-    WAIT_RESTART(true);
+    WAIT_RESTART(true),
+    QUEST_PROGRESS_PANEL_TEXT_REFRESHER(true);
 
     private boolean fps;
 

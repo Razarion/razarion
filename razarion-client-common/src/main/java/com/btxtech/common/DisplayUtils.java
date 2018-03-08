@@ -41,7 +41,13 @@ public class DisplayUtils {
 
     public static String formatHourTimeStamp(long timeStamp) {
         int hours = (int) (timeStamp / MILLISECONDS_IN_HOUR);
-        return hours + ":" + MINUTE_TIME_FORMATTER.format(new Date(timeStamp));
+        String hoursString;
+        if (hours > 10) {
+            hoursString = Integer.toString(hours);
+        } else {
+            hoursString = "0" + hours;
+        }
+        return hoursString + ":" + MINUTE_TIME_FORMATTER.format(new Date(timeStamp));
     }
 
     public static String formatMinuteTimeStamp(long timeStamp) {

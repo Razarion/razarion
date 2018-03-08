@@ -130,10 +130,9 @@ public class ConditionConfigPropertyPanel extends Composite {
                     break;
                 case SYNC_ITEM_POSITION:
                     baseItemTypeCountTr.getStyle().setProperty("display", "table-row");
-                    botIdsTr.getStyle().setProperty("display", "table-row");
                     baseItemTypeCount.init(conditionConfig.getComparisonConfig().getTypeCount(), itemTypeCount -> conditionConfig.getComparisonConfig().setTypeCount(itemTypeCount));
-                    botIds.init(conditionConfig.getComparisonConfig().getBotIds(), botIds -> conditionConfig.getComparisonConfig().setBotIds(botIds));
                     placeConfigTr.getStyle().setProperty("display", "table-row");
+                    timeTr.getStyle().setProperty("display", "table-row");
                     break;
                 case BOX_PICKED:
                     countTr.getStyle().setProperty("display", "table-row");

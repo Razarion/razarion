@@ -1,12 +1,12 @@
 package com.btxtech.client.cockpit.quest;
 
 import com.btxtech.client.StaticResourcePath;
+import com.btxtech.shared.system.SimpleExecutorService;
+import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.google.gwt.user.client.TakesValue;
-import org.jboss.errai.common.client.api.IsElement;
+import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.dom.Div;
-import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.common.client.dom.Image;
-import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
@@ -17,10 +17,9 @@ import javax.inject.Inject;
  * on 09.08.2017.
  */
 @Templated("QuestSidebar.html#progressTableRow")
-public class ProgressTableRowWidget implements TakesValue<ProgressTableRowModel>, IsElement {
+public class ProgressTableRowWidget extends Composite implements TakesValue<ProgressTableRowModel> {
     @Inject
-    @DataField
-    private TableRow progressTableRow;
+    private SimpleExecutorService simpleExecutorService;
     @Inject
     @DataField
     private Image progressStatusImage;
@@ -33,9 +32,8 @@ public class ProgressTableRowWidget implements TakesValue<ProgressTableRowModel>
     @Inject
     @DataField
     private Div progressActionWordLabel;
-
-
     private ProgressTableRowModel progressTableRowModel;
+    private SimpleScheduledFuture textCallbackFuture;
 
     @Override
     public void setValue(ProgressTableRowModel progressTableRowModel) {
@@ -64,6 +62,11 @@ public class ProgressTableRowWidget implements TakesValue<ProgressTableRowModel>
         } else {
             progressActionWordLabel.getStyle().setProperty("display", "none");
         }
+        if (progressTableRowModel.getTextRefreshInterval() != null && progressTableRowModel.getTextCallback() != null) {
+            textCallbackFuture = simpleExecutorService.scheduleAtFixedRate(progressTableRowModel.getTextRefreshInterval(), true, () -> {
+                progressTextLabel.setInnerHTML(progressTableRowModel.getTextCallback().get());
+            }, SimpleExecutorService.Type.QUEST_PROGRESS_PANEL_TEXT_REFRESHER);
+        }
     }
 
     @Override
@@ -72,7 +75,11 @@ public class ProgressTableRowWidget implements TakesValue<ProgressTableRowModel>
     }
 
     @Override
-    public HTMLElement getElement() {
-        return progressTableRow;
+    protected void onUnload() {
+        super.onUnload();
+        if (textCallbackFuture != null) {
+            textCallbackFuture.cancel();
+            textCallbackFuture = null;
+        }
     }
 }

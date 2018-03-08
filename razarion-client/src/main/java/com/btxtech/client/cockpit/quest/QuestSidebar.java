@@ -5,6 +5,7 @@ import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.quest.QuestSelectionDialog;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -43,6 +44,7 @@ import java.util.logging.Logger;
  */
 @Templated("QuestSidebar.html#questSidebar")
 public class QuestSidebar extends Composite {
+    private static final int TIME_TEXT_REFRESHER_DELAY = 1000;
     private Logger logger = Logger.getLogger(QuestSidebar.class.getName());
     @Inject
     private ItemTypeService itemTypeService;
@@ -153,6 +155,7 @@ public class QuestSidebar extends Composite {
             case SYNC_ITEM_POSITION:
                 fillBaseItemCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, null);
                 fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questMinutesPast());
+                fillTime(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo);
                 break;
             case BOX_PICKED:
                 fillCount(progressTableModels, activeQuest.getConditionConfig().getComparisonConfig(), questProgressInfo, I18nHelper.getConstants().questBoxesPicked());
@@ -214,6 +217,35 @@ public class QuestSidebar extends Composite {
         if (actionWord != null) {
             progressTableRowModel.setActionWord(actionWord);
         }
+        progressTableModels.add(progressTableRowModel);
+    }
+
+    private void fillTime(List<ProgressTableRowModel> progressTableModels, ComparisonConfig comparisonConfig, QuestProgressInfo questProgressInfo) {
+        if (comparisonConfig.getTimeSeconds() == null) {
+            return;
+        }
+        ProgressTableRowModel progressTableRowModel = new ProgressTableRowModel();
+        String timeString;
+        if (questProgressInfo != null && questProgressInfo.getSecondsRemaining() != null) {
+            timeString = DisplayUtils.formatHourTimeStamp(questProgressInfo.getSecondsRemaining() * 1000);
+            if (questProgressInfo.getSecondsRemaining() <= 0) {
+                progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_TICK);
+            } else {
+                long startTime = System.currentTimeMillis();
+                progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_EXCLAMATION);
+                progressTableRowModel.setTextCallback(() -> {
+                    long diff = (System.currentTimeMillis() - startTime) / 1000;
+                    return DisplayUtils.formatHourTimeStamp((questProgressInfo.getSecondsRemaining() - diff) * 1000);
+                });
+                progressTableRowModel.setTextRefreshInterval(TIME_TEXT_REFRESHER_DELAY);
+            }
+            progressTableRowModel.setActionWord(I18nHelper.getConstants().questTimeRemaining());
+        } else {
+            progressTableRowModel.setStatusImage(StaticResourcePath.IMG_NAME_PAUSE);
+            timeString = "--:--:--";
+            progressTableRowModel.setActionWord(I18nHelper.getConstants().questTimeNotFulfilled());
+        }
+        progressTableRowModel.setText(timeString);
         progressTableModels.add(progressTableRowModel);
     }
 

@@ -7,6 +7,7 @@ package com.btxtech.client;
 public class StaticResourcePath {
     public static final String IMG_NAME_TICK = "Tick.png";
     public static final String IMG_NAME_EXCLAMATION = "Exclamation.png";
+    public static final String IMG_NAME_PAUSE = "Pause.png";
 
     private static final String IMAGES_PATH = "images/";
     private static final String CURSORS_PATH = IMAGES_PATH + "cursors/";
