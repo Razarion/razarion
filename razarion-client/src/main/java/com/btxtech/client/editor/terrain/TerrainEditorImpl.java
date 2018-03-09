@@ -16,6 +16,7 @@ import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
+import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.EditorKeyboardListener;
@@ -23,7 +24,6 @@ import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.mouse.TerrainMouseHandler;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.uiservice.renderer.RenderService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -86,6 +86,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     private ModifiedSlopeContainer modifiedSlopeContainer;
     private Collection<ModifiedTerrainObject> modifiedTerrainObjects;
     private boolean deletePressed;
+    private boolean shiftPressed;
     private boolean insertPressed;
     private Matrix4 cursorModelMatrix = Matrix4.createIdentity();
     private Vertex terrainPosition;
@@ -139,7 +140,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         if (slopeMode) {
             if (hoverSlope != null) {
                 editSlope(terrainPosition);
-            }else if(insertPressed) {
+            } else if (insertPressed) {
                 ModifiedSlope parentSlope = hoverSlope = modifiedSlopeContainer.getPolygonAt(terrainPosition.toXY());
                 Integer editorParentId = null;
                 if (parentSlope != null) {
@@ -185,13 +186,23 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 hoverSlope.decreaseDriveway(movedCursor);
                 terrainEditorRenderTask.updateSlope(hoverSlope);
             } else {
-                Polygon2D newPolygon = hoverSlope.remove(movedCursor);
-                if (newPolygon != null) {
-                    terrainEditorRenderTask.updateSlope(hoverSlope);
-                    modifiedSlopeContainer.update(hoverSlope);
+                if (shiftPressed) {
+                    if(hoverSlope.isParent()) {
+                        modalDialogManager.showMessageDialog("Delete", "Delete all child slopes first");
+                    } else {
+                        modifiedSlopeContainer.remove(hoverSlope);
+                        terrainEditorRenderTask.removeSlope(hoverSlope);
+                        hoverSlope = null;
+                    }
                 } else {
-                    terrainEditorRenderTask.removeSlope(hoverSlope);
-                    modifiedSlopeContainer.remove(hoverSlope);
+                    Polygon2D newPolygon = hoverSlope.remove(movedCursor);
+                    if (newPolygon != null) {
+                        terrainEditorRenderTask.updateSlope(hoverSlope);
+                        modifiedSlopeContainer.update(hoverSlope);
+                    } else {
+                        terrainEditorRenderTask.removeSlope(hoverSlope);
+                        modifiedSlopeContainer.remove(hoverSlope);
+                    }
                 }
             }
         } else {
@@ -222,6 +233,11 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 cursorType = CursorType.MODIFY;
             }
         }
+    }
+
+    @Override
+    public void onShiftKeyDown(boolean down) {
+        shiftPressed = down;
     }
 
     @Override

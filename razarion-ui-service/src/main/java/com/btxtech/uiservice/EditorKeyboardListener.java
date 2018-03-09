@@ -11,4 +11,5 @@ public interface EditorKeyboardListener {
 
     void onInsertKeyDown(boolean down);
 
+    void onShiftKeyDown(boolean down);
 }

@@ -82,6 +82,9 @@ public class KeyboardEventHandler {
                         if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
                             editorKeyboardListener.onDeleteKeyDown(true);
                         }
+                        if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SHIFT) {
+                            editorKeyboardListener.onShiftKeyDown(true);
+                        }
                         if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
                             editorKeyboardListener.onSpaceKeyDown(true);
                         }
@@ -123,6 +126,9 @@ public class KeyboardEventHandler {
                 if (editorKeyboardListener != null) {
                     if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.DELETE) {
                         editorKeyboardListener.onDeleteKeyDown(false);
+                    }
+                    if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SHIFT) {
+                        editorKeyboardListener.onShiftKeyDown(false);
                     }
                     if (keyboardEvent.getKeyCode() == KeyboardEvent.KeyCode.SPACE) {
                         editorKeyboardListener.onSpaceKeyDown(false);
