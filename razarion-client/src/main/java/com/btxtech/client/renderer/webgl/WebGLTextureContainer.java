@@ -29,6 +29,7 @@ import java.util.function.IntConsumer;
  */
 @ApplicationScoped
 public class WebGLTextureContainer {
+    // private Logger logger = Logger.getLogger(WebGLTextureContainer.class.getName());
     private static final int TERRAIN_MARKER_LENGTH = 512;
     @Inject
     private GameCanvas gameCanvas;
