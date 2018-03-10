@@ -36,17 +36,21 @@ public class BotService {
             try {
                 startBot(botConfig);
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Starting bot failed: " + botConfig.getName(), e);
+                logger.log(Level.SEVERE, "Starting bots failed: " + botConfig.getName(), e);
             }
         }
     }
 
     private void startBot(BotConfig botConfig) {
-        BotRunner botRunner = botRunnerInstance.get();
-        synchronized (botRunners) {
-            botRunners.add(botRunner);
+        try {
+            BotRunner botRunner = botRunnerInstance.get();
+            synchronized (botRunners) {
+                botRunners.add(botRunner);
+            }
+            botRunner.start(botConfig);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Starting bot failed: " + botConfig.getName(), e);
         }
-        botRunner.start(botConfig);
     }
 
     public void killAllBots() {
