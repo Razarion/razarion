@@ -267,6 +267,12 @@ public class BaseItemUiService {
         cockpitService.onItemCountChanged(itemCount, getMyTotalHouseSpace());
     }
 
+    public Collection<PlayerBaseDto> getBases() {
+        synchronized (bases) {
+            return new ArrayList<>(bases.values());
+        }
+    }
+
     public void addBase(PlayerBaseDto playerBase) {
         synchronized (bases) {
             if (bases.put(playerBase.getBaseId(), playerBase) != null) {

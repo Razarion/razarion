@@ -1,6 +1,7 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.AdditionUserInfo;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
@@ -14,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -57,4 +59,9 @@ public interface UserServiceProvider {
     @Path("useraccountinfo")
     @Consumes(MediaType.APPLICATION_JSON)
     void setRememberMe(boolean rememberMe);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("additionuserinfo")
+    List<AdditionUserInfo> additionUserInfo();
 }

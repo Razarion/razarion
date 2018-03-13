@@ -1,12 +1,12 @@
 package com.btxtech.server.user;
 
-import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.HistoryPersistence;
+import com.btxtech.server.persistence.history.UserHistoryEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
@@ -17,6 +17,7 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
+import com.btxtech.shared.datatypes.AdditionUserInfo;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.HumanPlayerId;
@@ -25,6 +26,7 @@ import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.datatypes.UserAccountInfo;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.InventoryInfo;
+import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
@@ -668,5 +670,21 @@ public class UserService {
         UserEntity userEntity = getUserEntity(sessionHolder.getPlayerSession().getUserContext().getHumanPlayerId().getUserId());
         userAccountInfo.setEmail(userEntity.getEmail());
         return userAccountInfo;
+    }
+
+    @SecurityCheck
+    @Transactional
+    public List<AdditionUserInfo> additionUserInfo() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);
+        userQuery.from(UserEntity.class);
+        List<AdditionUserInfo> additionUserInfos = new ArrayList<>();
+        entityManager.createQuery(userQuery).getResultList().forEach(userEntity -> {
+            AdditionUserInfo additionUserInfo = new AdditionUserInfo();
+            additionUserInfo.setHumanPlayerId(userEntity.createHumanPlayerId());
+            additionUserInfo.setLastLoggedIn(historyPersistence.get().readLastLoginDate(userEntity));
+            additionUserInfos.add(additionUserInfo);
+        });
+        return additionUserInfos;
     }
 }

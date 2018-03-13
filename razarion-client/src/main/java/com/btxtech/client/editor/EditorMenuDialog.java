@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
+import com.btxtech.client.editor.basemgmt.BaseMgmtEditorPanel;
 import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
 import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.i18n.I18nPanel;
@@ -60,6 +61,9 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     @DataField
     private Button gameEngineButton;
+    @Inject
+    @DataField
+    private Button baseMgmtButton;
     @Inject
     @DataField
     private Button planetButton;
@@ -145,6 +149,11 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @EventHandler("gameEngineButton")
     private void onGameEngineButtonClicked(ClickEvent event) {
         openEditor(GameEngineEditorPanel.class);
+    }
+
+    @EventHandler("baseMgmtButton")
+    private void onBaseMgmtButtonClicked(ClickEvent event) {
+        openEditor(BaseMgmtEditorPanel.class);
     }
 
     @EventHandler("planetButton")

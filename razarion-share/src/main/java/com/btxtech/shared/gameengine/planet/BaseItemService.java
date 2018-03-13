@@ -434,6 +434,10 @@ public class BaseItemService {
         }
     }
 
+    public void mgmtDeleteBase(int baseId) {
+        Collection<SyncBaseItem> items = new ArrayList<>(((PlayerBaseFull) getPlayerBase4BaseId(baseId)).getItems());
+        items.forEach(this::removeSyncItem);
+    }
 
     public void checkItemLimit4ItemAdding(BaseItemType newItemType, int itemCount2Add, PlayerBaseFull simpleBase) throws ItemLimitExceededException, HouseSpaceExceededException, NoSuchItemTypeException {
         if (isLevelLimitation4ItemTypeExceeded(newItemType, itemCount2Add, simpleBase)) {

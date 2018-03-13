@@ -22,6 +22,7 @@ public class DisplayUtils {
     public static final NumberFormat NUMBER_FORMATTER_X_XX = NumberFormat.getFormat("#.##");
     public static final NumberFormat NUMBER_FORMATTER_X_XXX = NumberFormat.getFormat("#.###");
     public static final NumberFormat NUMBER_FORMATTER_X_XXXX = NumberFormat.getFormat("#.####");
+    public static final DateTimeFormat DATE_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy");
     public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
     public static final DateTimeFormat DATE_TIME_FORMATTER_MILLIS = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss.SSS");
     public static final DateTimeFormat MINUTE_TIME_FORMATTER = DateTimeFormat.getFormat("mm:ss");
@@ -29,6 +30,14 @@ public class DisplayUtils {
 
     public static String formatVertex(Vertex vertex) {
         return (NUMBER_FORMATTER_X_XX.format(vertex.getX()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getY()) + ":" + NUMBER_FORMATTER_X_XX.format(vertex.getZ()));
+    }
+
+    public static String formatDateOnly(Date date) {
+        return DATE_FORMATTER.format(date);
+    }
+
+    public static Date toDateOnly(String stringDate) {
+        return DATE_FORMATTER.parse(stringDate);
     }
 
     public static String formatDate(Date date) {

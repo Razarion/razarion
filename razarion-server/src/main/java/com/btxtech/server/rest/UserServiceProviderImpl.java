@@ -4,6 +4,7 @@ import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
+import com.btxtech.shared.datatypes.AdditionUserInfo;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.datatypes.SetNameResult;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.Context;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -129,6 +131,16 @@ public class UserServiceProviderImpl implements UserServiceProvider {
             } else {
                 httpServletResponse.addCookie(FrontendProviderImpl.generateExpiredLoginServletCookie());
             }
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public List<AdditionUserInfo> additionUserInfo() {
+        try {
+            return userService.additionUserInfo();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

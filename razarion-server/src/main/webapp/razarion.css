@@ -1042,3 +1042,25 @@ a:active {
 
 /** -------------------------- EDITOR ENDS-------------------------- */
 
+/** -------------------------- GENERIC TABLE ENDS -------------------------- */
+table.inGameNormalTable {
+    font-size: 12px;
+    border-collapse: collapse;
+}
+
+table.inGameNormalTable>thead>tr>th {
+    text-align: left;
+    background-color: #3289bd;
+    color: black;
+    font-weight: bold;
+}
+
+table.inGameNormalTable>thead>tr>th, table.inGameNormalTable>tbody>tr>td {
+    border: 1px solid #3289bd;
+    padding: 3px;
+}
+
+table.inGameNormalTable>tbody>tr {
+    background-color: #025cff2e
+}
+/** -------------------------- GENERIC TABLE -------------------------- */

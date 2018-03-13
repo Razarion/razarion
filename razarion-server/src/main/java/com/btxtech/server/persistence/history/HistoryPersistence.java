@@ -195,6 +195,22 @@ public class HistoryPersistence {
 
     @Transactional
     @SecurityCheck
+    public Date readLastLoginDate(UserEntity userEntity) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserHistoryEntity> userQuery = criteriaBuilder.createQuery(UserHistoryEntity.class);
+        Root<UserHistoryEntity> from = userQuery.from(UserHistoryEntity.class);
+        userQuery.orderBy(criteriaBuilder.desc(from.get(UserHistoryEntity_.loggedIn)));
+        CriteriaQuery<UserHistoryEntity> userSelect = userQuery.select(from);
+        userQuery.where(criteriaBuilder.equal(from.get(UserHistoryEntity_.userId), userEntity.getId()));
+        List<UserHistoryEntity> userHistoryEntities = entityManager.createQuery(userSelect).setMaxResults(1).getResultList();
+        if (!userHistoryEntities.isEmpty()) {
+            return userHistoryEntities.get(0).getLoggedIn();
+        }
+        return null;
+    }
+
+    @Transactional
+    @SecurityCheck
     public SimpleUserBackend readUserFromHistory(String sessionId) {
         List<UserEntity> userEntities = entityManager.createQuery("select u from UserEntity u where u.id in (select h.userId from UserHistoryEntity h where h.sessionId=:sessionId and h.loggedIn is not null)", UserEntity.class).setParameter("sessionId", sessionId).getResultList();
         if (userEntities.isEmpty()) {

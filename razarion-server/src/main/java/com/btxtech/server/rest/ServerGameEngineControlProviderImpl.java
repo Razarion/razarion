@@ -1,6 +1,8 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -15,6 +17,8 @@ public class ServerGameEngineControlProviderImpl implements ServerGameEngineCont
     private ExceptionHandler exceptionHandler;
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
+    @Inject
+    private BaseItemService baseItemService;
 
     @Override
     public void restartBots() {
@@ -60,6 +64,17 @@ public class ServerGameEngineControlProviderImpl implements ServerGameEngineCont
     public void restartBoxRegions() {
         try {
             serverGameEngineControl.restartBoxRegions();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    @SecurityCheck
+    public void deleteBase(int baseId) {
+        try {
+            baseItemService.mgmtDeleteBase(baseId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

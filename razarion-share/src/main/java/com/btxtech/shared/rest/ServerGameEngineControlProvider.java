@@ -2,8 +2,10 @@ package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 /**
  * Created by Beat
@@ -30,4 +32,8 @@ public interface ServerGameEngineControlProvider {
     @POST
     @Path("restartBoxRegions")
     void restartBoxRegions();
+
+    @DELETE
+    @Path("deletebase/{baseId}")
+    void deleteBase(@PathParam("baseId") int baseId);
 }
