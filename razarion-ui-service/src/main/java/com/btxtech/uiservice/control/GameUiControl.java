@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
+import com.btxtech.shared.dto.SlaveQuestInfo;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
@@ -114,17 +115,21 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private int generating;
     private long lastHomeScroll;
     private Collection<SyncBaseItemSimpleDto> visitedHomeItems = new ArrayList<>();
+    private QuestConfig serverQuest;
+    private QuestProgressInfo serverQuestProgress;
 
     public void setColdGameUiControlConfig(ColdGameUiControlConfig coldGameUiControlConfig) {
         this.coldGameUiControlConfig = coldGameUiControlConfig;
         gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
         userUiService.setUserContext(coldGameUiControlConfig.getUserContext());
         unlockUiService.setLevelUnlockConfigs(coldGameUiControlConfig.getLevelUnlockConfigs());
+        initServerQuest(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveQuestInfo());
     }
 
     public void onWarmGameConfigLoaded(WarmGameUiControlConfig warmGameUiControlConfig) {
         this.coldGameUiControlConfig.setWarmGameUiControlConfig(warmGameUiControlConfig);
         gameEngineMode = warmGameUiControlConfig.getGameEngineMode();
+        initServerQuest(warmGameUiControlConfig.getSlaveQuestInfo());
     }
 
     public void init() {
@@ -387,26 +392,31 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         abstractServerSystemConnection.sendChatMessage(message);
     }
 
-    public void onQuestProgress(QuestProgressInfo questProgressInfo) {
+    public void onQuestProgress(QuestProgressInfo questProgressInfo, boolean fromServer) {
+        if (fromServer) {
+            serverQuestProgress = questProgressInfo;
+        }
         if (currentScene != null) {
             currentScene.onQuestProgress(questProgressInfo);
         }
     }
 
-    public void onQuestActivated(QuestConfig quest) {
+    public void onQuestActivatedServer(QuestConfig quest) {
+        serverQuest = quest;
         if (currentScene != null) {
-            currentScene.onQuestActivated(quest);
+            currentScene.onQuestActivatedServer(quest);
         }
     }
 
     public void onQuestPassedServer(QuestConfig quest) {
+        serverQuest = null;
         if (currentScene != null) {
             currentScene.onQuestPassedServer(quest);
         }
     }
 
     public boolean hasActiveServerQuest() {
-        return currentScene != null && currentScene.getServerQuest() != null;
+        return currentScene != null && serverQuest != null;
     }
 
     public void onEnergyChanged(int consuming, int generating) {
@@ -491,5 +501,23 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public Scene getCurrentScene() {
         return currentScene;
+    }
+
+    private void initServerQuest(SlaveQuestInfo slaveQuestInfo) {
+        if (slaveQuestInfo != null) {
+            serverQuest = slaveQuestInfo.getActiveQuest();
+            serverQuestProgress = slaveQuestInfo.getQuestProgressInfo();
+        } else {
+            serverQuest = null;
+            serverQuestProgress = null;
+        }
+    }
+
+    public QuestConfig getServerQuest() {
+        return serverQuest;
+    }
+
+    public QuestProgressInfo getServerQuestProgress() {
+        return serverQuestProgress;
     }
 }

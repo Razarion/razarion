@@ -64,7 +64,6 @@ public class Scene implements ViewService.ViewFieldListener {
     private int completionCallbackCount;
     private boolean hasCompletionCallback;
     private boolean scrollBouncePrevention = true;
-    private QuestConfig serverQuest;
 
     public void init(SceneConfig sceneConfig) {
         this.sceneConfig = sceneConfig;
@@ -281,10 +280,9 @@ public class Scene implements ViewService.ViewFieldListener {
     }
 
     private void setupQuestVisualizer4Server() {
-        serverQuest = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getActiveQuest();
-        questVisualizer.showSideBar(serverQuest, gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo(), true);
-        inGameQuestVisualizationService.onQuestActivated(serverQuest);
-        inGameQuestVisualizationService.onQuestProgress(gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getSlaveQuestInfo().getQuestProgressInfo());
+        questVisualizer.showSideBar(gameUiControl.getServerQuest(), gameUiControl.getServerQuestProgress(), true);
+        inGameQuestVisualizationService.onQuestActivated(gameUiControl.getServerQuest());
+        inGameQuestVisualizationService.onQuestProgress(gameUiControl.getServerQuestProgress());
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
@@ -292,7 +290,7 @@ public class Scene implements ViewService.ViewFieldListener {
         inGameQuestVisualizationService.onQuestProgress(questProgressInfo);
     }
 
-    public void onQuestActivated(QuestConfig quest) {
+    public void onQuestActivatedServer(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
             questVisualizer.showSideBar(quest, null, true);
             if (quest != null) {
@@ -300,7 +298,6 @@ public class Scene implements ViewService.ViewFieldListener {
             } else {
                 inGameQuestVisualizationService.stop();
             }
-            serverQuest = quest;
         }
     }
 
@@ -309,13 +306,8 @@ public class Scene implements ViewService.ViewFieldListener {
             questVisualizer.showSideBar(null, null, true);
             modalDialogManager.showQuestPassed(quest);
             inGameQuestVisualizationService.stop();
-            serverQuest = null;
         } else {
             logger.severe("Scene.onQuestPassedServer() but not sceneConfig.isProcessServerQuests()");
         }
-    }
-
-    public QuestConfig getServerQuest() {
-        return serverQuest;
     }
 }

@@ -386,7 +386,7 @@ public abstract class GameEngineControl {
                 onStopped();
                 break;
             case QUEST_PROGRESS:
-                gameUiControl.onQuestProgress((QuestProgressInfo) controlPackage.getData(0));
+                gameUiControl.onQuestProgress((QuestProgressInfo) controlPackage.getData(0), false);
                 break;
             case CONNECTION_LOST:
                 onConnectionLost();

@@ -67,10 +67,10 @@ public abstract class AbstractServerSystemConnection {
         Object param = fromJson(jsonString, packet);
         switch (packet) {
             case QUEST_PROGRESS_CHANGED:
-                gameUiControl.onQuestProgress((QuestProgressInfo) param);
+                gameUiControl.onQuestProgress((QuestProgressInfo) param, true);
                 break;
             case QUEST_ACTIVATED:
-                gameUiControl.onQuestActivated((QuestConfig) param);
+                gameUiControl.onQuestActivatedServer((QuestConfig) param);
                 break;
             case QUEST_PASSED:
                 gameUiControl.onQuestPassedServer((QuestConfig) param);
