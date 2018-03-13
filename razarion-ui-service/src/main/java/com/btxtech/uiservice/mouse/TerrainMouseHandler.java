@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBoxItemSimpleDto;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleDto;
 import com.btxtech.shared.gameengine.planet.model.SyncItemContainer;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.EditorMouseListener;
 import com.btxtech.uiservice.Group;
@@ -253,10 +254,13 @@ public class TerrainMouseHandler {
 
     private void executeMoveCommand(Group selection, DecimalPosition position) {
         Collection<SyncBaseItemSimpleDto> movables = selection.getMovables();
+        movables = movables.stream().filter(syncBaseItemSimpleDto -> {
+            TerrainType terrainType = itemTypeService.getBaseItemType(syncBaseItemSimpleDto.getItemTypeId()).getPhysicalAreaConfig().getTerrainType();
+            return terrainUiService.isTerrainFreeInDisplay(position, terrainType);
+        }).collect(Collectors.toList());
         if (movables.isEmpty()) {
             return;
         }
-
         audioService.onCommandSent();
         gameEngineControl.moveCmd(movables, position);
     }

@@ -191,7 +191,7 @@ public class TerrainUiService {
         return true;
     }
 
-    private boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition, TerrainType terrainType) {
+    public boolean isTerrainFreeInDisplay(DecimalPosition terrainPosition, TerrainType terrainType) {
         Index terrainTile = TerrainUtil.toTile(terrainPosition);
         UiTerrainTile uiTerrainTile = displayTerrainTiles.get(terrainTile);
         if (uiTerrainTile == null) {
