@@ -16,6 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 
 /**
  * Created by Beat
@@ -38,6 +39,11 @@ public interface FrontendProvider {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Path("log")
     void log(@FormParam("message") String message, @FormParam("url") String url, @FormParam("error") String error);
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("windowclosed/{url}/{time}/{event}")
+    String windowClosed(@PathParam("url") String url, @PathParam("time") String stringDate, @PathParam("event") String stringEvent);
 
     @GET
     @Path("simplelog/{e}/{t}/{p}")

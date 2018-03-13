@@ -198,6 +198,17 @@ public class TrackerPersistence {
         entityManager.persist(frontendNavigationEntity);
     }
 
+    @Transactional
+    public void onWindowClose(String url, String clientTime, String eventString, String sessionId) {
+        WindowCloseTrackerEntity closeTrackerEntity = new WindowCloseTrackerEntity();
+        closeTrackerEntity.setSessionId(sessionId);
+        closeTrackerEntity.setServerTime(new Date());
+        closeTrackerEntity.setUrl(url);
+        closeTrackerEntity.setClientTime(clientTime);
+        closeTrackerEntity.setEventString(eventString);
+        entityManager.persist(closeTrackerEntity);
+    }
+
     public void onTrackingStart(String httpSessionId, TrackingStart trackingStart) throws JsonProcessingException {
         trackingContainerMongoDb.storeTrackingStart(httpSessionId, trackingStart);
     }

@@ -11,8 +11,7 @@ export class AppComponent {
 
   constructor(private router: Router, private frontendService: FrontendService) {
     window.addEventListener("beforeunload", event => {
-      let date: Date = new Date();
-      frontendService.log("On windows closed. Time: " + date.toString() + "." + date.getMilliseconds() + " event: " + JSON.stringify(event), null);
+      frontendService.logWindowClosed(event);
     });
 
     router.events.subscribe(event => {

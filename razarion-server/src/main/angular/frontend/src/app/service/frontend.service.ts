@@ -84,6 +84,19 @@ export class FrontendService {
     this.http.post<void>(URL_FRONTEND + '/log', body, {headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded')}).subscribe();
   }
 
+  logWindowClosed(event: any): void {
+    try {
+      let params: String = encodeURIComponent(this.router.url) + "/" + encodeURIComponent(JSON.stringify(new Date())) + "/" + encodeURIComponent(JSON.stringify(event));
+      this.http.get<boolean>(URL_FRONTEND + '/windowclosed/' + params).subscribe(() => {
+        },
+        error => {
+          this.log("logWindowClosed 1 error", error);
+        });
+    } catch (err) {
+      this.log("logWindowClosed 2 error", err);
+    }
+  }
+
   getLanguage(): string {
     return this.language;
   }
@@ -234,7 +247,7 @@ export class FrontendService {
 
   verifyEmail(email: string): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/' + encodeURI(email)).subscribe(
+      this.http.get<boolean>(URL_FRONTEND + '/isemailfree/' + encodeURIComponent(email)).subscribe(
         valid => resolve(valid),
         error => {
           this.log("verifyEmail catch", error);

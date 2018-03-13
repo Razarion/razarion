@@ -3,14 +3,14 @@
 <head>
   <script>
     function logError(message, source, lineNumber, columnNumber, error) {
-      var errorMessage = encodeURI("-Frontend-window.onerror\nMessage: " + message + "\nSource: " + source + "\nLinenumber: " + lineNumber + "\ncolumnNumber: " + columnNumber + "\nerror: " + error);
+      var errorMessage = encodeURIComponent("-Frontend-window.onerror\nMessage: " + message + "\nSource: " + source + "\nLinenumber: " + lineNumber + "\ncolumnNumber: " + columnNumber + "\nerror: " + error);
       if(error && error.stack) {
         errorMessage += "\nstack: '" + error.stack + "'."
       }
       errorMessage = errorMessage.replace(/\//g, "-");
-      var pathName = encodeURI(window.location.pathname);
+      var pathName = encodeURIComponent(window.location.pathname);
       var img = document.createElement('img');
-      img.src = '/rest/frontend/simplelog/' + encodeURI(errorMessage) + '/' + new Date().getTime() + '/' + pathName.replace(/\//g, "-");
+      img.src = '/rest/frontend/simplelog/' + encodeURIComponent(errorMessage) + '/' + new Date().getTime() + '/' + pathName.replace(/\//g, "-");
       document.body.appendChild(img);
       return true;
     }

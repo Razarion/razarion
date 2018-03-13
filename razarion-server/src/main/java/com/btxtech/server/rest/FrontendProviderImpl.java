@@ -1,16 +1,18 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.shared.dto.FrontendLoginState;
 import com.btxtech.server.frontend.FrontendService;
 import com.btxtech.server.frontend.InternalLoginState;
-import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
-import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.server.user.RegisterService;
 import com.btxtech.server.user.UserService;
+import com.btxtech.server.util.DateUtil;
+import com.btxtech.server.util.ServerUtil;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
+import com.btxtech.shared.dto.FrontendLoginState;
+import com.btxtech.shared.dto.LoginResult;
+import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.rest.FrontendProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -22,6 +24,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
+import java.util.Date;
 import java.util.logging.Logger;
 
 /*
@@ -57,7 +60,7 @@ public class FrontendProviderImpl implements FrontendProvider {
                 httpServletResponse.addCookie(generateLoginServletCookie(internalLoginState.getLoginCookieValue()));
             }
             String razarionCookieValue = frontendService.handleRazarionCookie(razarionCookie);
-            if(razarionCookieValue != null) {
+            if (razarionCookieValue != null) {
                 httpServletResponse.addCookie(generateRazarionServletCookie(razarionCookieValue));
             }
             return internalLoginState.getFrontendLoginState();
@@ -90,6 +93,15 @@ public class FrontendProviderImpl implements FrontendProvider {
         logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext: " + sessionHolder.getPlayerSession().getUserContext() + "\nMessage: " + message + aditionalString);
     }
 
+    @Override
+    public String windowClosed(String url, String stringDate, String stringEvent) {
+        try {
+            trackerPersistence.onWindowClose(url, ServerUtil.removeTrailingQuotas(stringDate), stringEvent, sessionHolder.getPlayerSession().getHttpSessionId());
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
+        return "";
+    }
 
     @Override
     public Response simpleLog(String errorMessage, String timestamp, String pathName) {
