@@ -55,7 +55,7 @@ public class TerrainDestinationFinder {
             return true;
         });
         if (result.getO1() == null) {
-            throw new IllegalArgumentException("TerrainDestinationFinder.find(): no reachable terrain destination found");
+            throw new IllegalArgumentException("TerrainDestinationFinder.find(): no reachable terrain destination found. position: " + position + " destination: " + destination + " distance: " + distance + " radius: " + radius + " terrainType: " + terrainType);
         }
         reachableDestination = result.getO1();
         pathingNodeWrapper = pathingAccess.getPathingNodeWrapper(reachableDestination);
