@@ -3,68 +3,81 @@ IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(date 1478620485000)
-+++ errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(revision )
-@@ -32,14 +32,14 @@
+--- errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(date 1517950579000)
++++ errai-bus/src/main/java/org/jboss/errai/bus/client/util/ManagementConsole.java	(date 1521059100886)
+@@ -32,26 +32,26 @@
   */
  public class ManagementConsole {
    private final ClientMessageBusImpl clientMessageBus;
 -  private BusErrorDialog errorDialog;
 +  //private BusErrorDialog errorDialog;
    private final Logger logger = LoggerFactory.getLogger(ManagementConsole.class);
- 
+
    private static final String SEP = "-------------------------------------------------------------------";
- 
+
    public ManagementConsole(final ClientMessageBusImpl clientMessageBus) {
      this.clientMessageBus = clientMessageBus;
 -    this.errorDialog = new BusErrorDialog(clientMessageBus);
 +    // this.errorDialog = new BusErrorDialog(clientMessageBus);
- 
+
      java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ManagementConsole.class.getName());
      ErraiSimpleFormatter esf = new ErraiSimpleFormatter("%5$s");
-@@ -51,7 +51,7 @@
+     ErraiConsoleLogHandler eclh = new ErraiConsoleLogHandler(esf);
+-    logger.addHandler(eclh);
++    // logger.addHandler(eclh);
+     logger.setUseParentHandlers(false);
+
+     declareDebugFunction();
    }
- 
+
    public void displayError(final String message, final String additionalDetails, final Throwable e) {
 -    errorDialog.addError(message, additionalDetails, e);
 +    // errorDialog.addError(message, additionalDetails, e);
- 
+
      logger.error(message, e);
      logger.debug(additionalDetails, e);
 @@ -100,8 +100,8 @@
    }
- 
+
    private void showErrorConsole() {
 -    this.errorDialog.center();
 -    this.errorDialog.show();
 +    // this.errorDialog.center();
 +    // this.errorDialog.show();
    }
- 
+
    /**
-Index: errai-marshalling/src/main/java/org/jboss/errai/marshalling/rebind/MarshallerGeneratorFactory.java
+Index: errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- errai-marshalling/src/main/java/org/jboss/errai/marshalling/rebind/MarshallerGeneratorFactory.java	(date 1478620485000)
-+++ errai-marshalling/src/main/java/org/jboss/errai/marshalling/rebind/MarshallerGeneratorFactory.java	(revision )
-@@ -124,7 +124,7 @@
-   public static final String SHORT_MARSHALLER_PREFIX = "Marshaller_";
-   private static final String MARSHALLERS_VAR = "marshallers";
-   private static final boolean SHORT_MARSHALLER_NAMES = Boolean.parseBoolean(System.getProperty(MarshallingGenUtil.USE_SHORT_IMPL_NAMES, "true"));
--  private static final int MARSHALLER_HELPER_METHOD_SIZE = 100;
-+  private static final int MARSHALLER_HELPER_METHOD_SIZE = 200;
- 
-   private final MarshallerOutputTarget target;
- 
+--- errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java	(date 1517950579000)
++++ errai-common/src/main/java/org/jboss/errai/common/client/logging/LoggingHandlerConfigurator.java	(date 1521059100856)
+@@ -72,13 +72,13 @@
+     }
+
+     handlers.put(ErraiSystemLogHandler.class, new ErraiSystemLogHandler());
+-    logger.addHandler(handlers.get(ErraiSystemLogHandler.class));
++    // logger.addHandler(handlers.get(ErraiSystemLogHandler.class));
+
+     handlers.put(ErraiConsoleLogHandler.class, new ErraiConsoleLogHandler());
+-    logger.addHandler(handlers.get(ErraiConsoleLogHandler.class));
++    // logger.addHandler(handlers.get(ErraiConsoleLogHandler.class));
+
+     handlers.put(ErraiDevelopmentModeLogHandler.class, new ErraiDevelopmentModeLogHandler());
+-    logger.addHandler(handlers.get(ErraiDevelopmentModeLogHandler.class));
++    // logger.addHandler(handlers.get(ErraiDevelopmentModeLogHandler.class));
+
+     instance = this;
+   }
 Index: errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
---- errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(date 1478620485000)
-+++ errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(revision )
+--- errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(date 1517950579000)
++++ errai-jaxrs/errai-jaxrs-client/src/main/java/org/jboss/errai/enterprise/client/jaxrs/JacksonTransformer.java	(date 1521037469635)
 @@ -124,6 +124,9 @@
              if (arr.get(i).isObject() != null && arr.get(i).isObject().get(NUMERIC_VALUE) != null) {
                arr.set(i, arr.get(i).isObject().get(NUMERIC_VALUE));
@@ -83,9 +96,9 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +          JSONValue value = toJackson(obj.get(k), k, null, objectCache);
            JSONObject tmpObject = new JSONObject();
            toJackson(newKey, QUALIFIED_VALUE, tmpObject, objectCache);
- 
+
 @@ -174,6 +177,11 @@
- 
+
          toJackson(obj.get(k), k, obj, objectCache);
        }
 +    } else if(val.isArray() != null) {
@@ -94,17 +107,17 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 +        arr.set(i, toJackson(arr.get(i), key, parent, objectCache));
 +      }
      }
- 
+
      return (obj != null) ? cleanUpEmbeddedJson(obj) : val;
 @@ -259,10 +267,23 @@
        }
- 
+
        for (int i = 0; i < arr.size(); i++) {
 -        arr.set(i, fromJackson(arr.get(i), QUALIFIED_VALUE, null, objectId));
 +        fromJacksonIfInnerArray(objectId, arr, i);
        }
      }
- 
+
      return val;
    }
 +
