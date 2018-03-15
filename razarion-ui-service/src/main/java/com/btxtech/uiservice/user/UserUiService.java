@@ -54,6 +54,13 @@ public class UserUiService {
     private SimpleScheduledFuture setUserNameFuture;
     private SimpleScheduledFuture registerFuture;
 
+    public void init(UserContext userContext) {
+        this.userContext = userContext;
+        if (userRegistrationCallback != null) {
+            userRegistrationCallback.accept(userContext);
+        }
+    }
+
     public void start() {
         if (!isRegistered()) {
             activateRegisterTimer();
@@ -62,7 +69,6 @@ public class UserUiService {
                 activateSetUserNameTimer();
             }
         }
-
     }
 
     public void stop() {
@@ -78,13 +84,6 @@ public class UserUiService {
     public void activateRegisterTimer() {
         clearRegisterTimer();
         registerFuture = simpleExecutorService.schedule(REGISTER_TIME, modalDialogManager::showRegisterDialog, SimpleExecutorService.Type.REGISTER);
-    }
-
-    public void setUserContext(UserContext userContext) {
-        this.userContext = userContext;
-        if (userRegistrationCallback != null) {
-            userRegistrationCallback.accept(userContext);
-        }
     }
 
     public UserContext getUserContext() {

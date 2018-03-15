@@ -1,6 +1,5 @@
 package com.btxtech.client.user;
 
-import com.btxtech.shared.datatypes.FbAuthResponse;
 import jsinterop.annotations.JsFunction;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -15,6 +14,9 @@ public class Facebook {
 
     @JsProperty(namespace = JsPackage.GLOBAL)
     public static native FB getFB();
+
+    @JsProperty(namespace = JsPackage.GLOBAL, name = "window")
+    public static native AppStartLogin getAppStartLogin();
 
     @JsType(isNative = true)
     public interface FB {
@@ -35,6 +37,7 @@ public class Facebook {
     @JsType(isNative = true)
     public interface Event {
         void subscribe(String event, LoginStatusCallback callback);
+
         void unsubscribe(String event, LoginStatusCallback callback);
     }
 
@@ -61,4 +64,15 @@ public class Facebook {
         return new com.btxtech.shared.datatypes.FbAuthResponse().setUserID(authResponse.userID).setAccessToken(authResponse.accessToken).setSignedRequest(authResponse.signedRequest).setExpiresIn(authResponse.expiresIn);
     }
 
+    @JsType(isNative = true)
+    public interface AppStartLogin {
+        @JsProperty(name = "RAZ_inGameFbAuthResponse")
+        FbResponse getFbAuthResponse();
+
+        @JsProperty(name = "RAZ_inGameFbAuthResponse")
+        void setFbAuthResponse(FbResponse fbAuthResponse);
+
+        @JsProperty(name = "RAZ_inGameFbAuthResponseCallback")
+        void setFbAuthResponseCallback(LoginStatusCallback loginStatusCallback);
+    }
 }

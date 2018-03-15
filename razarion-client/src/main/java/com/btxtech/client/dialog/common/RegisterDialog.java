@@ -2,17 +2,15 @@ package com.btxtech.client.dialog.common;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
-import com.btxtech.client.user.Facebook;
+import com.btxtech.client.user.FacebookService;
 import com.btxtech.shared.datatypes.RegisterInfo;
 import com.btxtech.shared.dto.EmailPasswordInfo;
 import com.btxtech.shared.rest.UserServiceProvider;
-import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.regexp.shared.RegExp;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -42,9 +40,9 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
     @Inject
     private UserUiService userUiService;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
     private ModalDialogManager modalDialogManager;
+    @Inject
+    private FacebookService facebookService;
     @Inject
     @DataField
     private Input emailField;
@@ -73,7 +71,6 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
     @DataField
     private Image progressImage;
     private ModalDialogPanel<Void> modalDialogPanel;
-    private Facebook.LoginStatusCallback statusCallback;
 
     @Override
     public void init(Void aVoid) {
@@ -94,32 +91,7 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
 
     @Override
     public void onShown() {
-        try {
-            if (statusCallback == null) {
-                statusCallback = response -> {
-                    if (Facebook.CONNECTED.equalsIgnoreCase(response.status)) {
-                        caller.call((RemoteCallback<RegisterInfo>) registerInfo -> {
-                                    if (registerInfo.isUserAlreadyExits()) {
-                                        // User has been logged in on the server
-                                        Window.Location.reload();
-                                    } else {
-                                        userUiService.onUserRegistered(registerInfo.getHumanPlayerId(), false);
-                                    }
-                                },
-                                (message, throwable) -> {
-                                    logger.log(Level.SEVERE, "RegisterDialog: inGameFacebookRegister() failed: " + message, throwable);
-                                    return false;
-                                }).inGameFacebookRegister(Facebook.toFbAuthResponse(response.authResponse));
-                        modalDialogPanel.close();
-                    }
-                };
-                Facebook.getFB().getEvent().subscribe("auth.statusChange", statusCallback);
-            }
-            // Renders the facebook register button
-            Facebook.getFB().getXFBML().parse();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-        }
+        facebookService.onRegisterButtonShown(modalDialogPanel::close);
     }
 
     @EventHandler("emailRegisterButton")
@@ -151,10 +123,7 @@ public class RegisterDialog extends Composite implements ModalDialogContent<Void
     @Override
     public void onClose() {
         userUiService.activateRegisterTimer();
-        if (statusCallback != null) {
-            Facebook.getFB().getEvent().unsubscribe("auth.statusChange", statusCallback);
-            statusCallback = null;
-        }
+        facebookService.onRegisterButtonHidden();
     }
 
     private boolean checkEmailValid() {

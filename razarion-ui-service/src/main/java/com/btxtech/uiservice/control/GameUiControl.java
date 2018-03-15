@@ -121,7 +121,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void setColdGameUiControlConfig(ColdGameUiControlConfig coldGameUiControlConfig) {
         this.coldGameUiControlConfig = coldGameUiControlConfig;
         gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
-        userUiService.setUserContext(coldGameUiControlConfig.getUserContext());
+        userUiService.init(coldGameUiControlConfig.getUserContext());
         unlockUiService.setLevelUnlockConfigs(coldGameUiControlConfig.getLevelUnlockConfigs());
         initServerQuest(coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveQuestInfo());
     }

@@ -1,5 +1,6 @@
 package com.btxtech.client.system.boot;
 
+import com.btxtech.client.user.FacebookService;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiControlProvider;
@@ -29,18 +30,16 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Inject
     private Caller<GameUiControlProvider> serviceCaller;
     @Inject
-    private UserUiService userUiService;
+    private FacebookService facebookService;
     private Logger logger = Logger.getLogger(LoadGameUiControlTask.class.getName());
 
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        serviceCaller.call(new RemoteCallback<ColdGameUiControlConfig>() {
-            @Override
-            public void callback(ColdGameUiControlConfig coldGameUiControlConfig) {
-                gameUiControl.setColdGameUiControlConfig(coldGameUiControlConfig);
-                deferredStartup.finished();
-            }
+        serviceCaller.call((RemoteCallback<ColdGameUiControlConfig>) coldGameUiControlConfig -> {
+            gameUiControl.setColdGameUiControlConfig(coldGameUiControlConfig);
+            facebookService.activateFacebookAppStartLogin();
+            deferredStartup.finished();
         }, (message, throwable) -> {
             logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
             deferredStartup.failed(throwable);
