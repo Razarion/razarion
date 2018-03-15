@@ -22,7 +22,7 @@ export class FacebookAppStart implements OnInit {
       } else {
         this.frontendService.fbLogin(response => {
           try {
-            if ((<any>window).RAZ_inGameFbAuthResponsecallback) {
+            if ((<any>window).RAZ_inGameFbAuthResponseCallback) {
               (<any>window).RAZ_inGameFbAuthResponseCallback(response);
             } else {
               (<any>window).RAZ_inGameFbAuthResponse = response;
