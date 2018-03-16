@@ -1,10 +1,11 @@
 package com.btxtech.client.editor.itemtype;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
-import com.btxtech.shared.rest.ItemTypeProvider;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
+import com.btxtech.shared.rest.ItemTypeProvider;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -12,8 +13,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -22,8 +21,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class ResourceItemTypeCrud extends AbstractCrudeEditor<ResourceItemType> {
-    private Logger logger = Logger.getLogger(ResourceItemTypeCrud.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    // private Logger logger = Logger.getLogger(ResourceItemTypeCrud.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ItemTypeProvider> provider;
     @Inject
@@ -38,10 +38,7 @@ public class ResourceItemTypeCrud extends AbstractCrudeEditor<ResourceItemType> 
                 fire();
                 fireSelection(resourceItemType.createObjectNameId());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ResourceItemTypeCrud.createResourceItemType failed: " + message, throwable);
-            return false;
-        }).createResourceItemType();
+        }, exceptionHandler.restErrorHandler("ResourceItemTypeCrud.createResourceItemType failed: ")).createResourceItemType();
     }
 
     @Override
@@ -49,18 +46,12 @@ public class ResourceItemTypeCrud extends AbstractCrudeEditor<ResourceItemType> 
         provider.call(ignore -> {
             itemTypeService.deleteResourceItemType(resourceItemType);
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ResourceItemTypeCrud.deleteResourceItemType failed: " + message, throwable);
-            return false;
-        }).deleteResourceItemType(resourceItemType.getId());
+        }, exceptionHandler.restErrorHandler("ResourceItemTypeCrud.deleteResourceItemType failed: ")).deleteResourceItemType(resourceItemType.getId());
     }
 
     @Override
     public void save(ResourceItemType resourceItemType) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "ResourceItemTypeCrud.updateResourceItemType failed: " + message, throwable);
-            return false;
-        }).updateResourceItemType(resourceItemType);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("ResourceItemTypeCrud.updateResourceItemType failed: ")).updateResourceItemType(resourceItemType);
     }
 
     @Override
@@ -72,10 +63,7 @@ public class ResourceItemTypeCrud extends AbstractCrudeEditor<ResourceItemType> 
                 fire();
                 fireChange(resourceItemTypes);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ResourceItemTypeCrud.readResourceItemTypes failed: " + message, throwable);
-            return false;
-        }).readResourceItemTypes();
+        }, exceptionHandler.restErrorHandler("ResourceItemTypeCrud.readResourceItemTypes failed: ")).readResourceItemTypes();
     }
 
     @Override

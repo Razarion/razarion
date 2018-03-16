@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.basemgmt;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.AdditionUserInfo;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.workerdto.PlayerBaseDto;
@@ -34,6 +35,8 @@ import java.util.stream.Collectors;
 @Templated("BaseMgmtEditorPanel.html#baseMgmt")
 public class BaseMgmtEditorPanel extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(BaseMgmtEditorPanel.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private BaseItemUiService baseItemUiService;
     @Inject
@@ -145,10 +148,7 @@ public class BaseMgmtEditorPanel extends LeftSideBarContent {
         BaseMgmtModel baseMgmtModel = new BaseMgmtModel();
         baseMgmtModel.setPlayerBase(playerBaseDto);
         baseMgmtModel.setKillCallback(engineCaller.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineControlProvider.deleteBase() failed: " + message, throwable);
-            return false;
-        })::deleteBase);
+        }, exceptionHandler.restErrorHandler("ServerGameEngineControlProvider.deleteBase() failed: "))::deleteBase);
         if (additionUserInfos != null) {
             AdditionUserInfo additionUserInfo = find(playerBaseDto.getHumanPlayerId(), additionUserInfos);
             if (additionUserInfo != null) {

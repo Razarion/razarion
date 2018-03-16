@@ -3,6 +3,7 @@ package com.btxtech.client.editor.server.resource;
 import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
 import com.btxtech.client.editor.server.startregion.StartRegionPropertyPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
 import org.jboss.errai.common.client.api.Caller;
@@ -19,7 +20,9 @@ import java.util.logging.Logger;
  */
 @Templated("../../framework/AbstractCrudeParentSidebar.html#abstract-crud-parent")
 public class ResourceRegionSidebar extends AbstractCrudeParentSidebar<ResourceRegionConfig, ResourceRegionPropertyPanel> {
-    private Logger logger = Logger.getLogger(ResourceRegionSidebar.class.getName());
+    // private Logger logger = Logger.getLogger(ResourceRegionSidebar.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ServerGameEngineControlProvider> provider;
     @Inject
@@ -31,10 +34,7 @@ public class ResourceRegionSidebar extends AbstractCrudeParentSidebar<ResourceRe
     public void onConfigureDialog() {
         super.onConfigureDialog();
         getSideBarPanel().addButton("Restart", () -> provider.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Calling ServerGameEngineControlProvider.restartResourceRegions() failed: " + message, throwable);
-            return false;
-        }).restartResourceRegions());
+        }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.restartResourceRegions() failed: ")).restartResourceRegions());
     }
 
     @Override

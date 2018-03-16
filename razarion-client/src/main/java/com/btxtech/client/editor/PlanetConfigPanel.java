@@ -3,6 +3,7 @@ package com.btxtech.client.editor;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.itemtype.base.BaseItemTypeWidget;
 import com.btxtech.client.editor.widgets.itemtype.basecount.BaseItemTypeCountWidget;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
@@ -31,6 +32,8 @@ import java.util.logging.Logger;
 @Templated("PlanetConfigPanel.html#planetConfigPanel")
 public class PlanetConfigPanel extends LeftSideBarContent {
     private Logger logger = Logger.getLogger(PlanetConfigPanel.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ServerGameEngineControlProvider> provider;
     @Inject
@@ -85,10 +88,7 @@ public class PlanetConfigPanel extends LeftSideBarContent {
     @EventHandler("reloadButton")
     private void onReloadButtonClicked(ClickEvent event) {
         provider.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Calling ServerGameEngineControlProvider.reloadPlanet() failed: " + message, throwable);
-            return false;
-        }).reloadPlanet();
+        }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.reloadPlanet() failed: ")).reloadPlanet();
 
     }
 

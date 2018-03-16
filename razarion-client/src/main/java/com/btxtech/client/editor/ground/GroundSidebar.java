@@ -5,6 +5,7 @@ import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.LightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
@@ -35,7 +36,9 @@ import java.util.logging.Logger;
  */
 @Templated("GroundSidebar.html#terrain")
 public class GroundSidebar extends LeftSideBarContent {
-    private Logger logger = Logger.getLogger(GroundSidebar.class.getName());
+    //private Logger logger = Logger.getLogger(GroundSidebar.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private TerrainUiService terrainUiService;
     @Inject
@@ -116,10 +119,7 @@ public class GroundSidebar extends LeftSideBarContent {
             bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId));
             splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> groundConfig.getGroundSkeletonConfig().setSplattingId(imageId));
             terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "loadGroundConfig failed: " + message, throwable);
-            return false;
-        }).loadGroundConfig();
+        }, exceptionHandler.restErrorHandler("loadGroundConfig failed: ")).loadGroundConfig();
     }
 
     @Override
@@ -131,20 +131,14 @@ public class GroundSidebar extends LeftSideBarContent {
                 lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
                 // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "saveGroundConfig failed: " + message, throwable);
-            return false;
-        }).saveGroundConfig(groundConfigDataBinder.getModel()));
+        }, exceptionHandler.restErrorHandler("saveGroundConfig failed: ")).saveGroundConfig(groundConfigDataBinder.getModel()));
         enableSaveButton(true);
     }
 
     @EventHandler("restartPlanetButton")
     private void restartPlanetButtonClicked(ClickEvent event) {
         modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanetWarm() failed: " + message, throwable);
-            return false;
-        }).restartPlanetCold(gameUiControl.getPlanetConfig().getPlanetId()), () -> {
+        }, exceptionHandler.restErrorHandler("PlanetEditorProvider.restartPlanetWarm() failed: ")).restartPlanetCold(gameUiControl.getPlanetConfig().getPlanetId()), () -> {
         });
     }
 

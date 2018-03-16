@@ -3,6 +3,7 @@ package com.btxtech.client.dialog.quest;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.common.DisplayUtils;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.QuestProvider;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -23,8 +24,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -32,13 +31,15 @@ import java.util.logging.Logger;
  */
 @Templated("QuestSelectionDialog.html#questSelectionTr")
 public class QuestConfigWidget implements TakesValue<QuestConfig>, IsElement {
-    private Logger logger = Logger.getLogger(QuestConfigWidget.class.getName());
+    // private Logger logger = Logger.getLogger(QuestConfigWidget.class.getName());
     @Inject
     private Caller<QuestProvider> provider;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
     private ClientModalDialogManagerImpl dialogManager;
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     @AutoBound
     private DataBinder<QuestConfig> dataBinder;
@@ -99,10 +100,7 @@ public class QuestConfigWidget implements TakesValue<QuestConfig>, IsElement {
 
     private void activateQuest() {
         provider.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Calling QuestProvider.readMyOpenQuests() failed: " + message, throwable);
-            return false;
-        }).activateQuest(dataBinder.getModel().getId());
+        }, exceptionHandler.restErrorHandler("Calling QuestProvider.readMyOpenQuests()")).activateQuest(dataBinder.getModel().getId());
         closeDialog();
     }
 

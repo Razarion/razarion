@@ -2,6 +2,7 @@ package com.btxtech.client.editor.level;
 
 import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
 import org.jboss.errai.common.client.api.Caller;
@@ -9,8 +10,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -18,7 +17,9 @@ import java.util.logging.Logger;
  */
 @Templated("../framework/AbstractCrudeParentSidebar.html#abstract-crud-parent")
 public class LevelConfigSidebar extends AbstractCrudeParentSidebar<LevelEditConfig, LevelConfigPropertyPanel> {
-    private Logger logger = Logger.getLogger(LevelConfigSidebar.class.getName());
+    // private Logger logger = Logger.getLogger(LevelConfigSidebar.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Instance<LevelConfigPropertyPanel> instance;
     @Inject
@@ -30,10 +31,7 @@ public class LevelConfigSidebar extends AbstractCrudeParentSidebar<LevelEditConf
     public void onConfigureDialog() {
         super.onConfigureDialog();
         getSideBarPanel().addButton("Restart", () -> provider.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Calling ServerGameEngineControlProvider.reloadStatic() failed: " + message, throwable);
-            return false;
-        }).reloadStatic());
+        }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.reloadStatic() failed: ")).reloadStatic());
     }
 
     @Override

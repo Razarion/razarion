@@ -2,6 +2,7 @@ package com.btxtech.client.editor.server.quest;
 
 import com.btxtech.client.editor.framework.ObjectNamePropertyPanel;
 import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -11,8 +12,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -20,7 +19,9 @@ import java.util.logging.Logger;
  */
 @Templated("QuestPropertyWrapperPanel.html#questPropertyPanel")
 public class QuestPropertyWrapperPanel extends ObjectNamePropertyPanel {
-    private Logger logger = Logger.getLogger(QuestPropertyWrapperPanel.class.getName());
+    // private Logger logger = Logger.getLogger(QuestPropertyWrapperPanel.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ServerGameEngineEditorProvider> provider;
     @Inject
@@ -30,10 +31,7 @@ public class QuestPropertyWrapperPanel extends ObjectNamePropertyPanel {
     @Override
     public void setObjectNameId(ObjectNameId objectNameId) {
         ServerLevelQuestConfig serverLevelQuestConfig = (ServerLevelQuestConfig) getPredecessorConfigObject();
-        provider.call(response -> questPropertyPanel.init((QuestConfig) response), (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.readQuestConfig failed: " + message, throwable);
-            return false;
-        }).readQuestConfig(serverLevelQuestConfig.getId(), objectNameId.getId());
+        provider.call(response -> questPropertyPanel.init((QuestConfig) response), exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.readQuestConfig failed: ")).readQuestConfig(serverLevelQuestConfig.getId(), objectNameId.getId());
         registerSaveButton(this::save);
         enableSaveButton(true);
     }
@@ -46,10 +44,7 @@ public class QuestPropertyWrapperPanel extends ObjectNamePropertyPanel {
     private void save() {
         ServerLevelQuestConfig serverLevelQuestConfig = (ServerLevelQuestConfig) getPredecessorConfigObject();
         provider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.readQuestConfig failed: " + message, throwable);
-            return false;
-        }).updateQuestConfig(serverLevelQuestConfig.getId(), questPropertyPanel.getQuestConfig());
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.readQuestConfig failed: ")).updateQuestConfig(serverLevelQuestConfig.getId(), questPropertyPanel.getQuestConfig());
     }
 
 }

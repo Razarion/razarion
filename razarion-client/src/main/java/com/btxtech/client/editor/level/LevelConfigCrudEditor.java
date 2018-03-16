@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.level;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.rest.LevelEditorProvider;
@@ -12,15 +13,15 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * on 22.08.2017.
  */
 public class LevelConfigCrudEditor extends AbstractCrudeEditor<LevelEditConfig> {
-    private Logger logger = Logger.getLogger(LevelConfigCrudEditor.class.getName());
+    // private Logger logger = Logger.getLogger(LevelConfigCrudEditor.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<LevelEditorProvider> provider;
     private List<ObjectNameId> objectNameIds = new ArrayList<>();
@@ -31,10 +32,7 @@ public class LevelConfigCrudEditor extends AbstractCrudeEditor<LevelEditConfig> 
             objectNameIds.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getInternalName())));
             LevelConfigCrudEditor.this.objectNameIds = objectNameIds;
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "LevelEditorProvider.readObjectNameIds failed: " + message, throwable);
-            return false;
-        }).readObjectNameIds();
+        }, exceptionHandler.restErrorHandler("LevelEditorProvider.readObjectNameIds failed: ")).readObjectNameIds();
     }
 
     @Override
@@ -49,10 +47,7 @@ public class LevelConfigCrudEditor extends AbstractCrudeEditor<LevelEditConfig> 
             objectNameIds.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getInternalName())));
             fire();
             fireSelection(levelConfig.createObjectNameId());
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "LevelEditorProvider.create failed: " + message, throwable);
-            return false;
-        }).create();
+        }, exceptionHandler.restErrorHandler("LevelEditorProvider.create failed: ")).create();
     }
 
     @Override
@@ -60,18 +55,12 @@ public class LevelConfigCrudEditor extends AbstractCrudeEditor<LevelEditConfig> 
         provider.call((RemoteCallback<Void>) aVoid -> {
             objectNameIds.removeIf(objectNameId -> objectNameId.getId() == levelEditConfig.getLevelId());
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "LevelEditorProvider.delete failed: " + message, throwable);
-            return false;
-        }).delete(levelEditConfig.getLevelId());
+        }, exceptionHandler.restErrorHandler("LevelEditorProvider.delete failed: ")).delete(levelEditConfig.getLevelId());
     }
 
     @Override
     public void save(LevelEditConfig levelEditConfig) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "LevelEditorProvider.update failed: " + message, throwable);
-            return false;
-        }).update(levelEditConfig);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("LevelEditorProvider.update failed: ")).update(levelEditConfig);
     }
 
     @Override
@@ -81,9 +70,6 @@ public class LevelConfigCrudEditor extends AbstractCrudeEditor<LevelEditConfig> 
 
     @Override
     public void getInstance(ObjectNameId id, Consumer<LevelEditConfig> callback) {
-        provider.call((RemoteCallback<LevelEditConfig>) callback::accept, (message, throwable) -> {
-            logger.log(Level.SEVERE, "LevelEditorProvider.read failed: " + message, throwable);
-            return false;
-        }).read(id.getId());
+        provider.call((RemoteCallback<LevelEditConfig>) callback::accept, exceptionHandler.restErrorHandler("LevelEditorProvider.read failed: ")).read(id.getId());
     }
 }

@@ -1,10 +1,11 @@
 package com.btxtech.client.editor.terrainobject;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
-import com.btxtech.shared.rest.TerrainElementEditorProvider;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -12,8 +13,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -22,10 +21,11 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> {
-    private Logger logger = Logger.getLogger(TerrainObjectCrud.class.getName());
+    // private Logger logger = Logger.getLogger(TerrainObjectCrud.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private TerrainTypeService terrainTypeService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     private Caller<TerrainElementEditorProvider> provider;
 
@@ -38,10 +38,7 @@ public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> 
                 fire();
                 fireSelection(terrainObjectConfig.createObjectNameId());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TerrainElementEditorProvider.createTerrainObjectConfig failed: " + message, throwable);
-            return false;
-        }).createTerrainObjectConfig();
+        }, exceptionHandler.restErrorHandler("TerrainElementEditorProvider.createTerrainObjectConfig failed: ")).createTerrainObjectConfig();
     }
 
     @Override
@@ -53,10 +50,7 @@ public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> 
                 fire();
                 fireChange(terrainObjectConfig);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TerrainElementEditorProvider.createTerrainObjectConfig failed: " + message, throwable);
-            return false;
-        }).readTerrainObjectConfigs();
+        }, exceptionHandler.restErrorHandler("TerrainElementEditorProvider.createTerrainObjectConfig failed: ")).readTerrainObjectConfigs();
     }
 
     @Override
@@ -66,10 +60,7 @@ public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> 
 
     @Override
     public void save(TerrainObjectConfig terrainObjectConfig) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "TerrainElementEditorProvider.saveTerrainObjectConfig failed: " + message, throwable);
-            return false;
-        }).saveTerrainObjectConfig(terrainObjectConfig);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("TerrainElementEditorProvider.saveTerrainObjectConfig failed: ")).saveTerrainObjectConfig(terrainObjectConfig);
     }
 
 
@@ -78,10 +69,7 @@ public class TerrainObjectCrud extends AbstractCrudeEditor<TerrainObjectConfig> 
         provider.call(ignore -> {
             terrainTypeService.deleteTerrainObjectConfig(terrainObjectConfig);
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TerrainElementEditorProvider.deleteTerrainObjectConfig failed: " + message, throwable);
-            return false;
-        }).deleteTerrainObjectConfig(terrainObjectConfig);
+        }, exceptionHandler.restErrorHandler("TerrainElementEditorProvider.deleteTerrainObjectConfig failed: ")).deleteTerrainObjectConfig(terrainObjectConfig);
     }
 
     @Override

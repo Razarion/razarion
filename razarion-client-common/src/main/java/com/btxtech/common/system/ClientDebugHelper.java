@@ -6,7 +6,6 @@ import org.jboss.errai.common.client.api.Caller;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -18,14 +17,13 @@ public class ClientDebugHelper implements DebugHelper {
     private Logger logger = Logger.getLogger(ClientDebugHelper.class.getName());
     @Inject
     private Caller<LoggingProvider> caller;
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
 
     @Override
     public void debugToDb(String debugMessage) {
         caller.call(ignore -> {
-                }, (message, throwable) -> {
-                    logger.log(Level.SEVERE, "LoggingProvider.jsonDebugDbLogger() failed: " + message, throwable);
-                    return false;
-                }
+                }, exceptionHandler.restErrorHandler("LoggingProvider.jsonDebugDbLogger()")
         ).jsonDebugDbLogger(debugMessage);
     }
 }

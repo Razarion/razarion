@@ -1,5 +1,6 @@
 package com.btxtech.client;
 
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.InventoryInfo;
 import com.btxtech.shared.rest.InventoryProvider;
 import com.btxtech.uiservice.inventory.InventoryUiService;
@@ -9,8 +10,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -18,15 +17,14 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class ClientInventoryUiService extends InventoryUiService {
-    private Logger logger = Logger.getLogger(ClientInventoryUiService.class.getName());
+    // private Logger logger = Logger.getLogger(ClientInventoryUiService.class.getName());
     @Inject
     private Caller<InventoryProvider> inventoryProvider;
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
 
     @Override
     protected void loadServerInventoryInfo(Consumer<InventoryInfo> inventoryInfoConsumer) {
-        inventoryProvider.call((RemoteCallback<InventoryInfo>) inventoryInfoConsumer::accept, (message, throwable) -> {
-            logger.log(Level.SEVERE, "InventoryProvider.loadInventory() failed: " + message, throwable);
-            return false;
-        }).loadInventory();
+        inventoryProvider.call((RemoteCallback<InventoryInfo>) inventoryInfoConsumer::accept, exceptionHandler.restErrorHandler("InventoryProvider.loadInventory()")).loadInventory();
     }
 }

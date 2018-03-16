@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -14,8 +15,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -24,8 +23,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class SlopeConfigCrud extends AbstractCrudeEditor<SlopeConfig> {
-    private Logger logger = Logger.getLogger(SlopeConfigCrud.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    // private Logger logger = Logger.getLogger(SlopeConfigCrud.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<TerrainElementEditorProvider> provider;
     @Inject
@@ -44,10 +44,7 @@ public class SlopeConfigCrud extends AbstractCrudeEditor<SlopeConfig> {
                 fire();
                 fireSelection(slopeConfig.createObjectNameId());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "createSlopeConfig failed: " + message, throwable);
-            return false;
-        }).createSlopeConfig();
+        }, exceptionHandler.restErrorHandler("createSlopeConfig failed: ")).createSlopeConfig();
     }
 
     @Override
@@ -55,18 +52,12 @@ public class SlopeConfigCrud extends AbstractCrudeEditor<SlopeConfig> {
         provider.call(ignore -> {
             terrainTypeService.deleteSlopeSkeletonConfig(slopeConfig.getSlopeSkeletonConfig());
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "deleteSlopeConfig failed: " + message, throwable);
-            return false;
-        }).deleteSlopeConfig(slopeConfig.getId());
+        }, exceptionHandler.restErrorHandler("deleteSlopeConfig failed: ")).deleteSlopeConfig(slopeConfig.getId());
     }
 
     @Override
     public void save(SlopeConfig slopeConfig) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "deleteSlopeConfig failed: " + message, throwable);
-            return false;
-        }).updateSlopeConfig(slopeConfig);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("deleteSlopeConfig failed: ")).updateSlopeConfig(slopeConfig);
     }
 
     @Override
@@ -78,10 +69,7 @@ public class SlopeConfigCrud extends AbstractCrudeEditor<SlopeConfig> {
                 fire();
                 fireChange(slopeConfigs);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "readSlopeConfigs failed: " + message, throwable);
-            return false;
-        }).readSlopeConfigs();
+        }, exceptionHandler.restErrorHandler("readSlopeConfigs failed: ")).readSlopeConfigs();
     }
 
     @Override
@@ -91,9 +79,6 @@ public class SlopeConfigCrud extends AbstractCrudeEditor<SlopeConfig> {
             public void callback(SlopeConfig slopeConfig) {
                 callback.accept(slopeConfig);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "readSlopeConfig failed: " + message, throwable);
-            return false;
-        }).readSlopeConfig(id.getId());
+        }, exceptionHandler.restErrorHandler("readSlopeConfig failed: ")).readSlopeConfig(id.getId());
     }
 }

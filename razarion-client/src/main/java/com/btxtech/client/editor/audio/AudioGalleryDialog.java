@@ -4,6 +4,7 @@ import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.widgets.FileButton;
 import com.btxtech.client.utils.ControlUtils;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.AudioItemConfig;
 import com.btxtech.shared.rest.AudioProvider;
 import com.google.gwt.user.client.ui.Composite;
@@ -18,8 +19,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -27,7 +26,9 @@ import java.util.logging.Logger;
  */
 @Templated("AudioDialog.html#audio-gallery-dialog")
 public class AudioGalleryDialog extends Composite implements ModalDialogContent<Void> {
-    private Logger logger = Logger.getLogger(AudioGalleryDialog.class.getName());
+    // private Logger logger = Logger.getLogger(AudioGalleryDialog.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<AudioProvider> audioService;
     @Inject
@@ -52,10 +53,7 @@ public class AudioGalleryDialog extends Composite implements ModalDialogContent<
     }
 
     private void create(String dataUrl) {
-        audioService.call(aVoid -> load(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "createAudio failed: " + message, throwable);
-            return false;
-        }).createAudio(dataUrl);
+        audioService.call(aVoid -> load(), exceptionHandler.restErrorHandler("createAudio failed: ")).createAudio(dataUrl);
     }
 
     private void load() {
@@ -65,10 +63,7 @@ public class AudioGalleryDialog extends Composite implements ModalDialogContent<
                 audioGalleryItems.add(new AudioGalleryItem().init(audioItemConfig));
             }
             audioGallery.setValue(audioGalleryItems);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "getAudioItemConfigs failed: " + message, throwable);
-            return false;
-        }).getAudioItemConfigs();
+        }, exceptionHandler.restErrorHandler("getAudioItemConfigs failed: ")).getAudioItemConfigs();
     }
 
     @Override
@@ -86,9 +81,6 @@ public class AudioGalleryDialog extends Composite implements ModalDialogContent<
         if (changed.isEmpty()) {
             return;
         }
-        audioService.call(aVoid -> load(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "createAudio failed: " + message, throwable);
-            return false;
-        }).save(changed);
+        audioService.call(aVoid -> load(), exceptionHandler.restErrorHandler("createAudio failed: ")).save(changed);
     }
 }

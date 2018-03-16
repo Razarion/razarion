@@ -1,5 +1,6 @@
 package com.btxtech.worker;
 
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.tracking.TrackingContainer;
 import com.btxtech.shared.gameengine.WorkerTrackerHandler;
 import com.btxtech.shared.rest.TrackerProvider;
@@ -7,8 +8,6 @@ import org.jboss.errai.common.client.api.Caller;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -16,16 +15,15 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class ClientWorkerTrackerHandler extends WorkerTrackerHandler {
-    private Logger logger = Logger.getLogger(WorkerTrackerHandler.class.getName());
+    // private Logger logger = Logger.getLogger(WorkerTrackerHandler.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<TrackerProvider> trackingProvider;
 
     @Override
     protected void sendToServer(TrackingContainer tmpTrackingContainer) {
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "detailedTracking failed: " + message, throwable);
-            return false;
-        }).detailedTracking(tmpTrackingContainer);
+        }, exceptionHandler.restErrorHandler("detailedTracking failed: ")).detailedTracking(tmpTrackingContainer);
     }
 }

@@ -1,10 +1,11 @@
 package com.btxtech.client.editor.itemtype;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
-import com.btxtech.shared.rest.ItemTypeProvider;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.rest.ItemTypeProvider;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
@@ -12,8 +13,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -22,8 +21,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
-    private Logger logger = Logger.getLogger(BaseItemTypeCrud.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    // private Logger logger = Logger.getLogger(BaseItemTypeCrud.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ItemTypeProvider> provider;
     @Inject
@@ -31,17 +31,11 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
 
     @Override
     public void create() {
-        provider.call(new RemoteCallback<BaseItemType>() {
-            @Override
-            public void callback(BaseItemType baseItemType) {
-                itemTypeService.overrideBaseItemType(baseItemType);
-                fire();
-                fireSelection(baseItemType.createObjectNameId());
-            }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "BaseItemTypeCrud.createBaseItemType failed: " + message, throwable);
-            return false;
-        }).createBaseItemType();
+        provider.call((RemoteCallback<BaseItemType>) baseItemType -> {
+            itemTypeService.overrideBaseItemType(baseItemType);
+            fire();
+            fireSelection(baseItemType.createObjectNameId());
+        }, exceptionHandler.restErrorHandler("BaseItemTypeCrud.createBaseItemType failed: ")).createBaseItemType();
     }
 
     @Override
@@ -49,33 +43,21 @@ public class BaseItemTypeCrud extends AbstractCrudeEditor<BaseItemType> {
         provider.call(ignore -> {
             itemTypeService.deleteBaseItemType(baseItemType);
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "BaseItemTypeCrud.deleteBaseItemType failed: " + message, throwable);
-            return false;
-        }).deleteBaseItemType(baseItemType.getId());
+        }, exceptionHandler.restErrorHandler("BaseItemTypeCrud.deleteBaseItemType failed: ")).deleteBaseItemType(baseItemType.getId());
     }
 
     @Override
     public void save(BaseItemType baseItemType) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "BaseItemTypeCrud.updateBaseItemType failed: " + message, throwable);
-            return false;
-        }).updateBaseItemType(baseItemType);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("BaseItemTypeCrud.updateBaseItemType failed: ")).updateBaseItemType(baseItemType);
     }
 
     @Override
     public void reload() {
-        provider.call(new RemoteCallback<List<BaseItemType>>() {
-            @Override
-            public void callback(List<BaseItemType> baseItemTypes) {
-                itemTypeService.setBaseItemTypes(baseItemTypes);
-                fire();
-                fireChange(baseItemTypes);
-            }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "BaseItemTypeCrud.readBaseItemTypes failed: " + message, throwable);
-            return false;
-        }).readBaseItemTypes();
+        provider.call((RemoteCallback<List<BaseItemType>>) baseItemTypes -> {
+            itemTypeService.setBaseItemTypes(baseItemTypes);
+            fire();
+            fireChange(baseItemTypes);
+        }, exceptionHandler.restErrorHandler("BaseItemTypeCrud.readBaseItemTypes failed: ")).readBaseItemTypes();
     }
 
     @Override

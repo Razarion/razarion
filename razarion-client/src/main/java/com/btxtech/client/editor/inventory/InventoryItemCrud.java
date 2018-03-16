@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.inventory;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.rest.InventoryEditorProvider;
@@ -12,8 +13,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -21,7 +20,9 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class InventoryItemCrud extends AbstractCrudeEditor<InventoryItem> {
-    private Logger logger = Logger.getLogger(InventoryItemCrud.class.getName());
+    // private Logger logger = Logger.getLogger(InventoryItemCrud.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<InventoryEditorProvider> provider;
     private List<ObjectNameId> objectNameIds = new ArrayList<>();
@@ -31,10 +32,7 @@ public class InventoryItemCrud extends AbstractCrudeEditor<InventoryItem> {
         provider.call((RemoteCallback<List<ObjectNameId>>) objectNameIds -> {
             InventoryItemCrud.this.objectNameIds = objectNameIds;
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "InventoryEditorProvider.readInventoryItemObjectNameIds failed: " + message, throwable);
-            return false;
-        }).readInventoryItemObjectNameIds();
+        }, exceptionHandler.restErrorHandler("InventoryEditorProvider.readInventoryItemObjectNameIds failed: ")).readInventoryItemObjectNameIds();
     }
 
 
@@ -44,10 +42,7 @@ public class InventoryItemCrud extends AbstractCrudeEditor<InventoryItem> {
             objectNameIds.add(inventoryItem.createObjectNameId());
             fire();
             fireSelection(inventoryItem.createObjectNameId());
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "InventoryEditorProvider.createInventoryItem failed: " + message, throwable);
-            return false;
-        }).createInventoryItem();
+        }, exceptionHandler.restErrorHandler("InventoryEditorProvider.createInventoryItem failed: ")).createInventoryItem();
     }
 
     @Override
@@ -55,18 +50,12 @@ public class InventoryItemCrud extends AbstractCrudeEditor<InventoryItem> {
         provider.call(ignore -> {
             objectNameIds.removeIf(objectNameId -> objectNameId.getId() == inventoryItem.getId());
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "InventoryEditorProvider.deleteInventoryItem failed: " + message, throwable);
-            return false;
-        }).deleteInventoryItem(inventoryItem.getId());
+        }, exceptionHandler.restErrorHandler("InventoryEditorProvider.deleteInventoryItem failed: ")).deleteInventoryItem(inventoryItem.getId());
     }
 
     @Override
     public void save(InventoryItem inventoryItem) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "InventoryEditorProvider.updateInventoryItem failed: " + message, throwable);
-            return false;
-        }).updateInventoryItem(inventoryItem);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("InventoryEditorProvider.updateInventoryItem failed: ")).updateInventoryItem(inventoryItem);
     }
 
     @Override
@@ -76,10 +65,7 @@ public class InventoryItemCrud extends AbstractCrudeEditor<InventoryItem> {
 
     @Override
     public void getInstance(ObjectNameId objectNameId, Consumer<InventoryItem> callback) {
-        provider.call((RemoteCallback<InventoryItem>) callback::accept, (message, throwable) -> {
-            logger.log(Level.SEVERE, "InventoryEditorProvider.readInventoryItem failed: " + message, throwable);
-            return false;
-        }).readInventoryItem(objectNameId.getId());
+        provider.call((RemoteCallback<InventoryItem>) callback::accept, exceptionHandler.restErrorHandler("InventoryEditorProvider.readInventoryItem failed: ")).readInventoryItem(objectNameId.getId());
     }
 
     @Override

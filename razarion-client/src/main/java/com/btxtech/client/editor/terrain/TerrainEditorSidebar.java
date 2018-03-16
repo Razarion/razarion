@@ -5,6 +5,7 @@ import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.common.DisplayUtils;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -43,7 +44,9 @@ import java.util.logging.Logger;
  */
 @Templated("TerrainEditorSidebar.html#terrainEditor")
 public class TerrainEditorSidebar extends LeftSideBarContent implements ViewService.ViewFieldListener {
-    private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
+    // private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private TerrainEditorImpl terrainEditor;
     @Inject
@@ -151,10 +154,7 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
             slopeSelection.setAcceptableValues(objectNameIds);
             slopeSelection.setValue(objectNameId);
             terrainEditor.setSlope4New(objectNameId);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "getSlopeNameIds failed: " + message, throwable);
-            return false;
-        }).getSlopeNameIds();
+        }, exceptionHandler.restErrorHandler("getSlopeNameIds failed: ")).getSlopeNameIds();
         drivewayMode.setChecked(terrainEditor.isDrivewayMode());
         drivewaySelection.addValueChangeHandler(event -> terrainEditor.setDriveway4New(drivewaySelection.getValue()));
         elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
@@ -162,20 +162,14 @@ public class TerrainEditorSidebar extends LeftSideBarContent implements ViewServ
             drivewaySelection.setAcceptableValues(objectNameIds);
             drivewaySelection.setValue(objectNameId);
             terrainEditor.setDriveway4New(objectNameId);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "readDrivewayObjectNameIds failed: " + message, throwable);
-            return false;
-        }).readDrivewayObjectNameIds();
+        }, exceptionHandler.restErrorHandler("readDrivewayObjectNameIds failed: ")).readDrivewayObjectNameIds();
         terrainObjectSelection.addValueChangeHandler(event -> terrainEditor.setTerrainObject4New(terrainObjectSelection.getValue()));
         elementEditorProvider.call((RemoteCallback<Collection<ObjectNameId>>) objectNameIds -> {
             ObjectNameId objectNameId = CollectionUtils.getFirst(objectNameIds);
             terrainObjectSelection.setAcceptableValues(objectNameIds);
             terrainObjectSelection.setValue(objectNameId);
             terrainEditor.setTerrainObject4New(objectNameId);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "getTerrainObjectNameIds failed: " + message, throwable);
-            return false;
-        }).getTerrainObjectNameIds();
+        }, exceptionHandler.restErrorHandler("getTerrainObjectNameIds failed: ")).getTerrainObjectNameIds();
         terrainEditor.setTerrainPositionListener(vertex -> terrainPositionLabel.setTextContent(DisplayUtils.formatVertex(vertex)));
         viewService.addViewFieldListeners(this);
         radarPanel.show();

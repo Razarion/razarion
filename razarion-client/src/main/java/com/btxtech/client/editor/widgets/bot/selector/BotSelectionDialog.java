@@ -2,6 +2,7 @@ package com.btxtech.client.editor.widgets.bot.selector;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.CommonEditorProvider;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -17,8 +18,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -26,7 +25,9 @@ import java.util.logging.Logger;
  */
 @Templated("BotSelectionDialog.html#bot-selection-dialog")
 public class BotSelectionDialog extends Composite implements ModalDialogContent<Integer> {
-    private Logger logger = Logger.getLogger(BotSelectionDialog.class.getName());
+    // private Logger logger = Logger.getLogger(BotSelectionDialog.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<CommonEditorProvider> provider;
     @Inject
@@ -45,10 +46,7 @@ public class BotSelectionDialog extends Composite implements ModalDialogContent<
         DOMUtil.removeAllElementChildren(botList.getElement()); // Remove placeholder table row from template.
         provider.call(response -> {
             fillTable(selectedId, (List<ObjectNameId>) response);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "CommonEditorProvider.getAllBotsFromPlanet() failed: " + message, throwable);
-            return false;
-        }).getAllBotsFromPlanet(gameUiControl.getPlanetConfig().getPlanetId());
+        }, exceptionHandler.restErrorHandler("CommonEditorProvider.getAllBotsFromPlanet() failed: ")).getAllBotsFromPlanet(gameUiControl.getPlanetConfig().getPlanetId());
 
         botList.addComponentCreationHandler(botSelectionEntryWidget -> botSelectionEntryWidget.setBotSelectionDialog(BotSelectionDialog.this));
         botList.setSelector(baseItemTypeSelectionEntry -> baseItemTypeSelectionEntry.setSelected(true));

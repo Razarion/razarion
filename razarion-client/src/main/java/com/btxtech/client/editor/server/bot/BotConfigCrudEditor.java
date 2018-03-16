@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.server.bot;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
@@ -12,8 +13,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -21,7 +20,9 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class BotConfigCrudEditor extends AbstractCrudeEditor<BotConfig> {
-    private Logger logger = Logger.getLogger(BotConfigCrudEditor.class.getName());
+    // private Logger logger = Logger.getLogger(BotConfigCrudEditor.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ServerGameEngineEditorProvider> provider;
     private List<ObjectNameId> objectNameIds = new ArrayList<>();
@@ -34,10 +35,7 @@ public class BotConfigCrudEditor extends AbstractCrudeEditor<BotConfig> {
                 BotConfigCrudEditor.this.objectNameIds = objectNameIds;
                 fire();
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.readBotConfigObjectNameIds failed: " + message, throwable);
-            return false;
-        }).readBotConfigObjectNameIds();
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.readBotConfigObjectNameIds failed: ")).readBotConfigObjectNameIds();
     }
 
     @Override
@@ -49,10 +47,7 @@ public class BotConfigCrudEditor extends AbstractCrudeEditor<BotConfig> {
                 fire();
                 fireSelection(botConfig.createObjectNameId());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.createBotConfig failed: " + message, throwable);
-            return false;
-        }).createBotConfig();
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.createBotConfig failed: ")).createBotConfig();
     }
 
     @Override
@@ -68,18 +63,12 @@ public class BotConfigCrudEditor extends AbstractCrudeEditor<BotConfig> {
                 objectNameIds.removeIf(objectNameId -> objectNameId.getId() == botConfig.getId());
                 fire();
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.deleteBotConfigConfig failed: " + message, throwable);
-            return false;
-        }).deleteBotConfigConfig(botConfig.getId());
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.deleteBotConfigConfig failed: ")).deleteBotConfigConfig(botConfig.getId());
     }
 
     @Override
     public void save(BotConfig botConfig) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.updateBotConfig failed: " + message, throwable);
-            return false;
-        }).updateBotConfig(botConfig);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.updateBotConfig failed: ")).updateBotConfig(botConfig);
     }
 
     @Override
@@ -94,9 +83,6 @@ public class BotConfigCrudEditor extends AbstractCrudeEditor<BotConfig> {
             public void callback(BotConfig botConfig) {
                 callback.accept(botConfig);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.readBotConfig failed: " + message, throwable);
-            return false;
-        }).readBotConfig(id.getId());
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.readBotConfig failed: ")).readBotConfig(id.getId());
     }
 }

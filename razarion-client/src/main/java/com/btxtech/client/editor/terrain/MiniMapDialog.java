@@ -3,6 +3,7 @@ package com.btxtech.client.editor.terrain;
 import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
@@ -44,6 +45,8 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
     private static final String TERRAIN_OBJECT_COLOR = "#008000";
     private Logger logger = Logger.getLogger(MiniMapDialog.class.getName());
     @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
+    @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
     private TerrainEditorImpl terrainEditor;
@@ -64,10 +67,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
         this.canvasElement.setHeight(RadarPanel.MINI_MAP_IMAGE_HEIGHT);
         ctx = (CanvasRenderingContext2D) this.canvasElement.getContext("2d");
 
-        planetEditorServiceCaller.call((RemoteCallback<TerrainEditorLoad>) this::generateMiniTerrain, (message, throwable) -> {
-            logger.log(Level.SEVERE, "readTerrainSlopePositions failed: " + message, throwable);
-            return false;
-        }).readTerrainEditorLoad(terrainEditor.getPlanetId());
+        planetEditorServiceCaller.call((RemoteCallback<TerrainEditorLoad>) this::generateMiniTerrain, exceptionHandler.restErrorHandler("readTerrainSlopePositions failed: ")).readTerrainEditorLoad(terrainEditor.getPlanetId());
     }
 
     @Override

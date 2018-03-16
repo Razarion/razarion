@@ -3,6 +3,7 @@ package com.btxtech.client.dialog.common;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.UserAccountInfo;
 import com.btxtech.shared.rest.UserServiceProvider;
@@ -24,8 +25,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -33,13 +32,15 @@ import java.util.logging.Logger;
  */
 @Templated("UserAccountDialog.html#userAccountDialog")
 public class UserAccountDialog extends Composite implements ModalDialogContent<Void> {
-    private Logger logger = Logger.getLogger(UserAccountDialog.class.getName());
+    // private Logger logger = Logger.getLogger(UserAccountDialog.class.getName());
     @Inject
     private Caller<UserServiceProvider> caller;
     @Inject
     private UserUiService userUiService;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     @DataField
     private Span loggedInSpan;
@@ -78,10 +79,7 @@ public class UserAccountDialog extends Composite implements ModalDialogContent<V
             } else {
                 loggedInSpan.setTextContent("Facebook");
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "UserAccountDialog: userAccountInfo() failed: " + message, throwable);
-            return false;
-        }).userAccountInfo();
+        }, exceptionHandler.restErrorHandler("UserAccountDialog: userAccountInfo()")).userAccountInfo();
     }
 
     @Override
@@ -92,10 +90,7 @@ public class UserAccountDialog extends Composite implements ModalDialogContent<V
     @EventHandler("rememberMeCheckbox")
     public void rememberMeCheckboxClicked(ChangeEvent event) {
         caller.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "UserAccountDialog: setRememberMe() failed: " + message, throwable);
-            return false;
-        }).setRememberMe(rememberMeCheckbox.getChecked());
+        }, exceptionHandler.restErrorHandler("UserAccountDialog: setRememberMe()")).setRememberMe(rememberMeCheckbox.getChecked());
     }
 
     @EventHandler("setNameButton")

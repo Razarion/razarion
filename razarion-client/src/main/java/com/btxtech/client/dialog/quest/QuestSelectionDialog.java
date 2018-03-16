@@ -2,6 +2,7 @@ package com.btxtech.client.dialog.quest;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.rest.QuestProvider;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -27,9 +28,11 @@ import java.util.logging.Logger;
  */
 @Templated("QuestSelectionDialog.html#quest-selection-dialog")
 public class QuestSelectionDialog extends Composite implements ModalDialogContent<Void> {
-    private Logger logger = Logger.getLogger(QuestSelectionDialog.class.getName());
+    // private Logger logger = Logger.getLogger(QuestSelectionDialog.class.getName());
     @Inject
     private Caller<QuestProvider> provider;
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     @DataField
     private Label textLabel;
@@ -43,10 +46,7 @@ public class QuestSelectionDialog extends Composite implements ModalDialogConten
     public void init(Void aVoid) {
         DOMUtil.removeAllElementChildren(questTable.getElement()); // Remove placeholder table row from template.
         questTable.addComponentCreationHandler(questConfigWidget -> questConfigWidget.setModalDialogPanel(modalDialogPanel));
-        provider.call(response -> setupGui((List<QuestConfig>) response), (message, throwable) -> {
-            logger.log(Level.SEVERE, "Calling QuestProvider.readMyOpenQuests() failed: " + message, throwable);
-            return false;
-        }).readMyOpenQuests();
+        provider.call(response -> setupGui((List<QuestConfig>) response), exceptionHandler.restErrorHandler("Calling QuestProvider.readMyOpenQuests()")).readMyOpenQuests();
     }
 
     private void setupGui(List<QuestConfig> questConfigs) {

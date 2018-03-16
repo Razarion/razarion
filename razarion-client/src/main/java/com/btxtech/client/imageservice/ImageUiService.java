@@ -1,5 +1,6 @@
 package com.btxtech.client.imageservice;
 
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.CommonUrl;
@@ -47,7 +48,8 @@ public class ImageUiService {
     }
 
     private Logger logger = Logger.getLogger(ImageListener.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ImageProvider> imageService;
     private Map<Integer, ImageElement> imageElementLibrary = new HashMap<>();
@@ -120,10 +122,7 @@ public class ImageUiService {
                 }
             }
             imageGalleryItemListener.onLoaded(result);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "getImageGalleryItem failed: " + message, throwable);
-            return false;
-        }).getImageGalleryItems();
+        }, exceptionHandler.restErrorHandler("ImageProvider.getImageGalleryItems()")).getImageGalleryItems();
     }
 
     public void reload(ImageGalleryItemListener imageGalleryItemListener) {
@@ -141,10 +140,7 @@ public class ImageUiService {
     }
 
     public void create(String dataUrl, final ImageGalleryItemListener imageGalleryItemListener) {
-        imageService.call(aVoid -> getImageGalleryItems(imageGalleryItemListener), (message, throwable) -> {
-            logger.log(Level.SEVERE, "uploadImage failed: " + message, throwable);
-            return false;
-        }).uploadImage(dataUrl);
+        imageService.call(aVoid -> getImageGalleryItems(imageGalleryItemListener), exceptionHandler.restErrorHandler("ImageProvider.uploadImage(): ")).uploadImage(dataUrl);
     }
 
     public void save(final ImageGalleryItemListener imageGalleryItemListener) {
@@ -222,10 +218,7 @@ public class ImageUiService {
     }
 
     private void loadImageGalleyItem(final int id, final ImageElement imageElement) {
-        imageService.call((RemoteCallback<ImageGalleryItem>) imageGalleryItem -> addImageGalleryItem(id, imageGalleryItem, imageElement), (message, throwable) -> {
-            logger.log(Level.SEVERE, "getImageGalleryItems failed: " + message, throwable);
-            return false;
-        }).getImageGalleryItem(id);
+        imageService.call((RemoteCallback<ImageGalleryItem>) imageGalleryItem -> addImageGalleryItem(id, imageGalleryItem, imageElement), exceptionHandler.restErrorHandler("getImageGalleryItems failed: ")).getImageGalleryItem(id);
     }
 
     private void addImage(int id, ImageElement imageElement, boolean loadImageGalleyItem) {

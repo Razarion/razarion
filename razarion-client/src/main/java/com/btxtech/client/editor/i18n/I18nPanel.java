@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.i18n;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.I18nStringEditor;
 import com.btxtech.shared.rest.CommonEditorProvider;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -29,7 +30,9 @@ import java.util.stream.Collectors;
  */
 @Templated("I18nPanel.html#i18nPanel")
 public class I18nPanel extends LeftSideBarContent {
-    private Logger logger = Logger.getLogger(I18nPanel.class.getName());
+    // private Logger logger = Logger.getLogger(I18nPanel.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<CommonEditorProvider> provider;
     @Inject
@@ -56,10 +59,7 @@ public class I18nPanel extends LeftSideBarContent {
                 return i18nStringEditorModel;
             }).collect(Collectors.toList()));
             setupMissingLabels();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "CommonEditorProvider.loadAllI18NEntries failed: " + message, throwable);
-            return false;
-        }).loadAllI18NEntries();
+        }, exceptionHandler.restErrorHandler("CommonEditorProvider.loadAllI18NEntries failed: ")).loadAllI18NEntries();
 
     }
 
@@ -71,10 +71,7 @@ public class I18nPanel extends LeftSideBarContent {
     @Override
     protected void onConfigureDialog() {
         registerSaveButton(() -> provider.call((ignore) -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "CommonEditorProvider.saveI8NEntries failed: " + message, throwable);
-            return false;
-        }).saveI8NEntries(i18nTable.getValue().stream().filter(I18nStringEditorModel::checkDirty).map(I18nStringEditorModel::toI18nStringEditor).collect(Collectors.toList())));
+        }, exceptionHandler.restErrorHandler("CommonEditorProvider.saveI8NEntries failed: ")).saveI8NEntries(i18nTable.getValue().stream().filter(I18nStringEditorModel::checkDirty).map(I18nStringEditorModel::toI18nStringEditor).collect(Collectors.toList())));
         enableSaveButton(true);
     }
 

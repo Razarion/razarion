@@ -1,5 +1,6 @@
 package com.btxtech.client;
 
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.UnlockResultInfo;
 import com.btxtech.shared.rest.UnlockProvider;
@@ -10,8 +11,6 @@ import org.jboss.errai.common.client.api.RemoteCallback;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -19,15 +18,14 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class ClientUnlockUiService extends UnlockUiService {
-    private Logger logger = Logger.getLogger(ClientUnlockUiService.class.getName());
+    // private Logger logger = Logger.getLogger(ClientUnlockUiService.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<UnlockProvider> provider;
 
     @Override
     protected void unlockViaCrystalCall(LevelUnlockConfig levelUnlockConfig, Consumer<UnlockResultInfo> callback) {
-        provider.call((RemoteCallback<UnlockResultInfo>) callback::accept, (message, throwable) -> {
-            logger.log(Level.SEVERE, "UnlockProvider.unlockViaCrystals() failed: message: " + message, throwable);
-            return false;
-        }).unlockViaCrystals(levelUnlockConfig.getId());
+        provider.call((RemoteCallback<UnlockResultInfo>) callback::accept, exceptionHandler.restErrorHandler("UnlockProvider.unlockViaCrystals() failed: message: ")).unlockViaCrystals(levelUnlockConfig.getId());
     }
 }

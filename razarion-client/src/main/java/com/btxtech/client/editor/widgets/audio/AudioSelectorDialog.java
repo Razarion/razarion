@@ -2,6 +2,7 @@ package com.btxtech.client.editor.widgets.audio;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.AudioItemConfig;
 import com.btxtech.shared.rest.AudioProvider;
 import com.google.gwt.user.client.ui.Composite;
@@ -15,8 +16,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -24,11 +23,11 @@ import java.util.logging.Logger;
  */
 @Templated("AudioSelectorDialog.html#audio-selector-dialog")
 public class AudioSelectorDialog extends Composite implements ModalDialogContent<Integer> {
-    private Logger logger = Logger.getLogger(AudioSelectorDialog.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    // private Logger logger = Logger.getLogger(AudioSelectorDialog.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<AudioProvider> audioService;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     @ListContainer("div")
@@ -45,10 +44,7 @@ public class AudioSelectorDialog extends Composite implements ModalDialogContent
             public void callback(List<AudioItemConfig> audioItemConfigs) {
                 onLoaded(audioItemConfigs);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "getAudioItemConfigs failed: " + message, throwable);
-            return false;
-        }).getAudioItemConfigs();
+        }, exceptionHandler.restErrorHandler("getAudioItemConfigs failed: ")).getAudioItemConfigs();
 
         audioGallery.addComponentCreationHandler(imageGalleryItemWidget -> imageGalleryItemWidget.setAudioSelectorDialog(this));
         audioGallery.setSelector(imageGalleryItemWidget -> imageGalleryItemWidget.setSelected(true));

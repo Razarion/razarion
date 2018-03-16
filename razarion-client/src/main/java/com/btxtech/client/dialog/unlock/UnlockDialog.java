@@ -2,6 +2,7 @@ package com.btxtech.client.dialog.unlock;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.rest.InventoryProvider;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.unlock.UnlockUiService;
@@ -17,8 +18,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +26,9 @@ import java.util.stream.Collectors;
  */
 @Templated("UnlockDialog.html#unlockDialog")
 public class UnlockDialog extends Composite implements ModalDialogContent<Void> {
-    private Logger logger = Logger.getLogger(UnlockDialog.class.getName());
+    // private Logger logger = Logger.getLogger(UnlockDialog.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<InventoryProvider> inventoryProvider;
     @Inject
@@ -78,9 +79,6 @@ public class UnlockDialog extends Composite implements ModalDialogContent<Void> 
             unlockDialogText.setTextContent(I18nHelper.getConstants().nothingToUnlockDialogText());
             unlockDialogTable.getStyle().setProperty("display", "none");
         }
-        inventoryProvider.call((RemoteCallback<Integer>) crystals -> unlockDialogCrystals.setTextContent(I18nHelper.getConstants().availableCrystals(Integer.toString(crystals))), (message, throwable) -> {
-            logger.log(Level.SEVERE, "UnlockDialog: InventoryProvider.loadCrystals() failed: message: " + message, throwable);
-            return false;
-        }).loadCrystals();
+        inventoryProvider.call((RemoteCallback<Integer>) crystals -> unlockDialogCrystals.setTextContent(I18nHelper.getConstants().availableCrystals(Integer.toString(crystals))), exceptionHandler.restErrorHandler("UnlockDialog: InventoryProvider.loadCrystals()")).loadCrystals();
     }
 }

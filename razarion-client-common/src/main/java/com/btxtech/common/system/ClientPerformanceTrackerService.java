@@ -1,6 +1,5 @@
 package com.btxtech.common.system;
 
-import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.rest.TrackerProvider;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
@@ -12,7 +11,6 @@ import org.jboss.errai.common.client.api.Caller;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -65,10 +63,7 @@ public class ClientPerformanceTrackerService {
         List<TerrainTileStatistic> terrainTileStatistics = perfmonService.flushTerrainTileStatistics();
         if (!terrainTileStatistics.isEmpty()) {
             providerCaller.call(response -> {
-            }, (message, throwable) -> {
-                logger.log(Level.SEVERE, "TrackerProvider.terrainTileStatisticsTracker() failed: " + message, throwable);
-                return false;
-            }).terrainTileStatisticsTracker(terrainTileStatistics);
+            }, exceptionHandler.restErrorHandler("TrackerProvider.terrainTileStatisticsTracker()")).terrainTileStatisticsTracker(terrainTileStatistics);
         }
     }
 }

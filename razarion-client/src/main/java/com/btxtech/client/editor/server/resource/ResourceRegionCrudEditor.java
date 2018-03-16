@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.server.resource;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
@@ -12,8 +13,6 @@ import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -21,7 +20,9 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class ResourceRegionCrudEditor extends AbstractCrudeEditor<ResourceRegionConfig> {
-    private Logger logger = Logger.getLogger(ResourceRegionCrudEditor.class.getName());
+    // private Logger logger = Logger.getLogger(ResourceRegionCrudEditor.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ServerGameEngineEditorProvider> provider;
     private List<ObjectNameId> objectNameIds = new ArrayList<>();
@@ -34,10 +35,7 @@ public class ResourceRegionCrudEditor extends AbstractCrudeEditor<ResourceRegion
                 ResourceRegionCrudEditor.this.objectNameIds = objectNameIds;
                 fire();
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.readResourceRegionObjectNameIds failed: " + message, throwable);
-            return false;
-        }).readResourceRegionObjectNameIds();
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.readResourceRegionObjectNameIds failed: ")).readResourceRegionObjectNameIds();
     }
 
     @Override
@@ -49,10 +47,7 @@ public class ResourceRegionCrudEditor extends AbstractCrudeEditor<ResourceRegion
                 fire();
                 fireSelection(resourceRegionConfig.createObjectNameId());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.createResourceRegionConfig failed: " + message, throwable);
-            return false;
-        }).createResourceRegionConfig();
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.createResourceRegionConfig failed: ")).createResourceRegionConfig();
     }
 
     @Override
@@ -68,18 +63,12 @@ public class ResourceRegionCrudEditor extends AbstractCrudeEditor<ResourceRegion
                 objectNameIds.removeIf(objectNameId -> objectNameId.getId() == resourceRegionConfig.getId());
                 fire();
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.deleteResourceRegionConfig failed: " + message, throwable);
-            return false;
-        }).deleteResourceRegionConfig(resourceRegionConfig.getId());
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.deleteResourceRegionConfig failed: ")).deleteResourceRegionConfig(resourceRegionConfig.getId());
     }
 
     @Override
     public void save(ResourceRegionConfig resourceRegionConfig) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.updateResourceRegionConfig failed: " + message, throwable);
-            return false;
-        }).updateResourceRegionConfig(resourceRegionConfig);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.updateResourceRegionConfig failed: ")).updateResourceRegionConfig(resourceRegionConfig);
     }
 
     @Override
@@ -94,9 +83,6 @@ public class ResourceRegionCrudEditor extends AbstractCrudeEditor<ResourceRegion
             public void callback(ResourceRegionConfig resourceRegionConfig) {
                 callback.accept(resourceRegionConfig);
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "ServerGameEngineEditorProvider.readResourceRegionConfig failed: " + message, throwable);
-            return false;
-        }).readResourceRegionConfig(id.getId());
+        }, exceptionHandler.restErrorHandler("ServerGameEngineEditorProvider.readResourceRegionConfig failed: ")).readResourceRegionConfig(id.getId());
     }
 }

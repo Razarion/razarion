@@ -91,10 +91,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         gameUiControlTrackerInfo.setGameSessionUuid(clientRunner.getGameSessionUuid());
         gameUiControlTrackerInfo.setDuration((int) (startTimeStamp.getTime() - System.currentTimeMillis()));
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TrackerProvider.gameUiControlTrackerInfo() trackGameUiControl: " + message, throwable);
-            return false;
-        }).gameUiControlTrackerInfo(gameUiControlTrackerInfo);
+        }, exceptionHandler.restErrorHandler("TrackerProvider.gameUiControlTrackerInfo() trackGameUiControl")).gameUiControlTrackerInfo(gameUiControlTrackerInfo);
     }
 
     @Override
@@ -105,10 +102,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         sceneTrackerInfo.setGameSessionUuid(clientRunner.getGameSessionUuid());
         sceneTrackerInfo.setDuration((int) (System.currentTimeMillis() - startTimeStamp.getTime()));
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TrackerProvider.sceneTrackerInfo() trackScene: " + message, throwable);
-            return false;
-        }).sceneTrackerInfo(sceneTrackerInfo);
+        }, exceptionHandler.restErrorHandler("TrackerProvider.sceneTrackerInfo() trackScene")).sceneTrackerInfo(sceneTrackerInfo);
     }
 
     @Override
@@ -124,39 +118,27 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
     @Override
     public void onTaskFinished(AbstractStartupTask task) {
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TrackerProvider.startupTask() onTaskFinished: " + message, throwable);
-            return false;
-        }).startupTask(createStartupTaskJson(task, null));
+        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTask() onTaskFinished")).startupTask(createStartupTaskJson(task, null));
     }
 
     @Override
     public void onTaskFailed(AbstractStartupTask task, String error, Throwable t) {
         logger.log(Level.SEVERE, "onTaskFailed: " + task + " error:" + error, t);
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TrackerProvider.startupTask() onTaskFailed: " + message, throwable);
-            return false;
-        }).startupTask(createStartupTaskJson(task, error));
+        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTask() onTaskFailed")).startupTask(createStartupTaskJson(task, error));
     }
 
     @Override
     public void onStartupFinished(List<StartupTaskInfo> taskInfo, long totalTime) {
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TrackerProvider.startupTerminated() onStartupFinished: " + message, throwable);
-            return false;
-        }).startupTerminated(createStartupTerminatedJson(totalTime, true));
+        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTerminated() onStartupFinished")).startupTerminated(createStartupTerminatedJson(totalTime, true));
     }
 
     @Override
     public void onStartupFailed(List<StartupTaskInfo> taskInfo, long totalTime) {
         logger.severe("onStartupFailed: " + taskInfo + " totalTime:" + totalTime);
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "TrackerProvider.startupTerminated() onStartupFailed: " + message, throwable);
-            return false;
-        }).startupTerminated(createStartupTerminatedJson(totalTime, false));
+        }, exceptionHandler.restErrorHandler("TrackerProvider.startupTerminated() onStartupFailed")).startupTerminated(createStartupTerminatedJson(totalTime, false));
     }
 
     private StartupTaskJson createStartupTaskJson(AbstractStartupTask task, String error) {
@@ -192,10 +174,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
         trackingStart.setBrowserWindowDimension(gameCanvas.getWindowDimenionForPlayback());
         initDetailedTracking(trackingStart);
         trackingProvider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "trackingStart failed: " + message, throwable);
-            return false;
-        }).trackingStart(trackingStart);
+        }, exceptionHandler.restErrorHandler("TrackerProvider.trackingStart()")).trackingStart(trackingStart);
     }
 
     @Override

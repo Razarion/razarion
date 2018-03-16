@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.itemtype;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -12,8 +13,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -22,7 +21,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class BoxItemTypeCrud extends AbstractCrudeEditor<BoxItemType> {
-    private Logger logger = Logger.getLogger(BoxItemTypeCrud.class.getName());
+    // private Logger logger = Logger.getLogger(BoxItemTypeCrud.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<ItemTypeProvider> provider;
     @Inject
@@ -34,10 +35,7 @@ public class BoxItemTypeCrud extends AbstractCrudeEditor<BoxItemType> {
             itemTypeService.overrideBoxItemType(boxItemType);
             fire();
             fireSelection(boxItemType.createObjectNameId());
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "BoxItemTypeCrud.createBoxItemType failed: " + message, throwable);
-            return false;
-        }).createBoxItemType();
+        }, exceptionHandler.restErrorHandler("BoxItemTypeCrud.createBoxItemType failed: ")).createBoxItemType();
     }
 
     @Override
@@ -45,18 +43,12 @@ public class BoxItemTypeCrud extends AbstractCrudeEditor<BoxItemType> {
         provider.call(ignore -> {
             itemTypeService.deleteBoxItemType(boxItemType);
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "BoxItemTypeCrud.deleteBoxItemType failed: " + message, throwable);
-            return false;
-        }).deleteBoxItemType(boxItemType.getId());
+        }, exceptionHandler.restErrorHandler("BoxItemTypeCrud.deleteBoxItemType failed: ")).deleteBoxItemType(boxItemType.getId());
     }
 
     @Override
     public void save(BoxItemType boxItemType) {
-        provider.call(ignore -> fire(), (message, throwable) -> {
-            logger.log(Level.SEVERE, "BoxItemTypeCrud.updateBoxItemType failed: " + message, throwable);
-            return false;
-        }).updateBoxItemType(boxItemType);
+        provider.call(ignore -> fire(), exceptionHandler.restErrorHandler("BoxItemTypeCrud.updateBoxItemType failed: ")).updateBoxItemType(boxItemType);
     }
 
     @Override
@@ -65,10 +57,7 @@ public class BoxItemTypeCrud extends AbstractCrudeEditor<BoxItemType> {
             itemTypeService.setBoxItemTypes(boxItemTypes);
             fire();
             fireChange(boxItemTypes);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "BoxItemTypeCrud.readBoxItemType failed: " + message, throwable);
-            return false;
-        }).readBoxItemTypes();
+        }, exceptionHandler.restErrorHandler("BoxItemTypeCrud.readBoxItemType failed: ")).readBoxItemTypes();
     }
 
     @Override

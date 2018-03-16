@@ -2,6 +2,7 @@ package com.btxtech.client.dialog.common;
 
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.ErrorResult;
 import com.btxtech.shared.datatypes.SetNameResult;
 import com.btxtech.shared.rest.UserServiceProvider;
@@ -31,6 +32,8 @@ public class SetUserNameDialog extends Composite implements ModalDialogContent<V
     private Logger logger = Logger.getLogger(SetUserNameDialog.class.getName());
     @Inject
     private Caller<UserServiceProvider> caller;
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private UserUiService userUiService;
     @Inject
@@ -69,10 +72,7 @@ public class SetUserNameDialog extends Composite implements ModalDialogContent<V
                 saveButton.setEnabled(false);
                 displayError(setNameResult.getErrorResult());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "UserServiceProvider.setName() failed: " + message, throwable);
-            return false;
-        }).setName(nameField.getValue());
+        }, exceptionHandler.restErrorHandler("UserServiceProvider.setName()")).setName(nameField.getValue());
     }
 
     private void checkNameValid() {
@@ -88,10 +88,7 @@ public class SetUserNameDialog extends Composite implements ModalDialogContent<V
             } else {
                 displayError(errorResult.getErrorResult());
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "UserServiceProvider.verifySetName() failed: " + message, throwable);
-            return false;
-        }).verifySetName(nameField.getValue());
+        }, exceptionHandler.restErrorHandler("UserServiceProvider.verifySetName()")).verifySetName(nameField.getValue());
 
     }
 

@@ -4,6 +4,7 @@ import com.btxtech.client.KeyboardEventHandler;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.terrain.renderer.TerrainEditorRenderTask;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -34,8 +35,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -50,7 +49,9 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
         REMOVE_MODE
     }
 
-    private Logger logger = Logger.getLogger(TerrainEditorImpl.class.getName());
+    // private Logger logger = Logger.getLogger(TerrainEditorImpl.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<PlanetEditorProvider> planetEditorServiceCaller;
     @Inject
@@ -187,7 +188,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 terrainEditorRenderTask.updateSlope(hoverSlope);
             } else {
                 if (shiftPressed) {
-                    if(hoverSlope.isParent()) {
+                    if (hoverSlope.isParent()) {
                         modalDialogManager.showMessageDialog("Delete", "Delete all child slopes first");
                     } else {
                         modifiedSlopeContainer.remove(hoverSlope);
@@ -289,10 +290,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
                 saveDialog.close();
                 saveDialog = null;
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "readTerrainSlopePositions failed: " + message, throwable);
-            return false;
-        }).readTerrainEditorLoad(getPlanetId());
+        }, exceptionHandler.restErrorHandler("readTerrainSlopePositions failed: ")).readTerrainEditorLoad(getPlanetId());
     }
 
     private Collection<ModifiedSlope> setupModifiedSlope(List<TerrainSlopePosition> slopes) {
@@ -361,10 +359,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
 
     public void restartPlanetButton() {
         modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanetWarm() failed: " + message, throwable);
-            return false;
-        }).restartPlanetWarm(getPlanetId()), () -> {
+        }, exceptionHandler.restErrorHandler("PlanetEditorProvider.restartPlanetWarm() failed: ")).restartPlanetWarm(getPlanetId()), () -> {
         });
     }
 
@@ -534,10 +529,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
 
     public void saveMiniMapImage(String dataUrl) {
         planetEditorServiceCaller.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "updateMiniMapImage failed: " + message, throwable);
-            return false;
-        }).updateMiniMapImage(getPlanetId(), dataUrl);
+        }, exceptionHandler.restErrorHandler("updateMiniMapImage failed: ")).updateMiniMapImage(getPlanetId(), dataUrl);
     }
 
     public boolean isInvertedSlope() {

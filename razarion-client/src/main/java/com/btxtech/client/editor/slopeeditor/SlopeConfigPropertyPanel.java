@@ -8,6 +8,7 @@ import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.utils.BooleanNullConverter;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -36,8 +37,6 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -45,7 +44,9 @@ import java.util.logging.Logger;
  */
 @Templated("SlopeConfigPropertyPanel.html#slope")
 public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig> implements SelectedCornerListener {
-    private Logger logger = Logger.getLogger(SlopeConfigPropertyPanel.class.getName());
+    // private Logger logger = Logger.getLogger(SlopeConfigPropertyPanel.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private ClientRenderServiceImpl renderService;
     @Inject
@@ -242,10 +243,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @EventHandler("restartPlanetButton")
     private void restartPlanetButtonClicked(ClickEvent event) {
         modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "PlanetEditorProvider.restartPlanetWarm() failed: " + message, throwable);
-            return false;
-        }).restartPlanetCold(gameUiControl.getPlanetConfig().getPlanetId()), () -> {
+        }, exceptionHandler.restErrorHandler("PlanetEditorProvider.restartPlanetWarm() failed: ")).restartPlanetCold(gameUiControl.getPlanetConfig().getPlanetId()), () -> {
         });
     }
 }

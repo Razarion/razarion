@@ -2,6 +2,7 @@ package com.btxtech.client.editor.shape3dgallery;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.Shape3DComposite;
@@ -13,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.WeaponType;
 import com.btxtech.shared.rest.Shape3DProvider;
 import com.btxtech.shared.utils.Shape3DUtils;
-import com.btxtech.uiservice.effects.EffectVisualizationService;
 import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
 import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
@@ -29,8 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -39,8 +37,9 @@ import java.util.stream.Collectors;
  */
 @ApplicationScoped
 public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
-    private Logger logger = Logger.getLogger(Shape3DCrud.class.getName());
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    // private Logger logger = Logger.getLogger(Shape3DCrud.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<Shape3DProvider> caller;
     @Inject
@@ -69,10 +68,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             shape3DUiService.override(shape3D);
             fire();
             fireSelection(shape3D.createObjectNameId());
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Shape3DProvider.create failed: " + message, throwable);
-            return false;
-        }).create();
+        }, exceptionHandler.restErrorHandler("Shape3DProvider.create failed: ")).create();
     }
 
     @Override
@@ -82,10 +78,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             shape3DUiService.setShapes3Ds(shape3Ds);
             fire();
             fireChange(shape3Ds);
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
-            return false;
-        }).getShape3Ds();
+        }, exceptionHandler.restErrorHandler("Shape3DProvider.getShape3Ds failed: ")).getShape3Ds();
     }
 
     @Override
@@ -101,10 +94,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             addChangesCollada(originalShape3D.getDbId(), colladaText);
             shape3DUiService.override(shape3DComposite);
             fireChange(shape3DComposite.getShape3D());
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Shape3DProvider.getShape3Ds failed: " + message, throwable);
-            return false;
-        }).colladaConvert(originalShape3D.getDbId(), colladaText);
+        }, exceptionHandler.restErrorHandler("Shape3DProvider.getShape3Ds failed: ")).colladaConvert(originalShape3D.getDbId(), colladaText);
     }
 
     public void updateTexture(Shape3D shape3D, String materialId, Integer imageId) {
@@ -147,10 +137,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
             return;
         }
 
-        caller.call(response -> changes.remove(shape3D.getDbId()), (message, throwable) -> {
-            logger.log(Level.SEVERE, "Shape3DProvider.save failed: " + message, throwable);
-            return false;
-        }).save(shape3DConfig);
+        caller.call(response -> changes.remove(shape3D.getDbId()), exceptionHandler.restErrorHandler("Shape3DProvider.save failed: ")).save(shape3DConfig);
     }
 
 
@@ -159,10 +146,7 @@ public class Shape3DCrud extends AbstractCrudeEditor<Shape3D> {
         caller.call(response -> {
             shape3DUiService.remove(shape3D);
             fire();
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "Shape3DProvider.delete failed: " + message, throwable);
-            return false;
-        }).delete(shape3D.getDbId());
+        }, exceptionHandler.restErrorHandler("Shape3DProvider.delete failed: ")).delete(shape3D.getDbId());
     }
 
     private void addChangesCollada(int dbId, String colladaText) {

@@ -8,6 +8,7 @@ import com.btxtech.client.editor.widgets.quest.QuestPropertyPanel;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.client.utils.BooleanNullConverter;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
@@ -46,8 +47,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -55,7 +54,9 @@ import java.util.logging.Logger;
  */
 @Templated("SceneConfigPropertyPanel.html#propertyPanel")
 public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
-    private Logger logger = Logger.getLogger(SceneConfigPropertyPanel.class.getName());
+    // private Logger logger = Logger.getLogger(SceneConfigPropertyPanel.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
     @Inject
     private Caller<SceneEditorProvider> provider;
     @Inject
@@ -228,10 +229,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
                 killBotCommandConfigs.init(sceneConfig.getKillBotCommandConfigs(), sceneConfig::setKillBotCommandConfigs, KillBotCommandConfig::new, KillBotCommandConfigPropertyPanel.class);
 
             }
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "SceneEditorProvider.readSceneConfig failed: " + message, throwable);
-            return false;
-        }).readSceneConfig(gameUiControlConfigId, objectNameId.getId());
+        }, exceptionHandler.restErrorHandler("SceneEditorProvider.readSceneConfig failed: ")).readSceneConfig(gameUiControlConfigId, objectNameId.getId());
         registerSaveButton(this::save);
         enableSaveButton(true);
     }
@@ -239,10 +237,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     private void save() {
         int gameUiControlConfigId = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getGameUiControlConfigId();
         provider.call(response -> {
-        }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "SceneEditorProvider.updateSceneConfig failed: " + message, throwable);
-            return false;
-        }).updateSceneConfig(gameUiControlConfigId, dataBinder.getModel());
+        }, exceptionHandler.restErrorHandler("SceneEditorProvider.updateSceneConfig failed: ")).updateSceneConfig(gameUiControlConfigId, dataBinder.getModel());
     }
 
     @Override
