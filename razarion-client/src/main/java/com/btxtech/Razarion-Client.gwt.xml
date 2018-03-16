@@ -9,6 +9,8 @@
 
     <!--<inherits name="org.jboss.errai.ui.Cordova" />-->
     <inherits name="elemental.Elemental"/>
+    <inherits name="elemental2.core.Core"/>
+    <inherits name="elemental2.dom.Dom"/>
     <inherits name='com.btxtech.Razarion-Share'/>
     <inherits name='com.btxtech.Razarion-Ui-Service'/>
     <inherits name='com.btxtech.Razarion-Client-Common'/>

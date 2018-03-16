@@ -4,44 +4,46 @@ import com.btxtech.shared.datatypes.ChatMessage;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.TakesValue;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.api.IsElement;
-import org.jboss.errai.common.client.dom.HTMLElement;
-import org.jboss.errai.common.client.dom.Span;
-import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 /**
  * Created by Beat
  * on 29.12.2017.
  */
-@Templated("ClientChatCockpit.html#messageRow")
+@Templated("ClientChatCockpit.html#messageDiv")
 public class MessageWidget implements TakesValue<ChatMessage>, IsElement {
     @Inject
     private UserUiService userUiService;
     @Inject
     @DataField
-    private TableRow messageRow;
+    private HTMLDivElement messageDiv;
     @Inject
     @DataField
-    private Span userEntrySpan;
+    @Named("Span")
+    private HTMLElement userEntrySpan;
     @Inject
     @DataField
-    private Span messageEntrySpan;
+    @Named("Span")
+    private HTMLElement messageEntrySpan;
     private ChatMessage chatMessage;
 
     @Override
     public void setValue(ChatMessage chatMessage) {
         this.chatMessage = chatMessage;
-        if(userUiService.isRegistered() && userUiService.getUserContext().getHumanPlayerId().getUserId() == chatMessage.getUserId()) {
-            userEntrySpan.getStyle().setProperty("color", Colors.OWN.toHtmlColor());
+        if (userUiService.isRegistered() && userUiService.getUserContext().getHumanPlayerId().getUserId() == chatMessage.getUserId()) {
+            userEntrySpan.style.setProperty("color", Colors.OWN.toHtmlColor());
         } else {
-            userEntrySpan.getStyle().setProperty("color", Colors.FRIEND.toHtmlColor());
+            userEntrySpan.style.setProperty("color", Colors.FRIEND.toHtmlColor());
         }
-        userEntrySpan.setTextContent(chatMessage.getUserName() + ": ");
-        messageEntrySpan.setTextContent(chatMessage.getMessage());
+        userEntrySpan.textContent = chatMessage.getUserName() + ": ";
+        messageEntrySpan.textContent = chatMessage.getMessage();
     }
 
     @Override
@@ -50,7 +52,7 @@ public class MessageWidget implements TakesValue<ChatMessage>, IsElement {
     }
 
     @Override
-    public HTMLElement getElement() {
-        return messageRow;
+    public org.jboss.errai.common.client.dom.HTMLElement getElement() {
+        return (org.jboss.errai.common.client.dom.HTMLElement) messageDiv;
     }
 }
