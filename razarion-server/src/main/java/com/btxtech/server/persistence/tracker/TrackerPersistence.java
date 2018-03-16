@@ -346,7 +346,12 @@ public class TrackerPersistence {
         sessionDetail.setLanguage(sessionTrackerEntity.getLanguage());
         sessionDetail.setAcceptLanguage(sessionTrackerEntity.getAcceptLanguage());
         sessionDetail.setGameSessionDetails(readGameSessionDetails(sessionId));
-        sessionDetail.setPageDetails(readPageDetails(sessionId));
+        List<PageDetail> pageDetails = new ArrayList<>();
+        pageDetails.addAll(readPageDetails(sessionId));
+        pageDetails.addAll(readFrontendNavigationDetails(sessionId));
+        pageDetails.addAll(readWindowCloseTrackerDetails(sessionId));
+        pageDetails.sort(Comparator.comparing(PageDetail::getTime));
+        sessionDetail.setPageDetails(pageDetails);
         return sessionDetail;
     }
 
@@ -356,8 +361,25 @@ public class TrackerPersistence {
         Root<PageTrackerEntity> root = query.from(PageTrackerEntity.class);
         query.where(criteriaBuilder.equal(root.get(PageTrackerEntity_.sessionId), sessionId));
         CriteriaQuery<PageTrackerEntity> userSelect = query.select(root);
-        query.orderBy(criteriaBuilder.asc(root.get(PageTrackerEntity_.timeStamp)));
         return entityManager.createQuery(userSelect).getResultList().stream().map(PageTrackerEntity::toPageDetail).collect(Collectors.toList());
+    }
+
+    private List<PageDetail> readFrontendNavigationDetails(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<FrontendNavigationEntity> query = criteriaBuilder.createQuery(FrontendNavigationEntity.class);
+        Root<FrontendNavigationEntity> root = query.from(FrontendNavigationEntity.class);
+        query.where(criteriaBuilder.equal(root.get(FrontendNavigationEntity_.sessionId), sessionId));
+        CriteriaQuery<FrontendNavigationEntity> userSelect = query.select(root);
+        return entityManager.createQuery(userSelect).getResultList().stream().map(FrontendNavigationEntity::toPageDetail).collect(Collectors.toList());
+    }
+
+    private List<PageDetail> readWindowCloseTrackerDetails(String sessionId) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<WindowCloseTrackerEntity> query = criteriaBuilder.createQuery(WindowCloseTrackerEntity.class);
+        Root<WindowCloseTrackerEntity> root = query.from(WindowCloseTrackerEntity.class);
+        query.where(criteriaBuilder.equal(root.get(WindowCloseTrackerEntity_.sessionId), sessionId));
+        CriteriaQuery<WindowCloseTrackerEntity> userSelect = query.select(root);
+        return entityManager.createQuery(userSelect).getResultList().stream().map(WindowCloseTrackerEntity::toPageDetail).collect(Collectors.toList());
     }
 
     private List<GameSessionDetail> readGameSessionDetails(String sessionId) {

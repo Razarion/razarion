@@ -199,15 +199,17 @@
   <thead>
   <tr>
     <th>Date</th>
+    <th>Type</th>
     <th>Page</th>
-    <th>Parameters</th>
     <th>URI</th>
+    <th>Additional</th>
   </tr>
   </thead>
   <tr *ngFor="let pageDetail of sessionDetail.pageDetails">
     <td>{{ pageDetail.time | date:'dd.MM.yyyy HH:mm:ss'}}</td>
+    <td>{{ pageDetail.type }}</td>
     <td>{{ pageDetail.page }}</td>
-    <td>{{ pageDetail.parameters }}</td>
     <td>{{ pageDetail.uri }}</td>
+    <td>{{ pageDetail.additional }}</td>
   </tr>
 </table>

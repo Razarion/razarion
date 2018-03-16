@@ -34,9 +34,16 @@ export class SessionDetail {
 
 export class PageDetail {
   time: Date;
+  type: PageDetailType ;
   page: string;
-  parameters: string;
+  additional: string;
   uri: string;
+}
+
+export enum PageDetailType {
+  SERVER_ACCESS,
+  FRONTEND_NAVIGATION,
+  WINDOW_CLOSED
 }
 
 export class GameSessionDetail {

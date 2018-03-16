@@ -83,7 +83,7 @@ public class PageTrackerEntity {
     }
 
     public PageDetail toPageDetail() {
-        return new PageDetail().setPage(page).setParameters(params).setTime(timeStamp).setUri(uri);
+        return new PageDetail().setPage(page).setAdditional(params).setTime(timeStamp).setUri(uri).setType(PageDetail.Type.SERVER_ACCESS);
     }
 
     @Override

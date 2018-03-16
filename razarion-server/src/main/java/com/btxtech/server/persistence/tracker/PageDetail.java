@@ -7,9 +7,15 @@ import java.util.Date;
  * on 25.07.2017.
  */
 public class PageDetail {
+    public enum Type {
+        SERVER_ACCESS,
+        FRONTEND_NAVIGATION,
+        WINDOW_CLOSED
+    }
     private Date time;
+    private Type type;
     private String page;
-    private String parameters;
+    private String additional;
     private String uri;
 
     public Date getTime() {
@@ -18,6 +24,15 @@ public class PageDetail {
 
     public PageDetail setTime(Date time) {
         this.time = time;
+        return this;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public PageDetail setType(Type type) {
+        this.type = type;
         return this;
     }
 
@@ -30,12 +45,12 @@ public class PageDetail {
         return this;
     }
 
-    public String getParameters() {
-        return parameters;
+    public String getAdditional() {
+        return additional;
     }
 
-    public PageDetail setParameters(String parameters) {
-        this.parameters = parameters;
+    public PageDetail setAdditional(String additional) {
+        this.additional = additional;
         return this;
     }
 

@@ -49,6 +49,10 @@ public class FrontendNavigationEntity {
         this.url = url;
     }
 
+    public PageDetail toPageDetail() {
+        return new PageDetail().setType(PageDetail.Type.FRONTEND_NAVIGATION).setTime(timeStamp).setUri(url);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -67,5 +71,4 @@ public class FrontendNavigationEntity {
     public int hashCode() {
         return id != null ? id.hashCode() : System.identityHashCode(this);
     }
-
 }

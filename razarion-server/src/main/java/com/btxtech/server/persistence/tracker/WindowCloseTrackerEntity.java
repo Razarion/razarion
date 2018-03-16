@@ -83,6 +83,10 @@ public class WindowCloseTrackerEntity {
         this.url = url;
     }
 
+    public  PageDetail toPageDetail() {
+        return new PageDetail().setType(PageDetail.Type.WINDOW_CLOSED).setTime(serverTime).setUri(url).setAdditional(clientTime);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
