@@ -1,5 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
+import com.btxtech.shared.gameengine.planet.PlanetServiceTracker;
+
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -9,11 +11,10 @@ import java.util.logging.Logger;
  */
 public class PathingServiceTracker {
     private Logger logger = Logger.getLogger(PathingServiceTracker.class.getName());
-    private static final int TICKS_FOR_DUMP = 1000;
     private long startPeriodTimeStamp;
     private long startTimeStamp;
     private long startTickTimeStamp;
-    private int tickCount = TICKS_FOR_DUMP;
+    private int tickCount = PlanetServiceTracker.TICKS_FOR_DUMP;
     private int totalTickTime;
     private int preparationTime;
     private int findContactsTime;
@@ -117,7 +118,7 @@ public class PathingServiceTracker {
             return;
         }
         totalTickTime += (System.currentTimeMillis() - startTickTimeStamp);
-        if (tickCount >= TICKS_FOR_DUMP) {
+        if (tickCount >= PlanetServiceTracker.TICKS_FOR_DUMP) {
             dump();
             clear();
         }
