@@ -8,8 +8,8 @@ import java.util.logging.Logger;
  * on 29.09.2017.
  */
 public class PlanetServiceTracker {
+    public static final int TICKS_FOR_DUMP = 100;
     private Logger logger = Logger.getLogger(PlanetServiceTracker.class.getName());
-    private static final int TICKS_FOR_DUMP = 1000;
     private long startPeriodTimeStamp;
     private long startTimeStamp;
     private long startTickTimeStamp;
