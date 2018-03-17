@@ -68,7 +68,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     }
 
     private void handleErrors(ErrorEvent errorEvent) {
-        logger.severe("ClientGameEngineControl handleErrors. Message: " + errorEvent.getMessage() + " FileName: " + errorEvent.getFilename() + " LineNo: " + errorEvent.getLineno());
+        logger.severe("ClientGameEngineControl handleErrors. Message: \"" + errorEvent.getMessage() + "\". FileName: " + errorEvent.getFilename() + ". LineNo: " + errorEvent.getLineno());
     }
 
     @Override
