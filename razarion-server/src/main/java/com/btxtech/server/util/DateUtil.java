@@ -95,7 +95,20 @@ public class DateUtil {
         return (time / 1000) * 1000;
     }
 
-    public static String getDateStringMilis() {
+    public static String getDateStringMillis(String timeStampMillis) {
+        return getDateStringMillis(Long.parseLong(timeStampMillis));
+    }
+
+    public static String getDateStringMillis(long timeStampMillis) {
+        return getDateStringMillis(new Date(timeStampMillis));
+    }
+
+    public static String getDateStringMillis(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_TIME_FORMAT_STRING_MILIS);
+        return simpleDateFormat.format(date);
+    }
+
+    public static String getDateStringMillis() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_TIME_FORMAT_STRING_MILIS);
         return simpleDateFormat.format(new Date());
     }

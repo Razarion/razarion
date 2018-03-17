@@ -1,6 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.ServerDebugHelper;
+import com.btxtech.server.util.DateUtil;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.dto.LogRecordInfo;
 import com.btxtech.shared.dto.StackTraceElementLogInfo;
@@ -16,7 +17,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,17 +44,21 @@ public class LoggingProviderImpl implements LoggingProvider {
     // private FilePropertiesService filePropertiesService;
     private Map<String, StackTraceDeobfuscator> stackTraceDeobfuscators = new HashMap<>();
 
+    public static String setupUserWebString(SessionHolder sessionHolder) {
+        return " SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " " + sessionHolder.getPlayerSession().getUserContext();
+    }
+
     @Override
     public void simpleLogger(String logString) {
-        logger.severe("simpleLogger: " + setupUserWebString() + "\n" + logString);
+        logger.severe("GWT simpleLogger: " + setupUserWebString(sessionHolder) + "\n" + logString);
     }
 
     @Override
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
-            String s = "jsonLogger: " + setupUserWebString()
+            String s = "GWT jsonLogger: " + setupUserWebString(sessionHolder)
                     + "\n" + "GWT module name: " + logRecordInfo.getGwtModuleName()
-                    + "\n" + "Client time: " + new Date(Long.parseLong(logRecordInfo.getMillis()))
+                    + "\n" + "Client time: " + DateUtil.getDateStringMillis(logRecordInfo.getMillis())
                     + "\n" + "Message: " + logRecordInfo.getMessage();
             if (logRecordInfo.getThrown() != null) {
                 s += "\nThrown: " + thrownToString(convertToThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtModuleName(), logRecordInfo.getGwtStrongName()));
@@ -76,10 +80,6 @@ public class LoggingProviderImpl implements LoggingProvider {
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Debug client failed. debugMessage: " + debugMessage);
         }
-    }
-
-    private String setupUserWebString() {
-        return " SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " " + sessionHolder.getPlayerSession().getUserContext();
     }
 
     private String thrownToString(Throwable throwable) {

@@ -24,7 +24,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import java.util.Base64;
-import java.util.Date;
 import java.util.logging.Logger;
 
 /*
@@ -90,7 +89,7 @@ public class FrontendProviderImpl implements FrontendProvider {
         if (error != null) {
             aditionalString += "\nError: " + error;
         }
-        logger.warning("FrontendProvider log\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext: " + sessionHolder.getPlayerSession().getUserContext() + "\nMessage: " + message + aditionalString);
+        logger.warning("FrontendLogger log: " + LoggingProviderImpl.setupUserWebString(sessionHolder) + "\nMessage: " + message + aditionalString);
     }
 
     @Override
@@ -105,7 +104,7 @@ public class FrontendProviderImpl implements FrontendProvider {
 
     @Override
     public Response simpleLog(String errorMessage, String timestamp, String pathName) {
-        logger.severe("FrontendProvider simpleLog\nSessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + "\nUserContext " + sessionHolder.getPlayerSession().getUserContext() + "\nerrorMessage: " + errorMessage + "\ntimestamp: " + timestamp + "\npathName:" + pathName);
+        logger.severe("FrontendLogger simpleLog: " + LoggingProviderImpl.setupUserWebString(sessionHolder) + "\nError message: " + errorMessage + "\nTimestamp: " + DateUtil.getDateStringMillis(timestamp) + "\nPath name:" + pathName);
         return Response.ok(PIXEL_BYTES).build();
     }
 
