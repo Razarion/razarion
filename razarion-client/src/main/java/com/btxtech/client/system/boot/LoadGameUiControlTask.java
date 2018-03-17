@@ -1,21 +1,19 @@
 package com.btxtech.client.system.boot;
 
 import com.btxtech.client.user.FacebookService;
+import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.rest.GameUiControlProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
-import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.user.client.Window;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -25,13 +23,15 @@ import java.util.logging.Logger;
 public class LoadGameUiControlTask extends AbstractStartupTask {
     private static final String GAME_SESSION_ID_KEY = "gameSessionUuid";
     private static final String SESSION_ID_KEY = "sessionId";
+    // private Logger logger = Logger.getLogger(LoadGameUiControlTask.class.getName());
     @Inject
     private GameUiControl gameUiControl;
     @Inject
     private Caller<GameUiControlProvider> serviceCaller;
     @Inject
     private FacebookService facebookService;
-    private Logger logger = Logger.getLogger(LoadGameUiControlTask.class.getName());
+    @Inject
+    private ClientExceptionHandlerImpl exceptionHandler;
 
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
@@ -41,7 +41,7 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             facebookService.activateFacebookAppStartLogin();
             deferredStartup.finished();
         }, (message, throwable) -> {
-            logger.log(Level.SEVERE, "loadSlopeSkeletons failed: " + message, throwable);
+            exceptionHandler.restErrorHandler("GameUiControlProvider.loadGameUiControlConfig()");
             deferredStartup.failed(throwable);
             return false;
         }).loadGameUiControlConfig(setupGameUiControlInput());

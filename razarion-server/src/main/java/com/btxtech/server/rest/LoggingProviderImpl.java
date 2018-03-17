@@ -12,13 +12,15 @@ import com.google.gwt.core.server.StackTraceDeobfuscator;
 import javax.inject.Inject;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
@@ -44,16 +46,24 @@ public class LoggingProviderImpl implements LoggingProvider {
 
     @Override
     public void simpleLogger(String logString) {
-        logger.severe("SimpleLogger: SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
-        logger.severe("SimpleLogger: " + logString);
+        logger.severe("simpleLogger: " + setupUserWebString() + "\n" + logString);
     }
 
     @Override
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
-            LogRecord logRecord = toLogRecord(logRecordInfo);
-            logger.log(logRecord.getLevel(), "jsonLogger: GWT Modul: " + logRecordInfo.getGwtModuleName() + " SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " User " + sessionHolder.getPlayerSession().getUserContext());
-            logger.log(logRecord);
+            String s = "jsonLogger: " + setupUserWebString()
+                    + "\n" + "GWT module name: " + logRecordInfo.getGwtModuleName()
+                    + "\n" + "Client time: " + new Date(Long.parseLong(logRecordInfo.getMillis()))
+                    + "\n" + "Message: " + logRecordInfo.getMessage();
+            if (logRecordInfo.getThrown() != null) {
+                s += "\nThrown: " + thrownToString(convertToThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtModuleName(), logRecordInfo.getGwtStrongName()));
+            } else {
+                s += "\n";
+            }
+            s += "Logger name: " + logRecordInfo.getLoggerName();
+            s += "\n" + "GWT strong name: " + logRecordInfo.getGwtStrongName();
+            logger.log(Level.parse(logRecordInfo.getLevel()), s);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Logging from client failed. LogRecordInfo: " + logRecordInfo, throwable);
         }
@@ -68,31 +78,19 @@ public class LoggingProviderImpl implements LoggingProvider {
         }
     }
 
-    private LogRecord toLogRecord(LogRecordInfo logRecordInfo) {
-        LogRecord logRecord = new LogRecord(Level.parse(logRecordInfo.getLevel()), logRecordInfo.getMessage());
-
-        // TODO
-        logRecord.setSourceClassName("setSourceClassName");
-        logRecord.setSourceMethodName("setSourceMethodName");
-        logRecord.setThreadID(1111111);
-        // TODO
-
-        // TODO not available in GWT logRecord.setSequenceNumber(Long.parseLong(logRecordInfo.getSequenceNumber()));
-        // TODO not available in GWT logRecord.setSourceClassName(logRecordInfo.getSourceClassName());
-        // TODO not available in GWT logRecord.setSourceMethodName(logRecordInfo.getSourceMethodName());
-        // TODO not available in GWT logRecord.setThreadID(logRecordInfo.getThreadID());
-
-        logRecord.setMillis(Long.parseLong(logRecordInfo.getMillis()));
-        logRecord.setLoggerName(logRecordInfo.getLoggerName());
-        logRecord.setThrown(handleThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtModuleName(), logRecordInfo.getGwtStrongName()));
-        return logRecord;
+    private String setupUserWebString() {
+        return " SessionId: " + sessionHolder.getPlayerSession().getHttpSessionId() + " " + sessionHolder.getPlayerSession().getUserContext();
     }
 
-    private Throwable handleThrown(ThrownLogInfo thrownLogInfo, String gwtModuleName, String strongName) {
+    private String thrownToString(Throwable throwable) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        return sw.toString();
+    }
+
+    private Throwable convertToThrown(ThrownLogInfo thrownLogInfo, String gwtModuleName, String strongName) {
         Throwable throwable = setupThrown(thrownLogInfo);
-        if (throwable == null) {
-            return null;
-        }
         StackTraceDeobfuscator stackTraceDeobfuscator = getStackTraceDeobfuscator(gwtModuleName);
         if (stackTraceDeobfuscator != null) {
             stackTraceDeobfuscator.deobfuscateStackTrace(throwable, strongName);
@@ -101,9 +99,6 @@ public class LoggingProviderImpl implements LoggingProvider {
     }
 
     private Throwable setupThrown(ThrownLogInfo thrownLogInfo) {
-        if (thrownLogInfo == null) {
-            return null;
-        }
         Throwable throwable;
         if (thrownLogInfo.getCause() != null) {
             throwable = new Throwable(thrownLogInfo.getClassInfo() + ": " + thrownLogInfo.getMessage(), setupThrown(thrownLogInfo.getCause()));

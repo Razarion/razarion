@@ -1,7 +1,7 @@
 package com.btxtech.common.system;
 
 import com.btxtech.shared.system.ExceptionHandler;
-import com.google.gwt.user.client.Window;
+import elemental2.dom.DomGlobal;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.enterprise.client.jaxrs.api.ResponseException;
 import org.jboss.errai.ioc.client.api.UncaughtExceptionHandler;
@@ -13,6 +13,12 @@ import java.util.logging.Logger;
 /**
  * Created by Beat
  * 28.06.2016.
+ *
+ * Idea replace in path with regexp
+ * \, \(message\, throwable\) \-\> \{\n            logger\.log\(Level\.SEVERE\, \"(.*)?" \+ message\, throwable\)\;\n            return false\;\n        \}
+ , exceptionHandler.restErrorHandler("$1")
+ *
+ *
  */
 @ApplicationScoped
 public class ClientExceptionHandlerImpl implements ExceptionHandler {
@@ -36,7 +42,7 @@ public class ClientExceptionHandlerImpl implements ExceptionHandler {
 
     public void registerWindowCloseHandler() {
         try {
-            Window.addCloseHandler(windowCloseEvent -> windowClosing = true);
+            DomGlobal.window.addEventListener("beforeunload", event -> windowClosing = true);
         } catch (Throwable t) {
             handleException(t);
         }
@@ -47,7 +53,7 @@ public class ClientExceptionHandlerImpl implements ExceptionHandler {
             if (throwable instanceof ResponseException) {
                 ResponseException responseException = (ResponseException) throwable;
                 if (responseException.getResponse().getStatusCode() == 0) {
-                    if(windowClosing) {
+                    if (windowClosing) {
                         return;
                     } else {
                         logger.log(Level.SEVERE, "StatusCode code == 0. " + restService + ": " + message + ". Throwable: " + throwable);
