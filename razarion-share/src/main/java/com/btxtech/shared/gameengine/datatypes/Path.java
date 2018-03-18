@@ -50,7 +50,7 @@ public class Path {
     }
 
     public void setupCurrentWayPoint(SyncPhysicalArea syncPhysicalArea) {
-        if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), wayPositions.get(currentWayPointIndex))) {
+        if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius(), wayPositions.get(currentWayPointIndex))) {
             aheadTrack(syncPhysicalArea);
         } else {
             backtrack(syncPhysicalArea);
@@ -60,7 +60,7 @@ public class Path {
     private void aheadTrack(SyncPhysicalArea syncPhysicalArea) {
         int tmpCurrentWayPointIndex = currentWayPointIndex + 1;
         while (tmpCurrentWayPointIndex < wayPositions.size()) {
-            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
+            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius(), new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
                 currentWayPointIndex = tmpCurrentWayPointIndex;
                 tmpCurrentWayPointIndex++;
             } else {
@@ -72,7 +72,7 @@ public class Path {
     private void backtrack(SyncPhysicalArea syncPhysicalArea) {
         int tmpCurrentWayPointIndex = currentWayPointIndex - 1;
         while (tmpCurrentWayPointIndex >= 0) {
-            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
+            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius(), new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
                 currentWayPointIndex = tmpCurrentWayPointIndex;
                 return;
             }

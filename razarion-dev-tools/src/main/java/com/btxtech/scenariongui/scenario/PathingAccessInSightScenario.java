@@ -2,9 +2,6 @@ package com.btxtech.scenariongui.scenario;
 
 import com.btxtech.ExtendedGraphicsContext;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.planet.model.DevToolHelper;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import javafx.scene.paint.Color;
 
 /**
@@ -44,8 +41,7 @@ public class PathingAccessInSightScenario extends AbstractTerrainScenario {
     public boolean onMouseMove(DecimalPosition position) {
         if (start != null) {
             destination = position;
-            SyncPhysicalArea syncPhysicalArea = DevToolHelper.generateSyncPhysicalArea(start, RADIUS);
-            isInSight = getTerrainService().getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), position);
+            isInSight = getTerrainService().getPathingAccess().isInSight(start, RADIUS, position);
         }
         return true;
     }

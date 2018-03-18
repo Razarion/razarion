@@ -4,13 +4,12 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.GeometricUtil;
+import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +55,7 @@ public class PathingAccess {
     }
 
     public boolean isTerrainTypeAllowed(TerrainType terrainType, DecimalPosition terrainPosition, double radius) {
-        if(terrainType == null) {
+        if (terrainType == null) {
             throw new NullPointerException("PathingAccess.isTerrainTypeAllowed() terrainType==null");
         }
         if (terrainType.isAreaCheck()) {
@@ -88,19 +87,19 @@ public class PathingAccess {
         return getObstacles(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius());
     }
 
-    public boolean isInSight(DecimalPosition start, DecimalPosition target) {
+    public boolean isInSight(DecimalPosition start, double radius, DecimalPosition target) {
         if (start.equals(target)) {
             return true;
         }
         double angel = start.getAngle(target);
-        // double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
-        // double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
+        double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
+        double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
 
         Line line = new Line(start, target);
-        // Line line1 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel1, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel1, syncPhysicalArea.getRadius()));
-        // Line line2 = new Line(syncPhysicalArea.getPosition2d().getPointWithDistance(angel2, syncPhysicalArea.getRadius()), target.getPointWithDistance(angel2, syncPhysicalArea.getRadius()));
+        Line line1 = new Line(start.getPointWithDistance(angel1, radius), target.getPointWithDistance(angel1, radius));
+        Line line2 = new Line(start.getPointWithDistance(angel2, radius), target.getPointWithDistance(angel2, radius));
 
-        return !terrainShape.isSightBlocked(line) /*&& !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2)*/;
+        return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
     }
 
     public PathingNodeWrapper getPathingNodeWrapper(DecimalPosition terrainPosition) {
