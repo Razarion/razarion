@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -22,6 +23,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
+import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -30,7 +32,10 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
 
@@ -40,9 +45,9 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class SyncItemContainerService {
+    private static final int CELL_LENGTH_EXPONENT = 4; // 2 ^ exponent
+    private static final int CELL_LENGTH = (int) Math.pow(2, CELL_LENGTH_EXPONENT);
     private Logger logger = Logger.getLogger(SyncItemContainerService.class.getName());
-    private int lastItemId = 1;
-    private final HashMap<Integer, SyncItem> items = new HashMap<>();
     @Inject
     private Instance<SyncItem> syncItemInstance;
     @Inject
@@ -57,9 +62,15 @@ public class SyncItemContainerService {
     private Instance<GuardingItemService> guardingItemServiceInstanceInstance;
     @Inject
     private Instance<BotService> botServices;
+    private int lastItemId = 1;
+    private final HashMap<Integer, SyncItem> items = new HashMap<>();
+    private final HashMap<Index, SyncItemContainerCell> cells = new HashMap<>();
+    private final Set<SyncBaseItem> pathingChangedItem = new HashSet<>();
 
     public void clear() {
         items.clear();
+        cells.clear();
+        pathingChangedItem.clear();
         lastItemId = 1;
     }
 
@@ -270,6 +281,7 @@ public class SyncItemContainerService {
                 logger.severe("Item did not belong to SyncItemContainerService: " + syncItem);
             }
         }
+        removedDeadItemFromCell(syncItem);
         if (syncItem instanceof SyncBaseItem) {
             guardingItemServiceInstanceInstance.get().remove((SyncBaseItem) syncItem);
         }
@@ -360,7 +372,7 @@ public class SyncItemContainerService {
         }
 
         return GeometricUtil.findFreeRandomPosition(polygon, decimalPosition -> {
-            if(excludeBotRealm) {
+            if (excludeBotRealm) {
                 return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
             } else {
                 return isFree(terrainType, decimalPosition, radius);
@@ -409,5 +421,106 @@ public class SyncItemContainerService {
             return null;
         });
         return syncBaseItemInfos;
+    }
+
+
+    public void onPositionChanged(SyncItem syncItem, DecimalPosition oldPosition, DecimalPosition newPosition, boolean pathingService) {
+        if (pathingService) {
+            synchronized (pathingChangedItem) {
+                pathingChangedItem.add((SyncBaseItem) syncItem);
+            }
+        } else {
+            onPositionChanged(syncItem, oldPosition, newPosition);
+        }
+    }
+
+    private void onPositionChanged(SyncItem syncItem, DecimalPosition oldPosition, DecimalPosition newPosition) {
+        if (oldPosition != null && newPosition != null) {
+            Index oldIndex = position2Index(oldPosition);
+            Index newIndex = position2Index(newPosition);
+            if (oldIndex.equals(newIndex)) {
+                return;
+            }
+            removeFromCell(oldIndex, syncItem);
+            putToCell(newIndex, syncItem);
+        } else if (oldPosition == null && newPosition != null) {
+            putToCell(position2Index(newPosition), syncItem);
+        } else if (oldPosition != null) {
+            removeFromCell(position2Index(oldPosition), syncItem);
+        } else {
+            logger.severe("SyncItemContainerService.onPositionChanged() Unexpected oldPosition == null && newPosition == null for: " + syncItem);
+        }
+    }
+
+    public void afterPathingServiceTick() {
+        synchronized (pathingChangedItem) {
+            pathingChangedItem.forEach(syncBaseItem -> {
+                if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+                    logger.severe("SyncItemContainerService.afterPathingServiceTick() Received SyncBaseItem which can not move");
+                    return;
+                }
+                onPositionChanged(syncBaseItem, syncBaseItem.getSyncPhysicalMovable().getOldPosition(), syncBaseItem.getSyncPhysicalMovable().getPosition2d());
+            });
+            pathingChangedItem.clear();
+        }
+    }
+
+    private void removedDeadItemFromCell(SyncItem syncItem) {
+        if (syncItem instanceof SyncBaseItem) {
+            if (((SyncBaseItem) syncItem).isContainedIn()) {
+                return;
+            }
+        }
+        Index cellIndex = position2Index(syncItem.getSyncPhysicalArea().getPosition2d());
+        removeFromCell(cellIndex, syncItem);
+    }
+
+    private void putToCell(Index incellIndexex, SyncItem syncItem) {
+        SyncItemContainerCell cell;
+        synchronized (cells) {
+            cell = cells.get(incellIndexex);
+            if (cell == null) {
+                cell = new SyncItemContainerCell();
+                cells.put(incellIndexex, cell);
+            }
+        }
+        cell.add(syncItem);
+    }
+
+    private void removeFromCell(Index cellIndex, SyncItem syncItem) {
+        synchronized (cells) {
+            SyncItemContainerCell cell = cells.get(cellIndex);
+            if (cell == null) {
+                logger.severe("SyncItemContainerService.removeFromCell() SyncItem has not been added to cell before: " + syncItem);
+            } else {
+                cell.remove(syncItem);
+                if (cell.isEmpty()) {
+                    cells.remove(cellIndex);
+                }
+            }
+        }
+    }
+
+    private Index position2Index(DecimalPosition decimalPosition) {
+        return new Index(MathHelper.shiftFloor(decimalPosition.getX(), CELL_LENGTH_EXPONENT), MathHelper.shiftFloor(decimalPosition.getY(), CELL_LENGTH_EXPONENT));
+    }
+
+    public void iterateCellQuadItem(DecimalPosition center, double width, Consumer<SyncItem> callback) {
+        List<Index> cellIndexes = GeometricUtil.rasterizeRectangleInclusive(Rectangle2D.generateRectangleFromMiddlePoint(center, width, width), CELL_LENGTH);
+        cellIndexes.forEach(cellIndex -> {
+            SyncItemContainerCell cell = cells.get(cellIndex);
+            if (cell != null) {
+                cell.get().forEach(callback);
+            }
+        });
+    }
+    public void iterateCellQuadBaseItem(DecimalPosition center, double width, Consumer<SyncBaseItem> callback) {
+        List<Index> cellIndexes = GeometricUtil.rasterizeRectangleInclusive(Rectangle2D.generateRectangleFromMiddlePoint(center, width, width), CELL_LENGTH);
+        cellIndexes.forEach(cellIndex -> {
+            SyncItemContainerCell cell = cells.get(cellIndex);
+            if (cell != null) {
+                cell.get().stream().filter(syncItem -> syncItem instanceof SyncBaseItem).forEach(syncItem -> callback.accept((SyncBaseItem) syncItem));
+            }
+        });
     }
 }

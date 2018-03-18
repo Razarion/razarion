@@ -15,6 +15,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.WeldBaseTest;
+import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 25.09.2017.
  */
-public class WeldTerrainServiceTestBase extends WeldBaseTest {
+public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
     protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {

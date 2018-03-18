@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -36,6 +37,8 @@ public class PathingService {
     private TerrainService terrainService;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private ItemTypeService itemTypeService;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
     private PathingServiceUpdateListener pathingServiceUpdateListener;
 
@@ -117,7 +120,6 @@ public class PathingService {
             pathingServiceTracker.startTick();
             preparation();
             pathingServiceTracker.afterPreparation();
-
             Collection<Contact> contacts = findContacts();
             pathingServiceTracker.afterFindContacts();
             solveVelocity(contacts);
@@ -128,7 +130,8 @@ public class PathingService {
             pathingServiceTracker.afterSolvePosition();
             checkDestination();
             pathingServiceTracker.afterCheckDestination();
-
+            syncItemContainerService.afterPathingServiceTick();
+            pathingServiceTracker.afterSyncItemContainerService();
             finalization();
             pathingServiceTracker.afterFinalization();
             if (pathingServiceUpdateListener != null) {
@@ -185,18 +188,22 @@ public class PathingService {
     }
 
     private void findItemContacts(SyncBaseItem syncBaseItem, Collection<SyncPhysicalArea> alreadyAddedItems, Collection<Contact> contacts) {
-        syncItemContainerService.iterateOverItems(false, false, syncBaseItem, syncBaseItem, otherSyncItem -> {
-            SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
+        syncItemContainerService.iterateCellQuadBaseItem(syncBaseItem.getSyncPhysicalMovable().getPosition2d(), syncBaseItem.getSyncPhysicalMovable().getRadius() + itemTypeService.getMaxRadius(), otherSyncBaseItem -> {
+            if(syncBaseItem.equals(otherSyncBaseItem)) {
+                return;
+            }
+
+            SyncPhysicalArea other = otherSyncBaseItem.getSyncPhysicalArea();
 
             if (alreadyAddedItems.contains(other)) {
-                return null;
+                return;
             }
 
             Contact contact = ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).hasContact(other);
             if (contact != null) {
                 contacts.add(contact);
             }
-            return null;
+            return;
         });
     }
 

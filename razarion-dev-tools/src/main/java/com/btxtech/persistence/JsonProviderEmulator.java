@@ -54,7 +54,7 @@ public class JsonProviderEmulator {
     private TerrainShapeProvider terrainShapeProvider;
     private PlanetEditorProvider planetEditorProvider;
 
-    @PostConstruct
+    // TODO @PostConstruct
     public void connect() {
         Client client = ClientBuilder.newClient();
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST);

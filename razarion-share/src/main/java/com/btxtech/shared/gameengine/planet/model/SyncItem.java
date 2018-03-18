@@ -68,7 +68,11 @@ public abstract class SyncItem {
 
     @Override
     public String toString() {
-        return "SyncItem: id=" + id + "|" + itemType + "|" + syncPhysicalArea.getPosition2d();
+        if(syncPhysicalArea != null) {
+            return "SyncItem: id=" + id + "|" + itemType + "|" + syncPhysicalArea.getPosition2d();
+        } else {
+            return "SyncItem: id=" + id + "|" + itemType + "|no syncPhysicalArea";
+        }
     }
 
     @Override

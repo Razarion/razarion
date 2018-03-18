@@ -315,4 +315,8 @@ public class MathHelper {
                 MathHelper.random(newBase.getY(), variable.getY()),
                 MathHelper.random(newBase.getZ(), variable.getZ()));
     }
+
+    public static int shiftFloor(double input, int times) {
+        return ((int) input) >> times;
+    }
 }

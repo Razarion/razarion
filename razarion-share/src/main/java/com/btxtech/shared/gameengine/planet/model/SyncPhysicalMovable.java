@@ -16,6 +16,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
@@ -55,6 +56,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private Instance<Path> instancePath;
     @Inject
     private GameLogicService gameLogicService;
+    @Inject
+    private ItemTypeService itemTypeService;
     private final static int LOOK_AHEAD_TICKS_ITEM = 20;
     private final static int LOOK_AHEAD_TICKS_TERRAIN = 3;
     private final static int JAMMING_COUNT = 20;
@@ -81,8 +84,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setupForTick() {
+        oldPosition = getPosition2d();
         if (path != null) {
-            oldPosition = getPosition2d();
             path.setupCurrentWayPoint(this);
             double distance;
             if (path.isLastWayPoint()) {
@@ -173,9 +176,13 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private DecimalPosition forwardLooking(DecimalPosition desiredVelocity) {
         ClearanceHole clearanceHole = new ClearanceHole(this);
         SyncItem target = ((SyncBaseItem) getSyncItem()).getTarget();
-        syncItemContainerService.iterateOverItems(false, false, null, getSyncItem(), otherSyncItem -> {
+        double fullLookAheadItemDistance = lookAheadItemDistance + getSyncItem().getSyncPhysicalArea().getRadius() + itemTypeService.getMaxRadius();
+        syncItemContainerService.iterateCellQuadItem(getSyncItem().getSyncPhysicalArea().getPosition2d(), fullLookAheadItemDistance * 2.0, otherSyncItem -> {
+            if (getSyncItem().equals(otherSyncItem)) {
+                return;
+            }
             if (target != null && target.equals(otherSyncItem)) {
-                return null;
+                return;
             }
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             SyncPhysicalMovable otherMovable = null;
@@ -186,14 +193,14 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             // Check if other is too far away
             double distance = getDistance(other);
             if (distance > lookAheadItemDistance) {
-                return null;
+                return;
             }
 
             // Check other destination
             if (otherMovable != null && otherMovable.hasDestination()) {
                 // Similar destination
                 if (otherMovable.path.getCurrentWayPoint().sub(path.getCurrentWayPoint()).magnitude() <= getRadius() + otherMovable.getRadius()) {
-                    return null;
+                    return;
                 }
 
                 // Other moves to destination in same direction
@@ -202,19 +209,17 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 DecimalPosition relativeDestinationOther = otherMovable.path.getCurrentWayPoint().sub(otherMovable.getPosition2d()).normalize();
                 double deltaAngle = Math.acos(relativeDestination.dotProduct(relativeDestinationOther));
                 if (deltaAngle < Math.PI / 2.0) {
-                    return null;
+                    return;
                 }
             }
 
             //Check if destination is nearer than other
             if (getPosition2d().getDistance(path.getCurrentWayPoint()) < getPosition2d().getDistance(other.getPosition2d())) {
-                return null;
+                return;
             }
 
             // Other is dangerous.
             clearanceHole.addOther(other);
-
-            return null;
         });
 
         terrainService.getPathingAccess().getObstacles(getPosition2d(), getRadius() + lookAheadTerrainDistance).forEach(clearanceHole::addOther);
@@ -306,7 +311,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void implementPosition() {
         if (velocity != null) {
-            setPosition2d(getDesiredPosition());
+            setPosition2d(getDesiredPosition(), true);
         }
     }
 
@@ -340,5 +345,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             path.fillSyncPhysicalAreaInfo(syncPhysicalAreaInfo);
         }
         return syncPhysicalAreaInfo;
+    }
+
+    public DecimalPosition getOldPosition() {
+        return oldPosition;
     }
 }

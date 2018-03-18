@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.nativejs.NativeMatrixDto;
@@ -26,6 +27,8 @@ public class SyncPhysicalArea {
     private TerrainService terrainService;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private SyncItemContainerService syncItemContainerService;
     private SyncItem syncItem;
     private DecimalPosition position2d;
     private double angle;
@@ -42,7 +45,7 @@ public class SyncPhysicalArea {
         this.radius = radius;
         this.fixVerticalNorm = fixVerticalNorm;
         this.terrainType = terrainType;
-        setPosition2d(position2d);
+        setPosition2d(position2d, false);
         this.angle = angle;
     }
 
@@ -62,14 +65,16 @@ public class SyncPhysicalArea {
         return position2d != null;
     }
 
-    void setPosition2d(DecimalPosition position2d) {
+    void setPosition2d(DecimalPosition position2d, boolean pathingService) {
+        DecimalPosition oldPosition = this.position2d;
         this.position2d = position2d;
+        syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition, this.position2d, pathingService);
         position3d = null;
         norm = null;
     }
 
     public void addToPosition2d(DecimalPosition deltaXY) {
-        setPosition2d(position2d.add(deltaXY));
+        setPosition2d(position2d.add(deltaXY), true);
     }
 
     public double getAngle() {

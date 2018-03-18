@@ -9,6 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class ItemTypeService {
     private final HashMap<Integer, BaseItemType> baseItemTypes = new HashMap<>();
     private final HashMap<Integer, ResourceItemType> resourceItemTypes = new HashMap<>();
     private final HashMap<Integer, BoxItemType> boxItemTypes = new HashMap<>();
+    private double maxRadius;
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());
@@ -30,6 +32,10 @@ public class ItemTypeService {
         setBaseItemTypes(staticGameConfig.getBaseItemTypes());
         setResourceItemTypes(staticGameConfig.getResourceItemTypes());
         setBoxItemTypes(staticGameConfig.getBoxItemTypes());
+        maxRadius = -1.0;
+        maxRadius = Math.max(maxRadius, baseItemTypes.values().stream().map(baseItemType -> baseItemType.getPhysicalAreaConfig().getRadius()).max(Comparator.naturalOrder()).orElse(-1.0));
+        maxRadius = Math.max(maxRadius, resourceItemTypes.values().stream().map(ResourceItemType::getRadius).max(Comparator.naturalOrder()).orElse(-1.0));
+        maxRadius = Math.max(maxRadius, boxItemTypes.values().stream().map(BoxItemType::getRadius).max(Comparator.naturalOrder()).orElse(-1.0));
     }
 
     public ResourceItemType getResourceItemType(Integer resourceItemTypeId) {
@@ -119,12 +125,7 @@ public class ItemTypeService {
         boxItemTypes.remove(boxItemType.getId());
     }
 
-    // TODO public boolean areItemTypesLoaded()
-
-    // TODO public List<BaseItemType> ableToBuild(BaseItemType toBeBuilt)
-
-    // TODO public int getMaxItemRadius()
-
-    // TODO public int getMaxItemDiameter()
-
+    public double getMaxRadius() {
+        return maxRadius;
+    }
 }

@@ -24,6 +24,7 @@ public class PathingServiceTracker {
     private int checkDestinationTime;
     private int finalizationTime;
     private int updateListenerTime;
+    private int syncItemContainerServiceTime;
     private boolean running;
 
     public PathingServiceTracker(boolean running) {
@@ -45,6 +46,7 @@ public class PathingServiceTracker {
         checkDestinationTime = 0;
         finalizationTime = 0;
         updateListenerTime = 0;
+        syncItemContainerServiceTime = 0;
     }
 
     public void startTick() {
@@ -113,6 +115,13 @@ public class PathingServiceTracker {
         updateListenerTime += calculateDifAndReload();
     }
 
+    public void afterSyncItemContainerService() {
+        if (!running) {
+            return;
+        }
+        syncItemContainerServiceTime += calculateDifAndReload();
+    }
+
     public void endTick() {
         if (!running) {
             return;
@@ -149,6 +158,7 @@ public class PathingServiceTracker {
                 "checkDestinationTime: " + checkDestinationTime * factor + "s\n" +
                 "finalizationTime: " + finalizationTime * factor + "s\n" +
                 "updateListenerTime: " + updateListenerTime * factor + "s\n" +
+                "syncItemContainerServiceTime: " + syncItemContainerServiceTime * factor + "s\n" +
                 "-------------------------------------------------");
     }
 }
