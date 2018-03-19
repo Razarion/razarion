@@ -184,6 +184,7 @@ public class SyncPhysicalArea {
         DecimalPosition oldPosition2d = position2d;
         double oldAngle = angle;
         position2d = syncPhysicalAreaInfo.getPosition();
+        syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition2d, position2d, false);
         angle = syncPhysicalAreaInfo.getAngle();
         if (position2d != null) {
             if (oldPosition2d == null || !oldPosition2d.equals(position2d) || oldAngle != angle) {
