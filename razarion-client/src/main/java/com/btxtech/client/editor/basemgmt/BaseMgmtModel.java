@@ -24,9 +24,9 @@ public class BaseMgmtModel {
         this.playerBase = playerBase;
     }
 
-    public int getId() {
+    public Integer getId() {
         if (playerBase == null) {
-            return -1;
+            return null;
         }
         return playerBase.getBaseId();
     }
