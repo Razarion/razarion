@@ -411,6 +411,7 @@ public class ScenarioService implements QuestListener {
         addScenarioSuite(new MoveObstacleScenarioSuite());
         addScenarioSuite(new MoveSingleOutOfGroupScenarioSuite());
         addScenarioSuite(new MoveTerrainObjectScenarioSuite());
+        addScenarioSuite(new MoveComplexScenarioSuite());
         addScenarioSuite(new BotScenarioSuite());
         addScenarioSuite(new AttackScenarioSuite());
         addScenarioSuite(new PickBoxScenarioSuite());

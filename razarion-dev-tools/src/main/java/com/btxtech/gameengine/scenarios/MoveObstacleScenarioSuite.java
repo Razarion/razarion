@@ -103,11 +103,6 @@ public class MoveObstacleScenarioSuite extends ScenarioSuite {
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 25, 12, 20, 15));
                 slopePositions.add(createRectangleSlope(ScenarioService.SLOPE_ID, 25, -27, 20, 15));
             }
-
-            @Override
-            public boolean isStart() {
-                return true;
-            }
         });
     }
 }
