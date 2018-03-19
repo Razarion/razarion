@@ -22,7 +22,7 @@ public class MoveComplexScenarioSuite extends ScenarioSuite {
             public void createSyncItems() {
                 for (int x = -3; x < 4; x++) {
                     for (int y = -3; y < 4; y++) {
-                        createSyncBaseItem(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6.1 * x, 6.1 * y), 0, new DecimalPosition(100, 100));
+                        createSyncBaseItemAStar(ScenarioService.SIMPLE_MOVABLE_ITEM_TYPE, new DecimalPosition(6.1 * x, 6.1 * y), 0, new DecimalPosition(100, 100));
                     }
                 }
             }
