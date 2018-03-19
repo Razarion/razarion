@@ -332,7 +332,7 @@ public class ExtendedGraphicsContext {
             gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
         } else if (obstacle instanceof ObstacleTerrainObject) {
             Circle2D circle = ((ObstacleTerrainObject) obstacle).getCircle();
-            gc.fillOval(circle.getCenter().getX() - circle.getRadius(), circle.getCenter().getY() - circle.getRadius(), circle.getRadius() * 2, circle.getRadius() * 2);
+            gc.strokeOval(circle.getCenter().getX() - circle.getRadius(), circle.getCenter().getY() - circle.getRadius(), circle.getRadius() * 2, circle.getRadius() * 2);
         }
     }
 

@@ -8,6 +8,8 @@ import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
@@ -81,6 +83,7 @@ public abstract class AbstractTerrainScenario extends Scenario {
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
         slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(3);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {FrameworkHelper.createSlopeNode(0, 0, 0.3),},
                 {FrameworkHelper.createSlopeNode(2, 5, 1),},
@@ -91,6 +94,9 @@ public abstract class AbstractTerrainScenario extends Scenario {
         slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
 
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
+        List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(1).setRadius(1));
+        staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();
         drivewayConfigs.add(new DrivewayConfig().setId(1).setAngle(Math.toRadians(45)));
         staticGameConfig.setDrivewayConfigs(drivewayConfigs);
@@ -109,6 +115,7 @@ public abstract class AbstractTerrainScenario extends Scenario {
         terrainSlopePositions.add(terrainSlopePosition);
         DevToolNativeTerrainShapeAccess devToolNativeTerrainShapeAccess = getBean(DevToolNativeTerrainShapeAccess.class);
         devToolNativeTerrainShapeAccess.setTerrainSlopePositions(terrainSlopePositions);
+        devToolNativeTerrainShapeAccess.setTerrainObjectPositions(Arrays.asList(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setScale(4).setPosition(new DecimalPosition(56, 25))));
 
 
         PlanetConfig planetConfig = new PlanetConfig();
