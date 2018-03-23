@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
+import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.shared.datatypes.Polygon2D;
@@ -12,6 +13,7 @@ import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -26,6 +28,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,6 +59,11 @@ public class ServerGameEngineConfigEntity {
             inverseJoinColumns = @JoinColumn(name = "botConfigId"))
     private List<BotConfigEntity> botConfigs;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "SERVER_GAME_ENGINE_BOT_SCENE_CONFIG",
+            joinColumns = @JoinColumn(name = "serverGameEngineId"),
+            inverseJoinColumns = @JoinColumn(name = "botSceneConfigId"))
+    private List<BotSceneConfigEntity> botSceneConfigs;
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "serverGameEngineConfig")
     private List<ServerLevelQuestEntity> serverQuestEntities;
 
@@ -82,14 +90,17 @@ public class ServerGameEngineConfigEntity {
     }
 
     public Collection<BotConfig> getBotConfigs() {
-        Collection<BotConfig> botConfigs = new ArrayList<>();
         if (this.botConfigs == null) {
-            return botConfigs;
+            return Collections.emptyList();
         }
-        for (BotConfigEntity botConfigEntity : this.botConfigs) {
-            botConfigs.add(botConfigEntity.toBotConfig());
+        return this.botConfigs.stream().map(BotConfigEntity::toBotConfig).collect(Collectors.toList());
+    }
+
+    public Collection<BotSceneConfig> getBotSceneConfigs() {
+        if (this.botSceneConfigs == null) {
+            return Collections.emptyList();
         }
-        return botConfigs;
+        return this.botSceneConfigs.stream().map(BotSceneConfigEntity::toBotSceneConfig).collect(Collectors.toList());
     }
 
     public Collection<BoxRegionConfig> getBoxRegionConfigs() {
@@ -204,6 +215,14 @@ public class ServerGameEngineConfigEntity {
 
     public void setBotConfigEntities(List<BotConfigEntity> botConfigs) {
         this.botConfigs = botConfigs;
+    }
+
+    public List<BotSceneConfigEntity> getBotSceneConfigEntities() {
+        return botSceneConfigs;
+    }
+
+    public void setBotSceneConfigEntities(List<BotSceneConfigEntity> botSceneConfigs) {
+        this.botSceneConfigs = botSceneConfigs;
     }
 
     public List<ServerBoxRegionConfigEntity> getServerBoxRegionConfigEntities() {

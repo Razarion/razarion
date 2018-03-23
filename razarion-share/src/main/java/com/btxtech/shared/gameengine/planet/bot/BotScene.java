@@ -61,7 +61,7 @@ public class BotScene {
             try {
                 if (mood.checkThreshold(botSceneConfig)) {
                     BotSceneConflict botSceneConflict = conflictInstance.get();
-                    botSceneConflict.init(mood, botSceneConfig.getBotSceneConflictConfig());
+                    botSceneConflict.init(mood, botSceneConfig.getBotSceneConflictConfigs().get(0));
                     botSceneConflict.start();
                     botSceneConflicts.add(botSceneConflict);
                 }

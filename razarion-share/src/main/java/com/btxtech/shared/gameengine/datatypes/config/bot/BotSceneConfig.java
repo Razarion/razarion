@@ -12,7 +12,7 @@ public class BotSceneConfig {
     private int scheduleTimeMillis;
     private int killThreshold;
     private List<Integer> botIdsToWatch;
-    private BotSceneConflictConfig botSceneConflictConfig;
+    private List<BotSceneConflictConfig> botSceneConflictConfigs;
 
     public int getId() {
         return id;
@@ -59,12 +59,12 @@ public class BotSceneConfig {
         return this;
     }
 
-    public BotSceneConflictConfig getBotSceneConflictConfig() {
-        return botSceneConflictConfig;
+    public List<BotSceneConflictConfig> getBotSceneConflictConfigs() {
+        return botSceneConflictConfigs;
     }
 
-    public BotSceneConfig setBotSceneConflictConfig(BotSceneConflictConfig botSceneConflictConfig) {
-        this.botSceneConflictConfig = botSceneConflictConfig;
+    public BotSceneConfig setBotSceneConflictConfigs(List<BotSceneConflictConfig> botSceneConflictConfigs) {
+        this.botSceneConflictConfigs = botSceneConflictConfigs;
         return this;
     }
 

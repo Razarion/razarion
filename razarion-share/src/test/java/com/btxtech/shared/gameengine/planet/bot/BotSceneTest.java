@@ -42,7 +42,7 @@ public class BotSceneTest extends BaseBotServiceTest {
         sceneBotItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true));
         sceneBotEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(sceneBotItems));
         botSceneConflictConfig.setBotConfig(new BotConfig().setId(2).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(-50, -50, 100, 100))).setActionDelay(1).setBotEnragementStateConfigs(sceneBotEnragementStateConfigs).setName("Scene Bot"));
-        botSceneConfigs.add(new BotSceneConfig().setId(1).setScheduleTimeMillis(1).setBotIdsToWatch(Collections.singletonList(1)).setKillThreshold(2).setBotSceneConflictConfig(botSceneConflictConfig));
+        botSceneConfigs.add(new BotSceneConfig().setId(1).setScheduleTimeMillis(1).setBotIdsToWatch(Collections.singletonList(1)).setKillThreshold(2).setBotSceneConflictConfigs(Collections.singletonList(botSceneConflictConfig)));
 
         startBots(botConfigs, botSceneConfigs);
         // Setup human

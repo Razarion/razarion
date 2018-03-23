@@ -5,10 +5,20 @@ package com.btxtech.shared.gameengine.datatypes.config.bot;
  * on 23.03.2018.
  */
 public class BotSceneConflictConfig {
+    private int id;
     private double minDistance;
     private double maxDistance;
     private Integer targetBaseItemTypeId;
     private BotConfig botConfig;
+
+    public int getId() {
+        return id;
+    }
+
+    public BotSceneConflictConfig setId(int id) {
+        this.id = id;
+        return this;
+    }
 
     public double getMinDistance() {
         return minDistance;
