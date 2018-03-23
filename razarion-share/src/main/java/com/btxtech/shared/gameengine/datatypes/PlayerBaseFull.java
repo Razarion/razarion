@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.datatypes;
 
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
-import com.btxtech.shared.gameengine.datatypes.packets.BackupPlayerBaseInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 
 import java.util.ArrayList;
@@ -47,7 +46,11 @@ public class PlayerBaseFull extends PlayerBase {
     }
 
     public Collection<SyncBaseItem> findItemsInPlace(PlaceConfig placeConfig) {
-        return items.stream().filter(syncBaseItem -> !syncBaseItem.isContainedIn()).filter(placeConfig::checkInside).collect(Collectors.toCollection(ArrayList::new));
+        return items.stream().filter(syncBaseItem -> !syncBaseItem.isContainedIn()).filter(placeConfig::checkInside).collect(Collectors.toList());
+    }
+
+    public Collection<SyncBaseItem> findItemsOfType(int baseItemTypeId) {
+        return items.stream().filter(syncBaseItem -> syncBaseItem.getBaseItemType().getId() == baseItemTypeId).collect(Collectors.toList());
     }
 
     public int getUsedHouseSpace() {

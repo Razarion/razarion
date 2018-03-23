@@ -121,9 +121,13 @@ public class BotRunner {
     }
 
     private void createBaseIfNeeded() {
-        if (base == null || !baseItemService.isAlive(base)) {
+        if (!isBaseAlive()) {
             base = baseItemService.createBotBase(botConfig);
         }
+    }
+
+    public boolean isBaseAlive() {
+        return base != null && baseItemService.isAlive(base);
     }
 
     private BotEnragementState.Listener getEnragementStateListener() {
@@ -176,6 +180,9 @@ public class BotRunner {
         botEnragementState.executeCommand(botCommandConfig, base);
     }
 
+    public void attack(SyncBaseItem target) {
+        botEnragementState.attack(target);
+    }
 
     private void killBot() {
         synchronized (syncObject) {

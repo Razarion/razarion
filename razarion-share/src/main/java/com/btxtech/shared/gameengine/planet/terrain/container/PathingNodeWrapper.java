@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.planet.pathing.AStarContext;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 
@@ -57,6 +58,17 @@ public class PathingNodeWrapper {
             return subNodePosition.add(length, length);
         } else {
             throw new IllegalStateException("PathingNodeWrapper.getCenter()");
+        }
+    }
+
+    public Rectangle2D getRectangle() {
+        if (nodeIndex != null) {
+            return TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+        } else if (subNodePosition != null) {
+            double length = TerrainUtil.calculateSubNodeLength(terrainShapeSubNode.getDepth());
+            return new Rectangle2D(subNodePosition.getX(), subNodePosition.getY(), length, length);
+        } else {
+            throw new IllegalStateException("PathingNodeWrapper.getRectangle()");
         }
     }
 

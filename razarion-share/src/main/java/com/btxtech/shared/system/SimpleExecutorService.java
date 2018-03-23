@@ -10,6 +10,7 @@ public interface SimpleExecutorService {
     enum Type {
         GAME_ENGINE(PerfmonEnum.GAME_ENGINE),
         BOT_TICKER(PerfmonEnum.BOT_TICKER),
+        BOT_SCENE_TICKER(PerfmonEnum.BOT_SCENE_TICKER),
         BOT_TIMER(PerfmonEnum.BOT_TIMER),
         DETAILED_TRACKING(PerfmonEnum.DETAILED_TRACKING),
         COVER_FADE(PerfmonEnum.COVER_FADE),

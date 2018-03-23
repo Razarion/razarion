@@ -87,23 +87,27 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false).setAuxiliaryId(auxiliaryId));
-        getBotService().startBots(botConfigs);
+        getBotService().startBots(botConfigs, null);
         tickPlanetServiceBaseServiceActive();
         PlayerBase botBase = getBotBase(botName);
         return findSyncBaseItem((PlayerBaseFull) botBase, itemTypeId);
     }
 
     protected HumanBaseContext createHumanBaseBFA() {
+        return createHumanBaseBFA(new DecimalPosition(167, 136), new DecimalPosition(104, 144));
+    }
+
+    protected HumanBaseContext createHumanBaseBFA(DecimalPosition builderPosition, DecimalPosition factoryPosition) {
         HumanBaseContext humanBaseContext = new HumanBaseContext();
         // Human base
         UserContext userContext = createLevel1UserContext();
         humanBaseContext.setUserContext(userContext);
-        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(builderPosition, userContext);
         humanBaseContext.setPlayerBaseFull(playerBaseFull);
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
         humanBaseContext.setBuilder(builder);
-        getCommandService().build(builder, new DecimalPosition(104, 144), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        getCommandService().build(builder, factoryPosition, getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
         humanBaseContext.setFactory(factory);
@@ -124,7 +128,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
-        getBotService().startBots(botConfigs);
+        getBotService().startBots(botConfigs, null);
         tickPlanetServiceBaseServiceActive();
         return (PlayerBaseFull) getBotBase(botId);
     }
@@ -138,7 +142,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
-        getBotService().startBots(botConfigs);
+        getBotService().startBots(botConfigs, null);
         tickPlanetServiceBaseServiceActive();
         return (PlayerBaseFull) getBotBase(botId);
     }
@@ -152,7 +156,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
-        getBotService().startBots(botConfigs);
+        getBotService().startBots(botConfigs, null);
         tickPlanetServiceBaseServiceActive();
         return (PlayerBaseFull) getBotBase(botId);
     }

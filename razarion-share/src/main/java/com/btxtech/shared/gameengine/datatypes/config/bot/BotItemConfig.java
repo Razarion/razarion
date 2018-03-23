@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 /**
@@ -107,5 +108,20 @@ public class BotItemConfig {
 
     public Integer getRePopTime() {
         return rePopTime;
+    }
+
+    public BotItemConfig cloneWithAbsolutePosition(DecimalPosition absoluteCenter) {
+        BotItemConfig botItemConfig = new BotItemConfig();
+        botItemConfig.baseItemTypeId = baseItemTypeId;
+        botItemConfig.count = count;
+        botItemConfig.createDirectly = createDirectly;
+        botItemConfig.noSpawn = noSpawn;
+        botItemConfig.place = PlaceConfig.cloneWithAbsolutePosition(place, absoluteCenter);
+        botItemConfig.angle = angle;
+        botItemConfig.moveRealmIfIdle = moveRealmIfIdle;
+        botItemConfig.idleTtl = idleTtl;
+        botItemConfig.noRebuild = noRebuild;
+        botItemConfig.rePopTime = rePopTime;
+        return botItemConfig;
     }
 }

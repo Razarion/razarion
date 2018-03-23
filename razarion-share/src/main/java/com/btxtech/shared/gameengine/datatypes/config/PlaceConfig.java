@@ -122,4 +122,17 @@ public class PlaceConfig {
             throw new IllegalStateException("Invalid PlaceConfig");
         }
     }
+
+    public static PlaceConfig cloneWithAbsolutePosition(PlaceConfig realm, DecimalPosition absoluteCenter) {
+        if (realm == null) {
+            return null;
+        }
+        if (realm.getPosition() != null) {
+            return new PlaceConfig().setPosition(realm.getPosition().add(absoluteCenter)).setRadius(realm.getRadius());
+        } else if (realm.getPolygon2D() != null) {
+            return new PlaceConfig().setPolygon2D(realm.getPolygon2D().translate(absoluteCenter));
+        } else {
+            throw new IllegalStateException("Invalid PlaceConfig");
+        }
+    }
 }

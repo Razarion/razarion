@@ -143,7 +143,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
-        getBotService().startBots(botConfigs);
+        getBotService().startBots(botConfigs, null);
         // Attack
         assertSyncItemCount(5,0,0);
         TestSimpleScheduledFuture botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);

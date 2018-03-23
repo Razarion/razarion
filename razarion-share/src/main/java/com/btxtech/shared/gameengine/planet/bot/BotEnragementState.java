@@ -123,4 +123,9 @@ public class BotEnragementState {
     public void executeCommand(AbstractBotCommandConfig botCommandConfig, PlayerBaseFull base) {
         botItemContainer.executeCommand(botCommandConfig, base);
     }
+
+    public void attack(SyncBaseItem target) {
+        Collection<BotSyncBaseItem> idleAttacker = botItemContainer.getAllIdleAttackers();
+        idleAttacker.forEach(attacker -> attacker.attack(target));
+    }
 }

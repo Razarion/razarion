@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.basic;
 
-import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -346,7 +345,7 @@ public class ItemContainerTest extends BaseBasicTest {
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Test bot").setNpc(false).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(96,312, 40, 40))));
-        getBotService().startBots(botConfigs);
+        getBotService().startBots(botConfigs, null);
         tickPlanetServiceBaseServiceActive();
     }
 }

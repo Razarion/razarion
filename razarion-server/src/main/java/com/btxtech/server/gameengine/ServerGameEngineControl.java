@@ -113,7 +113,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             planetService.start();
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
-            botService.startBots(serverGameEnginePersistence.readBotConfigs());
+            botService.startBots(serverGameEnginePersistence.readBotConfigs(), null);
             planetService.enableTracking(false);
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
         if (activateQuests) {
@@ -142,7 +142,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void restartBots() {
         synchronized (reloadLook) {
             botService.killAllBots();
-            botService.startBots(serverGameEnginePersistence.readBotConfigs());
+            botService.startBots(serverGameEnginePersistence.readBotConfigs(), null);
         }
     }
 

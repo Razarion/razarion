@@ -5,6 +5,7 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -28,33 +29,57 @@ public class BotService {
     @Inject
     private Instance<BotRunner> botRunnerInstance;
     @Inject
+    private Instance<BotScene> defenceAreaInstance;
+    @Inject
     private ExceptionHandler exceptionHandler;
     private final Collection<BotRunner> botRunners = new ArrayList<>();
+    private final Collection<BotScene> botScenes = new ArrayList<>();
 
-    public void startBots(Collection<BotConfig> botConfigs) {
-        for (BotConfig botConfig : botConfigs) {
-            try {
-                startBot(botConfig);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Starting bots failed: " + botConfig.getName(), e);
-            }
+    public void startBots(Collection<BotConfig> botConfigs, Collection<BotSceneConfig> botSceneConfigs) {
+        if (botConfigs != null) {
+            botConfigs.forEach(botConfig -> {
+                try {
+                    startBot(botConfig);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Starting bot failed: " + botConfig, e);
+                }
+            });
+        }
+        if (botSceneConfigs != null) {
+            botSceneConfigs.forEach(botSceneConfig -> {
+                try {
+                    startBotScene(botSceneConfig);
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Starting BotScene failed: " + botSceneConfig, e);
+                }
+            });
         }
     }
 
-    private void startBot(BotConfig botConfig) {
-        try {
-            BotRunner botRunner = botRunnerInstance.get();
-            synchronized (botRunners) {
-                botRunners.add(botRunner);
-            }
-            botRunner.start(botConfig);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Starting bot failed: " + botConfig.getName(), e);
+    public BotRunner startBot(BotConfig botConfig) {
+        BotRunner botRunner = botRunnerInstance.get();
+        synchronized (botRunners) {
+            botRunners.add(botRunner);
         }
+        botRunner.start(botConfig);
+        return botRunner;
     }
+
+    private void startBotScene(BotSceneConfig botSceneConfig) {
+        BotScene botScene = defenceAreaInstance.get();
+        synchronized (botScenes) {
+            botScenes.add(botScene);
+        }
+        botScene.start(botSceneConfig);
+    }
+
 
     public void killAllBots() {
-        // Kill all bots
+        synchronized (botScenes) {
+            botScenes.forEach(BotScene::stop);
+            botScenes.clear();
+        }
+
         synchronized (botRunners) {
             botRunners.forEach(BotRunner::kill);
             botRunners.clear();
@@ -71,7 +96,9 @@ public class BotService {
 
     public void enrageOnKill(SyncBaseItem target, PlayerBase actor) {
         try {
-            getBotRunner(target.getBase()).enrageOnKill(target, actor);
+            BotRunner botRunner = getBotRunner(target.getBase());
+            botRunner.enrageOnKill(target, actor);
+            handleKillInBotScene(botRunner.getBotConfig().getId(), target, actor);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -146,6 +173,18 @@ public class BotService {
                     return;
                 }
             }
+        }
+    }
+
+    private void handleKillInBotScene(int botId, SyncBaseItem target, PlayerBase actor) {
+        synchronized (botScenes) {
+            botScenes.forEach(botScene -> {
+                try {
+                    botScene.onKillBotItem(botId, target, actor);
+                } catch (Throwable t) {
+                    exceptionHandler.handleException(t);
+                }
+            });
         }
     }
 }

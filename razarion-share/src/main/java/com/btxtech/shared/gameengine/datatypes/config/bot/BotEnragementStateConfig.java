@@ -1,6 +1,9 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -37,5 +40,13 @@ public class BotEnragementStateConfig {
 
     public Integer getEnrageUpKills() {
         return enrageUpKills;
+    }
+
+    public BotEnragementStateConfig cloneWithAbsolutePosition(DecimalPosition absoluteCenter) {
+        BotEnragementStateConfig botEnragementStateConfig = new BotEnragementStateConfig();
+        botEnragementStateConfig.name = name;
+        botEnragementStateConfig.botItems = botItems.stream().map(botItemConfig -> botItemConfig.cloneWithAbsolutePosition(absoluteCenter)).collect(Collectors.toList());
+        botEnragementStateConfig.enrageUpKills = enrageUpKills;
+        return botEnragementStateConfig;
     }
 }

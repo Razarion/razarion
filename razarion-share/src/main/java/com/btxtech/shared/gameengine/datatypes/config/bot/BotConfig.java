@@ -1,11 +1,13 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -155,6 +157,24 @@ public class BotConfig implements ObjectNameIdProvider {
         return botEnragementStateConfigs;
     }
 
+    public BotConfig cloneWithAbsolutePosition(DecimalPosition absoluteCenter) {
+        BotConfig botConfig = new BotConfig();
+        botConfig.id = id;
+        botConfig.internalName = internalName;
+        botConfig.auxiliaryId = auxiliaryId;
+        botConfig.npc = npc;
+        botConfig.actionDelay = actionDelay;
+        botConfig.realm = PlaceConfig.cloneWithAbsolutePosition(realm, absoluteCenter);
+        botConfig.name = name;
+        botConfig.autoAttack = autoAttack;
+        botConfig.minInactiveMs = minInactiveMs;
+        botConfig.maxInactiveMs = maxInactiveMs;
+        botConfig.minActiveMs = minActiveMs;
+        botConfig.maxActiveMs = maxActiveMs;
+        botConfig.botEnragementStateConfigs = botEnragementStateConfigs.stream().map(botEnragementStateConfig -> botEnragementStateConfig.cloneWithAbsolutePosition(absoluteCenter)).collect(Collectors.toList());
+        return botConfig;
+    }
+
     @Override
     public ObjectNameId createObjectNameId() {
         return new ObjectNameId(id, internalName);
@@ -177,6 +197,6 @@ public class BotConfig implements ObjectNameIdProvider {
 
     @Override
     public String toString() {
-        return "BotConfig: " + name + " realm: " + realm;
+        return "BotConfig" + name + "(" + id + "): realm: " + realm;
     }
 }

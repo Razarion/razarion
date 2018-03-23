@@ -175,7 +175,7 @@ public class Scenario {
         this.botService = botService;
         Collection<BotConfig> botConfigs = new ArrayList<>();
         setupBots(botConfigs);
-        botService.startBots(botConfigs);
+        botService.startBots(botConfigs, null);
     }
 
     protected Collection<SyncBaseItem> getBotItem(int botId) {

@@ -10,6 +10,7 @@ public enum PerfmonEnum {
     GAME_ENGINE(true),
     CLIENT_GAME_ENGINE_UPDATE(true),
     BOT_TICKER(true),
+    BOT_SCENE_TICKER(true),
     BOT_TIMER(true),
     DETAILED_TRACKING(true),
     COVER_FADE(true),
