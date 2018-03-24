@@ -47,6 +47,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -119,11 +120,23 @@ public class BotItemContainer {
         throw new IllegalStateException("internalKillAllItems has been called for more than " + KILL_ITERATION_MAXIMUM + " times.");
     }
 
-    Collection<BotSyncBaseItem> getAllIdleAttackers() {
-        Collection<BotSyncBaseItem> idleAttackers = new ArrayList<>();
+    Collection<BotSyncBaseItem> getAllIdleItems() {
+        Collection<BotSyncBaseItem> idleItems = new ArrayList<>();
         synchronized (botItems) {
             for (BotSyncBaseItem botSyncBaseItem : botItems.values()) {
                 if (botSyncBaseItem.isIdle() && botSyncBaseItem.isAlive()) {
+                    idleItems.add(botSyncBaseItem);
+                }
+            }
+        }
+        return idleItems;
+    }
+
+    Collection<BotSyncBaseItem> getAllIdleItems(SyncBaseItem target, BiPredicate<BotSyncBaseItem, SyncBaseItem> filter) {
+        Collection<BotSyncBaseItem> idleAttackers = new ArrayList<>();
+        synchronized (botItems) {
+            for (BotSyncBaseItem botSyncBaseItem : botItems.values()) {
+                if (botSyncBaseItem.isIdle() && filter.test(botSyncBaseItem, target) && botSyncBaseItem.isAlive()) {
                     idleAttackers.add(botSyncBaseItem);
                 }
             }

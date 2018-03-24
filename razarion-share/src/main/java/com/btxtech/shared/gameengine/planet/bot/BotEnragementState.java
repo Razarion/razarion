@@ -60,8 +60,8 @@ public class BotEnragementState {
         botItemContainer.killAllItems(base);
     }
 
-    public Collection<BotSyncBaseItem> getAllIdleAttackers() {
-        return botItemContainer.getAllIdleAttackers();
+    public Collection<BotSyncBaseItem> getAllIdleItems() {
+        return botItemContainer.getAllIdleItems();
     }
 
     public void onSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
@@ -125,7 +125,7 @@ public class BotEnragementState {
     }
 
     public void attack(SyncBaseItem target) {
-        Collection<BotSyncBaseItem> idleAttacker = botItemContainer.getAllIdleAttackers();
+        Collection<BotSyncBaseItem> idleAttacker = botItemContainer.getAllIdleItems(target, BotSyncBaseItem::isAbleToAttack);
         idleAttacker.forEach(attacker -> attacker.attack(target));
     }
 }
