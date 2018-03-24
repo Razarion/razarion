@@ -35,7 +35,7 @@ public class BotSceneConflictConfigEntity {
 
 
     public BotSceneConflictConfig toBotSceneConflictConfig() {
-        BotSceneConflictConfig botSceneConflictConfig = new BotSceneConflictConfig().setId(id).setMinDistance(minDistance).setMaxDistance(maxDistance);
+        BotSceneConflictConfig botSceneConflictConfig = new BotSceneConflictConfig().setMinDistance(minDistance).setMaxDistance(maxDistance);
         if (targetBaseItemType != null) {
             botSceneConflictConfig.setTargetBaseItemTypeId(targetBaseItemType.getId());
         }

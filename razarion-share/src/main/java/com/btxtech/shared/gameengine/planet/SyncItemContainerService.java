@@ -366,18 +366,29 @@ public class SyncItemContainerService {
     }
 
     public DecimalPosition getFreeRandomPosition(TerrainType terrainType, double radius, boolean excludeBotRealm, PlaceConfig placeConfig) {
-        Polygon2D polygon = placeConfig.getPolygon2D();
-        if (polygon == null) {
-            throw new IllegalArgumentException("To find a random place, a polygon must be set");
-        }
-
-        return GeometricUtil.findFreeRandomPosition(polygon, decimalPosition -> {
-            if (excludeBotRealm) {
-                return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+        if (placeConfig.getPolygon2D() != null) {
+            return GeometricUtil.findFreeRandomPosition(placeConfig.getPolygon2D(), decimalPosition -> {
+                if (excludeBotRealm) {
+                    return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+                } else {
+                    return isFree(terrainType, decimalPosition, radius);
+                }
+            });
+        } else if(placeConfig.getPosition() != null) {
+            if(placeConfig.getRadius() != null) {
+                return GeometricUtil.findFreeRandomPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition -> {
+                    if (excludeBotRealm) {
+                        return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
+                    } else {
+                        return isFree(terrainType, decimalPosition, radius);
+                    }
+                });
             } else {
-                return isFree(terrainType, decimalPosition, radius);
+                return placeConfig.getPosition();
             }
-        });
+        } else {
+            throw new IllegalArgumentException("To find a random place, a polygon or a position must be set");
+        }
     }
 
     private boolean isFree(TerrainType terrainType, DecimalPosition position, double radius) {

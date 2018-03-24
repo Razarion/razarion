@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -156,6 +157,31 @@ public interface ServerGameEngineEditorProvider {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readBotConfig/{id}")
     BotConfig readBotConfig(@PathParam("id") int id);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readBotSceneConfigObjectNameIds")
+    List<ObjectNameId> readBotSceneConfigObjectNameIds();
+
+    @POST
+    @Path("createBotSceneConfig")
+    @Produces(MediaType.APPLICATION_JSON)
+    BotSceneConfig createBotSceneConfig();
+
+    @DELETE
+    @Path("deleteBotSceneConfigConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void deleteBotSceneConfigConfig(int id);
+
+    @PUT
+    @Path("updateBotSceneConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    void updateBotSceneConfig(BotSceneConfig botSceneConfig);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("readBotSceneConfig/{id}")
+    BotSceneConfig readBotSceneConfig(@PathParam("id") int id);
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)

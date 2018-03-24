@@ -1,14 +1,17 @@
 package com.btxtech.shared.gameengine.datatypes.config.bot;
 
+import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
+
 import java.util.List;
 
 /**
  * Created by Beat
  * on 19.03.2018.
  */
-public class BotSceneConfig {
+public class BotSceneConfig implements ObjectNameIdProvider {
     private int id;
-    private String name;
+    private String internalName;
     private int scheduleTimeMillis;
     private int killThreshold;
     private List<Integer> botIdsToWatch;
@@ -23,12 +26,12 @@ public class BotSceneConfig {
         return this;
     }
 
-    public String getName() {
-        return name;
+    public String getInternalName() {
+        return internalName;
     }
 
-    public BotSceneConfig setName(String name) {
-        this.name = name;
+    public BotSceneConfig setInternalName(String internalName) {
+        this.internalName = internalName;
         return this;
     }
 
@@ -69,8 +72,13 @@ public class BotSceneConfig {
     }
 
     @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
+    }
+
+    @Override
     public String toString() {
-        return "BotConfig" + name + "(" + id + ")";
+        return "BotConfig" + internalName + "(" + id + ")";
     }
 
 }

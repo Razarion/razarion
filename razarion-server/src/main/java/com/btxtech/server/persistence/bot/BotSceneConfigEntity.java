@@ -50,7 +50,7 @@ public class BotSceneConfigEntity implements ObjectNameIdProvider {
     }
 
     public BotSceneConfig toBotSceneConfig() {
-        BotSceneConfig botSceneConfig = new BotSceneConfig().setId(id).setName(internalName).setKillThreshold(killThreshold).setScheduleTimeMillis(3000);
+        BotSceneConfig botSceneConfig = new BotSceneConfig().setId(id).setInternalName(internalName).setKillThreshold(killThreshold).setScheduleTimeMillis(3000);
         if (botsToWatch != null) {
             botSceneConfig.setBotIdsToWatch(botsToWatch.stream().map(BotConfigEntity::getId).collect(Collectors.toList()));
         }
@@ -61,7 +61,7 @@ public class BotSceneConfigEntity implements ObjectNameIdProvider {
     }
 
     public void fromBotConfig(ItemTypePersistence itemTypePersistence, EntityManager entityManager, BotSceneConfig botSceneConfig) {
-        internalName = botSceneConfig.getName();
+        internalName = botSceneConfig.getInternalName();
         killThreshold = botSceneConfig.getKillThreshold();
         botsToWatch.clear();
         if (botSceneConfig.getBotIdsToWatch() != null) {

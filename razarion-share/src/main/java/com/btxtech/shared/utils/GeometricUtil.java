@@ -263,6 +263,26 @@ public class GeometricUtil {
         throw new PositionCanNotBeFoundException();
     }
 
+    public static DecimalPosition findFreeRandomPosition(DecimalPosition position, double radius, Function<DecimalPosition, Boolean> freeCallback) {
+        Rectangle2D aabb = Rectangle2D.generateRectangleFromMiddlePoint(position, radius * 2.0, radius * 2.0);
+        Random random = new Random();
+        for (int i = 0; i < MAX_TRIES; i++) {
+            double width = random.nextDouble() * aabb.width();
+            double height = random.nextDouble() * aabb.height();
+            DecimalPosition possiblePosition = aabb.getStart().add(width, height);
+
+            if (position.getDistance(possiblePosition) > radius) {
+                continue;
+            }
+
+            if (freeCallback != null && !freeCallback.apply(possiblePosition)) {
+                continue;
+            }
+            return possiblePosition;
+        }
+        throw new PositionCanNotBeFoundException();
+    }
+
     public static List<Vertex> generatePlane(Vertex bl, Vertex br, Vertex tr, Vertex tl) {
         List<Vertex> plane = new ArrayList<>();
         plane.add(bl);

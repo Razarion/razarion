@@ -8,6 +8,7 @@ import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 import com.btxtech.shared.rest.ServerGameEngineEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -280,6 +281,56 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     public BotConfig readBotConfig(int id) {
         try {
             return serverGameEnginePersistence.getBotConfigCrud().read(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public List<ObjectNameId> readBotSceneConfigObjectNameIds() {
+        try {
+            return serverGameEnginePersistence.getBotSceneConfigCrud().readObjectNameIds();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public BotSceneConfig createBotSceneConfig() {
+        try {
+            return serverGameEnginePersistence.getBotSceneConfigCrud().create();
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void deleteBotSceneConfigConfig(int id) {
+        try {
+            serverGameEnginePersistence.getBotSceneConfigCrud().delete(id);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateBotSceneConfig(BotSceneConfig botSceneConfig) {
+        try {
+            serverGameEnginePersistence.getBotSceneConfigCrud().update(botSceneConfig);
+        } catch (Throwable e) {
+            exceptionHandler.handleException(e);
+            throw e;
+        }
+    }
+
+    @Override
+    public BotSceneConfig readBotSceneConfig(int id) {
+        try {
+            return serverGameEnginePersistence.getBotSceneConfigCrud().read(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

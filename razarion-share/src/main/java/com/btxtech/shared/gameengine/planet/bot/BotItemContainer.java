@@ -173,7 +173,7 @@ public class BotItemContainer {
                 try {
                     createItem(entry.getKey(), playerBase);
                 } catch (PositionCanNotBeFoundException t) {
-                    logger.warning("Can not find free place for BaseItemTypeId: " +entry.getKey().getBaseItemTypeId() + ". Bot: " +  botName + ". Exception: " + t);
+                    logger.warning("Can not find free place for BaseItemTypeId: " + entry.getKey().getBaseItemTypeId() + ". Bot: " + botName + ". Exception: " + t);
                 } catch (Exception e) {
                     logger.log(Level.SEVERE, botName, e);
                 }
@@ -211,12 +211,8 @@ public class BotItemContainer {
     private DecimalPosition getPosition(PlaceConfig placeConfig, BaseItemType toBeBuilt) {
         if (placeConfig == null) {
             return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, realm);
-        } else if (placeConfig.getPolygon2D() != null) {
-            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig);
-        } else if (placeConfig.getPosition() != null) {
-            return placeConfig.getPosition();
         } else {
-            throw new IllegalArgumentException();
+            return syncItemContainerService.getFreeRandomPosition(toBeBuilt.getPhysicalAreaConfig().getTerrainType(), toBeBuilt.getPhysicalAreaConfig().getRadius(), false, placeConfig);
         }
     }
 
