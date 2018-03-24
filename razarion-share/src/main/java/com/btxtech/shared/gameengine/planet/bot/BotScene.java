@@ -60,6 +60,7 @@ public class BotScene {
         moods.values().forEach(mood -> {
             try {
                 if (mood.checkThreshold(botSceneConfig)) {
+                    mood.setConflict();
                     BotSceneConflict botSceneConflict = conflictInstance.get();
                     botSceneConflict.init(mood, botSceneConfig.getBotSceneConflictConfigs().get(0));
                     botSceneConflict.start();

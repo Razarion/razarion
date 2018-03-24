@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 public class Mood {
     private int kills;
     private HumanPlayerId humanPlayerId;
+    private boolean conflict;
 
     public Mood(HumanPlayerId humanPlayerId) {
         this.humanPlayerId = humanPlayerId;
@@ -28,6 +29,10 @@ public class Mood {
     }
 
     public boolean checkThreshold(BotSceneConfig botSceneConfig) {
-        return kills >= botSceneConfig.getKillThreshold();
+        return !conflict && kills >= botSceneConfig.getKillThreshold();
+    }
+
+    public void setConflict() {
+        conflict = true;
     }
 }
