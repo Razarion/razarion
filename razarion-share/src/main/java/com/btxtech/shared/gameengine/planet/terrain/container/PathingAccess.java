@@ -92,8 +92,8 @@ public class PathingAccess {
             return true;
         }
         double angel = start.getAngle(target);
-        double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
-        double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
+        // double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
+        // double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
 
         Line line = new Line(start, target);
         // Line line1 = new Line(start.getPointWithDistance(angel1, radius), target.getPointWithDistance(angel1, radius));
