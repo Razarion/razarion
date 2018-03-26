@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -50,6 +51,10 @@ public class Path {
     }
 
     public void setupCurrentWayPoint(SyncPhysicalArea syncPhysicalArea) {
+        if (currentWayPointIndex + 1 < wayPositions.size() && MathHelper.compareWithPrecision(syncPhysicalArea.getPosition2d().getDistance(getCurrentWayPoint()), 0.0)) {
+            currentWayPointIndex++;
+            return;
+        }
         if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius(), wayPositions.get(currentWayPointIndex))) {
             aheadTrack(syncPhysicalArea);
         } else {

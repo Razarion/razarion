@@ -231,9 +231,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public boolean checkDestinationReached() {
         // 1) Position reached directly
-        double distance = getPosition2d().getDistance(path.getCurrentWayPoint());
-        if (distance < 2.0 * PathingService.STOP_DETECTION_DISTANCE) {
-            return true;
+        if (path.isLastWayPoint()) {
+            double distance = getPosition2d().getDistance(path.getCurrentWayPoint());
+            if (distance < 2.0 * PathingService.STOP_DETECTION_DISTANCE) {
+                return true;
+            }
         }
         double jammingFactor = calculateJammedFactor();
         jammingCounts.add(jammingFactor);

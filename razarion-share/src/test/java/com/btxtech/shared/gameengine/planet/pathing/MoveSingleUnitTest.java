@@ -35,4 +35,26 @@ public class MoveSingleUnitTest extends AStarBaseTest {
         TestHelper.assertDecimalPosition("Unexpected slave position", new DecimalPosition(200, 160), slaveBuilder.getSyncPhysicalMovable().getPosition2d(), 0.2);
     }
 
+    @Test
+    public void moveAroundDriveway() {
+        UserContext userContext = createLevel1UserContext();
+        PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(79, 48), userContext);
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+
+        WeldSlaveEmulator slave = new WeldSlaveEmulator();
+        slave.connectToMater(userContext, this);
+        slave.tickPlanetServiceBaseServiceActive();
+        SyncBaseItem slaveBuilder = slave.findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+
+        getCommandService().move(builder, new DecimalPosition(128, 48));
+
+        slave.tickPlanetServiceBaseServiceActive();
+        tickPlanetServiceBaseServiceActive();
+        // showDisplay();
+
+        TestHelper.assertDecimalPosition("Unexpected master position", new DecimalPosition(128, 48), builder.getSyncPhysicalMovable().getPosition2d(), 1.5);
+        TestHelper.assertDecimalPosition("Unexpected slave position", new DecimalPosition(128, 48), slaveBuilder.getSyncPhysicalMovable().getPosition2d(), 1.5);
+    }
+
 }
