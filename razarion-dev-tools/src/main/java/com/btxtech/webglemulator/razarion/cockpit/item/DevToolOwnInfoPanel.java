@@ -11,7 +11,7 @@ import javafx.scene.layout.VBox;
  */
 public class DevToolOwnInfoPanel extends VBox implements OwnInfoPanel {
     @Override
-    public void init(BaseItemType baseItemType, int count) {
+    public void init(BaseItemType baseItemType, int count, Integer syncItemId) {
         getChildren().add(new Label("OwnInfoPanel"));
         getChildren().add(new Label("Type: " + baseItemType.getInternalName()));
         getChildren().add(new Label("Description: " + baseItemType.getI18nDescription()));

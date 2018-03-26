@@ -7,5 +7,5 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
  * 29.09.2016.
  */
 public interface OwnInfoPanel {
-    void init(BaseItemType baseItemType, int count);
+    void init(BaseItemType baseItemType, int count, Integer syncItemId);
 }

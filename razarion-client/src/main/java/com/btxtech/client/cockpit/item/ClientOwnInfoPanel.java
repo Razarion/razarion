@@ -6,6 +6,7 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.uiservice.cockpit.item.OwnInfoPanel;
+import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
@@ -30,6 +31,8 @@ public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
+    private UserUiService userUiService;
+    @Inject
     @DataField
     private Image image;
     @Inject
@@ -46,10 +49,14 @@ public class ClientOwnInfoPanel extends Composite implements OwnInfoPanel {
     private Button sellButton;
 
     @Override
-    public void init(BaseItemType baseItemType, int count) {
+    public void init(BaseItemType baseItemType, int count, Integer syncItemId) {
         image.setUrl(CommonUrl.getImageServiceUrlSafe(baseItemType.getThumbnail()));
         itemTypeName.setText(I18nHelper.getLocalizedString(baseItemType.getI18nName()));
-        itemTypeDescr.setHTML(I18nHelper.getLocalizedString(baseItemType.getI18nDescription()));
+        if(userUiService.isAdmin() && syncItemId != null) {
+            itemTypeDescr.setHTML(I18nHelper.getLocalizedString(baseItemType.getI18nDescription()) + " (Id: " + syncItemId + ")");
+        } else {
+            itemTypeDescr.setHTML(I18nHelper.getLocalizedString(baseItemType.getI18nDescription()));
+        }
         if (count > 1) {
             countLabel.setText(Integer.toString(count));
         } else {

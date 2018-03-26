@@ -79,7 +79,7 @@ public class ItemCockpitService {
     private void activeOwnSingle(SyncBaseItemSimpleDto syncBaseItem) {
         OwnInfoPanel ownInfoPanel = instance.select(OwnInfoPanel.class).get();
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItem.getItemTypeId());
-        ownInfoPanel.init(baseItemType, 1);
+        ownInfoPanel.init(baseItemType, 1, syncBaseItem.getId());
         itemCockpitPanel.setInfoPanel(ownInfoPanel);
         setupBuildupPanel(syncBaseItem, baseItemType);
         setupItemContainerPanel(syncBaseItem, baseItemType);
@@ -109,7 +109,7 @@ public class ItemCockpitService {
 
     private void activeOwnMultiSameType(BaseItemType baseItemType, Group group) {
         OwnInfoPanel ownInfoPanel = instance.select(OwnInfoPanel.class).get();
-        ownInfoPanel.init(baseItemType, group.getCount());
+        ownInfoPanel.init(baseItemType, group.getCount(), null);
         itemCockpitPanel.setInfoPanel(ownInfoPanel);
         if (baseItemType.getFactoryType() != null || baseItemType.getBuilderType() != null) {
             buildupItemPanel = instance.select(BuildupItemPanel.class).get();
