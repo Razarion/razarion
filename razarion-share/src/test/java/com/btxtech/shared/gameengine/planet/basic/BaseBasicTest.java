@@ -113,8 +113,26 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         humanBaseContext.setFactory(factory);
         getCommandService().fabricate(factory, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem attacker = findSyncBaseItem(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID);
-        humanBaseContext.setAttacker(attacker);
+        SyncBaseItem attacker1 = findSyncBaseItem(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID);
+        humanBaseContext.setAttacker1(attacker1);
+
+        return humanBaseContext;
+    }
+
+    protected HumanBaseContext createHumanBaseBFA4(DecimalPosition builderPosition, DecimalPosition factoryPosition) {
+        HumanBaseContext humanBaseContext = createHumanBaseBFA(builderPosition, factoryPosition);
+        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem attacker2 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1());
+        humanBaseContext.setAttacker2(attacker2);
+        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem attacker3 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1(), attacker2);
+        humanBaseContext.setAttacker3(attacker3);
+        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        tickPlanetServiceBaseServiceActive();
+        SyncBaseItem attacker4 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1(), attacker2, attacker3);
+        humanBaseContext.setAttacker4(attacker4);
 
         return humanBaseContext;
     }

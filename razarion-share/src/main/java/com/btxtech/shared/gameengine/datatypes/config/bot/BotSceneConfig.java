@@ -13,7 +13,6 @@ public class BotSceneConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
     private int scheduleTimeMillis;
-    private int killThreshold;
     private List<Integer> botIdsToWatch;
     private List<BotSceneConflictConfig> botSceneConflictConfigs;
 
@@ -41,15 +40,6 @@ public class BotSceneConfig implements ObjectNameIdProvider {
 
     public BotSceneConfig setScheduleTimeMillis(int scheduleTimeMillis) {
         this.scheduleTimeMillis = scheduleTimeMillis;
-        return this;
-    }
-
-    public int getKillThreshold() {
-        return killThreshold;
-    }
-
-    public BotSceneConfig setKillThreshold(int killThreshold) {
-        this.killThreshold = killThreshold;
         return this;
     }
 

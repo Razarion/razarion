@@ -42,10 +42,10 @@ public class BotEnragementStateConfig {
         return enrageUpKills;
     }
 
-    public BotEnragementStateConfig cloneWithAbsolutePosition(DecimalPosition absoluteCenter) {
+    public BotEnragementStateConfig clone4BotScene(DecimalPosition absoluteCenter) {
         BotEnragementStateConfig botEnragementStateConfig = new BotEnragementStateConfig();
         botEnragementStateConfig.name = name;
-        botEnragementStateConfig.botItems = botItems.stream().map(botItemConfig -> botItemConfig.cloneWithAbsolutePosition(absoluteCenter)).collect(Collectors.toList());
+        botEnragementStateConfig.botItems = botItems.stream().map(botItemConfig -> botItemConfig.clone4BotScene(absoluteCenter)).collect(Collectors.toList());
         botEnragementStateConfig.enrageUpKills = enrageUpKills;
         return botEnragementStateConfig;
     }

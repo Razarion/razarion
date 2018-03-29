@@ -50,29 +50,31 @@ public class BotSceneConfigEntity implements ObjectNameIdProvider {
     }
 
     public BotSceneConfig toBotSceneConfig() {
-        BotSceneConfig botSceneConfig = new BotSceneConfig().setId(id).setInternalName(internalName).setKillThreshold(killThreshold).setScheduleTimeMillis(3000);
-        if (botsToWatch != null) {
-            botSceneConfig.setBotIdsToWatch(botsToWatch.stream().map(BotConfigEntity::getId).collect(Collectors.toList()));
-        }
-        if (botSceneConflictConfigs != null) {
-            botSceneConfig.setBotSceneConflictConfigs(botSceneConflictConfigs.stream().map(BotSceneConflictConfigEntity::toBotSceneConflictConfig).collect(Collectors.toList()));
-        }
-        return botSceneConfig;
+        return null; // TODO
+//        BotSceneConfig botSceneConfig = new BotSceneConfig().setId(id).setInternalName(internalName).setKillThreshold(killThreshold).setScheduleTimeMillis(3000);
+//        if (botsToWatch != null) {
+//            botSceneConfig.setBotIdsToWatch(botsToWatch.stream().map(BotConfigEntity::getId).collect(Collectors.toList()));
+//        }
+//        if (botSceneConflictConfigs != null) {
+//            botSceneConfig.setBotSceneConflictConfigs(botSceneConflictConfigs.stream().map(BotSceneConflictConfigEntity::toBotSceneConflictConfig).collect(Collectors.toList()));
+//        }
+//        return botSceneConfig;
     }
 
     public void fromBotConfig(ItemTypePersistence itemTypePersistence, EntityManager entityManager, BotSceneConfig botSceneConfig) {
-        internalName = botSceneConfig.getInternalName();
-        killThreshold = botSceneConfig.getKillThreshold();
-        botsToWatch.clear();
-        if (botSceneConfig.getBotIdsToWatch() != null) {
-            botSceneConfig.getBotIdsToWatch().forEach(botId -> botsToWatch.add(entityManager.find(BotConfigEntity.class, botId)));
-        }
-        botSceneConflictConfigs.clear();
-        if (botSceneConfig.getBotSceneConflictConfigs() != null) {
-            botSceneConfig.getBotSceneConflictConfigs().forEach(botSceneConflictConfig -> {
-                botSceneConflictConfigs.add(new BotSceneConflictConfigEntity().fromBotSceneConflictConfig(itemTypePersistence, botSceneConflictConfig));
-            });
-        }
+        // TODO
+//        internalName = botSceneConfig.getInternalName();
+//        killThreshold = botSceneConfig.getKillThreshold();
+//        botsToWatch.clear();
+//        if (botSceneConfig.getBotIdsToWatch() != null) {
+//            botSceneConfig.getBotIdsToWatch().forEach(botId -> botsToWatch.add(entityManager.find(BotConfigEntity.class, botId)));
+//        }
+//        botSceneConflictConfigs.clear();
+//        if (botSceneConfig.getBotSceneConflictConfigs() != null) {
+//            botSceneConfig.getBotSceneConflictConfigs().forEach(botSceneConflictConfig -> {
+//                botSceneConflictConfigs.add(new BotSceneConflictConfigEntity().fromBotSceneConflictConfig(itemTypePersistence, botSceneConflictConfig));
+//            });
+//        }
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.btxtech.shared.gameengine.planet.bot;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.KillBotCommandConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -15,8 +17,10 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * User: beat
@@ -94,11 +98,26 @@ public class BotService {
         }
     }
 
-    public void enrageOnKill(SyncBaseItem target, PlayerBase actor) {
+    public void onKill(SyncBaseItem target, PlayerBase actor) {
         try {
-            BotRunner botRunner = getBotRunner(target.getBase());
-            botRunner.enrageOnKill(target, actor);
-            handleKillInBotScene(botRunner.getBotConfig().getId(), target, actor);
+            if (target.getBase().getCharacter().isBot()) {
+                BotRunner botRunner = getBotRunner(target.getBase());
+                if (botRunner != null) {
+                    botRunner.enrageOnKill(target, actor);
+                    handleKillInBotScene(botRunner.getBotConfig().getId(), actor);
+                }
+            } else if (actor.getCharacter().isHuman() && actor.getCharacter().isBot()) {
+                BotRunner botRunner = getBotRunner(actor);
+                if (botRunner != null) {
+                    synchronized (botScenes) {
+                        for (BotScene botScene : botScenes) {
+                            if (botScene.onHumanKill(target.getBase().getHumanPlayerId(), botRunner)) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -163,7 +182,7 @@ public class BotService {
                 }
             }
         }
-        throw new IllegalArgumentException("No bot runner for playerBase: " + playerBase);
+        return null;
     }
 
     public void onBotSyncBaseItemCreated(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
@@ -176,15 +195,21 @@ public class BotService {
         }
     }
 
-    private void handleKillInBotScene(int botId, SyncBaseItem target, PlayerBase actor) {
+    private void handleKillInBotScene(int botId, PlayerBase actor) {
         synchronized (botScenes) {
             botScenes.forEach(botScene -> {
                 try {
-                    botScene.onKillBotItem(botId, target, actor);
+                    botScene.onKillBotItem(botId, actor);
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);
                 }
             });
+        }
+    }
+
+    public List<BotSceneIndicationInfo> getBotSceneIndicationInfos(HumanPlayerId humanPlayerId) {
+        synchronized (botScenes) {
+            return botScenes.stream().map(botScene -> botScene.getBotSceneIndicationInfo(humanPlayerId)).filter(Objects::nonNull).collect(Collectors.toList());
         }
     }
 }

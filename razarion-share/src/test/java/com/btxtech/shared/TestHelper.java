@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Triangle;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.VertexList;
-import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import org.junit.Assert;
 
 import java.io.BufferedReader;
@@ -271,5 +270,13 @@ public class TestHelper {
             }
         }
         return builder.toString();
+    }
+
+    public static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

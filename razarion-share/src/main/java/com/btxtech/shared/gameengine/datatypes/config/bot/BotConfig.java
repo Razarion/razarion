@@ -157,7 +157,7 @@ public class BotConfig implements ObjectNameIdProvider {
         return botEnragementStateConfigs;
     }
 
-    public BotConfig cloneWithAbsolutePosition(DecimalPosition absoluteCenter) {
+    public BotConfig clone4BotScene(DecimalPosition absoluteCenter) {
         BotConfig botConfig = new BotConfig();
         botConfig.id = id;
         botConfig.internalName = internalName;
@@ -167,11 +167,7 @@ public class BotConfig implements ObjectNameIdProvider {
         botConfig.realm = PlaceConfig.cloneWithAbsolutePosition(realm, absoluteCenter);
         botConfig.name = name;
         botConfig.autoAttack = autoAttack;
-        botConfig.minInactiveMs = minInactiveMs;
-        botConfig.maxInactiveMs = maxInactiveMs;
-        botConfig.minActiveMs = minActiveMs;
-        botConfig.maxActiveMs = maxActiveMs;
-        botConfig.botEnragementStateConfigs = botEnragementStateConfigs.stream().map(botEnragementStateConfig -> botEnragementStateConfig.cloneWithAbsolutePosition(absoluteCenter)).collect(Collectors.toList());
+        botConfig.botEnragementStateConfigs = botEnragementStateConfigs.stream().map(botEnragementStateConfig -> botEnragementStateConfig.clone4BotScene(absoluteCenter)).collect(Collectors.toList());
         return botConfig;
     }
 

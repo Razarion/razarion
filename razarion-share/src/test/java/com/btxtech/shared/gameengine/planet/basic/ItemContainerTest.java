@@ -39,7 +39,7 @@ public class ItemContainerTest extends BaseBasicTest {
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
-        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
@@ -50,21 +50,21 @@ public class ItemContainerTest extends BaseBasicTest {
         Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         assertNoCommand4Contained(humanBaseContext);
-        assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(3, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 2.
-        getCommandService().loadContainer(humanBaseContext.getAttacker(), transporter);
+        getCommandService().loadContainer(humanBaseContext.getAttacker1(), transporter);
         tickPlanetServiceBaseServiceActive();
         // Verify loaded
-        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
         Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
         assertNoCommand4Contained(humanBaseContext);
-        Assert.assertEquals(transporter, humanBaseContext.getAttacker().getContainedIn());
-        Assert.assertNull(humanBaseContext.getAttacker().getSyncPhysicalArea().getPosition2d());
-        Assert.assertFalse(humanBaseContext.getAttacker().getSyncPhysicalArea().hasPosition());
-        assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertEquals(transporter, humanBaseContext.getAttacker1().getContainedIn());
+        Assert.assertNull(humanBaseContext.getAttacker1().getSyncPhysicalArea().getPosition2d());
+        Assert.assertFalse(humanBaseContext.getAttacker1().getSyncPhysicalArea().hasPosition());
+        assertAllSlaves(permSlave, transporter, 3, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(3, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Move to unload position
         getCommandService().move(transporter, new DecimalPosition(63, 222));
@@ -77,10 +77,10 @@ public class ItemContainerTest extends BaseBasicTest {
         Assert.assertNull(humanBaseContext.getBuilder().getContainedIn());
         Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertTrue(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
-        Assert.assertNull(humanBaseContext.getAttacker().getContainedIn());
-        Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getAttacker().getSyncPhysicalArea().getPosition2d());
-        Assert.assertTrue(humanBaseContext.getAttacker().getSyncPhysicalArea().hasPosition());
-        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        Assert.assertNull(humanBaseContext.getAttacker1().getContainedIn());
+        Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getAttacker1().getSyncPhysicalArea().getPosition2d());
+        Assert.assertTrue(humanBaseContext.getAttacker1().getSyncPhysicalArea().hasPosition());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
 
         // showDisplay();
@@ -101,7 +101,7 @@ public class ItemContainerTest extends BaseBasicTest {
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
-        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
@@ -132,10 +132,10 @@ public class ItemContainerTest extends BaseBasicTest {
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
-        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Sell others
-        getBaseItemService().sellItems(Arrays.asList(humanBaseContext.getAttacker().getId(), humanBaseContext.getFactory().getId(), harbour.getId()), humanBaseContext.getPlayerBaseFull());
+        getBaseItemService().sellItems(Arrays.asList(humanBaseContext.getAttacker1().getId(), humanBaseContext.getFactory().getId(), harbour.getId()), humanBaseContext.getPlayerBaseFull());
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
         tickPlanetServiceBaseServiceActive();
@@ -172,10 +172,10 @@ public class ItemContainerTest extends BaseBasicTest {
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
-        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Sell others
-        getBaseItemService().sellItems(Arrays.asList(humanBaseContext.getAttacker().getId(), humanBaseContext.getFactory().getId(), harbour.getId()), humanBaseContext.getPlayerBaseFull());
+        getBaseItemService().sellItems(Arrays.asList(humanBaseContext.getAttacker1().getId(), humanBaseContext.getFactory().getId(), harbour.getId()), humanBaseContext.getPlayerBaseFull());
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
         tickPlanetServiceBaseServiceActive();
@@ -214,7 +214,7 @@ public class ItemContainerTest extends BaseBasicTest {
         SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
-        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker());
+        assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(0, transporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
         // Load 1.
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);

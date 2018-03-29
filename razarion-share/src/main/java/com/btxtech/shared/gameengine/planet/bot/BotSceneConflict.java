@@ -31,27 +31,16 @@ public class BotSceneConflict {
     private HumanPlayerId humanPlayerId;
     private BotSceneConflictConfig botSceneConflictConfig;
     private BotRunner botRunner;
-    private boolean over;
+    private Long reRopTime;
+    private long botStartTimeStamp;
+    private int kills;
 
-
-    public void init(Mood mood, BotSceneConflictConfig botSceneConflictConfig) {
-        humanPlayerId = mood.getHumanPlayerId();
-        this.botSceneConflictConfig = botSceneConflictConfig;
-    }
-
-    public void start() {
+    public void start(BotSceneConflictConfig botSceneConflictConfig) {
         try {
-            SyncBaseItem target = getTarget();
-            if (target == null) {
-                over = true;
-                return;
-            }
-            SyncPhysicalArea targetSyncPhysicalArea = target.getSyncPhysicalArea();
-
-            TerrainAreaFinder terrainAreaFinder = terrainAreaFinderInstance.get();
-            terrainAreaFinder.start(targetSyncPhysicalArea.getPosition2d(), targetSyncPhysicalArea.getTerrainType(), botSceneConflictConfig.getMinDistance(), botSceneConflictConfig.getMaxDistance());
-            BotConfig botConfig = botSceneConflictConfig.getBotConfig().cloneWithAbsolutePosition(terrainAreaFinder.getRandomPosition());
-            botRunner = botService.startBot(botConfig);
+            stop();
+            this.botSceneConflictConfig = botSceneConflictConfig;
+            setupRePop();
+            startBot();
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -59,26 +48,63 @@ public class BotSceneConflict {
 
     public void tick() {
         try {
-            if(over) {
+            if (botRunner.isBaseAlive()) {
+                if (botSceneConflictConfig.getStopMillis() != null) {
+                    if (botStartTimeStamp + botSceneConflictConfig.getStopMillis() > System.currentTimeMillis()) {
+                        setupRePop();
+                        stop();
+                        return;
+                    }
+                }
+                if (botSceneConflictConfig.getStopKills() != null && kills >= botSceneConflictConfig.getStopKills()) {
+                    setupRePop();
+                    stop();
+                    return;
+                }
+
+                SyncBaseItem target = getTarget();
+                if (target == null) {
+                    return;
+                }
+                botRunner.attack(target);
                 return;
             }
-            if (!botRunner.isBaseAlive()) {
-                over = true;
+            stop();
+            if (reRopTime == null && botSceneConflictConfig.getRePopMillis() != null) {
+                reRopTime = System.currentTimeMillis() + (long) botSceneConflictConfig.getRePopMillis();
                 return;
             }
-            SyncBaseItem target = getTarget();
-            if (target == null) {
-                over = true;
+
+            if (reRopTime != null && reRopTime < System.currentTimeMillis()) {
                 return;
             }
-            botRunner.attack(target);
+            startBot();
+            reRopTime = null;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
     }
 
-    public boolean isOver() {
-        return over;
+    private void setupRePop() {
+        if (botSceneConflictConfig.getRePopMillis() != null) {
+            reRopTime = System.currentTimeMillis() + (long) botSceneConflictConfig.getRePopMillis();
+        } else {
+            reRopTime = null;
+        }
+    }
+
+    private void startBot() {
+        SyncBaseItem target = getTarget();
+        if (target == null) {
+            return;
+        }
+        SyncPhysicalArea targetSyncPhysicalArea = target.getSyncPhysicalArea();
+        TerrainAreaFinder terrainAreaFinder = terrainAreaFinderInstance.get();
+        terrainAreaFinder.start(targetSyncPhysicalArea.getPosition2d(), targetSyncPhysicalArea.getTerrainType(), botSceneConflictConfig.getMinDistance(), botSceneConflictConfig.getMaxDistance());
+        BotConfig botConfig = botSceneConflictConfig.getBotConfig().clone4BotScene(terrainAreaFinder.getRandomPosition());
+        botRunner = botService.startBot(botConfig);
+        botStartTimeStamp = System.currentTimeMillis();
+        kills = 0;
     }
 
     private SyncBaseItem getTarget() {
@@ -86,7 +112,7 @@ public class BotSceneConflict {
         return playerBaseFull.findItemsOfType(botSceneConflictConfig.getTargetBaseItemTypeId()).stream().findFirst().orElse(null);
     }
 
-    public void clean() {
+    public void stop() {
         if (botRunner != null) {
             botRunner.kill();
         }
@@ -94,5 +120,17 @@ public class BotSceneConflict {
 
     public HumanPlayerId getHumanPlayerId() {
         return humanPlayerId;
+    }
+
+    public void setHumanPlayerId(HumanPlayerId humanPlayerId) {
+        this.humanPlayerId = humanPlayerId;
+    }
+
+    public boolean onHumanKill(BotRunner botRunner) {
+        if (this.botRunner == botRunner) {
+            kills++;
+            return true;
+        }
+        return false;
     }
 }

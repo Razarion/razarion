@@ -18,8 +18,12 @@ public class BaseBotServiceTest extends BaseBasicTest {
     private TestSimpleScheduledFuture botScheduledFuture;
 
     protected void startBots(List<BotConfig> botConfigs, List<BotSceneConfig> botSceneConfigs) {
-        getWeldBean(BotService.class).startBots(botConfigs, botSceneConfigs);
+        getBotService().startBots(botConfigs, botSceneConfigs);
         botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
+    }
+
+    protected BotService getBotService() {
+        return getWeldBean(BotService.class);
     }
 
     protected void tickBotRunner() {
@@ -31,7 +35,7 @@ public class BaseBotServiceTest extends BaseBasicTest {
     }
 
     protected SyncBaseItem findFirstBotItemHighestId(int botId, int baseItemTypeId) {
-        PlayerBaseFull botBase = (PlayerBaseFull)getBotBase(botId);
+        PlayerBaseFull botBase = (PlayerBaseFull) getBotBase(botId);
         return findSyncBaseItemHighestId(botBase, baseItemTypeId);
     }
 }

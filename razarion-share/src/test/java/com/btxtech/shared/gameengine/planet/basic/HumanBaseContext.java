@@ -12,7 +12,10 @@ public class HumanBaseContext {
     private UserContext userContext;
     private SyncBaseItem builder;
     private SyncBaseItem factory;
-    private SyncBaseItem attacker;
+    private SyncBaseItem attacker1;
+    private SyncBaseItem attacker2;
+    private SyncBaseItem attacker3;
+    private SyncBaseItem attacker4;
     private PlayerBaseFull playerBaseFull;
 
     public void setUserContext(UserContext userContext) {
@@ -39,12 +42,36 @@ public class HumanBaseContext {
         return factory;
     }
 
-    public void setAttacker(SyncBaseItem attacker) {
-        this.attacker = attacker;
+    public void setAttacker1(SyncBaseItem attacker1) {
+        this.attacker1 = attacker1;
     }
 
-    public SyncBaseItem getAttacker() {
-        return attacker;
+    public SyncBaseItem getAttacker1() {
+        return attacker1;
+    }
+
+    public SyncBaseItem getAttacker2() {
+        return attacker2;
+    }
+
+    public void setAttacker2(SyncBaseItem attacker2) {
+        this.attacker2 = attacker2;
+    }
+
+    public SyncBaseItem getAttacker3() {
+        return attacker3;
+    }
+
+    public void setAttacker3(SyncBaseItem attacker3) {
+        this.attacker3 = attacker3;
+    }
+
+    public SyncBaseItem getAttacker4() {
+        return attacker4;
+    }
+
+    public void setAttacker4(SyncBaseItem attacker4) {
+        this.attacker4 = attacker4;
     }
 
     public void setPlayerBaseFull(PlayerBaseFull playerBaseFull) {

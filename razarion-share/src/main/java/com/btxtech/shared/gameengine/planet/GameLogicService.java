@@ -131,9 +131,7 @@ public class GameLogicService {
     public void onSyncBaseItemKilledMaster(SyncBaseItem target, SyncBaseItem actor) {
         questServiceInstance.get().onSyncItemKilled(target, actor);
         gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemKilledMaster(target, actor));
-        if (target.getBase().getCharacter().isBot()) {
-            botServiceInstance.get().enrageOnKill(target, actor.getBase());
-        }
+        botServiceInstance.get().onKill(target, actor.getBase());
     }
 
     public void onSyncBaseItemKilledSlave(SyncBaseItem target) {
