@@ -1,10 +1,11 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.DoubleHolder;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
+import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
@@ -374,8 +375,8 @@ public class SyncItemContainerService {
                     return isFree(terrainType, decimalPosition, radius);
                 }
             });
-        } else if(placeConfig.getPosition() != null) {
-            if(placeConfig.getRadius() != null) {
+        } else if (placeConfig.getPosition() != null) {
+            if (placeConfig.getRadius() != null) {
                 return GeometricUtil.findFreeRandomPosition(placeConfig.getPosition(), placeConfig.getRadius(), decimalPosition -> {
                     if (excludeBotRealm) {
                         return isFree(terrainType, decimalPosition, radius) && !botServices.get().isInRealm(decimalPosition);
@@ -525,6 +526,7 @@ public class SyncItemContainerService {
             }
         });
     }
+
     public void iterateCellQuadBaseItem(DecimalPosition center, double width, Consumer<SyncBaseItem> callback) {
         List<Index> cellIndexes = GeometricUtil.rasterizeRectangleInclusive(Rectangle2D.generateRectangleFromMiddlePoint(center, width, width), CELL_LENGTH);
         cellIndexes.forEach(cellIndex -> {
@@ -534,4 +536,30 @@ public class SyncItemContainerService {
             }
         });
     }
+
+    public SyncBaseItem findNearestHumanBaseItemOnPathCell(SimplePath simplePath, double width) {
+        for (DecimalPosition wayPosition : simplePath.getWayPositions()) {
+            DoubleHolder<SyncBaseItem, Double> best = new DoubleHolder<>();
+            iterateCellQuadBaseItem(wayPosition, width, syncBaseItem -> {
+                if (syncBaseItem.getBase().getCharacter().isHuman()) {
+                    double distance = syncBaseItem.getSyncPhysicalArea().getPosition2d().getDistance(wayPosition);
+                    if (best.getO1() != null) {
+                        if (best.getO2() > distance) {
+                            best.setO1(syncBaseItem);
+                            best.setO2(distance);
+                        }
+                    } else {
+                        best.setO1(syncBaseItem);
+                        best.setO2(distance);
+                    }
+                }
+            });
+            if (best.getO1() != null) {
+                return best.getO1();
+            }
+        }
+        return null;
+    }
+
+
 }

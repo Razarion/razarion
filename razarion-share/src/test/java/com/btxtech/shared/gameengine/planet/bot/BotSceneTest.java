@@ -38,7 +38,7 @@ public class BotSceneTest extends BaseBotServiceTest {
         // Bot scene
         List<BotSceneConfig> botSceneConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> sceneBotEnragementStateConfigs = new ArrayList<>();
-        BotSceneConflictConfig botSceneConflictConfig = new BotSceneConflictConfig().setId(1).setEnterKills(2).setEnterDuration(100).setLeaveNoKillDuration(100).setMinDistance(100).setMaxDistance(200).setTargetBaseItemTypeId(GameTestContent.FACTORY_ITEM_TYPE_ID);
+        BotSceneConflictConfig botSceneConflictConfig = new BotSceneConflictConfig().setId(1).setEnterKills(2).setEnterDuration(100).setLeaveNoKillDuration(100).setMinDistance(100).setMaxDistance(200).setTargetBaseItemTypeId(GameTestContent.FACTORY_ITEM_TYPE_ID).setStopKills(2);
         List<BotItemConfig> sceneBotItems = new ArrayList<>();
         sceneBotItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.ATTACKER_ITEM_TYPE_ID).setCount(2).setCreateDirectly(true));
         sceneBotEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(sceneBotItems));
@@ -85,9 +85,11 @@ public class BotSceneTest extends BaseBotServiceTest {
         Assert.assertEquals(1, getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()).size());
         tickAll();
         TestHelper.sleep(100);
+        tickAllOnce();
 
-        showDisplay();
+        // showDisplay();
         Assert.assertTrue(getBotService().getBotSceneIndicationInfos(humanBaseContext.getPlayerBaseFull().getHumanPlayerId()).isEmpty());
+        Assert.fail("... BETTER ASSERT ...");
 
     }
 
