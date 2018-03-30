@@ -36,10 +36,6 @@ public class BotScenePropertyPanel extends AbstractPropertyPanel<BotSceneConfig>
     @DataField
     private HTMLInputElement internalName;
     @Inject
-    @Bound
-    @DataField
-    private HTMLInputElement killThreshold;
-    @Inject
     @DataField
     private BotListWidget botIdsToWatch;
     @Inject

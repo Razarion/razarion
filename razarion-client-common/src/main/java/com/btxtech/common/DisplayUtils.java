@@ -11,6 +11,8 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.client.ui.UIObject;
 
 import java.util.Date;
+import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -25,6 +27,7 @@ public class DisplayUtils {
     public static final DateTimeFormat DATE_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy");
     public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
     public static final DateTimeFormat DATE_TIME_FORMATTER_MILLIS = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss.SSS");
+    public static final DateTimeFormat M_S_MILIIS_TIME_FORMATTER = DateTimeFormat.getFormat("mm:ss.SSS");
     public static final DateTimeFormat MINUTE_TIME_FORMATTER = DateTimeFormat.getFormat("mm:ss");
     public static final DateTimeFormat SECOND_TIME_FORMATTER = DateTimeFormat.getFormat("ss");
 
@@ -46,6 +49,46 @@ public class DisplayUtils {
 
     public static String formatDateMillis(Date date) {
         return DATE_TIME_FORMATTER_MILLIS.format(date);
+    }
+
+    public static String formatDateMillis(int time) {
+        int hours = (int) (time / MILLISECONDS_IN_HOUR);
+        String hoursString;
+        if (hours > 10) {
+            hoursString = Integer.toString(hours);
+        } else {
+            hoursString = "0" + hours;
+        }
+        return hoursString + ":" + M_S_MILIIS_TIME_FORMATTER.format(new Date(time));
+    }
+
+    public static int parsDateMillis(String time) {
+        if (!time.contains(":") && !time.contains(".")) {
+            // Seconds
+            return Integer.parseInt(time) * 1000;
+        }
+        int intTime = 0;
+        String hmsTime = time;
+        if (time.contains(".")) {
+            intTime += Integer.parseInt(time.substring(time.indexOf(".") + 1));
+            hmsTime = time.substring(0, time.indexOf("."));
+        }
+        if (!time.contains(":")) {
+            if (hmsTime.trim().isEmpty()) {
+                return intTime;
+            } else {
+                return Integer.parseInt(hmsTime) * 1000 + intTime;
+            }
+        }
+
+        String[] array = hmsTime.split(":");
+        if (array.length == 2) {
+            return Integer.parseInt(array[0]) * 60 * 1000 + Integer.parseInt(array[1]) * 1000 + intTime;
+        } else if (array.length == 3) {
+            return Integer.parseInt(array[0]) * 60 * 60 * 1000 + Integer.parseInt(array[1]) * 60 * 1000 + Integer.parseInt(array[2]) * 1000 + intTime;
+        } else {
+            throw new IllegalArgumentException("Can not parse: " + time);
+        }
     }
 
     public static String formatHourTimeStamp(long timeStamp) {

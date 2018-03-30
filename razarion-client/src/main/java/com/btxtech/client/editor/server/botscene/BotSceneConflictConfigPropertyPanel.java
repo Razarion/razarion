@@ -6,6 +6,8 @@ import com.btxtech.client.editor.widgets.bot.BotEnragementStateConfigPropertyPan
 import com.btxtech.client.editor.widgets.childtable.ChildTable;
 import com.btxtech.client.editor.widgets.itemtype.base.BaseItemTypeWidget;
 import com.btxtech.client.editor.widgets.placeconfig.PlaceConfigWidget;
+import com.btxtech.client.utils.HumanReadableIntegerSizeConverter;
+import com.btxtech.client.utils.StringToIntTime;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
@@ -36,6 +38,22 @@ public class BotSceneConflictConfigPropertyPanel extends Composite implements Ta
     @Inject
     @Bound
     @DataField
+    private HTMLInputElement enterKills;
+    @Inject
+    @Bound(converter = StringToIntTime.class)
+    @DataField
+    private HTMLInputElement enterDuration;
+    @Inject
+    @Bound(converter = StringToIntTime.class)
+    @DataField
+    private HTMLInputElement leaveNoKillDuration;
+    @Inject
+    @Bound(converter = StringToIntTime.class)
+    @DataField
+    private HTMLInputElement rePopMillis;
+    @Inject
+    @Bound
+    @DataField
     private HTMLInputElement minDistance;
     @Inject
     @Bound
@@ -44,6 +62,14 @@ public class BotSceneConflictConfigPropertyPanel extends Composite implements Ta
     @Inject
     @DataField
     private BaseItemTypeWidget targetBaseItemTypeId;
+    @Inject
+    @Bound
+    @DataField
+    private HTMLInputElement stopKills;
+    @Inject
+    @Bound(converter = StringToIntTime.class)
+    @DataField
+    private HTMLInputElement stopMillis;
     @Inject
     @DataField
     private BotConfigPropertyPanel botConfigPropertyPanel;

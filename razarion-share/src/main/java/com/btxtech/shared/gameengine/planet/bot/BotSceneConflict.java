@@ -60,7 +60,7 @@ public class BotSceneConflict {
         try {
             if (botRunner.isBaseAlive()) {
                 if (botSceneConflictConfig.getStopMillis() != null) {
-                    if (botStartTimeStamp + botSceneConflictConfig.getStopMillis() > System.currentTimeMillis()) {
+                    if (botStartTimeStamp + botSceneConflictConfig.getStopMillis() < System.currentTimeMillis()) {
                         setupRePop();
                         stop();
                         return;

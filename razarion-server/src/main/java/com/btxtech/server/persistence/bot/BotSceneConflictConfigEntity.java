@@ -25,6 +25,10 @@ public class BotSceneConflictConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private int enterKills; // ms
+    private int enterDuration;
+    private int leaveNoKillDuration; // ms
+    private Integer rePopMillis;
     private double minDistance;
     private double maxDistance;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,22 +36,28 @@ public class BotSceneConflictConfigEntity {
     private BaseItemTypeEntity targetBaseItemType;
     @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private BotConfigEntity botConfig;
+    private Integer stopKills;
+    private Integer stopMillis;
 
 
     public BotSceneConflictConfig toBotSceneConflictConfig() {
-        BotSceneConflictConfig botSceneConflictConfig = new BotSceneConflictConfig().setId(id).setMinDistance(minDistance).setMaxDistance(maxDistance);
+        BotSceneConflictConfig botSceneConflictConfig = new BotSceneConflictConfig().setId(id).setEnterKills(enterKills).setEnterDuration(enterDuration).setLeaveNoKillDuration(leaveNoKillDuration).setRePopMillis(rePopMillis).setMinDistance(minDistance).setMaxDistance(maxDistance);
         if (targetBaseItemType != null) {
             botSceneConflictConfig.setTargetBaseItemTypeId(targetBaseItemType.getId());
         }
         if (botConfig != null) {
             botSceneConflictConfig.setBotConfig(botConfig.toBotConfig());
         }
-        return botSceneConflictConfig;
+        return botSceneConflictConfig.setStopKills(stopKills).setStopMillis(stopMillis);
     }
 
     public BotSceneConflictConfigEntity fromBotSceneConflictConfig(ItemTypePersistence itemTypePersistence, BotSceneConflictConfig botSceneConflictConfig) {
         minDistance = botSceneConflictConfig.getMinDistance();
         maxDistance = botSceneConflictConfig.getMaxDistance();
+        enterKills = botSceneConflictConfig.getEnterKills();
+        enterDuration = botSceneConflictConfig.getEnterDuration();
+        leaveNoKillDuration = botSceneConflictConfig.getLeaveNoKillDuration();
+        rePopMillis = botSceneConflictConfig.getRePopMillis();
         targetBaseItemType = itemTypePersistence.readBaseItemTypeEntity(botSceneConflictConfig.getTargetBaseItemTypeId());
         if (botSceneConflictConfig.getBotConfig() != null) {
             botConfig = new BotConfigEntity();
@@ -55,6 +65,8 @@ public class BotSceneConflictConfigEntity {
         } else {
             botConfig = null;
         }
+        stopKills = botSceneConflictConfig.getStopKills();
+        stopMillis = botSceneConflictConfig.getStopMillis();
         return this;
     }
 
