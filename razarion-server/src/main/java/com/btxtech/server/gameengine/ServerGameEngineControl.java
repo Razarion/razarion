@@ -348,6 +348,16 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
+    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId) {
+        systemConnectionService.onBotSceneConflictChanged(humanPlayerId, botService.getBotSceneIndicationInfos(humanPlayerId));
+    }
+
+    @Override
+    public void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds) {
+        activeHumanPlayerIds.forEach(this::onBotSceneConflictChanged);
+    }
+
+    @Override
     public void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         clientGameConnectionService.sendResourcesBalanceChanged(playerBase, resources);
     }

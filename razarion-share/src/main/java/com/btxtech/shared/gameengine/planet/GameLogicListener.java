@@ -11,6 +11,8 @@ import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 
+import java.util.Collection;
+
 /**
  * Created by Beat
  * 08.01.2017.
@@ -101,6 +103,11 @@ public interface GameLogicListener {
     }
 
     default void onWeaponNewPath(SyncBaseItem syncBaseItem) {
+    }
 
+    default void onBotSceneConflictChanged(HumanPlayerId humanPlayerId) {
+    }
+
+    default void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds) {
     }
 }

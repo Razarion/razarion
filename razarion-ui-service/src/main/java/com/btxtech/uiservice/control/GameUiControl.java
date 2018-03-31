@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -419,6 +420,10 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         if (currentScene != null) {
             currentScene.onQuestPassedServer(quest);
         }
+    }
+
+    public void onServerBotSceneIndicationChange(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
+        topRightCockpit.setBotSceneIndicationInfos(botSceneIndicationInfos);
     }
 
     public boolean hasActiveServerQuest() {

@@ -18,6 +18,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -223,5 +224,13 @@ public class GameLogicService {
 
     public void onWeaponNewPath(SyncBaseItem syncBaseItem) {
         gameLogicListener.ifPresent(listener -> listener.onWeaponNewPath(syncBaseItem));
+    }
+
+    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId) {
+        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictChanged(humanPlayerId));
+    }
+
+    public void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds) {
+        gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictsChanged(activeHumanPlayerIds));
     }
 }

@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -36,6 +37,8 @@ public class BotService {
     private Instance<BotScene> defenceAreaInstance;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private GameLogicService gameLogicService;
     private final Collection<BotRunner> botRunners = new ArrayList<>();
     private final Collection<BotScene> botScenes = new ArrayList<>();
 
@@ -79,8 +82,12 @@ public class BotService {
 
 
     public void killAllBots() {
+        Collection<HumanPlayerId> activeHumanPlayerIds = new ArrayList<>();
         synchronized (botScenes) {
-            botScenes.forEach(BotScene::stop);
+            botScenes.forEach(botScene -> {
+                activeHumanPlayerIds.addAll(botScene.allActiveConflicts());
+                botScene.stop();
+            });
             botScenes.clear();
         }
 
@@ -88,6 +95,8 @@ public class BotService {
             botRunners.forEach(BotRunner::kill);
             botRunners.clear();
         }
+
+        gameLogicService.onBotSceneConflictsChanged(activeHumanPlayerIds);
     }
 
     private void killBot(int botId) {
