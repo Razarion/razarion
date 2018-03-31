@@ -50,7 +50,9 @@ public class BotSceneConflict {
             stop();
             this.botSceneConflictConfig = botSceneConflictConfig;
             setupRePop();
-            startBot();
+            if (reRopTime == null || reRopTime <= System.currentTimeMillis()) {
+                startBot();
+            }
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -58,7 +60,7 @@ public class BotSceneConflict {
 
     public void tick() {
         try {
-            if (botRunner.isBaseAlive()) {
+            if (botRunner != null && botRunner.isBaseAlive()) {
                 if (botSceneConflictConfig.getStopMillis() != null) {
                     if (botStartTimeStamp + botSceneConflictConfig.getStopMillis() < System.currentTimeMillis()) {
                         setupRePop();
@@ -86,11 +88,10 @@ public class BotSceneConflict {
                 return;
             }
 
-            if (reRopTime != null && reRopTime < System.currentTimeMillis()) {
+            if (reRopTime != null && reRopTime > System.currentTimeMillis()) {
                 return;
             }
             startBot();
-            reRopTime = null;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -117,6 +118,7 @@ public class BotSceneConflict {
         botRunner = botService.startBot(botConfig);
         botStartTimeStamp = System.currentTimeMillis();
         kills = 0;
+        reRopTime = null;
     }
 
     private SyncBaseItem getTarget() {
