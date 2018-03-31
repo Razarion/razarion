@@ -16,6 +16,7 @@ import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.InGameQuestVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
+import com.btxtech.shared.gameengine.planet.bot.BotService;
 import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
@@ -56,6 +57,8 @@ public class GameUiControlConfigPersistence {
     private ServerLevelQuestService serverLevelQuestService;
     @Inject
     private ServerUnlockService serverUnlockService;
+    @Inject
+    private BotService botService;
 
     @Transactional
     public ColdGameUiControlConfig load(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
@@ -82,6 +85,7 @@ public class GameUiControlConfigPersistence {
             warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiControlConfig.setSlaveSyncItemInfo(gameEngineService.generateSlaveSyncItemInfo(userContext));
             warmGameUiControlConfig.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
+            warmGameUiControlConfig.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getHumanPlayerId()));
         }
         return warmGameUiControlConfig;
     }

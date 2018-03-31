@@ -9,7 +9,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.audio.AudioService;
-import com.btxtech.uiservice.cockpit.QuestVisualizer;
+import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.cockpit.ScreenCover;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
@@ -43,7 +43,7 @@ public class Scene implements ViewService.ViewFieldListener {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private QuestVisualizer questVisualizer;
+    private TopRightCockpit topRightCockpit;
     @Inject
     private BaseItemPlacerService baseItemPlacerService;
     @Inject
@@ -124,7 +124,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.getQuestConfig() != null) {
             gameEngineControl.activateQuest(sceneConfig.getQuestConfig());
             audioService.onQuestActivated();
-            questVisualizer.showSideBar(sceneConfig.getQuestConfig(), null, false);
+            topRightCockpit.showQuestSideBar(sceneConfig.getQuestConfig(), null, false);
             inGameQuestVisualizationService.onQuestActivated(sceneConfig.getQuestConfig());
         }
         if (sceneConfig.isWait4LevelUpDialog() != null && sceneConfig.isWait4LevelUpDialog()) {
@@ -149,7 +149,7 @@ public class Scene implements ViewService.ViewFieldListener {
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
             hasCompletionCallback = true;
             completionCallbackCount++;
-            questVisualizer.showSideBar(new QuestDescriptionConfig().setTitle(I18nHelper.getConstants().placeStartItemTitle()).setDescription(I18nHelper.getConstants().placeStartItemDescription()).setHidePassedDialog(true), null, false);
+            topRightCockpit.showQuestSideBar(new QuestDescriptionConfig().setTitle(I18nHelper.getConstants().placeStartItemTitle()).setDescription(I18nHelper.getConstants().placeStartItemDescription()).setHidePassedDialog(true), null, false);
         }
         if (sceneConfig.getDuration() != null) {
             hasCompletionCallback = true;
@@ -158,7 +158,7 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             scrollBouncePrevention = false;
-            questVisualizer.showSideBar(sceneConfig.getScrollUiQuest(), null, false);
+            topRightCockpit.showQuestSideBar(sceneConfig.getScrollUiQuest(), null, false);
             audioService.onQuestActivated();
             viewService.addViewFieldListeners(this);
         }
@@ -223,10 +223,10 @@ public class Scene implements ViewService.ViewFieldListener {
             baseItemPlacerService.deactivate();
         }
         if (sceneConfig.getQuestConfig() != null) {
-            questVisualizer.showSideBar(null, null, false);
+            topRightCockpit.showQuestSideBar(null, null, false);
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questVisualizer.showSideBar(null, null, false);
+            topRightCockpit.showQuestSideBar(null, null, false);
         }
         if (sceneConfig.getGameTipConfig() != null) {
             inGameQuestVisualizationService.setSuppressed(false);
@@ -234,20 +234,20 @@ public class Scene implements ViewService.ViewFieldListener {
         }
         if (sceneConfig.getScrollUiQuest() != null) {
             viewService.removeViewFieldListeners(this);
-            questVisualizer.showSideBar(null, null, false);
+            topRightCockpit.showQuestSideBar(null, null, false);
         }
         if (sceneConfig.isWaitForBaseCreated() != null && sceneConfig.isWaitForBaseCreated()) {
-            questVisualizer.showSideBar(null, null, false);
+            topRightCockpit.showQuestSideBar(null, null, false);
         }
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questVisualizer.showSideBar(null, null, false);
+            topRightCockpit.showQuestSideBar(null, null, false);
         }
         inGameQuestVisualizationService.stop();
     }
 
     void onQuestPassed() {
         if (sceneConfig.getQuestConfig() != null) {
-            questVisualizer.showSideBar(null, null, false);
+            topRightCockpit.showQuestSideBar(null, null, false);
             if (sceneConfig.getQuestConfig().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -260,7 +260,7 @@ public class Scene implements ViewService.ViewFieldListener {
             userUiService.increaseXp(sceneConfig.getQuestConfig().getXp());
         }
         if (sceneConfig.getScrollUiQuest() != null) {
-            questVisualizer.showSideBar(null, null, false);
+            topRightCockpit.showQuestSideBar(null, null, false);
             if (sceneConfig.getScrollUiQuest().isHidePassedDialog()) {
                 onComplete();
             } else {
@@ -280,19 +280,19 @@ public class Scene implements ViewService.ViewFieldListener {
     }
 
     private void setupQuestVisualizer4Server() {
-        questVisualizer.showSideBar(gameUiControl.getServerQuest(), gameUiControl.getServerQuestProgress(), true);
+        topRightCockpit.showQuestSideBar(gameUiControl.getServerQuest(), gameUiControl.getServerQuestProgress(), true);
         inGameQuestVisualizationService.onQuestActivated(gameUiControl.getServerQuest());
         inGameQuestVisualizationService.onQuestProgress(gameUiControl.getServerQuestProgress());
     }
 
     public void onQuestProgress(QuestProgressInfo questProgressInfo) {
-        questVisualizer.onQuestProgress(questProgressInfo);
+        topRightCockpit.onQuestProgress(questProgressInfo);
         inGameQuestVisualizationService.onQuestProgress(questProgressInfo);
     }
 
     public void onQuestActivatedServer(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questVisualizer.showSideBar(quest, null, true);
+            topRightCockpit.showQuestSideBar(quest, null, true);
             if (quest != null) {
                 inGameQuestVisualizationService.onQuestActivated(quest);
             } else {
@@ -303,7 +303,7 @@ public class Scene implements ViewService.ViewFieldListener {
 
     public void onQuestPassedServer(QuestConfig quest) {
         if (sceneConfig.isProcessServerQuests() != null && sceneConfig.isProcessServerQuests()) {
-            questVisualizer.showSideBar(null, null, true);
+            topRightCockpit.showQuestSideBar(null, null, true);
             modalDialogManager.showQuestPassed(quest);
             inGameQuestVisualizationService.stop();
         } else {

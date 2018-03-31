@@ -10,7 +10,7 @@ public class ZIndexConstants {
     public static final int MAIN_COCKPIT = counter++;
     public static final int CHAT_COCKPIT = counter++;
     public static final int EDITOR_SIDE_BAR = counter++;
-    public static final int QUEST_SIDE_BAR = counter++;
+    public static final int TOP_RIGHT_BAR = counter++;
     public static final int ITEM_COCKPIT = counter++;
     public static final int STORY_COVER = counter++;
     public static final int DIALOG = counter++;

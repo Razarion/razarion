@@ -11,7 +11,7 @@ import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.Group;
 import com.btxtech.uiservice.SelectionEvent;
 import com.btxtech.uiservice.SelectionHandler;
-import com.btxtech.uiservice.cockpit.QuestVisualizer;
+import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
@@ -33,7 +33,7 @@ public abstract class AbstractTipTask {
     @Inject
     private SelectionHandler selectionHandler;
     @Inject
-    private QuestVisualizer questVisualizer;
+    private TopRightCockpit topRightCockpit;
     @Inject
     private GameUiControl gameUiControl;
     @Inject
@@ -172,7 +172,7 @@ public abstract class AbstractTipTask {
     }
 
     void setShowInGameQuestVisualisation(boolean show) {
-        questVisualizer.setShowInGameVisualisation(show);
+        topRightCockpit.setShowQuestInGameVisualisation(show);
     }
 
     GameTipVisualConfig getGameTipVisualConfig() {

@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 11.07.2016.
  */
-@Templated("QuestSidebar.html#questSidebar")
+@Templated("TopRightCockpitWidget.html#questSidebar")
 public class QuestSidebar extends Composite {
     private static final int TIME_TEXT_REFRESHER_DELAY = 1000;
     private Logger logger = Logger.getLogger(QuestSidebar.class.getName());
@@ -87,10 +87,9 @@ public class QuestSidebar extends Composite {
         inGameQuestVisualizationService.setVisibleCallback(questVisualizationCheckbox::setChecked);
         inGameQuestVisualizationService.setSuppressCallback(suppressed -> questVisualizationDiv.getStyle().setProperty("display", suppressed ? "none" : "block"));
         questVisualizationCheckbox.setChecked(inGameQuestVisualizationService.isVisible());
-        getElement().getStyle().setZIndex(ZIndexConstants.QUEST_SIDE_BAR);
         GwtUtils.preventContextMenu(this);
         //noinspection GWTStyleCheck
-        setStyleName("quest-sidebar");
+        setStyleName("quest-cockpit");
         DOMUtil.removeAllElementChildren(progressTable.getElement()); // Remove placeholder table row from template.
     }
 
@@ -257,5 +256,13 @@ public class QuestSidebar extends Composite {
     @EventHandler("questVisualizationCheckbox")
     public void onQuestVisualizationCheckboxClicked(ChangeEvent event) {
         inGameQuestVisualizationService.setVisible(questVisualizationCheckbox.getChecked());
+    }
+
+    public void show(boolean show) {
+        if (show) {
+            getElement().getStyle().setDisplay(Style.Display.TABLE);
+        } else {
+            getElement().getStyle().setDisplay(Style.Display.NONE);
+        }
     }
 }

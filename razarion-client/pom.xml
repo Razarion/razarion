@@ -111,6 +111,12 @@
             <version>${gwt.elemental2.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.elemental2</groupId>
+            <artifactId>elemental2-svg</artifactId>
+            <version>${gwt.elemental2.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Errai -->
         <dependency>
             <groupId>org.jboss.errai</groupId>
@@ -187,7 +193,7 @@
                     <warSourceDirectory>${project.parent.basedir}${raz.web-dir}</warSourceDirectory>
                     <logLevel>WARN</logLevel>
                     <noServer>true</noServer>
-                    <extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M </extraJvmArgs>
+                    <extraJvmArgs>-Xmx4096m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M </extraJvmArgs>
                     <!--<extraJvmArgs>-Xmx2048m -XX:CompileThreshold=7000 -XX:MaxPermSize=512M -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000</extraJvmArgs>-->
                     <runTarget>webgl.html</runTarget>
                     <hostedWebapp>src/main/webapp</hostedWebapp>

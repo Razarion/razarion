@@ -291,26 +291,68 @@ a:active {
     vertical-align: middle;
 }
 
-/** ----- Quest ----- */
-@keyframes quest-sidebar-background-animation {
-    0% {
-        background-color: red;
-        background-image: none
-    }
-    100% {
-        background-color: transparent;
-        background-image: url('images/DialogBackground.png');
-    }
-}
-
-.quest-sidebar {
+/** ----- Top right cockpit ----- */
+.top-right-sidebar {
     position: absolute;
     top: 0;
     right: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/** ----- Bot-scene ----- */
+@keyframes bot-scene-sidebar-text-animation {
+    0% {
+        color: #3289bd;
+    }
+    100% {
+        color: #bd907e;
+    }
+}
+
+.bot-scene-container {
+    flex-direction: column;
+}
+
+.bot-scene-cockpit {
+    width: 300px;
+    background-image: url('images/DialogBackground.png');
+    border: 8px solid transparent;
+    border-image-source: url('images/Border.png');
+    border-image-slice: 8;
+    border-image-repeat: repeat;
+    box-shadow: 3px 3px 15px 1px #000;
+    box-sizing: border-box;
+    margin-bottom: 3px;
+}
+
+.bot-scene-sidebar-text {
+    animation: bot-scene-sidebar-text-animation 1s ease-in infinite alternate;
+    font-weight: bold;
+    font-size: 87%;
+    padding-bottom: 10px;
+}
+
+.bot-scene-sidebar-mood {
+    font-size: 80%;
+    color: #d8d0d0;
+}
+
+/** ----- Quest ----- */
+@keyframes quest-sidebar-background-animation {
+    0% {
+        background: red;
+    }
+    100% {
+        background: black;
+    }
+}
+
+.quest-cockpit {
     width: 300px;
     display: table;
-    animation: quest-sidebar-background-animation 4s ease-out 1;
-    background-image: url('images/DialogBackground.png');
+    animation: quest-sidebar-background-animation 2s ease-in 1;
+    background: url('images/DialogBackground.png');
     border: 8px solid transparent;
     border-image-source: url('images/Border.png');
     border-image-slice: 8;
@@ -1050,19 +1092,20 @@ table.inGameNormalTable {
     border-collapse: collapse;
 }
 
-table.inGameNormalTable>thead>tr>th {
+table.inGameNormalTable > thead > tr > th {
     text-align: left;
     background-color: #3289bd;
     color: black;
     font-weight: bold;
 }
 
-table.inGameNormalTable>thead>tr>th, table.inGameNormalTable>tbody>tr>td {
+table.inGameNormalTable > thead > tr > th, table.inGameNormalTable > tbody > tr > td {
     border: 1px solid #3289bd;
     padding: 3px;
 }
 
-table.inGameNormalTable>tbody>tr {
+table.inGameNormalTable > tbody > tr {
     background-color: #025cff2e
 }
+
 /** -------------------------- GENERIC TABLE -------------------------- */

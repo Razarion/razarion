@@ -29,6 +29,7 @@ import com.btxtech.uiservice.TrackerService;
 import com.btxtech.uiservice.cockpit.ChatUiService;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
+import com.btxtech.uiservice.cockpit.TopRightCockpit;
 import com.btxtech.uiservice.dialog.ModalDialogManager;
 import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.item.BaseItemUiService;
@@ -67,6 +68,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     private BaseItemUiService baseItemUiService;
     @Inject
     private CockpitService cockpitService;
+    @Inject
+    private TopRightCockpit topRightCockpit;
     @Inject
     private ChatUiService chatUiService;
     @Inject
@@ -170,11 +173,14 @@ public class GameUiControl { // Equivalent worker class is PlanetService
                 trackerService.startDetailedTracking(getPlanetConfig().getPlanetId());
             }
             scenes = coldGameUiControlConfig.getWarmGameUiControlConfig().getSceneConfigs();
+            topRightCockpit.setBotSceneIndicationInfos(null);
         } else if (gameEngineMode == GameEngineMode.SLAVE) {
             scenes = setupSlaveScenes();
+            topRightCockpit.setBotSceneIndicationInfos(coldGameUiControlConfig.getWarmGameUiControlConfig().getBotSceneIndicationInfos());
         } else if (gameEngineMode == GameEngineMode.PLAYBACK) {
             scenes = setupPlaybackScenes();
             playbackControl.start(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlaybackGameUiControlConfig());
+            topRightCockpit.setBotSceneIndicationInfos(null);
         } else {
             throw new IllegalArgumentException("Unknown GameEngineMode: " + coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode());
         }

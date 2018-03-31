@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class WarmGameUiControlConfig {
     private SlavePlanetConfig slavePlanetConfig;
     private SlaveQuestInfo slaveQuestInfo;
     private SlaveSyncItemInfo slaveSyncItemInfo;
+    private List<BotSceneIndicationInfo> botSceneIndicationInfos;
     private PlanetConfig planetConfig;
     private List<SceneConfig> sceneConfigs;
     private PlanetVisualConfig planetVisualConfig;
@@ -63,6 +65,15 @@ public class WarmGameUiControlConfig {
 
     public WarmGameUiControlConfig setSlaveSyncItemInfo(SlaveSyncItemInfo slaveSyncItemInfo) {
         this.slaveSyncItemInfo = slaveSyncItemInfo;
+        return this;
+    }
+
+    public List<BotSceneIndicationInfo> getBotSceneIndicationInfos() {
+        return botSceneIndicationInfos;
+    }
+
+    public WarmGameUiControlConfig setBotSceneIndicationInfos(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
+        this.botSceneIndicationInfos = botSceneIndicationInfos;
         return this;
     }
 

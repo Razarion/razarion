@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * Created by Beat
  * on 09.08.2017.
  */
-@Templated("QuestSidebar.html#progressTableRow")
+@Templated("TopRightCockpitWidget.html#progressTableRow")
 public class ProgressTableRowWidget extends Composite implements TakesValue<ProgressTableRowModel> {
     @Inject
     private SimpleExecutorService simpleExecutorService;
