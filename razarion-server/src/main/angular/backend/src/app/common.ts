@@ -22,6 +22,8 @@ export class SimpleUserBackend {
 export class QuestBackendInfo {
   id: number;
   internalName: string;
+  levelNumber: number;
+  levelId: number;
 }
 
 export class DecimalPosition {

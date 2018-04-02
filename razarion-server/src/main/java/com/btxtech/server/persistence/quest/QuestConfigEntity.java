@@ -1,19 +1,29 @@
 package com.btxtech.server.persistence.quest;
 
+import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
+import com.btxtech.server.persistence.level.LevelEntity;
+import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.tracker.I18nBundleEntity;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -39,6 +49,8 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
     private boolean hidePassedDialog;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private ConditionConfigEntity conditionConfigEntity;
+    @ManyToMany(mappedBy="questConfigs")
+    private List<ServerLevelQuestEntity> serverLevelQuestEntities;
 
     public Integer getId() {
         return id;
@@ -108,6 +120,18 @@ public class QuestConfigEntity implements ObjectNameIdProvider {
 
     public String getInternalName() {
         return internalName;
+    }
+
+    public QuestBackendInfo toQuestBackendInfo() {
+        LevelEntity levelEntity = null;
+        if (serverLevelQuestEntities != null && serverLevelQuestEntities.size() > 0) {
+            levelEntity = serverLevelQuestEntities.get(0).getMinimalLevel();
+        }
+        QuestBackendInfo questBackendInfo = new QuestBackendInfo().setId(id).setInternalName(internalName);
+        if (levelEntity != null) {
+            questBackendInfo.setLevelId(levelEntity.getId()).setLevelNumber(levelEntity.getNumber());
+        }
+        return questBackendInfo;
     }
 
     @Override

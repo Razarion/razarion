@@ -2,11 +2,9 @@ package com.btxtech.server.user;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.ServerUnlockService;
-import com.btxtech.server.mgmt.QuestBackendInfo;
 import com.btxtech.server.mgmt.UnlockedBackendInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.HistoryPersistence;
-import com.btxtech.server.persistence.history.UserHistoryEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.server.persistence.inventory.InventoryPersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
@@ -503,10 +501,10 @@ public class UserService {
         UserBackendInfo userBackendInfo = new UserBackendInfo().setName(userEntity.getName()).setRegisterDate(userEntity.getRegisterDate()).setFacebookId(userEntity.getFacebookUserId()).setEmail(userEntity.getEmail());
         userBackendInfo.setHumanPlayerId(userEntity.createHumanPlayerId()).setLevelNumber(userEntity.getLevel().getNumber()).setXp(userEntity.getXp()).setCrystals(userEntity.getCrystals());
         if (userEntity.getActiveQuest() != null) {
-            userBackendInfo.setActiveQuest(new QuestBackendInfo().setId(userEntity.getActiveQuest().getId()).setInternalName(userEntity.getActiveQuest().getInternalName()));
+            userBackendInfo.setActiveQuest(userEntity.getActiveQuest().toQuestBackendInfo());
         }
         if (userEntity.getCompletedQuestIds() != null && !userEntity.getCompletedQuestIds().isEmpty()) {
-            userBackendInfo.setCompletedQuests(userEntity.getCompletedQuest().stream().map(questConfigEntity -> new QuestBackendInfo().setId(questConfigEntity.getId()).setInternalName(questConfigEntity.getInternalName())).collect(Collectors.toList()));
+            userBackendInfo.setCompletedQuests(userEntity.getCompletedQuest().stream().map(QuestConfigEntity::toQuestBackendInfo).collect(Collectors.toList()));
         }
         if (userEntity.getLevelUnlockEntities() != null && !userEntity.getLevelUnlockEntities().isEmpty()) {
             userBackendInfo.setUnlockedBackendInfos(userEntity.getLevelUnlockEntities().stream().map(levelUnlockEntity -> new UnlockedBackendInfo().setId(levelUnlockEntity.getId()).setInternalName(levelUnlockEntity.getInternalName())).collect(Collectors.toList()));

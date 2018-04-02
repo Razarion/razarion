@@ -7,6 +7,8 @@ package com.btxtech.server.mgmt;
 public class QuestBackendInfo {
     private int id;
     private String internalName;
+    private Integer levelNumber;
+    private Integer levelId;
 
     public int getId() {
         return id;
@@ -23,6 +25,24 @@ public class QuestBackendInfo {
 
     public QuestBackendInfo setInternalName(String internalName) {
         this.internalName = internalName;
+        return this;
+    }
+
+    public Integer getLevelNumber() {
+        return levelNumber;
+    }
+
+    public QuestBackendInfo setLevelNumber(Integer levelNumber) {
+        this.levelNumber = levelNumber;
+        return this;
+    }
+
+    public Integer getLevelId() {
+        return levelId;
+    }
+
+    public QuestBackendInfo setLevelId(Integer levelId) {
+        this.levelId = levelId;
         return this;
     }
 }

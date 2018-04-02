@@ -141,7 +141,7 @@ public class ServerMgmt {
         if (playerSession.getUnregisteredUser() != null) {
             userBackendInfo.setCrystals(playerSession.getUnregisteredUser().getCrystals());
             if (playerSession.getUnregisteredUser().getActiveQuest() != null) {
-                userBackendInfo.setActiveQuest(new QuestBackendInfo().setId(playerSession.getUnregisteredUser().getActiveQuest().getId()).setInternalName(playerSession.getUnregisteredUser().getActiveQuest().getInternalName()));
+                userBackendInfo.setActiveQuest(questPersistence.findQuestBackendInfo(playerSession.getUnregisteredUser().getActiveQuest().getId()));
             }
             if (playerSession.getUnregisteredUser().getCompletedQuestIds() != null && !playerSession.getUnregisteredUser().getCompletedQuestIds().isEmpty()) {
                 userBackendInfo.setCompletedQuests(playerSession.getUnregisteredUser().getCompletedQuestIds().stream().map(questId -> questPersistence.findQuestBackendInfo(questId)).collect(Collectors.toList()));

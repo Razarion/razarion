@@ -48,7 +48,7 @@
     <td>Active quest</td>
     <td>
       <div *ngIf="userBackendInfo.activeQuest">{{userBackendInfo.activeQuest.internalName}}
-        ({{userBackendInfo.activeQuest.id}})
+        ({{userBackendInfo.activeQuest.id}}) (Level number: {{userBackendInfo.activeQuest.levelNumber}}({{userBackendInfo.activeQuest.levelId}}))
       </div>
     </td>
   </tr>
@@ -64,7 +64,7 @@
       <table class="normalTable">
         <tr *ngFor="let completedQuest of userBackendInfo.completedQuests">
           <td>
-            {{completedQuest.internalName}} ({{completedQuest.id}})
+            {{completedQuest.internalName}} ({{completedQuest.id}}) (Level number: {{completedQuest.levelNumber}} ({{completedQuest.levelId}}))
           </td>
           <td>
             <button (click)="onRemoveCompletedQuest(completedQuest)">Remove</button>
