@@ -45,6 +45,11 @@ public interface BackendProvider {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("addcompletedquest")
+    UserBackendInfo addCompletedQuest(@FormParam("playerId") int playerId, @FormParam("questId") int questId);
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("setlevelnumber")
     UserBackendInfo setLevelNumber(@FormParam("playerId") int playerId, @FormParam("levelNumber") int levelNumber);
 

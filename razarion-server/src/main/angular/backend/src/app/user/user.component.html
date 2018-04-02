@@ -53,6 +53,12 @@
     </td>
   </tr>
   <tr>
+    <td>Add completed quests</td>
+    <td><input type="number" #questBox step="1" style="width: 5em;">
+      <button (click)="onAddCompletedQuest(questBox.value)">Add</button>
+    </td>
+  </tr>
+  <tr>
     <td>Completed quests</td>
     <td>
       <table class="normalTable">

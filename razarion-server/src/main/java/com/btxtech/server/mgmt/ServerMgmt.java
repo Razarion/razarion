@@ -173,6 +173,25 @@ public class ServerMgmt {
     }
 
     @SecurityCheck
+    public UserBackendInfo addCompletedQuest(int playerId, int questId) {
+        UserBackendInfo userBackendInfo = userService.addCompletedQuest(playerId, questId);
+        if (userBackendInfo != null) {
+            return userBackendInfo;
+        }
+
+        HumanPlayerId humanPlayerId = new HumanPlayerId().setPlayerId(playerId);
+        PlayerSession playerSession = sessionService.findPlayerSession(humanPlayerId);
+        if (playerSession == null) {
+            throw new IllegalArgumentException("Can not find registered oder unregistered user for playerId: " + playerId);
+        }
+
+        if (playerSession.getUnregisteredUser() != null) {
+            playerSession.getUnregisteredUser().addCompletedQuestId(questId);
+        }
+        return setupUnregisteredUserBackendInfo(humanPlayerId, playerSession);
+    }
+
+    @SecurityCheck
     public UserBackendInfo removeUnlockedItem(int playerId, int unlockItemId) {
         HumanPlayerId humanPlayerId = sessionService.findPlayerSession(new HumanPlayerId().setPlayerId(playerId)).getUserContext().getHumanPlayerId();
         serverUnlockService.removeUnlocked(humanPlayerId, unlockItemId);

@@ -22,6 +22,10 @@ export class UserComponent implements OnInit {
     this.route.params.switchMap((params: Params) => this.userService.loadUserBackendInfo(params['id'])).subscribe(userBackendInfo => this.displayUser(userBackendInfo));
   }
 
+  onAddCompletedQuest(questId: number) {
+    this.userService.addCompletedQuest(this.userBackendInfo.humanPlayerId.playerId, questId).then(userBackendInfo => this.displayUser(userBackendInfo));
+  }
+
   onRemoveCompletedQuest(completedQuest: QuestBackendInfo) {
     this.userService.removeCompletedQuest(this.userBackendInfo.humanPlayerId.playerId, completedQuest.id).then(userBackendInfo => this.displayUser(userBackendInfo));
   }

@@ -525,6 +525,17 @@ public class UserService {
         return findUserBackendInfo(playerId);
     }
 
+    @Transactional
+    public UserBackendInfo addCompletedQuest(int playerId, int questId) {
+        UserEntity userEntity = getUserEntity4PlayerId(playerId);
+        if (userEntity == null) {
+            return null;
+        }
+        userEntity.addCompletedQuest(entityManager.find(QuestConfigEntity.class, questId));
+        entityManager.merge(userEntity);
+        return findUserBackendInfo(playerId);
+    }
+
     private UserEntity getUserEntity4PlayerId(int playerId) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<UserEntity> userQuery = criteriaBuilder.createQuery(UserEntity.class);

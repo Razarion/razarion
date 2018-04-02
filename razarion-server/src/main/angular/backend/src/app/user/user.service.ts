@@ -26,6 +26,18 @@ export class UserService {
       .catch(Common.handleError);
   }
 
+  addCompletedQuest(humanPlayerId: number, questId: number): Promise<UserBackendInfo> {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('playerId', humanPlayerId.toString());
+    urlSearchParams.append('questId', questId.toString());
+    return this.http.post(URL_BACKEND_PROVIDER + '/addcompletedquest', urlSearchParams.toString(), {headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'})})
+      .toPromise()
+      .then(response => {
+        return response.json();
+      })
+      .catch(Common.handleError);
+  }
+
   setLevelNumber(humanPlayerId: number, levelNumber: number): Promise<UserBackendInfo> {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('playerId', humanPlayerId.toString());
@@ -37,7 +49,6 @@ export class UserService {
       })
       .catch(Common.handleError);
   }
-
 
   setXp(humanPlayerId: number, xp: number) {
     let urlSearchParams = new URLSearchParams();

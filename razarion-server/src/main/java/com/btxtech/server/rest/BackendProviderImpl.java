@@ -73,6 +73,16 @@ public class BackendProviderImpl implements BackendProvider {
     }
 
     @Override
+    public UserBackendInfo addCompletedQuest(int playerId, int questId) {
+        try {
+            return serverMgmt.addCompletedQuest(playerId, questId);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
     public UserBackendInfo setLevelNumber(int playerId, int levelNumber) {
         try {
             return serverMgmt.setLevelNumber(playerId, levelNumber);
