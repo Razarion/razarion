@@ -662,8 +662,12 @@ public class BaseItemService {
             syncItemContainerService.clear();
             energyService.clean();
             backupPlanetInfo.getPlayerBaseInfos().forEach(playerBaseInfo -> {
-                lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
-                bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), baseRestoreProvider.getName(playerBaseInfo), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), baseRestoreProvider.getLevel(playerBaseInfo), baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo), playerBaseInfo.getHumanPlayerId(), null));
+                try {
+                    lastBaseItId = Math.max(playerBaseInfo.getBaseId(), lastBaseItId);
+                    bases.put(playerBaseInfo.getBaseId(), new PlayerBaseFull(playerBaseInfo.getBaseId(), baseRestoreProvider.getName(playerBaseInfo), playerBaseInfo.getCharacter(), playerBaseInfo.getResources(), baseRestoreProvider.getLevel(playerBaseInfo), baseRestoreProvider.getUnlockedItemLimit(playerBaseInfo), playerBaseInfo.getHumanPlayerId(), null));
+                } catch (Exception e) {
+                    exceptionHandler.handleException("BaseItemService.restore()", e);
+                }
             });
             Collection<SyncBaseItemInfo> syncBaseItemInfos = backupPlanetInfo.getSyncBaseItemInfos().stream().filter(syncBaseItemInfo -> !failedItems.contains(syncBaseItemInfo.getId())).collect(Collectors.toList());
             Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
