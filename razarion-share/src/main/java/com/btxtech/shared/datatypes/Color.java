@@ -1,5 +1,8 @@
 package com.btxtech.shared.datatypes;
 
+import com.btxtech.shared.utils.InterpolationUtils;
+import com.btxtech.shared.utils.MathHelper;
+
 import javax.persistence.Embeddable;
 import java.util.List;
 
@@ -76,6 +79,18 @@ public class Color {
         } else {
             return Integer.toHexString(intValue).toUpperCase();
         }
+    }
+
+    /**
+     * Mixes this color with another
+     *
+     * @param other other color to mix
+     * @param value max value 0..1
+     * @return return (1-value)*this + value*other
+     */
+    public Color mix(Color other, double value) {
+        double clamped = MathHelper.clamp(value,0, 1);
+        return new Color(InterpolationUtils.mix(r, other.r, clamped), InterpolationUtils.mix(g, other.g, clamped), InterpolationUtils.mix(b, other.b, clamped));
     }
 
     @Override
