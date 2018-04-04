@@ -96,7 +96,7 @@ public class BotService {
             botRunners.clear();
         }
 
-        gameLogicService.onBotSceneConflictsChanged(activeHumanPlayerIds);
+        gameLogicService.onBotSceneConflictsChanged(activeHumanPlayerIds, false, null, null, null);
     }
 
     private void killBot(int botId) {

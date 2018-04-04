@@ -14,6 +14,8 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 
 import javax.inject.Inject;
@@ -179,6 +181,26 @@ public class HistoryPersistence {
         }
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+        try {
+            BotSceneIndicationEntity botSceneIndicationEntity = new BotSceneIndicationEntity();
+            botSceneIndicationEntity.setTimeStamp(new Date());
+            botSceneIndicationEntity.setHumanPlayerIdEntityId(userService.getHumanPlayerId(humanPlayerId.getPlayerId()).getId());
+            botSceneIndicationEntity.setRaise(raise);
+            botSceneIndicationEntity.setNewBotSceneConflictConfigId(newConflict != null ? newConflict.getId() : null);
+            botSceneIndicationEntity.setOldBotSceneConflictConfigId(oldConflict != null ? oldConflict.getId() : null);
+            if (botSceneIndicationInfo != null) {
+                botSceneIndicationEntity.setBotSceneId(botSceneIndicationInfo.getBotSceneId());
+                botSceneIndicationEntity.setStep(botSceneIndicationInfo.getConflictStep());
+                botSceneIndicationEntity.setStepCount(botSceneIndicationInfo.getConflictStepCount());
+            }
+            entityManager.persist(botSceneIndicationEntity);
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
+    }
+
     @Transactional
     @SecurityCheck
     public List<UserHistoryEntry> readLoginHistory() {
@@ -298,6 +320,34 @@ public class HistoryPersistence {
                 default:
                     gameHistoryEntry.setDescription("Password reset unknown type: " + forgotPasswordHistoryEntity.getType() + " ???");
             }
+            history.add(gameHistoryEntry);
+        });
+        readAllHistory(entityManager, BotSceneIndicationEntity.class, playerId, BotSceneIndicationEntity_.humanPlayerIdEntityId, BotSceneIndicationEntity_.timeStamp).forEach(botSceneIndicationEntity -> {
+            GameHistoryEntry gameHistoryEntry = new GameHistoryEntry().setDate(botSceneIndicationEntity.getTimeStamp());
+            String description;
+            if (botSceneIndicationEntity.isRaise()) {
+                description = "Bot scene conflict raised.";
+            } else {
+                description = "Bot scene conflict fallen.";
+            }
+            if (botSceneIndicationEntity.getStep() != null && botSceneIndicationEntity.getStepCount() != null) {
+                description += " " + botSceneIndicationEntity.getStep() + "/" + botSceneIndicationEntity.getStepCount() + ".";
+            }
+            if (botSceneIndicationEntity.getBotSceneId() != null) {
+                description += " BotSceneId: " + botSceneIndicationEntity.getBotSceneId() + ".";
+            }
+            if (botSceneIndicationEntity.getNewBotSceneConflictConfigId() == null && botSceneIndicationEntity.getOldBotSceneConflictConfigId() == null) {
+                description += " CLEARED.";
+            } else {
+                if (botSceneIndicationEntity.getNewBotSceneConflictConfigId() != null) {
+                    description += " new ConflictId: " + botSceneIndicationEntity.getNewBotSceneConflictConfigId();
+                }
+                if (botSceneIndicationEntity.getOldBotSceneConflictConfigId() != null) {
+                    description += " old ConflictId: " + botSceneIndicationEntity.getOldBotSceneConflictConfigId();
+                }
+                description += ".";
+            }
+            gameHistoryEntry.setDescription(description);
             history.add(gameHistoryEntry);
         });
         history.sort(Comparator.comparing(GameHistoryEntry::getDate));

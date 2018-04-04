@@ -4,6 +4,7 @@ import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
+import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.item.ItemTrackerPersistence;
 import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
 import com.btxtech.server.user.SecurityCheck;
@@ -20,6 +21,8 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
@@ -96,6 +99,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private PathingService pathingService;
     @Inject
     private PathingChangesDisruptor pathingChangesDisruptor;
+    @Inject
+    private HistoryPersistence historyPersistence;
     private final Object reloadLook = new Object();
     private Set<SyncBaseItem> changedPathings = new HashSet<>();
 
@@ -348,13 +353,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
-    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId) {
+    public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
         systemConnectionService.onBotSceneConflictChanged(humanPlayerId, botService.getBotSceneIndicationInfos(humanPlayerId));
+        historyPersistence.onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo);
     }
 
     @Override
-    public void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds) {
-        activeHumanPlayerIds.forEach(this::onBotSceneConflictChanged);
+    public void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
+        activeHumanPlayerIds.forEach(humanPlayerId -> onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo));
     }
 
     @Override

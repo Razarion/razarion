@@ -6,6 +6,8 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -105,9 +107,9 @@ public interface GameLogicListener {
     default void onWeaponNewPath(SyncBaseItem syncBaseItem) {
     }
 
-    default void onBotSceneConflictChanged(HumanPlayerId humanPlayerId) {
+    default void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
     }
 
-    default void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds) {
+    default void onBotSceneConflictsChanged(Collection<HumanPlayerId> activeHumanPlayerIds, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
     }
 }

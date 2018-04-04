@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -94,6 +93,7 @@ public class BotScene {
                             return;
                         }
                         BotSceneConflictConfig newNextBotSceneConflictConfig = findNextBotSceneConflict(oldNextBotSceneConflictConfig);
+                        BotSceneConflictConfig oldBotSceneConflictConfig = provocationScale.getCurrentBotSceneConflictConfig();
                         provocationScale.onRise(newNextBotSceneConflictConfig);
 
                         BotSceneConflict currentBotSceneConflict = provocationScale.getCurrentBotSceneConflict();
@@ -103,9 +103,10 @@ public class BotScene {
                             provocationScale.setCurrentBotSceneConflict(currentBotSceneConflict);
                         }
                         currentBotSceneConflict.start(oldNextBotSceneConflictConfig);
-                        gameLogicService.onBotSceneConflictChanged(provocationScale.getHumanPlayerId());
+                        gameLogicService.onBotSceneConflictChanged(provocationScale.getHumanPlayerId(), true, oldNextBotSceneConflictConfig, oldBotSceneConflictConfig, getBotSceneIndicationInfo(provocationScale.getHumanPlayerId()));
                     } else if (provocationScale.isFallReached()) {
-                        BotSceneConflictConfig newCurrentBotSceneConflictConfig = findPreviousBotSceneConflict(provocationScale.getCurrentBotSceneConflictConfig());
+                        BotSceneConflictConfig oldBotSceneConflictConfig = provocationScale.getCurrentBotSceneConflictConfig();
+                        BotSceneConflictConfig newCurrentBotSceneConflictConfig = findPreviousBotSceneConflict(oldBotSceneConflictConfig);
                         provocationScale.onFall(newCurrentBotSceneConflictConfig);
                         if (newCurrentBotSceneConflictConfig != null) {
                             provocationScale.getCurrentBotSceneConflict().start(newCurrentBotSceneConflictConfig);
@@ -113,7 +114,7 @@ public class BotScene {
                             provocationScale.getCurrentBotSceneConflict().stop();
                             provocationScale.setCurrentBotSceneConflict(null);
                         }
-                        gameLogicService.onBotSceneConflictChanged(provocationScale.getHumanPlayerId());
+                        gameLogicService.onBotSceneConflictChanged(provocationScale.getHumanPlayerId(), false, newCurrentBotSceneConflictConfig, oldBotSceneConflictConfig, getBotSceneIndicationInfo(provocationScale.getHumanPlayerId()));
                     } else if (provocationScale.isCleanupReached()) {
                         expiredHumanPlayerIdConflicts.add(provocationScale.getHumanPlayerId());
                     } else if (provocationScale.getCurrentBotSceneConflict() != null) {
