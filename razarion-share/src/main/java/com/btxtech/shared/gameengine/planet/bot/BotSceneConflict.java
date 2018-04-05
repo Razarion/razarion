@@ -123,6 +123,9 @@ public class BotSceneConflict {
 
     private SyncBaseItem getTarget() {
         PlayerBaseFull playerBaseFull = baseItemService.getPlayerBaseFull4HumanPlayerId(humanPlayerId);
+        if (playerBaseFull == null) {
+            return null;
+        }
         return playerBaseFull.findItemsOfType(botSceneConflictConfig.getTargetBaseItemTypeId()).stream().findFirst().orElse(null);
     }
 
