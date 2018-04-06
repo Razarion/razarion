@@ -7,7 +7,7 @@ import java.util.Objects;
  * on 23.03.2018.
  */
 public class BotSceneConflictConfig {
-    private int id;
+    private Integer id;
     // Provocation to reach this conflict settings
     private int enterKills; // ms
     private int enterDuration;
@@ -23,11 +23,11 @@ public class BotSceneConflictConfig {
     private Integer stopKills;
     private Integer stopMillis;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public BotSceneConflictConfig setId(int id) {
+    public BotSceneConflictConfig setId(Integer id) {
         this.id = id;
         return this;
     }

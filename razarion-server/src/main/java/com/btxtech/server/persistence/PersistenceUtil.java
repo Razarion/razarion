@@ -5,8 +5,12 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by Beat
@@ -30,5 +34,34 @@ public interface PersistenceUtil {
             userQuery.orderBy(criteriaBuilder.desc(from.join(orderByAttribute)));
         }
         return entityManager.createQuery(userSelect).getResultList();
+    }
+
+    /**
+     * E : entity
+     * C : config
+     */
+    static <E, C> List<E> toChildEntityList(List<E> entityList, List<C> configList, Supplier<E> entityGenerator, Function<E, Object> entityIdProvider, BiConsumer<E, C> entityFiller, Function<C, Object> configIdProvider) {
+        List<E> resultEntityList = new ArrayList<>();
+        if (configList != null) {
+            for (C config : configList) {
+                E entity = null;
+                if (configIdProvider.apply(config) != null) {
+                    if (entityList != null) {
+                        entity = entityList.stream().filter(e -> entityIdProvider.apply(e).equals(configIdProvider.apply(config))).findFirst().orElse(null);
+                    }
+                }
+                if (entity == null) {
+                    entity = entityGenerator.get();
+                }
+                entityFiller.accept(entity, config);
+                resultEntityList.add(entity);
+            }
+        }
+        if (entityList == null) {
+            entityList = new ArrayList<>();
+        }
+        entityList.clear();
+        entityList.addAll(resultEntityList);
+        return entityList;
     }
 }

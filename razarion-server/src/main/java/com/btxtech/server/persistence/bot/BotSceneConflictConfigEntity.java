@@ -39,6 +39,9 @@ public class BotSceneConflictConfigEntity {
     private Integer stopKills;
     private Integer stopMillis;
 
+    public Integer getId() {
+        return id;
+    }
 
     public BotSceneConflictConfig toBotSceneConflictConfig() {
         BotSceneConflictConfig botSceneConflictConfig = new BotSceneConflictConfig().setId(id).setEnterKills(enterKills).setEnterDuration(enterDuration).setLeaveNoKillDuration(leaveNoKillDuration).setRePopMillis(rePopMillis).setMinDistance(minDistance).setMaxDistance(maxDistance);
@@ -60,7 +63,9 @@ public class BotSceneConflictConfigEntity {
         rePopMillis = botSceneConflictConfig.getRePopMillis();
         targetBaseItemType = itemTypePersistence.readBaseItemTypeEntity(botSceneConflictConfig.getTargetBaseItemTypeId());
         if (botSceneConflictConfig.getBotConfig() != null) {
-            botConfig = new BotConfigEntity();
+            if (botConfig == null) {
+                botConfig = new BotConfigEntity();
+            }
             botConfig.fromBotConfig(itemTypePersistence, botSceneConflictConfig.getBotConfig());
         } else {
             botConfig = null;

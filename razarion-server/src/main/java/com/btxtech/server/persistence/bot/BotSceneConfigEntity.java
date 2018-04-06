@@ -1,9 +1,11 @@
 package com.btxtech.server.persistence.bot;
 
+import com.btxtech.server.persistence.PersistenceUtil;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConfig;
+import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -65,12 +67,8 @@ public class BotSceneConfigEntity implements ObjectNameIdProvider {
         if (botSceneConfig.getBotIdsToWatch() != null) {
             botSceneConfig.getBotIdsToWatch().forEach(botId -> botsToWatch.add(entityManager.find(BotConfigEntity.class, botId)));
         }
-        botSceneConflictConfigs.clear();
-        if (botSceneConfig.getBotSceneConflictConfigs() != null) {
-            botSceneConfig.getBotSceneConflictConfigs().forEach(botSceneConflictConfig -> {
-                botSceneConflictConfigs.add(new BotSceneConflictConfigEntity().fromBotSceneConflictConfig(itemTypePersistence, botSceneConflictConfig));
-            });
-        }
+        botSceneConflictConfigs = PersistenceUtil.toChildEntityList(botSceneConflictConfigs, botSceneConfig.getBotSceneConflictConfigs(), BotSceneConflictConfigEntity::new, BotSceneConflictConfigEntity::getId,
+                (botSceneConflictConfigEntity, botSceneConflictConfig) -> botSceneConflictConfigEntity.fromBotSceneConflictConfig(itemTypePersistence, botSceneConflictConfig), BotSceneConflictConfig::getId);
     }
 
     @Override
