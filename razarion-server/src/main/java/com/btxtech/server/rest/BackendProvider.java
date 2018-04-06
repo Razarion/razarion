@@ -1,5 +1,6 @@
 package com.btxtech.server.rest;
 
+import com.btxtech.server.mgmt.ItemTrackingDescription;
 import com.btxtech.server.mgmt.OnlineInfo;
 import com.btxtech.server.mgmt.UserBackendInfo;
 import com.btxtech.server.persistence.history.UserHistoryEntry;
@@ -94,6 +95,11 @@ public interface BackendProvider {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     List<ItemTracking> itemHistory(ItemTrackingSearch itemTrackingSearch);
+
+    @GET
+    @Path("itemhistorydescription")
+    @Produces(MediaType.APPLICATION_JSON)
+    ItemTrackingDescription itemHistoryDescription();
 
     @POST
     @Path("sendrestartlifecycle")

@@ -33,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -42,6 +43,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -695,5 +697,22 @@ public class UserService {
             additionUserInfos.add(additionUserInfo);
         });
         return additionUserInfos;
+    }
+
+    @SecurityCheck
+    @Transactional
+    public Map<Integer, String> getAllHumanPlayerId2RegisteredUserName() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<UserEntity> root = cq.from(UserEntity.class);
+        cq.multiselect(root.get(UserEntity_.humanPlayerIdEntity).get(HumanPlayerIdEntity_.id), root.get(UserEntity_.name));
+        Map<Integer, String> humanPlayerId2RegisteredUserName = new HashMap<>();
+        entityManager.createQuery(cq).getResultList().forEach(tuple -> {
+            String name = tuple.get(1) != null ? tuple.get(1).toString() : null;
+            if (name != null) {
+                humanPlayerId2RegisteredUserName.put((int) tuple.get(0), name);
+            }
+        });
+        return humanPlayerId2RegisteredUserName;
     }
 }

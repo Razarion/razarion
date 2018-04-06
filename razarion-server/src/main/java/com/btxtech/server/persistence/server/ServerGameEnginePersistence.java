@@ -2,6 +2,7 @@ package com.btxtech.server.persistence.server;
 
 import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
+import com.btxtech.server.persistence.bot.BotConfigEntity_;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.level.LevelEntity;
@@ -9,7 +10,10 @@ import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
+import com.btxtech.server.user.HumanPlayerIdEntity_;
 import com.btxtech.server.user.SecurityCheck;
+import com.btxtech.server.user.UserEntity;
+import com.btxtech.server.user.UserEntity_;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -27,6 +31,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ListJoin;
@@ -34,8 +39,10 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -86,6 +93,23 @@ public class ServerGameEnginePersistence {
     @Transactional
     public Collection<BotConfig> readBotConfigs() {
         return read().getBotConfigs();
+    }
+
+    @Transactional
+    @SecurityCheck
+    public Map<Integer,String> getAllBotName2Id() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
+        Root<BotConfigEntity> root = cq.from(BotConfigEntity.class);
+        cq.multiselect(root.get(BotConfigEntity_.id), root.get(BotConfigEntity_.internalName));
+        Map<Integer, String> botId2Names = new HashMap<>();
+        entityManager.createQuery(cq).getResultList().forEach(tuple -> {
+            String name = tuple.get(1) != null ? tuple.get(1).toString() : null;
+            if (name != null) {
+                botId2Names.put((int) tuple.get(0), name);
+            }
+        });
+        return botId2Names;
     }
 
     @Transactional

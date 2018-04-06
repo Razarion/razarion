@@ -1,6 +1,5 @@
 import {Component, OnInit} from "@angular/core";
 import {ItemTracking, ItemTrackingSearch, ItemTrackingType} from "./item-history.dto";
-import {Router} from "@angular/router";
 import {ItemHistoryService} from "./item-history.service";
 
 @Component({
@@ -18,7 +17,7 @@ export class ItemHistoryComponent implements OnInit {
   searchCount: number;
   actualCount: number = 0;
 
-  constructor(private itemHistoryService: ItemHistoryService, private route: Router) {
+  constructor(private itemHistoryService: ItemHistoryService) {
   }
 
   ngOnInit(): void {
@@ -41,10 +40,9 @@ export class ItemHistoryComponent implements OnInit {
 
   onReload() {
     this.load();
-    this.getBgColor(ItemTrackingType.BASE_CREATED);
   }
 
-  getBgColor(type: ItemTrackingType): string {
+  displayBgColor(type: ItemTrackingType): string {
     switch (type) {
       case  ItemTrackingType.SERVER_START:
         return "#ff1217";
@@ -89,4 +87,73 @@ export class ItemHistoryComponent implements OnInit {
     }
   }
 
+  displayItemTypeId(itemTracking: ItemTracking): string {
+    if (itemTracking.itemTypeId == null) {
+      return null;
+    }
+
+    switch (itemTracking.type) {
+      case ItemTrackingType.BASE_ITEM_SPAWN:
+      case ItemTrackingType.BASE_ITEM_SPAWN_DIRECTLY :
+      case ItemTrackingType.BASE_ITEM_BUILT :
+      case ItemTrackingType.BASE_ITEM_FACTORIZED :
+      case ItemTrackingType.BASE_ITEM_KILLED :
+      case ItemTrackingType.BASE_ITEM_REMOVED :
+        return this.itemHistoryService.name4BaseItemTypeId(itemTracking.itemTypeId) + "(" + itemTracking.itemTypeId + ")";
+      case ItemTrackingType.RESOURCE_ITEM_CREATED :
+      case ItemTrackingType.RESOURCE_ITEM_DELETED :
+        return this.itemHistoryService.name4ResourceItemTypeId(itemTracking.itemTypeId) + "(" + itemTracking.itemTypeId + ")";
+      case ItemTrackingType.BOX_ITEM_CREATED :
+      case ItemTrackingType.BOX_ITEM_DELETED:
+        return this.itemHistoryService.name4BoxItemTypeId(itemTracking.itemTypeId) + "(" + itemTracking.itemTypeId + ")";
+      default:
+        return "???";
+    }
+  }
+
+  displayTargetHumanPlayerId(itemTracking: ItemTracking): string {
+    if (itemTracking.targetHumanPlayerId == null) {
+      return null;
+    }
+    return this.getName4HumanPlayerId(itemTracking.targetHumanPlayerId);
+  }
+
+  displayActorHumanPlayerId(itemTracking: ItemTracking) {
+    if (itemTracking.actorHumanPlayerId == null) {
+      return null;
+    }
+    return this.getName4HumanPlayerId(itemTracking.actorHumanPlayerId);
+  }
+
+  private getName4HumanPlayerId(humanPlayerId: number): string {
+    let name: string = this.itemHistoryService.name4HumanPlayerId(humanPlayerId);
+    if (name != null) {
+      return name + "(" + humanPlayerId + ")";
+    } else {
+      return humanPlayerId.toString();
+    }
+  }
+
+  displayTargetBot(itemTracking: ItemTracking): string {
+    if (itemTracking.targetBaseBotId == null) {
+      return null;
+    }
+    return this.getBot4Id(itemTracking.targetBaseBotId);
+  }
+
+  displayActorBot(itemTracking: ItemTracking): string {
+    if (itemTracking.actorBaseBotId == null) {
+      return null;
+    }
+    return this.getBot4Id(itemTracking.actorBaseBotId);
+  }
+
+  private getBot4Id(botId: number): string {
+    let name: string = this.itemHistoryService.name4BotId(botId);
+    if (name != null) {
+      return name + "(" + botId + ")";
+    } else {
+      return botId.toString();
+    }
+  }
 }

@@ -1,7 +1,6 @@
 <h3>Item history</h3>
 
 
-
 <table class="propertyTable">
   <tr>
     <td>From date</td>
@@ -29,7 +28,9 @@
   </tr>
   <tr>
     <td>Reload</td>
-    <td><button (click)="onReload()">Reload</button></td>
+    <td>
+      <button (click)="onReload()">Reload</button>
+    </td>
   </tr>
 </table>
 
@@ -53,18 +54,18 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let itemTracking of itemTrackings" [ngStyle]="{'background-color':getBgColor(itemTracking.type)}">
+  <tr *ngFor="let itemTracking of itemTrackings" [ngStyle]="{'background-color':displayBgColor(itemTracking.type)}">
     <td>{{ itemTracking.timeStamp | date:'dd.MM.yyyy HH:mm:ss.SSS'}}</td>
     <td>{{ itemTracking.type }}</td>
     <td>{{ itemTracking.itemId }}</td>
-    <td>{{ itemTracking.itemTypeId }}</td>
+    <td>{{ displayItemTypeId(itemTracking)}}</td>
     <td>{{ itemTracking.actorItemId }}</td>
     <td>{{ itemTracking.targetBaseId }}</td>
-    <td>{{ itemTracking.targetHumanPlayerId }}</td>
-    <td>{{ itemTracking.targetBaseBotId }}</td>
+    <td>{{ displayTargetHumanPlayerId(itemTracking) }}</td>
+    <td>{{ displayTargetBot(itemTracking) }}</td>
     <td>{{ itemTracking.actorBaseId }}</td>
-    <td>{{ itemTracking.actorHumanPlayerId }}</td>
-    <td>{{ itemTracking.actorBaseBotId }}</td>
+    <td>{{ displayActorHumanPlayerId(itemTracking) }}</td>
+    <td>{{ displayActorBot(itemTracking) }}</td>
     <td><span *ngIf="itemTracking.decimalPosition">{{ itemTracking.decimalPosition.x | number : '1.2-2'}} : {{
       itemTracking.decimalPosition.y| number : '1.2-2' }}</span>
     </td>

@@ -15,6 +15,14 @@ export class ItemTracking {
   actorItemId: number;
 }
 
+export class ItemTrackingDescription {
+  baseItemTypeNames: any;
+  boxItemTypeNames: any;
+  resourceItemTypeNames: any;
+  humanPlayerIdNames: any;
+  botNames: any;
+}
+
 export class ItemTrackingSearch {
   from: Date;
   to: Date;
