@@ -10,6 +10,7 @@ public class ItemTrackingSearch {
     private Date from;
     private Date to;
     private Integer humanPlayerId;
+    private Integer botId;
     private Integer count;
 
     public Date getFrom() {
@@ -36,6 +37,15 @@ public class ItemTrackingSearch {
 
     public ItemTrackingSearch setHumanPlayerId(Integer humanPlayerId) {
         this.humanPlayerId = humanPlayerId;
+        return this;
+    }
+
+    public Integer getBotId() {
+        return botId;
+    }
+
+    public ItemTrackingSearch setBotId(Integer botId) {
+        this.botId = botId;
         return this;
     }
 
