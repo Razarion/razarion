@@ -59,6 +59,10 @@ public class GuardingItemService {
                 return false;
             }
 
+            if (!syncBaseItem.isBuildup()) {
+                return false;
+            }
+
             if (syncBaseItem.isContainedIn()) {
                 return false;
             }
