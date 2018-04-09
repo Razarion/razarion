@@ -115,7 +115,7 @@ public class BotService {
                     botRunner.enrageOnKill(target, actor);
                     handleKillInBotScene(botRunner.getBotConfig().getId(), actor);
                 }
-            } else if (actor.getCharacter().isHuman()) {
+            } else if (target.getBase().getCharacter().isHuman()) {
                 BotRunner botRunner = getBotRunner(actor);
                 if (botRunner != null) {
                     synchronized (botScenes) {
