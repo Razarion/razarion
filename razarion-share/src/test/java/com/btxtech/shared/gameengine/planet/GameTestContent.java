@@ -57,6 +57,7 @@ public interface GameTestContent {
     int SHIP_ATTACKER_ITEM_TYPE_ID = 8;
     int SHIP_HARVESTER_ITEM_TYPE_ID = 9;
     int SHIP_TRANSPORTER_ITEM_TYPE_ID = 10;
+    int MOVING_TEST_ITEM_TYPE_ID = 11;
     int RESOURCE_ITEM_TYPE_ID = 101;
     int BOX_ITEM_TYPE_ID = 501;
     int BOX_ITEM_TYPE_LONG_ID = 502;
@@ -113,6 +114,7 @@ public interface GameTestContent {
         setupHarvester(baseItemTypes);
         setupShipHarvester(baseItemTypes);
         setupHarbour(baseItemTypes);
+        setupMoveTestUnits(baseItemTypes);
         return baseItemTypes;
     }
 
@@ -196,6 +198,13 @@ public interface GameTestContent {
         baseItemTypes.add(attacker);
     }
 
+    static void setupMoveTestUnits(List<BaseItemType> baseItemTypes) {
+        BaseItemType moveTest = new BaseItemType();
+        moveTest.setHealth(1).setBuildup(1).setId(MOVING_TEST_ITEM_TYPE_ID).setInternalName("Move Test 1");
+        moveTest.setPhysicalAreaConfig(new PhysicalAreaConfig().setTerrainType(TerrainType.LAND).setAcceleration(5.0).setAngularVelocity(Math.toRadians(180)).setRadius(2).setSpeed(17.0));
+        baseItemTypes.add(moveTest);
+    }
+
     static List<ResourceItemType> setupResourceItemType() {
         List<ResourceItemType> resourceItemTypes = new ArrayList<>();
         setupResource(resourceItemTypes);
@@ -258,6 +267,7 @@ public interface GameTestContent {
         level1Limitation.put(SHIP_HARVESTER_ITEM_TYPE_ID, 2);
         level1Limitation.put(HARBOUR_ITEM_TYPE_ID, 1);
         level1Limitation.put(SHIP_TRANSPORTER_ITEM_TYPE_ID, 1);
+        level1Limitation.put(MOVING_TEST_ITEM_TYPE_ID, 1000);
         levelConfigs.add(new LevelConfig().setLevelId(LEVEL_ID_1).setNumber(1).setXp2LevelUp(2).setItemTypeLimitation(level1Limitation));
         return levelConfigs;
     }
@@ -274,6 +284,7 @@ public interface GameTestContent {
         levelLimitation.put(SHIP_HARVESTER_ITEM_TYPE_ID, 2);
         levelLimitation.put(HARBOUR_ITEM_TYPE_ID, 3);
         levelLimitation.put(SHIP_TRANSPORTER_ITEM_TYPE_ID, 1);
+        levelLimitation.put(MOVING_TEST_ITEM_TYPE_ID, 1000);
         return levelLimitation;
     }
 

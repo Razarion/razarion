@@ -8,10 +8,14 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
+import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -36,14 +40,18 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeSubNod
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
-import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.debugtool.DebugStaticStorage;
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
+import javafx.event.Event;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Paint;
 import javafx.scene.paint.Stop;
 
 import javax.inject.Inject;
@@ -60,7 +68,11 @@ import java.util.List;
  * on 30.06.2017.
  */
 @Singleton
-public class WeldTestRenderer extends AbstractTerrainTestRenderer {
+public class WeldTestRenderer {
+    private static final double LINE_WIDTH = 0.1;
+    public static final double FAT_LINE_WIDTH = 0.3;
+    private static final int GRID_SPACING_100 = 100;
+    private static final int GRID_SPACING_08 = 8;
     private static final Color BASE_ITEM_TYPE_COLOR = new Color(0.5, 0.5, 1, 1);
     private static final Color BASE_ITEM_TYPE_LINE_COLOR = new Color(0, 0.3, 0, 1);
     private static final Color BASE_ITEM_TYPE_WEAPON_COLOR = new Color(1, 1, 0, 1);
@@ -74,6 +86,13 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private TerrainTypeService terrainTypeService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private ItemTypeService itemTypeService;
+    private Canvas canvas;
+    private GraphicsContext gc;
+    private double scale;
+    private DecimalPosition shift = new DecimalPosition(0, 0);
+    private DecimalPosition lastShiftPosition;
     private TerrainShape actual;
     private TerrainShapeTile[][] terrainShapeTiles;
     private UserDataRenderer userDataRenderer;
@@ -81,6 +100,163 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private double zMin = 0;
     private double zMax = 20;
     private WeldTestController weldTestController;
+
+    public void init(Canvas canvas, double scale) {
+        this.canvas = canvas;
+        this.scale = scale;
+    }
+
+    public DecimalPosition convertMouseToModel(Event event) {
+        MouseEvent mouseEvent = (MouseEvent) event;
+        DecimalPosition decimalPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
+        return decimalPosition.add(-canvas.getWidth() / 2.0, -canvas.getHeight() / 2.0).divide(scale, -scale).sub(shift);
+    }
+
+    public boolean shifting(Event event) {
+        MouseEvent mouseEvent = (MouseEvent) event;
+        DecimalPosition decimalPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
+        DecimalPosition position = decimalPosition.add(-canvas.getWidth() / 2.0, -canvas.getHeight() / 2.0).divide(scale, -scale);
+
+        boolean isShifted = false;
+        if (lastShiftPosition != null) {
+            DecimalPosition delta = position.sub(lastShiftPosition);
+            if (!delta.equalsDeltaZero()) {
+                shift = shift.add(delta);
+                isShifted = true;
+            }
+        }
+        lastShiftPosition = position;
+        return isShifted;
+    }
+
+    public void stopShift() {
+        lastShiftPosition = null;
+    }
+
+    protected void preRender() {
+        double canvasWidth = canvas.getWidth();
+        double canvasHeight = canvas.getHeight();
+
+        gc = canvas.getGraphicsContext2D();
+
+        gc.translate(0, 0);
+        gc.scale(1.0, 1.0);
+        gc.clearRect(0, 0, canvasWidth, canvasHeight);
+
+        gc.save();
+
+        // draw grid
+        drawGrid(gc, canvasWidth, canvasHeight);
+
+        gc.translate(canvasWidth / 2.0, canvasHeight / 2.0);
+        gc.scale(scale, -scale);
+        gc.translate(shift.getX(), shift.getY());
+    }
+
+    protected void postRender() {
+        gc.restore();
+        gc = null;
+    }
+
+    private void drawGrid(GraphicsContext gc, double canvasWidth, double canvasHeight) {
+        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_100 * scale), Color.GRAY);
+        drawGrid(gc, canvasWidth, canvasHeight, (int) (GRID_SPACING_08 * scale), Color.LIGHTGRAY);
+
+        gc.setStroke(Color.BLACK);
+        gc.strokeLine(shift.getX() * scale + canvasWidth / 2.0, 0, shift.getX() * scale + canvasWidth / 2.0, canvasHeight);
+        gc.strokeLine(0, canvasHeight / 2.0 - shift.getY() * scale, canvasWidth, canvasHeight / 2.0 - shift.getY() * scale);
+    }
+
+    private void drawGrid(GraphicsContext gc, double canvasWidth, double canvasHeight, int gridSpacing, Paint color) {
+        gc.setLineWidth(1);
+        gc.setStroke(color);
+
+        int verticalGrid = (int) Math.ceil(canvasWidth / gridSpacing) * gridSpacing;
+        int verticalOffset = (int) (shift.getX() * scale + canvasWidth / 2.0) % gridSpacing;
+        for (int x = 0; x <= verticalGrid; x += gridSpacing) {
+            gc.strokeLine(x + verticalOffset, 0, x + verticalOffset, canvasHeight);
+        }
+        int horizontalGrid = (int) Math.ceil(canvasHeight / gridSpacing) * gridSpacing;
+        int horizontalOffset = (int) (canvasHeight / 2.0 - shift.getY() * scale) % gridSpacing;
+        for (int y = 0; y <= horizontalGrid; y += gridSpacing) {
+            gc.strokeLine(0, y + horizontalOffset, canvasWidth, y + horizontalOffset);
+        }
+    }
+
+
+    public void setZoom(double zoom) {
+        if (zoom > 1.0) {
+            scale = zoom;
+        } else if (zoom < -1.0) {
+            scale = -1.0 / zoom;
+        } else {
+            scale = 1.0;
+        }
+    }
+
+    public double getZoom() {
+        if (scale > 1.0) {
+            return scale;
+        } else if (scale < 1.0) {
+            return -1.0 / scale;
+        } else {
+            return 1.0;
+        }
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void render(ScenarioPlaybackController scenarioPlaybackController) {
+        preRender();
+
+        doRender(scenarioPlaybackController);
+
+        postRender();
+    }
+
+    public void strokePolygon(List<DecimalPosition> polygon, double strokeWidth, Color color, boolean showPoint) {
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        gc.setLineWidth(strokeWidth);
+        for (int i = 0; i < polygon.size(); i++) {
+            DecimalPosition start = polygon.get(i);
+            DecimalPosition end = polygon.get(i + 1 < polygon.size() ? i + 1 : i - polygon.size() + 1);
+
+            gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+            if (showPoint) {
+                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
+            }
+        }
+    }
+
+    public void fillRectangle(Rectangle2D rectangle, Color color) {
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.8));
+        gc.fillRect(rectangle.getStart().getX(), rectangle.getStart().getY(), rectangle.width(), rectangle.height());
+    }
+
+    public void strokeVertexPolygon(List<Vertex> polygon, double strokeWidth, Color color, boolean showPoint) {
+        strokePolygon(Vertex.toXY(polygon), strokeWidth, color, showPoint);
+    }
+
+    public void strokeLine(List<DecimalPosition> line, double strokeWidth, Color color, boolean showPoint) {
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        gc.setLineWidth(strokeWidth);
+        for (int i = 0; i < line.size() - 1; i++) {
+            DecimalPosition start = line.get(i);
+            DecimalPosition end = line.get(i + 1);
+
+            gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+            if (showPoint) {
+                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
+                if (i == line.size() - 1) {
+                    gc.fillOval(end.getX() - strokeWidth * 5.0, end.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
+                }
+            }
+        }
+    }
 
     public void setup(WeldTestController weldTestController, Object[] userObjects) {
         this.weldTestController = weldTestController;
@@ -122,8 +298,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         this.zMax = zMax;
     }
 
-    @Override
-    protected void doRender() {
+    protected void doRender(ScenarioPlaybackController scenarioPlaybackController) {
         Index fromTileIndex = new Index(0, 0);
         Index toTileIndex = fromTileIndex.add(2, 2);
 
@@ -139,12 +314,17 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         if (weldTestController.renderShapeTerrainType() || weldTestController.renderShapeTerrainHeight() || weldTestController.renderShapeFractionalSlope() || weldTestController.renderShapeObstacles() || weldTestController.renderGroundSlopeConnections() || weldTestController.renderShapeWater() || weldTestController.renderShapeTerrainObject()) {
             doRenderShape();
         }
-        renderItemTypes();
+        if (weldTestController.renderSyncItems()) {
+            renderSyncItems();
+        }
         if (userDataRenderer != null) {
             userDataRenderer.render();
         }
         if (moveUserDataRenderer != null) {
             moveUserDataRenderer.render();
+        }
+        if (scenarioPlaybackController != null) {
+            scenarioPlaybackController.render(this);
         }
         if (DebugStaticStorage.getPolygon() != null) {
             strokePolygon(DebugStaticStorage.getPolygon(), FAT_LINE_WIDTH, Color.BLUE, true);
@@ -163,20 +343,20 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
                 DecimalPosition samplePosition = new DecimalPosition(x + 0.5, y + 0.5);
                 // Z
                 double z = terrainService.getSurfaceAccess().getInterpolatedZ(samplePosition);
-                getGc().setFill(color4Z(z));
-                getGc().fillRect(x, y, 0.5, 0.5);
+                gc.setFill(color4Z(z));
+                gc.fillRect(x, y, 0.5, 0.5);
                 // Norm
                 Vertex norm = terrainService.getSurfaceAccess().getInterpolatedNorm(samplePosition);
                 if (MathHelper.compareWithPrecision(norm.magnitude(), 1.0)) {
-                    getGc().setFill(color4Norm(norm));
+                    gc.setFill(color4Norm(norm));
                 } else {
-                    getGc().setFill(Color.BLACK);
+                    gc.setFill(Color.BLACK);
                 }
-                getGc().fillRect(x + 0.5, y, 0.5, 0.5);
+                gc.fillRect(x + 0.5, y, 0.5, 0.5);
                 // TerrainType
                 TerrainType terrainType = terrainService.getPathingAccess().getTerrainType(samplePosition);
-                getGc().setFill(color4TerrainType(terrainType));
-                getGc().fillRect(x + 0.5, y + 0.5, 0.5, 0.5);
+                gc.setFill(color4TerrainType(terrainType));
+                gc.fillRect(x + 0.5, y + 0.5, 0.5, 0.5);
             }
         }
     }
@@ -198,13 +378,13 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
 
         if (weldTestController.renderTerrainTileWater()) {
-            getGc().setLineWidth(LINE_WIDTH);
+            gc.setLineWidth(LINE_WIDTH);
             if (terrainTile.getTerrainWaterTile() != null) {
                 drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
             }
         }
         if (weldTestController.renderTerrainTileGround()) {
-            getGc().setLineWidth(LINE_WIDTH);
+            gc.setLineWidth(LINE_WIDTH);
             for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
                 int vertexScalarIndex = vertexIndex * 3;
                 fillTriangle(terrainTile.getGroundVertices(), terrainTile.getGroundNorms(), terrainTile.getGroundTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
@@ -217,7 +397,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
 
         if (weldTestController.renderTerrainTileSlope()) {
-            getGc().setLineWidth(LINE_WIDTH);
+            gc.setLineWidth(LINE_WIDTH);
             if (terrainTile.getTerrainSlopeTiles() != null) {
                 for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
                     drawTerrainSlopeTile(terrainSlopeTile);
@@ -227,7 +407,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
         if (weldTestController.renderTerrainTileTerrainObject()) {
             if (terrainTile.getTerrainTileObjectLists() != null) {
-                getGc().setFill(Color.BROWN);
+                gc.setFill(Color.BROWN);
                 Arrays.stream(terrainTile.getTerrainTileObjectLists()).forEach(terrainTileObjectList -> {
                     if (terrainTileObjectList.getModels() != null) {
                         TerrainObjectConfig terrainObjectConfig = terrainTypeService.getTerrainObjectConfig(terrainTileObjectList.getTerrainObjectConfigId());
@@ -235,7 +415,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
                             NativeVertexDto br = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(-terrainObjectConfig.getRadius(), -terrainObjectConfig.getRadius(), 0), 1.0);
                             NativeVertexDto tl = nativeMatrix.multiplyVertex(NativeUtil.toNativeVertex(terrainObjectConfig.getRadius(), terrainObjectConfig.getRadius(), 0), 1.0);
                             Rectangle2D rect = Rectangle2D.generateRectangleFromAnyPoints(new DecimalPosition(br.x, br.y), new DecimalPosition(tl.x, tl.y)); // If rotated, it is may upside down
-                            getGc().fillOval(rect.startX(), rect.startY(), rect.width(), rect.height());
+                            gc.fillOval(rect.startX(), rect.startY(), rect.width(), rect.height());
                         });
                     }
                 });
@@ -246,44 +426,44 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     private void fillTriangle(double[] groundVertices, double[] groundNorms, double[] groundTangents, int index1, int index2, int index3) {
         int fillIndex = index2;
         double[] fillVertices = groundNorms;
-        getGc().setFill(color4Norm(new Vertex(fillVertices[fillIndex], fillVertices[fillIndex + 1], fillVertices[fillIndex + 2])));
+        gc.setFill(color4Norm(new Vertex(fillVertices[fillIndex], fillVertices[fillIndex + 1], fillVertices[fillIndex + 2])));
         double[] xCorners = new double[]{groundVertices[index1], groundVertices[index2], groundVertices[index3]};
         double[] yCorners = new double[]{groundVertices[index1 + 1], groundVertices[index2 + 1], groundVertices[index3 + 1]};
-        getGc().fillPolygon(xCorners, yCorners, 3);
+        gc.fillPolygon(xCorners, yCorners, 3);
     }
 
     private void fillTriangle(double[] groundVertices, int index1, int index2, int index3) {
         double[] xCorners = new double[]{groundVertices[index1], groundVertices[index2], groundVertices[index3]};
         double[] yCorners = new double[]{groundVertices[index1 + 1], groundVertices[index2 + 1], groundVertices[index3 + 1]};
-        getGc().fillPolygon(xCorners, yCorners, 3);
+        gc.fillPolygon(xCorners, yCorners, 3);
     }
 
     public void showDifference(DiffTriangleElement diffTriangleElement) {
         switch (diffTriangleElement.getDifference()) {
             case XY:
-                getGc().setLineWidth(LINE_WIDTH);
-                getGc().setStroke(Color.RED);
+                gc.setLineWidth(LINE_WIDTH);
+                gc.setStroke(Color.RED);
                 strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
                 break;
             case Z:
-                getGc().setFill(new Color(1.0, 0.5, 0.5, 0.5));
+                gc.setFill(new Color(1.0, 0.5, 0.5, 0.5));
                 fillTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
                 break;
             case XYZ:
-                getGc().setFill(new Color(1.0, 0.5, 0.5, 0.5));
+                gc.setFill(new Color(1.0, 0.5, 0.5, 0.5));
                 fillTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
-                getGc().setLineWidth(LINE_WIDTH);
-                getGc().setStroke(Color.RED);
+                gc.setLineWidth(LINE_WIDTH);
+                gc.setStroke(Color.RED);
                 strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
                 break;
             case MISSING:
-                getGc().setLineWidth(LINE_WIDTH);
-                getGc().setStroke(new Color(1.0, 0.8, 0.0, 1.0));
+                gc.setLineWidth(LINE_WIDTH);
+                gc.setStroke(new Color(1.0, 0.8, 0.0, 1.0));
                 strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
                 break;
             case UNEXPECTED:
-                getGc().setLineWidth(LINE_WIDTH);
-                getGc().setStroke(new Color(0.8, 0, 0.8, 1.0));
+                gc.setLineWidth(LINE_WIDTH);
+                gc.setStroke(new Color(0.8, 0, 0.8, 1.0));
                 strokeTriangle(diffTriangleElement.getVertices(), diffTriangleElement.getScalarIndex(), diffTriangleElement.getScalarIndex() + 3, diffTriangleElement.getScalarIndex() + 6);
                 break;
             default:
@@ -292,9 +472,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void strokeTriangle(double[] vertices, int index1, int index2, int index3) {
-        getGc().strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
-        getGc().strokeLine(vertices[index2], vertices[index2 + 1], vertices[index3], vertices[index3 + 1]);
-        getGc().strokeLine(vertices[index3], vertices[index3 + 1], vertices[index1], vertices[index1 + 1]);
+        gc.strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
+        gc.strokeLine(vertices[index2], vertices[index2 + 1], vertices[index3], vertices[index3 + 1]);
+        gc.strokeLine(vertices[index3], vertices[index3 + 1], vertices[index1], vertices[index1 + 1]);
     }
 
     private void strokeZTriangle(double[] vertices, int index1, int index2, int index3) {
@@ -314,8 +494,8 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void strokeGradientLine(double[] vertices, int index1, int index2, Color color1, Color color2) {
-        getGc().setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, color1), new Stop(1, color2)));
-        getGc().strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
+        gc.setStroke(new LinearGradient(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1], false, CycleMethod.NO_CYCLE, new Stop(0, color1), new Stop(1, color2)));
+        gc.strokeLine(vertices[index1], vertices[index1 + 1], vertices[index2], vertices[index2 + 1]);
     }
 
     private Color color4Z(double z) {
@@ -325,7 +505,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
     }
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
-        getGc().setLineWidth(LINE_WIDTH);
+        gc.setLineWidth(LINE_WIDTH);
         for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
             // fillTriangle(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms(), terrainSlopeTile.getTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
@@ -333,13 +513,13 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
 //            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
 //            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
-//            getGc().setStroke(Color.GRAY);
-//            getGc().strokePolygon(xCorners, yCorners, 3);
-            // getGc().setFill(Color.color(1, 0, 0, 0.3));
-            // getGc().fillPolygon(xCorners, yCorners, 3);
+//            gc.setStroke(Color.GRAY);
+//            gc.strokePolygon(xCorners, yCorners, 3);
+            // gc.setFill(Color.color(1, 0, 0, 0.3));
+            // gc.fillPolygon(xCorners, yCorners, 3);
         }
 //        // Norm
-//        getGc().setStroke(Color.RED);
+//        gc.setStroke(Color.RED);
 //        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
 //            int vertexScalarIndex = vertexIndex * 3;
 //
@@ -355,12 +535,12 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 //            double normX2 = terrainSlopeTile.getNorms()[vertexScalarIndex + 6] * AMPLIFIER;
 //            double normY2 = terrainSlopeTile.getNorms()[vertexScalarIndex + 7] * AMPLIFIER;
 //
-//            getGc().strokeLine(xCorners[0], yCorners[0], xCorners[0] + normX0, yCorners[0] + normY0);
-//            getGc().strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
-//            getGc().strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
+//            gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + normX0, yCorners[0] + normY0);
+//            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + normX1, yCorners[1] + normY1);
+//            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + normX2, yCorners[2] + normY2);
 //        }
 //        // Tangent
-//        getGc().setStroke(Color.BLUE);
+//        gc.setStroke(Color.BLUE);
 //        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
 //            int vertexScalarIndex = vertexIndex * 3;
 //
@@ -376,9 +556,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 //            double tangentX2 = terrainSlopeTile.getTangents()[vertexScalarIndex + 6] * AMPLIFIER;
 //            double tangentY2 = terrainSlopeTile.getTangents()[vertexScalarIndex + 7] * AMPLIFIER;
 //
-//            getGc().strokeLine(xCorners[0], yCorners[0], xCorners[0] + tangentX0, yCorners[0] + tangentY0);
-//            getGc().strokeLine(xCorners[1], yCorners[1], xCorners[1] + tangentX1, yCorners[1] + tangentY1);
-//            getGc().strokeLine(xCorners[2], yCorners[2], xCorners[2] + tangentX2, yCorners[2] + tangentY2);
+//            gc.strokeLine(xCorners[0], yCorners[0], xCorners[0] + tangentX0, yCorners[0] + tangentY0);
+//            gc.strokeLine(xCorners[1], yCorners[1], xCorners[1] + tangentX1, yCorners[1] + tangentY1);
+//            gc.strokeLine(xCorners[2], yCorners[2], xCorners[2] + tangentX2, yCorners[2] + tangentY2);
 //
 //        }
 //        // SlopeFactor
@@ -390,15 +570,15 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 //
 //            double slopeFactor = terrainSlopeTile.getSlopeFactors()[vertexIndex];
 //
-//            getGc().setFill(Color.color(slopeFactor, 0, 0, 0.1));
+//            gc.setFill(Color.color(slopeFactor, 0, 0, 0.1));
 //
 //            double radius = 1;
-//            getGc().fillOval(xCorner - radius, yCorner - radius, radius * 2.0, radius * 2.0);
+//            gc.fillOval(xCorner - radius, yCorner - radius, radius * 2.0, radius * 2.0);
 //        }
     }
 
     private void renderTileSplatting(TerrainTile terrainTile) {
-        getGc().setLineWidth(FAT_LINE_WIDTH);
+        gc.setLineWidth(FAT_LINE_WIDTH);
 
         for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
@@ -420,23 +600,23 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
                     DecimalPosition position = new DecimalPosition(xCorner, yCorner);
                     DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-                    getGc().strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
+                    gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
                 }
             }
         }
     }
 
     private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
-        getGc().setLineWidth(LINE_WIDTH);
-        getGc().setStroke(Color.BLUE);
+        gc.setLineWidth(LINE_WIDTH);
+        gc.setStroke(Color.BLUE);
         for (int vertexIndex = 0; vertexIndex < terrainWaterTile.getVertexCount(); vertexIndex += 3) {
             int vertexScalarIndex = vertexIndex * 3;
 
             double[] xCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex], terrainWaterTile.getVertices()[vertexScalarIndex + 3], terrainWaterTile.getVertices()[vertexScalarIndex + 6]};
             double[] yCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex + 1], terrainWaterTile.getVertices()[vertexScalarIndex + 4], terrainWaterTile.getVertices()[vertexScalarIndex + 7]};
-            getGc().strokePolygon(xCorners, yCorners, 3);
-            //getGc().setFill(Color.color(1, 0, 0, 0.3));
-            //getGc().fillPolygon(xCorners, yCorners, 3);
+            gc.strokePolygon(xCorners, yCorners, 3);
+            //gc.setFill(Color.color(1, 0, 0, 0.3));
+            //gc.fillPolygon(xCorners, yCorners, 3);
         }
     }
 
@@ -460,13 +640,13 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         if (weldTestController.renderTerrainTileTerrainType()) {
             TerrainType terrainType = TerrainType.fromOrdinal(terrainNode.getTerrainType());
             if (terrainType != null) {
-                getGc().setFill(color4TerrainType(terrainType));
-                getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+                gc.setFill(color4TerrainType(terrainType));
+                gc.fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
             }
         }
         if (weldTestController.renderTerrainTileHeight()) {
-            getGc().setFill(color4Z(terrainNode.getHeight()));
-            getGc().fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+            gc.setFill(color4Z(terrainNode.getHeight()));
+            gc.fillRect(absoluteNodePosition.getX(), absoluteNodePosition.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
         drawSubNodes(terrainNode.getTerrainSubNodes(), absoluteNodePosition, 0);
     }
@@ -490,29 +670,29 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         if (weldTestController.renderTerrainTileTerrainType()) {
             TerrainType terrainType = TerrainType.fromOrdinal(terrainSubNode.getTerrainType());
             if (terrainType != null) {
-                getGc().setFill(color4TerrainType(terrainType));
-                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
+                gc.setFill(color4TerrainType(terrainType));
+                gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
             }
         }
         if (weldTestController.renderTerrainTileHeight()) {
             if (terrainSubNode.getHeight() != null) {
-                getGc().setFill(color4Z(terrainSubNode.getHeight()));
-                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
+                gc.setFill(color4Z(terrainSubNode.getHeight()));
+                gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength - 0.1, subNodeLength - 0.1);
             }
         }
 
-//        getGc().setStroke(new Color(0, 0, 1, 1));
-//        getGc().strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+//        gc.setStroke(new Color(0, 0, 1, 1));
+//        gc.strokeRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
 //        if (terrainSubNode.getTerrainSubNodes() == null) {
 //            if (terrainSubNode.isLand() == null || !terrainSubNode.isLand()) {
-//                getGc().setFill(new Color(1, 0, 0, 0.5));
-//                getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+//                gc.setFill(new Color(1, 0, 0, 0.5));
+//                gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
 //            }
 //
 //            double height = terrainSubNode.getHeight();
 //            double v = (height + 5) / 25.0;
-//            getGc().setFill(Color.color(v, v, v, 0.5));
-//            getGc().fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
+//            gc.setFill(Color.color(v, v, v, 0.5));
+//            gc.fillRect(absolutePosition.getX(), absolutePosition.getY(), subNodeLength, subNodeLength);
 //        }
         drawSubNodes(terrainSubNode.getTerrainSubNodes(), absolutePosition, depth + 1);
 
@@ -529,7 +709,7 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
     }
 
-    private void renderItemTypes() {
+    private void renderSyncItems() {
         syncItemContainerService.iterateOverItems(false, true, null, syncItem -> {
             drawSyncItem(syncItem);
             return null;
@@ -545,22 +725,22 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 //            PathingNodeWrapper pathingNodeWrapper = entry.getKey();
 //            if(pathingNodeWrapper.getNodeIndex() != null) {
 //                Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(pathingNodeWrapper.getNodeIndex());
-//                getGc().setFill(new Color(0, 1, 1, 0.3));
-//                getGc().fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
+//                gc.setFill(new Color(0, 1, 1, 0.3));
+//                gc.fillRect(rect.startX(), rect.startY(), rect.width() - 0.1, rect.height() - 0.1);
 //            }
 //            if(pathingNodeWrapper.getTerrainShapeSubNode() != null) {
 //                double length = TerrainUtil.calculateSubNodeLength(pathingNodeWrapper.getTerrainShapeSubNode().getDepth());
-//                getGc().setFill(new Color(1, 0, 1, 0.3));
-//                getGc().fillRect(pathingNodeWrapper.getSubNodePosition().getX(), pathingNodeWrapper.getSubNodePosition().getY(), length - 0.1, length - 0.1);
+//                gc.setFill(new Color(1, 0, 1, 0.3));
+//                gc.fillRect(pathingNodeWrapper.getSubNodePosition().getX(), pathingNodeWrapper.getSubNodePosition().getY(), length - 0.1, length - 0.1);
 //            }
 //        }
 //    }
 
     private void displayTerrainShapeTile(Index tileIndex, TerrainShapeTile terrainShapeTile) {
-        getGc().setLineWidth(LINE_WIDTH * 4.0);
-        getGc().setStroke(Color.DARKGREEN);
+        gc.setLineWidth(LINE_WIDTH * 4.0);
+        gc.setStroke(Color.DARKGREEN);
         DecimalPosition absolute = TerrainUtil.toTileAbsolute(tileIndex);
-        getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
+        gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_TILE_ABSOLUTE_LENGTH);
         displayNodes(absolute, terrainShapeTile);
 
         if (weldTestController.renderShapeFractionalSlope()) {
@@ -586,9 +766,9 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
     private void displayNode(DecimalPosition absoluteTile, Index nodeRelativeIndex, TerrainShapeNode terrainShapeNode) {
         DecimalPosition absolute = TerrainUtil.toNodeAbsolute(nodeRelativeIndex).add(absoluteTile);
-        getGc().setLineWidth(LINE_WIDTH);
-        getGc().setStroke(Color.BLACK);
-        getGc().strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+        gc.setLineWidth(LINE_WIDTH);
+        gc.setStroke(Color.BLACK);
+        gc.strokeRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
         if (weldTestController.renderShapeObstacles()) {
             displayObstacles(terrainShapeNode);
         }
@@ -599,12 +779,12 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
             displayShapeWater(terrainShapeNode.getWaterSegments());
         }
         if (weldTestController.renderShapeTerrainType() && terrainShapeNode.getTerrainType() != null) {
-            getGc().setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
-            getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+            gc.setFill(color4TerrainType(terrainShapeNode.getTerrainType()));
+            gc.fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
         if (weldTestController.renderShapeTerrainHeight() && terrainShapeNode.getGameEngineHeightOrNull() != null) {
-            getGc().setFill(color4Z(terrainShapeNode.getGameEngineHeightOrNull()));
-            getGc().fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
+            gc.setFill(color4Z(terrainShapeNode.getGameEngineHeightOrNull()));
+            gc.fillRect(absolute.getX(), absolute.getY(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1, TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH - 0.1);
         }
         displaySubNodes(0, absolute, terrainShapeNode.getTerrainShapeSubNodes());
     }
@@ -634,12 +814,12 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         for (Obstacle obstacle : terrainShapeNode.getObstacles()) {
             if (obstacle instanceof ObstacleSlope) {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
-                getGc().setStroke(Color.RED);
-                getGc().strokeLine(obstacleSlope.getLine().getPoint1().getX(), obstacleSlope.getLine().getPoint1().getY(), obstacleSlope.getLine().getPoint2().getX(), obstacleSlope.getLine().getPoint2().getY());
+                gc.setStroke(Color.RED);
+                gc.strokeLine(obstacleSlope.getLine().getPoint1().getX(), obstacleSlope.getLine().getPoint1().getY(), obstacleSlope.getLine().getPoint2().getX(), obstacleSlope.getLine().getPoint2().getY());
             } else if (obstacle instanceof ObstacleTerrainObject) {
                 ObstacleTerrainObject obstacleTerrainObject = (ObstacleTerrainObject) obstacle;
-                getGc().setStroke(Color.RED);
-                getGc().fillOval(obstacleTerrainObject.getCircle().getCenter().getX() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getCenter().getY() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius());
+                gc.setStroke(Color.RED);
+                gc.fillOval(obstacleTerrainObject.getCircle().getCenter().getX() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getCenter().getY() - obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius(), obstacleTerrainObject.getCircle().getRadius() + obstacleTerrainObject.getCircle().getRadius());
             } else {
                 throw new IllegalArgumentException("Unknown: " + obstacle);
             }
@@ -671,17 +851,17 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
 
     private void displaySubNode(int depth, DecimalPosition absolute, TerrainShapeSubNode terrainShapeSubNode) {
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
-        getGc().setStroke(Color.BLUEVIOLET);
-        getGc().setLineWidth(LINE_WIDTH);
-        getGc().strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
+        gc.setStroke(Color.BLUEVIOLET);
+        gc.setLineWidth(LINE_WIDTH);
+        gc.strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
         displaySubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
         if (weldTestController.renderShapeTerrainType() && terrainShapeSubNode.getTerrainType() != null) {
-            getGc().setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
-            getGc().fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
+            gc.setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
+            gc.fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
         }
         if (weldTestController.renderShapeTerrainHeight() && terrainShapeSubNode.getHeight() != null) {
-            getGc().setFill(color4Z(terrainShapeSubNode.getHeight()));
-            getGc().fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
+            gc.setFill(color4Z(terrainShapeSubNode.getHeight()));
+            gc.fillRect(absolute.getX(), absolute.getY(), subLength - 0.1, subLength - 0.1);
         }
     }
 
@@ -705,17 +885,35 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         if (nativeTerrainShapeObjectLists == null) {
             return;
         }
-        getGc().setStroke(Color.BROWN);
-        getGc().setLineWidth(FAT_LINE_WIDTH);
+        gc.setStroke(Color.BROWN);
+        gc.setLineWidth(FAT_LINE_WIDTH);
         Arrays.stream(nativeTerrainShapeObjectLists).forEach(nativeTerrainShapeObjectList -> {
             if (nativeTerrainShapeObjectList.positions != null) {
                 double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectId).getRadius();
                 Arrays.stream(nativeTerrainShapeObjectList.positions).forEach(nativeTerrainShapeObjectPosition -> {
                     double correctedRadius = radius * nativeTerrainShapeObjectPosition.scale;
-                    getGc().strokeOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
+                    gc.strokeOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
                 });
             }
         });
+    }
+
+
+    public void drawSyncBaseItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
+        BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
+        DecimalPosition position = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
+        gc.setFill(BASE_ITEM_TYPE_COLOR);
+        if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+            fillPolygon(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
+            gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
+            gc.setLineWidth(0.1);
+            strokePolygon(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
+            gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
+            gc.setLineWidth(0.5);
+            createHeadingLine(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
+        } else {
+            gc.fillOval(position.getX() - baseItemType.getPhysicalAreaConfig().getRadius(), position.getY() - baseItemType.getPhysicalAreaConfig().getRadius(), baseItemType.getPhysicalAreaConfig().getRadius() * 2, baseItemType.getPhysicalAreaConfig().getRadius() * 2);
+        }
     }
 
     public void drawSyncItem(SyncItem syncItem) {
@@ -725,24 +923,24 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
         }
         DecimalPosition position = syncPhysicalArea.getPosition2d();
         if (syncItem instanceof SyncBaseItem) {
-            getGc().setFill(BASE_ITEM_TYPE_COLOR);
+            gc.setFill(BASE_ITEM_TYPE_COLOR);
         } else if (syncItem instanceof SyncResourceItem) {
-            getGc().setFill(RESOURCE_ITEM_TYPE_COLOR);
+            gc.setFill(RESOURCE_ITEM_TYPE_COLOR);
         } else if (syncItem instanceof SyncBoxItem) {
-            getGc().setFill(BOX_ITEM_TYPE_COLOR);
+            gc.setFill(BOX_ITEM_TYPE_COLOR);
         } else {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }
         if (syncItem.getSyncPhysicalArea().canMove()) {
-            fillPolygon(syncItem);
-            getGc().setStroke(BASE_ITEM_TYPE_LINE_COLOR);
-            getGc().setLineWidth(0.1);
-            strokePolygon(syncItem);
-            getGc().setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
-            getGc().setLineWidth(0.5);
-            createHeadingLine(syncItem);
+            fillPolygon(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
+            gc.setLineWidth(0.1);
+            strokePolygon(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
+            gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
+            gc.setLineWidth(0.5);
+            createHeadingLine(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getAngle());
         } else {
-            getGc().fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
+            gc.fillOval(position.getX() - syncPhysicalArea.getRadius(), position.getY() - syncPhysicalArea.getRadius(), syncPhysicalArea.getRadius() * 2, syncPhysicalArea.getRadius() * 2);
         }
 
         if (syncItem instanceof SyncBaseItem) {
@@ -751,93 +949,90 @@ public class WeldTestRenderer extends AbstractTerrainTestRenderer {
                 Matrix4 matrix4 = syncBaseItem.getSyncWeapon().createTurretMatrix();
                 DecimalPosition canonStart = matrix4.multiply(Vertex.ZERO, 1.0).toXY();
                 DecimalPosition canonEnd = matrix4.multiply(syncBaseItem.getSyncWeapon().getWeaponType().getTurretType().getMuzzlePosition(), 1.0).toXY();
-                getGc().setStroke(BASE_ITEM_TYPE_WEAPON_COLOR);
-                getGc().setLineWidth(0.5);
-                getGc().strokeLine(canonStart.getX(), canonStart.getY(), canonEnd.getX(), canonEnd.getY());
+                gc.setStroke(BASE_ITEM_TYPE_WEAPON_COLOR);
+                gc.setLineWidth(0.5);
+                gc.strokeLine(canonStart.getX(), canonStart.getY(), canonEnd.getX(), canonEnd.getY());
             }
             if (syncBaseItem.getSyncPhysicalArea().canMove()) {
                 Path path = syncBaseItem.getSyncPhysicalMovable().getPath();
                 if (path != null) {
                     strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.CADETBLUE, true);
-                    getGc().setStroke(Color.BLUEVIOLET);
-                    getGc().setLineWidth(0.5);
-                    getGc().strokeLine(syncBaseItem.getSyncPhysicalArea().getPosition2d().getX(), syncBaseItem.getSyncPhysicalArea().getPosition2d().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());
+                    gc.setStroke(Color.BLUEVIOLET);
+                    gc.setLineWidth(0.5);
+                    gc.strokeLine(syncBaseItem.getSyncPhysicalArea().getPosition2d().getX(), syncBaseItem.getSyncPhysicalArea().getPosition2d().getY(), path.getCurrentWayPoint().getX(), path.getCurrentWayPoint().getY());
                 }
             }
         }
     }
 
-    private void fillPolygon(SyncItem syncItem) {
-        DecimalPosition middle = syncItem.getSyncPhysicalArea().getPosition2d();
-        double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
-        double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+    private void fillPolygon(DecimalPosition position, double radius, double angle) {
+        double angel1 = angle - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel2 = angle + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel3 = angel1 + MathHelper.HALF_RADIANT;
         double angel4 = angel2 + MathHelper.HALF_RADIANT;
 
-        DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
-        DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
-        DecimalPosition point3 = middle.getPointWithDistance(angel3, syncItem.getSyncPhysicalArea().getRadius());
-        DecimalPosition point4 = middle.getPointWithDistance(angel4, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point1 = position.getPointWithDistance(angel1, radius);
+        DecimalPosition point2 = position.getPointWithDistance(angel2, radius);
+        DecimalPosition point3 = position.getPointWithDistance(angel3, radius);
+        DecimalPosition point4 = position.getPointWithDistance(angel4, radius);
 
-        getGc().fillPolygon(new double[]{point1.getX(), point2.getX(), point3.getX(), point4.getX()}, new double[]{point1.getY(), point2.getY(), point3.getY(), point4.getY()}, 4);
+        gc.fillPolygon(new double[]{point1.getX(), point2.getX(), point3.getX(), point4.getX()}, new double[]{point1.getY(), point2.getY(), point3.getY(), point4.getY()}, 4);
     }
 
-    private void strokePolygon(SyncItem syncItem) {
-        double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
-        double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+    private void strokePolygon(DecimalPosition position, double radius, double angle) {
+        double angel1 = angle - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel2 = angle + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
         double angel3 = angel1 + MathHelper.HALF_RADIANT;
         double angel4 = angel2 + MathHelper.HALF_RADIANT;
 
-        DecimalPosition middle = syncItem.getSyncPhysicalArea().getPosition2d();
-        DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
-        DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
-        DecimalPosition point3 = middle.getPointWithDistance(angel3, syncItem.getSyncPhysicalArea().getRadius());
-        DecimalPosition point4 = middle.getPointWithDistance(angel4, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point1 = position.getPointWithDistance(angel1, radius);
+        DecimalPosition point2 = position.getPointWithDistance(angel2, radius);
+        DecimalPosition point3 = position.getPointWithDistance(angel3, radius);
+        DecimalPosition point4 = position.getPointWithDistance(angel4, radius);
 
-        getGc().strokePolygon(new double[]{point1.getX(), point2.getX(), point3.getX(), point4.getX()}, new double[]{point1.getY(), point2.getY(), point3.getY(), point4.getY()}, 4);
+        gc.strokePolygon(new double[]{point1.getX(), point2.getX(), point3.getX(), point4.getX()}, new double[]{point1.getY(), point2.getY(), point3.getY(), point4.getY()}, 4);
     }
 
-    private void createHeadingLine(SyncItem syncItem) {
-        double angel1 = syncItem.getSyncPhysicalArea().getAngle() - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
-        double angel2 = syncItem.getSyncPhysicalArea().getAngle() + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+    private void createHeadingLine(DecimalPosition middle, double radius, double angle) {
+        double angel1 = angle - SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
+        double angel2 = angle + SYNC_ITEM_DISPLAY_FRONT_ANGEL / 2;
 
-        DecimalPosition middle = syncItem.getSyncPhysicalArea().getPosition2d();
-        DecimalPosition point1 = middle.getPointWithDistance(angel1, syncItem.getSyncPhysicalArea().getRadius());
-        DecimalPosition point2 = middle.getPointWithDistance(angel2, syncItem.getSyncPhysicalArea().getRadius());
+        DecimalPosition point1 = middle.getPointWithDistance(angel1, radius);
+        DecimalPosition point2 = middle.getPointWithDistance(angel2, radius);
 
-        getGc().strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
+        gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
     }
 
     public void strokeCurveDecimalPosition(List<DecimalPosition> curve, double strokeWidth, Color color, boolean showPoint) {
-        getGc().setStroke(color);
-        getGc().setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
-        getGc().setLineWidth(strokeWidth);
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        gc.setLineWidth(strokeWidth);
         for (int i = 0; i < curve.size(); i++) {
             DecimalPosition start = curve.get(i);
             if (i + 1 < curve.size()) {
                 DecimalPosition end = curve.get(i + 1);
-                getGc().strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+                gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
             }
             if (showPoint) {
-                getGc().fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
+                gc.fillOval(start.getX() - strokeWidth * 5.0, start.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
             }
         }
     }
 
     public void strokeCircle(Circle2D circle2D, double lineWidth, Color color) {
-        getGc().setStroke(color);
-        getGc().setLineWidth(lineWidth);
-        getGc().strokeOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2.0 * circle2D.getRadius(), 2.0 * circle2D.getRadius());
+        gc.setStroke(color);
+        gc.setLineWidth(lineWidth);
+        gc.strokeOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2.0 * circle2D.getRadius(), 2.0 * circle2D.getRadius());
     }
 
     public void fillCircle(Circle2D circle2D, Color color) {
-        getGc().setFill(color);
-        getGc().fillOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2.0 * circle2D.getRadius(), 2.0 * circle2D.getRadius());
+        gc.setFill(color);
+        gc.fillOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2.0 * circle2D.getRadius(), 2.0 * circle2D.getRadius());
     }
 
     public void drawPosition(DecimalPosition position, double radius, Color color) {
-        getGc().setFill(color);
-        getGc().fillOval(position.getX() - radius, position.getY() - radius, radius * 2.0, radius * 2.0);
+        gc.setFill(color);
+        gc.fillOval(position.getX() - radius, position.getY() - radius, radius * 2.0, radius * 2.0);
     }
 
     public void drawPositions(Collection<DecimalPosition> positions, double radius, Color color) {

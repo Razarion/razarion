@@ -31,7 +31,7 @@ import java.util.List;
  * 09.04.2017.
  */
 public class AssertTerrainTile {
-    public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
+    public static final String SAVE_DIRECTORY = TestHelper.SAVE_DIRECTORY + "terrain";
     // public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion2\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\terrain";
     private Collection<TerrainTile> expected;
     private DifferenceCollector differenceCollector;

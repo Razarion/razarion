@@ -2,18 +2,26 @@ package com.btxtech.shared.gameengine.planet.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
+import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
-import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestController;
-import com.btxtech.shared.gameengine.planet.terrain.gui.AbstractTerrainTestRenderer;
-import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URL;
@@ -26,13 +34,25 @@ import java.util.ResourceBundle;
  * 09.04.2017.
  */
 @Singleton
-public class WeldTestController extends AbstractTerrainTestController {
+public class WeldTestController implements Initializable {
     @Inject
     private WeldTestRenderer weldTestRenderer;
     @Inject
     private PlanetService planetService;
     @Inject
     private TerrainService terrainService;
+    @Inject
+    private Instance<ScenarioPlaybackController> instance;
+    @FXML
+    private AnchorPane anchorPanel;
+    @FXML
+    private Canvas canvas;
+    @FXML
+    private Slider zoomSlider;
+    @FXML
+    private TextField scaleField;
+    @FXML
+    private TextField mouseLabel;
     @FXML
     private TextField zMinField;
     @FXML
@@ -67,19 +87,32 @@ public class WeldTestController extends AbstractTerrainTestController {
     private CheckBox shapeWaterCheck;
     @FXML
     private CheckBox shapeTerrainObjectCheck;
+    @FXML
+    private CheckBox syncItemsCheck;
+    @FXML
+    private AnchorPane gameEnginePlaybackContainer;
+    private DecimalPosition mousePosition;
     private Object[] userObjects;
     private MouseMoveCallback mouseMoveCallback;
     private TestCaseGenerator testCaseGenerator;
-
-    @Override
-    protected AbstractTerrainTestRenderer setupRenderer() {
-        weldTestRenderer.setup(this, userObjects);
-        return weldTestRenderer;
-    }
+    private ScenarioPlaybackController scenarioPlaybackController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        super.initialize(url, resourceBundle);
+        weldTestRenderer.setup(this, userObjects);
+        weldTestRenderer.init(canvas, 1.0);
+        anchorPanel.widthProperty().addListener((observableValue, oldSceneWidth, width) -> {
+            canvas.setWidth(width.doubleValue());
+            weldTestRenderer.render(scenarioPlaybackController);
+        });
+        anchorPanel.heightProperty().addListener((observableValue, oldSceneWidth, height) -> {
+            canvas.setHeight(height.doubleValue());
+            weldTestRenderer.render(scenarioPlaybackController);
+        });
+        scaleField.setText(String.format("%.2f", weldTestRenderer.getScale()));
+        zoomSlider.setValue(weldTestRenderer.getZoom());
+        zoomSlider.valueProperty().addListener((observableValue, number, t1) -> setZoom(zoomSlider.getValue()));
+
         zMinField.setText(Double.toString(weldTestRenderer.getZMin()));
         zMaxField.setText(Double.toString(weldTestRenderer.getZMax()));
 
@@ -98,10 +131,64 @@ public class WeldTestController extends AbstractTerrainTestController {
         addRenderListener(groundSlopeConnectionsCheck);
         addRenderListener(shapeWaterCheck);
         addRenderListener(shapeTerrainObjectCheck);
+        addRenderListener(syncItemsCheck);
+
+        setupGameEnginePlayback();
+    }
+
+    public void onZoomResetButton() {
+        setZoom(1);
+    }
+
+    private void setZoom(double zoom) {
+        weldTestRenderer.setZoom(zoom);
+        scaleField.setText(String.format("%.2f", weldTestRenderer.getScale()));
+        weldTestRenderer.render(scenarioPlaybackController);
+    }
+
+    public void onScroll(ScrollEvent scrollEvent) {
+        if (scrollEvent.getDeltaY() > 0) {
+            zoomSlider.setValue(zoomSlider.getValue() + 1);
+        } else {
+            zoomSlider.setValue(zoomSlider.getValue() - 1);
+        }
+    }
+
+    public void onMouseDragged(Event event) {
+        if (weldTestRenderer.shifting(event)) {
+            weldTestRenderer.render(scenarioPlaybackController);
+        }
+    }
+
+    public void onMouseReleased() {
+        weldTestRenderer.stopShift();
+    }
+
+    public void onMouseMoved(Event event) {
+        DecimalPosition position = weldTestRenderer.convertMouseToModel(event);
+        mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
+        mousePosition = position;
+        if (mouseMoveCallback != null) {
+            Object[] userObject = mouseMoveCallback.onMouseMove(position);
+            if (userObject != null) {
+                weldTestRenderer.setMoveUserDataRenderer(userObject);
+                weldTestRenderer.render(scenarioPlaybackController);
+                weldTestRenderer.setMoveUserDataRenderer(null);
+            }
+        }
+    }
+
+    public void onMousePressed(MouseEvent event) {
+        DecimalPosition position = weldTestRenderer.convertMouseToModel(event);
+        onMousePressedTerrain(position);
+    }
+
+    public DecimalPosition getMousePosition() {
+        return mousePosition;
     }
 
     private void addRenderListener(CheckBox checkBox) {
-        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> getAbstractTerrainTestRenderer().render());
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> weldTestRenderer.render(scenarioPlaybackController));
     }
 
     public void setUserObjects(Object[] userObjects) {
@@ -111,23 +198,14 @@ public class WeldTestController extends AbstractTerrainTestController {
                 mouseMoveCallback = (MouseMoveCallback) userObject;
             } else if (userObject instanceof TestCaseGenerator) {
                 testCaseGenerator = (TestCaseGenerator) userObject;
+            } else if (userObject instanceof ScenarioPlayback) {
+                scenarioPlaybackController = instance.get();
+                scenarioPlaybackController.setScenarioPlayback((ScenarioPlayback) userObject, () -> weldTestRenderer.render(scenarioPlaybackController));
             } else {
                 userObjectsCopy.add(userObject);
             }
         }
         this.userObjects = userObjectsCopy.toArray();
-    }
-
-    @Override
-    public void onMouseMoved(DecimalPosition position) {
-        if (mouseMoveCallback != null) {
-            Object[] userObject = mouseMoveCallback.onMouseMove(position);
-            if (userObject != null) {
-                ((WeldTestRenderer) getAbstractTerrainTestRenderer()).setMoveUserDataRenderer(userObject);
-                getAbstractTerrainTestRenderer().render();
-                ((WeldTestRenderer) getAbstractTerrainTestRenderer()).setMoveUserDataRenderer(null);
-            }
-        }
     }
 
     protected void onMousePressedTerrain(DecimalPosition position) {
@@ -151,14 +229,14 @@ public class WeldTestController extends AbstractTerrainTestController {
 
     }
 
-    public void onMinZChanged(ActionEvent inputMethodEvent) {
+    public void onMinZChanged() {
         weldTestRenderer.setZMin(Double.parseDouble(zMinField.getText()));
-        getAbstractTerrainTestRenderer().render();
+        weldTestRenderer.render(scenarioPlaybackController);
     }
 
-    public void onMaxZChanged(ActionEvent inputMethodEvent) {
+    public void onMaxZChanged() {
         weldTestRenderer.setZMax(Double.parseDouble(zMaxField.getText()));
-        getAbstractTerrainTestRenderer().render();
+        weldTestRenderer.render(scenarioPlaybackController);
     }
 
     public boolean renderTerrainTileSplattings() {
@@ -221,17 +299,35 @@ public class WeldTestController extends AbstractTerrainTestController {
         return shapeTerrainObjectCheck.isSelected();
     }
 
-    public void onTickButton(ActionEvent actionEvent) {
-        planetService.run();
-        getAbstractTerrainTestRenderer().render();
+    public boolean renderSyncItems() {
+        return syncItemsCheck.isSelected();
     }
 
-    public void onTestGenerationButton(ActionEvent actionEvent) {
+    public void onTickButton() {
+        planetService.run();
+        weldTestRenderer.render(scenarioPlaybackController);
+    }
+
+    public void onTestGenerationButton() {
         if (testCaseGenerator != null) {
-            if(getMousePosition() == null) {
+            if (getMousePosition() == null) {
                 throw new IllegalStateException("No mouse position available. Move the mouse before press the test case generation button.");
             }
             testCaseGenerator.onTestGenerationButton(getMousePosition());
+        }
+    }
+
+    private void setupGameEnginePlayback() {
+        gameEnginePlaybackContainer.getChildren().clear();
+        if (scenarioPlaybackController == null) {
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ScenarioPlayback.fxml"));
+            loader.setControllerFactory(param -> scenarioPlaybackController);
+            gameEnginePlaybackContainer.getChildren().add(loader.load());
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 }

@@ -56,7 +56,7 @@
                                 <CheckBox fx:id="terrainTileSlopeCheck" mnemonicParsing="false" text="Tile Slope" />
                                 <CheckBox fx:id="terrainTileHeightCheck" mnemonicParsing="false" text="Tile Height" />
                                 <CheckBox fx:id="terrainTileTerrainTypeCheck" mnemonicParsing="false" text="Tile Terrain Type" />
-                        <CheckBox fx:id="terrainTileTerrainObjectCheck" mnemonicParsing="false" text="Tile Terrain Object" />
+                                <CheckBox fx:id="terrainTileTerrainObjectCheck" mnemonicParsing="false" text="Tile Terrain Object" />
                                 <CheckBox fx:id="shapeAccessCheck" mnemonicParsing="false" text="Shape access" />
                                 <CheckBox fx:id="shapeTerrainTypeCheck" mnemonicParsing="false" text="Shape terrain type" />
                                 <CheckBox fx:id="shapeTerrainHeightCheck" mnemonicParsing="false" text="Shape terrain height (Game engine)" />
@@ -64,16 +64,25 @@
                                 <CheckBox fx:id="shapeObstaclesCheck" mnemonicParsing="false" text="Shape obstacles" />
                                 <CheckBox fx:id="groundSlopeConnectionsCheck" mnemonicParsing="false" text="Shape ground slope connections" />
                                 <CheckBox fx:id="shapeWaterCheck" mnemonicParsing="false" text="Shape water" />
-                        <CheckBox fx:id="shapeTerrainObjectCheck" mnemonicParsing="false" text="Shape Terrain Object" />
+                                <CheckBox fx:id="shapeTerrainObjectCheck" mnemonicParsing="false" text="Shape Terrain Object" />
                             </children>
                         </VBox>
                     </content>
                 </TitledPane>
                 <TitledPane animated="false" text="Game engin">
                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <VBox>
+                     <children>
+                                <Button mnemonicParsing="false" onAction="#onTickButton" text="Tick" />
+                        <CheckBox fx:id="syncItemsCheck" mnemonicParsing="false" text="Show sync items" />
+                     </children>
+                  </VBox>
+                    </content>
+                </TitledPane>
+                <TitledPane animated="false" text="Game engine playback">
+                    <content>
+                        <AnchorPane fx:id="gameEnginePlaybackContainer" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                             <children>
-                                <Button layoutX="2.0" layoutY="2.0" mnemonicParsing="false" onAction="#onTickButton" text="Tick" />
                             </children>
                         </AnchorPane>
                     </content>

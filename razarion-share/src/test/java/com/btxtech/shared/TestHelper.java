@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
  * 01.11.2015.
  */
 public class TestHelper {
+    public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\";
+
     public static void assertItemTypeCountMap(Map<Integer, Integer> actual, int... expectedItemTypeIdCount) {
         Assert.assertTrue("expectedItemTypeIdCount must have an even count. first itemTypeId, second count", expectedItemTypeIdCount.length % 2 == 0);
         int count = expectedItemTypeIdCount.length / 2;

@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.pathing;
+package com.btxtech.shared.gameengine.planet.pathing.move;
 
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
@@ -13,13 +13,24 @@ import org.junit.Test;
  * Created by Beat
  * on 18.03.2018.
  */
-public class MoveSingleUnitTest extends AStarBaseTest {
+public class MoveSingleUnitTest extends MoveBaseTest {
+
     @Test
     public void moveEast() {
+        testScenario(new Scenario("moveEast.json") {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(200, 160));
+            }
+        });
+    }
+
+    @Test
+    public void moveEast2() {
         UserContext userContext = createLevel1UserContext();
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(64, 160), userContext);
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.MOVING_TEST_ITEM_TYPE_ID);
 
         WeldSlaveEmulator slave = new WeldSlaveEmulator();
         slave.connectToMater(userContext, this);

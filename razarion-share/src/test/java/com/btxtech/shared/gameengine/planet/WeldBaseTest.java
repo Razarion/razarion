@@ -79,6 +79,10 @@ public class WeldBaseTest {
         return getWeldBean(SyncItemContainerService.class);
     }
 
+    public ItemTypeService getItemTypeService() {
+        return getWeldBean(ItemTypeService.class);
+    }
+
     public EnergyService getEnergyService() {
         return getWeldBean(EnergyService.class);
     }
