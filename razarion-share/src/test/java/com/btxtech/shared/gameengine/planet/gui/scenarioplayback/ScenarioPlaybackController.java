@@ -31,7 +31,7 @@ public class ScenarioPlaybackController implements Initializable {
     @FXML
     private Label tickLabel;
     @FXML
-    private Label currentTickLabel;
+    private TextField tickField;
     @FXML
     private Label timeLabel;
     @FXML
@@ -64,10 +64,35 @@ public class ScenarioPlaybackController implements Initializable {
         setupCurrent();
     }
 
+    public void onTickField() {
+        try {
+            if (tickField.getText().trim().isEmpty()) {
+                tick = 0;
+            } else {
+                tick = Integer.parseInt(tickField.getText());
+            }
+            if (tick >= scenarioPlayback.getTickCount()) {
+                tick = scenarioPlayback.getTickCount() - 1;
+            }
+            if (tick < 0) {
+                tick = 0;
+            }
+            setupCurrent();
+            display();
+            renderListener.run();
+            displayBaseItemInfo();
+        } catch (NumberFormatException t) {
+            tickField.setText(Integer.toString(tick));
+            tickField.positionCaret(tickField.getLength());
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
     public void onNextTickButtonClicked() {
         tick++;
         if (tick >= scenarioPlayback.getTickCount()) {
-            tick = scenarioPlayback.getTickCount();
+            tick = scenarioPlayback.getTickCount() - 1;
             return;
         }
         setupCurrent();
@@ -94,7 +119,8 @@ public class ScenarioPlaybackController implements Initializable {
 
     private void display() {
         tickLabel.setText(Integer.toString(scenarioPlayback.getTickCount()));
-        currentTickLabel.setText(Integer.toString(tick));
+        tickField.setText(Integer.toString(tick));
+        tickField.positionCaret(tickField.getLength());
         timeLabel.setText(String.format("%.3fs", (double) tick * PlanetService.TICK_FACTOR));
     }
 
