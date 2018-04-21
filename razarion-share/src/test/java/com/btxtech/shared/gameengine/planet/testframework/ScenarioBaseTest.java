@@ -1,4 +1,4 @@
-package com.btxtech.shared.gameengine.planet.pathing.move;
+package com.btxtech.shared.gameengine.planet.testframework;
 
 import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.UserContext;
@@ -6,9 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.pathing.AStarBaseTest;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +16,7 @@ import java.util.List;
  * Created by Beat
  * on 12.04.2018.
  */
-public class MoveBaseTest extends AStarBaseTest {
+public class ScenarioBaseTest extends AStarBaseTest {
     public static final String SAVE_DIRECTORY = TestHelper.SAVE_DIRECTORY + "pathing//move";
 
     protected void testScenario(Scenario scenario) {
@@ -29,22 +27,27 @@ public class MoveBaseTest extends AStarBaseTest {
         scenario.setup(playerBase1, getItemTypeService(), getBaseItemService());
         scenario.createSyncItems();
 
-
-        List<List<SyncBaseItemInfo>> ticks = new ArrayList<>();
-        for(int i = 0; i < 100; i++) {
-            ticks.add(getBaseItemService().getSyncBaseItemInfos());
-            tickPlanetService();
-        }
-        ticks.add(getBaseItemService().getSyncBaseItemInfos());
-
-        showDisplay(new ScenarioPlayback().setSyncBaseItemInfo(ticks));
-
+        List<List<SyncBaseItemInfo>> actualTicks = runScenario();
         try {
-            new ObjectMapper().writeValue(new File(SAVE_DIRECTORY, scenario.getFileName()), ticks);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            List<List<SyncBaseItemInfo>> expectedTicks = scenario.readExpectedTicks();
+            compareScenario(expectedTicks, actualTicks, scenario);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            showDisplay(new ScenarioPlayback().setSyncBaseItemInfo(actualTicks));
         }
-
     }
 
+    private List<List<SyncBaseItemInfo>> runScenario() {
+        List<List<SyncBaseItemInfo>> actualTicks = new ArrayList<>();
+        while (isBaseServiceActive() || isPathingServiceMoving()) {
+            actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
+            tickPlanetService();
+        }
+        actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
+        return actualTicks;
+    }
+
+    private void compareScenario(List<List<SyncBaseItemInfo>> expectedTicks, List<List<SyncBaseItemInfo>> actualTicks, Scenario scenario) throws IOException {
+        // TODO
+    }
 }

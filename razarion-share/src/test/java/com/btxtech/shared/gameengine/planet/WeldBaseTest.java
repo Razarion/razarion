@@ -21,6 +21,8 @@ import com.btxtech.shared.gameengine.planet.gui.WeldDisplay;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
@@ -123,12 +125,27 @@ public class WeldBaseTest {
         weldContainer.event().select(StaticGameInitEvent.class).fire(new StaticGameInitEvent(staticGameConfig));
     }
 
-    public boolean isBaseServiceActive(SyncBaseItem[] ignores) {
+    public boolean isBaseServiceActive(SyncBaseItem ... ignores) {
         Collection<SyncBaseItem> activeItems = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItems", baseItemService));
         activeItems.removeAll(Arrays.asList(ignores));
         Collection<SyncBaseItem> activeItemQueue = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService));
         activeItemQueue.removeAll(Arrays.asList(ignores));
         return !activeItems.isEmpty() || !activeItemQueue.isEmpty();
+    }
+
+    public boolean isPathingServiceMoving() {
+        return getSyncItemContainerService().iterateOverBaseItems(false, false, false, syncBaseItem -> {
+            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
+            if (!syncPhysicalArea.canMove()) {
+                return null;
+            }
+
+            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
+            if (syncPhysicalMovable.isMoving()) {
+                return true;
+            }
+            return null;
+        });
     }
 
     public void tickPlanetService() {
