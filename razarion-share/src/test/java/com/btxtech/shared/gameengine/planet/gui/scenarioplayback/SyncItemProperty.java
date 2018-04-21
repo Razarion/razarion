@@ -28,7 +28,7 @@ public class SyncItemProperty {
     }
 
     public static SyncItemProperty create(String name, DecimalPosition decimalPosition) {
-        return new SyncItemProperty(name, String.format("%.2f:%.2f", decimalPosition.getX(), decimalPosition.getY()));
+        return new SyncItemProperty(name, String.format("%.3f:%.3f", decimalPosition.getX(), decimalPosition.getY()));
     }
 
     public static SyncItemProperty createRad2Grad(String name, double rad) {
