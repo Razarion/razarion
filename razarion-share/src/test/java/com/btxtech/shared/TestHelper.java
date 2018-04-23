@@ -250,6 +250,13 @@ public class TestHelper {
     }
 
     public static void assertDecimalPositions(List<DecimalPosition> expected, List<DecimalPosition> actual) {
+        if (expected == null && actual == null) {
+            return;
+        } else if (expected != null && actual == null) {
+            Assert.fail("Expected is: " + expected + ". Actual is null");
+        } else if (expected == null) {
+            Assert.fail("Expected is null. Actual: " + actual);
+        }
         Assert.assertEquals("Size is not same", expected.size(), actual.size());
         for (int i = 0; i < expected.size(); i++) {
             assertDecimalPosition("At position: " + i + ".", expected.get(i), actual.get(i));

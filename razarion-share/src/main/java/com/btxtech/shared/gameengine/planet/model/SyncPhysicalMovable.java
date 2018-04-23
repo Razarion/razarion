@@ -27,7 +27,6 @@ import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
 import com.btxtech.shared.gameengine.planet.pathing.Contact;
-import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.utils.MathHelper;
@@ -89,7 +88,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             path.setupCurrentWayPoint(this);
             double distance;
             if (path.isLastWayPoint()) {
-                distance = getPosition2d().getDistance(path.getCurrentWayPoint()) - path.getTotalRange() + PathingService.STOP_DETECTION_DISTANCE;
+                distance = getPosition2d().getDistance(path.getCurrentWayPoint()) - path.getTotalRange();
                 if (distance <= 0) {
                     path = null;
                     stopNoDestination();
@@ -100,9 +99,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
 
             DecimalPosition desiredVelocity = path.getCurrentWayPoint().sub(getPosition2d()).normalize(maxSpeed);
-            if (velocity == null) {
-                velocity = DecimalPosition.createVector(getAngle(), 0.001);
-            }
             desiredVelocity = forwardLooking(desiredVelocity).normalize(maxSpeed);
             double desiredAngle = desiredVelocity.angle();
             double deltaAngle = MathHelper.negateAngle(desiredVelocity.angle() - getAngle());
@@ -113,17 +109,19 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 setAngle(desiredAngle);
             }
             // Max possible speed
-            double originalSpeed = velocity.magnitude();
             double possibleSpeed;
             if (MathHelper.compareWithPrecision(MathHelper.getAngle(desiredAngle, getAngle()), 0.0)) {
-                double tickDistance = originalSpeed * PlanetService.TICK_FACTOR;
-                double ticks2Break = maxSpeed / (acceleration * PlanetService.TICK_FACTOR);
-                double breakingDistance = acceleration * PlanetService.TICK_FACTOR * PlanetService.TICK_FACTOR * (ticks2Break * ticks2Break / 2.0);
-                if (tickDistance >= distance) {
-                    possibleSpeed = distance / PlanetService.TICK_FACTOR;
-                } else if (breakingDistance >= distance) {
-                    double ticks2Destination = Math.sqrt(2.0 * distance / acceleration);
-                    possibleSpeed = acceleration * ticks2Destination;
+                if (path.isLastWayPoint()) {
+                    double ticks2Break = maxSpeed / (acceleration * PlanetService.TICK_FACTOR);
+                    //Gaußsche Summenformel https://de.wikipedia.org/wiki/Gau%C3%9Fsche_Summenformel
+                    double breakingDistance = ((ticks2Break * ticks2Break + ticks2Break) / 2.0) * acceleration * PlanetService.TICK_FACTOR * PlanetService.TICK_FACTOR;
+                    if (breakingDistance >= distance) {
+                        //Gaußsche Summenformel https://de.wikipedia.org/wiki/Gau%C3%9Fsche_Summenformel
+                        double ticks2Destination = 0.5 * (Math.sqrt(8 * (distance / acceleration / PlanetService.TICK_FACTOR / PlanetService.TICK_FACTOR) + 1) - 1);
+                        possibleSpeed = acceleration * PlanetService.TICK_FACTOR * ticks2Destination;
+                    } else {
+                        possibleSpeed = maxSpeed;
+                    }
                 } else {
                     possibleSpeed = maxSpeed;
                 }
@@ -134,6 +132,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 possibleSpeed = radius * angularVelocity;
             }
             // Fix velocity
+            double originalSpeed = velocity != null ? velocity.magnitude() : 0;
             double desiredSpeed;
             if (Math.abs(originalSpeed - possibleSpeed) > acceleration * PlanetService.TICK_FACTOR) {
                 if (originalSpeed < possibleSpeed) {
@@ -145,8 +144,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 desiredSpeed = possibleSpeed;
             }
 
-            double speed = Math.min(maxSpeed, desiredSpeed);
-            speed = Math.max(0.0, speed);
+            double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
             velocity = DecimalPosition.createVector(getAngle(), speed);
             this.desiredVelocity = velocity;
         } else {
@@ -233,7 +231,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         // 1) Position reached directly
         if (path.isLastWayPoint()) {
             double distance = getPosition2d().getDistance(path.getCurrentWayPoint());
-            if (distance < 2.0 * PathingService.STOP_DETECTION_DISTANCE) {
+            if (distance < getRadius()) {
                 return true;
             }
         }

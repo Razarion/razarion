@@ -32,7 +32,7 @@
                 <Label text="Tick" />
                 <Label fx:id="tickLabel" text="Label" GridPane.columnIndex="1" />
                 <Label text="Tick control" GridPane.rowIndex="2" />
-                <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <children>
                         <Button mnemonicParsing="false" onAction="#onPrefTickButtonClicked" text="-" />
                   <TextField fx:id="tickField" onKeyReleased="#onTickField" prefHeight="25.0" prefWidth="40.0" />
@@ -45,6 +45,12 @@
             <Label fx:id="timeLabel" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             </children>
         </GridPane>
+      <HBox alignment="CENTER_LEFT" prefHeight="11.0" prefWidth="187.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#onSaveButton" text="Save" />
+            <Label fx:id="testMethodLabel" text="sss" />
+         </children>
+      </HBox>
         <VBox prefHeight="259.0" prefWidth="155.0">
             <children>
                 <HBox prefHeight="100.0" prefWidth="200.0">

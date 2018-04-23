@@ -56,7 +56,7 @@ public class SyncPhysicalAreaInfo {
         return currentWayPointIndex;
     }
 
-    public SyncPhysicalAreaInfo setCurrentWayPointIndex(int currentWayPointIndex) {
+    public SyncPhysicalAreaInfo setCurrentWayPointIndex(Integer currentWayPointIndex) {
         this.currentWayPointIndex = currentWayPointIndex;
         return this;
     }
@@ -65,7 +65,7 @@ public class SyncPhysicalAreaInfo {
         return totalRange;
     }
 
-    public SyncPhysicalAreaInfo setTotalRange(double totalRange) {
+    public SyncPhysicalAreaInfo setTotalRange(Double totalRange) {
         this.totalRange = totalRange;
         return this;
     }

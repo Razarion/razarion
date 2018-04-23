@@ -37,6 +37,8 @@ public class ScenarioPlaybackController implements Initializable {
     @FXML
     private CheckBox animationCheck;
     @FXML
+    private Label testMethodLabel;
+    @FXML
     private TableView<SyncItemProperty> syncItemPropertyTable;
     @FXML
     private TableColumn<SyncItemProperty, String> syncItemPropertyTableNameColumn;
@@ -122,6 +124,7 @@ public class ScenarioPlaybackController implements Initializable {
         tickField.setText(Integer.toString(tick));
         tickField.positionCaret(tickField.getLength());
         timeLabel.setText(String.format("%.3fs", (double) tick * PlanetService.TICK_FACTOR));
+        testMethodLabel.setText(scenarioPlayback.getScenario().getFileName());
     }
 
     public void render(WeldTestRenderer weldTestRenderer) {
@@ -191,5 +194,9 @@ public class ScenarioPlaybackController implements Initializable {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    public void onSaveButton() {
+        scenarioPlayback.getScenario().onSave();
     }
 }

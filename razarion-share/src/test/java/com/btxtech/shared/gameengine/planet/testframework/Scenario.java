@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 /**
  * Created by Beat
@@ -30,6 +31,7 @@ public class Scenario {
     private ItemTypeService itemTypeService;
     private BaseItemService baseItemService;
     private List<SyncBaseItem> createdSyncBaseItems = new ArrayList<>();
+    private Runnable saveCallback;
 
     public Scenario(String fileName, Class theClass) {
         this.fileName = fileName;
@@ -40,6 +42,10 @@ public class Scenario {
         this.playerBase1 = playerBase1;
         this.itemTypeService = itemTypeService;
         this.baseItemService = baseItemService;
+    }
+
+    public void setSaveCallback(Runnable saveCallback) {
+        this.saveCallback = saveCallback;
     }
 
     // Override in subclasses
@@ -66,10 +72,6 @@ public class Scenario {
         return fileName;
     }
 
-    public File getFile(String path) {
-        return new File(path, fileName);
-    }
-
     public List<List<SyncBaseItemInfo>> readExpectedTicks() throws IOException {
         InputStream inputStream = theClass.getResourceAsStream(fileName);
         if (inputStream == null) {
@@ -79,5 +81,22 @@ public class Scenario {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return objectMapper.readValue(inputStream, new TypeReference<List<List<SyncBaseItemInfo>>>() {
         });
+    }
+
+    public void save(String saveDir, List<List<SyncBaseItemInfo>> expectedTicks) {
+        try {
+            File savePath = new File(saveDir, fileName);
+            System.out.println("Save expected text case values to: " + savePath);
+            new ObjectMapper().writeValue(savePath, expectedTicks);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+
+    }
+
+    public void onSave() {
+        if(saveCallback != null) {
+            saveCallback.run();
+        }
     }
 }

@@ -22,7 +22,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("moveEast1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(170, 160));
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(100, 160));
             }
         });
     }
@@ -32,7 +32,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("moveEast2.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(171, 160));
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(101, 160));
             }
         });
     }
@@ -42,7 +42,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("moveEast3.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(180, 160));
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(110, 160));
             }
         });
     }
