@@ -22,10 +22,6 @@ public class BaseBotServiceTest extends BaseBasicTest {
         botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
     }
 
-    protected BotService getBotService() {
-        return getWeldBean(BotService.class);
-    }
-
     protected void tickBotRunner() {
         botScheduledFuture.invokeRun();
     }

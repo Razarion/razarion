@@ -13,6 +13,7 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,10 @@ public class WeldMasterBaseTest extends WeldBaseTest {
 
     protected BotService getBotService() {
         return getWeldBean(BotService.class);
+    }
+
+    protected PathingService getPathingService() {
+        return getWeldBean(PathingService.class);
     }
 
     @Deprecated // Use getBotBase(int botId)

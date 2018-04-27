@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,7 @@ public class Scenario {
     private PlayerBaseFull playerBase1;
     private ItemTypeService itemTypeService;
     private BaseItemService baseItemService;
+    private PathingService pathingService;
     private List<SyncBaseItem> createdSyncBaseItems = new ArrayList<>();
     private Runnable saveCallback;
 
@@ -38,10 +40,11 @@ public class Scenario {
         this.theClass = theClass;
     }
 
-    final public void setup(PlayerBaseFull playerBase1, ItemTypeService itemTypeService, BaseItemService baseItemService) {
+    final public void setup(PlayerBaseFull playerBase1, ItemTypeService itemTypeService, BaseItemService baseItemService, PathingService pathingService) {
         this.playerBase1 = playerBase1;
         this.itemTypeService = itemTypeService;
         this.baseItemService = baseItemService;
+        this.pathingService = pathingService;
     }
 
     public void setSaveCallback(Runnable saveCallback) {
@@ -53,12 +56,26 @@ public class Scenario {
 
     }
 
-    final protected SyncBaseItem createSyncBaseItem(int baseItemTypeId, DecimalPosition position, DecimalPosition destination) {
+    final protected SyncBaseItem createSyncBaseItemSimplePath(int baseItemTypeId, DecimalPosition position, DecimalPosition destination) {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase1, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
                 SimplePath path = new SimplePath();
                 path.setWayPositions(Collections.singletonList(destination));
+                ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
+            }
+            createdSyncBaseItems.add(syncBaseItem);
+            return syncBaseItem;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    final protected SyncBaseItem createSyncBaseItem(int baseItemTypeId, DecimalPosition position, DecimalPosition destination) {
+        try {
+            SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase1, true);
+            if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
+                SimplePath path =pathingService.setupPathToDestination(syncBaseItem, destination);
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
             }
             createdSyncBaseItems.add(syncBaseItem);

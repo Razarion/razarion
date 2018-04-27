@@ -112,8 +112,4 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
 
         setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions);
     }
-
-    protected PathingService getPathingService() {
-        return getWeldBean(PathingService.class);
-    }
 }
