@@ -187,6 +187,11 @@ public class ScenarioPlaybackController implements Initializable {
                 syncItemPropertyTable.getItems().add(SyncItemProperty.createRad2Grad("Angle", syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle()));
                 if (syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity() != null) {
                     syncItemPropertyTable.getItems().add(SyncItemProperty.create("Velocity", syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity()));
+                    syncItemPropertyTable.getItems().add(SyncItemProperty.create("Speed", syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity().magnitude()));
+                }
+                if(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null) {
+                    syncItemPropertyTable.getItems().add(SyncItemProperty.create("Way positions", syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions()));
+                    syncItemPropertyTable.getItems().add(SyncItemProperty.create("Current way pointIndex", syncBaseItemInfo.getSyncPhysicalAreaInfo().getCurrentWayPointIndex()));
                 }
             }
         } catch (NumberFormatException t) {

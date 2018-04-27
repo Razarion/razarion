@@ -241,7 +241,6 @@ public class ExtendedGraphicsContext {
             throw new IllegalArgumentException("Unknown SyncItem: " + syncItem);
         }
         if (syncItem.getSyncPhysicalArea().canMove()) {
-            gc.setFill(new Color(syncItem.getSyncPhysicalMovable().avgJamming(), 0.0, 1.0, 1.0));
             fillPolygon(syncItem);
             gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);

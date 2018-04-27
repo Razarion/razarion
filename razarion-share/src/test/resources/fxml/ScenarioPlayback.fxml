@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="187.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="225.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController">
     <children>
         <GridPane gridLinesVisible="true">
             <columnConstraints>
@@ -62,7 +62,7 @@
                 <TableView fx:id="syncItemPropertyTable" prefHeight="346.0" prefWidth="155.0">
                     <columns>
                         <TableColumn fx:id="syncItemPropertyTableNameColumn" prefWidth="74.0" text="Property" />
-                        <TableColumn fx:id="syncItemPropertyTableValueColumn" prefWidth="112.0" text="Value" />
+                        <TableColumn fx:id="syncItemPropertyTableValueColumn" prefWidth="143.0" text="Value" />
                     </columns>
                 </TableView>
             </children>

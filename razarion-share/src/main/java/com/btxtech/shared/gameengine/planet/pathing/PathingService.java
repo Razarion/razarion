@@ -362,10 +362,7 @@ public class PathingService {
                 return null;
             }
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
-            if (syncPhysicalMovable.hasDestination() && syncPhysicalMovable.checkDestinationReached()) {
-                syncPhysicalMovable.stop();
-                onPathingChanged(syncPhysicalMovable);
-            }
+            syncPhysicalMovable.stopIfDestinationReached();
             return null;
         });
     }

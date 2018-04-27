@@ -15,6 +15,7 @@ package com.btxtech.shared.gameengine.planet.model;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
@@ -35,8 +36,6 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: beat
@@ -59,8 +58,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private ItemTypeService itemTypeService;
     private final static int LOOK_AHEAD_TICKS_ITEM = 20;
     private final static int LOOK_AHEAD_TICKS_TERRAIN = 3;
-    private final static int JAMMING_COUNT = 20;
-    private final static double MAX_JAMMING_FACTOR = 0.6;
     private double lookAheadItemDistance;
     private double lookAheadTerrainDistance;
     private double acceleration; // Meter per square second
@@ -68,9 +65,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private double angularVelocity; // Rad per second
     private Path path;
     private DecimalPosition velocity;
-    private DecimalPosition desiredVelocity;
     private DecimalPosition oldPosition;
-    private List<Double> jammingCounts = new ArrayList<>();
 
     public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle, DecimalPosition velocity) {
         super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.getFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, angle);
@@ -86,17 +81,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         oldPosition = getPosition2d();
         if (path != null) {
             path.setupCurrentWayPoint(this);
-            double distance;
-            if (path.isLastWayPoint()) {
-                distance = getPosition2d().getDistance(path.getCurrentWayPoint()) - path.getTotalRange();
-                if (distance <= 0) {
-                    path = null;
-                    stopNoDestination();
-                    return;
-                }
-            } else {
-                distance = getPosition2d().getDistance(path.getCurrentWayPoint());
-            }
 
             DecimalPosition desiredVelocity = path.getCurrentWayPoint().sub(getPosition2d()).normalize(maxSpeed);
             desiredVelocity = forwardLooking(desiredVelocity).normalize(maxSpeed);
@@ -108,52 +92,21 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             } else {
                 setAngle(desiredAngle);
             }
-            // Max possible speed
-            double possibleSpeed;
-            if (MathHelper.compareWithPrecision(MathHelper.getAngle(desiredAngle, getAngle()), 0.0)) {
-                if (path.isLastWayPoint()) {
-                    double ticks2Break = maxSpeed / (acceleration * PlanetService.TICK_FACTOR);
-                    //Gaußsche Summenformel https://de.wikipedia.org/wiki/Gau%C3%9Fsche_Summenformel
-                    double breakingDistance = ((ticks2Break * ticks2Break + ticks2Break) / 2.0) * acceleration * PlanetService.TICK_FACTOR * PlanetService.TICK_FACTOR;
-                    if (breakingDistance >= distance) {
-                        //Gaußsche Summenformel https://de.wikipedia.org/wiki/Gau%C3%9Fsche_Summenformel
-                        double ticks2Destination = 0.5 * (Math.sqrt(8 * (distance / acceleration / PlanetService.TICK_FACTOR / PlanetService.TICK_FACTOR) + 1) - 1);
-                        possibleSpeed = acceleration * PlanetService.TICK_FACTOR * ticks2Destination;
-                    } else {
-                        possibleSpeed = maxSpeed;
-                    }
-                } else {
-                    possibleSpeed = maxSpeed;
-                }
-                possibleSpeed = Math.min(maxSpeed, possibleSpeed);
-            } else {
-                double angle = MathHelper.getAngle(getAngle(), desiredAngle) - MathHelper.QUARTER_RADIANT;
-                double radius = distance / (2.0 * Math.cos(angle));
-                possibleSpeed = radius * angularVelocity;
-            }
             // Fix velocity
             double originalSpeed = velocity != null ? velocity.magnitude() : 0;
-            double desiredSpeed;
-            if (Math.abs(originalSpeed - possibleSpeed) > acceleration * PlanetService.TICK_FACTOR) {
-                if (originalSpeed < possibleSpeed) {
-                    desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
-                } else {
-                    desiredSpeed = possibleSpeed;
-                }
-            } else {
-                desiredSpeed = possibleSpeed;
+            double desiredSpeed = maxSpeed;
+            if (originalSpeed < maxSpeed) {
+                desiredSpeed = originalSpeed + acceleration * PlanetService.TICK_FACTOR;
             }
 
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
-            velocity = DecimalPosition.createVector(getAngle(), speed);
-            this.desiredVelocity = velocity;
+            velocity = DecimalPosition.createVector(desiredVelocity.angle(), speed);
         } else {
             stopNoDestination();
         }
     }
 
     private void stopNoDestination() {
-        desiredVelocity = null;
         if (velocity == null) {
             return;
         }
@@ -227,20 +180,17 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         return DecimalPosition.createVector(direction, desiredVelocity.magnitude());
     }
 
-    public boolean checkDestinationReached() {
-        // 1) Position reached directly
-        if (path.isLastWayPoint()) {
-            double distance = getPosition2d().getDistance(path.getCurrentWayPoint());
-            if (distance < getRadius()) {
-                return true;
-            }
+    public void stopIfDestinationReached() {
+        if (path == null || !path.isLastWayPoint()) {
+            return;
         }
-        double jammingFactor = calculateJammedFactor();
-        jammingCounts.add(jammingFactor);
-        if (jammingCounts.size() > JAMMING_COUNT) {
-            jammingCounts.remove(0);
+
+        Line line = new Line(oldPosition, getPosition2d());
+        if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
+            velocity = null;
+            setPosition2d(path.getCurrentWayPoint(), false);
+            path = null;
         }
-        return jammingCounts.size() >= JAMMING_COUNT && avgJamming() > MAX_JAMMING_FACTOR;
     }
 
     @Override
@@ -249,7 +199,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setPath(SimplePath path) {
-        jammingCounts.clear();
         this.path = instancePath.get();
         this.path.init(path);
     }
@@ -277,19 +226,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setVelocity(DecimalPosition velocity) {
         this.velocity = velocity;
-    }
-
-    public double calculateJammedFactor() {
-        if (oldPosition == null || desiredVelocity == null) {
-            return 0.0;
-        }
-        DecimalPosition moved = getPosition2d().sub(oldPosition);
-        DecimalPosition actualVelocity = moved.divide(PlanetService.TICK_FACTOR);
-        return 1.0 - MathHelper.clamp(actualVelocity.magnitude() / desiredVelocity.magnitude(), 0, 1.0);
-    }
-
-    public double avgJamming() {
-        return jammingCounts.stream().mapToDouble(value -> value).average().orElse(0);
     }
 
     public Contact hasContact(SyncPhysicalArea other) {

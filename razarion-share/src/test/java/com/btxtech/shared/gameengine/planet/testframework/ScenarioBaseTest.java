@@ -17,6 +17,7 @@ import java.util.List;
  * on 12.04.2018.
  */
 public class ScenarioBaseTest extends AStarBaseTest {
+    private static final int MAX_TICK_COUNT = 100000;
     public static final String SAVE_DIRECTORY = TestHelper.SAVE_DIRECTORY + "pathing//move";
 
     protected void testScenario(Scenario scenario) {
@@ -41,11 +42,9 @@ public class ScenarioBaseTest extends AStarBaseTest {
 
     private List<List<SyncBaseItemInfo>> runScenario() {
         List<List<SyncBaseItemInfo>> actualTicks = new ArrayList<>();
-        int tickCount = 0;
-        while (isBaseServiceActive() || isPathingServiceMoving()) {
+        for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
             actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
             tickPlanetService();
-            tickCount++;
         }
         actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
         return actualTicks;
