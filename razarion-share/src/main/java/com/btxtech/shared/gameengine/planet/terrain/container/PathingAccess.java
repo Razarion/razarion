@@ -92,14 +92,14 @@ public class PathingAccess {
             return true;
         }
         double angel = start.getAngle(target);
-        // double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
-        // double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
+        double angel1 = MathHelper.normaliseAngle(angel - MathHelper.QUARTER_RADIANT);
+        double angel2 = MathHelper.normaliseAngle(angel + MathHelper.QUARTER_RADIANT);
 
         Line line = new Line(start, target);
-        // Line line1 = new Line(start.getPointWithDistance(angel1, radius), target.getPointWithDistance(angel1, radius));
-        // Line line2 = new Line(start.getPointWithDistance(angel2, radius), target.getPointWithDistance(angel2, radius));
+        Line line1 = new Line(start.getPointWithDistance(angel1, radius), target.getPointWithDistance(angel1, radius));
+        Line line2 = new Line(start.getPointWithDistance(angel2, radius), target.getPointWithDistance(angel2, radius));
 
-        return !terrainShape.isSightBlocked(line)/* && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2)*/;
+        return !terrainShape.isSightBlocked(line) && !terrainShape.isSightBlocked(line1) && !terrainShape.isSightBlocked(line2);
     }
 
     public PathingNodeWrapper getPathingNodeWrapper(DecimalPosition terrainPosition) {

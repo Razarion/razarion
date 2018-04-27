@@ -911,6 +911,9 @@ public class WeldTestRenderer {
             gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);
             gc.setLineWidth(0.5);
             createHeadingLine(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
+            if (syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null) {
+                strokeCurveDecimalPosition(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions(), 0.1, Color.CADETBLUE, true);
+            }
         } else {
             gc.fillOval(position.getX() - baseItemType.getPhysicalAreaConfig().getRadius(), position.getY() - baseItemType.getPhysicalAreaConfig().getRadius(), baseItemType.getPhysicalAreaConfig().getRadius() * 2, baseItemType.getPhysicalAreaConfig().getRadius() * 2);
         }

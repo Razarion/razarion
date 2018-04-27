@@ -185,6 +185,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             return;
         }
 
+        if(oldPosition.equalsDelta(getPosition2d())) {
+            return;
+        }
         Line line = new Line(oldPosition, getPosition2d());
         if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
             velocity = null;
