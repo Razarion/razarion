@@ -232,13 +232,13 @@ public class PathingService {
                 }
                 double projection = contact.getNormal().dotProduct(relativeVelocity);
                 DecimalPosition pushAway = contact.getNormal().multiply(-projection / 2.0);
-                DecimalPosition newVelocity1 = item1.getVelocity().add(pushAway);
+                DecimalPosition newVelocity1 = item1.getVelocity().add(pushAway).normalize(item1.getVelocity().magnitude());
                 item1.setVelocity(newVelocity1);
                 DecimalPosition velocity2 = item2.getVelocity();
                 if (velocity2 == null) {
                     velocity2 = new DecimalPosition(0, 0);
                 }
-                DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1));
+                DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1)).normalize(velocity2.magnitude());
                 item2.setVelocity(newVelocity2);
                 onPathingChanged(item1);
                 onPathingChanged(item2);
@@ -247,7 +247,7 @@ public class PathingService {
                 double projection = contact.getNormal().dotProduct(velocity);
                 if (projection < 0) {
                     DecimalPosition pushAway = contact.getNormal().multiply(-projection);
-                    DecimalPosition newVelocity = velocity.add(pushAway);
+                    DecimalPosition newVelocity = velocity.add(pushAway).normalize(item1.getVelocity().magnitude());;
                     item1.setVelocity(newVelocity);
                     onPathingChanged(item1);
                 }
@@ -373,7 +373,7 @@ public class PathingService {
                 return null;
             }
 
-            syncBaseItem.getSyncPhysicalMovable().setupPosition3d();
+            syncBaseItem.getSyncPhysicalMovable().finalization();
 
             return null;
         });

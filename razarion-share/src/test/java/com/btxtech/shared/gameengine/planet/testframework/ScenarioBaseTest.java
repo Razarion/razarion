@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.testframework;
 
 import com.btxtech.shared.TestHelper;
-import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -16,7 +15,6 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
-import com.btxtech.shared.gameengine.planet.pathing.AStarBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,7 +29,7 @@ import java.util.List;
  * on 12.04.2018.
  */
 public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
-    private static final int MAX_TICK_COUNT = 100000;
+    private static final int MAX_TICK_COUNT = 1000;
     public static final String SAVE_DIRECTORY = TestHelper.SAVE_DIRECTORY + "pathing//move";
 
     @Before
@@ -133,6 +131,9 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         scenario.setSaveCallback(() -> scenario.save(SAVE_DIRECTORY, actualTicks));
         try {
             List<List<SyncBaseItemInfo>> expectedTicks = scenario.readExpectedTicks();
+            if (actualTicks.size() >= MAX_TICK_COUNT + 1) {
+                throw new Exception("Max ticks (+ start state) reached: " + expectedTicks.size());
+            }
             compareScenario(expectedTicks, actualTicks, scenario);
         } catch (Throwable t) {
             t.printStackTrace();

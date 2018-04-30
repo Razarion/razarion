@@ -82,16 +82,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         if (path != null) {
             path.setupCurrentWayPoint(this);
 
-            DecimalPosition desiredVelocity = path.getCurrentWayPoint().sub(getPosition2d()).normalize(maxSpeed);
-            desiredVelocity = forwardLooking(desiredVelocity).normalize(maxSpeed);
-            double desiredAngle = desiredVelocity.angle();
-            double deltaAngle = MathHelper.negateAngle(desiredVelocity.angle() - getAngle());
-            // Fix angle
-            if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
-                setAngle(MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angularVelocity * PlanetService.TICK_FACTOR));
-            } else {
-                setAngle(desiredAngle);
-            }
+            double desiredAngle = forwardLookingAngle(path.getCurrentWayPoint().sub(getPosition2d()).angle());
             // Fix velocity
             double originalSpeed = velocity != null ? velocity.magnitude() : 0;
             double desiredSpeed = maxSpeed;
@@ -100,7 +91,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
 
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
-            velocity = DecimalPosition.createVector(desiredVelocity.angle(), speed);
+            velocity = DecimalPosition.createVector(desiredAngle, speed);
         } else {
             stopNoDestination();
         }
@@ -124,7 +115,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
     }
 
-    private DecimalPosition forwardLooking(DecimalPosition desiredVelocity) {
+    private double forwardLookingAngle(double desiredAngle) {
         ClearanceHole clearanceHole = new ClearanceHole(this);
         SyncItem target = ((SyncBaseItem) getSyncItem()).getTarget();
         double fullLookAheadItemDistance = lookAheadItemDistance + getSyncItem().getSyncPhysicalArea().getRadius() + itemTypeService.getMaxRadius();
@@ -176,8 +167,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         terrainService.getPathingAccess().getObstacles(getPosition2d(), getRadius() + lookAheadTerrainDistance).forEach(clearanceHole::addOther);
 
         // calculate push away force with velocity - obstacle
-        double direction = clearanceHole.getFreeAngle(desiredVelocity.angle());
-        return DecimalPosition.createVector(direction, desiredVelocity.magnitude());
+        return clearanceHole.getFreeAngle(desiredAngle);
     }
 
     public void stopIfDestinationReached() {
@@ -185,7 +175,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             return;
         }
 
-        if(oldPosition.equalsDelta(getPosition2d())) {
+        if (oldPosition.equalsDelta(getPosition2d())) {
             return;
         }
         Line line = new Line(oldPosition, getPosition2d());
@@ -288,5 +278,18 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public DecimalPosition getOldPosition() {
         return oldPosition;
+    }
+
+    public void finalization() {
+        setupPosition3d();
+        // Fix angle
+        if (velocity != null) {
+            double deltaAngle = MathHelper.negateAngle(velocity.angle() - getAngle());
+            if (Math.abs(deltaAngle) > angularVelocity * PlanetService.TICK_FACTOR) {
+                setAngle(MathHelper.negateAngle(getAngle() + Math.signum(deltaAngle) * angularVelocity * PlanetService.TICK_FACTOR));
+            } else {
+                setAngle(velocity.angle());
+            }
+        }
     }
 }
