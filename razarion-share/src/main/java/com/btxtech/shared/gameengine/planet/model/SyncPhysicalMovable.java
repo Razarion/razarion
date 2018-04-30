@@ -46,6 +46,7 @@ import javax.inject.Named;
 @Dependent
 @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
 public class SyncPhysicalMovable extends SyncPhysicalArea {
+    private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -66,6 +67,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private Path path;
     private DecimalPosition velocity;
     private DecimalPosition oldPosition;
+    private boolean crowded;
 
     public void init(SyncItem syncItem, PhysicalAreaConfig physicalAreaConfig, DecimalPosition position2d, double angle, DecimalPosition velocity) {
         super.init(syncItem, physicalAreaConfig.getRadius(), physicalAreaConfig.getFixVerticalNorm(), physicalAreaConfig.getTerrainType(), position2d, angle);
@@ -79,6 +81,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setupForTick() {
         oldPosition = getPosition2d();
+        crowded = false;
         if (path != null) {
             path.setupCurrentWayPoint(this);
 
@@ -173,6 +176,14 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     public void stopIfDestinationReached() {
         if (path == null || !path.isLastWayPoint()) {
             return;
+        }
+
+        if (crowded) {
+            if (getPosition2d().getDistance(path.getCurrentWayPoint()) < getRadius() + CROWDED_STOP_DETECTION_DISTANCE) {
+                velocity = null;
+                path = null;
+                return;
+            }
         }
 
         if (oldPosition.equalsDelta(getPosition2d())) {
@@ -278,6 +289,10 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public DecimalPosition getOldPosition() {
         return oldPosition;
+    }
+
+    public void setCrowded() {
+        crowded = true;
     }
 
     public void finalization() {

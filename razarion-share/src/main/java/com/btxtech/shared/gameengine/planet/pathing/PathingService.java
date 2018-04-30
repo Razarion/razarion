@@ -29,7 +29,6 @@ public class PathingService {
     public static final double MAXIMUM_CORRECTION = 0.02;
     public static final double PENETRATION_TOLERANCE = 0.1;
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
-    public static final double STOP_DETECTION_DISTANCE = 0.1;
     // private Logger logger = Logger.getLogger(PathingService.class.getName());
     @Inject
     private SyncItemContainerService syncItemContainerService;
@@ -380,6 +379,7 @@ public class PathingService {
     }
 
     private void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable) {
+        syncPhysicalMovable.setCrowded();
         if (pathingServiceUpdateListener != null) {
             pathingServiceUpdateListener.onPathingChanged(syncPhysicalMovable);
         }
