@@ -54,8 +54,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     @Inject
     private Instance<Path> instancePath;
     @Inject
-    private GameLogicService gameLogicService;
-    @Inject
     private ItemTypeService itemTypeService;
     private final static int LOOK_AHEAD_TICKS_ITEM = 20;
     private final static int LOOK_AHEAD_TICKS_TERRAIN = 3;
@@ -96,25 +94,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
             velocity = DecimalPosition.createVector(desiredAngle, speed);
         } else {
-            stopNoDestination();
-        }
-    }
-
-    private void stopNoDestination() {
-        if (velocity == null) {
-            return;
-        }
-        double magnitude = velocity.magnitude();
-        double acceleration = this.acceleration * PlanetService.TICK_FACTOR;
-        if (acceleration >= magnitude) {
             velocity = null;
-            gameLogicService.onSyncBaseItemStopped((SyncBaseItem) getSyncItem());
-        } else {
-            velocity = velocity.normalize(magnitude - acceleration);
-            if (velocity.equalsDeltaZero()) {
-                velocity = null;
-                gameLogicService.onSyncBaseItemStopped((SyncBaseItem) getSyncItem());
-            }
         }
     }
 
@@ -130,32 +110,14 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 return;
             }
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
-            SyncPhysicalMovable otherMovable = null;
             if (other.canMove()) {
-                otherMovable = (SyncPhysicalMovable) otherSyncItem.getSyncPhysicalArea();
+                return;
             }
 
             // Check if other is too far away
             double distance = getDistance(other);
             if (distance > lookAheadItemDistance) {
                 return;
-            }
-
-            // Check other destination
-            if (otherMovable != null && otherMovable.hasDestination()) {
-                // Similar destination
-                if (otherMovable.path.getCurrentWayPoint().sub(path.getCurrentWayPoint()).magnitude() <= getRadius() + otherMovable.getRadius()) {
-                    return;
-                }
-
-                // Other moves to destination in same direction
-                DecimalPosition relativeDestination = path.getCurrentWayPoint().sub(getPosition2d()).normalize();
-
-                DecimalPosition relativeDestinationOther = otherMovable.path.getCurrentWayPoint().sub(otherMovable.getPosition2d()).normalize();
-                double deltaAngle = Math.acos(relativeDestination.dotProduct(relativeDestinationOther));
-                if (deltaAngle < Math.PI / 2.0) {
-                    return;
-                }
             }
 
             //Check if destination is nearer than other

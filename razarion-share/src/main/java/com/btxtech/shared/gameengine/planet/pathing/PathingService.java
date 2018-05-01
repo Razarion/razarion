@@ -22,7 +22,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Singleton
 public class PathingService {
@@ -161,7 +164,7 @@ public class PathingService {
 
     private Collection<Contact> findContacts() {
         Collection<Contact> contacts = new ArrayList<>();
-        Collection<SyncPhysicalArea> alreadyAddedItems = new ArrayList<>();
+        Set<DoubleSyncBaseItemKey> alreadyAddedItems = new HashSet<>();
 
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
@@ -174,8 +177,6 @@ public class PathingService {
                 findObstacleContacts(syncPhysicalMovable, contacts);
                 findItemContacts(syncBaseItem, alreadyAddedItems, contacts);
             }
-            alreadyAddedItems.add(syncPhysicalMovable);
-
             return null;
         });
         return contacts;
@@ -190,23 +191,24 @@ public class PathingService {
         }
     }
 
-    private void findItemContacts(SyncBaseItem syncBaseItem, Collection<SyncPhysicalArea> alreadyAddedItems, Collection<Contact> contacts) {
-        syncItemContainerService.iterateCellQuadBaseItem(syncBaseItem.getSyncPhysicalMovable().getPosition2d(), syncBaseItem.getSyncPhysicalMovable().getRadius() + itemTypeService.getMaxRadius(), otherSyncBaseItem -> {
+    private void findItemContacts(SyncBaseItem syncBaseItem, Set<DoubleSyncBaseItemKey> alreadyAddedItems, Collection<Contact> contacts) {
+        syncItemContainerService.iterateCellQuadBaseItem(syncBaseItem.getSyncPhysicalMovable().getPosition2d(), 2.0 * syncBaseItem.getSyncPhysicalMovable().getRadius() + itemTypeService.getMaxRadius(), otherSyncBaseItem -> {
             if (syncBaseItem.equals(otherSyncBaseItem)) {
                 return;
             }
 
             SyncPhysicalArea other = otherSyncBaseItem.getSyncPhysicalArea();
 
-            if (alreadyAddedItems.contains(other)) {
+            DoubleSyncBaseItemKey key = new DoubleSyncBaseItemKey(syncBaseItem, otherSyncBaseItem);
+            if (alreadyAddedItems.contains(key)) {
                 return;
             }
 
             Contact contact = ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).hasContact(other);
             if (contact != null) {
                 contacts.add(contact);
+                alreadyAddedItems.add(key);
             }
-            return;
         });
     }
 
@@ -230,17 +232,24 @@ public class PathingService {
                     relativeVelocity = relativeVelocity.sub(item2.getVelocity());
                 }
                 double projection = contact.getNormal().dotProduct(relativeVelocity);
-                DecimalPosition pushAway = contact.getNormal().multiply(-projection / 2.0);
-                DecimalPosition newVelocity1 = item1.getVelocity().add(pushAway).normalize(item1.getVelocity().magnitude());
-                item1.setVelocity(newVelocity1);
                 DecimalPosition velocity2 = item2.getVelocity();
                 if (velocity2 == null) {
                     velocity2 = new DecimalPosition(0, 0);
                 }
-                DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1)).normalize(velocity2.magnitude());
-                item2.setVelocity(newVelocity2);
-                onPathingChanged(item1);
-                onPathingChanged(item2);
+                if (contact.getItem2().hasDestination()) {
+                    DecimalPosition pushAway = contact.getNormal().multiply(-projection / 2.0);
+                    DecimalPosition newVelocity1 = item1.getVelocity().add(pushAway).normalize(item1.getVelocity().magnitude());
+                    item1.setVelocity(newVelocity1);
+                    DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1)).normalize(velocity2.magnitude());
+                    item2.setVelocity(newVelocity2);
+                    onPathingChanged(item1);
+                    onPathingChanged(item2);
+                } else {
+                    DecimalPosition pushAway = contact.getNormal().multiply(projection);
+                    item2.setVelocity(velocity2.add(pushAway));
+                    onPathingChanged(item1);
+                    onPathingChanged(item2);
+                }
             } else {
                 DecimalPosition velocity = item1.getVelocity();
                 double projection = contact.getNormal().dotProduct(velocity);
@@ -382,6 +391,33 @@ public class PathingService {
         syncPhysicalMovable.setCrowded();
         if (pathingServiceUpdateListener != null) {
             pathingServiceUpdateListener.onPathingChanged(syncPhysicalMovable);
+        }
+    }
+
+    private class DoubleSyncBaseItemKey {
+        private SyncBaseItem s1;
+        private SyncBaseItem s2;
+
+        public DoubleSyncBaseItemKey(SyncBaseItem s1, SyncBaseItem s2) {
+            this.s1 = s1;
+            this.s2 = s2;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            DoubleSyncBaseItemKey that = (DoubleSyncBaseItemKey) o;
+            return (Objects.equals(s1, that.s1) && Objects.equals(s2, that.s2)) || (Objects.equals(s1, that.s2) && Objects.equals(s2, that.s1));
+        }
+
+        @Override
+        public int hashCode() {
+            return s1.hashCode() + s2.hashCode();
         }
     }
 }
