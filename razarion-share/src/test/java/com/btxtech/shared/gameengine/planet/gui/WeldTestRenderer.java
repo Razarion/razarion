@@ -73,6 +73,7 @@ public class WeldTestRenderer {
     public static final double FAT_LINE_WIDTH = 0.3;
     private static final int GRID_SPACING_100 = 100;
     private static final int GRID_SPACING_08 = 8;
+    private static final Color BASE_ITEM_TYPE_BF_COLOR = new Color(0.8, 0, 0, 0.2);
     private static final Color BASE_ITEM_TYPE_COLOR = new Color(0.5, 0.5, 1, 1);
     private static final Color BASE_ITEM_TYPE_LINE_COLOR = new Color(0, 0.3, 0, 1);
     private static final Color BASE_ITEM_TYPE_WEAPON_COLOR = new Color(1, 1, 0, 1);
@@ -902,8 +903,10 @@ public class WeldTestRenderer {
     public void drawSyncBaseItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
         DecimalPosition position = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
-        gc.setFill(BASE_ITEM_TYPE_COLOR);
         if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
+            gc.setFill(BASE_ITEM_TYPE_BF_COLOR);
+            gc.fillOval(position.getX() - baseItemType.getPhysicalAreaConfig().getRadius(), position.getY() - baseItemType.getPhysicalAreaConfig().getRadius(), baseItemType.getPhysicalAreaConfig().getRadius() * 2, baseItemType.getPhysicalAreaConfig().getRadius() * 2);
+            gc.setFill(BASE_ITEM_TYPE_COLOR);
             fillPolygon(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);
@@ -915,6 +918,7 @@ public class WeldTestRenderer {
                 strokeCurveDecimalPosition(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions(), 0.1, Color.CADETBLUE, true);
             }
         } else {
+            gc.setFill(BASE_ITEM_TYPE_COLOR);
             gc.fillOval(position.getX() - baseItemType.getPhysicalAreaConfig().getRadius(), position.getY() - baseItemType.getPhysicalAreaConfig().getRadius(), baseItemType.getPhysicalAreaConfig().getRadius() * 2, baseItemType.getPhysicalAreaConfig().getRadius() * 2);
         }
     }
