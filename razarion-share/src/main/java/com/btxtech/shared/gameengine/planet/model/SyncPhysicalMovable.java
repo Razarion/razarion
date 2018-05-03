@@ -23,7 +23,6 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
@@ -195,8 +194,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public Contact hasContact(SyncPhysicalArea other) {
-        double distance = getDistance(other);
-        if (distance >= 0) {
+        if (getDistance(other) >= 0 && !isDesiredTouching(other)) {
             return null;
         }
         DecimalPosition norm = getPosition2d().sub(other.getPosition2d()).normalize(1.0);

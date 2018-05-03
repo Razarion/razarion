@@ -160,6 +160,30 @@ public class SyncPhysicalArea {
         return getDistance(syncPhysicalArea.position2d, syncPhysicalArea.getRadius());
     }
 
+    public boolean isDesiredTouching(SyncPhysicalArea other) {
+        SyncPhysicalMovable thisMovable = null;
+        SyncPhysicalMovable otherMovable = null;
+
+        if (this instanceof SyncPhysicalMovable && ((SyncPhysicalMovable)this).isMoving()) {
+            thisMovable = (SyncPhysicalMovable) this;
+        }
+        if (other instanceof SyncPhysicalMovable && ((SyncPhysicalMovable)other).isMoving()) {
+            otherMovable = (SyncPhysicalMovable) other;
+        }
+
+        if (thisMovable == null && otherMovable == null) {
+            return false;
+        }
+
+        if(thisMovable != null && otherMovable != null) {
+           return thisMovable.getDesiredPosition().getDistance(otherMovable.getDesiredPosition()) < getRadius() + other.getRadius();
+        } else if(thisMovable != null) {
+            return thisMovable.getDesiredPosition().getDistance(other.getPosition2d()) < getRadius() + other.getRadius();
+        } else {
+            return otherMovable.getDesiredPosition().getDistance(getPosition2d()) < getRadius() + other.getRadius();
+        }
+    }
+
     public double getDistance(DecimalPosition position, double radius) {
         return position2d.getDistance(position) - this.radius - radius;
     }
