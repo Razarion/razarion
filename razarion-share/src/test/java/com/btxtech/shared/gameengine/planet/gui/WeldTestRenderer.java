@@ -76,6 +76,7 @@ public class WeldTestRenderer {
     private static final Color BASE_ITEM_TYPE_BF_COLOR = new Color(0.8, 0, 0, 0.2);
     private static final Color BASE_ITEM_TYPE_COLOR = new Color(0.5, 0.5, 1, 1);
     private static final Color BASE_ITEM_TYPE_LINE_COLOR = new Color(0, 0.3, 0, 1);
+    private static final Color BASE_ITEM_TYPE_LINE_COLOR_HIGHLIGHTED = new Color(1, 1, 0, 1);
     private static final Color BASE_ITEM_TYPE_WEAPON_COLOR = new Color(1, 1, 0, 1);
     private static final Color BASE_ITEM_TYPE_HEADING_COLOR = new Color(1, 0.3, 0, 1);
     private static final Color RESOURCE_ITEM_TYPE_COLOR = new Color(0.8, 0.8, 0, 1);
@@ -900,7 +901,7 @@ public class WeldTestRenderer {
     }
 
 
-    public void drawSyncBaseItemInfo(SyncBaseItemInfo syncBaseItemInfo) {
+    public void drawSyncBaseItemInfo(SyncBaseItemInfo syncBaseItemInfo, boolean highlight) {
         BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
         DecimalPosition position = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
         if (baseItemType.getPhysicalAreaConfig().fulfilledMovable()) {
@@ -908,7 +909,7 @@ public class WeldTestRenderer {
             gc.fillOval(position.getX() - baseItemType.getPhysicalAreaConfig().getRadius(), position.getY() - baseItemType.getPhysicalAreaConfig().getRadius(), baseItemType.getPhysicalAreaConfig().getRadius() * 2, baseItemType.getPhysicalAreaConfig().getRadius() * 2);
             gc.setFill(BASE_ITEM_TYPE_COLOR);
             fillPolygon(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
-            gc.setStroke(BASE_ITEM_TYPE_LINE_COLOR);
+            gc.setStroke(highlight ? BASE_ITEM_TYPE_LINE_COLOR_HIGHLIGHTED : BASE_ITEM_TYPE_LINE_COLOR);
             gc.setLineWidth(0.1);
             strokePolygon(position, baseItemType.getPhysicalAreaConfig().getRadius(), syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle());
             gc.setStroke(BASE_ITEM_TYPE_HEADING_COLOR);

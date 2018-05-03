@@ -128,7 +128,9 @@ public class ScenarioPlaybackController implements Initializable {
     }
 
     public void render(WeldTestRenderer weldTestRenderer) {
-        current.forEach(weldTestRenderer::drawSyncBaseItemInfo);
+        current.forEach(syncBaseItemInfo -> {
+            weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId);
+        });
     }
 
     private void animationTimer(boolean start) {
@@ -166,6 +168,7 @@ public class ScenarioPlaybackController implements Initializable {
         try {
             currentSyncBaseItemId = null;
             currentSyncBaseItemId = Integer.parseInt(((TextField) keyEvent.getSource()).getText());
+            renderListener.run();
             displayBaseItemInfo();
         } catch (NumberFormatException t) {
             // Ignore
