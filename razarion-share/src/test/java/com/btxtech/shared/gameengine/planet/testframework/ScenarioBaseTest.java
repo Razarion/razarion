@@ -144,11 +144,12 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
 
     private List<List<SyncBaseItemInfo>> runScenario() {
         List<List<SyncBaseItemInfo>> actualTicks = new ArrayList<>();
-        for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
-            actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
-            tickPlanetService();
-        }
         actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
+        for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
+            // System.out.println("--------- Tick Index: " + actualTicks.size());
+            tickPlanetService();
+            actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
+        }
         return actualTicks;
     }
 
