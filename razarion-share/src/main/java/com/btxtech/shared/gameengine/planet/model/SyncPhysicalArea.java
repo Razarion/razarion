@@ -229,7 +229,8 @@ public class SyncPhysicalArea {
     @Override
     public String toString() {
         return "SyncPhysicalArea{" +
-                "position3d=" + position3d +
+                "itemId=" + syncItem.getId() +
+                ", position3d=" + position3d +
                 ", norm=" + norm +
                 ", radius=" + radius +
                 '}';
