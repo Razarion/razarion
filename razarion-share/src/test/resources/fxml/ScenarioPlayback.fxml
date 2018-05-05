@@ -62,7 +62,8 @@
                 <TableView fx:id="syncItemPropertyTable" prefHeight="346.0" prefWidth="155.0">
                     <columns>
                         <TableColumn fx:id="syncItemPropertyTableNameColumn" prefWidth="74.0" text="Property" />
-                        <TableColumn fx:id="syncItemPropertyTableValueColumn" prefWidth="143.0" text="Value" />
+                        <TableColumn fx:id="syncItemPropertyTableActualValueColumn" prefWidth="143.0" text="Actual value" />
+                        <TableColumn fx:id="syncItemPropertyTableExpectedValueColumn" prefWidth="143.0" text="Expected value" />
                     </columns>
                 </TableView>
             </children>
