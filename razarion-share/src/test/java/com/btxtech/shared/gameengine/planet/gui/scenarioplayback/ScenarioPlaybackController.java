@@ -43,10 +43,13 @@ public class ScenarioPlaybackController implements Initializable {
     @FXML
     private TableColumn<SyncItemProperty, String> syncItemPropertyTableNameColumn;
     @FXML
-    private TableColumn<SyncItemProperty, String> syncItemPropertyTableValueColumn;
+    private TableColumn<SyncItemProperty, String> syncItemPropertyTableActualValueColumn;
+    @FXML
+    private TableColumn<SyncItemProperty, String> syncItemPropertyTableExpectedValueColumn;
     private ScenarioPlayback scenarioPlayback;
     private int tick;
-    private List<SyncBaseItemInfo> current;
+    private List<SyncBaseItemInfo> currentActual;
+    private List<SyncBaseItemInfo> currentExpected;
     private Integer currentSyncBaseItemId;
     private Runnable renderListener;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -56,7 +59,8 @@ public class ScenarioPlaybackController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         animationCheck.selectedProperty().addListener((observable, oldValue, newValue) -> animationTimer(newValue));
         syncItemPropertyTableNameColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyName()));
-        syncItemPropertyTableValueColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyValue()));
+        syncItemPropertyTableActualValueColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyActualValue()));
+        syncItemPropertyTableExpectedValueColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyExpectedValue()));
         display();
     }
 
@@ -116,7 +120,12 @@ public class ScenarioPlaybackController implements Initializable {
     }
 
     private void setupCurrent() {
-        current = scenarioPlayback.getSyncBaseItemInfo().get(tick);
+        currentActual = scenarioPlayback.getActualSyncBaseItemInfo().get(tick);
+        if (scenarioPlayback.getExpectedSyncBaseItemInfo() != null && tick < scenarioPlayback.getExpectedSyncBaseItemInfo().size()) {
+            currentExpected = scenarioPlayback.getExpectedSyncBaseItemInfo().get(tick);
+        } else {
+            currentExpected = null;
+        }
     }
 
     private void display() {
@@ -128,9 +137,7 @@ public class ScenarioPlaybackController implements Initializable {
     }
 
     public void render(WeldTestRenderer weldTestRenderer) {
-        current.forEach(syncBaseItemInfo -> {
-            weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId);
-        });
+        currentActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
     }
 
     private void animationTimer(boolean start) {
@@ -183,18 +190,22 @@ public class ScenarioPlaybackController implements Initializable {
             return;
         }
         try {
-            SyncBaseItemInfo syncBaseItemInfo = current.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
-            if (syncBaseItemInfo != null) {
-                syncItemPropertyTable.getItems().add(SyncItemProperty.create("Id", syncBaseItemInfo.getId()));
-                syncItemPropertyTable.getItems().add(SyncItemProperty.create("Position", syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition()));
-                syncItemPropertyTable.getItems().add(SyncItemProperty.createRad2Grad("Angle", syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle()));
-                if (syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity() != null) {
-                    syncItemPropertyTable.getItems().add(SyncItemProperty.create("Velocity", syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity()));
-                    syncItemPropertyTable.getItems().add(SyncItemProperty.create("Speed", syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity().magnitude()));
+            SyncBaseItemInfo actualSyncBaseItemInfo = currentActual.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
+            SyncBaseItemInfo expectedSyncBaseItemInfo = null;
+            if (currentExpected != null) {
+                expectedSyncBaseItemInfo = currentExpected.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
+            }
+            if (actualSyncBaseItemInfo != null) {
+                syncItemPropertyTable.getItems().add(SyncItemProperty.createInt("Id", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, SyncBaseItemInfo::getId));
+                syncItemPropertyTable.getItems().add(SyncItemProperty.createDecimalPosition("Position", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition()));
+                syncItemPropertyTable.getItems().add(SyncItemProperty.createRad2Grad("Angle", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getAngle()));
+                if (actualSyncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity() != null) {
+                    syncItemPropertyTable.getItems().add(SyncItemProperty.createDecimalPosition("Velocity", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity()));
+                    syncItemPropertyTable.getItems().add(SyncItemProperty.createDouble("Speed", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getVelocity().magnitude()));
                 }
-                if(syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null) {
-                    syncItemPropertyTable.getItems().add(SyncItemProperty.create("Way positions", syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions()));
-                    syncItemPropertyTable.getItems().add(SyncItemProperty.create("Current way pointIndex", syncBaseItemInfo.getSyncPhysicalAreaInfo().getCurrentWayPointIndex()));
+                if (actualSyncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null) {
+                    syncItemPropertyTable.getItems().add(SyncItemProperty.createDecimalPositionList("Way positions", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions()));
+                    syncItemPropertyTable.getItems().add(SyncItemProperty.createInt("Current way pointIndex", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getCurrentWayPointIndex()));
                 }
             }
         } catch (NumberFormatException t) {

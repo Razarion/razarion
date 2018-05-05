@@ -11,7 +11,8 @@ import java.util.List;
  */
 public class ScenarioPlayback {
     private Scenario scenario;
-    private List<List<SyncBaseItemInfo>> syncBaseItemInfo;
+    private List<List<SyncBaseItemInfo>> actualSyncBaseItemInfo;
+    private List<List<SyncBaseItemInfo>> expectedSyncBaseItemInfo;
 
     public Scenario getScenario() {
         return scenario;
@@ -22,20 +23,29 @@ public class ScenarioPlayback {
         return this;
     }
 
-    public List<List<SyncBaseItemInfo>> getSyncBaseItemInfo() {
-        return syncBaseItemInfo;
+    public List<List<SyncBaseItemInfo>> getActualSyncBaseItemInfo() {
+        return actualSyncBaseItemInfo;
     }
 
-    public ScenarioPlayback setSyncBaseItemInfo(List<List<SyncBaseItemInfo>> syncBaseItemInfo) {
-        this.syncBaseItemInfo = syncBaseItemInfo;
+    public ScenarioPlayback setActualSyncBaseItemInfo(List<List<SyncBaseItemInfo>> actualSyncBaseItemInfo) {
+        this.actualSyncBaseItemInfo = actualSyncBaseItemInfo;
         return this;
     }
 
     public int getTickCount() {
-        if (syncBaseItemInfo != null) {
-            return syncBaseItemInfo.size();
+        if (actualSyncBaseItemInfo != null) {
+            return actualSyncBaseItemInfo.size();
         } else {
             return 0;
         }
+    }
+
+    public List<List<SyncBaseItemInfo>> getExpectedSyncBaseItemInfo() {
+        return expectedSyncBaseItemInfo;
+    }
+
+    public ScenarioPlayback setExpectedSyncBaseItemInfo(List<List<SyncBaseItemInfo>> expectedSyncBaseItemInfo) {
+        this.expectedSyncBaseItemInfo = expectedSyncBaseItemInfo;
+        return this;
     }
 }
