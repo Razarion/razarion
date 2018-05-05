@@ -129,15 +129,16 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
 
         List<List<SyncBaseItemInfo>> actualTicks = runScenario();
         scenario.setSaveCallback(() -> scenario.save(SAVE_DIRECTORY, actualTicks));
+        List<List<SyncBaseItemInfo>> expectedTicks = null;
         try {
-            List<List<SyncBaseItemInfo>> expectedTicks = scenario.readExpectedTicks();
+            expectedTicks = scenario.readExpectedTicks();
             if (actualTicks.size() >= MAX_TICK_COUNT + 1) {
                 throw new Exception("Max ticks (+ start state) reached: " + expectedTicks.size());
             }
             compareScenario(expectedTicks, actualTicks, scenario);
         } catch (Throwable t) {
             t.printStackTrace();
-            showDisplay(new ScenarioPlayback().setSyncBaseItemInfo(actualTicks).setScenario(scenario));
+            showDisplay(new ScenarioPlayback().setActualSyncBaseItemInfo(actualTicks).setExpectedSyncBaseItemInfo(expectedTicks).setScenario(scenario));
             throw new RuntimeException(t);
         }
     }
