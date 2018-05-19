@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import org.junit.Assert;
 import org.junit.Before;
 
@@ -147,7 +148,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         List<List<SyncBaseItemInfo>> actualTicks = new ArrayList<>();
         actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
         for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
-            // System.out.println("--------- Tick Index: " + actualTicks.size());
+            DebugHelperStatic.setCurrentTick(actualTicks.size());
             tickPlanetService();
             actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
         }

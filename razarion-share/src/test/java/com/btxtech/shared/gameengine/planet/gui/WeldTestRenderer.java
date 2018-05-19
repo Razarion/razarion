@@ -41,7 +41,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
 import com.btxtech.shared.nativejs.NativeVertexDto;
-import com.btxtech.shared.system.debugtool.DebugStaticStorage;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.InterpolationUtils;
 import com.btxtech.shared.utils.MathHelper;
 import javafx.event.Event;
@@ -328,11 +328,11 @@ public class WeldTestRenderer {
         if (scenarioPlaybackController != null) {
             scenarioPlaybackController.render(this);
         }
-        if (DebugStaticStorage.getPolygon() != null) {
-            strokePolygon(DebugStaticStorage.getPolygon(), FAT_LINE_WIDTH, Color.BLUE, true);
+        if (DebugHelperStatic.getPolygon() != null) {
+            strokePolygon(DebugHelperStatic.getPolygon(), FAT_LINE_WIDTH, Color.BLUE, true);
         }
-        if (DebugStaticStorage.getPositions() != null) {
-            drawPositions(DebugStaticStorage.getPositions(), FAT_LINE_WIDTH, Color.RED);
+        if (DebugHelperStatic.getPositions() != null) {
+            drawPositions(DebugHelperStatic.getPositions(), FAT_LINE_WIDTH, Color.RED);
         }
     }
 
