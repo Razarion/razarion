@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
@@ -214,15 +215,23 @@ public class PathingService {
 
     private void solveVelocity(Collection<Contact> contacts) {
         for (int i = 0; i < 10; i++) {
-            solveVelocityContacts(contacts);
+            solveMovingVelocityContacts(contacts);
         }
+        for (int i = 0; i < 10; i++) {
+            solveStandingVelocityContacts(contacts);
+        }
+        DebugHelperStatic.printOnTick();
     }
 
-    private void solveVelocityContacts(Collection<Contact> contacts) {
+    private void solveMovingVelocityContacts(Collection<Contact> contacts) {
+        DebugHelperStatic.add2printOnTick("\n-- solveMovingVelocityContacts --");
         for (Contact contact : contacts) {
+            DebugHelperStatic.add2printOnTick("\n");
             SyncPhysicalMovable item1 = contact.getItem1();
-            if (contact.hasUnit2AndCanMove()) {
+            DebugHelperStatic.add2printOnTick("item1: " + item1.getSyncItem().getId());
+            if (contact.hasBothDestination()) {
                 SyncPhysicalMovable item2 = (SyncPhysicalMovable) contact.getItem2();
+                DebugHelperStatic.add2printOnTick(". item2: " + item2.getSyncItem().getId());
                 double newPenetration = calculateNewPenetration(item1, item2);
                 if (newPenetration == 0) {
                     continue;
@@ -236,30 +245,56 @@ public class PathingService {
                 if (velocity2 == null) {
                     velocity2 = new DecimalPosition(0, 0);
                 }
-                if (contact.getItem2().hasDestination()) {
-                    DecimalPosition pushAway = contact.getNormal().multiply(-projection / 2.0);
-                    DecimalPosition newVelocity1 = item1.getVelocity().add(pushAway).normalize(item1.getVelocity().magnitude());
-                    item1.setVelocity(newVelocity1);
-                    DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1)).normalize(velocity2.magnitude());
-                    item2.setVelocity(newVelocity2);
-                    onPathingChanged(item1);
-                    onPathingChanged(item2);
-                } else {
-                    DecimalPosition pushAway = contact.getNormal().multiply(projection);
-                    item2.setVelocity(velocity2.add(pushAway));
-                    onPathingChanged(item1);
-                    onPathingChanged(item2);
-                }
-            } else {
-                DecimalPosition velocity = item1.getVelocity();
-                double projection = contact.getNormal().dotProduct(velocity);
-                if (projection < 0) {
-                    DecimalPosition pushAway = contact.getNormal().multiply(-projection);
-                    DecimalPosition newVelocity = velocity.add(pushAway).normalize(item1.getVelocity().magnitude());;
-                    item1.setVelocity(newVelocity);
-                    onPathingChanged(item1);
-                }
+                DecimalPosition pushAway = contact.getNormal().multiply(-projection / 2.0);
+                DecimalPosition newVelocity1 = item1.getVelocity().add(pushAway).normalize(item1.getVelocity().magnitude());
+                item1.setVelocity(newVelocity1);
+                DebugHelperStatic.add2printOnTick(". newVelocity1: " + newVelocity1);
+                DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1)).normalize(velocity2.magnitude());
+                item2.setVelocity(newVelocity2);
+                DebugHelperStatic.add2printOnTick(". newVelocity2: " + newVelocity2);
+                onPathingChanged(item1);
+                onPathingChanged(item2);
+            } else if (contact.hasFix()) {
+                solveVelocityContactsFix(contact, item1);
             }
+        }
+    }
+
+    private void solveStandingVelocityContacts(Collection<Contact> contacts) {
+        for (Contact contact : contacts) {
+            if (contact.hasOneIdle()) {
+                SyncPhysicalMovable itemWithDestination = contact.getItem1().hasDestination() ? contact.getItem1() : (SyncPhysicalMovable) contact.getItem2();
+                SyncPhysicalMovable itemIdle = contact.getItem1().hasDestination() ? (SyncPhysicalMovable) contact.getItem2() : contact.getItem1();
+                double newPenetration = calculateNewPenetration(itemWithDestination, itemIdle);
+                if (newPenetration == 0) {
+                    continue;
+                }
+                DecimalPosition relativeVelocity = itemWithDestination.getVelocity();
+                if (itemIdle.getVelocity() != null) {
+                    relativeVelocity = relativeVelocity.sub(itemIdle.getVelocity());
+                }
+                double projection = contact.getNormal().dotProduct(relativeVelocity);
+                DecimalPosition velocity2 = itemIdle.getVelocity();
+                if (velocity2 == null) {
+                    velocity2 = new DecimalPosition(0, 0);
+                }
+                DecimalPosition pushAway = contact.getNormal().multiply(projection / 2.0);
+                itemIdle.setVelocity(velocity2.add(pushAway));
+                onPathingChanged(itemIdle);
+            } else if (contact.hasFix()) {
+                solveVelocityContactsFix(contact, contact.getItem1());
+            }
+        }
+    }
+
+    private void solveVelocityContactsFix(Contact contact, SyncPhysicalMovable item1) {
+        DecimalPosition velocity = item1.getVelocity();
+        double projection = contact.getNormal().dotProduct(velocity);
+        if (projection < 0) {
+            DecimalPosition pushAway = contact.getNormal().multiply(-projection);
+            DecimalPosition newVelocity = velocity.add(pushAway).normalize(item1.getVelocity().magnitude());
+            item1.setVelocity(newVelocity);
+            onPathingChanged(item1);
         }
     }
 

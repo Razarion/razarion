@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet.model;
 
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
@@ -140,7 +141,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
 
         if (crowded) {
-            if (getPosition2d().getDistance(path.getCurrentWayPoint()) < getRadius() + CROWDED_STOP_DETECTION_DISTANCE) {
+            Circle2D circle = new Circle2D(path.getCurrentWayPoint(), getRadius() + CROWDED_STOP_DETECTION_DISTANCE);
+            if(circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
                 velocity = null;
                 path = null;
                 return;

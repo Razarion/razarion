@@ -14,11 +14,11 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
 
     @Test
     public void moveMultipleEast1() {
-        testScenario(new Scenario("moveMultipleEast1.json", getClass()) {
+        testScenario(new Scenario("_moveMultipleEast1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 162), new DecimalPosition(100, 160));
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 162), new DecimalPosition(70, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 158), new DecimalPosition(70, 160));
             }
         });
     }
@@ -39,9 +39,41 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("move3East1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 150), new DecimalPosition(100, 160));
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(45, 160), new DecimalPosition(100, 160));
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 170), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(100, 160));
+
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(44, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(44, 162), new DecimalPosition(100, 160));
+            }
+        });
+    }
+
+    @Test
+    public void move4East1() {
+        testScenario(new Scenario("move4East1.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 162), new DecimalPosition(100, 160));
+
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(44, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(44, 162), new DecimalPosition(100, 160));
+            }
+        });
+    }
+
+    @Test
+    public void move6East1() {
+        testScenario(new Scenario("move6East1.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 162), new DecimalPosition(100, 160));
+
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(44, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(44, 162), new DecimalPosition(100, 160));
+
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(48, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(48, 162), new DecimalPosition(100, 160));
             }
         });
     }
@@ -62,9 +94,11 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("movePushAway2.json", getClass()) {
             @Override
             protected void createSyncItems() {
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 162), new DecimalPosition(100, 160));
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(80, 160), null);
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(80, 160));
             }
         });
     }
+
 }

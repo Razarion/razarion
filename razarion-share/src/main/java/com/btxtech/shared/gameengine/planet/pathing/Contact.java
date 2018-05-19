@@ -42,8 +42,17 @@ public class Contact {
         return obstacle;
     }
 
-    public boolean hasUnit2AndCanMove() {
-        return item2 != null && item2.canMove();
+    public boolean hasBothDestination() {
+        return item2 != null && item1.hasDestination() && item2.hasDestination();
+    }
+
+    public boolean hasOneIdle() {
+        return item2 != null && item2.canMove() && item1.hasDestination() ^ item2.hasDestination();
+
+    }
+
+    public boolean hasFix() {
+        return item2 == null || !item2.canMove();
     }
 
     @Override
