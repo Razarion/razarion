@@ -128,8 +128,9 @@ public class PathingService {
             preparation();
             pathingServiceTracker.afterPreparation();
             Collection<Contact> contacts = findContacts();
+            Collection<Island> islands = findIsland(contacts);
             pathingServiceTracker.afterFindContacts();
-            solveVelocity(contacts);
+            solveIslands(islands);
             pathingServiceTracker.afterSolveVelocity();
             implementPosition();
             pathingServiceTracker.afterImplementPosition();
@@ -213,6 +214,16 @@ public class PathingService {
         });
     }
 
+    private Collection<Island> findIsland(Collection<Contact> contacts) {
+        Collection<Island> islands = new ArrayList<>();
+        contacts.forEach(contact -> {
+            Island island = islands.stream().filter(i -> i.included(contact)).findFirst().orElse(new Island());
+            island.add(contact);
+            islands.add(island);
+        });
+        return islands;
+    }
+
     private void solveVelocity(Collection<Contact> contacts) {
         for (int i = 0; i < 10; i++) {
             solveMovingVelocityContacts(contacts);
@@ -221,6 +232,10 @@ public class PathingService {
             solveStandingVelocityContacts(contacts);
         }
         DebugHelperStatic.printOnTick();
+    }
+
+    private void solveIslands(Collection<Island> islands) {
+        islands.forEach(Island::solve);
     }
 
     private void solveMovingVelocityContacts(Collection<Contact> contacts) {

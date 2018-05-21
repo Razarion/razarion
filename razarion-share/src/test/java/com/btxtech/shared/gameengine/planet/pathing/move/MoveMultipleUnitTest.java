@@ -14,7 +14,7 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
 
     @Test
     public void moveMultipleEast1() {
-        testScenario(new Scenario("_moveMultipleEast1.json", getClass()) {
+        testScenario(new Scenario("moveMultipleEast1.json", getClass()) {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 162), new DecimalPosition(70, 160));

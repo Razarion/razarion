@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
  * 01.11.2015.
  */
 public class TestHelper {
+    public static final double DECIMAL_POTION_DELTA = 0.001;
     public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\";
 
     public static void assertItemTypeCountMap(Map<Integer, Integer> actual, int... expectedItemTypeIdCount) {
@@ -235,7 +236,7 @@ public class TestHelper {
     }
 
     public static void assertDecimalPosition(String message, DecimalPosition expected, DecimalPosition actual) {
-        assertDecimalPosition(message, expected, actual, 0.001);
+        assertDecimalPosition(message, expected, actual, DECIMAL_POTION_DELTA);
     }
 
     public static void assertDecimalPosition(String message, DecimalPosition expected, DecimalPosition actual, double delta) {

@@ -10,10 +10,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.util.List;
@@ -59,6 +61,37 @@ public class ScenarioPlaybackController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         animationCheck.selectedProperty().addListener((observable, oldValue, newValue) -> animationTimer(newValue));
         syncItemPropertyTableNameColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyName()));
+        syncItemPropertyTableNameColumn.setCellFactory(column -> new TableCell<SyncItemProperty, String>() {
+            @Override
+            public void updateIndex(int i) {
+                super.updateIndex(i);
+                if(i >= syncItemPropertyTable.getItems().size() || i < 0) {
+                    setStyle(null);
+                    setTextFill(Color.BLACK);
+                    return;
+                }
+                SyncItemProperty syncItemProperty = syncItemPropertyTable.getItems().get(i);
+                if (!syncItemProperty.isEquals()) {
+                    setTextFill(Color.YELLOW);
+                    setStyle("-fx-background-color: red");
+                } else {
+                    setStyle(null);
+                    setTextFill(Color.BLACK);
+                }
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(null);
+                } else {
+                    setText(item);
+                }
+            }
+        });
+
+
         syncItemPropertyTableActualValueColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyActualValue()));
         syncItemPropertyTableExpectedValueColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyExpectedValue()));
         display();
