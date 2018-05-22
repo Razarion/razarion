@@ -134,8 +134,8 @@ public class PathingService {
             pathingServiceTracker.afterSolveVelocity();
             implementPosition();
             pathingServiceTracker.afterImplementPosition();
-            solvePosition();
-            pathingServiceTracker.afterSolvePosition();
+            //solvePosition();
+            //pathingServiceTracker.afterSolvePosition();
             checkDestination();
             pathingServiceTracker.afterCheckDestination();
             syncItemContainerService.afterPathingServiceTick();
@@ -238,6 +238,7 @@ public class PathingService {
     }
 
     private void solveIslands(Collection<Island> islands) {
+        DebugHelperStatic.add2printOnTick("\nislands:" + islands.size());
         islands.forEach(Island::solve);
     }
 
