@@ -10,6 +10,7 @@ import org.junit.Test;
  * Created by Beat
  * on 18.03.2018.
  */
+@Deprecated
 public class MoveMultipleUnitTest extends ScenarioBaseTest {
 
     @Test
