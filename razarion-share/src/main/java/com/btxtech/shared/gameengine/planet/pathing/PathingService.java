@@ -175,10 +175,10 @@ public class PathingService {
             }
 
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
-            if (syncPhysicalMovable.isMoving()) {
-                findObstacleContacts(syncPhysicalMovable, contacts);
-                findItemContacts(syncBaseItem, alreadyAddedItems, contacts);
-            }
+            // if (syncPhysicalMovable.isMoving()) {
+            findObstacleContacts(syncPhysicalMovable, contacts);
+            findItemContacts(syncBaseItem, alreadyAddedItems, contacts);
+            // }
             return null;
         });
         return contacts;
@@ -217,9 +217,12 @@ public class PathingService {
     private Collection<Island> findIsland(Collection<Contact> contacts) {
         Collection<Island> islands = new ArrayList<>();
         contacts.forEach(contact -> {
-            Island island = islands.stream().filter(i -> i.included(contact)).findFirst().orElse(new Island());
+            Island island = islands.stream().filter(i -> i.included(contact)).findFirst().orElse(null);
+            if (island == null) {
+                island = new Island();
+                islands.add(island);
+            }
             island.add(contact);
-            islands.add(island);
         });
         return islands;
     }

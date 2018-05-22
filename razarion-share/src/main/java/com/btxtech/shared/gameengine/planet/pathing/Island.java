@@ -18,11 +18,12 @@ public class Island {
     private Collection<SyncPhysicalArea> fix = new HashSet<>();
 
     public void add(Contact contact) {
+        // DebugHelperStatic.add2printOnTick("\nContact: " + contact.getItem1().getSyncItem().getId() + ":" + contact.getItem2().getSyncItem().getId());
         activeMovable.add(contact.getItem1());
         contact.getItem1().setCrowded();
         if (contact.getItem2() != null) {
             if (contact.getItem2().hasDestination()) {
-                ((SyncPhysicalMovable)contact.getItem2()).setCrowded();
+                ((SyncPhysicalMovable) contact.getItem2()).setCrowded();
                 activeMovable.add((SyncPhysicalMovable) contact.getItem2());
             } else if (contact.getItem2().canMove()) {
                 passiveMovable.add((SyncPhysicalMovable) contact.getItem2());
@@ -50,11 +51,16 @@ public class Island {
     }
 
     public void solve() {
+        // DebugHelperStatic.add2printOnTick("\nactiveMovable: " + activeMovable.size() + ". passiveMovable: " + passiveMovable.size());
         SingleHolder<DecimalPosition> commonVelocityHolder = new SingleHolder<>(DecimalPosition.NULL);
         SingleHolder<Double> minSpeed = new SingleHolder<>();
         activeMovable.forEach(syncPhysicalMovable -> {
-            double speed = syncPhysicalMovable.getVelocity().magnitude();
-            commonVelocityHolder.setO(commonVelocityHolder.getO().add(syncPhysicalMovable.getVelocity()));
+            DecimalPosition velocity = syncPhysicalMovable.getVelocity();
+            if (velocity == null) {
+                velocity = DecimalPosition.NULL;
+            }
+            double speed = velocity.magnitude();
+            commonVelocityHolder.setO(commonVelocityHolder.getO().add(velocity));
             if (minSpeed.isEmpty()) {
                 minSpeed.setO(speed);
             } else {
