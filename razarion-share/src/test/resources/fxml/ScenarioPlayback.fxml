@@ -56,7 +56,13 @@
                 <HBox prefHeight="100.0" prefWidth="200.0">
                     <children>
                         <Label prefHeight="17.0" prefWidth="134.0" text="Sync item id" />
-                        <TextField onKeyReleased="#onSyncItemTextChanged" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#onSyncItemDecreaseButton" text="-" />
+                              <TextField fx:id="syncItemText" onKeyReleased="#onSyncItemTextChanged" prefHeight="25.0" prefWidth="66.0" />
+                        <Button mnemonicParsing="false" onAction="#onSyncItemIncreaseButton" text="+" />
+                     </children>
+                  </HBox>
                     </children>
                 </HBox>
                 <TableView fx:id="syncItemPropertyTable" prefHeight="346.0" prefWidth="155.0">

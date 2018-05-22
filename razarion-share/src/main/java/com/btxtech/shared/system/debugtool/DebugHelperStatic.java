@@ -12,8 +12,8 @@ import java.util.List;
 public class DebugHelperStatic {
     private static List<DecimalPosition> polygon;
     private static List<DecimalPosition> positions;
-    private static final int FROM_TICK = 49;
-    private static final int TO_TICK = 50;
+    private static Integer FROM_TICK;
+    private static Integer TO_TICK;
     private static Integer currentTick;
     private static String printOnTickMessage;
 
@@ -54,18 +54,35 @@ public class DebugHelperStatic {
         if (omitTick()) {
             return;
         }
-        System.out.println("\n--------- Tick: " + currentTick + printOnTickMessage);
-        printOnTickMessage = null;
+        if (printOnTickMessage != null) {
+            System.out.println("\n--------- Tick " + currentTick + ": " + printOnTickMessage);
+            printOnTickMessage = null;
+        }
     }
 
     private static boolean omitTick() {
         if (currentTick == null) {
             return true;
         }
-        return FROM_TICK > currentTick || TO_TICK < currentTick;
+        if (FROM_TICK != null && TO_TICK != null) {
+            return FROM_TICK > currentTick || TO_TICK < currentTick;
+        } else if (FROM_TICK != null) {
+            return FROM_TICK < currentTick;
+        } else if (TO_TICK != null) {
+            return TO_TICK > currentTick;
+        } else {
+            return false;
+        }
     }
 
     public static void setCurrentTick(Integer currentTick) {
         DebugHelperStatic.currentTick = currentTick;
     }
+
+    public static void setTick(Integer fromTick, Integer toTick) {
+        DebugHelperStatic.FROM_TICK = fromTick;
+        DebugHelperStatic.TO_TICK = toTick;
+    }
+
+
 }

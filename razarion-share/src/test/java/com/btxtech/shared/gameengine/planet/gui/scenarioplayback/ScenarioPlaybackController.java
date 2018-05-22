@@ -41,6 +41,8 @@ public class ScenarioPlaybackController implements Initializable {
     @FXML
     private Label testMethodLabel;
     @FXML
+    private TextField syncItemText;
+    @FXML
     private TableView<SyncItemProperty> syncItemPropertyTable;
     @FXML
     private TableColumn<SyncItemProperty, String> syncItemPropertyTableNameColumn;
@@ -65,7 +67,7 @@ public class ScenarioPlaybackController implements Initializable {
             @Override
             public void updateIndex(int i) {
                 super.updateIndex(i);
-                if(i >= syncItemPropertyTable.getItems().size() || i < 0) {
+                if (i >= syncItemPropertyTable.getItems().size() || i < 0) {
                     setStyle(null);
                     setTextFill(Color.BLACK);
                     return;
@@ -208,6 +210,41 @@ public class ScenarioPlaybackController implements Initializable {
         try {
             currentSyncBaseItemId = null;
             currentSyncBaseItemId = Integer.parseInt(((TextField) keyEvent.getSource()).getText());
+            renderListener.run();
+            displayBaseItemInfo();
+        } catch (NumberFormatException t) {
+            // Ignore
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+
+    public void onSyncItemIncreaseButton() {
+        try {
+            if (currentSyncBaseItemId != null) {
+                currentSyncBaseItemId++;
+            } else {
+                currentSyncBaseItemId = 1;
+            }
+            syncItemText.setText(Integer.toString(currentSyncBaseItemId));
+            renderListener.run();
+            displayBaseItemInfo();
+        } catch (NumberFormatException t) {
+            // Ignore
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public void onSyncItemDecreaseButton() {
+        try {
+            if (currentSyncBaseItemId != null) {
+                currentSyncBaseItemId--;
+            } else {
+                currentSyncBaseItemId = 1;
+            }
+            syncItemText.setText(Integer.toString(currentSyncBaseItemId));
             renderListener.run();
             displayBaseItemInfo();
         } catch (NumberFormatException t) {
