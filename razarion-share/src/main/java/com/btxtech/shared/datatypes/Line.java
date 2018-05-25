@@ -2,6 +2,7 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -292,6 +293,26 @@ public class Line {
             return null;
         }
         return point;
+    }
+
+    public Collection<DecimalPosition> circleLineIntersection(double radius) {
+        // http://mathworld.wolfram.com/Circle-LineIntersection.html
+        double dx = point2.getX() - point1.getX();
+        double dy = point2.getY() - point1.getY();
+        double dr2 = dx * dx + dy * dy;
+        double d = point1.getX() * point2.getY() - point2.getX() * point1.getY();
+
+        double part1 = Math.sqrt(radius * radius * dr2 - d * d);
+
+        double x1 = (d * dy + Math.signum(dy) * dx * part1) / dr2;
+        double y1 = (-d * dx + Math.abs(dy) * part1) / dr2;
+        double x2 = (d * dy - Math.signum(dy) * dx * part1) / dr2;
+        double y2 = (-d * dx - Math.abs(dy) * part1) / dr2;
+
+        Collection<DecimalPosition> intersections = new ArrayList<>();
+        intersections.add(new DecimalPosition(x1, y1));
+        intersections.add(new DecimalPosition(x2, y2));
+        return intersections;
     }
 
     /**

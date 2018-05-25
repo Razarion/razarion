@@ -1,7 +1,5 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
@@ -60,30 +58,20 @@ public class Island {
     }
 
     public void solve() {
-        SingleHolder<DecimalPosition> commonVelocityHolder = new SingleHolder<>(DecimalPosition.NULL);
-        SingleHolder<Double> minSpeed = new SingleHolder<>();
+        Collection<VelocityObstacleSolver> velocityObstacleSolvers = new ArrayList<>();
         activeMovable.forEach(syncPhysicalMovable -> {
-            DecimalPosition velocity = syncPhysicalMovable.getVelocity();
-            if (velocity == null) {
-                velocity = DecimalPosition.NULL;
-            }
-            double speed = velocity.magnitude();
-            commonVelocityHolder.setO(commonVelocityHolder.getO().add(velocity));
-            if (minSpeed.isEmpty()) {
-                minSpeed.setO(speed);
-            } else {
-                minSpeed.setO(Math.min(speed, minSpeed.getO()));
-            }
-
+            VelocityObstacleSolver velocityObstacleSolver = new VelocityObstacleSolver(syncPhysicalMovable);
+            activeMovable.forEach(other -> {
+                if (syncPhysicalMovable == other) {
+                    return;
+                }
+                velocityObstacleSolver.analyzeAndAdd(other);
+            });
+            velocityObstacleSolver.solve();
+            velocityObstacleSolvers.add(velocityObstacleSolver);
         });
-        DecimalPosition commonVelocity;
-        if (!minSpeed.isEmpty()) {
-            commonVelocity = commonVelocityHolder.getO().normalize(minSpeed.getO());
-        } else {
-            commonVelocity = null;
-        }
-        DebugHelperStatic.add2printOnTick("\nactiveMovable: " + activeMovable.size() + ". passiveMovable: " + passiveMovable.size() + ". commonVelocity: " + commonVelocity);
-        activeMovable.forEach(syncPhysicalMovable -> syncPhysicalMovable.setVelocity(commonVelocity));
-        passiveMovable.forEach(syncPhysicalMovable -> syncPhysicalMovable.setVelocity(commonVelocity));
+
+        velocityObstacleSolvers.forEach(VelocityObstacleSolver::implementVelocity);
+        //  TODO check if whole island is solved. If not solved rerun solve
     }
 }

@@ -159,14 +159,6 @@ public class MathHelper {
         return rad / ONE_RADIANT * 360.0;
     }
 
-    public static double signum(double value) {
-        if (value < 0) {
-            return -1;
-        } else {
-            return 1;
-        }
-    }
-
     public static boolean compareWithPrecision(double value1, double value2) {
         return compareWithPrecision(value1, value2, PRECISION);
     }

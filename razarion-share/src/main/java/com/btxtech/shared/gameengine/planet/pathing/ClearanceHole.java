@@ -14,6 +14,7 @@ import java.util.logging.Logger;
  * Created by Beat
  * 16.05.2016.
  */
+@Deprecated
 public class ClearanceHole {
     private Logger logger = Logger.getLogger(ClearanceHole.class.getName());
     private SyncPhysicalMovable syncPhysicalMovable;

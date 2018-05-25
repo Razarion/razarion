@@ -132,8 +132,8 @@ public class PathingService {
             pathingServiceTracker.afterFindContacts();
             solveIslands(islands);
             pathingServiceTracker.afterSolveVelocity();
-            implementPosition();
-            pathingServiceTracker.afterImplementPosition();
+             implementPosition();
+             pathingServiceTracker.afterImplementPosition();
             //solvePosition();
             //pathingServiceTracker.afterSolvePosition();
             checkDestination();
@@ -194,7 +194,7 @@ public class PathingService {
     }
 
     private void findItemContacts(SyncBaseItem syncBaseItem, Set<DoubleSyncBaseItemKey> alreadyAddedItems, Collection<Contact> contacts) {
-        syncItemContainerService.iterateCellQuadBaseItem(syncBaseItem.getSyncPhysicalMovable().getPosition2d(), 2.0 * syncBaseItem.getSyncPhysicalMovable().getRadius() + itemTypeService.getMaxRadius(), otherSyncBaseItem -> {
+        syncItemContainerService.iterateCellQuadBaseItem(syncBaseItem.getSyncPhysicalMovable().getPosition2d(), 10.0 * syncBaseItem.getSyncPhysicalMovable().getRadius() + itemTypeService.getMaxRadius(), otherSyncBaseItem -> {
             if (syncBaseItem.equals(otherSyncBaseItem)) {
                 return;
             }

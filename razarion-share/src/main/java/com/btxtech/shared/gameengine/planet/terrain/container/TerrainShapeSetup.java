@@ -464,7 +464,7 @@ public class TerrainShapeSetup {
             }
             DecimalPosition start = DecimalPosition.getNearestPoint(piercingLine.get(0), crossPoints);
             startRectanglePiercing = getRectanglePiercing(absoluteRect, start);
-            DecimalPosition end = DecimalPosition.getFarestPoint(piercingLine.get(0), crossPoints);
+            DecimalPosition end = DecimalPosition.getFurthestPoint(piercingLine.get(0), crossPoints);
             endRectanglePiercing = getRectanglePiercing(absoluteRect, end);
         } else {
             Line startLine = new Line(piercingLine.get(0), piercingLine.get(1));

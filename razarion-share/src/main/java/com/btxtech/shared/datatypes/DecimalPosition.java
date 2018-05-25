@@ -374,7 +374,7 @@ public class DecimalPosition {
         return result;
     }
 
-    public static DecimalPosition getFarestPoint(DecimalPosition position, Collection<DecimalPosition> intersections) {
+    public static DecimalPosition getFurthestPoint(DecimalPosition position, Collection<DecimalPosition> intersections) {
         double maxDistance = 0;
         DecimalPosition result = null;
         for (DecimalPosition intersection : intersections) {
