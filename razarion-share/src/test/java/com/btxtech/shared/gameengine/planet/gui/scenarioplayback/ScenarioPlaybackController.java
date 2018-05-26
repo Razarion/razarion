@@ -14,6 +14,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 
@@ -95,6 +97,28 @@ public class ScenarioPlaybackController implements Initializable {
 
 
         syncItemPropertyTableActualValueColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyActualValue()));
+        syncItemPropertyTableActualValueColumn.setCellFactory(column -> {
+            TableCell<SyncItemProperty, String> cell = new TableCell<SyncItemProperty, String>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                    } else {
+                        setText(item);
+                    }
+                }
+            };
+            cell.setOnMouseClicked(event -> {
+                System.out.println("To clipboard: " + cell.getItem());
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(cell.getItem());
+                clipboard.setContent(content);
+            });
+            return cell;
+        });
+
         syncItemPropertyTableExpectedValueColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyExpectedValue()));
         display();
     }
