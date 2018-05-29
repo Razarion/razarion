@@ -1,5 +1,6 @@
 package com.btxtech.shared.gui;
 
+import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
@@ -192,13 +193,19 @@ public abstract class AbstractTestGuiRenderer {
         }
     }
 
-    protected void strokeLine(Line line, Paint color, double lineWidth) {
+    protected void strokeLine(Line line, double lineWidth, Paint color) {
         gc.setStroke(color);
         gc.setLineWidth(lineWidth);
         gc.strokeLine(line.getPoint1().getX(), line.getPoint1().getY(), line.getPoint2().getX(), line.getPoint2().getY());
     }
 
-    protected void strokeSyncPhysicalMovable(SyncPhysicalMovable syncPhysicalMovable, Paint color, double lineWidth) {
+    protected void strokeCircle(Circle2D circle2D, double lineWidth, Paint color) {
+        gc.setStroke(color);
+        gc.setLineWidth(lineWidth);
+        gc.strokeOval(circle2D.getCenter().getX() - circle2D.getRadius(), circle2D.getCenter().getY() - circle2D.getRadius(), 2 * circle2D.getRadius(), 2 * circle2D.getRadius());
+    }
+
+    protected void strokeSyncPhysicalMovable(SyncPhysicalMovable syncPhysicalMovable, double lineWidth, Paint color) {
         gc.setStroke(color);
         gc.setLineWidth(lineWidth);
         gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius(), syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius(), 2 * syncPhysicalMovable.getRadius(), 2 * syncPhysicalMovable.getRadius());

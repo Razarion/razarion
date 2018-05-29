@@ -13,6 +13,7 @@ import java.util.Collection;
  * Created by Beat
  * on 23.05.2018.
  */
+@Deprecated
 public class ReciprocalVelocityObstacle {
     private static final double FLANK_LENGTH = 20;
     private SyncPhysicalMovable syncPhysicalMovable;

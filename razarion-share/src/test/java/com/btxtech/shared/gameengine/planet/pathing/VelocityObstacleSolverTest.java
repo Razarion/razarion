@@ -35,9 +35,9 @@ public class VelocityObstacleSolverTest {
                 syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(66.39999999999999, 10), new DecimalPosition(16.5, 0));
                 syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(73.60000000000001, 10), new DecimalPosition(-16.5, 2.0206672185931327E-15));
 
-                strokeSyncPhysicalMovable(syncPhysicalMovable1, Color.RED, 0.1);
-                strokeSyncPhysicalMovable(syncPhysicalMovable2, Color.RED, 0.1);
-                strokeLine(new Line(DecimalPosition.NULL, syncPhysicalMovable1.getVelocity().multiply(PlanetService.TICK_FACTOR)), Color.YELLOWGREEN, 0.02);
+                strokeSyncPhysicalMovable(syncPhysicalMovable1, 0.1, Color.RED);
+                strokeSyncPhysicalMovable(syncPhysicalMovable2, 0.1, Color.RED);
+                strokeLine(new Line(DecimalPosition.NULL, syncPhysicalMovable1.getVelocity().multiply(PlanetService.TICK_FACTOR)), 0.02, Color.YELLOWGREEN);
 
                 velocityObstacleSolver1 = new VelocityObstacleSolver(syncPhysicalMovable1);
                 velocityObstacleSolver1.analyzeAndAdd(syncPhysicalMovable2);
@@ -51,13 +51,13 @@ public class VelocityObstacleSolverTest {
                     velocityObstacleSolver2.implementVelocity();
                     syncPhysicalMovable1.implementPosition();
                     syncPhysicalMovable2.implementPosition();
-                    strokeSyncPhysicalMovable(syncPhysicalMovable1, Color.GREEN, 0.1);
-                    strokeSyncPhysicalMovable(syncPhysicalMovable2, Color.GREEN, 0.1);
+                    strokeSyncPhysicalMovable(syncPhysicalMovable1, 0.1, Color.GREEN);
+                    strokeSyncPhysicalMovable(syncPhysicalMovable2, 0.1, Color.GREEN);
                     if (velocityObstacleSolver1.getReciprocalVelocityObstacles() != null && !velocityObstacleSolver1.getReciprocalVelocityObstacles().isEmpty()) {
                         ReciprocalVelocityObstacle reciprocalVelocityObstacle = velocityObstacleSolver1.getReciprocalVelocityObstacles().stream().findFirst().get();
-                        strokeLine(reciprocalVelocityObstacle.getFlank1(), Color.RED, 0.1);
-                        strokeLine(reciprocalVelocityObstacle.getFlank2(), Color.RED, 0.1);
-                        strokeLine(reciprocalVelocityObstacle.getMiddle(), Color.GREEN, 0.1);
+                        strokeLine(reciprocalVelocityObstacle.getFlank1(), 0.1, Color.RED);
+                        strokeLine(reciprocalVelocityObstacle.getFlank2(), 0.1, Color.RED);
+                        strokeLine(reciprocalVelocityObstacle.getMiddle(), 0.1, Color.GREEN);
                         if (velocityObstacleSolver1.getBestVelocity() != null) {
                             strokeDecimalPosition(velocityObstacleSolver1.getBestVelocity().multiply(PlanetService.TICK_FACTOR), 0.5, Color.ORANGE);
                         }
