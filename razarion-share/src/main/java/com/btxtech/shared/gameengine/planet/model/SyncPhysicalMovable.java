@@ -30,6 +30,7 @@ import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
 import com.btxtech.shared.gameengine.planet.pathing.Contact;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -93,6 +94,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
             velocity = DecimalPosition.createVector(desiredAngle, speed);
+            DebugHelperStatic.add2printOnTick("\n" + getSyncItem().getId() + ". p:" + getPosition2d() + ". velocity:" + velocity);
         } else {
             velocity = null;
         }
@@ -142,7 +144,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
         if (crowded) {
             Circle2D circle = new Circle2D(path.getCurrentWayPoint(), getRadius() + CROWDED_STOP_DETECTION_DISTANCE);
-            if(circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
+            if (circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
                 velocity = null;
                 path = null;
                 return;

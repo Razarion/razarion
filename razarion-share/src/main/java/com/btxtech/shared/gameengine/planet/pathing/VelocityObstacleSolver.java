@@ -40,7 +40,7 @@ public class VelocityObstacleSolver {
         if (possibilities.isEmpty()) {
             return;
         }
-        bestVelocity = DecimalPosition.getNearestPoint(syncPhysicalMovable.getVelocity(), possibilities).divide(PlanetService.TICK_FACTOR);
+        bestVelocity = DecimalPosition.getNearestPoint(syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR), possibilities).divide(PlanetService.TICK_FACTOR);
     }
 
     public void implementVelocity() {

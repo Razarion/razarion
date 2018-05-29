@@ -26,8 +26,19 @@ public class VelocityObstacleSolverTest {
 
             @Override
             protected void doRender() {
-                syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(20, 18), new DecimalPosition(15, 5));
-                syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(20, 22), new DecimalPosition(15, -5));
+//                syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(47.788119, 50.891979), new DecimalPosition(16.967255,-1.054636));
+//                syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(50.891979, 47.788119), new DecimalPosition(-1.054636,16.967255));
+
+//                syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(54.77921535706048, 58.3792153570605), new DecimalPosition(16.132926282949995, -5.359915069187317));
+//                syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(58.3792153570605, 54.77921535706048), new DecimalPosition(-5.359915069187318, 16.132926282949995));
+
+                syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(66.39999999999999, 10), new DecimalPosition(16.5, 0));
+                syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(73.60000000000001, 10), new DecimalPosition(-16.5, 2.0206672185931327E-15));
+
+                strokeSyncPhysicalMovable(syncPhysicalMovable1, Color.RED, 0.1);
+                strokeSyncPhysicalMovable(syncPhysicalMovable2, Color.RED, 0.1);
+                strokeLine(new Line(DecimalPosition.NULL, syncPhysicalMovable1.getVelocity().multiply(PlanetService.TICK_FACTOR)), Color.YELLOWGREEN, 0.02);
+
                 velocityObstacleSolver1 = new VelocityObstacleSolver(syncPhysicalMovable1);
                 velocityObstacleSolver1.analyzeAndAdd(syncPhysicalMovable2);
                 velocityObstacleSolver1.solve();
@@ -36,9 +47,6 @@ public class VelocityObstacleSolverTest {
                 velocityObstacleSolver2.solve();
 
                 if (velocityObstacleSolver1 != null) {
-                    strokeSyncPhysicalMovable(syncPhysicalMovable1, Color.RED, 0.1);
-                    strokeSyncPhysicalMovable(syncPhysicalMovable2, Color.RED, 0.1);
-                    strokeLine(new Line(DecimalPosition.NULL, syncPhysicalMovable1.getVelocity().multiply(PlanetService.TICK_FACTOR)), Color.YELLOWGREEN, 0.02);
                     velocityObstacleSolver1.implementVelocity();
                     velocityObstacleSolver2.implementVelocity();
                     syncPhysicalMovable1.implementPosition();

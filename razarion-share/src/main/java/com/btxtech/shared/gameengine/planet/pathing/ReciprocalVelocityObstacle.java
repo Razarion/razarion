@@ -45,18 +45,23 @@ public class ReciprocalVelocityObstacle {
 
     public Collection<DecimalPosition> getPossibleIntersections() {
         Collection<DecimalPosition> possibleIntersections = new ArrayList<>();
-        fillInPossibleFlankIntersections(flank1, angle1, flank2, possibleIntersections);
-        fillInPossibleFlankIntersections(flank2, angle2, flank1, possibleIntersections);
-        fillInPossibleConeStart(possibleIntersections);
+        if(coneStart.equalsDelta(DecimalPosition.NULL)) {
+            fillInPossibleFlankIntersections(flank1, angle1, null, possibleIntersections);
+            fillInPossibleFlankIntersections(flank2, angle2, null, possibleIntersections);
+        } else {
+            fillInPossibleFlankIntersections(flank1, angle1, flank2, possibleIntersections);
+            fillInPossibleFlankIntersections(flank2, angle2, flank1, possibleIntersections);
+            fillInPossibleConeStart(possibleIntersections);
+        }
         return possibleIntersections;
     }
 
     private void fillInPossibleFlankIntersections(Line flank, double angle, Line otherFlank, Collection<DecimalPosition> filteredIntersections) {
         flank.circleLineIntersection(syncPhysicalMovable.getVelocity().magnitude() * PlanetService.TICK_FACTOR).forEach(intersection -> {
             if (MathHelper.compareWithPrecision(MathHelper.normaliseAngle(coneStart.getAngle(intersection)), angle)) {
-                //if (otherFlank.getCrossInclusive(new Line(DecimalPosition.NULL, intersection)) == null) {
-                filteredIntersections.add(intersection);
-                //}
+                if (otherFlank == null || otherFlank.getCrossInclusive(new Line(DecimalPosition.NULL, intersection)) == null) {
+                    filteredIntersections.add(intersection);
+                }
             }
         });
     }
