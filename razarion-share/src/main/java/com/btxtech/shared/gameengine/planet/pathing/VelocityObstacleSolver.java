@@ -4,15 +4,12 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * Created by Beat
  * on 24.05.2018.
  */
 public class VelocityObstacleSolver {
-    public Collection<ReciprocalVelocityObstacle> reciprocalVelocityObstacles = new ArrayList<>();
+    public Orca orca;
     private SyncPhysicalMovable syncPhysicalMovable;
     private DecimalPosition bestVelocity;
 
@@ -25,22 +22,15 @@ public class VelocityObstacleSolver {
         if (distance > syncPhysicalMovable.getRadius() + other.getRadius()) {
             return;
         }
-        reciprocalVelocityObstacles.add(new ReciprocalVelocityObstacle(syncPhysicalMovable, other));
+        orca = new Orca(syncPhysicalMovable, other);
     }
 
     public void solve() {
-        if (reciprocalVelocityObstacles.isEmpty()) {
-            return;
+        if (orca == null) {
+            bestVelocity = syncPhysicalMovable.getVelocity();
+        } else {
+            bestVelocity = orca.getNewVelocity().divide(PlanetService.TICK_FACTOR);
         }
-        if (reciprocalVelocityObstacles.size() != 1) {
-            throw new UnsupportedOperationException();
-        }
-        ReciprocalVelocityObstacle reciprocalVelocityObstacle = reciprocalVelocityObstacles.stream().findFirst().get();
-        Collection<DecimalPosition> possibilities = reciprocalVelocityObstacle.getPossibleIntersections();
-        if (possibilities.isEmpty()) {
-            return;
-        }
-        bestVelocity = DecimalPosition.getNearestPoint(syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR), possibilities).divide(PlanetService.TICK_FACTOR);
     }
 
     public void implementVelocity() {
@@ -49,8 +39,8 @@ public class VelocityObstacleSolver {
         }
     }
 
-    public Collection<ReciprocalVelocityObstacle> getReciprocalVelocityObstacles() {
-        return reciprocalVelocityObstacles;
+    public Orca getOrca() {
+        return orca;
     }
 
     public DecimalPosition getBestVelocity() {

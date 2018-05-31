@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
@@ -14,7 +15,7 @@ import org.junit.Test;
  * Created by Beat
  * on 24.05.2018.
  */
-public class ReciprocalVelocityObstacleTest {
+public class OrcaTest {
     @Test
     public void test() {
         TestGuiDisplay.show(new AbstractTestGuiRenderer() {
@@ -32,8 +33,11 @@ public class ReciprocalVelocityObstacleTest {
                         strokeCircle(new Circle2D(orca.getRelativePosition(), orca.getCombinedRadius()), 0.2, Color.BROWN);
                         strokeCircle(new Circle2D(orca.getRelativePosition().divide(Orca.TAU), orca.getCombinedRadius() / Orca.TAU), 0.2, Color.SANDYBROWN);
                         strokeDecimalPosition(orca.getRelativeVelocity().add(orca.getU()), 0.2, Color.RED);
-                        strokeLine(orca.getLine(), 0.1, Color.ORANGE);
-                        strokeLine(orca.getLine1(), 0.1, Color.GREEN);
+                        strokeLine(orca.getLine().toLine(), 0.1, Color.ORANGE);
+                        // strokeLine(new Line(DecimalPosition.NULL, orca.getRelativeVelocity()), 0.1, Color.BLACK);
+                        if (orca.getNewVelocity() != null) {
+                            strokeLine(new Line(DecimalPosition.NULL, orca.getNewVelocity()), 0.1, Color.POWDERBLUE);
+                        }
                     }
                     // strokeLine(orca.getFlank2(), Color.RED, 0.1);
 

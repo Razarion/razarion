@@ -259,6 +259,10 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         crowded = true;
     }
 
+    public double getMaxSpeed() {
+        return maxSpeed;
+    }
+
     public void finalization() {
         setupPosition3d();
         // Fix angle
