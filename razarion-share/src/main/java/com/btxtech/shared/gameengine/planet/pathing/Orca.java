@@ -137,8 +137,7 @@ public class Orca {
 
         for (int lineNo = 0; lineNo < orcaLines.size(); lineNo++) {
             if (orcaLines.get(lineNo).getDirection().determinant(orcaLines.get(lineNo).getPoint().sub(newVelocity)) > 0.0) {
-                // Result does not satisfy constraint i. Compute new optimal
-                // result.
+                // Result does not satisfy constraint i. Compute new optimal result.
                 DecimalPosition tempResult = newVelocity;
                 if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, optimizeDirection)) {
                     newVelocity = tempResult;

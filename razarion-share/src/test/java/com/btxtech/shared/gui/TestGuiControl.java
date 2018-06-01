@@ -1,6 +1,7 @@
 package com.btxtech.shared.gui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -30,6 +31,7 @@ public class TestGuiControl implements Initializable {
     @FXML
     private TextField mouseLabel;
     private AbstractTestGuiRenderer abstractTestGuiRenderer;
+    private DecimalPosition mousePosition;
 
     public TestGuiControl(AbstractTestGuiRenderer abstractTestGuiRenderer) {
         this.abstractTestGuiRenderer = abstractTestGuiRenderer;
@@ -81,9 +83,9 @@ public class TestGuiControl implements Initializable {
     }
 
     public void onMouseMoved(Event event) {
-        DecimalPosition position = abstractTestGuiRenderer.convertMouseToModel(event);
-        mouseLabel.setText(String.format("%.2f:%.2f", position.getX(), position.getY()));
-        if(abstractTestGuiRenderer.onMouseMoved(position)) {
+        mousePosition = abstractTestGuiRenderer.convertMouseToModel(event);
+        mouseLabel.setText(String.format("%.2f:%.2f", mousePosition.getX(), mousePosition.getY()));
+        if(abstractTestGuiRenderer.onMouseMoved(mousePosition)) {
             abstractTestGuiRenderer.render();
         }
     }
@@ -91,5 +93,9 @@ public class TestGuiControl implements Initializable {
     public void onMousePressed(MouseEvent event) {
         DecimalPosition position = abstractTestGuiRenderer.convertMouseToModel(event);
         abstractTestGuiRenderer.onMousePressedTerrain(position);
+    }
+
+    public void onGenTestButtonClicked() {
+        abstractTestGuiRenderer.onGenTestButtonClicked(mousePosition);
     }
 }

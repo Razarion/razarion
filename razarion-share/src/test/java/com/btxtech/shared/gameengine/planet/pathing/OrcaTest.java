@@ -17,7 +17,16 @@ import org.junit.Test;
  */
 public class OrcaTest {
     @Test
-    public void test() {
+    public void frontal1() {
+        SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(20, 20), new DecimalPosition(30, 0));
+        SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(24.5, 20), new DecimalPosition(-30, 0));
+        Orca orca12 = new Orca(syncPhysicalMovable1, syncPhysicalMovable2);
+        System.out.println("New Velocity 1: " + orca12.getNewVelocity() + " magnitude: " + orca12.getNewVelocity().magnitude());
+    }
+
+
+        @Test
+    public void testGui() {
         TestGuiDisplay.show(new AbstractTestGuiRenderer() {
             SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(20, 20), new DecimalPosition(30, 0));
             SyncPhysicalMovable syncPhysicalMovable2/* = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(60, 50), new DecimalPosition(17, 0))*/;
@@ -48,7 +57,13 @@ public class OrcaTest {
             protected boolean onMouseMoved(DecimalPosition position) {
                 syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, position, new DecimalPosition(-30, 0));
                 orca = new Orca(syncPhysicalMovable1, syncPhysicalMovable2);
+                System.out.println("New Velocity: " + orca.getNewVelocity() + " magnitude: " + orca.getNewVelocity().magnitude());
                 return true;
+            }
+
+            @Override
+            protected void onGenTestButtonClicked(DecimalPosition mousePosition) {
+                System.out.println("Mouse position: " + mousePosition);
             }
         });
     }

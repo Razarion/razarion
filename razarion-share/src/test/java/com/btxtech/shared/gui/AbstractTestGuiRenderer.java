@@ -232,4 +232,12 @@ public abstract class AbstractTestGuiRenderer {
     protected boolean onMouseMoved(DecimalPosition position) {
         return false;
     }
+
+    /**
+     * Override in subclasses
+     *
+     * @param mousePosition position
+     */
+    protected void onGenTestButtonClicked(DecimalPosition mousePosition) {
+    }
 }
