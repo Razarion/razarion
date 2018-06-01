@@ -139,7 +139,7 @@ public class Orca {
             if (orcaLines.get(lineNo).getDirection().determinant(orcaLines.get(lineNo).getPoint().sub(newVelocity)) > 0.0) {
                 // Result does not satisfy constraint i. Compute new optimal result.
                 DecimalPosition tempResult = newVelocity;
-                if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, optimizeDirection)) {
+                if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, true)) {
                     newVelocity = tempResult;
 
                     return lineNo;
@@ -213,7 +213,7 @@ public class Orca {
             }
         } else {
             // Optimize closest point.
-            final double t = orcaLines.get(lineNo).getDirection().dotProduct(optimizationVelocity.sub(orcaLines.get(lineNo).getPoint()));
+            double t = orcaLines.get(lineNo).getDirection().dotProduct(optimizationVelocity.sub(orcaLines.get(lineNo).getPoint()));
 
             if (t < tLeft) {
                 newVelocity = orcaLines.get(lineNo).getPoint().add(tLeft, orcaLines.get(lineNo).getDirection());
