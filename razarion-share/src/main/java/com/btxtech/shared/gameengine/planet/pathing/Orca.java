@@ -66,7 +66,15 @@ public class Orca {
             }
         } else {
             // Collision. Project on cut-off circle of time timeStep.
-            throw new UnsupportedOperationException();
+
+            // Vector from cutoff center to relative velocity.
+            DecimalPosition w = relativeVelocity.sub(relativePosition.multiply(PlanetService.TICKS_PER_SECONDS));
+
+            double wLength = w.magnitude();
+            DecimalPosition unitW = w.multiply(1.0 / wLength);
+
+            direction = new DecimalPosition(unitW.getY(), -unitW.getX());
+            u = unitW.multiply(combinedRadius * PlanetService.TICKS_PER_SECONDS - wLength);
         }
         DecimalPosition point = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR).add(0.5, u);
         orcaLines.add(new OrcaLine(point, direction));
