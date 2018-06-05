@@ -84,7 +84,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         if (path != null) {
             path.setupCurrentWayPoint(this);
 
-            double desiredAngle = forwardLookingAngle(path.getCurrentWayPoint().sub(getPosition2d()).angle());
+            double desiredAngle = path.getCurrentWayPoint().sub(getPosition2d()).angle();
             // Fix velocity
             double originalSpeed = velocity != null ? velocity.magnitude() : 0;
             double desiredSpeed = maxSpeed;

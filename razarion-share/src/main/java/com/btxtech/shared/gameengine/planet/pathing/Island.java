@@ -12,6 +12,7 @@ import java.util.HashSet;
  * Created by Beat
  * on 19.05.2018.
  */
+@Deprecated
 public class Island {
     private Collection<SyncPhysicalMovable> activeMovable = new HashSet<>();
     private Collection<Integer> activeMovableIds = new ArrayList<>();

@@ -23,6 +23,7 @@ public class ItemTypeService {
     private final HashMap<Integer, ResourceItemType> resourceItemTypes = new HashMap<>();
     private final HashMap<Integer, BoxItemType> boxItemTypes = new HashMap<>();
     private double maxRadius;
+    private double maxVelocity;
 
     public void onGameEngineInit(@Observes StaticGameInitEvent engineInitEvent) {
         init(engineInitEvent.getStaticGameConfig());
@@ -36,6 +37,7 @@ public class ItemTypeService {
         maxRadius = Math.max(maxRadius, baseItemTypes.values().stream().map(baseItemType -> baseItemType.getPhysicalAreaConfig().getRadius()).max(Comparator.naturalOrder()).orElse(-1.0));
         maxRadius = Math.max(maxRadius, resourceItemTypes.values().stream().map(ResourceItemType::getRadius).max(Comparator.naturalOrder()).orElse(-1.0));
         maxRadius = Math.max(maxRadius, boxItemTypes.values().stream().map(BoxItemType::getRadius).max(Comparator.naturalOrder()).orElse(-1.0));
+        maxVelocity = baseItemTypes.values().stream().filter(baseItemType -> baseItemType.getPhysicalAreaConfig().fulfilledMovable()).map(baseItemType -> baseItemType.getPhysicalAreaConfig().getSpeed()).max(Comparator.naturalOrder()).orElse(-1.0);
     }
 
     public ResourceItemType getResourceItemType(Integer resourceItemTypeId) {
@@ -127,5 +129,9 @@ public class ItemTypeService {
 
     public double getMaxRadius() {
         return maxRadius;
+    }
+
+    public double getMaxVelocity() {
+        return maxVelocity;
     }
 }

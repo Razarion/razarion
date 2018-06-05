@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -127,13 +128,14 @@ public class PathingService {
             pathingServiceTracker.startTick();
             preparation();
             pathingServiceTracker.afterPreparation();
-            Collection<Contact> contacts = findContacts();
-            Collection<Island> islands = findIsland(contacts);
-            pathingServiceTracker.afterFindContacts();
-            solveIslands(islands);
+            // Collection<Contact> contacts = findContacts();
+            // Collection<Island> islands = findIsland(contacts);
+            // pathingServiceTracker.afterFindContacts();
+            // solveIslands(islands);
+            orcaSolver();
             pathingServiceTracker.afterSolveVelocity();
-             implementPosition();
-             pathingServiceTracker.afterImplementPosition();
+            implementPosition();
+            pathingServiceTracker.afterImplementPosition();
             //solvePosition();
             //pathingServiceTracker.afterSolvePosition();
             checkDestination();
@@ -163,6 +165,47 @@ public class PathingService {
             return null;
         });
     }
+
+    private void orcaSolver() {
+        System.out.println("------------------------------------");
+        double width = 4.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR);
+        Collection<Orca> orcas = new ArrayList<>();
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
+            if (!syncPhysicalArea.canMove()) {
+                return null;
+            }
+
+            if(DebugHelperStatic.isCurrentTick(29)) {
+                System.out.println("---28---");
+            }
+
+            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
+            if (syncPhysicalMovable.isMoving()) {
+                Orca orca = new Orca(syncPhysicalMovable);
+                System.out.println("Orca: " + syncPhysicalMovable.getSyncItem().getId());
+                syncItemContainerService.iterateCellRadiusItem(syncPhysicalArea.getPosition2d(), width, otherSyncItem -> {
+                    System.out.println("check: " + otherSyncItem.getId());
+                    if (syncBaseItem.equals(otherSyncItem)) {
+                        return;
+                    }
+
+                    SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
+                    if (other instanceof SyncPhysicalMovable) {
+                        System.out.println("add: " + otherSyncItem.getId());
+                        orca.add((SyncPhysicalMovable) other);
+                    }
+                });
+                if (!orca.isEmpty()) {
+                    orcas.add(orca);
+                }
+            }
+            return null;
+        });
+        orcas.forEach(Orca::solve);
+        orcas.forEach(Orca::implementVelocity);
+    }
+
 
     private Collection<Contact> findContacts() {
         Collection<Contact> contacts = new ArrayList<>();

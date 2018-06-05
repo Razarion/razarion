@@ -527,6 +527,14 @@ public class SyncItemContainerService {
         });
     }
 
+    public void iterateCellRadiusItem(DecimalPosition center, double radius, Consumer<SyncItem> callback) {
+        iterateCellQuadItem(center, radius + CELL_LENGTH, syncItem -> {
+            if(syncItem.getSyncPhysicalArea().getPosition2d().getDistance(center) <= radius) {
+                callback.accept(syncItem);
+            }
+        });
+    }
+
     public void iterateCellQuadBaseItem(DecimalPosition center, double width, Consumer<SyncBaseItem> callback) {
         List<Index> cellIndexes = GeometricUtil.rasterizeRectangleInclusive(Rectangle2D.generateRectangleFromMiddlePoint(center, width, width), CELL_LENGTH);
         cellIndexes.forEach(cellIndex -> {

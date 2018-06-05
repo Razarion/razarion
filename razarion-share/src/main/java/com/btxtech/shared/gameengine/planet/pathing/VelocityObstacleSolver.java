@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
  * Created by Beat
  * on 24.05.2018.
  */
+@Deprecated
 public class VelocityObstacleSolver {
     public Orca orca;
     private SyncPhysicalMovable syncPhysicalMovable;
@@ -22,7 +23,7 @@ public class VelocityObstacleSolver {
         if (distance > syncPhysicalMovable.getRadius() + other.getRadius()) {
             return;
         }
-        orca = new Orca(syncPhysicalMovable, other);
+        // orca = new Orca(syncPhysicalMovable, other);
     }
 
     public void solve() {

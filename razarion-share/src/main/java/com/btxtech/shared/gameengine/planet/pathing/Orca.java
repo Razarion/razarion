@@ -15,24 +15,27 @@ import java.util.List;
 public class Orca {
     public static final double TAU = 5;
     public static final double EPSILON = 0.00001;
-    private DecimalPosition u;
-    private DecimalPosition direction;
-    private DecimalPosition relativeVelocity;
-    private DecimalPosition relativePosition;
+    private SyncPhysicalMovable syncPhysicalMovable;
     private DecimalPosition preferredVelocity;
-    private double combinedRadius;
-    private double maxSpeed;
     private DecimalPosition newVelocity;
+    private double maxSpeed;
     private List<OrcaLine> orcaLines = new ArrayList<>();
 
-    public Orca(SyncPhysicalMovable syncPhysicalMovable, SyncPhysicalMovable other) {
-        relativePosition = other.getPosition2d().sub(syncPhysicalMovable.getPosition2d());
-        relativeVelocity = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR).sub(other.getVelocity().multiply(PlanetService.TICK_FACTOR));
+    public Orca(SyncPhysicalMovable syncPhysicalMovable) {
+        this.syncPhysicalMovable = syncPhysicalMovable;
         preferredVelocity = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR);
-        maxSpeed = syncPhysicalMovable.getVelocity().magnitude() * PlanetService.TICK_FACTOR;
+        maxSpeed = preferredVelocity.magnitude();
+    }
+
+    public void add(SyncPhysicalMovable other) {
+        DecimalPosition relativePosition = other.getPosition2d().sub(syncPhysicalMovable.getPosition2d());
+        DecimalPosition relativeVelocity = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR).sub(other.getVelocity().multiply(PlanetService.TICK_FACTOR));
         double distanceSq = relativePosition.magnitude() * relativePosition.magnitude();
-        combinedRadius = syncPhysicalMovable.getRadius() + other.getRadius();
+        double combinedRadius = syncPhysicalMovable.getRadius() + other.getRadius();
         double combinedRadiusSq = combinedRadius * combinedRadius;
+
+        DecimalPosition u;
+        DecimalPosition direction;
 
         if (distanceSq > combinedRadiusSq) {
             // No collision.
@@ -78,39 +81,27 @@ public class Orca {
         }
         DecimalPosition point = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR).add(0.5, u);
         orcaLines.add(new OrcaLine(point, direction));
-
-        int lineFail = linearProgram2(orcaLines, preferredVelocity, false);
-        if (lineFail < orcaLines.size()) {
-            linearProgram3(orcaLines.size(), lineFail);
-        }
-    }
-
-    public DecimalPosition getRelativeVelocity() {
-        return relativeVelocity;
-    }
-
-    public DecimalPosition getRelativePosition() {
-        return relativePosition;
-    }
-
-    public double getCombinedRadius() {
-        return combinedRadius;
-    }
-
-    public DecimalPosition getU() {
-        return u;
-    }
-
-    public DecimalPosition getDirection() {
-        return direction;
-    }
-
-    public OrcaLine getLine() {
-        return orcaLines.get(0);
     }
 
     public DecimalPosition getNewVelocity() {
         return newVelocity;
+    }
+
+    public boolean isEmpty() {
+        return orcaLines.isEmpty();
+    }
+
+    public void implementVelocity() {
+        if(newVelocity != null && !newVelocity.equals(preferredVelocity)) {
+            syncPhysicalMovable.setVelocity(newVelocity.divide(PlanetService.TICK_FACTOR));
+        }
+    }
+
+    public void solve() {
+        int lineFail = linearProgram2(orcaLines, preferredVelocity, false);
+        if (lineFail < orcaLines.size()) {
+            linearProgram3(orcaLines.size(), lineFail);
+        }
     }
 
     /**
@@ -137,6 +128,7 @@ public class Orca {
 
         for (int lineNo = 0; lineNo < orcaLines.size(); lineNo++) {
             if (orcaLines.get(lineNo).getDirection().determinant(orcaLines.get(lineNo).getPoint().sub(newVelocity)) > 0.0) {
+                syncPhysicalMovable.setCrowded();
                 // Result does not satisfy constraint i. Compute new optimal result.
                 DecimalPosition tempResult = newVelocity;
                 if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, true)) {
@@ -279,5 +271,4 @@ public class Orca {
             }
         }
     }
-
 }

@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("PathingAccess InSight", new PathingAccessInSightScenario());
         register("Display Polygon", new DisplayPolygonScenario());
         register("JUnit Test", new JUnitTestScenario());
@@ -46,7 +47,6 @@ public abstract class Scenario {
         register("Clearance Hole", new ClearanceHoleScenario());
         register("Simple Terrain", new SimpleTerrainScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
-        register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
         register("Bresenhams Test", new FillCircleScenario());
         register("Rectangle 2D", new Rectangle2DScenario());

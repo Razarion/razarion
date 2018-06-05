@@ -84,5 +84,8 @@ public class DebugHelperStatic {
         DebugHelperStatic.TO_TICK = toTick;
     }
 
-
+    // Comes to early
+    public static boolean isCurrentTick(int tick) {
+        return currentTick == tick;
+    }
 }
