@@ -91,6 +91,10 @@ public class Orca {
         return orcaLines.isEmpty();
     }
 
+    public List<OrcaLine> getOrcaLines() {
+        return orcaLines;
+    }
+
     public void implementVelocity() {
         if(newVelocity != null && !newVelocity.equals(preferredVelocity)) {
             syncPhysicalMovable.setVelocity(newVelocity.divide(PlanetService.TICK_FACTOR));

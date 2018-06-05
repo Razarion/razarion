@@ -94,7 +94,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
             velocity = DecimalPosition.createVector(desiredAngle, speed);
-            DebugHelperStatic.add2printOnTick("\n" + getSyncItem().getId() + ". p:" + getPosition2d() + ". velocity:" + velocity);
+            DebugHelperStatic.add2printOnTick("\n" + getSyncItem().getId() + ". p:" + getPosition2d() + ". v:" + velocity + ". speed: " + velocity.magnitude());
         } else {
             velocity = null;
         }

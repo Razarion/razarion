@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.PlanetService;
@@ -24,15 +23,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Singleton
 public class PathingService {
-    public static final double MAXIMUM_CORRECTION = 0.02;
-    public static final double PENETRATION_TOLERANCE = 0.1;
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     // private Logger logger = Logger.getLogger(PathingService.class.getName());
     @Inject
@@ -176,7 +170,7 @@ public class PathingService {
                 return null;
             }
 
-            if(DebugHelperStatic.isCurrentTick(29)) {
+            if (DebugHelperStatic.isCurrentTick(29)) {
                 System.out.println("---28---");
             }
 
@@ -192,8 +186,11 @@ public class PathingService {
 
                     SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
                     if (other instanceof SyncPhysicalMovable) {
-                        System.out.println("add: " + otherSyncItem.getId());
-                        orca.add((SyncPhysicalMovable) other);
+                        SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
+                        if (otherSyncPhysicalMovable.isMoving()) {
+                            System.out.println("add: " + otherSyncItem.getId());
+                            orca.add((SyncPhysicalMovable) other);
+                        }
                     }
                 });
                 if (!orca.isEmpty()) {
@@ -204,249 +201,6 @@ public class PathingService {
         });
         orcas.forEach(Orca::solve);
         orcas.forEach(Orca::implementVelocity);
-    }
-
-
-    private Collection<Contact> findContacts() {
-        Collection<Contact> contacts = new ArrayList<>();
-        Set<DoubleSyncBaseItemKey> alreadyAddedItems = new HashSet<>();
-
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
-            if (!syncPhysicalArea.canMove()) {
-                return null;
-            }
-
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
-            // if (syncPhysicalMovable.isMoving()) {
-            findObstacleContacts(syncPhysicalMovable, contacts);
-            findItemContacts(syncBaseItem, alreadyAddedItems, contacts);
-            // }
-            return null;
-        });
-        return contacts;
-    }
-
-    private void findObstacleContacts(SyncPhysicalMovable item, Collection<Contact> contacts) {
-        for (Obstacle obstacle : terrainService.getPathingAccess().getObstacles(item)) {
-            Contact contact = obstacle.hasContact(item);
-            if (contact != null) {
-                contacts.add(contact);
-            }
-        }
-    }
-
-    private void findItemContacts(SyncBaseItem syncBaseItem, Set<DoubleSyncBaseItemKey> alreadyAddedItems, Collection<Contact> contacts) {
-        syncItemContainerService.iterateCellQuadBaseItem(syncBaseItem.getSyncPhysicalMovable().getPosition2d(), 10.0 * syncBaseItem.getSyncPhysicalMovable().getRadius() + itemTypeService.getMaxRadius(), otherSyncBaseItem -> {
-            if (syncBaseItem.equals(otherSyncBaseItem)) {
-                return;
-            }
-
-            SyncPhysicalArea other = otherSyncBaseItem.getSyncPhysicalArea();
-
-            DoubleSyncBaseItemKey key = new DoubleSyncBaseItemKey(syncBaseItem, otherSyncBaseItem);
-            if (alreadyAddedItems.contains(key)) {
-                return;
-            }
-
-            Contact contact = ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).hasContact(other);
-            if (contact != null) {
-                contacts.add(contact);
-                alreadyAddedItems.add(key);
-            }
-        });
-    }
-
-    private Collection<Island> findIsland(Collection<Contact> contacts) {
-        Collection<Island> islands = new ArrayList<>();
-        contacts.forEach(contact -> {
-            Island island = islands.stream().filter(i -> i.included(contact)).findFirst().orElse(null);
-            if (island == null) {
-                island = new Island();
-                islands.add(island);
-            }
-            island.add(contact);
-        });
-        return islands;
-    }
-
-    private void solveVelocity(Collection<Contact> contacts) {
-        for (int i = 0; i < 10; i++) {
-            solveMovingVelocityContacts(contacts);
-        }
-        for (int i = 0; i < 10; i++) {
-            solveStandingVelocityContacts(contacts);
-        }
-        DebugHelperStatic.printOnTick();
-    }
-
-    private void solveIslands(Collection<Island> islands) {
-        DebugHelperStatic.add2printOnTick("\nislands:" + islands.size());
-        islands.forEach(Island::solve);
-    }
-
-    private void solveMovingVelocityContacts(Collection<Contact> contacts) {
-        DebugHelperStatic.add2printOnTick("\n-- solveMovingVelocityContacts --");
-        for (Contact contact : contacts) {
-            DebugHelperStatic.add2printOnTick("\n");
-            SyncPhysicalMovable item1 = contact.getItem1();
-            DebugHelperStatic.add2printOnTick("item1: " + item1.getSyncItem().getId());
-            if (contact.hasBothDestination()) {
-                SyncPhysicalMovable item2 = (SyncPhysicalMovable) contact.getItem2();
-                DebugHelperStatic.add2printOnTick(". item2: " + item2.getSyncItem().getId());
-                double newPenetration = calculateNewPenetration(item1, item2);
-                if (newPenetration == 0) {
-                    continue;
-                }
-                DecimalPosition relativeVelocity = item1.getVelocity();
-                if (item2.getVelocity() != null) {
-                    relativeVelocity = relativeVelocity.sub(item2.getVelocity());
-                }
-                double projection = contact.getNormal().dotProduct(relativeVelocity);
-                DecimalPosition velocity2 = item2.getVelocity();
-                if (velocity2 == null) {
-                    velocity2 = new DecimalPosition(0, 0);
-                }
-                DecimalPosition pushAway = contact.getNormal().multiply(-projection / 2.0);
-                DecimalPosition newVelocity1 = item1.getVelocity().add(pushAway).normalize(item1.getVelocity().magnitude());
-                item1.setVelocity(newVelocity1);
-                DebugHelperStatic.add2printOnTick(". newVelocity1: " + newVelocity1);
-                DecimalPosition newVelocity2 = velocity2.add(pushAway.multiply(-1)).normalize(velocity2.magnitude());
-                item2.setVelocity(newVelocity2);
-                DebugHelperStatic.add2printOnTick(". newVelocity2: " + newVelocity2);
-                onPathingChanged(item1);
-                onPathingChanged(item2);
-            } else if (contact.hasFix()) {
-                solveVelocityContactsFix(contact, item1);
-            }
-        }
-    }
-
-    private void solveStandingVelocityContacts(Collection<Contact> contacts) {
-        for (Contact contact : contacts) {
-            if (contact.hasOneIdle()) {
-                SyncPhysicalMovable itemWithDestination = contact.getItem1().hasDestination() ? contact.getItem1() : (SyncPhysicalMovable) contact.getItem2();
-                SyncPhysicalMovable itemIdle = contact.getItem1().hasDestination() ? (SyncPhysicalMovable) contact.getItem2() : contact.getItem1();
-                double newPenetration = calculateNewPenetration(itemWithDestination, itemIdle);
-                if (newPenetration == 0) {
-                    continue;
-                }
-                DecimalPosition relativeVelocity = itemWithDestination.getVelocity();
-                if (itemIdle.getVelocity() != null) {
-                    relativeVelocity = relativeVelocity.sub(itemIdle.getVelocity());
-                }
-                double projection = contact.getNormal().dotProduct(relativeVelocity);
-                DecimalPosition velocity2 = itemIdle.getVelocity();
-                if (velocity2 == null) {
-                    velocity2 = new DecimalPosition(0, 0);
-                }
-                DecimalPosition pushAway = contact.getNormal().multiply(projection / 2.0);
-                itemIdle.setVelocity(velocity2.add(pushAway));
-                onPathingChanged(itemIdle);
-            } else if (contact.hasFix()) {
-                solveVelocityContactsFix(contact, contact.getItem1());
-            }
-        }
-    }
-
-    private void solveVelocityContactsFix(Contact contact, SyncPhysicalMovable item1) {
-        DecimalPosition velocity = item1.getVelocity();
-        double projection = contact.getNormal().dotProduct(velocity);
-        if (projection < 0) {
-            DecimalPosition pushAway = contact.getNormal().multiply(-projection);
-            DecimalPosition newVelocity = velocity.add(pushAway).normalize(item1.getVelocity().magnitude());
-            item1.setVelocity(newVelocity);
-            onPathingChanged(item1);
-        }
-    }
-
-    private void solvePosition() {
-        boolean solved = false;
-        for (int i = 0; i < 10 && !solved; i++) {
-            solved = solvePositionContacts();
-        }
-    }
-
-    private boolean solvePositionContacts() {
-        SingleHolder<Boolean> solved = new SingleHolder<>(true);
-        // Units
-        List<SyncPhysicalMovable> itemsToCheck = new ArrayList<>();
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
-            if (!syncPhysicalArea.canMove()) {
-                return null;
-            }
-            itemsToCheck.add((SyncPhysicalMovable) syncPhysicalArea);
-            return null;
-        });
-
-        while (!itemsToCheck.isEmpty()) {
-            SyncPhysicalMovable item1 = itemsToCheck.remove(0);
-            for (SyncPhysicalMovable item2 : itemsToCheck) {
-                double distance = item1.getDistance(item2);
-                if (distance >= -PENETRATION_TOLERANCE) {
-                    continue;
-                }
-                solved.setO(false);
-                double penetration = -distance;
-                if (penetration > MAXIMUM_CORRECTION) {
-                    penetration = MAXIMUM_CORRECTION;
-                }
-                if (item2.canMove()) {
-                    DecimalPosition pushAway = item1.getPosition2d().sub(item2.getPosition2d()).normalize(penetration / 2.0);
-                    item1.addToPosition2d(pushAway);
-                    item2.addToPosition2d(pushAway.multiply(-1.0));
-                    onPathingChanged(item1);
-                    onPathingChanged(item2);
-                } else {
-                    DecimalPosition pushAway = item1.getPosition2d().sub(item2.getPosition2d()).normalize(penetration);
-                    item1.addToPosition2d(pushAway);
-                    onPathingChanged(item1);
-                }
-            }
-        }
-        // obstacles
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
-            SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
-            if (!syncPhysicalArea.canMove()) {
-                return null;
-            }
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
-
-            for (Obstacle obstacle : terrainService.getPathingAccess().getObstacles(syncPhysicalMovable)) {
-                // There is no check if the unit is inside the restricted area
-                DecimalPosition projection = obstacle.project(syncPhysicalMovable.getPosition2d());
-                double distance = projection.getDistance(syncPhysicalMovable.getPosition2d()) - syncPhysicalMovable.getRadius();
-                if (distance >= -PENETRATION_TOLERANCE) {
-                    continue;
-                }
-                solved.setO(false);
-                double penetration = -distance;
-                if (penetration > MAXIMUM_CORRECTION) {
-                    penetration = MAXIMUM_CORRECTION;
-                }
-                DecimalPosition pushAway = syncPhysicalMovable.getPosition2d().sub(projection).normalize(penetration);
-                syncPhysicalMovable.addToPosition2d(pushAway);
-                onPathingChanged(syncPhysicalMovable);
-            }
-
-            return null;
-        });
-
-        return solved.getO();
-    }
-
-    private double calculateNewPenetration(SyncPhysicalMovable item1, SyncPhysicalArea item2) {
-        double distance;
-        if (item2.canMove()) {
-            distance = item1.getDesiredPosition().getDistance(((SyncPhysicalMovable) item2).getDesiredPosition()) - item1.getRadius() - item2.getRadius();
-        } else {
-            distance = item1.getDesiredPosition().getDistance(item2.getPosition2d()) - item1.getRadius() - item2.getRadius();
-        }
-        if (distance > 0) {
-            return 0;
-        }
-        return -distance;
     }
 
     private void implementPosition() {
@@ -484,37 +238,11 @@ public class PathingService {
         });
     }
 
+    // TODO is this still needed
     private void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable) {
         syncPhysicalMovable.setCrowded();
         if (pathingServiceUpdateListener != null) {
             pathingServiceUpdateListener.onPathingChanged(syncPhysicalMovable);
-        }
-    }
-
-    private class DoubleSyncBaseItemKey {
-        private SyncBaseItem s1;
-        private SyncBaseItem s2;
-
-        public DoubleSyncBaseItemKey(SyncBaseItem s1, SyncBaseItem s2) {
-            this.s1 = s1;
-            this.s2 = s2;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            DoubleSyncBaseItemKey that = (DoubleSyncBaseItemKey) o;
-            return (Objects.equals(s1, that.s1) && Objects.equals(s2, that.s2)) || (Objects.equals(s1, that.s2) && Objects.equals(s2, that.s1));
-        }
-
-        @Override
-        public int hashCode() {
-            return s1.hashCode() + s2.hashCode();
         }
     }
 }
