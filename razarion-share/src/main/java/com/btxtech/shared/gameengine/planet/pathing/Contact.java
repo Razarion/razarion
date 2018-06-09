@@ -8,6 +8,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
  * Created by Beat
  * 16.05.2016.
  */
+@Deprecated
 public class Contact {
     private SyncPhysicalMovable item1;
     private SyncPhysicalArea item2;

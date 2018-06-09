@@ -162,7 +162,7 @@ public class PathingService {
 
     private void orcaSolver() {
         System.out.println("------------------------------------");
-        double width = 4.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR);
+        double collisionAvoidanceRadius = 2.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR) * Orca.TAU;
         Collection<Orca> orcas = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
@@ -177,9 +177,8 @@ public class PathingService {
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
-                System.out.println("Orca: " + syncPhysicalMovable.getSyncItem().getId());
-                syncItemContainerService.iterateCellRadiusItem(syncPhysicalArea.getPosition2d(), width, otherSyncItem -> {
-                    System.out.println("check: " + otherSyncItem.getId());
+                DebugHelperStatic.add2printOnTick("\nOrca: " + syncPhysicalMovable.getSyncItem().getId());
+                syncItemContainerService.iterateCellRadiusItem(syncPhysicalArea.getPosition2d(), collisionAvoidanceRadius, otherSyncItem -> {
                     if (syncBaseItem.equals(otherSyncItem)) {
                         return;
                     }
@@ -188,7 +187,7 @@ public class PathingService {
                     if (other instanceof SyncPhysicalMovable) {
                         SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
                         if (otherSyncPhysicalMovable.isMoving()) {
-                            System.out.println("add: " + otherSyncItem.getId());
+                            DebugHelperStatic.add2printOnTick("\nadd: " + otherSyncItem.getId());
                             orca.add((SyncPhysicalMovable) other);
                         }
                     }

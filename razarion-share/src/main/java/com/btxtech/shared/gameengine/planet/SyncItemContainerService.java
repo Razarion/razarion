@@ -528,7 +528,7 @@ public class SyncItemContainerService {
     }
 
     public void iterateCellRadiusItem(DecimalPosition center, double radius, Consumer<SyncItem> callback) {
-        iterateCellQuadItem(center, radius + CELL_LENGTH, syncItem -> {
+        iterateCellQuadItem(center, 2.0 * radius + CELL_LENGTH, syncItem -> {
             if(syncItem.getSyncPhysicalArea().getPosition2d().getDistance(center) <= radius) {
                 callback.accept(syncItem);
             }

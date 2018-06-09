@@ -18,17 +18,12 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.Path;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.pathing.ClearanceHole;
-import com.btxtech.shared.gameengine.planet.pathing.Contact;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.MathHelper;
@@ -49,17 +44,7 @@ import javax.inject.Named;
 public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     @Inject
-    private SyncItemContainerService syncItemContainerService;
-    @Inject
-    private TerrainService terrainService;
-    @Inject
     private Instance<Path> instancePath;
-    @Inject
-    private ItemTypeService itemTypeService;
-    private final static int LOOK_AHEAD_TICKS_ITEM = 20;
-    private final static int LOOK_AHEAD_TICKS_TERRAIN = 3;
-    private double lookAheadItemDistance;
-    private double lookAheadTerrainDistance;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second
@@ -74,8 +59,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         maxSpeed = physicalAreaConfig.getSpeed();
         angularVelocity = physicalAreaConfig.getAngularVelocity();
         acceleration = physicalAreaConfig.getAcceleration();
-        lookAheadItemDistance = LOOK_AHEAD_TICKS_ITEM * maxSpeed * PlanetService.TICK_FACTOR;
-        lookAheadTerrainDistance = LOOK_AHEAD_TICKS_TERRAIN * maxSpeed * PlanetService.TICK_FACTOR;
     }
 
     public void setupForTick() {
@@ -98,43 +81,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         } else {
             velocity = null;
         }
-    }
-
-    private double forwardLookingAngle(double desiredAngle) {
-        ClearanceHole clearanceHole = new ClearanceHole(this);
-        SyncItem target = ((SyncBaseItem) getSyncItem()).getTarget();
-        double fullLookAheadItemDistance = lookAheadItemDistance + getSyncItem().getSyncPhysicalArea().getRadius() + itemTypeService.getMaxRadius();
-        syncItemContainerService.iterateCellQuadItem(getSyncItem().getSyncPhysicalArea().getPosition2d(), fullLookAheadItemDistance * 2.0, otherSyncItem -> {
-            if (getSyncItem().equals(otherSyncItem)) {
-                return;
-            }
-            if (target != null && target.equals(otherSyncItem)) {
-                return;
-            }
-            SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
-            if (other.canMove()) {
-                return;
-            }
-
-            // Check if other is too far away
-            double distance = getDistance(other);
-            if (distance > lookAheadItemDistance) {
-                return;
-            }
-
-            //Check if destination is nearer than other
-            if (getPosition2d().getDistance(path.getCurrentWayPoint()) < getPosition2d().getDistance(other.getPosition2d())) {
-                return;
-            }
-
-            // Other is dangerous.
-            clearanceHole.addOther(other);
-        });
-
-        terrainService.getPathingAccess().getObstacles(getPosition2d(), getRadius() + lookAheadTerrainDistance).forEach(clearanceHole::addOther);
-
-        // calculate push away force with velocity - obstacle
-        return clearanceHole.getFreeAngle(desiredAngle);
     }
 
     public void stopIfDestinationReached() {
@@ -195,14 +141,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setVelocity(DecimalPosition velocity) {
         this.velocity = velocity;
-    }
-
-    public Contact hasContact(SyncPhysicalArea other) {
-        if (getDistance(other) >= 0 && !isDesiredTouching(other)) {
-            return null;
-        }
-        DecimalPosition norm = getPosition2d().sub(other.getPosition2d()).normalize(1.0);
-        return new Contact(this, other, norm);
     }
 
     public DecimalPosition getDesiredPosition() {

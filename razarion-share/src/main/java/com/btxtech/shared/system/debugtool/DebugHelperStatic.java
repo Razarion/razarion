@@ -50,7 +50,7 @@ public class DebugHelperStatic {
         }
     }
 
-    public static void printOnTick() {
+    public static void printAfterTick() {
         if (omitTick()) {
             return;
         }

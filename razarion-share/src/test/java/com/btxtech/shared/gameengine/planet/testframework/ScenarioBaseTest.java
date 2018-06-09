@@ -150,7 +150,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
             DebugHelperStatic.setCurrentTick(actualTicks.size());
             tickPlanetService();
-            DebugHelperStatic.printOnTick();
+            DebugHelperStatic.printAfterTick();
             actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
         }
         return actualTicks;

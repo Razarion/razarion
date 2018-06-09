@@ -3,6 +3,8 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.system.debugtool.DebugHelper;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import java.util.List;
  */
 // http://gamma.cs.unc.edu/ORCA/
 public class Orca {
-    public static final double TAU = 5;
+    public static final double TAU = 2;
     public static final double EPSILON = 0.00001;
     private SyncPhysicalMovable syncPhysicalMovable;
     private DecimalPosition preferredVelocity;
@@ -46,13 +48,15 @@ public class Orca {
             double dotProduct1 = w.dotProduct(relativePosition);
 
             if (dotProduct1 < 0.0 && dotProduct1 * dotProduct1 > combinedRadiusSq * wLengthSq) {
+                DebugHelperStatic.add2printOnTick("\n No collision cut-off circle: "/* + other.getSyncItem().getId()*/);
                 // Project on cut-off circle.
                 double wLength = Math.sqrt(wLengthSq);
                 DecimalPosition unitW = w.divide(wLength);
 
-                direction = new DecimalPosition(unitW.getY(), -unitW.getX()); // Rotate -90deg
+                direction = new DecimalPosition(unitW.getY(), -unitW.getX()); // Rotate -90deg (clockwise)
                 u = unitW.multiply(combinedRadius / TAU - wLength);
             } else {
+                DebugHelperStatic.add2printOnTick("\n No collision legs: "/* + other.getSyncItem().getId()*/);
                 // Project on legs.
                 double leg = Math.sqrt(distanceSq - combinedRadiusSq);
 
@@ -68,6 +72,7 @@ public class Orca {
                 u = direction.multiply(dotProduct2).sub(relativeVelocity);
             }
         } else {
+            DebugHelperStatic.add2printOnTick("\n Collision: "/* + other.getSyncItem().getId()*/);
             // Collision. Project on cut-off circle of time timeStep.
 
             // Vector from cutoff center to relative velocity.
@@ -80,7 +85,12 @@ public class Orca {
             u = unitW.multiply(combinedRadius * PlanetService.TICKS_PER_SECONDS - wLength);
         }
         DecimalPosition point = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR).add(0.5, u);
-        orcaLines.add(new OrcaLine(point, direction));
+        OrcaLine orcaLine = new OrcaLine(point, direction);
+        orcaLine.setRelativeVelocity(relativeVelocity);
+        orcaLine.setRelativePosition(relativePosition);
+        orcaLine.setCombinedRadius(combinedRadius);
+        orcaLine.setU(u);
+        orcaLines.add(orcaLine);
     }
 
     public DecimalPosition getNewVelocity() {
@@ -135,7 +145,7 @@ public class Orca {
                 syncPhysicalMovable.setCrowded();
                 // Result does not satisfy constraint i. Compute new optimal result.
                 DecimalPosition tempResult = newVelocity;
-                if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, true)) {
+                if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, true)) { // TODO optimizeDirection used before
                     newVelocity = tempResult;
 
                     return lineNo;

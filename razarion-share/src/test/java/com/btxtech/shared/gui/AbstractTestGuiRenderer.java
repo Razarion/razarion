@@ -6,6 +6,8 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.pathing.Orca;
+import com.btxtech.shared.gameengine.planet.pathing.OrcaLine;
 import javafx.event.Event;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -216,6 +218,24 @@ public abstract class AbstractTestGuiRenderer {
             // gc.strokeOval(syncPhysicalMovable.getPosition2d().getX() - syncPhysicalMovable.getRadius() - speedRadius, syncPhysicalMovable.getPosition2d().getY() - syncPhysicalMovable.getRadius() - speedRadius, 2 * (syncPhysicalMovable.getRadius() + speedRadius), 2 * (syncPhysicalMovable.getRadius() + speedRadius));
             gc.strokeLine(syncPhysicalMovable.getPosition2d().getX(), syncPhysicalMovable.getPosition2d().getY(), syncPhysicalMovable.getPosition2d().getX() + v.getX(), syncPhysicalMovable.getPosition2d().getY() + v.getY());
         }
+    }
+
+    protected void strokeOrcaLine(OrcaLine orcaLine) {
+        strokeLine(orcaLine.toLine(), 0.05, Color.ORANGE);
+        strokeCircle(new Circle2D(orcaLine.getRelativePosition(), orcaLine.getCombinedRadius()), 0.05, Color.BROWN);
+        strokeCircle(new Circle2D(orcaLine.getRelativePosition().divide(Orca.TAU), orcaLine.getCombinedRadius() / Orca.TAU), 0.05, Color.SANDYBROWN);
+        strokeDecimalPosition(orcaLine.getRelativeVelocity().add(orcaLine.getU()), 0.05, Color.RED);
+        strokeDecimalPosition(orcaLine.getRelativeVelocity(), 0.2, Color.BLUE);
+
+//                            if (orcaLine.getU() != null) {
+//
+//                        strokeLine(orca.getLine().toLine(), 0.1, Color.ORANGE);
+//                        // strokeLine(new Line(DecimalPosition.NULL, orca.getRelativeVelocity()), 0.1, Color.BLACK);
+//                        if (orca.getNewVelocity() != null) {
+//                            strokeLine(new Line(DecimalPosition.NULL, orca.getNewVelocity()), 0.1, Color.POWDERBLUE);
+//                        }
+//                    }
+//                    // strokeLine(orca.getFlank2(), Color.RED, 0.1);
     }
 
     // Override in subclasses
