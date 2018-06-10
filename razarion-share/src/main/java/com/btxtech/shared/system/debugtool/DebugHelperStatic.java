@@ -4,12 +4,14 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Beat
  * on 16.11.2017.
  */
 public class DebugHelperStatic {
+    private static final String NULL_STRING = "null";
     private static List<DecimalPosition> polygon;
     private static List<DecimalPosition> positions;
     private static Integer FROM_TICK;
@@ -87,5 +89,13 @@ public class DebugHelperStatic {
     // Comes to early
     public static boolean isCurrentTick(int tick) {
         return currentTick == tick;
+    }
+
+    public static String generate(DecimalPosition decimalPosition) {
+        if (decimalPosition != null) {
+            return "new DecimalPosition(" + String.format(Locale.US, "%.3f, %.3f", decimalPosition.getX(), decimalPosition.getY()) + ")";
+        } else {
+            return NULL_STRING;
+        }
     }
 }

@@ -16,14 +16,6 @@ import org.junit.Test;
  * on 24.05.2018.
  */
 public class OrcaTest {
-    @Test
-    public void frontal1() {
-        SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(20, 20), new DecimalPosition(30, 0));
-        SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(24.5, 20), new DecimalPosition(-30, 0));
-        //Orca orca12 = new Orca(syncPhysicalMovable1, syncPhysicalMovable2);
-        //System.out.println("New Velocity 1: " + orca12.getNewVelocity() + " magnitude: " + orca12.getNewVelocity().magnitude());
-    }
-
 
     @Test
     public void testGui() {
@@ -39,22 +31,25 @@ public class OrcaTest {
 //        SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(69.67934615779934, 157.36264913700253), new DecimalPosition(16.936052765691972, 1.4731316023007792));
 //        SyncPhysicalMovable syncPhysicalMovable3 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(69.67934615779936, 162.63735086299747), new DecimalPosition(16.936052765691972, -1.4731316023007799));
         ///
-        SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(23.54347670132562, 20.0), new DecimalPosition(-1.0326164933719664, 1.2645904833547426E-16));
-        SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(19.67934615779934, 17.36264913700253), new DecimalPosition(16.936052765691972, 1.4731316023007792));
-        SyncPhysicalMovable syncPhysicalMovable3 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(19.67934615779936, 22.63735086299747), new DecimalPosition(16.936052765691972, -1.4731316023007799));
+//        SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(23.54347670132562, 20.0), new DecimalPosition(-1.0326164933719664, 1.2645904833547426E-16));
+//        SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(19.67934615779934, 17.36264913700253), new DecimalPosition(16.936052765691972, 1.4731316023007792));
+//        SyncPhysicalMovable syncPhysicalMovable3 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(19.67934615779936, 22.63735086299747), new DecimalPosition(16.936052765691972, -1.4731316023007799));
+        //
+        SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(56.250, 160.000), new DecimalPosition(12.500, 0.000), new DecimalPosition(13.000, 0.000));
+        SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(83.750, 160.000), new DecimalPosition(-12.500, 0.000), new DecimalPosition(-13.000, 0.000));
 
 
         DebugHelperStatic.setCurrentTick(1);
-//        Orca orca1 = new Orca(syncPhysicalMovable1);
-//        orca1.add(syncPhysicalMovable2);
-//        orca1.add(syncPhysicalMovable3);
-//        orca1.solve();
-//        System.out.println("orca1: " + orca1.getNewVelocity() + ". speed: " + orca1.getNewVelocity().magnitude() + ". angle speed: " + Math.toDegrees(orca1.getNewVelocity().angle()));
-            Orca orca2 = new Orca(syncPhysicalMovable2);
-            orca2.add(syncPhysicalMovable1);
-            orca2.add(syncPhysicalMovable3);
-            orca2.solve();
-            System.out.println("orca2: " + orca2.getNewVelocity() + ". speed: " + orca2.getNewVelocity().magnitude() + ". angle speed: " + Math.toDegrees(orca2.getNewVelocity().angle()));
+        Orca orca1 = new Orca(syncPhysicalMovable1);
+        orca1.add(syncPhysicalMovable2);
+        // orca1.add(syncPhysicalMovable3);
+        orca1.solve();
+        System.out.println("orca1: " + orca1.getNewVelocity() + ". speed: " + orca1.getNewVelocity().magnitude() + ". angle speed: " + Math.toDegrees(orca1.getNewVelocity().angle()));
+//            Orca orca2 = new Orca(syncPhysicalMovable2);
+//            orca2.add(syncPhysicalMovable1);
+//            orca2.add(syncPhysicalMovable3);
+//            orca2.solve();
+//            System.out.println("orca2: " + orca2.getNewVelocity() + ". speed: " + orca2.getNewVelocity().magnitude() + ". angle speed: " + Math.toDegrees(orca2.getNewVelocity().angle()));
 //            Orca orca3 = new Orca(syncPhysicalMovable3);
 //            orca3.add(syncPhysicalMovable1);
 //            orca3.add(syncPhysicalMovable2);
@@ -68,14 +63,14 @@ public class OrcaTest {
             protected void doRender() {
                 strokeSyncPhysicalMovable(syncPhysicalMovable1, 0.05, Color.RED);
                 strokeSyncPhysicalMovable(syncPhysicalMovable2, 0.05, Color.GREEN);
-                strokeSyncPhysicalMovable(syncPhysicalMovable3, 0.05, Color.GREEN);
+                // strokeSyncPhysicalMovable(syncPhysicalMovable3, 0.05, Color.GREEN);
 
-                for (OrcaLine orcaLine : orca2.getOrcaLines()) {
+                for (OrcaLine orcaLine : orca1.getOrcaLines()) {
                     strokeOrcaLine(orcaLine);
                 }
 
                 //     strokeOrcaLine(orca1.getOrcaLines().get(0));
-                strokeLine(new Line(DecimalPosition.NULL, orca2.getNewVelocity()), 0.1, Color.POWDERBLUE);
+                strokeLine(new Line(DecimalPosition.NULL, orca1.getNewVelocity()), 0.1, Color.POWDERBLUE);
 
 
 //                if (syncPhysicalMovable2 != null) {

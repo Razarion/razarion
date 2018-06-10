@@ -170,10 +170,6 @@ public class PathingService {
                 return null;
             }
 
-            if (DebugHelperStatic.isCurrentTick(29)) {
-                System.out.println("---28---");
-            }
-
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
@@ -194,6 +190,8 @@ public class PathingService {
                 });
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
+                } else {
+                    syncPhysicalMovable.setVelocity(syncPhysicalMovable.getPreferredVelocity());
                 }
             }
             return null;

@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
-import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import java.util.ArrayList;
@@ -25,13 +24,13 @@ public class Orca {
 
     public Orca(SyncPhysicalMovable syncPhysicalMovable) {
         this.syncPhysicalMovable = syncPhysicalMovable;
-        preferredVelocity = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR);
-        maxSpeed = preferredVelocity.magnitude();
+        preferredVelocity = syncPhysicalMovable.getPreferredVelocity().normalize();
+        maxSpeed = syncPhysicalMovable.getPreferredVelocity().magnitude();
     }
 
     public void add(SyncPhysicalMovable other) {
         DecimalPosition relativePosition = other.getPosition2d().sub(syncPhysicalMovable.getPosition2d());
-        DecimalPosition relativeVelocity = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR).sub(other.getVelocity().multiply(PlanetService.TICK_FACTOR));
+        DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).sub(DecimalPosition.zeroIfNull(other.getVelocity()));
         double distanceSq = relativePosition.magnitude() * relativePosition.magnitude();
         double combinedRadius = syncPhysicalMovable.getRadius() + other.getRadius();
         double combinedRadiusSq = combinedRadius * combinedRadius;
@@ -84,7 +83,7 @@ public class Orca {
             direction = new DecimalPosition(unitW.getY(), -unitW.getX());
             u = unitW.multiply(combinedRadius * PlanetService.TICKS_PER_SECONDS - wLength);
         }
-        DecimalPosition point = syncPhysicalMovable.getVelocity().multiply(PlanetService.TICK_FACTOR).add(0.5, u);
+        DecimalPosition point = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).add(0.5, u);
         OrcaLine orcaLine = new OrcaLine(point, direction);
         orcaLine.setRelativeVelocity(relativeVelocity);
         orcaLine.setRelativePosition(relativePosition);
@@ -106,13 +105,13 @@ public class Orca {
     }
 
     public void implementVelocity() {
-        if(newVelocity != null && !newVelocity.equals(preferredVelocity)) {
-            syncPhysicalMovable.setVelocity(newVelocity.divide(PlanetService.TICK_FACTOR));
+        if(newVelocity != null) {
+            syncPhysicalMovable.setVelocity(newVelocity);
         }
     }
 
     public void solve() {
-        int lineFail = linearProgram2(orcaLines, preferredVelocity, false);
+        int lineFail = linearProgram2(orcaLines, preferredVelocity, true);
         if (lineFail < orcaLines.size()) {
             linearProgram3(orcaLines.size(), lineFail);
         }
@@ -134,7 +133,7 @@ public class Orca {
             newVelocity = optimizationVelocity.multiply(maxSpeed);
         } else if (optimizationVelocity.magnitude() > maxSpeed) {
             // Optimize closest point and outside circle.
-            newVelocity = optimizationVelocity.normalize(maxSpeed);
+            newVelocity = optimizationVelocity.multiply(maxSpeed);
         } else {
             // Optimize closest point and inside circle.
             newVelocity = optimizationVelocity;
@@ -145,7 +144,7 @@ public class Orca {
                 syncPhysicalMovable.setCrowded();
                 // Result does not satisfy constraint i. Compute new optimal result.
                 DecimalPosition tempResult = newVelocity;
-                if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, true)) { // TODO optimizeDirection used before
+                if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, optimizeDirection)) {
                     newVelocity = tempResult;
 
                     return lineNo;

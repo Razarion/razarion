@@ -19,14 +19,15 @@ public interface GameTestHelper {
 
     static SyncBaseItem createMockSyncBaseItem(double radius, TerrainType terrainType, DecimalPosition position) {
         SyncBaseItem syncBaseItem = new SyncBaseItem();
-        syncBaseItem.init(-99, null, createSyncPhysicalMovable(radius, terrainType, position, null));
+        syncBaseItem.init(-99, null, createSyncPhysicalMovable(radius, terrainType, position, null, null));
         return syncBaseItem;
     }
 
-    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity) {
+    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, DecimalPosition preferredVelocity) {
         SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
         SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
         SimpleTestEnvironment.injectService("velocity", syncPhysicalMovable, SyncPhysicalMovable.class, velocity);
+        SimpleTestEnvironment.injectService("preferredVelocity", syncPhysicalMovable, SyncPhysicalMovable.class, preferredVelocity);
         SimpleTestEnvironment.injectService("radius", syncPhysicalMovable, SyncPhysicalArea.class, radius);
         SimpleTestEnvironment.injectService("terrainType", syncPhysicalMovable, SyncPhysicalArea.class, terrainType);
         SyncItemContainerService syncItemContainerService = EasyMock.createNiceMock(SyncItemContainerService.class);

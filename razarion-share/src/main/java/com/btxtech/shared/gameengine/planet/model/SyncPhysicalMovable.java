@@ -50,6 +50,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private double angularVelocity; // Rad per second
     private Path path;
     private DecimalPosition velocity;
+    private DecimalPosition preferredVelocity;
     private DecimalPosition oldPosition;
     private boolean crowded;
 
@@ -76,10 +77,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
 
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
-            velocity = DecimalPosition.createVector(desiredAngle, speed);
-            DebugHelperStatic.add2printOnTick("\n" + getSyncItem().getId() + ". p:" + getPosition2d() + ". v:" + velocity + ". speed: " + velocity.magnitude());
+            preferredVelocity = DecimalPosition.createVector(desiredAngle, speed);
+            DebugHelperStatic.add2printOnTick("\n" + getSyncItem().getId() + ". Values: " + DebugHelperStatic.generate(getPosition2d()) + ", " + DebugHelperStatic.generate(velocity) +", " + DebugHelperStatic.generate(preferredVelocity));
         } else {
             velocity = null;
+            preferredVelocity = null;
         }
     }
 
@@ -103,6 +105,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         Line line = new Line(oldPosition, getPosition2d());
         if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
             velocity = null;
+            preferredVelocity = null;
             setPosition2d(path.getCurrentWayPoint(), false);
             path = null;
         }
@@ -132,7 +135,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public boolean isMoving() {
-        return velocity != null && !velocity.equalsDeltaZero();
+        return (velocity != null && !velocity.equalsDeltaZero()) || (preferredVelocity != null && !preferredVelocity.equalsDeltaZero());
     }
 
     public DecimalPosition getVelocity() {
@@ -141,6 +144,10 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     public void setVelocity(DecimalPosition velocity) {
         this.velocity = velocity;
+    }
+
+    public DecimalPosition getPreferredVelocity() {
+        return preferredVelocity;
     }
 
     public DecimalPosition getDesiredPosition() {

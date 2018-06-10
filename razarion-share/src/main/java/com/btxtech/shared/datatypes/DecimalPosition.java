@@ -456,6 +456,14 @@ public class DecimalPosition {
         return positions.stream().map(position -> position.add(delta)).collect(Collectors.toList());
     }
 
+    public static DecimalPosition zeroIfNull(DecimalPosition decimalPosition) {
+        if (decimalPosition != null) {
+            return decimalPosition;
+        } else {
+            return NULL;
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
