@@ -174,24 +174,7 @@ public class PathingService {
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
                 DebugHelperStatic.add2printOnTick("\nOrca: " + syncPhysicalMovable.getSyncItem().getId());
-                syncItemContainerService.iterateCellQuadItem(syncPhysicalArea.getPosition2d(), collisionAvoidanceWidth, otherSyncItem -> {
-                    if (syncBaseItem.equals(otherSyncItem)) {
-                        return;
-                    }
-                    SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
-                    if (other instanceof SyncPhysicalMovable) {
-                        SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
-                        if (otherSyncPhysicalMovable.isMoving()) {
-                            double distance = syncPhysicalMovable.getDistance(other);
-                            DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity()).sub(DecimalPosition.zeroIfNull(otherSyncPhysicalMovable.getPreferredVelocity()));
-                            distance -= relativeVelocity.magnitude() * PlanetService.TICK_FACTOR * Orca.TAU;
-                            if (distance <= 0.0) {
-                                DebugHelperStatic.add2printOnTick("\nadd: " + otherSyncItem.getId());
-                                orca.add((SyncPhysicalMovable) other);
-                            }
-                        }
-                    }
-                });
+                addOtherSyncItemOrcaLines(orca, collisionAvoidanceWidth, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
                 } else {
@@ -202,6 +185,28 @@ public class PathingService {
         });
         orcas.forEach(Orca::solve);
         orcas.forEach(Orca::implementVelocity);
+    }
+
+    private void addOtherSyncItemOrcaLines(Orca orca, double collisionAvoidanceWidth, SyncBaseItem syncBaseItem) {
+        syncItemContainerService.iterateCellQuadItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), collisionAvoidanceWidth, otherSyncItem -> {
+            if (syncBaseItem.equals(otherSyncItem)) {
+                return;
+            }
+            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
+            SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
+            if (other instanceof SyncPhysicalMovable) {
+                SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
+                if (otherSyncPhysicalMovable.isMoving()) {
+                    double distance = syncPhysicalMovable.getDistance(other);
+                    DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity()).sub(DecimalPosition.zeroIfNull(otherSyncPhysicalMovable.getPreferredVelocity()));
+                    distance -= relativeVelocity.magnitude() * PlanetService.TICK_FACTOR * Orca.TAU;
+                    if (distance <= 0.0) {
+                        DebugHelperStatic.add2printOnTick("\nadd: " + otherSyncItem.getId());
+                        orca.add((SyncPhysicalMovable) other);
+                    }
+                }
+            }
+        });
     }
 
     private void implementPosition() {
