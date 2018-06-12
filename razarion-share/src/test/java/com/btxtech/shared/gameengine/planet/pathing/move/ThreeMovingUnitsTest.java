@@ -38,4 +38,17 @@ public class ThreeMovingUnitsTest extends ScenarioBaseTest {
         });
     }
 
+    @Test
+    public void frontal2() {
+        testScenario(new Scenario("ThreeMovingUnitsTest_frontal2.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(100, 162), new DecimalPosition(40, 162));
+
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 158), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 162), new DecimalPosition(100, 160));
+            }
+        });
+    }
+
 }

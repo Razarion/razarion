@@ -162,7 +162,7 @@ public class PathingService {
 
     private void orcaSolver() {
         System.out.println("------------------------------------");
-        double collisionAvoidanceRadius = 2.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR) * Orca.TAU;
+        double collisionAvoidanceWidth = 4.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR) * Orca.TAU;
         Collection<Orca> orcas = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
@@ -174,17 +174,21 @@ public class PathingService {
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
                 DebugHelperStatic.add2printOnTick("\nOrca: " + syncPhysicalMovable.getSyncItem().getId());
-                syncItemContainerService.iterateCellRadiusItem(syncPhysicalArea.getPosition2d(), collisionAvoidanceRadius, otherSyncItem -> {
+                syncItemContainerService.iterateCellQuadItem(syncPhysicalArea.getPosition2d(), collisionAvoidanceWidth, otherSyncItem -> {
                     if (syncBaseItem.equals(otherSyncItem)) {
                         return;
                     }
-
                     SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
                     if (other instanceof SyncPhysicalMovable) {
                         SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
                         if (otherSyncPhysicalMovable.isMoving()) {
-                            DebugHelperStatic.add2printOnTick("\nadd: " + otherSyncItem.getId());
-                            orca.add((SyncPhysicalMovable) other);
+                            double distance = syncPhysicalMovable.getDistance(other);
+                            DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity()).sub(DecimalPosition.zeroIfNull(otherSyncPhysicalMovable.getPreferredVelocity()));
+                            distance -= relativeVelocity.magnitude() * PlanetService.TICK_FACTOR * Orca.TAU;
+                            if (distance <= 0.0) {
+                                DebugHelperStatic.add2printOnTick("\nadd: " + otherSyncItem.getId());
+                                orca.add((SyncPhysicalMovable) other);
+                            }
                         }
                     }
                 });
