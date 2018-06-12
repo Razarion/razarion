@@ -13,7 +13,7 @@ import org.junit.Test;
 @Deprecated
 public class MoveMultipleUnitTest extends ScenarioBaseTest {
 
-    @Test
+    // @Test
     public void moveMultipleEast2() {
         testScenario(new Scenario("moveMultipleEast2.json", getClass()) {
             @Override
@@ -24,7 +24,7 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
         });
     }
 
-    @Test
+    // @Test
     public void move4East1() {
         testScenario(new Scenario("move4East1.json", getClass()) {
             @Override
@@ -38,7 +38,7 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
         });
     }
 
-    @Test
+    // @Test
     public void move6East1() {
         testScenario(new Scenario("move6East1.json", getClass()) {
             @Override
@@ -55,7 +55,7 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
         });
     }
 
-    @Test
+    // @Test
     public void movePushAway1() {
         testScenario(new Scenario("movePushAway1.json", getClass()) {
             @Override
@@ -66,7 +66,7 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
         });
     }
 
-    @Test
+    // @Test
     public void movePushAway2() {
         testScenario(new Scenario("movePushAway2.json", getClass()) {
             @Override
