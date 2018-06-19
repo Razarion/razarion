@@ -103,23 +103,14 @@ public class Orca {
         DecimalPosition relativePosition1 = obstacleSlope.getLine().getPoint1().sub(position);
         DecimalPosition relativePosition2 = obstacleSlope.getLine().getPoint2().sub(position);
 
-//                // Check if velocity obstacle of obstacle is already taken care of
-//                // by previously constructed obstacle ORCA lines.
-//                boolean alreadyCovered = false;
-//
-//                for (final Line orcaLine : lines) {
-//                    if (RVOMath.det(relativePosition1.scalarMultiply(invTimeHorizonObstacle).subtract(orcaLine.point), orcaLine.direction) - invTimeHorizonObstacle * radius >= -RVOMath.EPSILON && RVOMath.det(relativePosition2.scalarMultiply(invTimeHorizonObstacle).subtract(orcaLine.point), orcaLine.direction) - invTimeHorizonObstacle * radius >= -RVOMath.EPSILON) {
-//                        alreadyCovered = true;
-//
-//                        break;
-//                    }
-//                }
-//
-//                if (alreadyCovered) {
-//                    continue;
-//                }
-//
-//                // Not yet covered. Check for collisions.
+        // Check if velocity obstacle of obstacle is already taken care of by previously constructed obstacle ORCA lines.
+        for (OrcaLine orcaLine : orcaLines) {
+            if (relativePosition1.multiply(invTimeHorizonObstacle).sub(orcaLine.getPoint()).determinant(orcaLine.getDirection()) - invTimeHorizonObstacle * radius >= -EPSILON && relativePosition2.multiply(invTimeHorizonObstacle).sub(orcaLine.getPoint()).determinant(orcaLine.getDirection()) - invTimeHorizonObstacle * radius >= -EPSILON) {
+                return;
+            }
+        }
+
+        // Not yet covered. Check for collisions.
         double distanceSq1 = relativePosition1.magnitudeSq();
         double distanceSq2 = relativePosition2.magnitudeSq();
         double radiusSq = radius * radius;
@@ -127,35 +118,34 @@ public class Orca {
         DecimalPosition obstacleVector = obstacleSlope.getLine().getPoint2().sub(obstacleSlope.getLine().getPoint1());
         double s = -relativePosition1.dotProduct(obstacleVector) / obstacleVector.magnitudeSq(); // Projection on obstacleVector (unit vector)
         double distanceSqLine = Math.pow(relativePosition1.add(s, obstacleVector).magnitude(), 2.0); // Distance nearest point on line
-//
-//                if (s < 0.0 && distanceSq1 <= radiusSq) {
-//                    // Collision with left vertex. Ignore if non-convex.
-//                    if (obstacle1.convex) {
-//                        final Vector2D direction = new Vector2D(-relativePosition1.getY(), relativePosition1.getX()).normalize();
-//                        lines.add(new Line(Vector2D.ZERO, direction));
-//                    }
-//
-//                    continue;
-//                }
-//
-//                if (s > 1.0 && distanceSq2 <= radiusSq) {
-//                    // Collision with right vertex. Ignore if non-convex or if it
-//                    // will be taken care of by neighboring obstacle.
-//                    if (obstacle2.convex && RVOMath.det(relativePosition2, obstacle2.direction) >= 0.0) {
-//                        final Vector2D direction = new Vector2D(-relativePosition2.getY(), relativePosition2.getX()).normalize();
-//                        lines.add(new Line(Vector2D.ZERO, direction));
-//                    }
-//
-//                    continue;
-//                }
-//
-//                if (s >= 0.0 && s < 1.0 && distanceSqLine <= radiusSq) {
-//                    // Collision with obstacle segment.
-//                    final Vector2D direction = obstacle1.direction.negate();
-//                    lines.add(new Line(Vector2D.ZERO, direction));
-//
-//                    continue;
-//                }
+
+        if (s < 0.0 && distanceSq1 <= radiusSq) {
+            // Collision with left vertex. Ignore if non-convex.
+            if (obstacleSlope.isPoint1Convex()) {
+                DecimalPosition direction = new DecimalPosition(-relativePosition1.getY(), relativePosition1.getX()).normalize();
+                orcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+            }
+
+            return;
+        }
+
+        if (s > 1.0 && distanceSq2 <= radiusSq) {
+            // Collision with right vertex. Ignore if non-convex or if it will be taken care of by neighboring obstacle.
+            if (obstacleSlope.isPoint2Convex() && relativePosition2.determinant(obstacleSlope.setupNextDirection()) >= 0.0) {
+                DecimalPosition direction = new DecimalPosition(-relativePosition2.getY(), relativePosition2.getX()).normalize();
+                orcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+            }
+
+            return;
+        }
+
+        if (s >= 0.0 && s < 1.0 && distanceSqLine <= radiusSq) {
+            // Collision with obstacle segment.
+            DecimalPosition direction = obstacleSlope.setupDirection().negate();
+            orcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+
+            return;
+        }
 
         // No collision. Compute legs. When obliquely viewed, both legs can come from a single vertex. Legs extend cut-off line when non-convex vertex.
         DecimalPosition leftLegDirection;

@@ -24,6 +24,7 @@ public class OrcaTest {
     private static final DecimalPosition POINT_4 = new DecimalPosition(30, 20);
     private SyncPhysicalMovable syncPhysicalMovable1;
     private Orca orca1;
+
     @Test
     public void testGui() {
 //        SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(78.25, 160.0), new DecimalPosition(-15.0, 1.83697019872103E-15));
@@ -72,7 +73,9 @@ public class OrcaTest {
                     strokeSyncPhysicalMovable(syncPhysicalMovable1, 0.05, Color.RED);
                     // strokeSyncPhysicalMovable(syncPhysicalMovable2, 0.05, Color.GREEN);
                     // strokeSyncPhysicalMovable(syncPhysicalMovable3, 0.05, Color.GREEN);
-                    strokeLine(new Line(DecimalPosition.NULL, orca1.getNewVelocity()), 0.1, Color.POWDERBLUE);
+                    if (!orca1.getNewVelocity().equalsDeltaZero()) {
+                        strokeLine(new Line(DecimalPosition.NULL, orca1.getNewVelocity()), 0.1, Color.POWDERBLUE);
+                    }
 
                     for (OrcaLine orcaLine : orca1.getOrcaLines()) {
                         strokeOrcaLine(orcaLine);
