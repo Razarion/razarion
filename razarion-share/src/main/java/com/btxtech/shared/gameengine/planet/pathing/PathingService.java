@@ -162,7 +162,7 @@ public class PathingService {
 
     private void orcaSolver() {
         System.out.println("------------------------------------");
-        double collisionAvoidanceWidth = 4.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR) * Orca.TAU;
+        double itemCollisionAvoidanceWidth = 4.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR) * Orca.TIME_HORIZON_ITEMS;
         Collection<Orca> orcas = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
@@ -174,7 +174,8 @@ public class PathingService {
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
                 DebugHelperStatic.add2printOnTick("\nOrca: " + syncPhysicalMovable.getSyncItem().getId());
-                addOtherSyncItemOrcaLines(orca, collisionAvoidanceWidth, syncBaseItem);
+                addOtherSyncItemOrcaLines(orca, itemCollisionAvoidanceWidth, syncBaseItem);
+                //addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
                 } else {
@@ -187,8 +188,8 @@ public class PathingService {
         orcas.forEach(Orca::implementVelocity);
     }
 
-    private void addOtherSyncItemOrcaLines(Orca orca, double collisionAvoidanceWidth, SyncBaseItem syncBaseItem) {
-        syncItemContainerService.iterateCellQuadItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), collisionAvoidanceWidth, otherSyncItem -> {
+    private void addOtherSyncItemOrcaLines(Orca orca, double itemCollisionAvoidanceWidth, SyncBaseItem syncBaseItem) {
+        syncItemContainerService.iterateCellQuadItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), itemCollisionAvoidanceWidth, otherSyncItem -> {
             if (syncBaseItem.equals(otherSyncItem)) {
                 return;
             }
@@ -199,12 +200,25 @@ public class PathingService {
                 if (otherSyncPhysicalMovable.isMoving()) {
                     double distance = syncPhysicalMovable.getDistance(other);
                     DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity()).sub(DecimalPosition.zeroIfNull(otherSyncPhysicalMovable.getPreferredVelocity()));
-                    distance -= relativeVelocity.magnitude() * PlanetService.TICK_FACTOR * Orca.TAU;
+                    distance -= relativeVelocity.magnitude() * PlanetService.TICK_FACTOR * Orca.TIME_HORIZON_ITEMS;
                     if (distance <= 0.0) {
                         DebugHelperStatic.add2printOnTick("\nadd: " + otherSyncItem.getId());
                         orca.add((SyncPhysicalMovable) other);
                     }
                 }
+            }
+        });
+    }
+
+    private void addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) {
+        double lookAheadTerrainDistance = syncBaseItem.getSyncPhysicalArea().getRadius() + DecimalPosition.zeroIfNull(syncBaseItem.getSyncPhysicalMovable().getPreferredVelocity()).magnitude() * Orca.TIME_HORIZON_ITEMS;
+        DecimalPosition position = syncBaseItem.getSyncPhysicalArea().getPosition2d();
+        terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
+            if (obstacle instanceof ObstacleSlope) {
+                ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
+                orca.add(obstacleSlope);
+            } else {
+                throw new UnsupportedOperationException();
             }
         });
     }

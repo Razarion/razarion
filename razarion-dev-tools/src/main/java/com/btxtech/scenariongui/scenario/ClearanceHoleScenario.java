@@ -15,6 +15,7 @@ import java.util.Collection;
  * Created by Beat
  * 05.04.2017.
  */
+@Deprecated
 public class ClearanceHoleScenario extends Scenario {
     private DecimalPosition target;
 

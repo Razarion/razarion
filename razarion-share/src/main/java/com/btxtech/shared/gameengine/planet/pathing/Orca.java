@@ -14,9 +14,12 @@ import java.util.List;
  */
 // http://gamma.cs.unc.edu/ORCA/
 public class Orca {
-    public static final double TAU = 2;
+    public static final double TIME_HORIZON_ITEMS = 2;
+    public static final double TIME_HORIZON_OBSTACLES = 2;
     public static final double EPSILON = 0.00001;
     private SyncPhysicalMovable syncPhysicalMovable;
+    private DecimalPosition position;
+    private double radius;
     private DecimalPosition preferredVelocity;
     private DecimalPosition newVelocity;
     private double maxSpeed;
@@ -24,15 +27,17 @@ public class Orca {
 
     public Orca(SyncPhysicalMovable syncPhysicalMovable) {
         this.syncPhysicalMovable = syncPhysicalMovable;
-        preferredVelocity = syncPhysicalMovable.getPreferredVelocity().normalize();
+        position = syncPhysicalMovable.getPosition2d();
+        radius = syncPhysicalMovable.getRadius();
+        preferredVelocity = syncPhysicalMovable.getPreferredVelocity();
         maxSpeed = syncPhysicalMovable.getPreferredVelocity().magnitude();
     }
 
     public void add(SyncPhysicalMovable other) {
-        DecimalPosition relativePosition = other.getPosition2d().sub(syncPhysicalMovable.getPosition2d());
+        DecimalPosition relativePosition = other.getPosition2d().sub(position);
         DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).sub(DecimalPosition.zeroIfNull(other.getVelocity()));
-        double distanceSq = relativePosition.magnitude() * relativePosition.magnitude();
-        double combinedRadius = syncPhysicalMovable.getRadius() + other.getRadius();
+        double distanceSq = relativePosition.magnitudeSq();
+        double combinedRadius = radius + other.getRadius();
         double combinedRadiusSq = combinedRadius * combinedRadius;
 
         DecimalPosition u;
@@ -40,7 +45,7 @@ public class Orca {
 
         if (distanceSq > combinedRadiusSq) {
             // No collision.
-            DecimalPosition w = relativeVelocity.sub(relativePosition.divide(TAU));
+            DecimalPosition w = relativeVelocity.sub(relativePosition.divide(TIME_HORIZON_ITEMS));
 
             // Vector from cutoff center to relative velocity.
             double wLengthSq = w.magnitude() * w.magnitude();
@@ -53,7 +58,7 @@ public class Orca {
                 DecimalPosition unitW = w.divide(wLength);
 
                 direction = new DecimalPosition(unitW.getY(), -unitW.getX()); // Rotate -90deg (clockwise)
-                u = unitW.multiply(combinedRadius / TAU - wLength);
+                u = unitW.multiply(combinedRadius / TIME_HORIZON_ITEMS - wLength);
             } else {
                 DebugHelperStatic.add2printOnTick("\n No collision legs: "/* + other.getSyncItem().getId()*/);
                 // Project on legs.
@@ -92,6 +97,222 @@ public class Orca {
         orcaLines.add(orcaLine);
     }
 
+    public void add(ObstacleSlope obstacleSlope) {
+        double invTimeHorizonObstacle = 1.0 / TIME_HORIZON_OBSTACLES;
+
+        DecimalPosition relativePosition1 = obstacleSlope.getLine().getPoint1().sub(position);
+        DecimalPosition relativePosition2 = obstacleSlope.getLine().getPoint2().sub(position);
+
+//                // Check if velocity obstacle of obstacle is already taken care of
+//                // by previously constructed obstacle ORCA lines.
+//                boolean alreadyCovered = false;
+//
+//                for (final Line orcaLine : lines) {
+//                    if (RVOMath.det(relativePosition1.scalarMultiply(invTimeHorizonObstacle).subtract(orcaLine.point), orcaLine.direction) - invTimeHorizonObstacle * radius >= -RVOMath.EPSILON && RVOMath.det(relativePosition2.scalarMultiply(invTimeHorizonObstacle).subtract(orcaLine.point), orcaLine.direction) - invTimeHorizonObstacle * radius >= -RVOMath.EPSILON) {
+//                        alreadyCovered = true;
+//
+//                        break;
+//                    }
+//                }
+//
+//                if (alreadyCovered) {
+//                    continue;
+//                }
+//
+//                // Not yet covered. Check for collisions.
+        double distanceSq1 = relativePosition1.magnitudeSq();
+        double distanceSq2 = relativePosition2.magnitudeSq();
+        double radiusSq = radius * radius;
+
+        DecimalPosition obstacleVector = obstacleSlope.getLine().getPoint2().sub(obstacleSlope.getLine().getPoint1());
+        double s = -relativePosition1.dotProduct(obstacleVector) / obstacleVector.magnitudeSq(); // Projection on obstacleVector (unit vector)
+        double distanceSqLine = Math.pow(relativePosition1.add(s, obstacleVector).magnitude(), 2.0); // Distance nearest point on line
+//
+//                if (s < 0.0 && distanceSq1 <= radiusSq) {
+//                    // Collision with left vertex. Ignore if non-convex.
+//                    if (obstacle1.convex) {
+//                        final Vector2D direction = new Vector2D(-relativePosition1.getY(), relativePosition1.getX()).normalize();
+//                        lines.add(new Line(Vector2D.ZERO, direction));
+//                    }
+//
+//                    continue;
+//                }
+//
+//                if (s > 1.0 && distanceSq2 <= radiusSq) {
+//                    // Collision with right vertex. Ignore if non-convex or if it
+//                    // will be taken care of by neighboring obstacle.
+//                    if (obstacle2.convex && RVOMath.det(relativePosition2, obstacle2.direction) >= 0.0) {
+//                        final Vector2D direction = new Vector2D(-relativePosition2.getY(), relativePosition2.getX()).normalize();
+//                        lines.add(new Line(Vector2D.ZERO, direction));
+//                    }
+//
+//                    continue;
+//                }
+//
+//                if (s >= 0.0 && s < 1.0 && distanceSqLine <= radiusSq) {
+//                    // Collision with obstacle segment.
+//                    final Vector2D direction = obstacle1.direction.negate();
+//                    lines.add(new Line(Vector2D.ZERO, direction));
+//
+//                    continue;
+//                }
+
+        // No collision. Compute legs. When obliquely viewed, both legs can come from a single vertex. Legs extend cut-off line when non-convex vertex.
+        DecimalPosition leftLegDirection;
+        DecimalPosition rightLegDirection;
+
+        boolean obstacle1Convex = obstacleSlope.isPoint1Convex();
+        boolean obstacle2Convex = obstacleSlope.isPoint2Convex();
+        DecimalPosition obstacle1Point = obstacleSlope.getLine().getPoint1();
+        DecimalPosition obstacle2Point = obstacleSlope.getLine().getPoint2();
+        DecimalPosition obstacle1Direction = obstacleSlope.setupDirection();
+        DecimalPosition obstacle1PreviousDirection = obstacleSlope.setupPreviousDirection();
+        DecimalPosition obstacle2Direction = obstacleSlope.setupNextDirection();
+        boolean obstacle1EqualsObstacle2 = false;
+
+        if (s < 0.0 && distanceSqLine <= radiusSq) {
+            // Obstacle viewed obliquely so that left vertex defines velocity obstacle.
+            if (!obstacleSlope.isPoint1Convex()) {
+                // Ignore obstacle.
+                return;
+            }
+
+            obstacle2Convex = obstacleSlope.isPoint1Convex();
+            obstacle2Point = obstacleSlope.getLine().getPoint1();
+            obstacle2Direction = obstacle1Direction;
+            obstacle1EqualsObstacle2 = true;
+
+            double leg1 = Math.sqrt(distanceSq1 - radiusSq);
+            leftLegDirection = new DecimalPosition(relativePosition1.getX() * leg1 - relativePosition1.getY() * radius, relativePosition1.getX() * radius + relativePosition1.getY() * leg1).multiply(1.0 / distanceSq1);
+            rightLegDirection = new DecimalPosition(relativePosition1.getX() * leg1 + relativePosition1.getY() * radius, -relativePosition1.getX() * radius + relativePosition1.getY() * leg1).multiply(1.0 / distanceSq1);
+        } else if (s > 1.0 && distanceSqLine <= radiusSq) {
+            // Obstacle viewed obliquely so that right vertex defines velocity obstacle.
+            if (!obstacleSlope.isPoint2Convex()) {
+                // Ignore obstacle.
+                return;
+            }
+
+            obstacle1Convex = obstacleSlope.isPoint2Convex();
+            obstacle1Point = obstacleSlope.getLine().getPoint2();
+            obstacle1PreviousDirection = obstacle1Direction;
+            obstacle1Direction = obstacle2Direction;
+            obstacle1EqualsObstacle2 = true;
+
+            double leg2 = Math.sqrt(distanceSq2 - radiusSq);
+            leftLegDirection = new DecimalPosition(relativePosition2.getX() * leg2 - relativePosition2.getY() * radius, relativePosition2.getX() * radius + relativePosition2.getY() * leg2).multiply(1.0 / distanceSq2);
+            rightLegDirection = new DecimalPosition(relativePosition2.getX() * leg2 + relativePosition2.getY() * radius, -relativePosition2.getX() * radius + relativePosition2.getY() * leg2).multiply(1.0 / distanceSq2);
+        } else {
+            // Usual situation.
+            if (obstacleSlope.isPoint1Convex()) {
+                double leg1 = Math.sqrt(distanceSq1 - radiusSq);
+                leftLegDirection = new DecimalPosition(relativePosition1.getX() * leg1 - relativePosition1.getY() * radius, relativePosition1.getX() * radius + relativePosition1.getY() * leg1).multiply(1.0 / distanceSq1);
+            } else {
+                // Left vertex non-convex; left leg extends cut-off line.
+                leftLegDirection = obstacleSlope.setupDirection().negate();
+            }
+
+            if (obstacleSlope.isPoint2Convex()) {
+                double leg2 = Math.sqrt(distanceSq2 - radiusSq);
+                rightLegDirection = new DecimalPosition(relativePosition2.getX() * leg2 + relativePosition2.getY() * radius, -relativePosition2.getX() * radius + relativePosition2.getY() * leg2).multiply(1.0 / distanceSq2);
+            } else {
+                // Right vertex non-convex; right leg extends cut-off line.
+                rightLegDirection = obstacleSlope.setupDirection();
+            }
+        }
+
+        // Legs can never point into neighboring edge when convex vertex,
+        // take cut-off line of neighboring edge instead. If velocity
+        // projected on "foreign" leg, no constraint is added.
+        boolean leftLegForeign = false;
+        boolean rightLegForeign = false;
+
+        if (obstacle1Convex && leftLegDirection.determinant(obstacle1PreviousDirection.negate()) >= 0.0) {
+            // Left leg points into obstacle.
+            leftLegDirection = obstacle1PreviousDirection.negate();
+            leftLegForeign = true;
+        }
+
+        if (obstacle2Convex && rightLegDirection.determinant(obstacle2Direction) <= 0.0) {
+            // Right leg points into obstacle.
+            rightLegDirection = obstacle2Direction;
+            rightLegForeign = true;
+        }
+
+        // Compute cut-off centers.
+        DecimalPosition leftCutOff = obstacle1Point.sub(position).multiply(invTimeHorizonObstacle);
+        DecimalPosition rightCutOff = obstacle2Point.sub(position).multiply(invTimeHorizonObstacle);
+        DecimalPosition cutOffVector = rightCutOff.sub(leftCutOff);
+
+        // Project current velocity on velocity obstacle.
+
+        // Check if current velocity is projected on cutoff circles.
+        DecimalPosition velocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity());
+
+        double t = obstacle1EqualsObstacle2 ? 0.5 : velocity.sub(leftCutOff).dotProduct(cutOffVector) / cutOffVector.magnitudeSq();
+        double tLeft = velocity.sub(leftCutOff).dotProduct(leftLegDirection);
+        double tRight = velocity.sub(rightCutOff).dotProduct(rightLegDirection);
+
+        if (t < 0.0 && tLeft < 0.0 || obstacle1EqualsObstacle2 && tLeft < 0.0 && tRight < 0.0) {
+            // Project on left cut-off circle.
+            DecimalPosition unitW = velocity.sub(leftCutOff).normalize();
+
+            DecimalPosition direction = new DecimalPosition(unitW.getY(), -unitW.getX());
+            DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, unitW);
+            OrcaLine orcaLine = new OrcaLine(point, direction);
+            orcaLines.add(orcaLine);
+            return;
+        }
+
+        if (t > 1.0 && tRight < 0.0) {
+            // Project on right cut-off circle.
+            DecimalPosition unitW = velocity.sub(rightCutOff).normalize();
+
+            DecimalPosition direction = new DecimalPosition(unitW.getY(), -unitW.getX());
+            DecimalPosition point = rightCutOff.add(radius * invTimeHorizonObstacle, unitW);
+            OrcaLine orcaLine = new OrcaLine(point, direction);
+            orcaLines.add(orcaLine);
+            return;
+        }
+
+        // Project on left leg, right leg, or cut-off line, whichever is
+        // closest to velocity.
+        double distanceSqCutOff = t < 0.0 || t > 1.0 || obstacle1EqualsObstacle2 ? Double.POSITIVE_INFINITY : velocity.getDistanceSq(leftCutOff.add(cutOffVector.multiply(t)));
+        double distanceSqLeft = tLeft < 0.0 ? Double.POSITIVE_INFINITY : velocity.getDistanceSq(leftCutOff.add(leftLegDirection.multiply(tLeft)));
+        double distanceSqRight = tRight < 0.0 ? Double.POSITIVE_INFINITY : velocity.getDistanceSq(rightCutOff.add(rightLegDirection.multiply(tRight)));
+
+        if (distanceSqCutOff <= distanceSqLeft && distanceSqCutOff <= distanceSqRight) {
+            // Project on cut-off line.
+            DecimalPosition direction = obstacle1Direction.negate();
+            DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-direction.getY(), direction.getX()));
+            OrcaLine orcaLine = new OrcaLine(point, direction);
+            orcaLines.add(orcaLine);
+
+            return;
+        }
+
+        if (distanceSqLeft <= distanceSqRight) {
+            // Project on left leg.
+            if (leftLegForeign) {
+                return;
+            }
+
+            DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-leftLegDirection.getY(), leftLegDirection.getX()));
+            OrcaLine orcaLine = new OrcaLine(point, leftLegDirection);
+            orcaLines.add(orcaLine);
+            return;
+        }
+
+        // Project on right leg.
+        if (rightLegForeign) {
+            return;
+        }
+
+        DecimalPosition direction = rightLegDirection.negate();
+        DecimalPosition point = rightCutOff.add(radius / TIME_HORIZON_OBSTACLES, new DecimalPosition(-direction.getY(), direction.getX()));
+        OrcaLine orcaLine = new OrcaLine(point, direction);
+        orcaLines.add(orcaLine);
+    }
+
     public DecimalPosition getNewVelocity() {
         return newVelocity;
     }
@@ -105,13 +326,13 @@ public class Orca {
     }
 
     public void implementVelocity() {
-        if(newVelocity != null) {
+        if (newVelocity != null) {
             syncPhysicalMovable.setVelocity(newVelocity);
         }
     }
 
     public void solve() {
-        int lineFail = linearProgram2(orcaLines, preferredVelocity, true);
+        int lineFail = linearProgram2(orcaLines, preferredVelocity, false);
         if (lineFail < orcaLines.size()) {
             linearProgram3(orcaLines.size(), lineFail);
         }
@@ -133,7 +354,7 @@ public class Orca {
             newVelocity = optimizationVelocity.multiply(maxSpeed);
         } else if (optimizationVelocity.magnitude() > maxSpeed) {
             // Optimize closest point and outside circle.
-            newVelocity = optimizationVelocity.multiply(maxSpeed);
+            newVelocity = optimizationVelocity.normalize(maxSpeed);
         } else {
             // Optimize closest point and inside circle.
             newVelocity = optimizationVelocity;
@@ -167,8 +388,8 @@ public class Orca {
      * @return True if successful.
      */
     private boolean linearProgram1(List<OrcaLine> orcaLines, int lineNo, DecimalPosition optimizationVelocity, boolean optimizeDirection) {
-        final double dotProduct = orcaLines.get(lineNo).getPoint().dotProduct(orcaLines.get(lineNo).getDirection());
-        final double discriminant = dotProduct * dotProduct + maxSpeed * maxSpeed - orcaLines.get(lineNo).getPoint().magnitude() * orcaLines.get(lineNo).getPoint().magnitude();
+        double dotProduct = orcaLines.get(lineNo).getPoint().dotProduct(orcaLines.get(lineNo).getDirection());
+        double discriminant = dotProduct * dotProduct + maxSpeed * maxSpeed - orcaLines.get(lineNo).getPoint().magnitude() * orcaLines.get(lineNo).getPoint().magnitude();
 
         if (discriminant < 0.0) {
             // Max speed circle fully invalidates line lineNo.
@@ -192,7 +413,7 @@ public class Orca {
                 continue;
             }
 
-            final double t = numerator / denominator;
+            double t = numerator / denominator;
 
             if (denominator >= 0.0) {
                 // Line i bounds line lineNo on the right.
@@ -245,14 +466,14 @@ public class Orca {
         for (int i = beginLine; i < orcaLines.size(); i++) {
             if (orcaLines.get(i).getDirection().determinant(orcaLines.get(i).getPoint().sub(newVelocity)) > distance) {
                 // Result does not satisfy constraint of line i.
-                final List<OrcaLine> projectedLines = new ArrayList<>(numObstacleLines);
+                List<OrcaLine> projectedLines = new ArrayList<>(numObstacleLines);
                 for (int j = 0; j < numObstacleLines; j++) {
                     projectedLines.add(orcaLines.get(j));
                 }
 
                 for (int j = numObstacleLines; j < i; j++) {
-                    final double determinant = orcaLines.get(i).getDirection().determinant(orcaLines.get(j).getDirection());
-                    final DecimalPosition point;
+                    double determinant = orcaLines.get(i).getDirection().determinant(orcaLines.get(j).getDirection());
+                    DecimalPosition point;
 
                     if (Math.abs(determinant) <= EPSILON) {
                         // Line i and line j are parallel.

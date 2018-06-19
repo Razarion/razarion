@@ -194,7 +194,11 @@ public class DecimalPosition {
     }
 
     public double magnitude() {
-        return Math.sqrt(x * x + y * y);
+        return Math.sqrt(magnitudeSq());
+    }
+
+    public double magnitudeSq() {
+        return x * x + y * y;
     }
 
     public DecimalPosition normalize(double basis) {
@@ -259,8 +263,11 @@ public class DecimalPosition {
     }
 
     public double getDistance(DecimalPosition decimalPosition) {
-        double sqrtC = Math.pow(decimalPosition.x - x, 2) + Math.pow(decimalPosition.y - y, 2);
-        return Math.sqrt(sqrtC);
+        return Math.sqrt(getDistanceSq(decimalPosition));
+    }
+
+    public double getDistanceSq(DecimalPosition decimalPosition) {
+        return Math.pow(decimalPosition.x - x, 2) + Math.pow(decimalPosition.y - y, 2);
     }
 
     public double getDistance(Index index) {
