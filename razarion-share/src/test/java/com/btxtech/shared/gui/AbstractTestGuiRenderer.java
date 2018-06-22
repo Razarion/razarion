@@ -222,11 +222,11 @@ public abstract class AbstractTestGuiRenderer {
 
     protected void strokeOrcaLine(OrcaLine orcaLine) {
         strokeLine(orcaLine.toLine(), 0.05, Color.ORANGE);
-//        strokeCircle(new Circle2D(orcaLine.getRelativePosition(), orcaLine.getCombinedRadius()), 0.05, Color.BROWN);
-//        strokeCircle(new Circle2D(orcaLine.getRelativePosition().divide(Orca.TIME_HORIZON_ITEMS), orcaLine.getCombinedRadius() / Orca.TIME_HORIZON_ITEMS), 0.05, Color.SANDYBROWN);
-//        strokeDecimalPosition(orcaLine.getRelativeVelocity().add(orcaLine.getU()), 0.2, Color.RED);
-//        strokeLine(new Line(orcaLine.getRelativeVelocity().add(orcaLine.getU()), orcaLine.getRelativeVelocity().add(orcaLine.getU()).add(orcaLine.getDirection())), 0.05, Color.RED);
-//        strokeDecimalPosition(orcaLine.getRelativeVelocity(), 0.2, Color.BLUE);
+        strokeCircle(new Circle2D(orcaLine.getRelativePosition(), orcaLine.getCombinedRadius()), 0.05, Color.BROWN);
+        strokeCircle(new Circle2D(orcaLine.getRelativePosition().divide(Orca.TIME_HORIZON_ITEMS), orcaLine.getCombinedRadius() / Orca.TIME_HORIZON_ITEMS), 0.05, Color.SANDYBROWN);
+        strokeDecimalPosition(orcaLine.getPoint(), 0.2, Color.RED);
+        strokeLine(new Line(orcaLine.getPoint(), orcaLine.getPoint().add(orcaLine.getDirection())), 0.05, Color.RED);
+        // strokeDecimalPosition(orcaLine.getRelativeVelocity(), 0.2, Color.BLUE);
     }
 
     // Override in subclasses

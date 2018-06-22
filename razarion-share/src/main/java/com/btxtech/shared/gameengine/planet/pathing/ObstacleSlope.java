@@ -10,67 +10,93 @@ import com.btxtech.shared.utils.MathHelper;
  * 20.09.2016.
  */
 public class ObstacleSlope extends Obstacle {
-    private Line line;
+    private DecimalPosition point1;
+    private DecimalPosition point2;
     private DecimalPosition previous;
     private DecimalPosition next;
+    private Line cachedLine;
 
-    public ObstacleSlope(Line line) {
-        this.line = line;
+    public ObstacleSlope(DecimalPosition point1, DecimalPosition point2) {
+        this.point1 = point1;
+        this.point2 = point2;
     }
 
-    public void setAdditionPints(DecimalPosition previous, DecimalPosition next) {
+    public ObstacleSlope(DecimalPosition point1, DecimalPosition point2, DecimalPosition previous, DecimalPosition next) {
+        this.point1 = point1;
+        this.point2 = point2;
         this.previous = previous;
         this.next = next;
     }
 
-    @Override
-    public DecimalPosition project(DecimalPosition point) {
-        return line.getNearestPointOnLine(point);
+    public void initPrevious(ObstacleSlope previousObstacleSlope) {
+        previous = previousObstacleSlope.point1;
+    }
+
+    public void initNext(ObstacleSlope nextObstacleSlope) {
+        next = nextObstacleSlope.point2;
     }
 
     @Override
     public boolean isPiercing(Line line) {
-        return this.line.getCrossInclusive(line) != null;
+        return createLine().getCrossInclusive(line) != null;
     }
 
-    public Line getLine() {
-        return line;
+    public Line createLine() {
+        if (cachedLine == null) {
+            cachedLine = new Line(point1, point2);
+        }
+        return cachedLine;
+    }
+
+    public DecimalPosition getPoint1() {
+        return point1;
+    }
+
+    public DecimalPosition getPoint2() {
+        return point2;
     }
 
     public boolean isPoint1Convex() {
-        return line.getPoint1().angle(line.getPoint2(), previous) < MathHelper.HALF_RADIANT;
+        return point1.angle(point2, previous) < MathHelper.HALF_RADIANT;
     }
 
     public boolean isPoint2Convex() {
-        return line.getPoint2().angle(next, line.getPoint1()) < MathHelper.HALF_RADIANT;
+        return point2.angle(next, point1) < MathHelper.HALF_RADIANT;
     }
 
     public DecimalPosition setupDirection() {
-        return line.getPoint2().sub(line.getPoint1()).normalize();
+        return point2.sub(point1).normalize();
     }
 
     public DecimalPosition setupPreviousDirection() {
-        return next.sub(line.getPoint2()).normalize();
+        return next.sub(point2).normalize();
     }
 
     public DecimalPosition setupNextDirection() {
-        return line.getPoint1().sub(previous).normalize();
+        return point1.sub(previous).normalize();
     }
 
     @Override
     public NativeObstacle toNativeObstacle() {
         NativeObstacle nativeObstacle = new NativeObstacle();
-        nativeObstacle.x1 = line.getPoint1().getX();
-        nativeObstacle.y1 = line.getPoint1().getY();
-        nativeObstacle.x2 = line.getPoint2().getX();
-        nativeObstacle.y2 = line.getPoint2().getY();
+        nativeObstacle.x1 = point1.getX();
+        nativeObstacle.y1 = point1.getY();
+        nativeObstacle.x2 = point2.getX();
+        nativeObstacle.y2 = point2.getY();
+        nativeObstacle.xP = previous.getX();
+        nativeObstacle.yP = previous.getY();
+        nativeObstacle.xN = next.getX();
+        nativeObstacle.yN = next.getY();
         return nativeObstacle;
     }
 
     @Override
     public String toString() {
         return "ObstacleSlope{" +
-                "line=" + line +
+                "point1=" + point1 +
+                ", point2=" + point2 +
+                ", previous=" + previous +
+                ", next=" + next +
                 '}';
     }
 }

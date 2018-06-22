@@ -31,6 +31,7 @@ public class Orca {
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = syncPhysicalMovable.getPreferredVelocity();
         maxSpeed = syncPhysicalMovable.getPreferredVelocity().magnitude();
+        DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }
 
     public void add(SyncPhysicalMovable other) {
@@ -43,6 +44,7 @@ public class Orca {
         DecimalPosition u;
         DecimalPosition direction;
 
+        DebugHelperStatic.addOrcaAdd(other);
         if (distanceSq > combinedRadiusSq) {
             // No collision.
             DecimalPosition w = relativeVelocity.sub(relativePosition.divide(TIME_HORIZON_ITEMS));
@@ -52,7 +54,6 @@ public class Orca {
             double dotProduct1 = w.dotProduct(relativePosition);
 
             if (dotProduct1 < 0.0 && dotProduct1 * dotProduct1 > combinedRadiusSq * wLengthSq) {
-                DebugHelperStatic.add2printOnTick("\n No collision cut-off circle: "/* + other.getSyncItem().getId()*/);
                 // Project on cut-off circle.
                 double wLength = Math.sqrt(wLengthSq);
                 DecimalPosition unitW = w.divide(wLength);
@@ -60,7 +61,6 @@ public class Orca {
                 direction = new DecimalPosition(unitW.getY(), -unitW.getX()); // Rotate -90deg (clockwise)
                 u = unitW.multiply(combinedRadius / TIME_HORIZON_ITEMS - wLength);
             } else {
-                DebugHelperStatic.add2printOnTick("\n No collision legs: "/* + other.getSyncItem().getId()*/);
                 // Project on legs.
                 double leg = Math.sqrt(distanceSq - combinedRadiusSq);
 
@@ -76,7 +76,6 @@ public class Orca {
                 u = direction.multiply(dotProduct2).sub(relativeVelocity);
             }
         } else {
-            DebugHelperStatic.add2printOnTick("\n Collision: "/* + other.getSyncItem().getId()*/);
             // Collision. Project on cut-off circle of time timeStep.
 
             // Vector from cutoff center to relative velocity.
@@ -100,8 +99,8 @@ public class Orca {
     public void add(ObstacleSlope obstacleSlope) {
         double invTimeHorizonObstacle = 1.0 / TIME_HORIZON_OBSTACLES;
 
-        DecimalPosition relativePosition1 = obstacleSlope.getLine().getPoint1().sub(position);
-        DecimalPosition relativePosition2 = obstacleSlope.getLine().getPoint2().sub(position);
+        DecimalPosition relativePosition1 = obstacleSlope.getPoint1().sub(position);
+        DecimalPosition relativePosition2 = obstacleSlope.getPoint2().sub(position);
 
         // Check if velocity obstacle of obstacle is already taken care of by previously constructed obstacle ORCA lines.
         for (OrcaLine orcaLine : orcaLines) {
@@ -115,7 +114,7 @@ public class Orca {
         double distanceSq2 = relativePosition2.magnitudeSq();
         double radiusSq = radius * radius;
 
-        DecimalPosition obstacleVector = obstacleSlope.getLine().getPoint2().sub(obstacleSlope.getLine().getPoint1());
+        DecimalPosition obstacleVector = obstacleSlope.getPoint2().sub(obstacleSlope.getPoint1());
         double s = -relativePosition1.dotProduct(obstacleVector) / obstacleVector.magnitudeSq(); // Projection on obstacleVector (unit vector)
         double distanceSqLine = Math.pow(relativePosition1.add(s, obstacleVector).magnitude(), 2.0); // Distance nearest point on line
 
@@ -153,8 +152,8 @@ public class Orca {
 
         boolean obstacle1Convex = obstacleSlope.isPoint1Convex();
         boolean obstacle2Convex = obstacleSlope.isPoint2Convex();
-        DecimalPosition obstacle1Point = obstacleSlope.getLine().getPoint1();
-        DecimalPosition obstacle2Point = obstacleSlope.getLine().getPoint2();
+        DecimalPosition obstacle1Point = obstacleSlope.getPoint1();
+        DecimalPosition obstacle2Point = obstacleSlope.getPoint2();
         DecimalPosition obstacle1Direction = obstacleSlope.setupDirection();
         DecimalPosition obstacle1PreviousDirection = obstacleSlope.setupPreviousDirection();
         DecimalPosition obstacle2Direction = obstacleSlope.setupNextDirection();
@@ -168,7 +167,7 @@ public class Orca {
             }
 
             obstacle2Convex = obstacleSlope.isPoint1Convex();
-            obstacle2Point = obstacleSlope.getLine().getPoint1();
+            obstacle2Point = obstacleSlope.getPoint1();
             obstacle2Direction = obstacle1Direction;
             obstacle1EqualsObstacle2 = true;
 
@@ -183,7 +182,7 @@ public class Orca {
             }
 
             obstacle1Convex = obstacleSlope.isPoint2Convex();
-            obstacle1Point = obstacleSlope.getLine().getPoint2();
+            obstacle1Point = obstacleSlope.getPoint2();
             obstacle1PreviousDirection = obstacle1Direction;
             obstacle1Direction = obstacle2Direction;
             obstacle1EqualsObstacle2 = true;

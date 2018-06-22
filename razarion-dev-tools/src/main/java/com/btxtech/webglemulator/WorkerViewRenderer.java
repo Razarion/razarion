@@ -189,7 +189,7 @@ public class WorkerViewRenderer extends Abstract2dRenderer {
             if (obstacle instanceof ObstacleSlope) {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
                 egc.getGc().setStroke(Color.RED);
-                egc.getGc().strokeLine(obstacleSlope.getLine().getPoint1().getX(), obstacleSlope.getLine().getPoint1().getY(), obstacleSlope.getLine().getPoint2().getX(), obstacleSlope.getLine().getPoint2().getY());
+                egc.getGc().strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint2().getX(), obstacleSlope.getPoint2().getY());
             } else if (obstacle instanceof ObstacleTerrainObject) {
                 ObstacleTerrainObject obstacleTerrainObject = (ObstacleTerrainObject) obstacle;
                 egc.getGc().setStroke(Color.RED);

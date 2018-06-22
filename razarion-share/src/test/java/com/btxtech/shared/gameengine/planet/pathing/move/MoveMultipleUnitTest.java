@@ -10,8 +10,17 @@ import org.junit.Test;
  * Created by Beat
  * on 18.03.2018.
  */
-@Deprecated
 public class MoveMultipleUnitTest extends ScenarioBaseTest {
+
+    @Test
+    public void moveMultipleEast1() {
+        testScenario(new Scenario("MoveMultipleUnitTest_moveMultipleEast1.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemGroup(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, 5, new DecimalPosition(40, 160), new DecimalPosition(160, 160));
+            }
+        });
+    }
 
     // @Test
     public void moveMultipleEast2() {

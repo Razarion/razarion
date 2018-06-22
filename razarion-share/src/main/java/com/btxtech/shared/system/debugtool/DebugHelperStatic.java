@@ -1,6 +1,7 @@
 package com.btxtech.shared.system.debugtool;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,50 @@ public class DebugHelperStatic {
         } else {
             printOnTickMessage += message;
         }
+    }
+
+    public static void addOrcaCreate(SyncPhysicalMovable syncPhysicalMovable) {
+        if(syncPhysicalMovable.getSyncItem() == null) {
+            return;
+        }
+        add2printOnTick("\n---------- Create ORCA:" + syncPhysicalMovable.getSyncItem().getId());
+        String stringBuilder = "\nSyncPhysicalMovable syncPhysicalMovable" +
+                syncPhysicalMovable.getSyncItem().getId() +
+                " = GameTestHelper.createSyncPhysicalMovable(" +
+                syncPhysicalMovable.getRadius() +
+                ", TerrainType." +
+                syncPhysicalMovable.getTerrainType() +
+                ", " +
+                generate(syncPhysicalMovable.getPosition2d()) +
+                ", " +
+                generate(syncPhysicalMovable.getVelocity()) +
+                ", " +
+                generate(syncPhysicalMovable.getPreferredVelocity()) +
+                ");";
+        add2printOnTick(stringBuilder);
+        add2printOnTick("\nOrca orca = new Orca(syncPhysicalMovable" + syncPhysicalMovable.getSyncItem().getId() + ");");
+
+    }
+
+    public static void addOrcaAdd(SyncPhysicalMovable syncPhysicalMovable) {
+        if(syncPhysicalMovable.getSyncItem() == null) {
+            return;
+        }
+        String stringBuilder = "\nSyncPhysicalMovable syncPhysicalMovable" +
+                syncPhysicalMovable.getSyncItem().getId() +
+                " = GameTestHelper.createSyncPhysicalMovable(" +
+                syncPhysicalMovable.getRadius() +
+                ", TerrainType." +
+                syncPhysicalMovable.getTerrainType() +
+                ", " +
+                generate(syncPhysicalMovable.getPosition2d()) +
+                ", " +
+                generate(syncPhysicalMovable.getVelocity()) +
+                ", " +
+                generate(syncPhysicalMovable.getPreferredVelocity()) +
+                ");";
+        add2printOnTick(stringBuilder);
+        add2printOnTick("\norca.add(syncPhysicalMovable" + syncPhysicalMovable.getSyncItem().getId() + ");");
     }
 
     public static void printAfterTick() {

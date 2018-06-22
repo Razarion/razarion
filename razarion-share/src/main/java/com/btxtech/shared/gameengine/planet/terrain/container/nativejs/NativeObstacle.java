@@ -12,6 +12,10 @@ public class NativeObstacle {
     public Double y1;
     public Double x2;
     public Double y2;
+    public Double xP;
+    public Double yP;
+    public Double xN;
+    public Double yN;
     public Double xC;
     public Double yC;
     public Double r;

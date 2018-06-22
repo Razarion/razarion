@@ -44,7 +44,6 @@ public abstract class Scenario {
         register("Polygon2D Test", new TestPolygon2DScenario());
         register("Draw Polygon", new DrawPolygonScenario());
         register("Free Random Position", new FreeRandomPositionScenario());
-        register("Clearance Hole", new ClearanceHoleScenario());
         register("Simple Terrain", new SimpleTerrainScenario());
         register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());

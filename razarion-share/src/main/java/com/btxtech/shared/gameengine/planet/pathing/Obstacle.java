@@ -12,25 +12,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObs
  */
 public abstract class Obstacle {
 
-    public abstract DecimalPosition project(DecimalPosition point);
-
     public abstract boolean isPiercing(Line line);
-
-    public Contact hasContact(SyncPhysicalMovable item) {
-        // There is no check if the unit is inside the restricted area
-        DecimalPosition pointOnLine = project(item.getPosition2d());
-        DecimalPosition sub = item.getPosition2d().sub(pointOnLine);
-        if (sub.magnitude() >= item.getRadius()) {
-            return null;
-        }
-        return new Contact(item, this, sub.normalize());
-    }
-
-    public double getDistance(SyncPhysicalArea item) {
-        // There is no check if the unit is inside the restricted area
-        DecimalPosition nearestPointOnObstacle = project(item.getPosition2d());
-        return nearestPointOnObstacle.getDistance(item.getPosition2d()) - item.getRadius();
-    }
 
     public abstract NativeObstacle toNativeObstacle();
 }

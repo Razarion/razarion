@@ -17,11 +17,6 @@ public class ObstacleTerrainObject extends Obstacle {
     }
 
     @Override
-    public DecimalPosition project(DecimalPosition point) {
-        return circle.project(point);
-    }
-
-    @Override
     public boolean isPiercing(Line line) {
         return circle.doesLineCut(line);
     }

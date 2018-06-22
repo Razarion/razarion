@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 /**
  * Created by Beat
@@ -75,13 +74,21 @@ public class Scenario {
         try {
             SyncBaseItem syncBaseItem = baseItemService.spawnSyncBaseItem(itemTypeService.getBaseItemType(baseItemTypeId), position, 0, playerBase1, true);
             if (syncBaseItem.getSyncPhysicalArea().canMove() && destination != null) {
-                SimplePath path =pathingService.setupPathToDestination(syncBaseItem, destination);
+                SimplePath path = pathingService.setupPathToDestination(syncBaseItem, destination);
                 ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).setPath(path);
             }
             createdSyncBaseItems.add(syncBaseItem);
             return syncBaseItem;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    final protected void createSyncBaseItemGroup(int baseItemTypeId, int edgeCount, DecimalPosition start, DecimalPosition destination) {
+        for (int x = -edgeCount / 2; x < Math.round(edgeCount / 2.0); x++) {
+            for (int y = -edgeCount / 2; y < Math.round(edgeCount / 2.0); y++) {
+                createSyncBaseItem(baseItemTypeId, new DecimalPosition(4 * x + start.getX(), 4 * y + start.getY()), destination);
+            }
         }
     }
 
@@ -112,7 +119,7 @@ public class Scenario {
     }
 
     public void onSave() {
-        if(saveCallback != null) {
+        if (saveCallback != null) {
             saveCallback.run();
         }
     }

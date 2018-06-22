@@ -173,7 +173,6 @@ public class PathingService {
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
-                DebugHelperStatic.add2printOnTick("\nOrca: " + syncPhysicalMovable.getSyncItem().getId());
                 addOtherSyncItemOrcaLines(orca, itemCollisionAvoidanceWidth, syncBaseItem);
                 //addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
@@ -202,7 +201,6 @@ public class PathingService {
                     DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity()).sub(DecimalPosition.zeroIfNull(otherSyncPhysicalMovable.getPreferredVelocity()));
                     distance -= relativeVelocity.magnitude() * PlanetService.TICK_FACTOR * Orca.TIME_HORIZON_ITEMS;
                     if (distance <= 0.0) {
-                        DebugHelperStatic.add2printOnTick("\nadd: " + otherSyncItem.getId());
                         orca.add((SyncPhysicalMovable) other);
                     }
                 }

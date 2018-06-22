@@ -11,8 +11,6 @@ import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import javafx.scene.paint.Color;
 import org.junit.Test;
 
-import java.util.Arrays;
-
 /**
  * Created by Beat
  * on 24.05.2018.
@@ -22,8 +20,8 @@ public class OrcaTest {
     private static final DecimalPosition POINT_2 = new DecimalPosition(20, 30);
     private static final DecimalPosition POINT_3 = new DecimalPosition(20, 20);
     private static final DecimalPosition POINT_4 = new DecimalPosition(30, 20);
-    private SyncPhysicalMovable syncPhysicalMovable1;
-    private Orca orca1;
+    // private SyncPhysicalMovable syncPhysicalMovable1;
+    // private Orca orca1;
 
     @Test
     public void testGui() {
@@ -44,8 +42,7 @@ public class OrcaTest {
 //        SyncPhysicalMovable syncPhysicalMovable3 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(19.67934615779936, 22.63735086299747), new DecimalPosition(16.936052765691972, -1.4731316023007799));
         //
         // SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(83.750, 60.000), new DecimalPosition(-12.500, 0.000), new DecimalPosition(-13.000, 0.000));
-        ObstacleSlope obstacleSlope = new ObstacleSlope(new Line(POINT_2, POINT_3));
-        obstacleSlope.setAdditionPints(POINT_1, POINT_4);
+        ObstacleSlope obstacleSlope = new ObstacleSlope(POINT_2, POINT_3, POINT_1, POINT_4);
 
 
         DebugHelperStatic.setCurrentTick(1);
@@ -68,28 +65,35 @@ public class OrcaTest {
 
             @Override
             protected void doRender() {
-                strokeLine(Arrays.asList(POINT_1, POINT_2, POINT_3, POINT_4), 0.1, Color.BLACK, true);
-                if (syncPhysicalMovable1 != null) {
-                    strokeSyncPhysicalMovable(syncPhysicalMovable1, 0.05, Color.RED);
-                    // strokeSyncPhysicalMovable(syncPhysicalMovable2, 0.05, Color.GREEN);
-                    // strokeSyncPhysicalMovable(syncPhysicalMovable3, 0.05, Color.GREEN);
-                    if (!orca1.getNewVelocity().equalsDeltaZero()) {
-                        strokeLine(new Line(DecimalPosition.NULL, orca1.getNewVelocity()), 0.1, Color.POWDERBLUE);
-                    }
+                // strokeLine(Arrays.asList(POINT_1, POINT_2, POINT_3, POINT_4), 0.1, Color.BLACK, true);
+                SyncPhysicalMovable syncPhysicalMovable24 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(93.957, 163.245), new DecimalPosition(16.526, -0.362), new DecimalPosition(16.980, -0.834));
+                Orca orca = new Orca(syncPhysicalMovable24);
+                SyncPhysicalMovable syncPhysicalMovable25 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(90.839, 165.768), new DecimalPosition(16.379, -1.063), new DecimalPosition(16.855, -1.406));
+                orca.add(syncPhysicalMovable25);
+                SyncPhysicalMovable syncPhysicalMovable23 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(96.450, 160.086), new DecimalPosition(17.000, 0.107), new DecimalPosition(17.000, -0.023));
+                orca.add(syncPhysicalMovable23);
 
-                    for (OrcaLine orcaLine : orca1.getOrcaLines()) {
-                        strokeOrcaLine(orcaLine);
-                    }
+
+                orca.solve();
+                strokeSyncPhysicalMovable(syncPhysicalMovable24, 0.05, Color.RED);
+                strokeSyncPhysicalMovable(syncPhysicalMovable25, 0.05, Color.GREEN);
+                strokeSyncPhysicalMovable(syncPhysicalMovable23, 0.05, Color.GREEN);
+                if (!orca.getNewVelocity().equalsDeltaZero()) {
+                    strokeLine(new Line(DecimalPosition.NULL, orca.getNewVelocity()), 0.1, Color.POWDERBLUE);
+                }
+
+                for (OrcaLine orcaLine : orca.getOrcaLines()) {
+                    strokeOrcaLine(orcaLine);
                 }
             }
 
             @Override
             protected boolean onMouseMoved(DecimalPosition position) {
-                syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, position, new DecimalPosition(12.500, 0.000), new DecimalPosition(13.000, 0.000));
-                // syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(17.5, 25.076923076923077), new DecimalPosition(12.500, 0.000), new DecimalPosition(13.000, 0.000));
-                orca1 = new Orca(syncPhysicalMovable1);
-                orca1.add(obstacleSlope);
-                orca1.solve();
+//                syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, position, new DecimalPosition(12.500, 0.000), new DecimalPosition(13.000, 0.000));
+//                // syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(17.5, 25.076923076923077), new DecimalPosition(12.500, 0.000), new DecimalPosition(13.000, 0.000));
+//                orca1 = new Orca(syncPhysicalMovable1);
+//                orca1.add(obstacleSlope);
+//                orca1.solve();
                 return true;
             }
 

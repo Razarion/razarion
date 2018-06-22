@@ -326,8 +326,8 @@ public class ExtendedGraphicsContext {
         gc.setFill(fill);
         gc.setLineWidth(0.2);
         if (obstacle instanceof ObstacleSlope) {
-            DecimalPosition point1 = ((ObstacleSlope) obstacle).getLine().getPoint1();
-            DecimalPosition point2 = ((ObstacleSlope) obstacle).getLine().getPoint2();
+            DecimalPosition point1 = ((ObstacleSlope) obstacle).getPoint1();
+            DecimalPosition point2 = ((ObstacleSlope) obstacle).getPoint2();
             gc.strokeLine(point1.getX(), point1.getY(), point2.getX(), point2.getY());
         } else if (obstacle instanceof ObstacleTerrainObject) {
             Circle2D circle = ((ObstacleTerrainObject) obstacle).getCircle();
