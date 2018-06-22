@@ -89,6 +89,9 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             return;
         }
 
+        if (oldPosition.equalsDelta(getPosition2d())) {
+            return;
+        }
         if (crowded) {
             Circle2D circle = new Circle2D(path.getCurrentWayPoint(), getRadius() + CROWDED_STOP_DETECTION_DISTANCE);
             if (circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
@@ -98,9 +101,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
         }
 
-        if (oldPosition.equalsDelta(getPosition2d())) {
-            return;
-        }
         Line line = new Line(oldPosition, getPosition2d());
         if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
             velocity = null;
