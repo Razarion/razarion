@@ -14,7 +14,7 @@ import java.util.List;
  */
 // http://gamma.cs.unc.edu/ORCA/
 public class Orca {
-    public static final double TIME_HORIZON_ITEMS = 2;
+    public static final double TIME_HORIZON_ITEMS = 10;
     public static final double TIME_HORIZON_OBSTACLES = 2;
     public static final double EPSILON = 0.00001;
     private SyncPhysicalMovable syncPhysicalMovable;
@@ -24,13 +24,14 @@ public class Orca {
     private DecimalPosition newVelocity;
     private double maxSpeed;
     private List<OrcaLine> orcaLines = new ArrayList<>();
+    private int numObstacleLines;
 
     public Orca(SyncPhysicalMovable syncPhysicalMovable) {
         this.syncPhysicalMovable = syncPhysicalMovable;
         position = syncPhysicalMovable.getPosition2d();
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = syncPhysicalMovable.getPreferredVelocity();
-        maxSpeed = syncPhysicalMovable.getPreferredVelocity().magnitude();
+        maxSpeed = syncPhysicalMovable.getMaxSpeed();
         DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }
 
@@ -123,6 +124,7 @@ public class Orca {
             if (obstacleSlope.isPoint1Convex()) {
                 DecimalPosition direction = new DecimalPosition(-relativePosition1.getY(), relativePosition1.getX()).normalize();
                 orcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+                numObstacleLines++;
             }
 
             return;
@@ -133,6 +135,7 @@ public class Orca {
             if (obstacleSlope.isPoint2Convex() && relativePosition2.determinant(obstacleSlope.setupNextDirection()) >= 0.0) {
                 DecimalPosition direction = new DecimalPosition(-relativePosition2.getY(), relativePosition2.getX()).normalize();
                 orcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+                numObstacleLines++;
             }
 
             return;
@@ -142,6 +145,7 @@ public class Orca {
             // Collision with obstacle segment.
             DecimalPosition direction = obstacleSlope.setupDirection().negate();
             orcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+            numObstacleLines++;
 
             return;
         }
@@ -249,6 +253,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, unitW);
             OrcaLine orcaLine = new OrcaLine(point, direction);
             orcaLines.add(orcaLine);
+            numObstacleLines++;
             return;
         }
 
@@ -260,6 +265,7 @@ public class Orca {
             DecimalPosition point = rightCutOff.add(radius * invTimeHorizonObstacle, unitW);
             OrcaLine orcaLine = new OrcaLine(point, direction);
             orcaLines.add(orcaLine);
+            numObstacleLines++;
             return;
         }
 
@@ -275,6 +281,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-direction.getY(), direction.getX()));
             OrcaLine orcaLine = new OrcaLine(point, direction);
             orcaLines.add(orcaLine);
+            numObstacleLines++;
 
             return;
         }
@@ -288,6 +295,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-leftLegDirection.getY(), leftLegDirection.getX()));
             OrcaLine orcaLine = new OrcaLine(point, leftLegDirection);
             orcaLines.add(orcaLine);
+            numObstacleLines++;
             return;
         }
 
@@ -300,6 +308,7 @@ public class Orca {
         DecimalPosition point = rightCutOff.add(radius / TIME_HORIZON_OBSTACLES, new DecimalPosition(-direction.getY(), direction.getX()));
         OrcaLine orcaLine = new OrcaLine(point, direction);
         orcaLines.add(orcaLine);
+        numObstacleLines++;
     }
 
     public DecimalPosition getNewVelocity() {
@@ -323,7 +332,7 @@ public class Orca {
     public void solve() {
         int lineFail = linearProgram2(orcaLines, preferredVelocity, false);
         if (lineFail < orcaLines.size()) {
-            linearProgram3(orcaLines.size(), lineFail);
+            linearProgram3(numObstacleLines, lineFail);
         }
     }
 
