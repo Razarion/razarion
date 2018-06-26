@@ -45,7 +45,6 @@ public class SyncBaseItemInfo {
     private Integer targetContainer;
     private Integer containedIn;
     private DecimalPosition unloadPos;
-    private Index targetPosition;
     private double spawnProgress;
     private Integer syncBoxItemId;
 
@@ -220,15 +219,6 @@ public class SyncBaseItemInfo {
         return this;
     }
 
-    public Index getTargetPosition() {
-        return targetPosition;
-    }
-
-    public SyncBaseItemInfo setTargetPosition(Index targetPosition) {
-        this.targetPosition = Index.saveCopy(targetPosition);
-        return this;
-    }
-
     public Integer getSyncBoxItemId() {
         return syncBoxItemId;
     }
@@ -284,7 +274,6 @@ public class SyncBaseItemInfo {
                 " containedItems:" + intCollectionAsString() +
                 " targetContainer:" + targetContainer +
                 " containedIn:" + containedIn +
-                " unloadPos:" + unloadPos +
-                " targetPosition:" + targetPosition;
+                " unloadPos:" + unloadPos;
     }
 }
