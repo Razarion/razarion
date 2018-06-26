@@ -14,7 +14,7 @@ public class MoveMultipleUnitObstacleTest extends ScenarioBaseTest {
 
     @Test
     public void moveAroundDriveWay1() {
-        testScenario(new Scenario("MoveMultipleUnitObstacleTest.moveAroundDriveWay1.json", getClass()) {
+        testScenario(new Scenario("MoveMultipleUnitObstacleTest_moveAroundDriveWay1.json", getClass()) {
             @Override
             protected void createSyncItems() {
                 DecimalPosition start = new DecimalPosition(136,136);
