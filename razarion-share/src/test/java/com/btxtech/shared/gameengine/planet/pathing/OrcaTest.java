@@ -66,11 +66,11 @@ public class OrcaTest {
             @Override
             protected void doRender() {
                 // strokeLine(Arrays.asList(POINT_1, POINT_2, POINT_3, POINT_4), 0.1, Color.BLACK, true);
-                SyncPhysicalMovable syncPhysicalMovable24 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(93.957, 163.245), new DecimalPosition(16.526, -0.362), new DecimalPosition(16.980, -0.834));
+                SyncPhysicalMovable syncPhysicalMovable24 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(93.957, 163.245), new DecimalPosition(16.526, -0.362), new DecimalPosition(16.980, -0.834), 17);
                 Orca orca = new Orca(syncPhysicalMovable24);
-                SyncPhysicalMovable syncPhysicalMovable25 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(90.839, 165.768), new DecimalPosition(16.379, -1.063), new DecimalPosition(16.855, -1.406));
+                SyncPhysicalMovable syncPhysicalMovable25 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(90.839, 165.768), new DecimalPosition(16.379, -1.063), new DecimalPosition(16.855, -1.406), 17);
                 orca.add(syncPhysicalMovable25);
-                SyncPhysicalMovable syncPhysicalMovable23 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(96.450, 160.086), new DecimalPosition(17.000, 0.107), new DecimalPosition(17.000, -0.023));
+                SyncPhysicalMovable syncPhysicalMovable23 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(96.450, 160.086), new DecimalPosition(17.000, 0.107), new DecimalPosition(17.000, -0.023), 17);
                 orca.add(syncPhysicalMovable23);
 
 
