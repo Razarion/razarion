@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.testframework;
 
 import com.btxtech.shared.TestHelper;
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import org.junit.Assert;

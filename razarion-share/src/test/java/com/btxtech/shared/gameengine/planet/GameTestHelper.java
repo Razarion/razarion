@@ -19,11 +19,11 @@ public interface GameTestHelper {
 
     static SyncBaseItem createMockSyncBaseItem(double radius, TerrainType terrainType, DecimalPosition position) {
         SyncBaseItem syncBaseItem = new SyncBaseItem();
-        syncBaseItem.init(-99, null, createSyncPhysicalMovable(radius, terrainType, position, null, null));
+        syncBaseItem.init(-99, null, createSyncPhysicalMovable(radius, terrainType, position, null, null, 17));
         return syncBaseItem;
     }
 
-    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, DecimalPosition preferredVelocity) {
+    static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, DecimalPosition preferredVelocity, double maxSpeed) {
         SyncPhysicalMovable syncPhysicalMovable = new SyncPhysicalMovable();
         SimpleTestEnvironment.injectService("position2d", syncPhysicalMovable, SyncPhysicalArea.class, position);
         SimpleTestEnvironment.injectService("velocity", syncPhysicalMovable, SyncPhysicalMovable.class, velocity);
