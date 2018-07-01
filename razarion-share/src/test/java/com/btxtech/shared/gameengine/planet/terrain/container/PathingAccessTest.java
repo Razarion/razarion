@@ -7,9 +7,15 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.PositionMarker;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
 import com.btxtech.shared.gameengine.planet.pathing.AStarBaseTest;
+import com.btxtech.shared.gameengine.planet.pathing.Obstacle;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import javafx.scene.paint.Color;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -145,6 +151,25 @@ public class PathingAccessTest extends AStarBaseTest {
     @Test
     public void waterCoast7() {
         Assert.assertFalse(testCase(new DecimalPosition(181.988, 198.452), 5.0, TerrainType.WATER_COAST));
+    }
+
+    @Test
+    public void getObstacles() {
+        Collection<Obstacle> obstacles = getTerrainService().getPathingAccess().getObstacles(new DecimalPosition(180, 60), 8);
+        List<Obstacle> obstacleList = new ArrayList<>(obstacles);
+        Assert.assertEquals(3, obstacleList.size());
+        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(174.780725808768, 58.0), new DecimalPosition(179.68693548636554, 58.0))));
+        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(169.87451613117048, 58.0), new DecimalPosition(174.780725808768, 58.0))));
+        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(179.68693548636554, 51.0), new DecimalPosition(179.68693548636554, 58.0))));
+        Assert.assertEquals(0, obstacleList.size());
+
+//        PositionMarker positionMarker = new PositionMarker().addCircleColor(new Circle2D(new DecimalPosition(180, 60), 8), new Color(1,0,0, 0.3));
+//        System.out.println("Size: " + obstacles.size());
+//        obstacles.forEach(obstacle -> {
+//            ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
+//            positionMarker.addLine(new Line(obstacleSlope.getPoint1(), obstacleSlope.getPoint2()), new Color(0, 0, 1, 0.3));
+//        });
+//        showDisplay(positionMarker);
     }
 
     // @Test

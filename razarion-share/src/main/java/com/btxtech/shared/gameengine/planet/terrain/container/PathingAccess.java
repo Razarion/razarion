@@ -13,7 +13,9 @@ import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Beat
@@ -72,19 +74,16 @@ public class PathingAccess {
         }
     }
 
-    public Collection<Obstacle> getObstacles(DecimalPosition position, double radius) {
-        Collection<Obstacle> obstacles = new ArrayList<>();
+    public Set<Obstacle> getObstacles(DecimalPosition position, double radius) {
+        Set<Obstacle> obstacles = new HashSet<>();
+        Circle2D circle2D = new Circle2D(position, radius);
         terrainShape.terrainNodesInCircleCallback(position, radius, terrainShapeNode -> {
             if (terrainShapeNode.getObstacles() != null) {
-                obstacles.addAll(terrainShapeNode.getObstacles());
+                terrainShapeNode.getObstacles().stream().filter(obstacle -> obstacle.isIntersect(circle2D)).forEach(obstacles::add);
             }
             return true;
         });
         return obstacles;
-    }
-
-    public Collection<Obstacle> getObstacles(SyncPhysicalMovable syncPhysicalMovable) {
-        return getObstacles(syncPhysicalMovable.getPosition2d(), syncPhysicalMovable.getRadius());
     }
 
     public boolean isInSight(DecimalPosition start, double radius, DecimalPosition target) {

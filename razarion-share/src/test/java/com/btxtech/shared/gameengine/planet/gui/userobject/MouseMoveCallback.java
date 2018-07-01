@@ -11,10 +11,6 @@ import java.util.function.Function;
 public class MouseMoveCallback {
     private Function<DecimalPosition, Object[]> callback;
 
-    public Function<DecimalPosition, Object[]> getCallback() {
-        return callback;
-    }
-
     public MouseMoveCallback setCallback(Function<DecimalPosition, Object[]> callback) {
         this.callback = callback;
         return this;

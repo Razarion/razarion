@@ -11,6 +11,9 @@ import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import javafx.scene.paint.Color;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Beat
  * on 24.05.2018.
@@ -42,7 +45,7 @@ public class OrcaTest {
 //        SyncPhysicalMovable syncPhysicalMovable3 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(19.67934615779936, 22.63735086299747), new DecimalPosition(16.936052765691972, -1.4731316023007799));
         //
         // SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(83.750, 60.000), new DecimalPosition(-12.500, 0.000), new DecimalPosition(-13.000, 0.000));
-        ObstacleSlope obstacleSlope = new ObstacleSlope(POINT_2, POINT_3, POINT_1, POINT_4);
+//        ObstacleSlope obstacleSlope = new ObstacleSlope(POINT_2, POINT_3, POINT_1, POINT_4);
 
 
         DebugHelperStatic.setCurrentTick(1);
@@ -62,24 +65,31 @@ public class OrcaTest {
         DebugHelperStatic.printAfterTick();
 
         TestGuiDisplay.show(new AbstractTestGuiRenderer() {
+            private DecimalPosition position = new DecimalPosition(0, 0);
 
             @Override
             protected void doRender() {
+                List<ObstacleSlope> obstacles = new ArrayList<>();
+//                Orca orca = null;
+//                SyncPhysicalMovable syncPhysicalMovable1 = null;
                 // strokeLine(Arrays.asList(POINT_1, POINT_2, POINT_3, POINT_4), 0.1, Color.BLACK, true);
-                SyncPhysicalMovable syncPhysicalMovable24 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(93.957, 163.245), new DecimalPosition(16.526, -0.362), new DecimalPosition(16.980, -0.834), 17);
-                Orca orca = new Orca(syncPhysicalMovable24);
-                SyncPhysicalMovable syncPhysicalMovable25 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(90.839, 165.768), new DecimalPosition(16.379, -1.063), new DecimalPosition(16.855, -1.406), 17);
-                orca.add(syncPhysicalMovable25);
-                SyncPhysicalMovable syncPhysicalMovable23 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(96.450, 160.086), new DecimalPosition(17.000, 0.107), new DecimalPosition(17.000, -0.023), 17);
-                orca.add(syncPhysicalMovable23);
-
-
+                // ------------- Generated code -------------
+                SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, position, new DecimalPosition(17, 0), new DecimalPosition(17, 0), 17.0);
+                Orca orca = new Orca(syncPhysicalMovable1);
+                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(79.687, 99.000), new DecimalPosition(74.781, 99.000), new DecimalPosition(79.687, 92.000), new DecimalPosition(69.875, 99.000)));
+                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(79.687, 92.000), new DecimalPosition(79.687, 99.000), new DecimalPosition(79.687, 51.000), new DecimalPosition(74.781, 99.000)));
+                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(74.781, 99.000), new DecimalPosition(69.875, 99.000), new DecimalPosition(79.687, 99.000), new DecimalPosition(64.968, 99.000)));
+                // ------------- Generated code ends -------------
+                obstacles.forEach(obstacleSlope -> {
+                    orca.add(obstacleSlope);
+                    strokeObstacleSlope(obstacleSlope, 0.2, new Color(0, 0, 0, 0.1));
+                });
                 orca.solve();
-                strokeSyncPhysicalMovable(syncPhysicalMovable24, 0.05, Color.RED);
-                strokeSyncPhysicalMovable(syncPhysicalMovable25, 0.05, Color.GREEN);
-                strokeSyncPhysicalMovable(syncPhysicalMovable23, 0.05, Color.GREEN);
+                strokeSyncPhysicalMovable(syncPhysicalMovable1, 0.05, Color.RED);
+
+
                 if (!orca.getNewVelocity().equalsDeltaZero()) {
-                    strokeLine(new Line(DecimalPosition.NULL, orca.getNewVelocity()), 0.1, Color.POWDERBLUE);
+                    strokeLine(new Line(DecimalPosition.NULL, orca.getNewVelocity()), 0.2, Color.DARKBLUE);
                 }
 
                 for (OrcaLine orcaLine : orca.getOrcaLines()) {
@@ -94,6 +104,7 @@ public class OrcaTest {
 //                orca1 = new Orca(syncPhysicalMovable1);
 //                orca1.add(obstacleSlope);
 //                orca1.solve();
+                this.position = position;
                 return true;
             }
 

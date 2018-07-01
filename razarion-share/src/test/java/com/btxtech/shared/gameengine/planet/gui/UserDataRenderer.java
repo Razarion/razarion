@@ -41,9 +41,11 @@ public class UserDataRenderer {
     private void render(PositionMarker positionMarker) {
         positionMarker.getCircles().forEach(circle -> weldTestRenderer.strokeCircle(circle, WeldTestRenderer.FAT_LINE_WIDTH, Color.RED));
         weldTestRenderer.drawPositions(positionMarker.getPositions(), WeldTestRenderer.FAT_LINE_WIDTH, Color.PINK);
-        if (positionMarker.getLine() != null) {
-            weldTestRenderer.strokeLine(positionMarker.getLine(), WeldTestRenderer.FAT_LINE_WIDTH, Color.BLUEVIOLET, true);
-        }
+        positionMarker.getLines().forEach(lineColor -> {
+            weldTestRenderer.getGc().setStroke(lineColor.getColor());
+            weldTestRenderer.getGc().setLineWidth(0.1);
+            weldTestRenderer.getGc().strokeLine(lineColor.getLine().getPoint1().getX(), lineColor.getLine().getPoint1().getY(), lineColor.getLine().getPoint2().getX(), lineColor.getLine().getPoint2().getY());
+        });
         positionMarker.getSyncItems().forEach(syncItem -> {
             weldTestRenderer.fillCircle(syncItem.getCircle2D(), syncItem.getColor());
         });

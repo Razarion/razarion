@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.pathing.Orca;
 import com.btxtech.shared.gameengine.planet.pathing.OrcaLine;
 import javafx.event.Event;
@@ -220,10 +221,19 @@ public abstract class AbstractTestGuiRenderer {
         }
     }
 
+    protected void strokeObstacleSlope(ObstacleSlope obstacleSlope, double lineWidth, Paint color) {
+        gc.setStroke(color);
+        gc.setLineWidth(lineWidth);
+        gc.setStroke(color);
+        gc.strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint2().getX(), obstacleSlope.getPoint2().getY());
+    }
+
     protected void strokeOrcaLine(OrcaLine orcaLine) {
         strokeLine(orcaLine.toLine(), 0.05, Color.ORANGE);
-        strokeCircle(new Circle2D(orcaLine.getRelativePosition(), orcaLine.getCombinedRadius()), 0.05, Color.BROWN);
-        strokeCircle(new Circle2D(orcaLine.getRelativePosition().divide(Orca.TIME_HORIZON_ITEMS), orcaLine.getCombinedRadius() / Orca.TIME_HORIZON_ITEMS), 0.05, Color.SANDYBROWN);
+        if (orcaLine.getRelativePosition() != null) {
+            strokeCircle(new Circle2D(orcaLine.getRelativePosition(), orcaLine.getCombinedRadius()), 0.05, Color.BROWN);
+            strokeCircle(new Circle2D(orcaLine.getRelativePosition().divide(Orca.TIME_HORIZON_ITEMS), orcaLine.getCombinedRadius() / Orca.TIME_HORIZON_ITEMS), 0.05, Color.SANDYBROWN);
+        }
         strokeDecimalPosition(orcaLine.getPoint(), 0.2, Color.RED);
         strokeLine(new Line(orcaLine.getPoint(), orcaLine.getPoint().add(orcaLine.getDirection())), 0.05, Color.RED);
         // strokeDecimalPosition(orcaLine.getRelativeVelocity(), 0.2, Color.BLUE);

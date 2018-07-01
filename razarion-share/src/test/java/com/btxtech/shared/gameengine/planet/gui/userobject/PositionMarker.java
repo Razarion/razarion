@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.gui.userobject;
 
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import javafx.scene.paint.Color;
@@ -17,7 +18,7 @@ import java.util.List;
 public class PositionMarker {
     private Collection<DecimalPosition> positions = new ArrayList<>();
     private Collection<Circle2D> circles = new ArrayList<>();
-    private List<DecimalPosition> line;
+    private List<LineColor> lines = new ArrayList<>();
     private List<Polygon2D> polygon2Ds = new ArrayList<>();
     private List<SyncItem> syncItems = new ArrayList<>();
     private List<RectColor> rectangle2Ds = new ArrayList<>();
@@ -41,12 +42,12 @@ public class PositionMarker {
         return circles;
     }
 
-    public List<DecimalPosition> getLine() {
-        return line;
+    public List<LineColor> getLines() {
+        return lines;
     }
 
-    public PositionMarker setLine(List<DecimalPosition> line) {
-        this.line = line;
+    public PositionMarker addLine(Line line, Color color) {
+        lines.add(new LineColor(line, color));
         return this;
     }
 
@@ -115,6 +116,24 @@ public class PositionMarker {
 
         public Circle2D getCircle2D() {
             return circle2D;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+    }
+
+    public static class LineColor {
+        private Line line;
+        private Color color;
+
+        public LineColor(Line line, Color color) {
+            this.line = line;
+            this.color = color;
+        }
+
+        public Line getLine() {
+            return line;
         }
 
         public Color getColor() {

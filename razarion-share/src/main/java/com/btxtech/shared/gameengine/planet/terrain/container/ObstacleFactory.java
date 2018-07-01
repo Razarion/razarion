@@ -32,8 +32,8 @@ public class ObstacleFactory {
                 if (!inDriveway) {
                     if (isOuter) {
                         // Termination
-                        previousObstacleSlope = addObstacleSlope(terrainShape, new ObstacleSlope(next, slope.getDrivewayGameEngineHandler().getInner4OuterTermination(next)), previousObstacleSlope);
                         previousObstacleSlope = addObstacleSlope(terrainShape, new ObstacleSlope(last, next), previousObstacleSlope);
+                        previousObstacleSlope = addObstacleSlope(terrainShape, new ObstacleSlope(next, slope.getDrivewayGameEngineHandler().getInner4OuterTermination(next)), previousObstacleSlope);
                     }
                 }
                 inDriveway = true;
@@ -41,7 +41,7 @@ public class ObstacleFactory {
                 if (inDriveway) {
                     if (isOuter) {
                         // Termination
-                        previousObstacleSlope = addObstacleSlope(terrainShape, new ObstacleSlope(last, slope.getDrivewayGameEngineHandler().getInner4OuterTermination(last)), previousObstacleSlope);
+                        previousObstacleSlope = addObstacleSlope(terrainShape, new ObstacleSlope(slope.getDrivewayGameEngineHandler().getInner4OuterTermination(last), last), previousObstacleSlope);
                         previousObstacleSlope = addObstacleSlope(terrainShape, new ObstacleSlope(last, next), previousObstacleSlope);
                     }
                 } else {

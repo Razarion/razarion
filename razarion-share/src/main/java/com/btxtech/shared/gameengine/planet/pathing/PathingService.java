@@ -161,7 +161,6 @@ public class PathingService {
     }
 
     private void orcaSolver() {
-        System.out.println("------------------------------------");
         double itemCollisionAvoidanceWidth = 4.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR) * Orca.TIME_HORIZON_ITEMS;
         Collection<Orca> orcas = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
@@ -174,7 +173,7 @@ public class PathingService {
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
                 addOtherSyncItemOrcaLines(orca, itemCollisionAvoidanceWidth, syncBaseItem);
-                //addObstaclesOrcaLines(orca, syncBaseItem);
+                addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
                 } else {
@@ -214,6 +213,9 @@ public class PathingService {
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
+                if(DebugHelperStatic.isCurrentTick(74)) {
+                    DebugHelperStatic.addOrcaAdd(obstacleSlope);
+                }
                 orca.add(obstacleSlope);
             } else {
                 throw new UnsupportedOperationException();

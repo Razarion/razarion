@@ -31,6 +31,18 @@ public class TestHelper {
     public static final double DECIMAL_POTION_DELTA = 0.001;
     public static final String SAVE_DIRECTORY = "C:\\dev\\projects\\razarion\\code\\razarion\\razarion-share\\src\\test\\resources\\com\\btxtech\\shared\\gameengine\\planet\\";
 
+    // duplication check
+    //        while (!obstacleList.isEmpty()) {
+//            ObstacleSlope obstacle = (ObstacleSlope) obstacleList.remove(0);
+//            obstacleList.forEach(other -> {
+//                ObstacleSlope otherObstacleSlope = (ObstacleSlope) other;
+//                if(obstacle.getPoint1().equals(otherObstacleSlope.getPoint1()) && obstacle.getPoint2().equals(otherObstacleSlope.getPoint2())) {
+//                    Assert.fail("Duplicated: " + otherObstacleSlope);
+//                }
+//            });
+//        }
+
+
     public static void assertItemTypeCountMap(Map<Integer, Integer> actual, int... expectedItemTypeIdCount) {
         Assert.assertTrue("expectedItemTypeIdCount must have an even count. first itemTypeId, second count", expectedItemTypeIdCount.length % 2 == 0);
         int count = expectedItemTypeIdCount.length / 2;

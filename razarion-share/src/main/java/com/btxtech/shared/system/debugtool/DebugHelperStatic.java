@@ -2,6 +2,7 @@ package com.btxtech.shared.system.debugtool;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class DebugHelperStatic {
     }
 
     public static void addOrcaCreate(SyncPhysicalMovable syncPhysicalMovable) {
-        if(syncPhysicalMovable.getSyncItem() == null) {
+        if (syncPhysicalMovable.getSyncItem() == null) {
             return;
         }
         add2printOnTick("\n---------- Create ORCA:" + syncPhysicalMovable.getSyncItem().getId());
@@ -70,6 +71,8 @@ public class DebugHelperStatic {
                 generate(syncPhysicalMovable.getVelocity()) +
                 ", " +
                 generate(syncPhysicalMovable.getPreferredVelocity()) +
+                ", " +
+                syncPhysicalMovable.getMaxSpeed() +
                 ");";
         add2printOnTick(stringBuilder);
         add2printOnTick("\nOrca orca = new Orca(syncPhysicalMovable" + syncPhysicalMovable.getSyncItem().getId() + ");");
@@ -77,7 +80,7 @@ public class DebugHelperStatic {
     }
 
     public static void addOrcaAdd(SyncPhysicalMovable syncPhysicalMovable) {
-        if(syncPhysicalMovable.getSyncItem() == null) {
+        if (syncPhysicalMovable.getSyncItem() == null) {
             return;
         }
         String stringBuilder = "\nSyncPhysicalMovable syncPhysicalMovable" +
@@ -92,9 +95,20 @@ public class DebugHelperStatic {
                 generate(syncPhysicalMovable.getVelocity()) +
                 ", " +
                 generate(syncPhysicalMovable.getPreferredVelocity()) +
+                ", " +
+                syncPhysicalMovable.getMaxSpeed() +
                 ");";
         add2printOnTick(stringBuilder);
         add2printOnTick("\norca.add(syncPhysicalMovable" + syncPhysicalMovable.getSyncItem().getId() + ");");
+    }
+
+    public static void addOrcaAdd(ObstacleSlope obstacleSlope) {
+        add2printOnTick("\nobstacles.add(GameTestHelper.createObstacleSlope("
+                + generate(obstacleSlope.getPoint1())
+                + ", " + generate(obstacleSlope.getPoint2())
+                + ", " + generate(obstacleSlope.getPrevious())
+                + ", " + generate(obstacleSlope.getNext())
+                + "));");
     }
 
     public static void printAfterTick() {

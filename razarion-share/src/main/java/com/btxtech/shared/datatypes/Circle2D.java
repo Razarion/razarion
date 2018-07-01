@@ -4,6 +4,7 @@ import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by Beat
@@ -91,6 +92,10 @@ public class Circle2D {
         return nearestPointOnRect.getDistance(center) <= radius;
     }
 
+    public boolean isIntersect(Circle2D circle2D) {
+        return center.getDistance(circle2D.getCenter()) <= radius + circle2D.getRadius();
+    }
+
     public boolean inside(DecimalPosition position) {
         return position.getDistance(center) < radius;
     }
@@ -113,5 +118,23 @@ public class Circle2D {
         } else {
             return InsideCheckResult.OUTSIDE;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Circle2D circle2D = (Circle2D) o;
+        return Double.compare(circle2D.radius, radius) == 0 &&
+                Objects.equals(center, circle2D.center);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(center, radius);
     }
 }

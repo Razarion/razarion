@@ -108,6 +108,10 @@ public class WeldTestRenderer {
         this.scale = scale;
     }
 
+    public GraphicsContext getGc() {
+        return gc;
+    }
+
     public DecimalPosition convertMouseToModel(Event event) {
         MouseEvent mouseEvent = (MouseEvent) event;
         DecimalPosition decimalPosition = new DecimalPosition(mouseEvent.getX(), mouseEvent.getY());
@@ -855,7 +859,7 @@ public class WeldTestRenderer {
         double subLength = TerrainUtil.calculateSubNodeLength(depth);
         gc.setStroke(Color.BLUEVIOLET);
         gc.setLineWidth(LINE_WIDTH);
-        gc.strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
+        // gc.strokeRect(absolute.getX(), absolute.getY(), subLength, subLength);
         displaySubNodes(depth + 1, absolute, terrainShapeSubNode.getTerrainShapeSubNodes());
         if (weldTestController.renderShapeTerrainType() && terrainShapeSubNode.getTerrainType() != null) {
             gc.setFill(color4TerrainType(terrainShapeSubNode.getTerrainType()));
