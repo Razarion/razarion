@@ -80,16 +80,20 @@ public class ObstacleSlope extends Obstacle {
         return point2.angle(next, point1) < MathHelper.HALF_RADIANT;
     }
 
+    public boolean isOutside(DecimalPosition position) {
+        return point1.sub(position).determinant(point2.sub(point1)) >= 0.0;
+    }
+
     public DecimalPosition setupDirection() {
         return point2.sub(point1).normalize();
     }
 
     public DecimalPosition setupPreviousDirection() {
-        return next.sub(point2).normalize();
+        return point1.sub(previous).normalize();
     }
 
     public DecimalPosition setupNextDirection() {
-        return point1.sub(previous).normalize();
+        return next.sub(point2).normalize();
     }
 
     @Override

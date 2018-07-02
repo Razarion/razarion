@@ -15,7 +15,7 @@ import java.util.List;
 // http://gamma.cs.unc.edu/ORCA/
 public class Orca {
     public static final double TIME_HORIZON_ITEMS = 10;
-    public static final double TIME_HORIZON_OBSTACLES = 2;
+    public static final double TIME_HORIZON_OBSTACLES = 10;
     public static final double EPSILON = 0.00001;
     private SyncPhysicalMovable syncPhysicalMovable;
     private DecimalPosition position;
@@ -98,6 +98,11 @@ public class Orca {
     }
 
     public void add(ObstacleSlope obstacleSlope) {
+        // remove if wrong side of obstacle line -> Backface Culling
+        if(obstacleSlope.isOutside(position)) {
+            return;
+        }
+
         double invTimeHorizonObstacle = 1.0 / TIME_HORIZON_OBSTACLES;
 
         DecimalPosition relativePosition1 = obstacleSlope.getPoint1().sub(position);

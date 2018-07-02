@@ -129,7 +129,9 @@ public class TerrainShapeSetup {
 
     private void processSlope(Slope slope, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes) {
         prepareVerticalSegments(slope);
-        ObstacleFactory.addObstacles(terrainShape, slope.getInnerGameEnginePolygon().getCorners(), slope, false);
+        List<DecimalPosition> tmpInnerGameEnginePolygon = new ArrayList<>(slope.getInnerGameEnginePolygon().getCorners());
+        Collections.reverse(tmpInnerGameEnginePolygon);
+        ObstacleFactory.addObstacles(terrainShape, tmpInnerGameEnginePolygon, slope, false);
         ObstacleFactory.addObstacles(terrainShape, slope.getOuterGameEnginePolygon().getCorners(), slope, true);
         SlopeContext slopeContext = new SlopeContext(slope);
         SlopeGroundConnectorFactory.prepareContextGroundSlopeConnection(slope.getInnerRenderEnginePolygon().getCorners(), false, slopeContext);

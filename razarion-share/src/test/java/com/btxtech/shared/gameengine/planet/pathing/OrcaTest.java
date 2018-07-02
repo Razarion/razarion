@@ -11,7 +11,7 @@ import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import javafx.scene.paint.Color;
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,10 +19,9 @@ import java.util.List;
  * on 24.05.2018.
  */
 public class OrcaTest {
-    private static final DecimalPosition POINT_1 = new DecimalPosition(30, 30);
-    private static final DecimalPosition POINT_2 = new DecimalPosition(20, 30);
-    private static final DecimalPosition POINT_3 = new DecimalPosition(20, 20);
-    private static final DecimalPosition POINT_4 = new DecimalPosition(30, 20);
+    private static final DecimalPosition POINT_TRIANGLE_1 = new DecimalPosition(20, 10);
+    private static final DecimalPosition POINT_TRIANGLE_2 = new DecimalPosition(30, 20);
+    private static final DecimalPosition POINT_TRIANGLE_3 = new DecimalPosition(20, 30);
     // private SyncPhysicalMovable syncPhysicalMovable1;
     // private Orca orca1;
 
@@ -45,8 +44,11 @@ public class OrcaTest {
 //        SyncPhysicalMovable syncPhysicalMovable3 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(19.67934615779936, 22.63735086299747), new DecimalPosition(16.936052765691972, -1.4731316023007799));
         //
         // SyncPhysicalMovable syncPhysicalMovable2 = GameTestHelper.createSyncPhysicalMovable(2, TerrainType.LAND, new DecimalPosition(83.750, 60.000), new DecimalPosition(-12.500, 0.000), new DecimalPosition(-13.000, 0.000));
-//        ObstacleSlope obstacleSlope = new ObstacleSlope(POINT_2, POINT_3, POINT_1, POINT_4);
 
+
+        ObstacleSlope obstacleSlope1 = new ObstacleSlope(POINT_TRIANGLE_1, POINT_TRIANGLE_2, POINT_TRIANGLE_3, POINT_TRIANGLE_3);
+        ObstacleSlope obstacleSlope2 = new ObstacleSlope(POINT_TRIANGLE_2, POINT_TRIANGLE_3, POINT_TRIANGLE_1, POINT_TRIANGLE_1);
+        ObstacleSlope obstacleSlope3 = new ObstacleSlope(POINT_TRIANGLE_3, POINT_TRIANGLE_1, POINT_TRIANGLE_2, POINT_TRIANGLE_2);
 
         DebugHelperStatic.setCurrentTick(1);
         // orca1.add(syncPhysicalMovable2);
@@ -65,20 +67,20 @@ public class OrcaTest {
         DebugHelperStatic.printAfterTick();
 
         TestGuiDisplay.show(new AbstractTestGuiRenderer() {
-            private DecimalPosition position = new DecimalPosition(0, 0);
+            private DecimalPosition position = new DecimalPosition(10, 20);
 
             @Override
             protected void doRender() {
-                List<ObstacleSlope> obstacles = new ArrayList<>();
-//                Orca orca = null;
-//                SyncPhysicalMovable syncPhysicalMovable1 = null;
-                // strokeLine(Arrays.asList(POINT_1, POINT_2, POINT_3, POINT_4), 0.1, Color.BLACK, true);
-                // ------------- Generated code -------------
+                List<ObstacleSlope> obstacles = Arrays.asList(obstacleSlope1, obstacleSlope2, obstacleSlope3);
                 SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, position, new DecimalPosition(17, 0), new DecimalPosition(17, 0), 17.0);
                 Orca orca = new Orca(syncPhysicalMovable1);
-                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(79.687, 99.000), new DecimalPosition(74.781, 99.000), new DecimalPosition(79.687, 92.000), new DecimalPosition(69.875, 99.000)));
-                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(79.687, 92.000), new DecimalPosition(79.687, 99.000), new DecimalPosition(79.687, 51.000), new DecimalPosition(74.781, 99.000)));
-                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(74.781, 99.000), new DecimalPosition(69.875, 99.000), new DecimalPosition(79.687, 99.000), new DecimalPosition(64.968, 99.000)));
+                strokeLine(Arrays.asList(POINT_TRIANGLE_1, POINT_TRIANGLE_2, POINT_TRIANGLE_3), 0.1, Color.BLACK, true);
+                // ------------- Generated code -------------
+//                SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, position, new DecimalPosition(17, 0), new DecimalPosition(17, 0), 17.0);
+//                Orca orca = new Orca(syncPhysicalMovable1);
+//                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(79.687, 99.000), new DecimalPosition(74.781, 99.000), new DecimalPosition(79.687, 92.000), new DecimalPosition(69.875, 99.000)));
+//                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(79.687, 92.000), new DecimalPosition(79.687, 99.000), new DecimalPosition(79.687, 51.000), new DecimalPosition(74.781, 99.000)));
+//                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(74.781, 99.000), new DecimalPosition(69.875, 99.000), new DecimalPosition(79.687, 99.000), new DecimalPosition(64.968, 99.000)));
                 // ------------- Generated code ends -------------
                 obstacles.forEach(obstacleSlope -> {
                     orca.add(obstacleSlope);
