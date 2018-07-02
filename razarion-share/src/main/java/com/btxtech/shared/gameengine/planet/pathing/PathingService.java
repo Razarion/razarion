@@ -208,12 +208,12 @@ public class PathingService {
     }
 
     private void addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) {
-        double lookAheadTerrainDistance = syncBaseItem.getSyncPhysicalArea().getRadius() + DecimalPosition.zeroIfNull(syncBaseItem.getSyncPhysicalMovable().getPreferredVelocity()).magnitude() * Orca.TIME_HORIZON_ITEMS;
+        double lookAheadTerrainDistance = syncBaseItem.getSyncPhysicalArea().getRadius() + DecimalPosition.zeroIfNull(syncBaseItem.getSyncPhysicalMovable().getPreferredVelocity()).magnitude();
         DecimalPosition position = syncBaseItem.getSyncPhysicalArea().getPosition2d();
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
-                if(DebugHelperStatic.isCurrentTick(74)) {
+                if(DebugHelperStatic.isCurrentTick(55)) {
                     DebugHelperStatic.addOrcaAdd(obstacleSlope);
                 }
                 orca.add(obstacleSlope);

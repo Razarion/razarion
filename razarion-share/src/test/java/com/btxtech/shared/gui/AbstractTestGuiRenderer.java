@@ -224,8 +224,9 @@ public abstract class AbstractTestGuiRenderer {
     protected void strokeObstacleSlope(ObstacleSlope obstacleSlope, double lineWidth, Paint color) {
         gc.setStroke(color);
         gc.setLineWidth(lineWidth);
-        gc.setStroke(color);
         gc.strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint2().getX(), obstacleSlope.getPoint2().getY());
+        gc.setStroke(Color.RED);
+        gc.strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint1().getX() + obstacleSlope.setupDirection().getX(), obstacleSlope.getPoint1().getY() + obstacleSlope.setupDirection().getY() );
     }
 
     protected void strokeOrcaLine(OrcaLine orcaLine) {
