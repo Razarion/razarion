@@ -33,9 +33,6 @@ public class Orca {
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = syncPhysicalMovable.getPreferredVelocity();
         maxSpeed = syncPhysicalMovable.getMaxSpeed();
-        if (DebugHelperStatic.isCurrentTick(55)) {
-            DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
-        }
     }
 
     public void add(SyncPhysicalMovable other) {
@@ -48,9 +45,6 @@ public class Orca {
         DecimalPosition u;
         DecimalPosition direction;
 
-        if (DebugHelperStatic.isCurrentTick(55)) {
-            DebugHelperStatic.addOrcaAdd(other);
-        }
         if (distanceSq > combinedRadiusSq) {
             // No collision.
             DecimalPosition w = relativeVelocity.sub(relativePosition.divide(TIME_HORIZON_ITEMS));
@@ -315,6 +309,14 @@ public class Orca {
 
     public boolean isEmpty() {
         return itemOrcaLines.isEmpty() && obstacleOrcaLines.isEmpty();
+    }
+
+    public List<OrcaLine> getItemOrcaLines() {
+        return itemOrcaLines;
+    }
+
+    public List<OrcaLine> getObstacleOrcaLines() {
+        return obstacleOrcaLines;
     }
 
     public List<OrcaLine> getOrcaLines() {

@@ -16,7 +16,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
@@ -28,6 +27,7 @@ import java.util.List;
 @Singleton
 public class PathingService {
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
+    public static final double NEIGHBOR_ITEM_RADIUS = 15;
     // private Logger logger = Logger.getLogger(PathingService.class.getName());
     @Inject
     private SyncItemContainerService syncItemContainerService;
@@ -161,7 +161,6 @@ public class PathingService {
     }
 
     private void orcaSolver() {
-        double itemCollisionAvoidanceWidth = 4.0 * (itemTypeService.getMaxRadius() + itemTypeService.getMaxVelocity() * PlanetService.TICK_FACTOR) * Orca.TIME_HORIZON_ITEMS;
         Collection<Orca> orcas = new ArrayList<>();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
@@ -172,7 +171,7 @@ public class PathingService {
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
-                addOtherSyncItemOrcaLines(orca, itemCollisionAvoidanceWidth, syncBaseItem);
+                addOtherSyncItemOrcaLines(orca, syncBaseItem);
                 addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
@@ -186,23 +185,15 @@ public class PathingService {
         orcas.forEach(Orca::implementVelocity);
     }
 
-    private void addOtherSyncItemOrcaLines(Orca orca, double itemCollisionAvoidanceWidth, SyncBaseItem syncBaseItem) {
-        syncItemContainerService.iterateCellQuadItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), itemCollisionAvoidanceWidth, otherSyncItem -> {
+    private void addOtherSyncItemOrcaLines(Orca orca, SyncBaseItem syncBaseItem) {
+        syncItemContainerService.iterateCellRadiusItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), NEIGHBOR_ITEM_RADIUS, otherSyncItem -> {
             if (syncBaseItem.equals(otherSyncItem)) {
                 return;
             }
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             if (other instanceof SyncPhysicalMovable) {
-                SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
-                if (otherSyncPhysicalMovable.isMoving()) {
-                    double distance = syncPhysicalMovable.getDistance(other);
-                    DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity()).sub(DecimalPosition.zeroIfNull(otherSyncPhysicalMovable.getPreferredVelocity()));
-                    distance -= relativeVelocity.magnitude() * PlanetService.TICK_FACTOR * Orca.TIME_HORIZON_ITEMS;
-                    if (distance <= 0.0) {
-                        orca.add((SyncPhysicalMovable) other);
-                    }
-                }
+                orca.add((SyncPhysicalMovable) other);
             }
         });
     }
@@ -213,9 +204,6 @@ public class PathingService {
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
-                if(DebugHelperStatic.isCurrentTick(55)) {
-                    DebugHelperStatic.addOrcaAdd(obstacleSlope);
-                }
                 orca.add(obstacleSlope);
             } else {
                 throw new UnsupportedOperationException();
