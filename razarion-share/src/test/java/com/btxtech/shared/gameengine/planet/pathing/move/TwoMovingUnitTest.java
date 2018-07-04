@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.testframework.Scenario;
 import com.btxtech.shared.gameengine.planet.testframework.ScenarioBaseTest;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import org.junit.Test;
 
 /**
@@ -49,8 +50,8 @@ public class TwoMovingUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("TwoMovingUnitTest_perpendicular1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(120, 150), new DecimalPosition(180, 150));
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(150, 120), new DecimalPosition(150, 180));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(190, 100), new DecimalPosition(250, 100));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(220, 70), new DecimalPosition(220, 130));
             }
         });
     }

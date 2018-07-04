@@ -121,7 +121,7 @@ public class DebugHelperStatic {
         }
     }
 
-    private static boolean omitTick() {
+    public static boolean omitTick() {
         if (currentTick == null) {
             return true;
         }
