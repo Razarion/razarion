@@ -97,6 +97,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             if (circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
                 velocity = null;
                 path = null;
+                preferredVelocity = null;
                 return;
             }
         }

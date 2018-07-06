@@ -22,16 +22,6 @@ public class MoveMultipleUnitTest extends ScenarioBaseTest {
         });
     }
 
-    @Test
-    public void moveMultipleSouthEast1() {
-        testScenario(new Scenario("MoveMultipleUnitTest_moveMultipleSouthEast1.json", getClass()) {
-            @Override
-            protected void createSyncItems() {
-                createSyncBaseItemGroup(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, 5, new DecimalPosition(136,166), new DecimalPosition(182.0, 132.0));
-            }
-        });
-    }
-
     // @Test
     public void moveMultipleEast2() {
         testScenario(new Scenario("moveMultipleEast2.json", getClass()) {

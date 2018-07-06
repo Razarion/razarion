@@ -5,7 +5,6 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
-import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -122,16 +121,10 @@ public class PathingService {
             pathingServiceTracker.startTick();
             preparation();
             pathingServiceTracker.afterPreparation();
-            // Collection<Contact> contacts = findContacts();
-            // Collection<Island> islands = findIsland(contacts);
-            // pathingServiceTracker.afterFindContacts();
-            // solveIslands(islands);
             orcaSolver();
             pathingServiceTracker.afterSolveVelocity();
             implementPosition();
             pathingServiceTracker.afterImplementPosition();
-            //solvePosition();
-            //pathingServiceTracker.afterSolvePosition();
             checkDestination();
             pathingServiceTracker.afterCheckDestination();
             syncItemContainerService.afterPathingServiceTick();
@@ -190,10 +183,12 @@ public class PathingService {
             if (syncBaseItem.equals(otherSyncItem)) {
                 return;
             }
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             if (other instanceof SyncPhysicalMovable) {
-                orca.add((SyncPhysicalMovable) other);
+                SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
+                if (otherSyncPhysicalMovable.isMoving()) {
+                    orca.add(otherSyncPhysicalMovable);
+                }
             }
         });
     }
@@ -228,8 +223,7 @@ public class PathingService {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
                 return null;
             }
-            SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea();
-            syncPhysicalMovable.stopIfDestinationReached();
+            ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).stopIfDestinationReached();
             return null;
         });
     }
