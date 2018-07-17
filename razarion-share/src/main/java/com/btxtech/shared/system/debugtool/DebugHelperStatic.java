@@ -106,8 +106,6 @@ public class DebugHelperStatic {
         add2printOnTick("\nobstacles.add(GameTestHelper.createObstacleSlope("
                 + generate(obstacleSlope.getPoint1())
                 + ", " + generate(obstacleSlope.getPoint2())
-                + ", " + generate(obstacleSlope.getPrevious())
-                + ", " + generate(obstacleSlope.getNext())
                 + "));");
     }
 

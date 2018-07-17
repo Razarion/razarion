@@ -59,10 +59,10 @@ public class TerrainShapeNode {
         if (nativeTerrainShapeNode.obstacles != null) {
             Collection<Obstacle> obstacles = new ArrayList<>();
             for (NativeObstacle nativeObstacle : nativeTerrainShapeNode.obstacles) {
-                if (nativeObstacle.x1 != null && nativeObstacle.y1 != null && nativeObstacle.x2 != null && nativeObstacle.y2 != null && nativeObstacle.xP != null && nativeObstacle.yP != null && nativeObstacle.xN != null && nativeObstacle.yN != null) {
-                    obstacles.add(new ObstacleSlope(new DecimalPosition(nativeObstacle.x1, nativeObstacle.y1), new DecimalPosition(nativeObstacle.x2, nativeObstacle.y2), new DecimalPosition(nativeObstacle.xP, nativeObstacle.yP), new DecimalPosition(nativeObstacle.xN, nativeObstacle.yN)));
-                } else if (nativeObstacle.xC != null && nativeObstacle.yC != null && nativeObstacle.r != null) {
-                    obstacles.add(new ObstacleTerrainObject(new Circle2D(new DecimalPosition(nativeObstacle.xC, nativeObstacle.yC), nativeObstacle.r)));
+                if (ObstacleSlope.isValidNative(nativeObstacle)) {
+                    obstacles.add(new ObstacleSlope(nativeObstacle));
+                } else if (ObstacleTerrainObject.isValidNative(nativeObstacle)) {
+                    obstacles.add(new ObstacleTerrainObject(nativeObstacle));
                 } else {
                     logger.warning("TerrainShapeNode setup from net. Illegal Obstacle received");
                 }

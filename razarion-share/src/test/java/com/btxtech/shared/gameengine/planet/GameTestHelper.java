@@ -39,7 +39,8 @@ public interface GameTestHelper {
     }
 
     static ObstacleSlope createObstacleSlope(DecimalPosition point1, DecimalPosition point2, DecimalPosition previous, DecimalPosition next) {
-        return new ObstacleSlope(point1, point2, previous, next);
+        // return new ObstacleSlope(point1, point2, previous, next);
+        return null;
     }
 
     static SlopeNode createSlopeNode(double x, double z, double slopeFactor) {

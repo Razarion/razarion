@@ -158,9 +158,9 @@ public class PathingAccessTest extends AStarBaseTest {
         Collection<Obstacle> obstacles = getTerrainService().getPathingAccess().getObstacles(new DecimalPosition(180, 60), 8);
         List<Obstacle> obstacleList = new ArrayList<>(obstacles);
         Assert.assertEquals(3, obstacleList.size());
-        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(174.780725808768, 58.0), new DecimalPosition(179.68693548636554, 58.0))));
-        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(169.87451613117048, 58.0), new DecimalPosition(174.780725808768, 58.0))));
-        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(179.68693548636554, 51.0), new DecimalPosition(179.68693548636554, 58.0))));
+        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(174.780725808768, 58.0), new DecimalPosition(179.68693548636554, 58.0), null, null)));
+        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(169.87451613117048, 58.0), new DecimalPosition(174.780725808768, 58.0), null, null)));
+        Assert.assertTrue(obstacleList.remove(new ObstacleSlope(new DecimalPosition(179.68693548636554, 51.0), new DecimalPosition(179.68693548636554, 58.0), null, null)));
         Assert.assertEquals(0, obstacleList.size());
 
 //        PositionMarker positionMarker = new PositionMarker().addCircleColor(new Circle2D(new DecimalPosition(180, 60), 8), new Color(1,0,0, 0.3));

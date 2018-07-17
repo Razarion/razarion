@@ -18,6 +18,10 @@ public class ObstacleTerrainObject extends Obstacle {
         this.circle = circle;
     }
 
+    public ObstacleTerrainObject(NativeObstacle nativeObstacle) {
+        circle = new Circle2D(new DecimalPosition(nativeObstacle.xC, nativeObstacle.yC), nativeObstacle.r);
+    }
+
     @Override
     public boolean isPiercing(Line line) {
         return circle.doesLineCut(line);
@@ -30,6 +34,10 @@ public class ObstacleTerrainObject extends Obstacle {
 
     public Circle2D getCircle() {
         return circle;
+    }
+
+    public static boolean isValidNative(NativeObstacle nativeObstacle) {
+        return nativeObstacle.xC != null && nativeObstacle.yC != null && nativeObstacle.r != null;
     }
 
     @Override

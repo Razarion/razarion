@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
-import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +32,11 @@ public class Orca {
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = syncPhysicalMovable.getPreferredVelocity();
         maxSpeed = syncPhysicalMovable.getMaxSpeed();
+//        DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }
 
     public void add(SyncPhysicalMovable other) {
+//        DebugHelperStatic.addOrcaAdd(other);
         DecimalPosition relativePosition = other.getPosition2d().sub(position);
         DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).sub(DecimalPosition.zeroIfNull(other.getVelocity()));
         double distanceSq = relativePosition.magnitudeSq();
@@ -97,6 +98,7 @@ public class Orca {
     }
 
     public void add(ObstacleSlope obstacleSlope) {
+//        DebugHelperStatic.addOrcaAdd(obstacleSlope);
         // remove if wrong side of obstacle line -> Backface Culling
         if (obstacleSlope.isOutside(position)) {
             return;
@@ -134,7 +136,7 @@ public class Orca {
 
         if (s > 1.0 && distanceSq2 <= radiusSq) {
             // Collision with right vertex. Ignore if non-convex or if it will be taken care of by neighboring obstacle.
-            if (obstacleSlope.isPoint2Convex() && relativePosition2.determinant(obstacleSlope.setupNextDirection()) >= 0.0) {
+            if (obstacleSlope.isPoint2Convex() && relativePosition2.determinant(obstacleSlope.getPoint2Direction()) >= 0.0) {
                 DecimalPosition direction = new DecimalPosition(-relativePosition2.getY(), relativePosition2.getX()).normalize();
                 obstacleOrcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
             }
@@ -157,8 +159,8 @@ public class Orca {
         DecimalPosition obstacle1Point = obstacleSlope.getPoint1();
         DecimalPosition obstacle2Point = obstacleSlope.getPoint2();
         DecimalPosition obstacle1Direction = obstacleSlope.setupDirection();
-        DecimalPosition obstacle1PreviousDirection = obstacleSlope.setupPreviousDirection();
-        DecimalPosition obstacle2Direction = obstacleSlope.setupNextDirection();
+        DecimalPosition obstacle1PreviousDirection = obstacleSlope.getPoint1Direction();
+        DecimalPosition obstacle2Direction = obstacleSlope.getPoint2Direction();
         boolean obstacle1EqualsObstacle2 = false;
 
         if (s < 0.0 && distanceSqLine <= radiusSq) {

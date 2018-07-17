@@ -820,8 +820,12 @@ public class WeldTestRenderer {
         for (Obstacle obstacle : terrainShapeNode.getObstacles()) {
             if (obstacle instanceof ObstacleSlope) {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
-                gc.setStroke(Color.RED);
+                gc.setStroke(new Color(1.0, 0.0, 0.0, 0.3));
                 gc.strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint2().getX(), obstacleSlope.getPoint2().getY());
+                gc.setStroke(new Color(0.0, 1.0, 0.0, 0.3));
+                gc.strokeLine(obstacleSlope.getPoint1().getX(), obstacleSlope.getPoint1().getY(), obstacleSlope.getPoint1().getX() + obstacleSlope.getPoint1Direction().getX(), obstacleSlope.getPoint1().getY() + obstacleSlope.getPoint1Direction().getY());
+//                gc.setStroke(new Color(0.0, 1.0, 0.0, 0.3));
+//                gc.strokeLine(obstacleSlope.getPoint2().getX(), obstacleSlope.getPoint2().getY(), obstacleSlope.getPoint2().getX() + obstacleSlope.getPoint2Direction().getX(), obstacleSlope.getPoint2().getY() + obstacleSlope.getPoint2Direction().getY());
             } else if (obstacle instanceof ObstacleTerrainObject) {
                 ObstacleTerrainObject obstacleTerrainObject = (ObstacleTerrainObject) obstacle;
                 gc.setStroke(Color.RED);

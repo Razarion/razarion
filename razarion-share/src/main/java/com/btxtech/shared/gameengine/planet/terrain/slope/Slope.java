@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.planet.terrain.container.ObstacleFactoryContext;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
@@ -35,12 +36,13 @@ public class Slope {
     private Polygon2D coastDelimiterPolygonTerrainType;
     private Collection<Driveway> driveways;
     private Collection<Slope> children;
+    private ObstacleFactoryContext obstacleFactoryContext = new ObstacleFactoryContext();
     private DrivewayGameEngineHandler drivewayGameEngineHandler = new DrivewayGameEngineHandler();
 
     public Slope(int slopeId, SlopeSkeletonConfig slopeSkeletonConfig, boolean inverted, List<TerrainSlopeCorner> corners, double outerGroundHeight, TerrainTypeService terrainTypeService) {
         this.slopeId = slopeId;
         this.slopeSkeletonConfig = slopeSkeletonConfig;
-                this.terrainTypeService = terrainTypeService;
+        this.terrainTypeService = terrainTypeService;
         this.inverted = inverted;
         this.outerGroundHeight = outerGroundHeight;
         this.innerGroundHeight = inverted ? outerGroundHeight - slopeSkeletonConfig.getHeight() : outerGroundHeight + slopeSkeletonConfig.getHeight();
@@ -209,6 +211,8 @@ public class Slope {
                 outerSlopeGameEngine = verticalSegment.getInner().getPointWithDistance(slopeSkeletonConfig.getInnerLineGameEngine(), outerSlopeRenderEngine, true);
             }
 
+            obstacleFactoryContext.addPositions(innerSlopeGameEngine, outerSlopeGameEngine, verticalSegment.getDrivewayHeightFactor() <= 0, i == 0);
+
             DecimalPosition innerSlopeCorrectedGameEngine;
             DecimalPosition innerGameEngineEndCorner = null;
             if (verticalSegment.getDrivewayHeightFactor() > 0) {
@@ -253,8 +257,10 @@ public class Slope {
                     drivewaySlopeInnerGameEngine = null;
                 }
             }
+
             // Driveway flat
             if (verticalSegment.getDrivewayHeightFactor() <= 0) {
+
                 if (drivewayFlatInnerGameEngine == null) {
                     drivewayFlatInnerGameEngine = new ArrayList<>();
                     drivewayFlatOuterGameEngine = new ArrayList<>();
@@ -294,6 +300,7 @@ public class Slope {
                 lastCoastDelimiterGameEngine = addCorrectedMinimalDelta(coastDelimiter, lastCoastDelimiterGameEngine, coastDelimiterLineTerrainType);
             }
         }
+        obstacleFactoryContext.complete();
 
         if (innerRenderEngine.get(0).equalsDelta(innerRenderEngine.get(innerRenderEngine.size() - 1))) {
             innerRenderEngine.remove(0);
@@ -462,6 +469,10 @@ public class Slope {
 
     public boolean isInverted() {
         return inverted;
+    }
+
+    public ObstacleFactoryContext getObstacleFactoryContext() {
+        return obstacleFactoryContext;
     }
 
     public static class Corner {

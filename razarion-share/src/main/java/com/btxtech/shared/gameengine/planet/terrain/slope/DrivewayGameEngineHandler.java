@@ -21,18 +21,23 @@ import java.util.Set;
 public class DrivewayGameEngineHandler {
     private Collection<SlopeDrivewayHolder> slopeDrivewayHolders = new ArrayList<>();
     private Collection<Polygon2D> flatPolygon = new ArrayList<>();
+    @Deprecated
     private Set<DecimalPosition> innerFlatLine = new HashSet<>();
+    @Deprecated
     private Set<DecimalPosition> outerFlatLine = new HashSet<>();
+    @Deprecated
     private Map<DecimalPosition, DecimalPosition> inner4OuterTermination = new HashMap<>();
 
     public void addInnerSlopePolygon(Polygon2D slopePolygon, Driveway driveway) {
         slopeDrivewayHolders.add(new SlopeDrivewayHolder(slopePolygon, driveway));
     }
 
+    @Deprecated
     public void addInnerFlatLine(DecimalPosition inner) {
         innerFlatLine.add(inner);
     }
 
+    @Deprecated
     public void addOuterFlatLine(DecimalPosition outer) {
         outerFlatLine.add(outer);
     }
@@ -81,6 +86,7 @@ public class DrivewayGameEngineHandler {
         return false;
     }
 
+    @Deprecated
     public boolean onFlatLine(DecimalPosition position, boolean isOuter) {
         if (isOuter) {
             return outerFlatLine.contains(position);
@@ -89,10 +95,12 @@ public class DrivewayGameEngineHandler {
         }
     }
 
+    @Deprecated
     public void putInner4OuterTermination(DecimalPosition outer, DecimalPosition inner) {
         inner4OuterTermination.put(outer, inner);
     }
 
+    @Deprecated
     public DecimalPosition getInner4OuterTermination(DecimalPosition outer) {
         return inner4OuterTermination.get(outer);
     }
