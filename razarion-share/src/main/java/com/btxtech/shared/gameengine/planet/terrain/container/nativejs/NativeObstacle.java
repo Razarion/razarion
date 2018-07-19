@@ -13,6 +13,8 @@ public class NativeObstacle {
     public Double y1;
     public Double x2;
     public Double y2;
+    public Double pDx;
+    public Double pDy;
     public Boolean p1C;
     public Double p1Dx;
     public Double p1Dy;

@@ -8,10 +8,12 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gui.AbstractTestGuiRenderer;
 import com.btxtech.shared.gui.TestGuiDisplay;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
+import com.btxtech.shared.utils.CollectionUtils;
 import javafx.scene.paint.Color;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -81,17 +83,28 @@ public class OrcaTest {
 //                obstacles.add(obstacleSlope2);
 //                obstacles.add(obstacleSlope3);
                 // ------------- Generated code -------------
-                SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(181.841, 76.059), new DecimalPosition(0.104, -17.000), new DecimalPosition(0.104, -17.000), 17.0);
+                SyncPhysicalMovable syncPhysicalMovable1 = GameTestHelper.createSyncPhysicalMovable(2.0, TerrainType.LAND, new DecimalPosition(125.972, 89.836), new DecimalPosition(-16.999, 0.139), new DecimalPosition(-16.999, 0.139), 17.0);
                 Orca orca = new Orca(syncPhysicalMovable1);
-                // obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(174.781, 92.000), new DecimalPosition(179.687, 92.000), new DecimalPosition(169.875, 92.000), new DecimalPosition(174.781, 58.000)));
-                // -obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(179.687, 92.000), new DecimalPosition(179.687, 99.000), new DecimalPosition(179.687, 51.000), new DecimalPosition(174.781, 99.000)));
-                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(179.687, 58.000), new DecimalPosition(174.781, 58.000), new DecimalPosition(174.781, 92.000), new DecimalPosition(169.875, 58.000)));
-                // -obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(179.687, 51.000), new DecimalPosition(179.687, 58.000), new DecimalPosition(174.781, 51.000), new DecimalPosition(179.687, 99.000)));
-                // -obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(169.875, 92.000), new DecimalPosition(174.781, 92.000), new DecimalPosition(164.968, 92.000), new DecimalPosition(179.687, 92.000)));
+
+                List<DecimalPosition> polygon = Arrays.asList(new DecimalPosition(110.000, 99.268), new DecimalPosition(109.268, 110.000), new DecimalPosition(104, 104));
+                for (int i = 0; i < polygon.size(); i++) {
+                    DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, polygon);
+                    DecimalPosition point1 = polygon.get(i);
+                    DecimalPosition point2 = CollectionUtils.getCorrectedElement(i + 1, polygon);
+                    DecimalPosition next = CollectionUtils.getCorrectedElement(i + 2, polygon);
+                    if (point1.equals(point2)) {
+                        // also for previous and next ???
+                        continue;
+                    }
+                    obstacles.add(new ObstacleSlope(point1, point2, previous, next));
+                }
+
+
+                // obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(110.000, 99.268), new DecimalPosition(109.268, 110.000), false, new DecimalPosition(-0.707, 0.707), false, new DecimalPosition(-0.259, 0.966)));
                 // ------------- Generated code ends -------------
                 obstacles.forEach(obstacleSlope -> {
                     orca.add(obstacleSlope);
-                    strokeObstacleSlope(obstacleSlope, 0.2, new Color(0, 0, 0, 0.1));
+                    strokeObstacleSlope(obstacleSlope, 0.2, new Color(0, 0, 0.5, 0.1));
                 });
                 orca.solve();
                 strokeSyncPhysicalMovable(syncPhysicalMovable1, 0.05, Color.RED);
@@ -104,6 +117,7 @@ public class OrcaTest {
                     strokeLine(new Line(DecimalPosition.NULL, orca.getNewVelocity()), 0.2, Color.DARKBLUE);
                 }
 
+                System.out.println("orcaLines: " + orca.getOrcaLines().size());
                 for (OrcaLine orcaLine : orca.getOrcaLines()) {
                     strokeOrcaLine(orcaLine);
                 }

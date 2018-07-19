@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,7 +146,7 @@ public class Orca {
 
         if (s >= 0.0 && s < 1.0 && distanceSqLine <= radiusSq) {
             // Collision with obstacle segment.
-            DecimalPosition direction = obstacleSlope.setupDirection().negate();
+            DecimalPosition direction = obstacleSlope.getPoint1Direction().negate();
             obstacleOrcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
             return;
         }
@@ -158,8 +159,8 @@ public class Orca {
         boolean obstacle2Convex = obstacleSlope.isPoint2Convex();
         DecimalPosition obstacle1Point = obstacleSlope.getPoint1();
         DecimalPosition obstacle2Point = obstacleSlope.getPoint2();
-        DecimalPosition obstacle1Direction = obstacleSlope.setupDirection();
-        DecimalPosition obstacle1PreviousDirection = obstacleSlope.getPoint1Direction();
+        DecimalPosition obstacle1Direction = obstacleSlope.getPoint1Direction();
+        DecimalPosition obstacle1PreviousDirection = obstacleSlope.getPreviousDirection(); // todo
         DecimalPosition obstacle2Direction = obstacleSlope.getPoint2Direction();
         boolean obstacle1EqualsObstacle2 = false;
 
@@ -201,7 +202,7 @@ public class Orca {
                 leftLegDirection = new DecimalPosition(relativePosition1.getX() * leg1 - relativePosition1.getY() * radius, relativePosition1.getX() * radius + relativePosition1.getY() * leg1).multiply(1.0 / distanceSq1);
             } else {
                 // Left vertex non-convex; left leg extends cut-off line.
-                leftLegDirection = obstacleSlope.setupDirection().negate();
+                leftLegDirection = obstacleSlope.getPoint1Direction().negate();
             }
 
             if (obstacleSlope.isPoint2Convex()) {
@@ -209,7 +210,7 @@ public class Orca {
                 rightLegDirection = new DecimalPosition(relativePosition2.getX() * leg2 + relativePosition2.getY() * radius, -relativePosition2.getX() * radius + relativePosition2.getY() * leg2).multiply(1.0 / distanceSq2);
             } else {
                 // Right vertex non-convex; right leg extends cut-off line.
-                rightLegDirection = obstacleSlope.setupDirection();
+                rightLegDirection = obstacleSlope.getPoint1Direction();
             }
         }
 

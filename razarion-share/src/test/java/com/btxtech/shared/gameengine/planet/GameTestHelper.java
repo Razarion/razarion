@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 import org.easymock.EasyMock;
 
 /**
@@ -38,9 +39,19 @@ public interface GameTestHelper {
         return syncPhysicalMovable;
     }
 
-    static ObstacleSlope createObstacleSlope(DecimalPosition point1, DecimalPosition point2, DecimalPosition previous, DecimalPosition next) {
-        // return new ObstacleSlope(point1, point2, previous, next);
-        return null;
+    static ObstacleSlope createObstacleSlope(DecimalPosition point1, DecimalPosition point2, boolean point1Convex, DecimalPosition point1Direction, boolean point2Convex, DecimalPosition point2Direction) {
+        NativeObstacle nativeObstacle = new NativeObstacle();
+        nativeObstacle.x1 = point1.getX();
+        nativeObstacle.y1 = point1.getY();
+        nativeObstacle.x2 = point2.getX();
+        nativeObstacle.y2 = point2.getY();
+        nativeObstacle.p1C = point1Convex;
+        nativeObstacle.p1Dx = point1Direction.getX();
+        nativeObstacle.p1Dy = point1Direction.getY();
+        nativeObstacle.p2C = point2Convex;
+        nativeObstacle.p2Dx = point2Direction.getX();
+        nativeObstacle.p2Dy = point2Direction.getY();
+        return new ObstacleSlope(nativeObstacle);
     }
 
     static SlopeNode createSlopeNode(double x, double z, double slopeFactor) {
