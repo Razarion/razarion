@@ -3,10 +3,10 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
-import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -17,6 +17,7 @@ public class Orca {
     public static final double TIME_HORIZON_ITEMS = 10;
     public static final double TIME_HORIZON_OBSTACLES = 10;
     public static final double EPSILON = 0.00001;
+    private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
     private SyncPhysicalMovable syncPhysicalMovable;
     private DecimalPosition position;
     private double radius;
@@ -84,6 +85,11 @@ public class Orca {
             DecimalPosition w = relativeVelocity.sub(relativePosition.multiply(PlanetService.TICKS_PER_SECONDS));
 
             double wLength = w.magnitude();
+            if(wLength == 0.0) {
+                // Not properly handled
+                LOGGER.warning("wLength == 0.0 not handled for: " + syncPhysicalMovable);
+                return;
+            }
             DecimalPosition unitW = w.multiply(1.0 / wLength);
 
             direction = new DecimalPosition(unitW.getY(), -unitW.getX());

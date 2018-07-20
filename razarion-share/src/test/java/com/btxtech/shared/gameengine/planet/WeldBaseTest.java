@@ -141,7 +141,7 @@ public class WeldBaseTest {
             }
 
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
-            if (syncPhysicalMovable.isMoving()) {
+            if (syncPhysicalMovable.hasDestination() || syncPhysicalMovable.isMoving()) {
                 return true;
             }
             return null;
@@ -156,6 +156,13 @@ public class WeldBaseTest {
     public void tickPlanetServiceBaseServiceActive(SyncBaseItem... ignores) {
         TestSimpleScheduledFuture gameEngine = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.GAME_ENGINE);
         while (isBaseServiceActive(ignores)) {
+            gameEngine.invokeRun();
+        }
+    }
+
+    public void tickPlanetServicePathingActive() {
+        TestSimpleScheduledFuture gameEngine = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.GAME_ENGINE);
+        while (isPathingServiceMoving()) {
             gameEngine.invokeRun();
         }
     }

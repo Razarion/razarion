@@ -22,12 +22,13 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Singleton
 public class PathingService {
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double NEIGHBOR_ITEM_RADIUS = 15;
-    // private Logger logger = Logger.getLogger(PathingService.class.getName());
+    private Logger logger = Logger.getLogger(PathingService.class.getName());
     @Inject
     private SyncItemContainerService syncItemContainerService;
     @Inject
@@ -201,7 +202,8 @@ public class PathingService {
                 ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
                 orca.add(obstacleSlope);
             } else {
-                throw new UnsupportedOperationException();
+                // TODO throw new UnsupportedOperationException();
+                logger.warning("FIX THIS: PathingService.addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) !!!!!!");
             }
         });
     }

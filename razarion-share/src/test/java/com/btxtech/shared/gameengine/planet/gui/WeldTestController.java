@@ -15,6 +15,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -91,11 +92,14 @@ public class WeldTestController implements Initializable {
     private CheckBox syncItemsCheck;
     @FXML
     private AnchorPane gameEnginePlaybackContainer;
+    @FXML
+    private Label tickCountLabel;
     private DecimalPosition mousePosition;
     private Object[] userObjects;
     private MouseMoveCallback mouseMoveCallback;
     private TestCaseGenerator testCaseGenerator;
     private ScenarioPlaybackController scenarioPlaybackController;
+    private int tickCount;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -305,6 +309,8 @@ public class WeldTestController implements Initializable {
 
     public void onTickButton() {
         planetService.run();
+        tickCount++;
+        tickCountLabel.setText(Integer.toString(tickCount));
         weldTestRenderer.render(scenarioPlaybackController);
     }
 

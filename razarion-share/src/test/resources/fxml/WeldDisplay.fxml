@@ -73,7 +73,12 @@
                     <content>
                   <VBox>
                      <children>
-                                <Button mnemonicParsing="false" onAction="#onTickButton" text="Tick" />
+                        <HBox prefHeight="26.0" prefWidth="210.0">
+                           <children>
+                                      <Button mnemonicParsing="false" onAction="#onTickButton" text="Tick" />
+                              <Label fx:id="tickCountLabel" />
+                           </children>
+                        </HBox>
                         <CheckBox fx:id="syncItemsCheck" mnemonicParsing="false" text="Show sync items" />
                      </children>
                   </VBox>

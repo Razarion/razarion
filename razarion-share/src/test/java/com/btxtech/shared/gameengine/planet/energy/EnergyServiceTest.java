@@ -33,7 +33,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
 
         getCommandService().build(builder, new DecimalPosition(70, 70), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
-        tickPlanetService(100);
+        tickPlanetService(53); // Building should be started but not finished
         assertEnergy(0, 0, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetServiceBaseServiceActive();
@@ -46,7 +46,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         getCommandService().build(builder, new DecimalPosition(70, 100), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
         assertEnergy(60, 0, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
-        tickPlanetService(100);
+        tickPlanetService(72); // Building should be started but not finished
         assertEnergy(60, 0, playerBaseFull);
         Assert.assertTrue(getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         tickPlanetServiceBaseServiceActive();
@@ -127,7 +127,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         // Create master consumer
         SyncBaseItem builder = CollectionUtils.getFirst(playerBaseFull.getItems());
         getCommandService().build(builder, new DecimalPosition(70, 70), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
-        tickPlanetService(100);
+        tickPlanetService(53); // Building should be started but not finished
         assertConnectedSlave(0, 0, permanentSalve, userContext);
         Assert.assertTrue(permanentSalve.getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         assertNewConnectedSlave(0, 0, userContext);
@@ -138,7 +138,7 @@ public class EnergyServiceTest extends WeldMasterBaseTest {
         assertNewConnectedSlave(60, 0, userContext);
         // Add generator master
         getCommandService().build(builder, new DecimalPosition(70, 100), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
-        tickPlanetService(100);
+        tickPlanetService(73); // Building should be started but not finished
         assertConnectedSlave(60, 0, permanentSalve, userContext);
         Assert.assertTrue(permanentSalve.getTestGameLogicListener().getEnergyStateChangedEntries().isEmpty());
         assertNewConnectedSlave(60, 0, userContext);

@@ -61,7 +61,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions, null);
 
-        // showDisplay();
+        showDisplay();
 
         Collection<TerrainTile> terrainTiles = generateTerrainTiles(new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
         // AssertTerrainTile.saveTerrainTiles(terrainTiles, "testSlopeTile1.json");

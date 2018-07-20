@@ -156,7 +156,8 @@ public class DebugHelperStatic {
 
     public static String generate(DecimalPosition decimalPosition) {
         if (decimalPosition != null) {
-            return "new DecimalPosition(" + String.format(Locale.US, "%.3f, %.3f", decimalPosition.getX(), decimalPosition.getY()) + ")";
+            // return "new DecimalPosition(" + String.format(Locale.US, "%.3f, %.3f", decimalPosition.getX(), decimalPosition.getY()) + ")";
+            return "**** NOT SUPPORTED IN GWT RT ****";
         } else {
             return NULL_STRING;
         }
