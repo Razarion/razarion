@@ -173,6 +173,7 @@ public class PathingService {
                 addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
+                    onPathingChanged(syncPhysicalMovable);
                 } else {
                     syncPhysicalMovable.setVelocity(syncPhysicalMovable.getPreferredVelocity());
                 }
@@ -340,7 +341,6 @@ public class PathingService {
         });
     }
 
-    // TODO is this still needed
     private void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable) {
         syncPhysicalMovable.setCrowded();
         if (pathingServiceUpdateListener != null) {
