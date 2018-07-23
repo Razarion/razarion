@@ -32,7 +32,7 @@ public class Orca {
         this.syncPhysicalMovable = syncPhysicalMovable;
         position = syncPhysicalMovable.getPosition2d();
         radius = syncPhysicalMovable.getRadius();
-        preferredVelocity = syncPhysicalMovable.getPreferredVelocity();
+        preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
         maxSpeed = syncPhysicalMovable.getMaxSpeed();
 //        DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }

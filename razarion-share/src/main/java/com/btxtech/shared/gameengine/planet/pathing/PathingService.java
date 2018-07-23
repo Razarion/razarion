@@ -3,8 +3,10 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
@@ -156,6 +158,7 @@ public class PathingService {
 
     private void orcaSolver() {
         Collection<Orca> orcas = new ArrayList<>();
+        TickContext tickContext = new TickContext();
         syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
             if (!syncPhysicalArea.canMove()) {
@@ -164,8 +167,9 @@ public class PathingService {
 
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
             if (syncPhysicalMovable.isMoving()) {
+                tickContext.addMoving(syncPhysicalMovable);
                 Orca orca = new Orca(syncPhysicalMovable);
-                addOtherSyncItemOrcaLines(orca, syncBaseItem);
+                addOtherSyncItemOrcaLines(orca, syncBaseItem, tickContext);
                 addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
@@ -175,11 +179,20 @@ public class PathingService {
             }
             return null;
         });
+        tickContext.getPushAways().forEach(syncPhysicalMovable -> {
+            Orca orca = new Orca(syncPhysicalMovable);
+            addOtherSyncItemOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem(), null);
+            addObstaclesOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem());
+            if (!orca.isEmpty()) {
+                orcas.add(orca);
+            }
+        });
         orcas.forEach(Orca::solve);
         orcas.forEach(Orca::implementVelocity);
+        // handlePushAways(tickContext);
     }
 
-    private void addOtherSyncItemOrcaLines(Orca orca, SyncBaseItem syncBaseItem) {
+    private void addOtherSyncItemOrcaLines(Orca orca, SyncBaseItem syncBaseItem, TickContext tickContext) {
         syncItemContainerService.iterateCellRadiusItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), NEIGHBOR_ITEM_RADIUS, otherSyncItem -> {
             if (syncBaseItem.equals(otherSyncItem)) {
                 return;
@@ -187,9 +200,19 @@ public class PathingService {
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             if (other instanceof SyncPhysicalMovable) {
                 SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
-                if (otherSyncPhysicalMovable.isMoving()) {
+                if(!otherSyncPhysicalMovable.isMoving() && !otherSyncPhysicalMovable.hasDestination()) {
+                    if(isPiercing(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
+                        setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
+                        if (tickContext != null) {
+                            tickContext.addPushAway(otherSyncPhysicalMovable);
+                        }
+                        orca.add(otherSyncPhysicalMovable);
+                    }
+                } else {
                     orca.add(otherSyncPhysicalMovable);
                 }
+            } else {
+                // TODO add none movable (buildings)
             }
         });
     }
@@ -205,6 +228,81 @@ public class PathingService {
                 // TODO throw new UnsupportedOperationException();
                 logger.warning("FIX THIS: PathingService.addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) !!!!!!");
             }
+        });
+    }
+
+    private boolean isPiercing(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
+        // 1) Check if pierced
+        double totalRadius = shifty.getRadius() + pusher.getRadius();
+        Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
+        DecimalPosition pusherVelocity = pusher.getPreferredVelocity().multiply(PlanetService.TICK_FACTOR);
+        DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
+        Line move = new Line(pusher.getPosition2d(), pusherTarget);
+        return minkowskiSum.doesLineCut(move);
+    }
+
+    private void setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
+        // 1) Check if pierced
+        double totalRadius = shifty.getRadius() + pusher.getRadius();
+        Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
+        DecimalPosition pusherVelocity = pusher.getPreferredVelocity().multiply(PlanetService.TICK_FACTOR);
+        DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
+        Line move = new Line(pusher.getPosition2d(), pusherTarget);
+        if (!minkowskiSum.doesLineCut(move)) {
+            return;
+        }
+        // 2) Push away
+        DecimalPosition crossPosition = move.projectOnInfiniteLine(shifty.getPosition2d());
+        DecimalPosition pushAwayDirection;
+        if (crossPosition.equals(shifty.getPosition2d())) {
+            pushAwayDirection = pusherVelocity.rotateCounterClock90();
+        } else {
+            pushAwayDirection = shifty.getPosition2d().sub(crossPosition).normalize();        }
+        double distanceSq = totalRadius * totalRadius - pusherTarget.sub(crossPosition).magnitudeSq();
+        double distance;
+        if (distanceSq > 0.0) {
+            distance = Math.sqrt(distanceSq);
+        } else {
+            // Pusher Target does not touch shifty
+            distance = totalRadius;
+        }
+        DecimalPosition shiftyTarget = crossPosition.getPointWithDistance(distance, crossPosition.add(pushAwayDirection), true);
+        DecimalPosition shiftyVelocity = shiftyTarget.sub(shifty.getPosition2d());
+        shifty.setupForPushAway(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
+    }
+
+    private void handlePushAways(TickContext tickContext) {
+        tickContext.getPushAways().forEach(shifty -> {
+            tickContext.getMovings().forEach(pusher -> {
+                // 1) Check if pierced
+                double totalRadius = shifty.getRadius() + pusher.getRadius();
+                Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
+                DecimalPosition pusherVelocity = pusher.getVelocity().multiply(PlanetService.TICK_FACTOR);
+                DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
+                Line move = new Line(pusher.getPosition2d(), pusherTarget);
+                if (!minkowskiSum.doesLineCut(move)) {
+                    return;
+                }
+                // 2) Push away
+                DecimalPosition crossPosition = move.projectOnInfiniteLine(shifty.getPosition2d());
+                if (crossPosition.equals(shifty.getPosition2d())) {
+                    throw new UnsupportedOperationException("!!! FIX ME !!!");
+                }
+                DecimalPosition pushAwayDirection = shifty.getPosition2d().sub(crossPosition).normalize();
+//                double angle = Math.atan(crossPosition.sub(pusherTarget).magnitude() / totalRadius);
+//                double distance = Math.sin(angle) * totalRadius;
+                double distanceSq = totalRadius * totalRadius - pusherTarget.sub(crossPosition).magnitudeSq();
+                double distance;
+                if (distanceSq > 0.0) {
+                    distance = Math.sqrt(distanceSq);
+                } else {
+                    // Pusher Target does not touch shifty
+                    distance = totalRadius;
+                }
+                DecimalPosition shiftyTarget = crossPosition.getPointWithDistance(distance, crossPosition.add(pushAwayDirection), true);
+                DecimalPosition shiftyVelocity = shiftyTarget.sub(shifty.getPosition2d());
+                shifty.setVelocity(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
+            });
         });
     }
 

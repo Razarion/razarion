@@ -173,6 +173,10 @@ public class DecimalPosition {
         return rotateCounterClock(center, sinus, cosines);
     }
 
+    public DecimalPosition rotateCounterClock90() {
+        return new DecimalPosition(-y, x);
+    }
+
     public DecimalPosition add(double weight, DecimalPosition otherDecimalPosition) {
         return new DecimalPosition(x + weight * otherDecimalPosition.x, y + weight * otherDecimalPosition.y);
     }

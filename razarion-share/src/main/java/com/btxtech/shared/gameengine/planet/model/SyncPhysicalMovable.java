@@ -84,6 +84,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         }
     }
 
+    public void setupForPushAway(DecimalPosition preferredVelocity) {
+        oldPosition = getPosition2d();
+        this.preferredVelocity = preferredVelocity;
+    }
+
     public void stopIfDestinationReached() {
         if (path == null || !path.isLastWayPoint()) {
             return;
