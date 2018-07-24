@@ -203,11 +203,12 @@ public class PathingService {
                 SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
                 if (!otherSyncPhysicalMovable.isMoving() && !otherSyncPhysicalMovable.hasDestination()) {
                     if (isPiercing(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
-                        setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
-                        if (tickContext != null) {
-                            tickContext.addPushAway(otherSyncPhysicalMovable);
+                        if (setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
+                            if (tickContext != null) {
+                                tickContext.addPushAway(otherSyncPhysicalMovable);
+                            }
+                            orca.add(otherSyncPhysicalMovable);
                         }
-                        orca.add(otherSyncPhysicalMovable);
                     }
                 } else {
                     orca.add(otherSyncPhysicalMovable);
@@ -242,7 +243,7 @@ public class PathingService {
         return minkowskiSum.doesLineCut(move);
     }
 
-    private void setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
+    private boolean setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
         // 1) Check if pierced
         double totalRadius = shifty.getRadius() + pusher.getRadius();
         Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
@@ -250,7 +251,7 @@ public class PathingService {
         DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
         Line move = new Line(pusher.getPosition2d(), pusherTarget);
         if (!minkowskiSum.doesLineCut(move)) {
-            return;
+            return false;
         }
         // 2) Push away
         DecimalPosition crossPosition = move.projectOnInfiniteLine(shifty.getPosition2d());
@@ -270,7 +271,12 @@ public class PathingService {
         }
         DecimalPosition shiftyTarget = crossPosition.getPointWithDistance(distance, crossPosition.add(pushAwayDirection), true);
         DecimalPosition shiftyVelocity = shiftyTarget.sub(shifty.getPosition2d());
+        if (shiftyVelocity.equals(DecimalPosition.NULL)) {
+            // Happens if the touching is very small -> omit
+            return false;
+        }
         shifty.setupForPushAway(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
+        return true;
     }
 
     private void handlePushAways(TickContext tickContext) {
