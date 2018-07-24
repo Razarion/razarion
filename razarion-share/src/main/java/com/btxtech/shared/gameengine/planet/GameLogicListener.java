@@ -62,7 +62,7 @@ public interface GameLogicListener {
     default void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
     }
 
-    default void onSyncBaseItemStopped(SyncBaseItem syncBaseItem) {
+    default void onSyncBaseItemDestinationReached(SyncBaseItem syncBaseItem) {
     }
 
     default void onProjectileFired(int baseItemTypeId, Vertex muzzlePosition, Vertex muzzleDirection) {

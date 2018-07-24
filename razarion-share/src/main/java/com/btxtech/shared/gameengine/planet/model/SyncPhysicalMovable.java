@@ -23,9 +23,9 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
+import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
-import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -45,6 +45,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
     @Inject
     private Instance<Path> instancePath;
+    @Inject
+    private GameLogicService gameLogicService;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second
@@ -103,6 +105,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 velocity = null;
                 path = null;
                 preferredVelocity = null;
+                gameLogicService.onSyncBaseItemDestinationReached((SyncBaseItem) getSyncItem());
                 return;
             }
         }
@@ -113,6 +116,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             preferredVelocity = null;
             setPosition2d(path.getCurrentWayPoint(), false);
             path = null;
+            gameLogicService.onSyncBaseItemDestinationReached((SyncBaseItem) getSyncItem());
         }
     }
 

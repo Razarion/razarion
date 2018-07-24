@@ -208,8 +208,8 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemIdle(syncBaseItem));
     }
 
-    public void onSyncBaseItemStopped(SyncBaseItem syncBaseItem) {
-        gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemStopped(syncBaseItem));
+    public void onSyncBaseItemDestinationReached(SyncBaseItem syncBaseItem) {
+        gameLogicListener.ifPresent(listener -> listener.onSyncBaseItemDestinationReached(syncBaseItem));
     }
 
     public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {

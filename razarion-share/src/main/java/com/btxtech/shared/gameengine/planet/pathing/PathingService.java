@@ -186,6 +186,7 @@ public class PathingService {
             addObstaclesOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem());
             if (!orca.isEmpty()) {
                 orcas.add(orca);
+                onPathingChanged(syncPhysicalMovable);
             }
         });
         orcas.forEach(Orca::solve);

@@ -324,7 +324,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
-    public void onSyncBaseItemStopped(SyncBaseItem syncBaseItem) {
+    public void onSyncBaseItemDestinationReached(SyncBaseItem syncBaseItem) {
         clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
@@ -444,6 +444,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void onPathingTickFinished() {
         Set<SyncBaseItem> tmp = changedPathings;
         changedPathings = new HashSet<>();
+        //logger.severe("-----" + tmp.stream().map(syncBaseItem -> syncBaseItem.getId() + "").collect(Collectors.joining("; ")));
         pathingChangesDisruptor.onChanges(tmp);
     }
 }
