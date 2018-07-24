@@ -13,6 +13,7 @@
 
 package com.btxtech.shared.datatypes;
 
+import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.persistence.Embeddable;
@@ -432,6 +433,18 @@ public class DecimalPosition {
             }
             if (accepted) {
                 acceptedPoints.add(point);
+            }
+        }
+        return acceptedPoints;
+    }
+
+    public static List<DecimalPosition> removeSimilarPointsFast(List<DecimalPosition> points, double minDelta) {
+        List<DecimalPosition> acceptedPoints = new ArrayList<>();
+        for (int i = 0; i < points.size(); i++) {
+            DecimalPosition current = points.get(i);
+            DecimalPosition next = CollectionUtils.getCorrectedElement(i + 1, points);
+            if (!current.equalsDelta(next, minDelta)) {
+                acceptedPoints.add(current);
             }
         }
         return acceptedPoints;

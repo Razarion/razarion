@@ -201,8 +201,8 @@ public class PathingService {
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             if (other instanceof SyncPhysicalMovable) {
                 SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
-                if(!otherSyncPhysicalMovable.isMoving() && !otherSyncPhysicalMovable.hasDestination()) {
-                    if(isPiercing(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
+                if (!otherSyncPhysicalMovable.isMoving() && !otherSyncPhysicalMovable.hasDestination()) {
+                    if (isPiercing(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
                         setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                         if (tickContext != null) {
                             tickContext.addPushAway(otherSyncPhysicalMovable);
@@ -227,7 +227,7 @@ public class PathingService {
                 orca.add(obstacleSlope);
             } else {
                 // TODO throw new UnsupportedOperationException();
-                logger.warning("FIX THIS: PathingService.addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) !!!!!!");
+                logger.warning("FIX THIS: ObstacleTerrainObject. PathingService.addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) !!!!!!");
             }
         });
     }
@@ -258,7 +258,8 @@ public class PathingService {
         if (crossPosition.equals(shifty.getPosition2d())) {
             pushAwayDirection = pusherVelocity.rotateCounterClock90();
         } else {
-            pushAwayDirection = shifty.getPosition2d().sub(crossPosition).normalize();        }
+            pushAwayDirection = shifty.getPosition2d().sub(crossPosition).normalize();
+        }
         double distanceSq = totalRadius * totalRadius - pusherTarget.sub(crossPosition).magnitudeSq();
         double distance;
         if (distanceSq > 0.0) {

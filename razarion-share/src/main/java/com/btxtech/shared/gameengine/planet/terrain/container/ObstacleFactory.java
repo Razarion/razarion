@@ -15,13 +15,16 @@ import java.util.List;
  * on 14.10.2017.
  */
 public class ObstacleFactory {
+    private static final double MIN_DELTA = 0.1;
+
     public static void addObstacles(TerrainShape terrainShape, Slope slope) {
         for (List<DecimalPosition> polygon : slope.getObstacleFactoryContext().getPolygons()) {
-            for (int i = 0; i < polygon.size(); i++) {
-                DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, polygon);
-                DecimalPosition point1 = polygon.get(i);
-                DecimalPosition point2 = CollectionUtils.getCorrectedElement(i + 1, polygon);
-                DecimalPosition next = CollectionUtils.getCorrectedElement(i + 2, polygon);
+            List<DecimalPosition> filteredPolygon = DecimalPosition.removeSimilarPointsFast(polygon, MIN_DELTA);
+            for (int i = 0; i < filteredPolygon.size(); i++) {
+                DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, filteredPolygon);
+                DecimalPosition point1 = filteredPolygon.get(i);
+                DecimalPosition point2 = CollectionUtils.getCorrectedElement(i + 1, filteredPolygon);
+                DecimalPosition next = CollectionUtils.getCorrectedElement(i + 2, filteredPolygon);
                 if (point1.equals(point2)) {
                     // also for previous and next ???
                     continue;
