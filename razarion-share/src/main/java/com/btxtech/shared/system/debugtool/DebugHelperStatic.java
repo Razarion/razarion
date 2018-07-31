@@ -108,6 +108,7 @@ public class DebugHelperStatic {
         add2printOnTick("\nobstacles.add(GameTestHelper.createObstacleSlope("
                 + generate(new DecimalPosition(nativeObstacle.x1, nativeObstacle.y1))
                 + ", " + generate(new DecimalPosition(nativeObstacle.x2, nativeObstacle.y2))
+                + ", " + generate(new DecimalPosition(nativeObstacle.pDx, nativeObstacle.pDy))
                 + ", " + nativeObstacle.p1C
                 + ", " + generate(new DecimalPosition(nativeObstacle.p1Dx, nativeObstacle.p1Dy))
                 + ", " + nativeObstacle.p2C

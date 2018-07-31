@@ -11,7 +11,11 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
+import com.btxtech.shared.utils.CollectionUtils;
 import org.easymock.EasyMock;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -39,12 +43,26 @@ public interface GameTestHelper {
         return syncPhysicalMovable;
     }
 
-    static ObstacleSlope createObstacleSlope(DecimalPosition point1, DecimalPosition point2, boolean point1Convex, DecimalPosition point1Direction, boolean point2Convex, DecimalPosition point2Direction) {
+    static List<ObstacleSlope> createObstacleSlopes(DecimalPosition... polygon) {
+        List<ObstacleSlope> obstacleSlopes = new ArrayList<>();
+        for (int i = 0; i < polygon.length; i++) {
+            DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, polygon);
+            DecimalPosition point1 = polygon[i];
+            DecimalPosition point2 = CollectionUtils.getCorrectedElement(i + 1, polygon);
+            DecimalPosition next = CollectionUtils.getCorrectedElement(i + 2, polygon);
+            obstacleSlopes.add(new ObstacleSlope(point1, point2, previous, next));
+        }
+        return obstacleSlopes;
+    }
+
+    static ObstacleSlope createObstacleSlope(DecimalPosition point1, DecimalPosition point2, DecimalPosition previousDirection, boolean point1Convex, DecimalPosition point1Direction, boolean point2Convex, DecimalPosition point2Direction) {
         NativeObstacle nativeObstacle = new NativeObstacle();
         nativeObstacle.x1 = point1.getX();
         nativeObstacle.y1 = point1.getY();
         nativeObstacle.x2 = point2.getX();
         nativeObstacle.y2 = point2.getY();
+        nativeObstacle.pDx = previousDirection.getX();
+        nativeObstacle.pDy = previousDirection.getY();
         nativeObstacle.p1C = point1Convex;
         nativeObstacle.p1Dx = point1Direction.getX();
         nativeObstacle.p1Dy = point1Direction.getY();

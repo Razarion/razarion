@@ -223,15 +223,18 @@ public class PathingService {
     private void addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) {
         double lookAheadTerrainDistance = syncBaseItem.getSyncPhysicalArea().getRadius() + DecimalPosition.zeroIfNull(syncBaseItem.getSyncPhysicalMovable().getPreferredVelocity()).magnitude();
         DecimalPosition position = syncBaseItem.getSyncPhysicalArea().getPosition2d();
+        List<ObstacleSlope> sortedObstacleSlope = new ArrayList<>();
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
-                ObstacleSlope obstacleSlope = (ObstacleSlope) obstacle;
-                orca.add(obstacleSlope);
+                sortedObstacleSlope.add((ObstacleSlope) obstacle);
+
             } else {
                 // TODO throw new UnsupportedOperationException();
                 logger.warning("FIX THIS: ObstacleTerrainObject. PathingService.addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) !!!!!!");
             }
         });
+        ObstacleSlope.sort(position, sortedObstacleSlope);
+        sortedObstacleSlope.forEach(orca::add);
     }
 
     private boolean isPiercing(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {

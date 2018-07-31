@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class Orca {
     private double maxSpeed;
     private List<OrcaLine> itemOrcaLines = new ArrayList<>();
     private List<OrcaLine> obstacleOrcaLines = new ArrayList<>();
+    private List<ObstacleSlope> debugObstacles = new ArrayList<>();
     private List<OrcaLine> orcaLines;
 
     public Orca(SyncPhysicalMovable syncPhysicalMovable) {
@@ -34,7 +36,7 @@ public class Orca {
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
         maxSpeed = syncPhysicalMovable.getMaxSpeed();
-//        DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
+        //DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }
 
     public void add(SyncPhysicalMovable other) {
@@ -110,6 +112,7 @@ public class Orca {
         if (obstacleSlope.isOutside(position)) {
             return;
         }
+        //System.out.print("add: " + obstacleSlope.getPoint1() + " " + obstacleSlope.getPoint2());
 
         double invTimeHorizonObstacle = 1.0 / TIME_HORIZON_OBSTACLES;
 
@@ -119,9 +122,11 @@ public class Orca {
         // Check if velocity obstacle of obstacle is already taken care of by previously constructed obstacle ORCA lines.
         for (OrcaLine orcaLine : obstacleOrcaLines) {
             if (relativePosition1.multiply(invTimeHorizonObstacle).sub(orcaLine.getPoint()).determinant(orcaLine.getDirection()) - invTimeHorizonObstacle * radius >= -EPSILON && relativePosition2.multiply(invTimeHorizonObstacle).sub(orcaLine.getPoint()).determinant(orcaLine.getDirection()) - invTimeHorizonObstacle * radius >= -EPSILON) {
+                //System.out.println(" DUMP");
                 return;
             }
         }
+        //System.out.println(" ok");
 
         // Not yet covered. Check for collisions.
         double distanceSq1 = relativePosition1.magnitudeSq();
@@ -137,6 +142,7 @@ public class Orca {
             if (obstacleSlope.isPoint1Convex()) {
                 DecimalPosition direction = new DecimalPosition(-relativePosition1.getY(), relativePosition1.getX()).normalize();
                 obstacleOrcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+                //debugObstacles.add(obstacleSlope);
             }
             return;
         }
@@ -146,6 +152,7 @@ public class Orca {
             if (obstacleSlope.isPoint2Convex() && relativePosition2.determinant(obstacleSlope.getPoint2Direction()) >= 0.0) {
                 DecimalPosition direction = new DecimalPosition(-relativePosition2.getY(), relativePosition2.getX()).normalize();
                 obstacleOrcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+                //debugObstacles.add(obstacleSlope);
             }
             return;
         }
@@ -154,6 +161,7 @@ public class Orca {
             // Collision with obstacle segment.
             DecimalPosition direction = obstacleSlope.getPoint1Direction().negate();
             obstacleOrcaLines.add(new OrcaLine(DecimalPosition.NULL, direction));
+            //debugObstacles.add(obstacleSlope);
             return;
         }
 
@@ -260,6 +268,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, unitW);
             OrcaLine orcaLine = new OrcaLine(point, direction);
             obstacleOrcaLines.add(orcaLine);
+            //debugObstacles.add(obstacleSlope);
             return;
         }
 
@@ -271,6 +280,7 @@ public class Orca {
             DecimalPosition point = rightCutOff.add(radius * invTimeHorizonObstacle, unitW);
             OrcaLine orcaLine = new OrcaLine(point, direction);
             obstacleOrcaLines.add(orcaLine);
+            //debugObstacles.add(obstacleSlope);
             return;
         }
 
@@ -286,6 +296,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-direction.getY(), direction.getX()));
             OrcaLine orcaLine = new OrcaLine(point, direction);
             obstacleOrcaLines.add(orcaLine);
+            //debugObstacles.add(obstacleSlope);
             return;
         }
 
@@ -298,6 +309,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-leftLegDirection.getY(), leftLegDirection.getX()));
             OrcaLine orcaLine = new OrcaLine(point, leftLegDirection);
             obstacleOrcaLines.add(orcaLine);
+            //debugObstacles.add(obstacleSlope);
             return;
         }
 
@@ -310,6 +322,7 @@ public class Orca {
         DecimalPosition point = rightCutOff.add(radius / TIME_HORIZON_OBSTACLES, new DecimalPosition(-direction.getY(), direction.getX()));
         OrcaLine orcaLine = new OrcaLine(point, direction);
         obstacleOrcaLines.add(orcaLine);
+        //debugObstacles.add(obstacleSlope);
     }
 
     public DecimalPosition getNewVelocity() {
@@ -515,5 +528,9 @@ public class Orca {
                 distance = orcaLines.get(i).getDirection().determinant(orcaLines.get(i).getPoint().sub(newVelocity));
             }
         }
+    }
+
+    public List<ObstacleSlope> getDebugObstacles() {
+        return debugObstacles;
     }
 }

@@ -36,6 +36,11 @@ public class CollectionUtils {
         return list.get(getCorrectedIndex(index, list.size()));
     }
 
+    @SafeVarargs
+    public static <T> T getCorrectedElement(int index, T... list) {
+        return list[getCorrectedIndex(index, list.length)];
+    }
+
     public static int getCorrectedDelta(int startIndex, int endIndex, int listSize) {
         int correctedStartIndex = getCorrectedIndex(startIndex, listSize);
         int correctedEndIndex = getCorrectedIndex(endIndex, listSize);

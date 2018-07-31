@@ -20,15 +20,12 @@ public class ObstacleFactory {
     public static void addObstacles(TerrainShape terrainShape, Slope slope) {
         for (List<DecimalPosition> polygon : slope.getObstacleFactoryContext().getPolygons()) {
             List<DecimalPosition> filteredPolygon = DecimalPosition.removeSimilarPointsFast(polygon, MIN_DELTA);
+            // dumpPolygonForRvo(filteredPolygon);
             for (int i = 0; i < filteredPolygon.size(); i++) {
                 DecimalPosition previous = CollectionUtils.getCorrectedElement(i - 1, filteredPolygon);
                 DecimalPosition point1 = filteredPolygon.get(i);
                 DecimalPosition point2 = CollectionUtils.getCorrectedElement(i + 1, filteredPolygon);
                 DecimalPosition next = CollectionUtils.getCorrectedElement(i + 2, filteredPolygon);
-                if (point1.equals(point2)) {
-                    // also for previous and next ???
-                    continue;
-                }
                 addObstacleSlope(terrainShape, new ObstacleSlope(point1, point2, previous, next));
             }
         }
@@ -41,5 +38,14 @@ public class ObstacleFactory {
         }
     }
 
+
+    private static void dumpPolygonForRvo(List<DecimalPosition> polygon) {
+        System.out.println("-------------------------------------------");
+        System.out.print("Arrays.asList(");
+        polygon.forEach(position -> {
+            System.out.print("new Vector2D(" + position.getX() + ", " + position.getY() + "),");
+        });
+        System.out.println(")");
+    }
 
 }

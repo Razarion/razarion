@@ -6,6 +6,8 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 import com.btxtech.shared.utils.MathHelper;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -91,6 +93,10 @@ public class ObstacleSlope extends Obstacle {
         return previousDirection;
     }
 
+    public DecimalPosition getNearestPoint(DecimalPosition position) {
+        return createLine().getNearestPointOnLine(position);
+    }
+
     @Override
     public NativeObstacle toNativeObstacle() {
         NativeObstacle nativeObstacle = new NativeObstacle();
@@ -113,6 +119,10 @@ public class ObstacleSlope extends Obstacle {
         return nativeObstacle.x1 != null && nativeObstacle.y1 != null && nativeObstacle.x2 != null && nativeObstacle.y2 != null
                 && nativeObstacle.pDx != null && nativeObstacle.pDy != null && nativeObstacle.p1C != null
                 && nativeObstacle.p1Dx != null && nativeObstacle.p1Dy != null && nativeObstacle.p2C != null && nativeObstacle.p2Dx != null && nativeObstacle.p2Dy != null;
+    }
+
+    public static void sort(DecimalPosition pivot, List<ObstacleSlope> obstacleSlopes) {
+        obstacleSlopes.sort(Comparator.comparingDouble(o -> pivot.getDistance(o.getNearestPoint(pivot))));
     }
 
     @Override
