@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.pathing;
 
-import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -13,8 +12,9 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
-import org.junit.Assert;
+import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import org.junit.Before;
 
 import java.util.ArrayList;
@@ -59,17 +59,28 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        // Land slope
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(1);
-        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
+        // Land slope 1
+        TerrainSlopePosition terrainSlopePositionLand1 = new TerrainSlopePosition();
+        terrainSlopePositionLand1.setId(1);
+        terrainSlopePositionLand1.setSlopeConfigId(1);
+        terrainSlopePositionLand1.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
                 GameTestHelper.createTerrainSlopeCorner(100, 60, 1), GameTestHelper.createTerrainSlopeCorner(100, 90, 1), // driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
-        terrainSlopePositions.add(terrainSlopePositionLand);
+        terrainSlopePositions.add(terrainSlopePositionLand1);
+        // Land slope 2
+        TerrainSlopePosition terrainSlopePositionLand2 = new TerrainSlopePosition();
+        terrainSlopePositionLand2.setId(2);
+        terrainSlopePositionLand2.setSlopeConfigId(1);
+        terrainSlopePositionLand2.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(165.39227716727615, 409.86546092796124, null),
+                GameTestHelper.createTerrainSlopeCorner(178.39227716727615, 431.36546092796124, 1),
+                GameTestHelper.createTerrainSlopeCorner(200.39227716727615, 467.36546092796124, 1),
+                GameTestHelper.createTerrainSlopeCorner(218.89227716727615, 498.86546092796124, null),
+                GameTestHelper.createTerrainSlopeCorner(111.89227716727615, 563.3654609279613, null),
+                GameTestHelper.createTerrainSlopeCorner(54.16666666666667, 442.99999999999983, null)));
+        terrainSlopePositions.add(terrainSlopePositionLand2);
         // Water slope
         TerrainSlopePosition terrainSlopePositionWater = new TerrainSlopePosition();
-        terrainSlopePositionWater.setId(2);
+        terrainSlopePositionWater.setId(3);
         terrainSlopePositionWater.setSlopeConfigId(2);
         terrainSlopePositionWater.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(64, 200, null), GameTestHelper.createTerrainSlopeCorner(231, 200, null),
                 GameTestHelper.createTerrainSlopeCorner(231, 256, null), GameTestHelper.createTerrainSlopeCorner(151, 257, null), // driveway
@@ -112,4 +123,16 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
 
         setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions);
     }
+
+    protected SimplePath setupPath(double actorRadius, TerrainType actorTerrainType, DecimalPosition actorPosition, double range, double targetRadius, TerrainType targetTerrainType, DecimalPosition targetPosition) {
+        SyncBaseItem actor = GameTestHelper.createMockSyncBaseItem(actorRadius, actorTerrainType, actorPosition);
+        SyncBaseItem target = GameTestHelper.createMockSyncBaseItem(targetRadius, targetTerrainType, targetPosition);
+        return getPathingService().setupPathToDestination(actor, range, target);
+    }
+
+    protected SimplePath setupPath(double radius, TerrainType land, DecimalPosition start, DecimalPosition destination) {
+        SyncBaseItem syncBaseItem = GameTestHelper.createMockSyncBaseItem(radius, land, start);
+        return getPathingService().setupPathToDestination(syncBaseItem, destination);
+    }
+
 }

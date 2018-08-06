@@ -299,7 +299,6 @@ public class ScenarioPlaybackController implements Initializable {
                 }
                 if (actualSyncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions() != null) {
                     syncItemPropertyTable.getItems().add(SyncItemProperty.createDecimalPositionList("Way positions", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getWayPositions()));
-                    syncItemPropertyTable.getItems().add(SyncItemProperty.createInt("Current way pointIndex", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, syncBaseItemInfo -> syncBaseItemInfo.getSyncPhysicalAreaInfo().getCurrentWayPointIndex()));
                 }
             }
         } catch (NumberFormatException t) {

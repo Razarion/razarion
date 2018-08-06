@@ -13,8 +13,6 @@ public class SyncPhysicalAreaInfo {
     private double angle;
     private DecimalPosition velocity;
     private List<DecimalPosition> wayPositions;
-    private Integer currentWayPointIndex;
-    private Double totalRange;
 
     public DecimalPosition getPosition() {
         return position;
@@ -49,24 +47,6 @@ public class SyncPhysicalAreaInfo {
 
     public SyncPhysicalAreaInfo setWayPositions(List<DecimalPosition> wayPositions) {
         this.wayPositions = wayPositions;
-        return this;
-    }
-
-    public Integer getCurrentWayPointIndex() {
-        return currentWayPointIndex;
-    }
-
-    public SyncPhysicalAreaInfo setCurrentWayPointIndex(Integer currentWayPointIndex) {
-        this.currentWayPointIndex = currentWayPointIndex;
-        return this;
-    }
-
-    public Double getTotalRange() {
-        return totalRange;
-    }
-
-    public SyncPhysicalAreaInfo setTotalRange(Double totalRange) {
-        this.totalRange = totalRange;
         return this;
     }
 }

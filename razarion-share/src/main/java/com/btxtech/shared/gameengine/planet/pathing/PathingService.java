@@ -4,7 +4,6 @@ import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
-import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
@@ -30,6 +29,7 @@ import java.util.logging.Logger;
 public class PathingService {
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double NEIGHBOR_ITEM_RADIUS = 15;
+    public static final double RADIUS_GROW = 1;
     private Logger logger = Logger.getLogger(PathingService.class.getName());
     @Inject
     private SyncItemContainerService syncItemContainerService;
@@ -37,8 +37,6 @@ public class PathingService {
     private TerrainService terrainService;
     @Inject
     private ExceptionHandler exceptionHandler;
-    @Inject
-    private ItemTypeService itemTypeService;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
     private PathingServiceUpdateListener pathingServiceUpdateListener;
 
@@ -63,7 +61,9 @@ public class PathingService {
         return setupPathToDestination(syncItem.getSyncPhysicalArea().getPosition2d(), syncItem.getSyncPhysicalArea().getRadius(), syncItem.getSyncPhysicalArea().getTerrainType(), targetTerrainType, destination, totalRange);
     }
 
-    public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType targetTerrain, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+    public SimplePath setupPathToDestination(DecimalPosition position, double radius, TerrainType terrainTerrain, TerrainType targetTerrainType, DecimalPosition destination, double totalRange) {
+        // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
+        double correctedRadius = radius + RADIUS_GROW;
         SimplePath path = new SimplePath();
         List<DecimalPosition> positions = new ArrayList<>();
         PathingNodeWrapper startNode = terrainService.getPathingAccess().getPathingNodeWrapper(position);
@@ -71,37 +71,35 @@ public class PathingService {
         if (startNode.equals(destinationNode)) {
             positions.add(destination);
             path.setWayPositions(positions);
-            path.setTotalRange(totalRange);
             return path;
         }
         if (!destinationNode.isFree(targetTerrainType)) {
             throw new PathFindingNotFreeException("Destination tile is not free: " + destination);
         }
         // long time = System.currentTimeMillis();
-        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, radius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
+        List<Index> subNodeIndexScope = GeometricUtil.rasterizeCircle(new Circle2D(DecimalPosition.NULL, correctedRadius), (int) TerrainUtil.MIN_SUB_NODE_LENGTH);
         PathingNodeWrapper correctedDestinationNode;
         AStarContext aStarContext;
         DecimalPosition additionPathElement = null;
-        if (TerrainDestinationFinder.differentTerrain(targetTerrain, targetTerrainType)) {
-            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius, targetTerrain, terrainService.getPathingAccess());
+        if (TerrainDestinationFinder.differentTerrain(terrainTerrain, targetTerrainType)) {
+            TerrainDestinationFinder terrainDestinationFinder = new TerrainDestinationFinder(position, destination, totalRange, radius, terrainTerrain, terrainService.getPathingAccess());
             terrainDestinationFinder.find();
             // destination = terrainDestinationFinder.getReachableDestination();
             correctedDestinationNode = terrainDestinationFinder.getReachableNode();
             additionPathElement = correctedDestinationNode.getCenter();
-            totalRange = 0;
-            aStarContext = new AStarContext(targetTerrain, subNodeIndexScope);
+            aStarContext = new AStarContext(terrainTerrain, subNodeIndexScope);
         } else {
 //            DestinationFinder destinationFinder = new DestinationFinder(position, destination, destinationNode, syncItem.getSyncPhysicalArea().getTerrainType(), subNodeIndexScope, terrainService.getPathingAccess());
 //            destinationFinder.find();
 //            correctedDestinationNode = terrainService.getPathingAccess().getPathingNodeWrapper(destinationFinder.getCorrectedDestination());;
 //            destination = destinationFinder.getCorrectedDestination();
-            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, targetTerrain, subNodeIndexScope, terrainService.getPathingAccess());
+            DestinationFinder destinationFinder = new DestinationFinder(destination, destinationNode, terrainTerrain, subNodeIndexScope, terrainService.getPathingAccess());
             correctedDestinationNode = destinationFinder.find();
-            aStarContext = new AStarContext(targetTerrain, subNodeIndexScope);
+            aStarContext = new AStarContext(terrainTerrain, subNodeIndexScope);
         }
         aStarContext.setStartSuck(startNode.isStuck(aStarContext));
         aStarContext.setStartPosition(position);
-        aStarContext.setMaxStuckDistance(radius);
+        aStarContext.setMaxStuckDistance(correctedRadius);
         aStarContext.setDestination(destination);
 
         AStar aStar = new AStar(startNode, correctedDestinationNode, aStarContext);
@@ -115,7 +113,6 @@ public class PathingService {
         }
         positions.add(destination);
         path.setWayPositions(positions);
-        path.setTotalRange(totalRange);
         return path;
     }
 
@@ -214,7 +211,7 @@ public class PathingService {
                 } else {
                     orca.add(otherSyncPhysicalMovable);
                 }
-            } else {
+                // TODO } else {
                 // TODO add none movable (buildings)
             }
         });
@@ -281,41 +278,6 @@ public class PathingService {
         }
         shifty.setupForPushAway(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
         return true;
-    }
-
-    private void handlePushAways(TickContext tickContext) {
-        tickContext.getPushAways().forEach(shifty -> {
-            tickContext.getMovings().forEach(pusher -> {
-                // 1) Check if pierced
-                double totalRadius = shifty.getRadius() + pusher.getRadius();
-                Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
-                DecimalPosition pusherVelocity = pusher.getVelocity().multiply(PlanetService.TICK_FACTOR);
-                DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
-                Line move = new Line(pusher.getPosition2d(), pusherTarget);
-                if (!minkowskiSum.doesLineCut(move)) {
-                    return;
-                }
-                // 2) Push away
-                DecimalPosition crossPosition = move.projectOnInfiniteLine(shifty.getPosition2d());
-                if (crossPosition.equals(shifty.getPosition2d())) {
-                    throw new UnsupportedOperationException("!!! FIX ME !!!");
-                }
-                DecimalPosition pushAwayDirection = shifty.getPosition2d().sub(crossPosition).normalize();
-//                double angle = Math.atan(crossPosition.sub(pusherTarget).magnitude() / totalRadius);
-//                double distance = Math.sin(angle) * totalRadius;
-                double distanceSq = totalRadius * totalRadius - pusherTarget.sub(crossPosition).magnitudeSq();
-                double distance;
-                if (distanceSq > 0.0) {
-                    distance = Math.sqrt(distanceSq);
-                } else {
-                    // Pusher Target does not touch shifty
-                    distance = totalRadius;
-                }
-                DecimalPosition shiftyTarget = crossPosition.getPointWithDistance(distance, crossPosition.add(pushAwayDirection), true);
-                DecimalPosition shiftyVelocity = shiftyTarget.sub(shifty.getPosition2d());
-                shifty.setVelocity(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
-            });
-        });
     }
 
     private void implementPosition() {

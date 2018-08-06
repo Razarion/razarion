@@ -294,7 +294,7 @@ public class TerrainShapeSetup {
                             }
                             continue;
                         case PARTLY:
-                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
+                            handlePartly(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
                             continue;
                     }
                 }
@@ -319,16 +319,16 @@ public class TerrainShapeSetup {
                             }
                             continue;
                         case PARTLY:
-                            handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
+                            handlePartly(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
                             continue;
                     }
                 }
-                handleParty(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
+                handlePartly(terrainRegion, dirtyTerrainShapeNodes, innerTerrainType, innerHeight, drivewayContext, nodeIndex, terrainRect);
             }
         }
     }
 
-    private void handleParty(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, DrivewayContext drivewayContext, Index nodeIndex, Rectangle2D terrainRect) {
+    private void handlePartly(Polygon2D terrainRegion, Map<Index, TerrainShapeNode> dirtyTerrainShapeNodes, TerrainType innerTerrainType, double innerHeight, DrivewayContext drivewayContext, Index nodeIndex, Rectangle2D terrainRect) {
         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
         dirtyTerrainShapeNodes.putIfAbsent(nodeIndex, terrainShapeNode);
         terrainShapeSubNodeFactory.fillSlopeTerrainShapeSubNode(terrainShapeNode, terrainRect, terrainRegion, innerTerrainType, innerHeight, drivewayContext);

@@ -64,7 +64,7 @@ public class MoveSingleUnitObstacleTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitObstacleTest_moveAroundSeaPath1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(220, 315), new DecimalPosition(149, 368));
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(220, 315), new DecimalPosition(156, 371));
             }
         });
     }

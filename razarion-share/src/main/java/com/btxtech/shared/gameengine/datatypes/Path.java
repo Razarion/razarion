@@ -19,7 +19,6 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -31,8 +30,7 @@ public class Path {
     @Inject
     private TerrainService terrainService;
     private List<DecimalPosition> wayPositions;
-    private int currentWayPointIndex;
-    private double totalRange;
+    private DecimalPosition currentWayPoint;
 
     /**
      * @param path the path
@@ -41,57 +39,29 @@ public class Path {
         if (path.getWayPositions().isEmpty()) {
             throw new IllegalArgumentException("At least one way point must be available");
         }
-        this.totalRange = path.getTotalRange();
         wayPositions = path.getWayPositions();
-        currentWayPointIndex = 0;
-    }
-
-    public DecimalPosition getCurrentWayPoint() {
-        return wayPositions.get(currentWayPointIndex);
     }
 
     public void setupCurrentWayPoint(SyncPhysicalArea syncPhysicalArea) {
-        if (currentWayPointIndex + 1 < wayPositions.size() && MathHelper.compareWithPrecision(syncPhysicalArea.getPosition2d().getDistance(getCurrentWayPoint()), 0.0)) {
-            currentWayPointIndex++;
-            return;
-        }
-        if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius(), wayPositions.get(currentWayPointIndex))) {
-            aheadTrack(syncPhysicalArea);
-        } else {
-            backtrack(syncPhysicalArea);
-        }
-    }
-
-    private void aheadTrack(SyncPhysicalArea syncPhysicalArea) {
-        int tmpCurrentWayPointIndex = currentWayPointIndex + 1;
-        while (tmpCurrentWayPointIndex < wayPositions.size()) {
-            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius(), new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
-                currentWayPointIndex = tmpCurrentWayPointIndex;
-                tmpCurrentWayPointIndex++;
-            } else {
-                break;
-            }
-        }
-    }
-
-    private void backtrack(SyncPhysicalArea syncPhysicalArea) {
-        int tmpCurrentWayPointIndex = currentWayPointIndex - 1;
-        while (tmpCurrentWayPointIndex >= 0) {
-            if (terrainService.getPathingAccess().isInSight(syncPhysicalArea.getPosition2d(), syncPhysicalArea.getRadius(), new DecimalPosition(wayPositions.get(tmpCurrentWayPointIndex)))) {
-                currentWayPointIndex = tmpCurrentWayPointIndex;
+        DecimalPosition itemPosition = syncPhysicalArea.getPosition2d();
+        for (int i = wayPositions.size() - 1; i >= 0; i--) {
+            DecimalPosition wayPosition = wayPositions.get(i);
+            // Attention due to performance!! isInSight() surface data (Obstacle-Model) is not based on the AStar surface data -> AStar model must overlap Obstacle-Model
+            if (terrainService.getPathingAccess().isInSight(itemPosition, syncPhysicalArea.getRadius(), wayPosition)) {
+                currentWayPoint = wayPosition;
                 return;
             }
-            tmpCurrentWayPointIndex--;
+
         }
-        currentWayPointIndex = 0;
+        currentWayPoint = wayPositions.get(0);
+    }
+
+    public DecimalPosition getCurrentWayPoint() {
+        return currentWayPoint;
     }
 
     public boolean isLastWayPoint() {
-        return currentWayPointIndex >= wayPositions.size() - 1;
-    }
-
-    public double getTotalRange() {
-        return totalRange;
+        return currentWayPoint == wayPositions.get(wayPositions.size() - 1);
     }
 
     public List<DecimalPosition> getWayPositions() {
@@ -100,13 +70,9 @@ public class Path {
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
         wayPositions = syncPhysicalAreaInfo.getWayPositions();
-        currentWayPointIndex = syncPhysicalAreaInfo.getCurrentWayPointIndex();
-        totalRange = syncPhysicalAreaInfo.getTotalRange();
     }
 
     public void fillSyncPhysicalAreaInfo(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
         syncPhysicalAreaInfo.setWayPositions(wayPositions);
-        syncPhysicalAreaInfo.setCurrentWayPointIndex(currentWayPointIndex);
-        syncPhysicalAreaInfo.setTotalRange(totalRange);
     }
 }

@@ -187,7 +187,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
         super.synchronize(syncPhysicalAreaInfo);
         velocity = syncPhysicalAreaInfo.getVelocity();
-        if (syncPhysicalAreaInfo.getWayPositions() != null && syncPhysicalAreaInfo.getCurrentWayPointIndex() != null && syncPhysicalAreaInfo.getTotalRange() != null) {
+        if (syncPhysicalAreaInfo.getWayPositions() != null) {
             Path path = instancePath.get();
             path.synchronize(syncPhysicalAreaInfo);
             this.path = path;

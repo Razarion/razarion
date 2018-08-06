@@ -46,7 +46,5 @@ public interface ScenarioAssert {
         Assert.assertEquals(expectedSyncPhysicalAreaInfo.getAngle(), actualSyncPhysicalAreaInfo.getAngle(), 0.0001);
         TestHelper.assertDecimalPosition("Velocity", expectedSyncPhysicalAreaInfo.getVelocity(), actualSyncPhysicalAreaInfo.getVelocity());
         TestHelper.assertDecimalPositions(expectedSyncPhysicalAreaInfo.getWayPositions(), actualSyncPhysicalAreaInfo.getWayPositions());
-        Assert.assertEquals(expectedSyncPhysicalAreaInfo.getCurrentWayPointIndex(), actualSyncPhysicalAreaInfo.getCurrentWayPointIndex());
-        Assert.assertEquals(expectedSyncPhysicalAreaInfo.getTotalRange(), actualSyncPhysicalAreaInfo.getTotalRange());
     }
 }

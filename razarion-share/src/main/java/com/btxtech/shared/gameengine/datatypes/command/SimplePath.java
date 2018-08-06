@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class SimplePath {
     private List<DecimalPosition> wayPositions;
-    private double totalRange;
 
     public List<DecimalPosition> getWayPositions() {
         return wayPositions;
@@ -18,13 +17,5 @@ public class SimplePath {
 
     public void setWayPositions(List<DecimalPosition> wayPositions) {
         this.wayPositions = wayPositions;
-    }
-
-    public double getTotalRange() {
-        return totalRange;
-    }
-
-    public void setTotalRange(double totalRange) {
-        this.totalRange = totalRange;
     }
 }
