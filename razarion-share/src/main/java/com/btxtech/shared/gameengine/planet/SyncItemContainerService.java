@@ -569,5 +569,8 @@ public class SyncItemContainerService {
         return null;
     }
 
+    public Collection<SyncItem> getSyncItemsCopy() {
+        return new ArrayList<>(items.values());
+    }
 
 }

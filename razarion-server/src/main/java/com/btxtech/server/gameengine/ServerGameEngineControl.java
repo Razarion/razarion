@@ -101,10 +101,13 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private PathingChangesDisruptor pathingChangesDisruptor;
     @Inject
     private HistoryPersistence historyPersistence;
+    //    @Inject
+//    private DebugGui debugGui;
     private final Object reloadLook = new Object();
     private Set<SyncBaseItem> changedPathings = new HashSet<>();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
+        //debugGui.display();
         PlanetConfig planetConfig = serverGameEnginePersistence.readPlanetConfig();
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
