@@ -28,13 +28,13 @@ public class DevToolCursorService extends CursorService {
 
     @Override
     protected void setPointerCursorInternal() {
-        System.out.println("+++ setPointerCursorInternal()");
+          // System.out.println("+++ setPointerCursorInternal()");
         webGlEmulatorController.getCanvas().setCursor(Cursor.HAND);
     }
 
     @Override
     protected void setCursorInternal(CursorType cursorType, boolean allowed) {
-        System.out.println("+++ setCursorInternal: " + cursorType + " allowed: " + allowed);
+        // System.out.println("+++ setCursorInternal: " + cursorType + " allowed: " + allowed);
         // webGlEmulatorController.getCanvas().setCursor(Cursor.MOVE);
 
         String urlString = "/cursors/" + cursorType.getName(allowed) + ".png";
