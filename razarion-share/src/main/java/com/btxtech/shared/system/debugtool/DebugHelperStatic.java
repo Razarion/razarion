@@ -76,8 +76,6 @@ public class DebugHelperStatic {
                 syncPhysicalMovable.getMaxSpeed() +
                 ");";
         add2printOnTick(stringBuilder);
-        add2printOnTick("\nOrca orca = new Orca(syncPhysicalMovable" + syncPhysicalMovable.getSyncItem().getId() + ");");
-
     }
 
     public static void addOrcaAdd(SyncPhysicalMovable syncPhysicalMovable) {
