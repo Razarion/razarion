@@ -23,6 +23,7 @@ public class PositionMarker {
     private List<SyncItem> syncItems = new ArrayList<>();
     private List<RectColor> rectangle2Ds = new ArrayList<>();
     private List<CircleColor> circleColors = new ArrayList<>();
+    private List<PathColor> pathColors = new ArrayList<>();
 
     public PositionMarker addPosition(DecimalPosition position) {
         positions.add(position);
@@ -84,6 +85,15 @@ public class PositionMarker {
 
     public PositionMarker addRectangle2D(Rectangle2D rectangle2D, Color color) {
         rectangle2Ds.add(new RectColor(rectangle2D, color));
+        return this;
+    }
+
+    public List<PathColor> getPathColors() {
+        return pathColors;
+    }
+
+    public PositionMarker addPath(List<DecimalPosition> path, Color color) {
+        pathColors.add(new PathColor(path, color));
         return this;
     }
 
@@ -152,6 +162,24 @@ public class PositionMarker {
 
         public Rectangle2D getRectangle2D() {
             return rectangle2D;
+        }
+
+        public Color getColor() {
+            return color;
+        }
+    }
+
+    public static class PathColor {
+        private List<DecimalPosition> path;
+        private Color color;
+
+        public PathColor(List<DecimalPosition> path, Color color) {
+            this.path = path;
+            this.color = color;
+        }
+
+        public List<DecimalPosition> getPath() {
+            return path;
         }
 
         public Color getColor() {

@@ -9,6 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -20,6 +21,8 @@ public class ServerDebugHelper implements DebugHelper {
     private EntityManager entityManager;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private Logger logger;
 
     @Override
     @Transactional
@@ -39,5 +42,10 @@ public class ServerDebugHelper implements DebugHelper {
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }
+    }
+
+    @Override
+    public void debugToConsole(String debugMessage) {
+        // TODO uncomment logger.severe("ServerDebugHelper.debugToConsole(): " + debugMessage);
     }
 }

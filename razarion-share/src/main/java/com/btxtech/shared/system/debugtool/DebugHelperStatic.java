@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObs
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by Beat
@@ -114,12 +113,16 @@ public class DebugHelperStatic {
                 + "));");
     }
 
-    public static void printAfterTick() {
+    public static void printAfterTick(DebugHelper debugHelper) {
         if (omitTick()) {
             return;
         }
         if (printOnTickMessage != null) {
-            System.out.println("\n--------- Tick " + currentTick + ": " + printOnTickMessage);
+            if(debugHelper != null) {
+                debugHelper.debugToConsole(printOnTickMessage);
+            }else{
+                System.out.println("\n--------- Tick " + currentTick + ": " + printOnTickMessage);
+            }
             printOnTickMessage = null;
         }
     }
@@ -156,7 +159,8 @@ public class DebugHelperStatic {
     public static String generate(DecimalPosition decimalPosition) {
         if (decimalPosition != null) {
             // return "new DecimalPosition(" + String.format(Locale.US, "%.3f, %.3f", decimalPosition.getX(), decimalPosition.getY()) + ")";
-            return "**** NOT SUPPORTED IN GWT RT ****";
+            return "new DecimalPosition(" + decimalPosition.getX() + ", " + decimalPosition.getY() + ")";
+            // return "**** NOT SUPPORTED IN GWT RT ****";
         } else {
             return NULL_STRING;
         }

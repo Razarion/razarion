@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
+import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @Singleton
 public class PathingService {
@@ -37,6 +39,8 @@ public class PathingService {
     private TerrainService terrainService;
     @Inject
     private ExceptionHandler exceptionHandler;
+//    @Inject
+//    private DebugHelper debugHelper;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
     private PathingServiceUpdateListener pathingServiceUpdateListener;
 
@@ -118,6 +122,7 @@ public class PathingService {
 
     public void tick() {
         try {
+            // DebugHelperStatic.setCurrentTick(-1);
             pathingServiceTracker.startTick();
             preparation();
             pathingServiceTracker.afterPreparation();
@@ -131,11 +136,8 @@ public class PathingService {
             pathingServiceTracker.afterSyncItemContainerService();
             finalization();
             pathingServiceTracker.afterFinalization();
-            if (pathingServiceUpdateListener != null) {
-                pathingServiceUpdateListener.onPathingTickFinished();
-            }
-            pathingServiceTracker.afterUpdateListener();
             pathingServiceTracker.endTick();
+            // DebugHelperStatic.printAfterTick(debugHelper);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -166,6 +168,7 @@ public class PathingService {
             if (syncPhysicalMovable.isMoving()) {
                 tickContext.addMoving(syncPhysicalMovable);
                 Orca orca = new Orca(syncPhysicalMovable);
+                // debugHelper.debugToConsole("new Orca1");
                 addOtherSyncItemOrcaLines(orca, syncBaseItem, tickContext);
                 addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
@@ -177,8 +180,10 @@ public class PathingService {
             }
             return null;
         });
+        // TODO handle push away recursively
         tickContext.getPushAways().forEach(syncPhysicalMovable -> {
             Orca orca = new Orca(syncPhysicalMovable);
+            // debugHelper.debugToConsole("new Orca2");
             addOtherSyncItemOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem(), null);
             addObstaclesOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem());
             if (!orca.isEmpty()) {
@@ -206,10 +211,12 @@ public class PathingService {
                                 tickContext.addPushAway(otherSyncPhysicalMovable);
                             }
                             orca.add(otherSyncPhysicalMovable);
+                            // debugHelper.debugToConsole("orca 1 add otherSyncPhysicalMovable");
                         }
                     }
                 } else {
                     orca.add(otherSyncPhysicalMovable);
+                    // debugHelper.debugToConsole("orca 2 add otherSyncPhysicalMovable");
                 }
                 // TODO } else {
                 // TODO add none movable (buildings)
@@ -231,7 +238,12 @@ public class PathingService {
             }
         });
         ObstacleSlope.sort(position, sortedObstacleSlope);
-        sortedObstacleSlope.forEach(orca::add);
+        sortedObstacleSlope.forEach(obstacleSlope -> {
+            orca.add(obstacleSlope);
+            // debugHelper.debugToConsole("orca 1 add obstacleSlope: " + obstacleSlope.getPoint1());
+        });
+        ////////////
+        // debugHelper.debugToConsole("Orcalines: " + orca.getDebugObstacles_WRONG().stream().map(ObstacleSlope::toString).collect( Collectors.joining( ", " ) ));
     }
 
     private boolean isPiercing(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {

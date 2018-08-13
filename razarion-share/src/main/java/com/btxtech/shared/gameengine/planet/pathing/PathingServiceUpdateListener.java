@@ -8,6 +8,4 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
  */
 public interface PathingServiceUpdateListener {
     void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable);
-
-    void onPathingTickFinished();
 }

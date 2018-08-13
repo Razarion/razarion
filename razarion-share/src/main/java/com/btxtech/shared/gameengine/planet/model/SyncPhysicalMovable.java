@@ -23,9 +23,10 @@ import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
+import com.btxtech.shared.system.debugtool.DebugHelper;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -43,10 +44,11 @@ import javax.inject.Named;
 @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
 public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
+    // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
     @Inject
     private Instance<Path> instancePath;
-    @Inject
-    private GameLogicService gameLogicService;
+//    @Inject
+//    private DebugHelper debugHelper;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second
@@ -80,6 +82,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
             preferredVelocity = DecimalPosition.createVector(desiredAngle, speed);
+            // debugHelper.debugToConsole("currentWayPoint(path, " + DebugHelperStatic.generate(getPosition2d()) + ", " + DebugHelperStatic.generate(path.getCurrentWayPoint()) + ", " + DebugHelperStatic.generate(velocity) + ", " + DebugHelperStatic.generate(preferredVelocity) + ");");
         } else {
             velocity = null;
             preferredVelocity = null;
@@ -105,7 +108,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 velocity = null;
                 path = null;
                 preferredVelocity = null;
-                gameLogicService.onSyncBaseItemDestinationReached((SyncBaseItem) getSyncItem());
                 return;
             }
         }
@@ -116,7 +118,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             preferredVelocity = null;
             setPosition2d(path.getCurrentWayPoint(), false);
             path = null;
-            gameLogicService.onSyncBaseItemDestinationReached((SyncBaseItem) getSyncItem());
         }
     }
 

@@ -52,6 +52,7 @@ public class UserDataRenderer {
         positionMarker.getPolygon2Ds().forEach(polygon2D -> weldTestRenderer.strokePolygon(polygon2D.getCorners(), WeldTestRenderer.FAT_LINE_WIDTH, Color.GREEN, true));
         positionMarker.getRectangle2Ds().forEach(rectangle -> weldTestRenderer.fillRectangle(rectangle.getRectangle2D(), rectangle.getColor()));
         positionMarker.getCircleColors().forEach(circle -> weldTestRenderer.fillCircle(circle.getCircle2D(), circle.getColor()));
+        positionMarker.getPathColors().forEach(pathColor -> weldTestRenderer.strokeCurveDecimalPosition(pathColor.getPath(), 0.1, pathColor.getColor(), true));
     }
 
     private void render(SimplePath simplePath) {

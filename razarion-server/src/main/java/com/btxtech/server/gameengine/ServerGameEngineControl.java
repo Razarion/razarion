@@ -31,6 +31,7 @@ import com.btxtech.shared.gameengine.planet.BoxService;
 import com.btxtech.shared.gameengine.planet.GameLogicListener;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.PlanetTickListener;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -57,7 +58,7 @@ import java.util.logging.Logger;
  * 18.04.2017.
  */
 @ApplicationScoped
-public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PathingServiceUpdateListener {
+public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PathingServiceUpdateListener, PlanetTickListener {
     private Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
@@ -105,6 +106,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 //    private DebugGui debugGui;
     private final Object reloadLook = new Object();
     private Set<SyncBaseItem> changedPathings = new HashSet<>();
+    private Set<SyncBaseItem> alreadySentSyncBaseItems = new HashSet<>();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         //debugGui.display();
@@ -119,6 +121,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
                 planetService.restoreBases(finaBackupPlanetInfo, this);
             }
             planetService.start();
+            planetService.addTickListener(this);
             resourceService.startResourceRegions();
             boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
             botService.startBots(serverGameEnginePersistence.readBotConfigs(), serverGameEnginePersistence.readBotSceneConfigs());
@@ -220,6 +223,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     public void stop() {
+        planetService.removeTickListener(this);
         planetService.stop();
         botService.killAllBots();
     }
@@ -324,11 +328,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
         clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
-    }
-
-    @Override
-    public void onSyncBaseItemDestinationReached(SyncBaseItem syncBaseItem) {
-        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
+        alreadySentSyncBaseItems.add(syncBaseItem);
     }
 
     @Override
@@ -444,10 +444,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
-    public void onPathingTickFinished() {
-        Set<SyncBaseItem> tmp = changedPathings;
+    public void onPostTick() {
+        Set<SyncBaseItem> tmpChangedPathings = changedPathings;
         changedPathings = new HashSet<>();
-        //logger.severe("-----" + tmp.stream().map(syncBaseItem -> syncBaseItem.getId() + "").collect(Collectors.joining("; ")));
-        pathingChangesDisruptor.onChanges(tmp);
+        Set<SyncBaseItem> tmpAlreadySentSyncBaseItems = alreadySentSyncBaseItems;
+        alreadySentSyncBaseItems = new HashSet<>();
+//        if(!tmp.isEmpty()) {
+//            logger.severe("-----" + tmp.stream().map(syncBaseItem -> syncBaseItem.getId() + "").collect(Collectors.joining("; ")));
+//        }
+        pathingChangesDisruptor.onPostTick(tmpChangedPathings, tmpAlreadySentSyncBaseItems);
     }
 }

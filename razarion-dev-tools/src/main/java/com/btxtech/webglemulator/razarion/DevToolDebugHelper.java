@@ -12,6 +12,11 @@ import javax.enterprise.context.ApplicationScoped;
 public class DevToolDebugHelper implements DebugHelper {
     @Override
     public void debugToDb(String debugMessage) {
-        System.out.println("DevToolDebugHelper: " + debugMessage);
+        System.out.println("DevToolDebugHelper.debugToDb(): " + debugMessage);
+    }
+
+    @Override
+    public void debugToConsole(String debugMessage) {
+        System.out.println("DevToolDebugHelper.debugToConsole(): " + debugMessage);
     }
 }

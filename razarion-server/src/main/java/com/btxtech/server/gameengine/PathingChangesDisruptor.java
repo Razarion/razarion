@@ -51,8 +51,19 @@ public class PathingChangesDisruptor implements EventHandler<SingleHolder<Set<Sy
         }
     }
 
-    public void onChanges(Set<SyncBaseItem> syncBaseItems) {
+    public void onPostTick(Set<SyncBaseItem> syncBaseItems, Set<SyncBaseItem> alreadySentSyncBaseItems) {
         try {
+            // System.out.println("syncBaseItems1: " + syncBaseItems.size() + ". alreadySentSyncBaseItems: " + alreadySentSyncBaseItems.size());
+            synchronized (lastSents) {
+                // TODO move to disruptor thread to reduce load on GameEngine thread
+                for (SyncBaseItem alreadySent : alreadySentSyncBaseItems) {
+                    // System.out.println("alreadySent: " + alreadySent.getId());
+                    lastSents.put(alreadySent, System.currentTimeMillis());
+                    waitingSyncBaseItems.remove(alreadySent);
+                    syncBaseItems.remove(alreadySent);
+                }
+            }
+            // System.out.println("syncBaseItems2: " + syncBaseItems.size() + ". alreadySentSyncBaseItems: " + alreadySentSyncBaseItems.size());
             if (syncBaseItems.isEmpty()) {
                 return;
             }
@@ -68,14 +79,11 @@ public class PathingChangesDisruptor implements EventHandler<SingleHolder<Set<Sy
             for (SyncBaseItem syncBaseItem : event.getO()) {
                 synchronized (lastSents) {
                     Long lastSent = lastSents.get(syncBaseItem);
-                    if (lastSent == null) {
+                    if (lastSent == null || lastSent + DE_BOUNCING < System.currentTimeMillis()) {
+                        waitingSyncBaseItems.remove(syncBaseItem);
                         sendAndAdd(syncBaseItem);
                     } else {
-                        if (lastSent + DE_BOUNCING < System.currentTimeMillis()) {
-                            sendAndAdd(syncBaseItem);
-                        } else {
-                            waitingSyncBaseItems.put(syncBaseItem, System.currentTimeMillis());
-                        }
+                        waitingSyncBaseItems.put(syncBaseItem, lastSent);
                     }
                 }
             }

@@ -177,7 +177,11 @@ public class ServerDebugRenderer implements PlanetTickListener {
         try {
             preRender();
 
-            doRender();
+            try {
+                doRender();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
 
             postRender();
         } catch (Throwable t) {

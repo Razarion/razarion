@@ -316,7 +316,7 @@ public class SyncBaseItem extends SyncTickItem implements SyncBaseObject {
             return syncItemContainer.tick();
         }
 
-        return getSyncPhysicalArea().canMove() && getSyncPhysicalArea().hasDestination();
+        return getSyncPhysicalArea().hasDestination();
     }
 
     public void stop() {

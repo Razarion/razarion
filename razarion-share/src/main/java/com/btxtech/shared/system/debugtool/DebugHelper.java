@@ -6,4 +6,6 @@ package com.btxtech.shared.system.debugtool;
  */
 public interface DebugHelper {
     void debugToDb(String debugMessage);
+
+    void debugToConsole(String debugMessage);
 }
