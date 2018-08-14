@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 // http://gamma.cs.unc.edu/ORCA/
 public class Orca {
     public static final double TIME_HORIZON_ITEMS = 10;
-    public static final double TIME_HORIZON_OBSTACLES = 10;
+    public static final double TIME_HORIZON_OBSTACLES = 2;
     public static final double EPSILON = 0.00001;
     private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
     private SyncPhysicalMovable syncPhysicalMovable;
@@ -267,7 +267,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, unitW);
             OrcaLine orcaLine = new OrcaLine(point, direction);
             obstacleOrcaLines.add(orcaLine);
-            // debugObstacles_WRONG.add(obstacleSlope);
+            debugObstacles_WRONG.add(new ObstacleSlope(obstacle1Point, obstacle1Point.getPointWithDistance(10, obstacle1Point.add(obstacle1Direction), true), DecimalPosition.NULL, DecimalPosition.NULL));
             return;
         }
 
@@ -279,7 +279,7 @@ public class Orca {
             DecimalPosition point = rightCutOff.add(radius * invTimeHorizonObstacle, unitW);
             OrcaLine orcaLine = new OrcaLine(point, direction);
             obstacleOrcaLines.add(orcaLine);
-            // debugObstacles_WRONG.add(obstacleSlope);
+            debugObstacles_WRONG.add(new ObstacleSlope(obstacle1Point, obstacle1Point.getPointWithDistance(10, obstacle1Point.add(obstacle1Direction), true), DecimalPosition.NULL, DecimalPosition.NULL));
             return;
         }
 
@@ -295,7 +295,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-direction.getY(), direction.getX()));
             OrcaLine orcaLine = new OrcaLine(point, direction);
             obstacleOrcaLines.add(orcaLine);
-            // debugObstacles_WRONG.add(obstacleSlope);
+            debugObstacles_WRONG.add(new ObstacleSlope(obstacle1Point, obstacle1Point.getPointWithDistance(10, obstacle1Point.add(obstacle1Direction), true), DecimalPosition.NULL, DecimalPosition.NULL));
             return;
         }
 
@@ -308,7 +308,7 @@ public class Orca {
             DecimalPosition point = leftCutOff.add(radius * invTimeHorizonObstacle, new DecimalPosition(-leftLegDirection.getY(), leftLegDirection.getX()));
             OrcaLine orcaLine = new OrcaLine(point, leftLegDirection);
             obstacleOrcaLines.add(orcaLine);
-            // debugObstacles_WRONG.add(obstacleSlope);
+            debugObstacles_WRONG.add(new ObstacleSlope(obstacle1Point, obstacle1Point.getPointWithDistance(10, obstacle1Point.add(obstacle1Direction), true), DecimalPosition.NULL, DecimalPosition.NULL));
             return;
         }
 
@@ -321,7 +321,7 @@ public class Orca {
         DecimalPosition point = rightCutOff.add(radius / TIME_HORIZON_OBSTACLES, new DecimalPosition(-direction.getY(), direction.getX()));
         OrcaLine orcaLine = new OrcaLine(point, direction);
         obstacleOrcaLines.add(orcaLine);
-        // debugObstacles_WRONG.add(obstacleSlope);
+        debugObstacles_WRONG.add(new ObstacleSlope(obstacle1Point, obstacle1Point.getPointWithDistance(10, obstacle1Point.add(obstacle1Direction), true), DecimalPosition.NULL, DecimalPosition.NULL));
     }
 
     public DecimalPosition getNewVelocity() {
