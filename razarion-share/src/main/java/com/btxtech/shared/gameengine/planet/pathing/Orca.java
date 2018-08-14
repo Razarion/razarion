@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 // http://gamma.cs.unc.edu/ORCA/
 public class Orca {
     public static final double TIME_HORIZON_ITEMS = 10;
-    public static final double TIME_HORIZON_OBSTACLES = 2;
+    public static final double TIME_HORIZON_OBSTACLES = 2; // Do not make bigger, it becomes unstable
     public static final double EPSILON = 0.00001;
     private static final Logger LOGGER = Logger.getLogger(Orca.class.getName());
     private SyncPhysicalMovable syncPhysicalMovable;

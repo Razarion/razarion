@@ -164,10 +164,10 @@ public class SyncPhysicalArea {
         SyncPhysicalMovable thisMovable = null;
         SyncPhysicalMovable otherMovable = null;
 
-        if (this instanceof SyncPhysicalMovable && ((SyncPhysicalMovable)this).isMoving()) {
+        if (this instanceof SyncPhysicalMovable && ((SyncPhysicalMovable) this).isMoving()) {
             thisMovable = (SyncPhysicalMovable) this;
         }
-        if (other instanceof SyncPhysicalMovable && ((SyncPhysicalMovable)other).isMoving()) {
+        if (other instanceof SyncPhysicalMovable && ((SyncPhysicalMovable) other).isMoving()) {
             otherMovable = (SyncPhysicalMovable) other;
         }
 
@@ -175,9 +175,9 @@ public class SyncPhysicalArea {
             return false;
         }
 
-        if(thisMovable != null && otherMovable != null) {
-           return thisMovable.getDesiredPosition().getDistance(otherMovable.getDesiredPosition()) < getRadius() + other.getRadius();
-        } else if(thisMovable != null) {
+        if (thisMovable != null && otherMovable != null) {
+            return thisMovable.getDesiredPosition().getDistance(otherMovable.getDesiredPosition()) < getRadius() + other.getRadius();
+        } else if (thisMovable != null) {
             return thisMovable.getDesiredPosition().getDistance(other.getPosition2d()) < getRadius() + other.getRadius();
         } else {
             return otherMovable.getDesiredPosition().getDistance(getPosition2d()) < getRadius() + other.getRadius();
@@ -212,6 +212,8 @@ public class SyncPhysicalArea {
         angle = syncPhysicalAreaInfo.getAngle();
         if (position2d != null) {
             if (oldPosition2d == null || !oldPosition2d.equals(position2d) || oldAngle != angle) {
+                position3d = null;
+                norm = null;
                 setupPosition3d();
             }
         } else {
