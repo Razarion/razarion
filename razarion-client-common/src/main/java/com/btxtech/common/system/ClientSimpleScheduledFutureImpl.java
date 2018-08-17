@@ -4,11 +4,12 @@ import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleScheduledFuture;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.google.gwt.user.client.Timer;
+import elemental2.dom.DomGlobal;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -16,18 +17,20 @@ import java.util.Optional;
  */
 @Dependent
 public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
-    @SuppressWarnings("CdiInjectionPointsInspection")
+    private Logger logger = Logger.getLogger(ClientSimpleScheduledFutureImpl.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private PerfmonService perfmonService;
-    private Timer timer;
-    private long milliSDelay;
+    private Long timerId;
+    private double milliSDelay;
     private boolean repeating;
     private Optional<PerfmonEnum> perfmonEnum;
     private Runnable runnable;
+    private double expected;
+    private DomGlobal.SetTimeoutCallbackFn callback;
 
-    public void init(long milliSDelay, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable) {
+    public void init(double milliSDelay, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable) {
         this.milliSDelay = milliSDelay;
         this.repeating = repeating;
         this.perfmonEnum = Optional.ofNullable(perfmonEnum);
@@ -36,38 +39,40 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
 
     @Override
     public void cancel() {
-        if (timer == null) {
+        if (timerId == null) {
             return;
         }
-        timer.cancel();
-        timer = null;
+        DomGlobal.clearTimeout(timerId);
+        timerId = null;
     }
 
     @Override
     public void start() {
-        if (timer != null) {
+        if (timerId != null) {
             return;
         }
-        timer = new Timer() {
-            @Override
-            public void run() {
-                try {
-                    if (!repeating) {
-                        timer = null;
-                    }
-                    perfmonEnum.ifPresent(perfmonService::onEntered);
-                    runnable.run();
-                } catch (Throwable t) {
-                    exceptionHandler.handleException(t);
-                } finally {
-                    perfmonEnum.ifPresent(perfmonService::onLeft);
+        expected = System.currentTimeMillis() + milliSDelay;
+        callback = p0 -> {
+            double timeDrift = System.currentTimeMillis() - expected;
+            if (timeDrift > milliSDelay) {
+                logger.severe("ClientSimpleScheduledFutureImpl: something really bad happened. Maybe the browser (tab) was inactive? possibly special handling to avoid futile \"catch up\" run");
+            }
+            try {
+                if (!repeating) {
+                    timerId = null;
                 }
+                perfmonEnum.ifPresent(perfmonService::onEntered);
+                runnable.run();
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            } finally {
+                perfmonEnum.ifPresent(perfmonService::onLeft);
+            }
+            if (repeating) {
+                expected += milliSDelay;
+                DomGlobal.setTimeout(callback, Math.max(0.0, milliSDelay - timeDrift));
             }
         };
-        if (repeating) {
-            timer.scheduleRepeating((int) milliSDelay);
-        } else {
-            timer.schedule((int) milliSDelay);
-        }
+        DomGlobal.setTimeout(callback, milliSDelay);
     }
 }

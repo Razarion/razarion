@@ -37,6 +37,7 @@ public class PerfmonService {
     private SimpleScheduledFuture simpleScheduledFuture;
     private List<TerrainTileStatistic> terrainTileStatistics = new ArrayList<>();
     private String gameSessionUuid;
+    private long samplingPeriodStart;
 
     public void start(String gameSessionUuid) {
         this.gameSessionUuid = gameSessionUuid;
@@ -45,6 +46,7 @@ public class PerfmonService {
             simpleScheduledFuture = null;
             logger.warning("PerfmonService.stop(): simpleScheduledFuture != null");
         }
+        samplingPeriodStart = System.currentTimeMillis();
         simpleScheduledFuture = simpleExecutorService.scheduleAtFixedRate(DUMP_DELAY, true, () -> {
             try {
                 Collection<StatisticEntry> statisticEntries = analyse();
@@ -110,18 +112,21 @@ public class PerfmonService {
     }
 
     private Collection<StatisticEntry> analyse() {
-        MapCollection<PerfmonEnum, SampleEntry> groupedMap = new MapCollection<>();
+        long tmpSamplingPeriodStart = samplingPeriodStart;
+        long samplingDuration = System.currentTimeMillis() - tmpSamplingPeriodStart;
+        samplingPeriodStart = System.currentTimeMillis();
         Collection<SampleEntry> tmpSampleEntries = sampleEntries;
         sampleEntries = new ArrayList<>();
+        MapCollection<PerfmonEnum, SampleEntry> groupedMap = new MapCollection<>();
         for (SampleEntry sampleEntry : tmpSampleEntries) {
             groupedMap.put(sampleEntry.getPerfmonEnum(), sampleEntry);
         }
         Collection<StatisticEntry> statisticEntries = new ArrayList<>();
         for (Map.Entry<PerfmonEnum, Collection<SampleEntry>> entry : groupedMap.getMap().entrySet()) {
-            if (entry.getValue().size() < 2) {
+            if (entry.getValue().size() < 1) {
                 continue;
             }
-            StatisticEntry statisticEntry = new StatisticEntry(entry.getKey());
+            StatisticEntry statisticEntry = new StatisticEntry(entry.getKey(), samplingPeriodStart, samplingDuration);
             for (SampleEntry sample : entry.getValue()) {
                 statisticEntry.analyze(sample);
             }

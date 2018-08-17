@@ -6,15 +6,17 @@ package com.btxtech.shared.system.perfmon;
  */
 public class StatisticEntry {
     private PerfmonEnum perfmonEnum;
-    private long fistSample;
-    private long lastSample;
+    private long samplingPeriodStart;
+    private long samplingDuration;
     private int samples;
     private double frequency;
     private int totalDuration;
     private double avgDuration;
 
-    public StatisticEntry(PerfmonEnum perfmonEnum) {
+    public StatisticEntry(PerfmonEnum perfmonEnum, long samplingPeriodStart, long samplingDuration) {
         this.perfmonEnum = perfmonEnum;
+        this.samplingPeriodStart = samplingPeriodStart;
+        this.samplingDuration = samplingDuration;
     }
 
     public PerfmonEnum getPerfmonEnum() {
@@ -29,8 +31,8 @@ public class StatisticEntry {
         return avgDuration;
     }
 
-    public long getFistSample() {
-        return fistSample;
+    public long getSamplingPeriodStart() {
+        return samplingPeriodStart;
     }
 
     public int getSamples() {
@@ -40,22 +42,11 @@ public class StatisticEntry {
     public void analyze(SampleEntry sample) {
         samples++;
         totalDuration += sample.getDuration();
-        if (fistSample != 0) {
-            fistSample = Math.min(fistSample, sample.getStartTime());
-        } else {
-            fistSample = sample.getStartTime();
-        }
-        if (lastSample != 0) {
-            lastSample = Math.max(lastSample, sample.getStartTime());
-        } else {
-            lastSample = sample.getStartTime();
-        }
     }
 
     public void finalizeStatistic() {
-        double samplingDuration = (double) (lastSample - fistSample) / 1000.0;
-        if(samplingDuration > 0) {
-            frequency = (double) samples / samplingDuration;
+        if (samplingDuration > 0) {
+            frequency = 1000.0 * (double) samples / (double) samplingDuration;
         }
         avgDuration = (double) totalDuration / (double) samples / 1000.0;
     }
