@@ -29,12 +29,17 @@ public class Orca {
     private List<ObstacleSlope> debugObstacles_WRONG = new ArrayList<>();
     private List<OrcaLine> orcaLines;
 
+
+//    TODO still two problems:
+//    - Push away not working over network (order & movable gets pushed away) & reqursively
+//    - Jumping especially near obstacles
+
     public Orca(SyncPhysicalMovable syncPhysicalMovable) {
         this.syncPhysicalMovable = syncPhysicalMovable;
         position = syncPhysicalMovable.getPosition2d();
         radius = syncPhysicalMovable.getRadius();
         preferredVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getPreferredVelocity());
-        maxSpeed = syncPhysicalMovable.getMaxSpeed();
+        maxSpeed = preferredVelocity.magnitude();
         //DebugHelperStatic.addOrcaCreate(syncPhysicalMovable);
     }
 
@@ -111,7 +116,6 @@ public class Orca {
         if (obstacleSlope.isOutside(position)) {
             return;
         }
-        //System.out.print("add: " + obstacleSlope.getPoint1() + " " + obstacleSlope.getPoint2());
 
         double invTimeHorizonObstacle = 1.0 / TIME_HORIZON_OBSTACLES;
 
@@ -121,11 +125,9 @@ public class Orca {
         // Check if velocity obstacle of obstacle is already taken care of by previously constructed obstacle ORCA lines.
         for (OrcaLine orcaLine : obstacleOrcaLines) {
             if (relativePosition1.multiply(invTimeHorizonObstacle).sub(orcaLine.getPoint()).determinant(orcaLine.getDirection()) - invTimeHorizonObstacle * radius >= -EPSILON && relativePosition2.multiply(invTimeHorizonObstacle).sub(orcaLine.getPoint()).determinant(orcaLine.getDirection()) - invTimeHorizonObstacle * radius >= -EPSILON) {
-                //System.out.println(" DUMP");
                 return;
             }
         }
-        //System.out.println(" ok");
 
         // Not yet covered. Check for collisions.
         double distanceSq1 = relativePosition1.magnitudeSq();
@@ -227,9 +229,7 @@ public class Orca {
             }
         }
 
-        // Legs can never point into neighboring edge when convex vertex,
-        // take cut-off line of neighboring edge instead. If velocity
-        // projected on "foreign" leg, no constraint is added.
+        // Legs can never point into neighboring edge when convex vertex, take cut-off line of neighboring edge instead. If velocity projected on "foreign" leg, no constraint is added.
         boolean leftLegForeign = false;
         boolean rightLegForeign = false;
 
