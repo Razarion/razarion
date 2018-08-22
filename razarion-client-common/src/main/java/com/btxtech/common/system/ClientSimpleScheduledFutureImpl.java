@@ -55,7 +55,7 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
         callback = p0 -> {
             double timeDrift = System.currentTimeMillis() - expected;
             if (timeDrift > milliSDelay) {
-                logger.severe("ClientSimpleScheduledFutureImpl: something really bad happened. Maybe the browser (tab) was inactive? possibly special handling to avoid futile \"catch up\" run");
+                logger.severe("ClientSimpleScheduledFutureImpl: something really bad happened. Maybe the browser (tab) was inactive? possibly special handling to avoid futile \"catch up\" run. PerfmonEnum: " + perfmonEnum);
             }
             try {
                 if (!repeating) {
