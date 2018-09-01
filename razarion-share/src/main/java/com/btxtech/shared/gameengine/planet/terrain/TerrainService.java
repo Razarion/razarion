@@ -37,7 +37,7 @@ public class TerrainService {
         terrainShape = null;
     }
 
-    public void setup(Runnable finishCallback, Consumer<String> failCallback) {
+    private void setup(Runnable finishCallback, Consumer<String> failCallback) {
         terrainShape = new TerrainShape();
         terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess, finishCallback, failCallback);
     }
@@ -56,5 +56,9 @@ public class TerrainService {
 
     public SurfaceAccess getSurfaceAccess() {
         return terrainShape.getSurfaceAccess();
+    }
+
+    public TerrainShape getTerrainShape() {
+        return terrainShape;
     }
 }
