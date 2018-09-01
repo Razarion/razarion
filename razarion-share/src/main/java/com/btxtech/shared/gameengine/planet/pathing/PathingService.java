@@ -193,7 +193,6 @@ public class PathingService {
         });
         orcas.forEach(Orca::solve);
         orcas.forEach(Orca::implementVelocity);
-        // handlePushAways(tickContext);
     }
 
     private void addOtherSyncItemOrcaLines(Orca orca, SyncBaseItem syncBaseItem, TickContext tickContext) {
