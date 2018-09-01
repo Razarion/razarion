@@ -49,4 +49,14 @@ public class SyncPhysicalAreaInfo {
         this.wayPositions = wayPositions;
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "SyncPhysicalAreaInfo{" +
+                "position=" + position +
+                ", angle=" + angle +
+                ", velocity=" + velocity +
+                ", wayPositions=" + wayPositions +
+                '}';
+    }
 }
