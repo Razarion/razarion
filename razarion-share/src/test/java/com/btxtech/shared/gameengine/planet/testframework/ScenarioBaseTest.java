@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
+import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.terrain.WeldTerrainServiceTestBase;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
@@ -32,6 +33,7 @@ import java.util.List;
 public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
     private static final int MAX_TICK_COUNT = 1000;
     public static final String SAVE_DIRECTORY = TestHelper.SAVE_DIRECTORY + "pathing//move";
+    private WeldSlaveEmulator slave;
 
     @Before
     public void before() {
@@ -128,9 +130,12 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         scenario.setup(playerBase1, getItemTypeService(), getBaseItemService(), getPathingService());
         scenario.createSyncItems();
 
-        List<List<SyncBaseItemInfo>> actualTicks = runScenario();
+        slave = new WeldSlaveEmulator();
+        slave.connectToMater(createLevel1UserContext(), this);
+
+        ScenarioTicks actualTicks = runScenario();
         scenario.setSaveCallback(() -> scenario.save(SAVE_DIRECTORY, actualTicks));
-        List<List<SyncBaseItemInfo>> expectedTicks = null;
+        ScenarioTicks expectedTicks = null;
         try {
             expectedTicks = scenario.readExpectedTicks();
             if (actualTicks.size() >= MAX_TICK_COUNT + 1) {
@@ -144,27 +149,57 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         }
     }
 
-    private List<List<SyncBaseItemInfo>> runScenario() {
-        List<List<SyncBaseItemInfo>> actualTicks = new ArrayList<>();
-        actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
+    private ScenarioTicks runScenario() {
+        ScenarioTicks actualTicks = new ScenarioTicks();
+        actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());
+        actualTicks.addClientTick(slave.getBaseItemService().getSyncBaseItemInfos());
         for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
+            System.out.println("----------------- Start Tick: " + tickCount);
             DebugHelperStatic.setCurrentTick(actualTicks.size());
             tickPlanetService();
+            slave.tick();
             DebugHelperStatic.printAfterTick(null);
-            actualTicks.add(getBaseItemService().getSyncBaseItemInfos());
+            actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());
+            actualTicks.addClientTick(slave.getBaseItemService().getSyncBaseItemInfos());
+            System.out.println("----------------- End Tick: " + tickCount);
         }
         return actualTicks;
     }
 
-    private void compareScenario(List<List<SyncBaseItemInfo>> expectedTicks, List<List<SyncBaseItemInfo>> actualTicks, Scenario scenario) {
+    private void compareScenario(ScenarioTicks expectedTicks, ScenarioTicks actualTicks, Scenario scenario) {
         Assert.assertEquals(expectedTicks.size(), actualTicks.size());
         for (int i = 0, expectedTicksSize = expectedTicks.size(); i < expectedTicksSize; i++) {
             try {
-                ScenarioAssert.compareSyncBaseItemInfo(expectedTicks.get(i), actualTicks.get(i));
+                ScenarioAssert.compareSyncBaseItemInfo(expectedTicks.getMasterTick(i), actualTicks.getMasterTick(i));
             } catch (Throwable t) {
                 System.out.println("Failed on tick: " + i);
                 throw t;
             }
+        }
+    }
+
+    public static class ScenarioTicks {
+        List<List<SyncBaseItemInfo>> actualMasterTicks = new ArrayList<>();
+        List<List<SyncBaseItemInfo>> actualClientTicks = new ArrayList<>();
+
+        public int size() {
+            return actualMasterTicks.size();
+        }
+
+        public List<SyncBaseItemInfo> getMasterTick(int index) {
+            return actualMasterTicks.get(index);
+        }
+
+        public List<SyncBaseItemInfo> getClientTick(int index) {
+            return actualClientTicks.get(index);
+        }
+
+        public void addMasterTick(List<SyncBaseItemInfo> syncBaseItemInfos) {
+            actualMasterTicks.add(syncBaseItemInfos);
+        }
+
+        public void addClientTick(List<SyncBaseItemInfo> syncBaseItemInfos) {
+            actualClientTicks.add(syncBaseItemInfos);
         }
     }
 }

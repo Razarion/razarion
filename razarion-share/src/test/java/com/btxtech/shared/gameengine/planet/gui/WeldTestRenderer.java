@@ -971,7 +971,7 @@ public class WeldTestRenderer {
             }
             if (syncBaseItem.getSyncPhysicalArea().canMove()) {
                 Path path = syncBaseItem.getSyncPhysicalMovable().getPath();
-                if (path != null) {
+                if (path != null && path.getCurrentWayPoint() != null) {
                     strokeCurveDecimalPosition(path.getWayPositions(), 0.1, Color.CADETBLUE, true);
                     gc.setStroke(Color.BLUEVIOLET);
                     gc.setLineWidth(0.5);

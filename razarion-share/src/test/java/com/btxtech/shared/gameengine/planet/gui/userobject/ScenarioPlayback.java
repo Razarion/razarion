@@ -1,9 +1,7 @@
 package com.btxtech.shared.gameengine.planet.gui.userobject;
 
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.testframework.Scenario;
-
-import java.util.List;
+import com.btxtech.shared.gameengine.planet.testframework.ScenarioBaseTest;
 
 /**
  * Created by Beat
@@ -11,8 +9,8 @@ import java.util.List;
  */
 public class ScenarioPlayback {
     private Scenario scenario;
-    private List<List<SyncBaseItemInfo>> actualSyncBaseItemInfo;
-    private List<List<SyncBaseItemInfo>> expectedSyncBaseItemInfo;
+    private ScenarioBaseTest.ScenarioTicks actualSyncBaseItemInfo;
+    private ScenarioBaseTest.ScenarioTicks expectedSyncBaseItemInfo;
 
     public Scenario getScenario() {
         return scenario;
@@ -23,11 +21,11 @@ public class ScenarioPlayback {
         return this;
     }
 
-    public List<List<SyncBaseItemInfo>> getActualSyncBaseItemInfo() {
+    public ScenarioBaseTest.ScenarioTicks getActualSyncBaseItemInfo() {
         return actualSyncBaseItemInfo;
     }
 
-    public ScenarioPlayback setActualSyncBaseItemInfo(List<List<SyncBaseItemInfo>> actualSyncBaseItemInfo) {
+    public ScenarioPlayback setActualSyncBaseItemInfo(ScenarioBaseTest.ScenarioTicks actualSyncBaseItemInfo) {
         this.actualSyncBaseItemInfo = actualSyncBaseItemInfo;
         return this;
     }
@@ -40,11 +38,11 @@ public class ScenarioPlayback {
         }
     }
 
-    public List<List<SyncBaseItemInfo>> getExpectedSyncBaseItemInfo() {
+    public ScenarioBaseTest.ScenarioTicks getExpectedSyncBaseItemInfo() {
         return expectedSyncBaseItemInfo;
     }
 
-    public ScenarioPlayback setExpectedSyncBaseItemInfo(List<List<SyncBaseItemInfo>> expectedSyncBaseItemInfo) {
+    public ScenarioPlayback setExpectedSyncBaseItemInfo(ScenarioBaseTest.ScenarioTicks expectedSyncBaseItemInfo) {
         this.expectedSyncBaseItemInfo = expectedSyncBaseItemInfo;
         return this;
     }

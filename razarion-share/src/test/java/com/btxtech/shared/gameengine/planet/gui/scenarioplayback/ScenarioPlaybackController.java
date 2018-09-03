@@ -52,9 +52,14 @@ public class ScenarioPlaybackController implements Initializable {
     private TableColumn<SyncItemProperty, String> syncItemPropertyTableActualValueColumn;
     @FXML
     private TableColumn<SyncItemProperty, String> syncItemPropertyTableExpectedValueColumn;
+    @FXML
+    private CheckBox showMasterCheck;
+    @FXML
+    private CheckBox showClientCheck;
     private ScenarioPlayback scenarioPlayback;
     private int tick;
-    private List<SyncBaseItemInfo> currentActual;
+    private List<SyncBaseItemInfo> currentMasterActual;
+    private List<SyncBaseItemInfo> currentClientActual;
     private List<SyncBaseItemInfo> currentExpected;
     private Integer currentSyncBaseItemId;
     private Runnable renderListener;
@@ -64,6 +69,8 @@ public class ScenarioPlaybackController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         animationCheck.selectedProperty().addListener((observable, oldValue, newValue) -> animationTimer(newValue));
+        addRenderListener(showMasterCheck);
+        addRenderListener(showClientCheck);
         syncItemPropertyTableNameColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyName()));
         syncItemPropertyTableNameColumn.setCellFactory(column -> new TableCell<SyncItemProperty, String>() {
             @Override
@@ -123,6 +130,10 @@ public class ScenarioPlaybackController implements Initializable {
         display();
     }
 
+    private void addRenderListener(CheckBox checkBox) {
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> renderListener.run());
+    }
+
     public void setScenarioPlayback(ScenarioPlayback scenarioPlayback, Runnable renderListener) {
         this.scenarioPlayback = scenarioPlayback;
         this.renderListener = renderListener;
@@ -179,9 +190,10 @@ public class ScenarioPlaybackController implements Initializable {
     }
 
     private void setupCurrent() {
-        currentActual = scenarioPlayback.getActualSyncBaseItemInfo().get(tick);
+        currentMasterActual = scenarioPlayback.getActualSyncBaseItemInfo().getMasterTick(tick);
+        currentClientActual = scenarioPlayback.getActualSyncBaseItemInfo().getClientTick(tick);
         if (scenarioPlayback.getExpectedSyncBaseItemInfo() != null && tick < scenarioPlayback.getExpectedSyncBaseItemInfo().size()) {
-            currentExpected = scenarioPlayback.getExpectedSyncBaseItemInfo().get(tick);
+            currentExpected = scenarioPlayback.getExpectedSyncBaseItemInfo().getMasterTick(tick);
         } else {
             currentExpected = null;
         }
@@ -196,7 +208,12 @@ public class ScenarioPlaybackController implements Initializable {
     }
 
     public void render(WeldTestRenderer weldTestRenderer) {
-        currentActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
+        if (showMasterCheck.isSelected()) {
+            currentMasterActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
+        }
+        if (showClientCheck.isSelected()) {
+            currentClientActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
+        }
     }
 
     private void animationTimer(boolean start) {
@@ -284,7 +301,7 @@ public class ScenarioPlaybackController implements Initializable {
             return;
         }
         try {
-            SyncBaseItemInfo actualSyncBaseItemInfo = currentActual.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
+            SyncBaseItemInfo actualSyncBaseItemInfo = currentMasterActual.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
             SyncBaseItemInfo expectedSyncBaseItemInfo = null;
             if (currentExpected != null) {
                 expectedSyncBaseItemInfo = currentExpected.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);

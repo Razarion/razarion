@@ -25,11 +25,22 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     private PlanetConfig planetConfig;
     private List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
     private List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
+    private NativeTerrainShapeAccess nativeTerrainShapeAccess;
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, terrainObjectPositions);
-        loadedCallback.accept(terrainShape.toNativeTerrainShape());
+        TerrainShape terrainShape;
+        if (terrainSlopePositions != null && terrainObjectPositions != null) {
+            terrainShape = new TerrainShape(planetConfig, terrainTypeService, terrainSlopePositions, terrainObjectPositions);
+            loadedCallback.accept(terrainShape.toNativeTerrainShape());
+        } else if (nativeTerrainShapeAccess != null) {
+            terrainShape = new TerrainShape();
+            terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess,  () -> {
+                loadedCallback.accept(terrainShape.toNativeTerrainShape());
+            }, failCallback);
+        } else {
+            throw new RuntimeException("++++++++++ Unexpected ++++++++++");
+        }
     }
 
     public void setPlanetConfig(PlanetConfig planetConfig) {
@@ -38,9 +49,22 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
 
     public void setTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions) {
         this.terrainSlopePositions = terrainSlopePositions;
+        nativeTerrainShapeAccess = null;
     }
 
     public void setTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
         this.terrainObjectPositions = terrainObjectPositions;
+        nativeTerrainShapeAccess = null;
+    }
+
+    public void setNativeTerrainShapeAccess(NativeTerrainShape nativeTerrainShape) {
+        this.nativeTerrainShapeAccess = new NativeTerrainShapeAccess() {
+            @Override
+            public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
+                loadedCallback.accept(nativeTerrainShape);
+            }
+        };
+        terrainSlopePositions = null;
+        terrainObjectPositions = null;
     }
 }

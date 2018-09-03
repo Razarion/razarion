@@ -96,7 +96,7 @@ public class Scenario {
         return fileName;
     }
 
-    public List<List<SyncBaseItemInfo>> readExpectedTicks() throws IOException {
+    public ScenarioBaseTest.ScenarioTicks readExpectedTicks() throws IOException {
         InputStream inputStream = theClass.getResourceAsStream(fileName);
         if (inputStream == null) {
             throw new IOException("PATH IS WRONG: Resource does not exist: " + theClass.getProtectionDomain().getCodeSource().getLocation().getPath() + fileName);
@@ -107,11 +107,11 @@ public class Scenario {
         });
     }
 
-    public void save(String saveDir, List<List<SyncBaseItemInfo>> expectedTicks) {
+    public void save(String saveDir, ScenarioBaseTest.ScenarioTicks expectedScenarioTicks) {
         try {
             File savePath = new File(saveDir, fileName);
             System.out.println("Save expected text case values to: " + savePath);
-            new ObjectMapper().writeValue(savePath, expectedTicks);
+            new ObjectMapper().writeValue(savePath, expectedScenarioTicks);
         } catch (Throwable t) {
             t.printStackTrace();
         }
