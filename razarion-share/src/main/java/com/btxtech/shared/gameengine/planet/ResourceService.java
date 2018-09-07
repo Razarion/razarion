@@ -14,6 +14,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -78,8 +79,11 @@ public class ResourceService {
         if (planetActivationEvent.getMasterPlanetConfig() != null) {
             resourceRegionConfigs = planetActivationEvent.getMasterPlanetConfig().getResourceRegionConfigs();
         }
-        if (planetActivationEvent.getSlaveSyncItemInfo() != null && planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos() != null) {
-            for (SyncResourceItemInfo syncResourceItemInfo : planetActivationEvent.getSlaveSyncItemInfo().getSyncResourceItemInfos()) {
+    }
+
+    public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
+        if (initialSlaveSyncItemInfo.getSyncResourceItemInfos() != null) {
+            for (SyncResourceItemInfo syncResourceItemInfo : initialSlaveSyncItemInfo.getSyncResourceItemInfos()) {
                 createSyncResourceItemSlave(syncResourceItemInfo);
             }
         }

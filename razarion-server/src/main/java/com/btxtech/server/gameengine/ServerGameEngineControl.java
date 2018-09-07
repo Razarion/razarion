@@ -11,7 +11,6 @@ import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -115,7 +114,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
         terrainShapeService.start();
         pathingService.setPathingServiceUpdateListener(this);
-        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), null, () -> {
+        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
                 planetService.restoreBases(finaBackupPlanetInfo, this);
@@ -243,10 +242,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     public void onLevelChanged(HumanPlayerId humanPlayerId, int levelId) {
         baseItemService.updateLevel(humanPlayerId, levelId);
-    }
-
-    public SlaveSyncItemInfo generateSlaveSyncItemInfo(UserContext userContext) {
-        return planetService.generateSlaveSyncItemInfo(userContext);
     }
 
     @Override

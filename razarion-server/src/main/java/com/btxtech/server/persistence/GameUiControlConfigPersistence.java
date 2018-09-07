@@ -83,7 +83,6 @@ public class GameUiControlConfigPersistence {
         WarmGameUiControlConfig warmGameUiControlConfig = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
         if (warmGameUiControlConfig.getGameEngineMode() == GameEngineMode.SLAVE) {
             warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig(userContext.getLevelId()));
-            warmGameUiControlConfig.setSlaveSyncItemInfo(gameEngineService.generateSlaveSyncItemInfo(userContext));
             warmGameUiControlConfig.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
             warmGameUiControlConfig.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getHumanPlayerId()));
         }

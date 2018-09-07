@@ -54,7 +54,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);
         getTestNativeTerrainShapeAccess().setTerrainSlopePositions(terrainSlopePositions);
         getTestNativeTerrainShapeAccess().setTerrainObjectPositions(terrainObjectPositions);
-        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
+        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
     }
 
     protected TerrainShape getTerrainShape() {

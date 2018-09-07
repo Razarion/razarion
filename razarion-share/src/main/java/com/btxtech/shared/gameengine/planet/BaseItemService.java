@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -39,11 +40,13 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -84,42 +87,46 @@ public class BaseItemService {
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
+    private PriorityQueue<SyncBaseItemInfo> pendingSyncBaseItemInfos = new PriorityQueue<>(Comparator.comparingDouble(SyncBaseItemInfo::getTickCount));
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
         activeItemQueue.clear();
         bases.clear();
+        pendingSyncBaseItemInfos.clear();
         guardingItemService.init(planetActivationEvent.getGameEngineMode());
         lastBaseItId = 1;
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
             gameEngineMode = planetActivationEvent.getGameEngineMode();
             planetConfig = planetActivationEvent.getPlanetConfig();
-            if (gameEngineMode == GameEngineMode.SLAVE && planetActivationEvent.getSlaveSyncItemInfo() != null) {
-                for (PlayerBaseInfo playerBaseInfo : planetActivationEvent.getSlaveSyncItemInfo().getPlayerBaseInfos()) {
-                    try {
-                        createBaseSlave(playerBaseInfo);
-                    } catch (Throwable t) {
-                        exceptionHandler.handleException(t);
-                    }
-                }
 
-                Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
-                for (SyncBaseItemInfo syncBaseItemInfo : planetActivationEvent.getSlaveSyncItemInfo().getSyncBaseItemInfos()) {
-                    try {
-                        SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
-                        tmp.put(syncBaseItem, syncBaseItemInfo);
-                    } catch (Throwable t) {
-                        exceptionHandler.handleException(t);
-                    }
-                }
+        }
+    }
 
-                for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
-                    try {
-                        synchronizeActivateSlave(entry.getKey(), entry.getValue());
-                    } catch (Throwable t) {
-                        exceptionHandler.handleException(t);
-                    }
-                }
+    public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
+        for (PlayerBaseInfo playerBaseInfo : initialSlaveSyncItemInfo.getPlayerBaseInfos()) {
+            try {
+                createBaseSlave(playerBaseInfo);
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        }
+
+        Map<SyncBaseItem, SyncBaseItemInfo> tmp = new HashMap<>();
+        for (SyncBaseItemInfo syncBaseItemInfo : initialSlaveSyncItemInfo.getSyncBaseItemInfos()) {
+            try {
+                SyncBaseItem syncBaseItem = createSyncBaseItemSlave(syncBaseItemInfo, getPlayerBase4BaseId(syncBaseItemInfo.getBaseId()));
+                tmp.put(syncBaseItem, syncBaseItemInfo);
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
+            }
+        }
+
+        for (Map.Entry<SyncBaseItem, SyncBaseItemInfo> entry : tmp.entrySet()) {
+            try {
+                synchronizeActivateSlave(entry.getKey(), entry.getValue());
+            } catch (Throwable t) {
+                exceptionHandler.handleException(t);
             }
         }
     }
@@ -301,7 +308,15 @@ public class BaseItemService {
         return syncBaseItem;
     }
 
-    public void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo) {
+    public void onSlaveSyncBaseItemChanged(long slaveTickCount, SyncBaseItemInfo syncBaseItemInfo) {
+        if (syncBaseItemInfo.getTickCount() > slaveTickCount) {
+            pendingSyncBaseItemInfos.add(syncBaseItemInfo);
+            return;
+        }
+        onSlaveSyncBaseItemChanged(syncBaseItemInfo);
+    }
+
+    private void onSlaveSyncBaseItemChanged(SyncBaseItemInfo syncBaseItemInfo) {
         SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItem(syncBaseItemInfo.getId());
         if (syncBaseItem == null) {
             PlayerBase playerBase = getPlayerBase4BaseId(syncBaseItemInfo.getBaseId());
@@ -697,4 +712,11 @@ public class BaseItemService {
             logger.warning("BaseItemService.restore(). PlayerBase remove due to no units. baseId: " + baseId + " name: " + playerBase.getName());
         });
     }
+
+    public void handlePendingSyncInfos(long tickCount) {
+        while (!pendingSyncBaseItemInfos.isEmpty() && pendingSyncBaseItemInfos.peek().getTickCount() <= tickCount) {
+            onSlaveSyncBaseItemChanged(pendingSyncBaseItemInfos.remove());
+        }
+    }
+
 }

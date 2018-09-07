@@ -23,12 +23,13 @@ public class WeldSlaveEmulator extends WeldBaseTest {
         this.weldMasterBaseTest = weldMasterBaseTest;
         setupEnvironment(weldMasterBaseTest.getStaticGameConfig(), weldMasterBaseTest.getPlanetConfig());
         getTestNativeTerrainShapeAccess().setNativeTerrainShapeAccess(weldMasterBaseTest.getTerrainService().getTerrainShape().toNativeTerrainShape());
-        getWeldBean(PlanetService.class).initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, weldMasterBaseTest.getSlaveSyncItemInfo(userContext), () -> {
+        getWeldBean(PlanetService.class).initialise(getPlanetConfig(), GameEngineMode.SLAVE, null, () -> {
             getWeldBean(PlanetService.class).start();
         }, null);
 
         testClientWebSocket = new TestClientWebSocket();
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().add(testClientWebSocket);
+        getWeldBean(PlanetService.class).initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getHumanPlayerId()));
     }
 
     public void disconnectFromMaster() {
@@ -44,7 +45,7 @@ public class WeldSlaveEmulator extends WeldBaseTest {
         @Override
         public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
             System.out.println("--- onSpawnSyncItemStart");
-            getBaseItemService().onSlaveSyncBaseItemChanged(syncBaseItem.getSyncInfo());
+            getBaseItemService().onSlaveSyncBaseItemChanged(getWeldBean(PlanetService.class).getTickCount(), syncBaseItem.getSyncInfo());
         }
 
         @Override
@@ -58,7 +59,7 @@ public class WeldSlaveEmulator extends WeldBaseTest {
                 buildupString = " buildup=" + syncBaseItem.getSyncBuilder().getCurrentBuildup().getBuildup();
             }
             System.out.println("--- sendSyncBaseItem: " + syncBaseItem.getBaseItemType() + " " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + velocityString + buildupString);
-            getBaseItemService().onSlaveSyncBaseItemChanged(syncBaseItem.getSyncInfo());
+            getBaseItemService().onSlaveSyncBaseItemChanged(getWeldBean(PlanetService.class).getTickCount(), syncBaseItem.getSyncInfo());
         }
 
         @Override

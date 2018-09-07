@@ -8,7 +8,6 @@ import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.ResourceItemPosition;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -122,19 +121,14 @@ public abstract class GameEngineControl {
 
     public void init(ColdGameUiControlConfig coldGameUiControlConfig, DeferredStartup initializationReferredStartup) {
         this.deferredStartup = initializationReferredStartup;
-        SlaveSyncItemInfo slaveSyncItemInfo = coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo();
-        if (slaveSyncItemInfo == null) {
-            // Errai can not handle top level null JSON
-            slaveSyncItemInfo = new SlaveSyncItemInfo();
-        }
         sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiControlConfig.getStaticGameConfig(), coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig(),
-                slaveSyncItemInfo, userUiService.getUserContext(), coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode(), coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking(),
+                userUiService.getUserContext(), coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode(), coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking(),
                 clientRunner.getGameSessionUuid());
     }
 
-    public void initWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {
+    public void initWarm(PlanetConfig planetConfig, GameEngineMode gameEngineMode, DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, slaveSyncItemInfo, userUiService.getUserContext(), gameEngineMode, clientRunner.getGameSessionUuid());
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE_WARM, planetConfig, userUiService.getUserContext(), gameEngineMode, clientRunner.getGameSessionUuid());
     }
 
     void startBots(List<BotConfig> botConfigs) {
@@ -390,6 +384,9 @@ public abstract class GameEngineControl {
                 break;
             case CONNECTION_LOST:
                 onConnectionLost();
+                break;
+            case INITIAL_SLAVE_SYNCHRONIZED:
+                gameUiControl.onInitialSlaveSynchronized((DecimalPosition) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());

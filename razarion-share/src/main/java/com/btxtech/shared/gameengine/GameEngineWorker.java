@@ -3,13 +3,14 @@ package com.btxtech.shared.gameengine;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.ResourceItemPosition;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -20,6 +21,7 @@ import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
+import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
@@ -128,11 +130,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     protected void dispatch(GameEngineControlPackage controlPackage) {
         switch (controlPackage.getCommand()) {
             case INITIALIZE:
-                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (SlaveSyncItemInfo) controlPackage.getData(2),
-                        (UserContext) controlPackage.getData(3), (GameEngineMode) controlPackage.getData(4), (Boolean) controlPackage.getData(5), (String) controlPackage.getData(6));
+                initialise((StaticGameConfig) controlPackage.getData(0), (PlanetConfig) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3), (Boolean) controlPackage.getData(4), (String) controlPackage.getData(5));
                 break;
             case INITIALIZE_WARM:
-                initialiseWarm((PlanetConfig) controlPackage.getData(0), (SlaveSyncItemInfo) controlPackage.getData(1), (UserContext) controlPackage.getData(2), (GameEngineMode) controlPackage.getData(3), (String) controlPackage.getData(4));
+                initialiseWarm((PlanetConfig) controlPackage.getData(0), (UserContext) controlPackage.getData(1), (GameEngineMode) controlPackage.getData(2), (String) controlPackage.getData(3));
                 break;
             case START:
                 start();
@@ -210,7 +211,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
                 onServerSyncItemDeleted((SyncItemDeletedInfo) controlPackage.getData(0));
                 break;
             case PLAYBACK_SYNC_BASE_ITEM:
-                baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) controlPackage.getData(0));
+                baseItemService.onSlaveSyncBaseItemChanged(planetService.getTickCount(), (SyncBaseItemInfo) controlPackage.getData(0));
                 break;
             case PLAYBACK_SYNC_RESOURCE_ITEM:
                 resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) controlPackage.getData(0));
@@ -226,12 +227,12 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, boolean detailedTracking, String gameSessionUuid) {
+    private void initialise(StaticGameConfig staticGameConfig, PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, boolean detailedTracking, String gameSessionUuid) {
         try {
             this.gameSessionUuid = gameSessionUuid;
             staticGameInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
             planetService.addTickListener(this);
-            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode, () -> {
+            initWarmInternal(planetConfig, userContext, gameEngineMode, () -> {
                 if (gameEngineMode == GameEngineMode.MASTER && detailedTracking) {
                     workerTrackerHandler = workerTrackerHandlerInstance.get();
                     workerTrackerHandler.start(gameSessionUuid);
@@ -247,10 +248,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initialiseWarm(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid) {
+    private void initialiseWarm(PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, String gameSessionUuid) {
         try {
             this.gameSessionUuid = gameSessionUuid;
-            initWarmInternal(planetConfig, slaveSyncItemInfo, userContext, gameEngineMode, () -> {
+            initWarmInternal(planetConfig, userContext, gameEngineMode, () -> {
                 workerTrackerHandler = null;
                 sendToClient(GameEngineControlPackage.Command.INITIALIZED);
             }, failString -> {
@@ -262,20 +263,51 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         }
     }
 
-    private void initWarmInternal(PlanetConfig planetConfig, SlaveSyncItemInfo slaveSyncItemInfo, UserContext userContext, GameEngineMode gameEngineMode, Runnable finishCallback, Consumer<String> failCallback) {
+    private void initWarmInternal(PlanetConfig planetConfig, UserContext userContext, GameEngineMode gameEngineMode, Runnable finishCallback, Consumer<String> failCallback) {
         this.gameEngineMode = gameEngineMode;
         this.userContext = userContext;
-        planetService.initialise(planetConfig, gameEngineMode, null, slaveSyncItemInfo, () -> {
-                    if (gameEngineMode == GameEngineMode.SLAVE && slaveSyncItemInfo.getActualBaseId() != null) {
-                        playerBase = baseItemService.getPlayerBase4BaseId(slaveSyncItemInfo.getActualBaseId());
-                    }
-                    finishCallback.run();
-                    if (gameEngineMode == GameEngineMode.SLAVE) {
-                        serverConnection = connectionInstance.get();
-                        serverConnection.init();
-                    }
-                }
-                , failCallback);
+        planetService.initialise(planetConfig, gameEngineMode, null, finishCallback::run, failCallback);
+    }
+
+
+    public void onInitialSlaveSyncItemInfo(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
+        planetService.initialSlaveSyncItemInfo(initialSlaveSyncItemInfo);
+        if (initialSlaveSyncItemInfo.getActualBaseId() != null) {
+            playerBase = baseItemService.getPlayerBase4BaseId(initialSlaveSyncItemInfo.getActualBaseId());
+        }
+        sendToClient(GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED, findScrollToBasePosition());
+    }
+
+    private DecimalPosition findScrollToBasePosition() {
+        if (playerBase == null) {
+            return null;
+        }
+        final SingleHolder<DecimalPosition> factoryPosition = new SingleHolder<>();
+        final SingleHolder<DecimalPosition> builderPosition = new SingleHolder<>();
+        final SingleHolder<DecimalPosition> unitPosition = new SingleHolder<>();
+        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+            if (!syncBaseItem.getBase().equals(playerBase)) {
+                return null;
+            }
+            BaseItemType baseItemType = syncBaseItem.getBaseItemType();
+            if (baseItemType.getFactoryType() != null) {
+                factoryPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+                return true;
+            }
+            if (baseItemType.getBuilderType() != null) {
+                builderPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+            }
+            unitPosition.setO(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+            return null;
+        });
+
+        if (!factoryPosition.isEmpty()) {
+            return factoryPosition.getO();
+        }
+        if (!builderPosition.isEmpty()) {
+            return builderPosition.getO();
+        }
+        return unitPosition.getO();
     }
 
     private void createHumanBaseWithBaseItem(int levelId, Map<Integer, Integer> unlockedItemLimit, HumanPlayerId humanPlayerId, String name, DecimalPosition position) {
@@ -293,6 +325,10 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         planetService.enableTracking(false);
         planetService.start();
         perfmonService.start(gameSessionUuid);
+        if (gameEngineMode == GameEngineMode.SLAVE) {
+            serverConnection = connectionInstance.get();
+            serverConnection.init();
+        }
     }
 
     public void stop() {

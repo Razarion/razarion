@@ -1,8 +1,8 @@
 package com.btxtech.shared.gameengine.planet;
 
-import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -66,29 +66,31 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private PlanetConfig planetConfig;
     private Collection<PlanetTickListener> tickListeners = new ArrayList<>();
     private PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
+    private long tickCount;
 
     @PostConstruct
     public void postConstruct() {
         scheduledFuture = simpleExecutorService.scheduleAtFixedRate(TICK_TIME_MILLI_SECONDS, false, this, SimpleExecutorService.Type.GAME_ENGINE);
     }
 
-    public void initialise(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, SlaveSyncItemInfo slaveSyncItemInfo, Runnable finishCallback, Consumer<String> failCallback) {
+    public void initialise(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, Runnable finishCallback, Consumer<String> failCallback) {
         this.planetConfig = planetConfig;
         syncItemContainerService.clear();
         terrainService.setup(planetConfig, () -> {
-            activationEvent.fire(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, slaveSyncItemInfo, PlanetActivationEvent.Type.INITIALIZE));
+            activationEvent.fire(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, PlanetActivationEvent.Type.INITIALIZE));
             finishCallback.run();
         }, failCallback);
     }
 
     public void start() {
         planetServiceTracker.clear();
+        tickCount = 0;
         scheduledFuture.start();
     }
 
     public void stop() {
         scheduledFuture.cancel();
-        activationEvent.fire(new PlanetActivationEvent(null, null, null, null, PlanetActivationEvent.Type.STOP));
+        activationEvent.fire(new PlanetActivationEvent(null, null, null, PlanetActivationEvent.Type.STOP));
         syncItemContainerService.clear();
         terrainService.clean();
     }
@@ -131,6 +133,10 @@ public class PlanetService implements Runnable { // Only available in worker. On
             notifyTickListeners();
             planetServiceTracker.afterTickListener();
             planetServiceTracker.endTick();
+            /// --- new experimental
+            tickCount++;
+            baseItemService.handlePendingSyncInfos(tickCount);
+            /// --- new experimental ends
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -166,20 +172,32 @@ public class PlanetService implements Runnable { // Only available in worker. On
         }
     }
 
-    public SlaveSyncItemInfo generateSlaveSyncItemInfo(UserContext userContext) {
-        SlaveSyncItemInfo slaveSyncItemInfo = new SlaveSyncItemInfo();
-        slaveSyncItemInfo.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
-        slaveSyncItemInfo.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
-        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(userContext.getHumanPlayerId());
+    public InitialSlaveSyncItemInfo generateSlaveSyncItemInfo(HumanPlayerId humanPlayerId) {
+        InitialSlaveSyncItemInfo initialSlaveSyncItemInfo = new InitialSlaveSyncItemInfo();
+        initialSlaveSyncItemInfo.setTickCount(tickCount);
+        initialSlaveSyncItemInfo.setSyncBaseItemInfos(baseItemService.getSyncBaseItemInfos());
+        initialSlaveSyncItemInfo.setPlayerBaseInfos(baseItemService.getPlayerBaseInfos());
+        PlayerBase playerBase = baseItemService.getPlayerBase4HumanPlayerId(humanPlayerId);
         if (playerBase != null) {
-            slaveSyncItemInfo.setActualBaseId(playerBase.getBaseId());
+            initialSlaveSyncItemInfo.setActualBaseId(playerBase.getBaseId());
         }
-        slaveSyncItemInfo.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
-        slaveSyncItemInfo.setSyncBoxItemInfos(boxService.getSyncBoxItemInfos());
-        return slaveSyncItemInfo;
+        initialSlaveSyncItemInfo.setSyncResourceItemInfos(resourceService.getSyncResourceItemInfos());
+        initialSlaveSyncItemInfo.setSyncBoxItemInfos(boxService.getSyncBoxItemInfos());
+        return initialSlaveSyncItemInfo;
     }
 
     public void enableTracking(boolean track) {
         planetServiceTracker.setRunning(track);
+    }
+
+    public void initialSlaveSyncItemInfo(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
+        this.tickCount = (long) initialSlaveSyncItemInfo.getTickCount();
+        resourceService.setupSlave(initialSlaveSyncItemInfo);
+        baseItemService.setupSlave(initialSlaveSyncItemInfo);
+        boxService.setupSlave(initialSlaveSyncItemInfo);
+    }
+
+    public long getTickCount() {
+        return this.tickCount;
     }
 }

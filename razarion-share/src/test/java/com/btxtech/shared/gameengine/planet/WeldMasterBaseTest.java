@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
@@ -33,7 +33,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
     protected void setupMasterEnvironment(StaticGameConfig staticGameConfig, List<TerrainSlopePosition> terrainSlopePositions) {
         setupEnvironment(staticGameConfig, GameTestContent.setupPlanetConfig());
         getTestNativeTerrainShapeAccess().setTerrainSlopePositions(terrainSlopePositions);
-        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), null, () -> getPlanetService().start(), null);
+        getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
     }
 
     protected CommandService getCommandService() {
@@ -84,8 +84,8 @@ public class WeldMasterBaseTest extends WeldBaseTest {
         return botService.getBotRunner(botId).getBase();
     }
 
-    public SlaveSyncItemInfo getSlaveSyncItemInfo(UserContext userContext) {
-        return getPlanetService().generateSlaveSyncItemInfo(userContext);
+    public InitialSlaveSyncItemInfo getSlaveSyncItemInfo(UserContext userContext) {
+        return getPlanetService().generateSlaveSyncItemInfo(userContext.getHumanPlayerId());
     }
 
     protected UserContext createLevel1UserContext(Integer userId) {

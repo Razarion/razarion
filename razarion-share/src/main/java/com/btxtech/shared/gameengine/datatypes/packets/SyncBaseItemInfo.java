@@ -15,7 +15,6 @@ package com.btxtech.shared.gameengine.datatypes.packets;
 
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Index;
 
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +25,7 @@ import java.util.List;
  * Time: 21:54:50
  */
 public class SyncBaseItemInfo {
+    private double tickCount;
     private int id;
     private int itemTypeId;
     private SyncPhysicalAreaInfo syncPhysicalAreaInfo;
@@ -47,6 +47,15 @@ public class SyncBaseItemInfo {
     private DecimalPosition unloadPos;
     private double spawnProgress;
     private Integer syncBoxItemId;
+
+    public double getTickCount() {
+        return tickCount;
+    }
+
+    public SyncBaseItemInfo setTickCount(double tickCount) {
+        this.tickCount = tickCount;
+        return this;
+    }
 
     public int getId() {
         return id;
@@ -257,7 +266,8 @@ public class SyncBaseItemInfo {
 
     @Override
     public String toString() {
-        return "SyncItemInfo: " + id +
+        return "tickCount: " + tickCount +
+                " SyncItemInfo: " + id +
                 " itemTypeId:" + itemTypeId +
                 baseId +
                 " syncPhysicalAreaInfo:" + syncPhysicalAreaInfo +

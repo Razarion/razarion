@@ -47,8 +47,8 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
     @Inject
     private Instance<Path> instancePath;
-//    @Inject
-//    private DebugHelper debugHelper;
+    @Inject
+    private DebugHelper debugHelper;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second
@@ -82,7 +82,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
             double speed = MathHelper.clamp(desiredSpeed, 0, maxSpeed);
             preferredVelocity = DecimalPosition.createVector(desiredAngle, speed);
-            // debugHelper.debugToConsole("currentWayPoint(path, " + DebugHelperStatic.generate(getPosition2d()) + ", " + DebugHelperStatic.generate(path.getCurrentWayPoint()) + ", " + DebugHelperStatic.generate(velocity) + ", " + DebugHelperStatic.generate(preferredVelocity) + ");");
+            // debugHelper.debugToConsole(getSyncItem().getId() + ". currentWayPoint(path, " + DebugHelperStatic.generate(getPosition2d()) + ", " + DebugHelperStatic.generate(path.getCurrentWayPoint()) + ", " + DebugHelperStatic.generate(velocity) + ", " + DebugHelperStatic.generate(preferredVelocity) + ");");
         } else {
             velocity = null;
             preferredVelocity = null;
@@ -148,6 +148,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         return (velocity != null && !velocity.equalsDeltaZero()) || (preferredVelocity != null && !preferredVelocity.equalsDeltaZero());
     }
 
+    @Override
     public DecimalPosition getVelocity() {
         return velocity;
     }

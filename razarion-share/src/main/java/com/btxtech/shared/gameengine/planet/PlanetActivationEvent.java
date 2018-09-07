@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
@@ -18,14 +17,12 @@ public class PlanetActivationEvent {
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
     private MasterPlanetConfig masterPlanetConfig;
-    private SlaveSyncItemInfo slaveSyncItemInfo;
     private Type type;
 
-    public PlanetActivationEvent(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, SlaveSyncItemInfo slaveSyncItemInfo, Type type) {
+    public PlanetActivationEvent(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, Type type) {
         this.planetConfig = planetConfig;
         this.gameEngineMode = gameEngineMode;
         this.masterPlanetConfig = masterPlanetConfig;
-        this.slaveSyncItemInfo = slaveSyncItemInfo;
         this.type = type;
     }
 
@@ -39,10 +36,6 @@ public class PlanetActivationEvent {
 
     public MasterPlanetConfig getMasterPlanetConfig() {
         return masterPlanetConfig;
-    }
-
-    public SlaveSyncItemInfo getSlaveSyncItemInfo() {
-        return slaveSyncItemInfo;
     }
 
     public Type getType() {

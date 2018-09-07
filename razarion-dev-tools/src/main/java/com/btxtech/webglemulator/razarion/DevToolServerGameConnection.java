@@ -22,7 +22,7 @@ import java.io.IOException;
  * Created by Beat
  * 21.04.2017.
  */
-@WebSocket(maxTextMessageSize = 64 * 1024)
+@WebSocket(maxTextMessageSize = 200000)
 public class DevToolServerGameConnection extends AbstractServerGameConnection implements DevToolConnectionDefault {
     @Inject
     private ExceptionHandler exceptionHandler;

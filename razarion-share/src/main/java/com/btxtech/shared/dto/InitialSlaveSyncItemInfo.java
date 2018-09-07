@@ -11,18 +11,28 @@ import java.util.List;
  * Created by Beat
  * 08.05.2017.
  */
-public class SlaveSyncItemInfo {
+public class InitialSlaveSyncItemInfo {
+    private double tickCount;
     private Integer actualBaseId;
     private List<SyncBaseItemInfo> syncBaseItemInfos;
     private List<PlayerBaseInfo> playerBaseInfos;
     private List<SyncResourceItemInfo> syncResourceItemInfos;
     private List<SyncBoxItemInfo> syncBoxItemInfos;
 
+    public double getTickCount() {
+        return tickCount;
+    }
+
+    public InitialSlaveSyncItemInfo setTickCount(double tickCount) {
+        this.tickCount = tickCount;
+        return this;
+    }
+
     public Integer getActualBaseId() {
         return actualBaseId;
     }
 
-    public SlaveSyncItemInfo setActualBaseId(Integer actualBaseId) {
+    public InitialSlaveSyncItemInfo setActualBaseId(Integer actualBaseId) {
         this.actualBaseId = actualBaseId;
         return this;
     }
@@ -31,7 +41,7 @@ public class SlaveSyncItemInfo {
         return syncBaseItemInfos;
     }
 
-    public SlaveSyncItemInfo setSyncBaseItemInfos(List<SyncBaseItemInfo> syncBaseItemInfos) {
+    public InitialSlaveSyncItemInfo setSyncBaseItemInfos(List<SyncBaseItemInfo> syncBaseItemInfos) {
         this.syncBaseItemInfos = syncBaseItemInfos;
         return this;
     }
@@ -40,7 +50,7 @@ public class SlaveSyncItemInfo {
         return playerBaseInfos;
     }
 
-    public SlaveSyncItemInfo setPlayerBaseInfos(List<PlayerBaseInfo> playerBaseInfos) {
+    public InitialSlaveSyncItemInfo setPlayerBaseInfos(List<PlayerBaseInfo> playerBaseInfos) {
         this.playerBaseInfos = playerBaseInfos;
         return this;
     }
@@ -49,7 +59,7 @@ public class SlaveSyncItemInfo {
         return syncResourceItemInfos;
     }
 
-    public SlaveSyncItemInfo setSyncResourceItemInfos(List<SyncResourceItemInfo> syncResourceItemInfos) {
+    public InitialSlaveSyncItemInfo setSyncResourceItemInfos(List<SyncResourceItemInfo> syncResourceItemInfos) {
         this.syncResourceItemInfos = syncResourceItemInfos;
         return this;
     }
@@ -58,7 +68,7 @@ public class SlaveSyncItemInfo {
         return syncBoxItemInfos;
     }
 
-    public SlaveSyncItemInfo setSyncBoxItemInfos(List<SyncBoxItemInfo> syncBoxItemInfos) {
+    public InitialSlaveSyncItemInfo setSyncBoxItemInfos(List<SyncBoxItemInfo> syncBoxItemInfos) {
         this.syncBoxItemInfos = syncBoxItemInfos;
         return this;
     }

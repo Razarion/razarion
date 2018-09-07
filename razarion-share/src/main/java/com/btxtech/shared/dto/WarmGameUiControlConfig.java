@@ -15,7 +15,6 @@ public class WarmGameUiControlConfig {
     private GameEngineMode gameEngineMode;
     private SlavePlanetConfig slavePlanetConfig;
     private SlaveQuestInfo slaveQuestInfo;
-    private SlaveSyncItemInfo slaveSyncItemInfo;
     private List<BotSceneIndicationInfo> botSceneIndicationInfos;
     private PlanetConfig planetConfig;
     private List<SceneConfig> sceneConfigs;
@@ -56,15 +55,6 @@ public class WarmGameUiControlConfig {
 
     public WarmGameUiControlConfig setSlaveQuestInfo(SlaveQuestInfo slaveQuestInfo) {
         this.slaveQuestInfo = slaveQuestInfo;
-        return this;
-    }
-
-    public SlaveSyncItemInfo getSlaveSyncItemInfo() {
-        return slaveSyncItemInfo;
-    }
-
-    public WarmGameUiControlConfig setSlaveSyncItemInfo(SlaveSyncItemInfo slaveSyncItemInfo) {
-        this.slaveSyncItemInfo = slaveSyncItemInfo;
         return this;
     }
 

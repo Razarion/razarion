@@ -15,6 +15,7 @@ import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -23,6 +24,7 @@ import javax.inject.Named;
 @Dependent
 @Named(SyncItem.SYNC_PHYSICAL_AREA)
 public class SyncPhysicalArea {
+    private Logger logger = Logger.getLogger(SyncPhysicalArea.class.getName());
     @Inject
     private TerrainService terrainService;
     @Inject
@@ -200,6 +202,10 @@ public class SyncPhysicalArea {
         return false;
     }
 
+    public DecimalPosition getVelocity() {
+        return null;
+    }
+
     public void stop() {
 
     }
@@ -207,6 +213,12 @@ public class SyncPhysicalArea {
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
         DecimalPosition oldPosition2d = position2d;
         double oldAngle = angle;
+        // System.out.println("synchronize: " + getSyncItem().getId() + "|" + syncPhysicalAreaInfo);
+        if (position2d != null && syncPhysicalAreaInfo.getPosition() != null) {
+            if (position2d.getDistance(syncPhysicalAreaInfo.getPosition()) > 1.0) {
+                logger.severe("TELEPORTING: " + getSyncItem().getId() + " p: " + position2d + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position2d.getDistance(syncPhysicalAreaInfo.getPosition()));
+            }
+        }
         position2d = syncPhysicalAreaInfo.getPosition();
         syncItemContainerService.onPositionChanged(getSyncItem(), oldPosition2d, position2d, false);
         angle = syncPhysicalAreaInfo.getAngle();

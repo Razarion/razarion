@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.LevelService;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -36,7 +36,7 @@ public class BaseItemServiceBase {
     private SyncItemContainerService syncItemContainerService;
     private ItemTypeService itemTypeService;
 
-    protected void setup(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, SlaveSyncItemInfo slaveSyncItemInfo) {
+    protected void setup(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
         baseItemService = new BaseItemService();
         itemTypeService = new ItemTypeService();
         // SyncItemContainerService
@@ -93,7 +93,7 @@ public class BaseItemServiceBase {
 
         planetConfig.setItemTypeLimitation(GameTestContent.setupPlanetItemTypeLimitations());
 
-        baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, slaveSyncItemInfo, PlanetActivationEvent.Type.INITIALIZE));
+        baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, PlanetActivationEvent.Type.INITIALIZE));
     }
 
     private void setupItemTypeService(ItemTypeService itemTypeService) {

@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BoxItemPosition;
 import com.btxtech.shared.dto.BoxRegionConfig;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -67,8 +68,11 @@ public class BoxService {
             boxes.clear();
         }
         gameEngineMode = planetActivationEvent.getGameEngineMode();
-        if (planetActivationEvent.getSlaveSyncItemInfo() != null && planetActivationEvent.getSlaveSyncItemInfo().getSyncBoxItemInfos() != null) {
-            planetActivationEvent.getSlaveSyncItemInfo().getSyncBoxItemInfos().forEach(this::createSyncBoxItemSlave);
+    }
+
+    public void setupSlave(InitialSlaveSyncItemInfo initialSlaveSyncItemInfo) {
+        if (initialSlaveSyncItemInfo.getSyncBoxItemInfos() != null) {
+            initialSlaveSyncItemInfo.getSyncBoxItemInfos().forEach(this::createSyncBoxItemSlave);
         }
     }
 

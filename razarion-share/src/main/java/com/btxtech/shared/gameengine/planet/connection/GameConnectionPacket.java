@@ -1,8 +1,8 @@
 package com.btxtech.shared.gameengine.planet.connection;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
-import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderFinalizeCommand;
@@ -30,6 +30,7 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
 
     // System
     SET_GAME_SESSION_UUID(String.class),
+    INITIAL_SLAVE_SYNC_INFO(InitialSlaveSyncItemInfo.class),
     // Base
     CREATE_BASE(DecimalPosition.class),
     BASE_CREATED(PlayerBaseInfo.class),

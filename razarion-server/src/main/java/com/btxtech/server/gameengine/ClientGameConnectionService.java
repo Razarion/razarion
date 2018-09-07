@@ -5,11 +5,13 @@ import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.MapCollection;
+import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
@@ -21,7 +23,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.ByteArrayOutputStream;
 import java.util.Collection;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by Beat
@@ -35,6 +39,8 @@ public class ClientGameConnectionService {
     private SessionService sessionService;
     @Inject
     private ConnectionTrackingPersistence connectionTrackingPersistence;
+    @Inject
+    private PlanetService planetService;
     private final MapCollection<HumanPlayerId, ClientGameConnection> gameConnections = new MapCollection<>();
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -43,6 +49,7 @@ public class ClientGameConnectionService {
             gameConnections.put(humanPlayerId, clientGameConnection);
         }
         connectionTrackingPersistence.onGameConnectionOpened(clientGameConnection.getHttpSessionId(), humanPlayerId);
+        sendInitialSlaveSyncInfo(humanPlayerId);
     }
 
     public void onClose(ClientGameConnection clientGameConnection) {
@@ -74,10 +81,14 @@ public class ClientGameConnectionService {
     }
 
     public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
-        if(!syncBaseItem.isAlive()) {
+        if (!syncBaseItem.isAlive()) {
             return;
         }
         SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
+        if (syncBaseItem.getSyncPhysicalArea().canMove()) {
+            System.out.println("*** sendSyncBaseItem: " + syncBaseItem.getId() + ". P: " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + ". V: " + syncBaseItem.getSyncPhysicalMovable().getVelocity());
+            // Thread.dumpStack();
+        }
         sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
     }
 
@@ -152,5 +163,14 @@ public class ClientGameConnectionService {
 
     private PlayerSession getPlayerSessionBase(PlayerBase playerBase) {
         return sessionService.findPlayerSession(playerBase.getHumanPlayerId());
+    }
+
+
+    private void sendInitialSlaveSyncInfo(HumanPlayerId humanPlayerId) {
+        try {
+            sendToClient(humanPlayerId, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetService.generateSlaveSyncItemInfo(humanPlayerId));
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
     }
 }

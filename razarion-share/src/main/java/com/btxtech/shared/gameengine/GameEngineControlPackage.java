@@ -21,6 +21,7 @@ public class GameEngineControlPackage {
         PERFMON_REQUEST,
         PERFMON_RESPONSE,
         CONNECTION_LOST,
+        INITIAL_SLAVE_SYNCHRONIZED,
         // Bot
         START_BOTS,
         EXECUTE_BOT_COMMANDS,

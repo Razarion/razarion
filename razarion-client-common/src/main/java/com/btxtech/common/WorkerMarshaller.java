@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
-import com.btxtech.shared.dto.SlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.datatypes.BoxContent;
@@ -88,6 +87,7 @@ public class WorkerMarshaller {
             case QUEST_PROGRESS:
             case SELL_ITEMS:
             case USE_INVENTORY_ITEM:
+            case INITIAL_SLAVE_SYNCHRONIZED:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
@@ -116,6 +116,11 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             case INITIALIZE_WARM:
+                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
                 array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
@@ -131,7 +136,6 @@ public class WorkerMarshaller {
                 array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
                 array.set(DATA_OFFSET_5, toJson(controlPackage.getData(5)));
-                array.set(DATA_OFFSET_6, toJson(controlPackage.getData(6)));
                 break;
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
@@ -141,7 +145,7 @@ public class WorkerMarshaller {
             case TICK_UPDATE_RESPONSE:
             case SYNC_ITEM_START_SPAWNED:
             case SYNC_ITEM_IDLE:
-                array.set(DATA_OFFSET_0, (JavaScriptObject)controlPackage.getData(0));
+                array.set(DATA_OFFSET_0, (JavaScriptObject) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -170,15 +174,13 @@ public class WorkerMarshaller {
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), StaticGameConfig.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_1), PlanetConfig.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), SlaveSyncItemInfo.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_3), UserContext.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_4), GameEngineMode.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_5), Boolean.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_6), String.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_2), UserContext.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_3), GameEngineMode.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_4), Boolean.class));
+                data.add(fromJson(array.getString(DATA_OFFSET_5), String.class));
                 break;
             case INITIALIZE_WARM:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), PlanetConfig.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), SlaveSyncItemInfo.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_2), UserContext.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_3), GameEngineMode.class));
                 data.add(fromJson(array.getString(DATA_OFFSET_4), String.class));
@@ -340,6 +342,9 @@ public class WorkerMarshaller {
                 break;
             case SELL_ITEMS:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                break;
+            case INITIAL_SLAVE_SYNCHRONIZED:
+                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);

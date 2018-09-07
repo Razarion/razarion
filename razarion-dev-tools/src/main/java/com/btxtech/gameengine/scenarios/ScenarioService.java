@@ -293,7 +293,7 @@ public class ScenarioService implements QuestListener {
         UserContext userContext = new UserContext().setHumanPlayerId(new HumanPlayerId().setPlayerId(1)).setName("User 1").setLevelId(LEVEL_1_ID);
         try {
             gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfig));
-            planetService.initialise(planetConfig, GameEngineMode.MASTER, masterPlanetConfig, null, () -> {
+            planetService.initialise(planetConfig, GameEngineMode.MASTER, masterPlanetConfig, () -> {
                 currentScenario.setupBots(botService);
                 planetService.enableTracking(true);
                 planetService.start();

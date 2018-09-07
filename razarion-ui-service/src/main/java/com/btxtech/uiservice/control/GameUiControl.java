@@ -20,7 +20,6 @@ import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeTickInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.SyncBaseItemSimpleDto;
 import com.btxtech.shared.utils.CollectionUtils;
@@ -176,8 +175,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             scenes = coldGameUiControlConfig.getWarmGameUiControlConfig().getSceneConfigs();
             topRightCockpit.setBotSceneIndicationInfos(null);
         } else if (gameEngineMode == GameEngineMode.SLAVE) {
-            scenes = setupSlaveScenes();
             topRightCockpit.setBotSceneIndicationInfos(coldGameUiControlConfig.getWarmGameUiControlConfig().getBotSceneIndicationInfos());
+            return; // Scene started if slave synchronized (from GameEngine)
         } else if (gameEngineMode == GameEngineMode.PLAYBACK) {
             scenes = setupPlaybackScenes();
             playbackControl.start(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlaybackGameUiControlConfig());
@@ -276,45 +275,20 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         return Math.min(levelCount + unlockedCount, planetCount);
     }
 
-    private List<SceneConfig> setupSlaveScenes() {
-        if (coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo().getActualBaseId() != null) {
-            return setupSlaveExistingScenes();
+    public void onInitialSlaveSynchronized(DecimalPosition scrollToPosition) {
+        if (scrollToPosition != null) {
+            scenes = setupSlaveExistingScenes(scrollToPosition);
         } else {
-            return setupSlaveSpawnScenes();
+            scenes = setupSlaveSpawnScenes();
         }
+        runScene();
     }
 
-    private List<SceneConfig> setupSlaveExistingScenes() {
+    private List<SceneConfig> setupSlaveExistingScenes(DecimalPosition scrollToPosition) {
         List<SceneConfig> sceneConfigs = new ArrayList<>();
-        DecimalPosition factoryPosition = null;
-        DecimalPosition builderPosition = null;
-        DecimalPosition unitPosition = null;
-        for (SyncBaseItemInfo syncBaseItemInfo : coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo().getSyncBaseItemInfos()) {
-            if (syncBaseItemInfo.getBaseId() == coldGameUiControlConfig.getWarmGameUiControlConfig().getSlaveSyncItemInfo().getActualBaseId()) {
-                BaseItemType baseItemType = itemTypeService.getBaseItemType(syncBaseItemInfo.getItemTypeId());
-                if (baseItemType.getFactoryType() != null) {
-                    factoryPosition = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
-                    break;
-                }
-                if (baseItemType.getBuilderType() != null) {
-                    builderPosition = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
-                }
-                if (builderPosition != null) {
-                    continue;
-                }
-                unitPosition = syncBaseItemInfo.getSyncPhysicalAreaInfo().getPosition();
-            }
-        }
-        DecimalPosition position = unitPosition;
-        if (builderPosition != null) {
-            position = builderPosition;
-        }
-        if (factoryPosition != null) {
-            position = factoryPosition;
-        }
 
-        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().setToPosition(position)));
         sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet fade out").setRemoveLoadingCover(true));
+        sceneConfigs.add(new SceneConfig().setInternalName("script: Multiplayer Planet viewfield").setViewFieldConfig(new ViewFieldConfig().setToPosition(scrollToPosition)));
         sceneConfigs.add(new SceneConfig().setInternalName("script: Process Server Quests").setProcessServerQuests(true));
         return sceneConfigs;
     }

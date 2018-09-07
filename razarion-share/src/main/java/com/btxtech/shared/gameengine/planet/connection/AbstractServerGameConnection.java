@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.connection;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
@@ -11,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncItemDeletedInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncResourceItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.BoxService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.ResourceService;
 import com.btxtech.shared.system.ConnectionMarshaller;
 
@@ -30,6 +32,8 @@ public abstract class AbstractServerGameConnection {
     private ResourceService resourceService;
     @Inject
     private BoxService boxService;
+    @Inject
+    private PlanetService planetService;
 
     protected abstract void sendToServer(String text);
 
@@ -76,7 +80,7 @@ public abstract class AbstractServerGameConnection {
                 gameEngineWorker.onServerBaseHumanPlayerIdChanged((PlayerBaseInfo) param);
                 break;
             case SYNC_BASE_ITEM_CHANGED:
-                baseItemService.onSlaveSyncBaseItemChanged((SyncBaseItemInfo) param);
+                baseItemService.onSlaveSyncBaseItemChanged(planetService.getTickCount(), (SyncBaseItemInfo) param);
                 break;
             case SYNC_RESOURCE_ITEM_CHANGED:
                 resourceService.onSlaveSyncResourceItemChanged((SyncResourceItemInfo) param);
@@ -89,6 +93,9 @@ public abstract class AbstractServerGameConnection {
                 break;
             case RESOURCE_BALANCE_CHANGED:
                 gameEngineWorker.updateResourceSlave((Integer) param);
+                break;
+            case INITIAL_SLAVE_SYNC_INFO:
+                gameEngineWorker.onInitialSlaveSyncItemInfo((InitialSlaveSyncItemInfo) param);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
