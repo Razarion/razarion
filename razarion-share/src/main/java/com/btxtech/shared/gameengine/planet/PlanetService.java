@@ -67,6 +67,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private Collection<PlanetTickListener> tickListeners = new ArrayList<>();
     private PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
     private long tickCount;
+    private GameEngineMode gameEngineMode;
 
     @PostConstruct
     public void postConstruct() {
@@ -75,6 +76,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public void initialise(PlanetConfig planetConfig, GameEngineMode gameEngineMode, MasterPlanetConfig masterPlanetConfig, Runnable finishCallback, Consumer<String> failCallback) {
         this.planetConfig = planetConfig;
+        this.gameEngineMode = gameEngineMode;
         syncItemContainerService.clear();
         terrainService.setup(planetConfig, () -> {
             activationEvent.fire(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, PlanetActivationEvent.Type.INITIALIZE));
@@ -117,10 +119,14 @@ public class PlanetService implements Runnable { // Only available in worker. On
             return;
         }
         try {
+            SynchronizationSendingContext synchronizationSendingContext = null;
+            if (gameEngineMode == GameEngineMode.MASTER) {
+                synchronizationSendingContext = new SynchronizationSendingContext();
+            }
             planetServiceTracker.startTick();
             questService.tick();
             planetServiceTracker.afterQuestService();
-            pathingService.tick();
+            pathingService.tick(synchronizationSendingContext);
             planetServiceTracker.afterPathingService();
             baseItemService.tick();
             planetServiceTracker.afterBaseItemService();
@@ -130,12 +136,12 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterEnergyService();
             boxService.tick();
             planetServiceTracker.afterBoxService();
-            notifyTickListeners();
+            notifyTickListeners(synchronizationSendingContext);
             planetServiceTracker.afterTickListener();
             planetServiceTracker.endTick();
             /// --- new experimental
             tickCount++;
-            baseItemService.handlePendingSyncInfos(tickCount);
+            baseItemService.handleReceivedPendingSyncInfos(tickCount);
             /// --- new experimental ends
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -162,10 +168,10 @@ public class PlanetService implements Runnable { // Only available in worker. On
         tickListeners.remove(planetTickListener);
     }
 
-    private void notifyTickListeners() {
+    private void notifyTickListeners(SynchronizationSendingContext synchronizationSendingContext) {
         for (PlanetTickListener tickListener : tickListeners) {
             try {
-                tickListener.onPostTick();
+                tickListener.onPostTick(synchronizationSendingContext);
             } catch (Throwable t) {
                 exceptionHandler.handleException(t);
             }

@@ -6,6 +6,7 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.PlanetTickListener;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
@@ -64,7 +65,7 @@ public class ServerDebugRenderer implements PlanetTickListener {
     }
 
     @Override
-    public void onPostTick() {
+    public void onPostTick(SynchronizationSendingContext synchronizationSendingContext) {
         try {
             Platform.runLater(this::render);
         } catch (Throwable e) {

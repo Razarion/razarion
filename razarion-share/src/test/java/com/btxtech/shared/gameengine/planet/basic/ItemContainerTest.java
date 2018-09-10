@@ -45,7 +45,7 @@ public class ItemContainerTest extends BaseBasicTest {
         getCommandService().loadContainer(humanBaseContext.getBuilder(), transporter);
         tickPlanetServiceBaseServiceActive();
         // Verify loaded
-        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder());
+        assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
         Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
@@ -56,7 +56,7 @@ public class ItemContainerTest extends BaseBasicTest {
         getCommandService().loadContainer(humanBaseContext.getAttacker1(), transporter);
         tickPlanetServiceBaseServiceActive();
         // Verify loaded
-        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
+        assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems(), humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
         Assert.assertEquals(transporter, humanBaseContext.getBuilder().getContainedIn());
         Assert.assertNull(humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertFalse(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
@@ -73,7 +73,7 @@ public class ItemContainerTest extends BaseBasicTest {
         getCommandService().unloadContainer(transporter, new DecimalPosition(47, 222));
         tickPlanetServiceBaseServiceActive();
         // Verify unloaded
-        assertContainingSyncItemIds(transporter.getSyncItemContainer().getContainedItems());
+        assertContainingSyncItems(transporter.getSyncItemContainer().getContainedItems());
         Assert.assertNull(humanBaseContext.getBuilder().getContainedIn());
         Assert.assertEquals(new DecimalPosition(47, 222), humanBaseContext.getBuilder().getSyncPhysicalArea().getPosition2d());
         Assert.assertTrue(humanBaseContext.getBuilder().getSyncPhysicalArea().hasPosition());
@@ -329,7 +329,7 @@ public class ItemContainerTest extends BaseBasicTest {
     private void assertSlave(WeldSlaveEmulator weldSlaveEmulator, SyncBaseItem masterTransporter, double maxContainingRadius, SyncBaseItem... masterContainedIns) {
         SyncBaseItem slaveTransporter = weldSlaveEmulator.getSyncItemContainerService().getSyncBaseItemSave(masterTransporter.getId());
         Assert.assertEquals(maxContainingRadius, slaveTransporter.getSyncItemContainer().getMaxContainingRadius(), 0.001);
-        assertContainingSyncItemIds(masterTransporter.getSyncItemContainer().getContainedItems(), slaveTransporter.getSyncItemContainer().getContainedItems().toArray(new SyncBaseItem[]{}));
+        assertContainingSyncItems(masterTransporter.getSyncItemContainer().getContainedItems(), slaveTransporter.getSyncItemContainer().getContainedItems().toArray(new SyncBaseItem[]{}));
         for (SyncBaseItem masterContainedIn : masterContainedIns) {
             SyncBaseItem slaveContainedIn = weldSlaveEmulator.getSyncItemContainerService().getSyncBaseItemSave(masterContainedIn.getId());
             Assert.assertEquals("masterContainedIn: " + masterContainedIn + " slaveContainedIn: " + slaveContainedIn, masterContainedIn.getContainedIn(), slaveContainedIn.getContainedIn());

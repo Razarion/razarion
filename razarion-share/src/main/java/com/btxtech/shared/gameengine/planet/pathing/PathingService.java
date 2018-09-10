@@ -7,6 +7,7 @@ import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.gameengine.datatypes.command.SimplePath;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
@@ -16,7 +17,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.PathingNodeWrapper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.system.ExceptionHandler;
-import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.inject.Inject;
@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Singleton
 public class PathingService {
@@ -39,14 +38,10 @@ public class PathingService {
     private TerrainService terrainService;
     @Inject
     private ExceptionHandler exceptionHandler;
-//    @Inject
+    private SynchronizationSendingContext synchronizationSendingContext;
+    //    @Inject
 //    private DebugHelper debugHelper;
     private PathingServiceTracker pathingServiceTracker = new PathingServiceTracker(false);
-    private PathingServiceUpdateListener pathingServiceUpdateListener;
-
-    public void setPathingServiceUpdateListener(PathingServiceUpdateListener pathingServiceUpdateListener) {
-        this.pathingServiceUpdateListener = pathingServiceUpdateListener;
-    }
 
     public SimplePath setupPathToDestination(SyncBaseItem syncItem, DecimalPosition destination) {
         return setupPathToDestination(syncItem, syncItem.getSyncPhysicalArea().getTerrainType(), destination, 0);
@@ -120,9 +115,10 @@ public class PathingService {
         return path;
     }
 
-    public void tick() {
+    public void tick(SynchronizationSendingContext synchronizationSendingContext) {
         try {
             // DebugHelperStatic.setCurrentTick(-1);
+            this.synchronizationSendingContext = synchronizationSendingContext;
             pathingServiceTracker.startTick();
             preparation();
             pathingServiceTracker.afterPreparation();
@@ -141,6 +137,7 @@ public class PathingService {
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
+        this.synchronizationSendingContext = null;
     }
 
     private void preparation() {
@@ -173,7 +170,6 @@ public class PathingService {
                 addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
-                    onPathingChanged(syncPhysicalMovable);
                 } else {
                     syncPhysicalMovable.setVelocity(syncPhysicalMovable.getPreferredVelocity());
                 }
@@ -188,7 +184,6 @@ public class PathingService {
             addObstaclesOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem());
             if (!orca.isEmpty()) {
                 orcas.add(orca);
-                onPathingChanged(syncPhysicalMovable);
             }
         });
         orcas.forEach(Orca::solve);
@@ -203,21 +198,19 @@ public class PathingService {
             SyncPhysicalArea other = otherSyncItem.getSyncPhysicalArea();
             if (other instanceof SyncPhysicalMovable) {
                 SyncPhysicalMovable otherSyncPhysicalMovable = (SyncPhysicalMovable) other;
-                if (!otherSyncPhysicalMovable.isMoving() && !otherSyncPhysicalMovable.hasDestination()) {
+                if (otherSyncPhysicalMovable.isMoving() || otherSyncPhysicalMovable.hasDestination()) {
+                    orca.add(otherSyncPhysicalMovable);
+                } else {
                     if (isPiercing(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
                         if (setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
                             if (tickContext != null) {
                                 tickContext.addPushAway(otherSyncPhysicalMovable);
                             }
                             orca.add(otherSyncPhysicalMovable);
-                            // debugHelper.debugToConsole("orca 1 add otherSyncPhysicalMovable");
+                            onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                         }
                     }
-                } else {
-                    orca.add(otherSyncPhysicalMovable);
-                    // debugHelper.debugToConsole("orca 2 add otherSyncPhysicalMovable");
                 }
-                // TODO } else {
                 // TODO add none movable (buildings)
             }
         });
@@ -230,19 +223,12 @@ public class PathingService {
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 sortedObstacleSlope.add((ObstacleSlope) obstacle);
-
             } else {
-                // TODO throw new UnsupportedOperationException();
-                logger.warning("FIX THIS: ObstacleTerrainObject. PathingService.addObstaclesOrcaLines(Orca orca, SyncBaseItem syncBaseItem) !!!!!!");
+                // TODO add ObstacleTerrainObject;
             }
         });
         ObstacleSlope.sort(position, sortedObstacleSlope);
-        sortedObstacleSlope.forEach(obstacleSlope -> {
-            orca.add(obstacleSlope);
-            // debugHelper.debugToConsole("orca 1 add obstacleSlope: " + obstacleSlope.getPoint1());
-        });
-        ////////////
-        // debugHelper.debugToConsole("Orcalines: " + orca.getDebugObstacles_WRONG().stream().map(ObstacleSlope::toString).collect( Collectors.joining( ", " ) ));
+        sortedObstacleSlope.forEach(orca::add);
     }
 
     private boolean isPiercing(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
@@ -325,10 +311,10 @@ public class PathingService {
         });
     }
 
-    private void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable) {
-        syncPhysicalMovable.setCrowded();
-        if (pathingServiceUpdateListener != null) {
-            pathingServiceUpdateListener.onPathingChanged(syncPhysicalMovable);
+    private void onPathingChanged(SyncPhysicalMovable syncBaseItem, SyncPhysicalMovable other) {
+        syncBaseItem.setCrowded();
+        if (synchronizationSendingContext != null) {
+            synchronizationSendingContext.addCollision(syncBaseItem, other);
         }
     }
 }

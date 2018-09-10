@@ -87,13 +87,13 @@ public class BaseItemService {
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
-    private PriorityQueue<SyncBaseItemInfo> pendingSyncBaseItemInfos = new PriorityQueue<>(Comparator.comparingDouble(SyncBaseItemInfo::getTickCount));
+    private PriorityQueue<SyncBaseItemInfo> pendingReceivedSyncBaseItemInfos = new PriorityQueue<>(Comparator.comparingDouble(SyncBaseItemInfo::getTickCount));
 
     public void onPlanetActivation(@Observes PlanetActivationEvent planetActivationEvent) {
         activeItems.clear();
         activeItemQueue.clear();
         bases.clear();
-        pendingSyncBaseItemInfos.clear();
+        pendingReceivedSyncBaseItemInfos.clear();
         guardingItemService.init(planetActivationEvent.getGameEngineMode());
         lastBaseItId = 1;
         if (planetActivationEvent.getType() == PlanetActivationEvent.Type.INITIALIZE) {
@@ -310,7 +310,7 @@ public class BaseItemService {
 
     public void onSlaveSyncBaseItemChanged(long slaveTickCount, SyncBaseItemInfo syncBaseItemInfo) {
         if (syncBaseItemInfo.getTickCount() > slaveTickCount) {
-            pendingSyncBaseItemInfos.add(syncBaseItemInfo);
+            pendingReceivedSyncBaseItemInfos.add(syncBaseItemInfo);
             return;
         }
         onSlaveSyncBaseItemChanged(syncBaseItemInfo);
@@ -713,9 +713,9 @@ public class BaseItemService {
         });
     }
 
-    public void handlePendingSyncInfos(long tickCount) {
-        while (!pendingSyncBaseItemInfos.isEmpty() && pendingSyncBaseItemInfos.peek().getTickCount() <= tickCount) {
-            onSlaveSyncBaseItemChanged(pendingSyncBaseItemInfos.remove());
+    public void handleReceivedPendingSyncInfos(long tickCount) {
+        while (!pendingReceivedSyncBaseItemInfos.isEmpty() && pendingReceivedSyncBaseItemInfos.peek().getTickCount() <= tickCount) {
+            onSlaveSyncBaseItemChanged(pendingReceivedSyncBaseItemInfos.remove());
         }
     }
 

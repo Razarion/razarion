@@ -5,5 +5,5 @@ package com.btxtech.shared.gameengine.planet;
  * 13.11.2016.
  */
 public interface PlanetTickListener {
-    void onPostTick();
+    void onPostTick(SynchronizationSendingContext synchronizationSendingContext);
 }

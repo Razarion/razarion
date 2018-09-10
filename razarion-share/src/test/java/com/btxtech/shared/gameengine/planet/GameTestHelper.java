@@ -23,10 +23,16 @@ import java.util.List;
  */
 public interface GameTestHelper {
 
-    static SyncBaseItem createMockSyncBaseItem(double radius, TerrainType terrainType, DecimalPosition position) {
+    static SyncBaseItem createMockSyncBaseItem(int id, double radius, TerrainType terrainType, DecimalPosition position) {
         SyncBaseItem syncBaseItem = new SyncBaseItem();
-        syncBaseItem.init(-99, null, createSyncPhysicalMovable(radius, terrainType, position, null, null, 17));
+        SyncPhysicalMovable syncPhysicalMovable = createSyncPhysicalMovable(radius, terrainType, position, null, null, 17);
+        syncBaseItem.init(id, null, syncPhysicalMovable);
+        SimpleTestEnvironment.injectService("syncItem", syncPhysicalMovable, SyncPhysicalArea.class, syncBaseItem);
         return syncBaseItem;
+    }
+
+    static SyncBaseItem createMockSyncBaseItem(double radius, TerrainType terrainType, DecimalPosition position) {
+        return createMockSyncBaseItem(-99, radius, terrainType, position);
     }
 
     static SyncPhysicalMovable createSyncPhysicalMovable(double radius, TerrainType terrainType, DecimalPosition position, DecimalPosition velocity, DecimalPosition preferredVelocity, double maxSpeed) {

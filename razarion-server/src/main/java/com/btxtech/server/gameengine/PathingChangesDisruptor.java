@@ -13,17 +13,19 @@ import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * on 26.02.2018.
  */
 @Singleton
-public class PathingChangesDisruptor implements EventHandler<SingleHolder<Set<SyncBaseItem>>> {
+public class PathingChangesDisruptor implements EventHandler<SingleHolder<Collection<Set<SyncBaseItem>>>> {
     private final static long DE_BOUNCING = 2000;
     private final static long PERIODIC_RUNNER_PERIOD = 500;
     @Resource(name = "DefaultManagedThreadFactory")
@@ -34,15 +36,15 @@ public class PathingChangesDisruptor implements EventHandler<SingleHolder<Set<Sy
     private ExceptionHandler exceptionHandler;
     @Inject
     private ClientGameConnectionService clientGameConnectionService;
-    private RingBuffer<SingleHolder<Set<SyncBaseItem>>> ringBuffer;
-    private final Map<SyncBaseItem, Long> lastSents = new HashMap<>();
-    private Map<SyncBaseItem, Long> waitingSyncBaseItems = new HashMap<>();
+    private RingBuffer<SingleHolder<Collection<Set<SyncBaseItem>>>> ringBuffer;
+    private final Map<Set<SyncBaseItem>, Long> lastSents = new HashMap<>();
+    private Map<Set<SyncBaseItem>, Long> waitingSyncBaseItems = new HashMap<>();
 
     @PostConstruct
     public void postConstruct() {
         try {
             scheduleExecutor.scheduleAtFixedRate(this::periodicRunner, PERIODIC_RUNNER_PERIOD, PERIODIC_RUNNER_PERIOD, TimeUnit.MILLISECONDS);
-            Disruptor<SingleHolder<Set<SyncBaseItem>>> disruptor = new Disruptor<>(SingleHolder::new, 512, managedThreadFactory);
+            Disruptor<SingleHolder<Collection<Set<SyncBaseItem>>>> disruptor = new Disruptor<>(SingleHolder::new, 512, managedThreadFactory);
             disruptor.handleEventsWith(this);
             disruptor.start();
             ringBuffer = disruptor.getRingBuffer();
@@ -51,44 +53,34 @@ public class PathingChangesDisruptor implements EventHandler<SingleHolder<Set<Sy
         }
     }
 
-    public void onPostTick(Set<SyncBaseItem> syncBaseItems, Set<SyncBaseItem> alreadySentSyncBaseItems) {
+    public void onPostTick(Collection<Set<SyncBaseItem>> colliding, Set<SyncBaseItem> alreadySentSyncBaseItems) {
         try {
-            // System.out.println("syncBaseItems1: " + syncBaseItems.size() + ". alreadySentSyncBaseItems: " + alreadySentSyncBaseItems.size());
-            synchronized (lastSents) {
-                // TODO move to disruptor thread to reduce load on GameEngine thread
-                for (SyncBaseItem alreadySent : alreadySentSyncBaseItems) {
-                    // System.out.println("alreadySent: " + alreadySent.getId());
-                    lastSents.put(alreadySent, System.currentTimeMillis());
-                    waitingSyncBaseItems.remove(alreadySent);
-                    syncBaseItems.remove(alreadySent);
-                }
+            if (!colliding.isEmpty()) {
+                ringBuffer.publishEvent((event, sequence) -> event.setO(colliding));
             }
-            // System.out.println("syncBaseItems2: " + syncBaseItems.size() + ". alreadySentSyncBaseItems: " + alreadySentSyncBaseItems.size());
-            if (syncBaseItems.isEmpty()) {
-                return;
-            }
-            ringBuffer.publishEvent((event, sequence) -> event.setO(syncBaseItems));
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
     }
 
     @Override
-    public void onEvent(SingleHolder<Set<SyncBaseItem>> event, long sequence, boolean endOfBatch) {
+    public void onEvent(SingleHolder<Collection<Set<SyncBaseItem>>> event, long sequence, boolean endOfBatch) {
         try {
-            for (SyncBaseItem syncBaseItem : event.getO()) {
-                synchronized (lastSents) {
-                    Long lastSent = lastSents.get(syncBaseItem);
-                    if (lastSent == null || lastSent + DE_BOUNCING < System.currentTimeMillis()) {
-                        waitingSyncBaseItems.remove(syncBaseItem);
-                        sendAndAdd(syncBaseItem);
-                    } else {
-                        waitingSyncBaseItems.put(syncBaseItem, lastSent);
-                    }
-                }
-            }
+            event.getO().forEach(this::handleCollidingSyncItems);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
+        }
+    }
+
+    private void handleCollidingSyncItems(Set<SyncBaseItem> collidingSyncItems) {
+        synchronized (lastSents) {
+            Long lastSent = lastSents.get(collidingSyncItems);
+            if (lastSent == null || lastSent + DE_BOUNCING < System.currentTimeMillis()) {
+                waitingSyncBaseItems.remove(collidingSyncItems);
+                sendAndAdd(collidingSyncItems);
+            } else {
+                waitingSyncBaseItems.put(collidingSyncItems, lastSent);
+            }
         }
     }
 
@@ -110,10 +102,14 @@ public class PathingChangesDisruptor implements EventHandler<SingleHolder<Set<Sy
         }
     }
 
-    private void sendAndAdd(SyncBaseItem syncBaseItem) {
+    private void sendAndAdd(Set<SyncBaseItem> collidingSyncItems) {
+        ////////////
+        System.out.println("--onPostTick---------------------------");
+        System.out.println(collidingSyncItems.stream().map(syncBaseItem -> Integer.toString(syncBaseItem.getId())).collect(Collectors.joining(", ")));
+        ///////////
+        collidingSyncItems.forEach(syncItem -> clientGameConnectionService.sendSyncBaseItem(syncItem));
         synchronized (lastSents) {
-            clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
-            lastSents.put(syncBaseItem, System.currentTimeMillis());
+            lastSents.put(collidingSyncItems, System.currentTimeMillis());
         }
     }
 }

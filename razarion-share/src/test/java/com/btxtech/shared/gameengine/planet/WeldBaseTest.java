@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Beat
@@ -125,7 +126,7 @@ public class WeldBaseTest {
         weldContainer.event().select(StaticGameInitEvent.class).fire(new StaticGameInitEvent(staticGameConfig));
     }
 
-    public boolean isBaseServiceActive(SyncBaseItem ... ignores) {
+    public boolean isBaseServiceActive(SyncBaseItem... ignores) {
         Collection<SyncBaseItem> activeItems = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItems", baseItemService));
         activeItems.removeAll(Arrays.asList(ignores));
         Collection<SyncBaseItem> activeItemQueue = new ArrayList<>((Collection<SyncBaseItem>) SimpleTestEnvironment.readField("activeItemQueue", baseItemService));
@@ -291,12 +292,20 @@ public class WeldBaseTest {
         Assert.assertEquals("Box items", boxCount, (int) actualBoxCount.getO());
     }
 
-    public void assertContainingSyncItemIds(List<SyncBaseItem> expected, SyncBaseItem... actuals) {
+    public void assertContainingSyncItems(List<SyncBaseItem> expected, SyncBaseItem... actuals) {
         List<SyncBaseItem> expectedCopy = new ArrayList<>(expected);
         for (SyncBaseItem actual : actuals) {
             Assert.assertTrue("Item does not exist: " + actual, expectedCopy.remove(actual));
         }
         Assert.assertTrue("There are remianing items: " + expectedCopy.size(), expectedCopy.isEmpty());
+    }
+
+    public static void assertContainingSyncItemIds(Collection<? extends SyncItem> expected, int... actualIds) {
+        List<Integer> expectedIds = expected.stream().map(SyncItem::getId).collect(Collectors.toList());
+        for (Integer actualId : actualIds) {
+            Assert.assertTrue("Item does not exist: " + actualId, expectedIds.remove(actualId));
+        }
+        Assert.assertTrue("There are remaining items: " + expectedIds, expectedIds.isEmpty());
     }
 
     public void printAllSyncItems() {

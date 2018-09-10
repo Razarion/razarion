@@ -32,13 +32,12 @@ import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.PlanetTickListener;
 import com.btxtech.shared.gameengine.planet.ResourceService;
+import com.btxtech.shared.gameengine.planet.SynchronizationSendingContext;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
-import com.btxtech.shared.gameengine.planet.pathing.PathingServiceUpdateListener;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -57,7 +56,7 @@ import java.util.logging.Logger;
  * 18.04.2017.
  */
 @ApplicationScoped
-public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PathingServiceUpdateListener, PlanetTickListener {
+public class ServerGameEngineControl implements GameLogicListener, BaseRestoreProvider, PlanetTickListener {
     private Logger logger = Logger.getLogger(ServerGameEngineControl.class.getName());
     @Inject
     private Event<StaticGameInitEvent> gameEngineInitEvent;
@@ -113,7 +112,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
         terrainShapeService.start();
-        pathingService.setPathingServiceUpdateListener(this);
         planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
@@ -434,19 +432,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
-    public void onPathingChanged(SyncPhysicalMovable syncPhysicalMovable) {
-        changedPathings.add((SyncBaseItem) syncPhysicalMovable.getSyncItem());
-    }
-
-    @Override
-    public void onPostTick() {
-        Set<SyncBaseItem> tmpChangedPathings = changedPathings;
-        changedPathings = new HashSet<>();
+    public void onPostTick(SynchronizationSendingContext synchronizationSendingContext) {
         Set<SyncBaseItem> tmpAlreadySentSyncBaseItems = alreadySentSyncBaseItems;
         alreadySentSyncBaseItems = new HashSet<>();
-//        if(!tmp.isEmpty()) {
-//            logger.severe("-----" + tmp.stream().map(syncBaseItem -> syncBaseItem.getId() + "").collect(Collectors.joining("; ")));
-//        }
-        pathingChangesDisruptor.onPostTick(tmpChangedPathings, tmpAlreadySentSyncBaseItems);
+        pathingChangesDisruptor.onPostTick(synchronizationSendingContext.getCollisions(), tmpAlreadySentSyncBaseItems);
     }
 }

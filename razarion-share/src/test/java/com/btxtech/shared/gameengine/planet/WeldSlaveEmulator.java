@@ -37,7 +37,7 @@ public class WeldSlaveEmulator extends WeldBaseTest {
     }
 
     public void tick() {
-        getWeldBean(PathingService.class).tick();
+        getWeldBean(PathingService.class).tick(null);
     }
 
     private class TestClientWebSocket extends TestWebSocket {
