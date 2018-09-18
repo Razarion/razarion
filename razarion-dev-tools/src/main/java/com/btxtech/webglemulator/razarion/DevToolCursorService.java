@@ -22,7 +22,7 @@ public class DevToolCursorService extends CursorService {
 
     @Override
     protected void setDefaultCursorInternal() {
-        System.out.println("+++ setDefaultCursorInternal()");
+        // System.out.println("+++ setDefaultCursorInternal()");
         webGlEmulatorController.getCanvas().setCursor(Cursor.DEFAULT);
     }
 

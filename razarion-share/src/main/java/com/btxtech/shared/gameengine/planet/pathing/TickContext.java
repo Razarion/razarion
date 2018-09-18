@@ -11,21 +11,12 @@ import java.util.Collection;
  */
 public class TickContext {
     private Collection<SyncPhysicalMovable> pushAways = new ArrayList<>();
-    private Collection<SyncPhysicalMovable> movings = new ArrayList<>();
 
     public void addPushAway(SyncPhysicalMovable pushAway) {
         pushAways.add(pushAway);
     }
 
-    public void addMoving(SyncPhysicalMovable moving) {
-        movings.add(moving);
-    }
-
     public Collection<SyncPhysicalMovable> getPushAways() {
         return pushAways;
-    }
-
-    public Collection<SyncPhysicalMovable> getMovings() {
-        return movings;
     }
 }

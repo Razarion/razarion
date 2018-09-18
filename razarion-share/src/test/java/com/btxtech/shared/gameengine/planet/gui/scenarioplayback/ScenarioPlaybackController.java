@@ -191,7 +191,7 @@ public class ScenarioPlaybackController implements Initializable {
 
     private void setupCurrent() {
         currentMasterActual = scenarioPlayback.getActualSyncBaseItemInfo().getMasterTick(tick);
-        currentClientActual = scenarioPlayback.getActualSyncBaseItemInfo().getClientTick(tick);
+        currentClientActual = scenarioPlayback.getActualSyncBaseItemInfo().getSlaveTick(tick);
         if (scenarioPlayback.getExpectedSyncBaseItemInfo() != null && tick < scenarioPlayback.getExpectedSyncBaseItemInfo().size()) {
             currentExpected = scenarioPlayback.getExpectedSyncBaseItemInfo().getMasterTick(tick);
         } else {

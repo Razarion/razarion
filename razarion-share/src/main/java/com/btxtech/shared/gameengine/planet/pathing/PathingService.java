@@ -120,7 +120,7 @@ public class PathingService {
             // DebugHelperStatic.setCurrentTick(-1);
             this.synchronizationSendingContext = synchronizationSendingContext;
             pathingServiceTracker.startTick();
-            preparation();
+            preparationPreferredVelocity();
             pathingServiceTracker.afterPreparation();
             orcaSolver();
             pathingServiceTracker.afterSolveVelocity();
@@ -140,30 +140,29 @@ public class PathingService {
         this.synchronizationSendingContext = null;
     }
 
-    private void preparation() {
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+    private void preparationPreferredVelocity() {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
-                return null;
+                return;
             }
 
             syncBaseItem.getSyncPhysicalMovable().setupForTick();
 
-            return null;
+            return;
         });
     }
 
     private void orcaSolver() {
         Collection<Orca> orcas = new ArrayList<>();
         TickContext tickContext = new TickContext();
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
             if (!syncPhysicalArea.canMove()) {
-                return null;
+                return;
             }
 
             SyncPhysicalMovable syncPhysicalMovable = (SyncPhysicalMovable) syncPhysicalArea;
             if (syncPhysicalMovable.isMoving()) {
-                tickContext.addMoving(syncPhysicalMovable);
                 Orca orca = new Orca(syncPhysicalMovable);
                 // debugHelper.debugToConsole("new Orca1");
                 addOtherSyncItemOrcaLines(orca, syncBaseItem, tickContext);
@@ -174,7 +173,7 @@ public class PathingService {
                     syncPhysicalMovable.setVelocity(syncPhysicalMovable.getPreferredVelocity());
                 }
             }
-            return null;
+            return;
         });
         // TODO handle push away recursively
         tickContext.getPushAways().forEach(syncPhysicalMovable -> {
@@ -273,41 +272,38 @@ public class PathingService {
             // Happens if the touching is very small -> omit
             return false;
         }
+        logger.severe("calculate push away: " + shifty.getSyncItem().getId() + ". pusher: " + pusher.getSyncItem().getId() + ". shiftyVelocity: " + shiftyVelocity);
         shifty.setupForPushAway(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
         return true;
     }
 
     private void implementPosition() {
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
             if (!syncPhysicalArea.canMove()) {
-                return null;
+                return;
             }
             ((SyncPhysicalMovable) syncPhysicalArea).implementPosition();
-            return null;
         });
     }
 
 
     private void checkDestination() {
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
-                return null;
+                return;
             }
             ((SyncPhysicalMovable) syncBaseItem.getSyncPhysicalArea()).stopIfDestinationReached();
-            return null;
         });
     }
 
     private void finalization() {
-        syncItemContainerService.iterateOverBaseItems(false, false, null, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
-                return null;
+                return;
             }
 
             syncBaseItem.getSyncPhysicalMovable().finalization();
-
-            return null;
         });
     }
 

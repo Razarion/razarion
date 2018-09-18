@@ -211,11 +211,13 @@ public class SyncPhysicalArea {
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
+        logger.severe("synchronize id: " + getSyncItem().getId() + ". " + syncPhysicalAreaInfo);
         DecimalPosition oldPosition2d = position2d;
         double oldAngle = angle;
         // System.out.println("synchronize: " + getSyncItem().getId() + "|" + syncPhysicalAreaInfo);
         if (position2d != null && syncPhysicalAreaInfo.getPosition() != null) {
-            if (position2d.getDistance(syncPhysicalAreaInfo.getPosition()) > 1.0) {
+            if (position2d.getDistance(syncPhysicalAreaInfo.getPosition()) > 0.5) {
+                // System.out.println("TELEPORTING: " + getSyncItem().getId() + " p: " + position2d + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position2d.getDistance(syncPhysicalAreaInfo.getPosition()));
                 logger.severe("TELEPORTING: " + getSyncItem().getId() + " p: " + position2d + ". new p: " + syncPhysicalAreaInfo.getPosition() + ". distance: " + position2d.getDistance(syncPhysicalAreaInfo.getPosition()));
             }
         }

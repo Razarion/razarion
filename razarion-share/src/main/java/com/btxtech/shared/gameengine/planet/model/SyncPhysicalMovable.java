@@ -105,6 +105,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         if (crowded) {
             Circle2D circle = new Circle2D(path.getCurrentWayPoint(), getRadius() + CROWDED_STOP_DETECTION_DISTANCE);
             if (circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
+                // System.out.println("stopIfDestinationReached: " + getSyncItem().getId() + " crowded");
                 velocity = null;
                 path = null;
                 preferredVelocity = null;
@@ -114,6 +115,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
         Line line = new Line(oldPosition, getPosition2d());
         if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
+            // System.out.println("stopIfDestinationReached: " + getSyncItem().getId() + " normal");
             velocity = null;
             preferredVelocity = null;
             setPosition2d(path.getCurrentWayPoint(), false);

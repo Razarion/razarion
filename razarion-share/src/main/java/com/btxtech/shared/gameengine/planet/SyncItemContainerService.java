@@ -32,10 +32,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Logger;
@@ -108,6 +110,18 @@ public class SyncItemContainerService {
      */
     public <T> T iterateOverBaseItems(boolean includeNoPosition, boolean includeDead, T defaultReturn, Function<SyncBaseItem, T> itemIteratorHandler) {
         return iterateOverBaseItems(includeNoPosition, includeDead, null, defaultReturn, itemIteratorHandler);
+    }
+
+    public void iterateOverBaseItemsIdOrdered(boolean includeNoPosition, boolean includeDead, Consumer<SyncBaseItem> itemIteratorHandler) {
+        Set<SyncBaseItem> items = new TreeSet<>(Comparator.comparingInt(SyncItem::getId));
+        iterateOverBaseItems(includeNoPosition, includeDead, null, null, new Function<SyncBaseItem, Object>() {
+            @Override
+            public Object apply(SyncBaseItem syncBaseItem) {
+                items.add(syncBaseItem);
+                return null;
+            }
+        });
+        items.forEach(itemIteratorHandler);
     }
 
     /**
@@ -528,11 +542,13 @@ public class SyncItemContainerService {
     }
 
     public void iterateCellRadiusItem(DecimalPosition center, double radius, Consumer<SyncItem> callback) {
+        Set<SyncItem> syncItems = new TreeSet<>(Comparator.comparingDouble(o -> o.getSyncPhysicalArea().getPosition2d().getDistance(center)));
         iterateCellQuadItem(center, 2.0 * radius + CELL_LENGTH, syncItem -> {
             if(syncItem.getSyncPhysicalArea().getPosition2d().getDistance(center) <= radius) {
-                callback.accept(syncItem);
+                syncItems.add(syncItem);
             }
         });
+        syncItems.forEach(callback);
     }
 
     public void iterateCellQuadBaseItem(DecimalPosition center, double width, Consumer<SyncBaseItem> callback) {

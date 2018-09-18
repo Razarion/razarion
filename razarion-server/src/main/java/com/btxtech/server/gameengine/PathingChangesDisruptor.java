@@ -104,8 +104,8 @@ public class PathingChangesDisruptor implements EventHandler<SingleHolder<Collec
 
     private void sendAndAdd(Set<SyncBaseItem> collidingSyncItems) {
         ////////////
-        System.out.println("--onPostTick---------------------------");
-        System.out.println(collidingSyncItems.stream().map(syncBaseItem -> Integer.toString(syncBaseItem.getId())).collect(Collectors.joining(", ")));
+        //
+        System.out.println("--sendAndAdd------tick count: " +collidingSyncItems.stream().findFirst().map(syncBaseItem -> Double.toString(syncBaseItem.getSyncInfo().getTickCount())).get() +": " + collidingSyncItems.stream().map(syncBaseItem -> Integer.toString(syncBaseItem.getId())).collect(Collectors.joining(", ")));
         ///////////
         collidingSyncItems.forEach(syncItem -> clientGameConnectionService.sendSyncBaseItem(syncItem));
         synchronized (lastSents) {

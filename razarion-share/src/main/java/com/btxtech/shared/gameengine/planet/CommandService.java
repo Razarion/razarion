@@ -50,6 +50,8 @@ public class CommandService { // Is part of the Base service
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
+    private PlanetService planetService;
+    @Inject
     private GuardingItemService guardingItemService;
 
     public void move(Collection<Integer> syncBaseItemIds, DecimalPosition destination) {
@@ -252,12 +254,17 @@ public class CommandService { // Is part of the Base service
 
     public void executeCommand(BaseCommand baseCommand) {
         try {
+            long tickCount = planetService.getTickCount();
+            boolean tickRunning = planetService.isTickRunning();
             SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
             syncBaseItem.stop();
             syncBaseItem.executeCommand(baseCommand);
             baseItemService.addToActiveItemQueue(syncBaseItem);
             guardingItemService.remove(syncBaseItem);
             gameLogicService.onCommandSent(syncBaseItem, baseCommand);
+            if (tickRunning || planetService.isTickRunning() || tickCount != planetService.getTickCount()) {
+                System.out.println("executeCommand1: Id: " + syncBaseItem.getId() + ". tickCount1: " + tickCount + ". tickCount2: " + planetService.getTickCount() + ". tickRunning1: " + tickRunning + ". tickRunning2: " + planetService.isTickRunning() + ".");
+            }
         } catch (ItemDoesNotExistException e) {
             gameLogicService.onItemDoesNotExistException(e);
         } catch (InsufficientFundsException e) {

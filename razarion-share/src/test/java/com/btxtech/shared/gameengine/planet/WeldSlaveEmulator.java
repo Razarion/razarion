@@ -58,7 +58,7 @@ public class WeldSlaveEmulator extends WeldBaseTest {
             if (syncBaseItem.getSyncBuilder() != null && syncBaseItem.getSyncBuilder().getCurrentBuildup() != null) {
                 buildupString = " buildup=" + syncBaseItem.getSyncBuilder().getCurrentBuildup().getBuildup();
             }
-            System.out.println("--- sendSyncBaseItem: " + syncBaseItem.getBaseItemType() + " " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + velocityString + buildupString);
+            System.out.println("--- sendSyncBaseItem: " + syncBaseItem.getId() + ". " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + velocityString + buildupString);
             getBaseItemService().onSlaveSyncBaseItemChanged(getWeldBean(PlanetService.class).getTickCount(), syncBaseItem.getSyncInfo());
         }
 

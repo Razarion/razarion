@@ -152,7 +152,8 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
     private ScenarioTicks runScenario() {
         ScenarioTicks actualTicks = new ScenarioTicks();
         actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());
-        actualTicks.addClientTick(slave.getBaseItemService().getSyncBaseItemInfos());
+        actualTicks.addSlaveTick(slave.getBaseItemService().getSyncBaseItemInfos());
+        actualTicks.compareMasterSlave();
         for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
             System.out.println("----------------- Start Tick: " + tickCount);
             DebugHelperStatic.setCurrentTick(actualTicks.size());
@@ -160,7 +161,8 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
             slave.tick();
             DebugHelperStatic.printAfterTick(null);
             actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());
-            actualTicks.addClientTick(slave.getBaseItemService().getSyncBaseItemInfos());
+            actualTicks.addSlaveTick(slave.getBaseItemService().getSyncBaseItemInfos());
+            actualTicks.compareMasterSlave();
             System.out.println("----------------- End Tick: " + tickCount);
         }
         return actualTicks;
@@ -180,7 +182,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
 
     public static class ScenarioTicks {
         List<List<SyncBaseItemInfo>> actualMasterTicks = new ArrayList<>();
-        List<List<SyncBaseItemInfo>> actualClientTicks = new ArrayList<>();
+        List<List<SyncBaseItemInfo>> actualSlaveTicks = new ArrayList<>();
 
         public int size() {
             return actualMasterTicks.size();
@@ -190,16 +192,37 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
             return actualMasterTicks.get(index);
         }
 
-        public List<SyncBaseItemInfo> getClientTick(int index) {
-            return actualClientTicks.get(index);
+        public List<SyncBaseItemInfo> getSlaveTick(int index) {
+            return actualSlaveTicks.get(index);
         }
 
         public void addMasterTick(List<SyncBaseItemInfo> syncBaseItemInfos) {
             actualMasterTicks.add(syncBaseItemInfos);
         }
 
-        public void addClientTick(List<SyncBaseItemInfo> syncBaseItemInfos) {
-            actualClientTicks.add(syncBaseItemInfos);
+        public void addSlaveTick(List<SyncBaseItemInfo> syncBaseItemInfos) {
+            actualSlaveTicks.add(syncBaseItemInfos);
+        }
+
+        public void compareMasterSlave() {
+            if (actualMasterTicks.size() != actualSlaveTicks.size()) {
+                System.out.println("Master/Slave not same size. Master: " + actualMasterTicks.size() + ". Slave: " + actualSlaveTicks.size());
+                return;
+            }
+            List<SyncBaseItemInfo> masterInfos = actualMasterTicks.get(actualMasterTicks.size() - 1);
+            List<SyncBaseItemInfo> salveInfos = actualSlaveTicks.get(actualSlaveTicks.size() - 1);
+
+            masterInfos.forEach(masterInfo -> {
+                SyncBaseItemInfo slaveInfo = findSlaveInfo(masterInfo, salveInfos);
+                double distance = masterInfo.getSyncPhysicalAreaInfo().getPosition().getDistance(slaveInfo.getSyncPhysicalAreaInfo().getPosition());
+                if (distance > 0.00000001) {
+                    System.out.println("### id: " + masterInfo.getId() + ". d: " + distance + ". Master: " + masterInfo.getSyncPhysicalAreaInfo().getPosition() + ". Master: " + slaveInfo.getSyncPhysicalAreaInfo().getPosition());
+                }
+            });
+        }
+
+        private SyncBaseItemInfo findSlaveInfo(SyncBaseItemInfo masterInfo, List<SyncBaseItemInfo> salveInfos) {
+            return salveInfos.stream().filter(slaveInfo -> slaveInfo.getId() == masterInfo.getId()).findFirst().orElseThrow(() -> new IllegalArgumentException("No such id id in slave found: " + masterInfo.getId()));
         }
     }
 }

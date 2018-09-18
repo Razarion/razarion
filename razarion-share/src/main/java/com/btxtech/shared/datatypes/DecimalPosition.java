@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class DecimalPosition {
     public static final DecimalPosition NULL = new DecimalPosition(0, 0);
+    public static final DecimalPosition EAST = new DecimalPosition(1, 0);
     private double x;
     private double y;
 

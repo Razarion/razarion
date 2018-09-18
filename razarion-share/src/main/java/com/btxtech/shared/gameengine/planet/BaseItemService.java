@@ -537,7 +537,7 @@ public class BaseItemService {
         }
     }
 
-    public void tick() {
+    public void tick(Collection<SyncBaseItem> pendingIdlesToSend) {
         try {
             synchronized (activeItems) {
                 synchronized (activeItemQueue) {
@@ -554,7 +554,11 @@ public class BaseItemService {
                     if (activeItem.isIdle()) {
                         iterator.remove();
                         if (!guardingItemService.add(activeItem)) {
-                            gameLogicService.onSyncBaseItemIdle(activeItem);
+                            if (pendingIdlesToSend != null) {
+                                pendingIdlesToSend.add(activeItem);
+                            } else {
+                                gameLogicService.onSyncBaseItemIdle(activeItem);
+                            }
                         }
                         continue;
                     }
@@ -564,7 +568,11 @@ public class BaseItemService {
                                 activeItem.stop();
                                 iterator.remove();
                                 if (!guardingItemService.add(activeItem)) {
-                                    gameLogicService.onSyncBaseItemIdle(activeItem);
+                                    if (pendingIdlesToSend != null) {
+                                        pendingIdlesToSend.add(activeItem);
+                                    } else {
+                                        gameLogicService.onSyncBaseItemIdle(activeItem);
+                                    }
                                 }
                             } catch (Throwable t) {
                                 exceptionHandler.handleException("Error during deactivation of active item: " + activeItem, t);
@@ -574,7 +582,11 @@ public class BaseItemService {
                         activeItem.stop();
                         exceptionHandler.handleException(t);
                         iterator.remove();
-                        gameLogicService.onSyncBaseItemIdle(activeItem);
+                        if (pendingIdlesToSend != null) {
+                            pendingIdlesToSend.add(activeItem);
+                        } else {
+                            gameLogicService.onSyncBaseItemIdle(activeItem);
+                        }
                     }
                 }
             }
@@ -713,9 +725,14 @@ public class BaseItemService {
         });
     }
 
-    public void handleReceivedPendingSyncInfos(long tickCount) {
+    public void afterTick(Collection<SyncBaseItem> pendingIdlesToSend, long tickCount) {
         while (!pendingReceivedSyncBaseItemInfos.isEmpty() && pendingReceivedSyncBaseItemInfos.peek().getTickCount() <= tickCount) {
-            onSlaveSyncBaseItemChanged(pendingReceivedSyncBaseItemInfos.remove());
+            SyncBaseItemInfo syncBaseItemInfo = pendingReceivedSyncBaseItemInfos.remove();
+            // System.out.println("Synchronize pending: slaveTickCount: " + tickCount + " info tick count: " + syncBaseItemInfo.getTickCount() + ". " + syncBaseItemInfo);
+            onSlaveSyncBaseItemChanged(syncBaseItemInfo);
+        }
+        if (pendingIdlesToSend != null) {
+            pendingIdlesToSend.forEach(syncBaseItem -> gameLogicService.onSyncBaseItemIdle(syncBaseItem));
         }
     }
 

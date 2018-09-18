@@ -149,7 +149,6 @@ public class TerrainMouseHandler {
                 return;
             }
 
-            System.out.println("terrainPosition: " + terrainPosition);
             if (shiftKey) {
                 logger.severe("Terrain Position: " + terrainPosition);
             }
@@ -321,6 +320,7 @@ public class TerrainMouseHandler {
                 gameEngineControl.unloadContainerCmd(container, terrainPosition);
             }
         } else {
+            logger.severe("(REMOVE THIS COMMENT) MOVE: terrainPosition: " + terrainPosition);
             executeMoveCommand(selectionHandler.getOwnSelection(), terrainPosition);
         }
     }
