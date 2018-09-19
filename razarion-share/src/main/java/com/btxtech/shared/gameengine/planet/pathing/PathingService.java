@@ -141,7 +141,7 @@ public class PathingService {
     }
 
     private void preparationPreferredVelocity() {
-        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
                 return;
             }
@@ -155,7 +155,7 @@ public class PathingService {
     private void orcaSolver() {
         Collection<Orca> orcas = new ArrayList<>();
         TickContext tickContext = new TickContext();
-        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
             if (!syncPhysicalArea.canMove()) {
                 return;
@@ -272,13 +272,13 @@ public class PathingService {
             // Happens if the touching is very small -> omit
             return false;
         }
-        logger.severe("calculate push away: " + shifty.getSyncItem().getId() + ". pusher: " + pusher.getSyncItem().getId() + ". shiftyVelocity: " + shiftyVelocity);
+        // logger.severe("calculate push away: " + shifty.getSyncItem().getId() + ". pusher: " + pusher.getSyncItem().getId() + ". shiftyVelocity: " + shiftyVelocity);
         shifty.setupForPushAway(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
         return true;
     }
 
     private void implementPosition() {
-        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
             if (!syncPhysicalArea.canMove()) {
                 return;
@@ -289,7 +289,7 @@ public class PathingService {
 
 
     private void checkDestination() {
-        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
                 return;
             }
@@ -298,7 +298,7 @@ public class PathingService {
     }
 
     private void finalization() {
-        syncItemContainerService.iterateOverBaseItemsIdOrdered(false, false, syncBaseItem -> {
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
                 return;
             }

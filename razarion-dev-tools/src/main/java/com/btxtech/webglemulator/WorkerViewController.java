@@ -57,7 +57,7 @@ public class WorkerViewController implements Initializable {
             canvas.setHeight(height.doubleValue());
             update();
         });
-        workerViewRenderer = workerEmulator.getWeldContainer().instance().select(WorkerViewRenderer.class).get();
+        workerViewRenderer = workerEmulator.getWorkerBean(WorkerViewRenderer.class);
         workerViewRenderer.init(canvas, zoom);
         scaleField.setText(String.format("%.2f", workerViewRenderer.getScale()));
         zoomSlider.setValue(workerViewRenderer.getZoom());

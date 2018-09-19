@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.ItemTypeService;
+import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.command.AttackCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.command.BuilderCommand;
@@ -254,21 +255,13 @@ public class CommandService { // Is part of the Base service
 
     public void executeCommand(BaseCommand baseCommand) {
         try {
-            long tickCount = planetService.getTickCount();
-            boolean tickRunning = planetService.isTickRunning();
-            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
-            syncBaseItem.stop();
-            syncBaseItem.executeCommand(baseCommand);
-            baseItemService.addToActiveItemQueue(syncBaseItem);
-            guardingItemService.remove(syncBaseItem);
-            gameLogicService.onCommandSent(syncBaseItem, baseCommand);
-            if (tickRunning || planetService.isTickRunning() || tickCount != planetService.getTickCount()) {
-                System.out.println("executeCommand1: Id: " + syncBaseItem.getId() + ". tickCount1: " + tickCount + ". tickCount2: " + planetService.getTickCount() + ". tickRunning1: " + tickRunning + ". tickRunning2: " + planetService.isTickRunning() + ".");
+            if(planetService.getGameEngineMode() == GameEngineMode.MASTER) {
+                baseItemService.queueCommand(baseCommand);
+            } else if(planetService.getGameEngineMode() == GameEngineMode.SLAVE) {
+                gameLogicService.onSlaveCommandSent(syncItemContainerService.getSyncBaseItemSave(baseCommand.getId()), baseCommand);
             }
         } catch (ItemDoesNotExistException e) {
             gameLogicService.onItemDoesNotExistException(e);
-        } catch (InsufficientFundsException e) {
-            gameLogicService.onInsufficientFundsException(e);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }

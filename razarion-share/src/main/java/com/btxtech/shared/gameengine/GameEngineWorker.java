@@ -586,12 +586,16 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
     }
 
     @Override
-    public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
-        if (serverConnection != null) {
-            serverConnection.onCommandSent(baseCommand);
-        }
+    public void onMasterCommandSent(SyncBaseItem syncItem) {
         if (workerTrackerHandler != null) {
             workerTrackerHandler.onSyncBaseItem(syncItem);
+        }
+    }
+
+    @Override
+    public void onSlaveCommandSent(SyncBaseItem syncBaseItemSave, BaseCommand baseCommand) {
+        if (serverConnection != null) {
+            serverConnection.onCommandSent(baseCommand);
         }
     }
 

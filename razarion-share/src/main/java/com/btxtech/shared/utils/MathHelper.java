@@ -224,6 +224,10 @@ public class MathHelper {
         return Math.max(min, Math.min(max, value));
     }
 
+    public static int clamp(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
+    }
+
     public static double clamp01(double value) {
         return clamp(value, 0.0, 1.0);
     }

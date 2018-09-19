@@ -127,7 +127,7 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
-    public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
+    public void onMasterCommandSent(SyncBaseItem syncItem) {
         testWebSocket.sendSyncBaseItem(syncItem);
     }
 

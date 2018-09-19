@@ -49,8 +49,12 @@ public class GameLogicService {
         logger.log(Level.SEVERE, "GameLogicService.onItemDoesNotExistException() ", e);
     }
 
-    public void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
-        gameLogicListener.ifPresent(listener -> listener.onCommandSent(syncItem, baseCommand));
+    public void onMasterCommandSent(SyncBaseItem syncItem) {
+        gameLogicListener.ifPresent(listener -> listener.onMasterCommandSent(syncItem));
+    }
+
+    public void onSlaveCommandSent(SyncBaseItem syncBaseItemSave, BaseCommand baseCommand) {
+        gameLogicListener.ifPresent(listener -> listener.onSlaveCommandSent(syncBaseItemSave, baseCommand));
     }
 
     public void onBaseCreated(PlayerBaseFull playerBase) {

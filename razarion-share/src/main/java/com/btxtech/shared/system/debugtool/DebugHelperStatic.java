@@ -1,11 +1,14 @@
 package com.btxtech.shared.system.debugtool;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.ObstacleSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeObstacle;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -13,6 +16,9 @@ import java.util.List;
  * on 16.11.2017.
  */
 public class DebugHelperStatic {
+    private static final String TICK_DATA_PATH = "C:\\dev\\projects\\razarion\\code\\razarion";
+    public static final String TICK_DATA_SLAVE = TICK_DATA_PATH + "\\slave.json";
+    public static final String TICK_DATA_MASTER = TICK_DATA_PATH + "\\master.json";
     private static final String NULL_STRING = "null";
     private static List<DecimalPosition> polygon;
     private static List<DecimalPosition> positions;
@@ -41,6 +47,19 @@ public class DebugHelperStatic {
 
     public static List<DecimalPosition> getPositions() {
         return positions;
+    }
+
+
+    public static void appendAfterTick(List<DebugHelperStatic.TickData> tickDatas, double tickCount, SyncItemContainerService syncItemContainerService) {
+        TickData tickData = new TickData();
+        tickData.setDate(new Date());
+        tickData.setTickCount(tickCount);
+        syncItemContainerService.iterateOverBaseItemsIdOrdered(tickData::addSyncBaseItem);
+        tickDatas.add(tickData);
+    }
+
+    public static void clearTickDatas(List<DebugHelperStatic.TickData> tickDatas) {
+        tickDatas.clear();
     }
 
     public static void add2printOnTick(String message) {
@@ -118,9 +137,9 @@ public class DebugHelperStatic {
             return;
         }
         if (printOnTickMessage != null) {
-            if(debugHelper != null) {
+            if (debugHelper != null) {
                 debugHelper.debugToConsole(printOnTickMessage);
-            }else{
+            } else {
                 System.out.println("\n--------- Tick " + currentTick + ": " + printOnTickMessage);
             }
             printOnTickMessage = null;
@@ -163,6 +182,122 @@ public class DebugHelperStatic {
             // return "**** NOT SUPPORTED IN GWT RT ****";
         } else {
             return NULL_STRING;
+        }
+    }
+
+    public static class TickData {
+        private double tickCount; // TODO should be called tick-number
+        private Date date;
+        private List<TickSyncBaseItem> tickSyncBaseItems;
+
+        public double getTickCount() {
+            return tickCount;
+        }
+
+        public void setTickCount(double tickCount) {
+            this.tickCount = tickCount;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        public List<TickSyncBaseItem> getTickSyncBaseItems() {
+            return tickSyncBaseItems;
+        }
+
+        public void setTickSyncBaseItems(List<TickSyncBaseItem> tickSyncBaseItems) {
+            this.tickSyncBaseItems = tickSyncBaseItems;
+        }
+
+        public void addSyncBaseItem(SyncBaseItem syncBaseItem) {
+            if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
+                return;
+            }
+            if (tickSyncBaseItems == null) {
+                tickSyncBaseItems = new ArrayList<>();
+            }
+            TickSyncBaseItem tickSyncBaseItem = new TickSyncBaseItem();
+            tickSyncBaseItem.setId(syncBaseItem.getId());
+            tickSyncBaseItem.setPosition(syncBaseItem.getSyncPhysicalArea().getPosition2d());
+            tickSyncBaseItem.setVelocity(syncBaseItem.getSyncPhysicalMovable().getVelocity());
+            tickSyncBaseItem.setAngle(syncBaseItem.getSyncPhysicalArea().getAngle());
+            tickSyncBaseItem.setRadius(syncBaseItem.getSyncPhysicalArea().getRadius());
+            if (syncBaseItem.getSyncPhysicalMovable().getPath() != null) {
+                tickSyncBaseItem.setPath(syncBaseItem.getSyncPhysicalMovable().getPath().getWayPositions());
+            }
+            tickSyncBaseItem.setPreferredVelocity(syncBaseItem.getSyncPhysicalMovable().getPreferredVelocity());
+            tickSyncBaseItems.add(tickSyncBaseItem);
+        }
+    }
+
+    public static class TickSyncBaseItem {
+        private int id;
+        private DecimalPosition position;
+        private DecimalPosition velocity;
+        private double angle;
+        private double radius;
+        private List<DecimalPosition> path;
+        private DecimalPosition preferredVelocity;
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public DecimalPosition getPosition() {
+            return position;
+        }
+
+        public void setPosition(DecimalPosition position) {
+            this.position = position;
+        }
+
+        public DecimalPosition getVelocity() {
+            return velocity;
+        }
+
+        public void setVelocity(DecimalPosition velocity) {
+            this.velocity = velocity;
+        }
+
+        public double getAngle() {
+            return angle;
+        }
+
+        public void setAngle(double angle) {
+            this.angle = angle;
+        }
+
+        public double getRadius() {
+            return radius;
+        }
+
+        public void setRadius(double radius) {
+            this.radius = radius;
+        }
+
+        public List<DecimalPosition> getPath() {
+            return path;
+        }
+
+        public void setPath(List<DecimalPosition> path) {
+            this.path = path;
+        }
+
+        public DecimalPosition getPreferredVelocity() {
+            return preferredVelocity;
+        }
+
+        public void setPreferredVelocity(DecimalPosition preferredVelocity) {
+            this.preferredVelocity = preferredVelocity;
         }
     }
 }

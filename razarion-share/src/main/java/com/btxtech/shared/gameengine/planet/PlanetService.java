@@ -16,6 +16,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.shared.system.SimpleScheduledFuture;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Event;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -71,6 +73,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private long tickCount;
     private GameEngineMode gameEngineMode;
     private boolean tickRunning;
+    private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
 
     @PostConstruct
     public void postConstruct() {
@@ -124,9 +127,11 @@ public class PlanetService implements Runnable { // Only available in worker. On
         try {
             tickRunning = true;
             SynchronizationSendingContext synchronizationSendingContext = null;
+            Collection<SyncBaseItem> executedCommands=null;
             Collection<SyncBaseItem> pendingIdlesToSend = null;
             if (gameEngineMode == GameEngineMode.MASTER) {
                 synchronizationSendingContext = new SynchronizationSendingContext();
+                executedCommands = new LinkedList<>();
                 pendingIdlesToSend = new LinkedList<>();
             }
             planetServiceTracker.startTick();
@@ -134,7 +139,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.afterQuestService();
             pathingService.tick(synchronizationSendingContext);
             planetServiceTracker.afterPathingService();
-            baseItemService.tick(pendingIdlesToSend);
+            baseItemService.tick(pendingIdlesToSend, executedCommands);
             planetServiceTracker.afterBaseItemService();
             projectileService.tick();
             planetServiceTracker.afterProjectileService();
@@ -147,8 +152,10 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.endTick();
             /// --- new experimental
             tickCount++;
-            baseItemService.afterTick(pendingIdlesToSend, tickCount);
+            baseItemService.afterTick(pendingIdlesToSend, tickCount, executedCommands);
             /// --- new experimental ends
+
+            DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -216,5 +223,13 @@ public class PlanetService implements Runnable { // Only available in worker. On
 
     public boolean isTickRunning() {
         return tickRunning;
+    }
+
+    public List<DebugHelperStatic.TickData> getTickDatas() {
+        return tickDatas;
+    }
+
+    public GameEngineMode getGameEngineMode() {
+        return gameEngineMode;
     }
 }

@@ -13,10 +13,12 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
+import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.exception.BaseDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.HouseSpaceExceededException;
+import com.btxtech.shared.gameengine.datatypes.exception.InsufficientFundsException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemDoesNotExistException;
 import com.btxtech.shared.gameengine.datatypes.exception.ItemLimitExceededException;
 import com.btxtech.shared.gameengine.datatypes.exception.NoSuchItemTypeException;
@@ -44,9 +46,11 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -85,6 +89,7 @@ public class BaseItemService {
     private int lastBaseItId = 1;
     private final Collection<SyncBaseItem> activeItems = new ArrayList<>();
     private final Collection<SyncBaseItem> activeItemQueue = new ArrayList<>();
+    private final Queue<BaseCommand> commandQueue = new LinkedList<>();
     private PlanetConfig planetConfig;
     private GameEngineMode gameEngineMode;
     private PriorityQueue<SyncBaseItemInfo> pendingReceivedSyncBaseItemInfos = new PriorityQueue<>(Comparator.comparingDouble(SyncBaseItemInfo::getTickCount));
@@ -537,8 +542,12 @@ public class BaseItemService {
         }
     }
 
-    public void tick(Collection<SyncBaseItem> pendingIdlesToSend) {
+    public void tick(Collection<SyncBaseItem> pendingIdlesToSend, Collection<SyncBaseItem> executedCommands) {
         try {
+            synchronized (commandQueue) {
+                commandQueue.forEach(baseCommand -> executeCommand(baseCommand, executedCommands));
+                commandQueue.clear();
+            }
             synchronized (activeItems) {
                 synchronized (activeItemQueue) {
                     activeItems.addAll(activeItemQueue);
@@ -591,6 +600,25 @@ public class BaseItemService {
                 }
             }
             guardingItemService.tick();
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+        }
+    }
+
+    private void executeCommand(BaseCommand baseCommand, Collection<SyncBaseItem> executedCommands) {
+        try {
+            SyncBaseItem syncBaseItem = syncItemContainerService.getSyncBaseItemSave(baseCommand.getId());
+            syncBaseItem.stop();
+            syncBaseItem.executeCommand(baseCommand);
+            addToActiveItemQueue(syncBaseItem);
+            guardingItemService.remove(syncBaseItem);
+            if (executedCommands != null) {
+                executedCommands.add(syncBaseItem);
+            }
+        } catch (ItemDoesNotExistException e) {
+            gameLogicService.onItemDoesNotExistException(e);
+        } catch (InsufficientFundsException e) {
+            gameLogicService.onInsufficientFundsException(e);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -725,7 +753,7 @@ public class BaseItemService {
         });
     }
 
-    public void afterTick(Collection<SyncBaseItem> pendingIdlesToSend, long tickCount) {
+    public void afterTick(Collection<SyncBaseItem> pendingIdlesToSend, long tickCount, Collection<SyncBaseItem> executedCommands) {
         while (!pendingReceivedSyncBaseItemInfos.isEmpty() && pendingReceivedSyncBaseItemInfos.peek().getTickCount() <= tickCount) {
             SyncBaseItemInfo syncBaseItemInfo = pendingReceivedSyncBaseItemInfos.remove();
             // System.out.println("Synchronize pending: slaveTickCount: " + tickCount + " info tick count: " + syncBaseItemInfo.getTickCount() + ". " + syncBaseItemInfo);
@@ -734,6 +762,14 @@ public class BaseItemService {
         if (pendingIdlesToSend != null) {
             pendingIdlesToSend.forEach(syncBaseItem -> gameLogicService.onSyncBaseItemIdle(syncBaseItem));
         }
+        if(executedCommands != null) {
+            executedCommands.forEach(syncBaseItem -> gameLogicService.onMasterCommandSent(syncBaseItem));
+        }
     }
 
+    public void queueCommand(BaseCommand baseCommand) {
+        synchronized (commandQueue) {
+            commandQueue.add(baseCommand);
+        }
+    }
 }

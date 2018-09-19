@@ -211,7 +211,7 @@ public class SyncPhysicalArea {
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
-        logger.severe("synchronize id: " + getSyncItem().getId() + ". " + syncPhysicalAreaInfo);
+        // logger.severe("synchronize id: " + getSyncItem().getId() + ". " + syncPhysicalAreaInfo);
         DecimalPosition oldPosition2d = position2d;
         double oldAngle = angle;
         // System.out.println("synchronize: " + getSyncItem().getId() + "|" + syncPhysicalAreaInfo);

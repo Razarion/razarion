@@ -5,6 +5,8 @@ import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.system.perfmon.PerfmonService;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.VisualUiService;
@@ -19,6 +21,8 @@ import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
+import com.btxtech.webglemulator.razarion.WorkerEmulator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -45,6 +49,7 @@ import javafx.stage.Stage;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Optional;
@@ -128,6 +133,8 @@ public class WebGlEmulatorController implements Initializable {
     private GameTipService gameTipService;
     @Inject
     private GameEngineControl gameEngineControl;
+    @Inject
+    private WorkerEmulator workerEmulator;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -422,5 +429,20 @@ public class WebGlEmulatorController implements Initializable {
 
     public void displayLevel(int levelNumber) {
         levelLabel.setText("Level: " + levelNumber);
+    }
+
+    public void onSaveTickDataButton() {
+        try {
+            System.out.println("onSaveTickDataButton() start saving");
+            new ObjectMapper().writeValue(new File(DebugHelperStatic.TICK_DATA_SLAVE), workerEmulator.getWorkerBean(PlanetService.class).getTickDatas());
+            System.out.println("onSaveTickDataButton() saved to: " + DebugHelperStatic.TICK_DATA_SLAVE);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public void onClearTickDataButton() {
+        System.out.println("onClearTickDataButton()");
+        DebugHelperStatic.clearTickDatas(workerEmulator.getWorkerBean(PlanetService.class).getTickDatas());
     }
 }

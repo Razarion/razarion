@@ -1,7 +1,9 @@
 package com.btxtech.server.debuggui;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import javafx.event.ActionEvent;
+import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.system.debugtool.DebugHelperStatic;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -14,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -25,6 +28,8 @@ import java.util.ResourceBundle;
 public class ServerGuiController implements Initializable {
     @Inject
     private ServerDebugRenderer serverDebugRenderer;
+    @Inject
+    private PlanetService planetService;
     @FXML
     private AnchorPane anchorPanel;
     @FXML
@@ -96,5 +101,20 @@ public class ServerGuiController implements Initializable {
     public void onMousePressed(MouseEvent event) {
         DecimalPosition position = serverDebugRenderer.convertMouseToModel(event);
         // serverDebugRenderer.onMousePressedTerrain(position);
+    }
+
+    public void onSaveTickDataButton() {
+        try {
+            System.out.println("onSaveTickDataButton() start saving");
+            new ObjectMapper().writeValue(new File(DebugHelperStatic.TICK_DATA_MASTER), planetService.getTickDatas());
+            System.out.println("onSaveTickDataButton() saved to: " + DebugHelperStatic.TICK_DATA_MASTER);
+        } catch (Throwable t) {
+            t.printStackTrace();
+        }
+    }
+
+    public void onClearTickDataButton() {
+        System.out.println("onClearTickDataButton()");
+        DebugHelperStatic.clearTickDatas(planetService.getTickDatas());
     }
 }

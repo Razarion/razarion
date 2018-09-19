@@ -320,7 +320,7 @@ public class TerrainMouseHandler {
                 gameEngineControl.unloadContainerCmd(container, terrainPosition);
             }
         } else {
-            logger.severe("(REMOVE THIS COMMENT) MOVE: terrainPosition: " + terrainPosition);
+            // logger.severe("(REMOVE THIS COMMENT) MOVE: terrainPosition: " + terrainPosition);
             executeMoveCommand(selectionHandler.getOwnSelection(), terrainPosition);
         }
     }

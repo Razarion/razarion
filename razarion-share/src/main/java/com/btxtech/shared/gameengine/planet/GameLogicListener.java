@@ -68,7 +68,10 @@ public interface GameLogicListener {
     default void onProjectileDetonation(int baseItemTypeId, Vertex position) {
     }
 
-    default void onCommandSent(SyncBaseItem syncItem, BaseCommand baseCommand) {
+    default void onMasterCommandSent(SyncBaseItem syncItem) {
+    }
+
+    default void onSlaveCommandSent(SyncBaseItem syncBaseItemSave, BaseCommand baseCommand) {
     }
 
     default void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {

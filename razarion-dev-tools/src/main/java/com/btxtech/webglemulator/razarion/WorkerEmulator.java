@@ -31,7 +31,7 @@ public class WorkerEmulator {
         gameEngineWorker.receivePackage(gameEngineControlPackage);
     }
 
-    public WeldContainer getWeldContainer() {
-        return weldContainer;
+    public <T> T getWorkerBean(Class<T> theClass) {
+        return weldContainer.instance().select(theClass).get();
     }
 }

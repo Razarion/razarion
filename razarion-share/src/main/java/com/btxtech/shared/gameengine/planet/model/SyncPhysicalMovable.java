@@ -26,7 +26,6 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
 import com.btxtech.shared.system.debugtool.DebugHelper;
-import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -131,6 +130,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     public void setPath(SimplePath path) {
         this.path = instancePath.get();
         this.path.init(path);
+        velocity = null;
     }
 
     public Path getPath() {

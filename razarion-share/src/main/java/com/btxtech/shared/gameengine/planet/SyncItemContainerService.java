@@ -112,9 +112,9 @@ public class SyncItemContainerService {
         return iterateOverBaseItems(includeNoPosition, includeDead, null, defaultReturn, itemIteratorHandler);
     }
 
-    public void iterateOverBaseItemsIdOrdered(boolean includeNoPosition, boolean includeDead, Consumer<SyncBaseItem> itemIteratorHandler) {
+    public void iterateOverBaseItemsIdOrdered(Consumer<SyncBaseItem> itemIteratorHandler) {
         Set<SyncBaseItem> items = new TreeSet<>(Comparator.comparingInt(SyncItem::getId));
-        iterateOverBaseItems(includeNoPosition, includeDead, null, null, new Function<SyncBaseItem, Object>() {
+        iterateOverBaseItems(false, false, null, null, new Function<SyncBaseItem, Object>() {
             @Override
             public Object apply(SyncBaseItem syncBaseItem) {
                 items.add(syncBaseItem);

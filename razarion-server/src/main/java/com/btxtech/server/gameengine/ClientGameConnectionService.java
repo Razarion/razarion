@@ -85,10 +85,10 @@ public class ClientGameConnectionService {
             return;
         }
         SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
-        if (syncBaseItem.getSyncPhysicalArea().canMove()) {
-            System.out.println("*** sendSyncBaseItem: " + syncBaseItem.getId() + ". P: " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + ". V: " + syncBaseItem.getSyncPhysicalMovable().getVelocity());
-            // Thread.dumpStack();
-        }
+//        if (syncBaseItem.getSyncPhysicalArea().canMove()) {
+//            // System.out.println("*** sendSyncBaseItem: " + syncBaseItem.getId() + ". P: " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + ". V: " + syncBaseItem.getSyncPhysicalMovable().getVelocity());
+//            // Thread.dumpStack();
+//        }
         sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
     }
 

@@ -145,13 +145,13 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         getBotService().startBots(botConfigs, null);
         // Attack
-        assertSyncItemCount(5,0,0);
+        assertSyncItemCount(5, 0, 0);
         TestSimpleScheduledFuture botScheduledFuture = getTestSimpleExecutorService().getScheduleAtFixedRate(SimpleExecutorService.Type.BOT_TICKER);
         for (int i = 0; i < 100; i++) {
             botScheduledFuture.invokeRun();
             tickPlanetServiceBaseServiceActive();
         }
-        assertSyncItemCount(3,0,2);
+        assertSyncItemCount(3, 0, 2);
 
     }
 
@@ -175,7 +175,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
     private void verifySlavePick(WeldSlaveEmulator permanentSalve, int pickerId, int boxId) {
         SyncBaseItem syncBaseItem = permanentSalve.getSyncItemContainerService().getSyncBaseItem(pickerId);
         Assert.assertFalse(syncBaseItem.isIdle());
-        permanentSalve.getBaseItemService().tick(null);
+        permanentSalve.getBaseItemService().tick(null, null);
         Assert.assertFalse(syncBaseItem.isIdle());
     }
 
