@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -31,6 +32,7 @@ public class PathingService {
     public static final double STOP_DETECTION_NEIGHBOUR_DISTANCE = 0.1;
     public static final double NEIGHBOR_ITEM_RADIUS = 15;
     public static final double RADIUS_GROW = 1;
+    private static final int MAX_PUSH_AWAY_DEEP = 10;
     private Logger logger = Logger.getLogger(PathingService.class.getName());
     @Inject
     private SyncItemContainerService syncItemContainerService;
@@ -145,16 +147,13 @@ public class PathingService {
             if (!syncBaseItem.getSyncPhysicalArea().canMove()) {
                 return;
             }
-
             syncBaseItem.getSyncPhysicalMovable().setupForTick();
-
-            return;
         });
     }
 
     private void orcaSolver() {
         Collection<Orca> orcas = new ArrayList<>();
-        TickContext tickContext = new TickContext();
+        Collection<SyncPhysicalMovable> pushAways = new LinkedList<>();
         syncItemContainerService.iterateOverBaseItemsIdOrdered(syncBaseItem -> {
             SyncPhysicalArea syncPhysicalArea = syncBaseItem.getSyncPhysicalArea();
             if (!syncPhysicalArea.canMove()) {
@@ -165,7 +164,7 @@ public class PathingService {
             if (syncPhysicalMovable.isMoving()) {
                 Orca orca = new Orca(syncPhysicalMovable);
                 // debugHelper.debugToConsole("new Orca1");
-                addOtherSyncItemOrcaLines(orca, syncBaseItem, tickContext);
+                addOtherSyncItemOrcaLines(orca, syncBaseItem, pushAways);
                 addObstaclesOrcaLines(orca, syncBaseItem);
                 if (!orca.isEmpty()) {
                     orcas.add(orca);
@@ -173,23 +172,33 @@ public class PathingService {
                     syncPhysicalMovable.setVelocity(syncPhysicalMovable.getPreferredVelocity());
                 }
             }
-            return;
         });
-        // TODO handle push away recursively
-        tickContext.getPushAways().forEach(syncPhysicalMovable -> {
+        handlePushAways(orcas, pushAways, 0);
+        orcas.forEach(Orca::solve);
+        orcas.forEach(Orca::implementVelocity);
+    }
+
+    private void handlePushAways(Collection<Orca> orcas, Collection<SyncPhysicalMovable> pushAways, int deep) {
+        if (deep > MAX_PUSH_AWAY_DEEP) {
+            logger.warning("MAX_PUSH_AWAY_DEEP reached");
+            return;
+        }
+        Collection<SyncPhysicalMovable> newPushAways = new LinkedList<>();
+        pushAways.forEach(syncPhysicalMovable -> {
             Orca orca = new Orca(syncPhysicalMovable);
             // debugHelper.debugToConsole("new Orca2");
-            addOtherSyncItemOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem(), null);
+            addOtherSyncItemOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem(), newPushAways);
             addObstaclesOrcaLines(orca, (SyncBaseItem) syncPhysicalMovable.getSyncItem());
             if (!orca.isEmpty()) {
                 orcas.add(orca);
             }
         });
-        orcas.forEach(Orca::solve);
-        orcas.forEach(Orca::implementVelocity);
+        if (!newPushAways.isEmpty()) {
+            handlePushAways(orcas, newPushAways, deep + 1);
+        }
     }
 
-    private void addOtherSyncItemOrcaLines(Orca orca, SyncBaseItem syncBaseItem, TickContext tickContext) {
+    private void addOtherSyncItemOrcaLines(Orca orca, SyncBaseItem syncBaseItem, Collection<SyncPhysicalMovable> pushAways) {
         syncItemContainerService.iterateCellRadiusItem(syncBaseItem.getSyncPhysicalArea().getPosition2d(), NEIGHBOR_ITEM_RADIUS, otherSyncItem -> {
             if (syncBaseItem.equals(otherSyncItem)) {
                 return;
@@ -201,13 +210,10 @@ public class PathingService {
                     orca.add(otherSyncPhysicalMovable);
                 } else {
                     if (isPiercing(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
-                        if (setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
-                            if (tickContext != null) {
-                                tickContext.addPushAway(otherSyncPhysicalMovable);
-                            }
-                            orca.add(otherSyncPhysicalMovable);
-                            onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
-                        }
+                        setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
+                        pushAways.add(otherSyncPhysicalMovable);
+                        orca.add(otherSyncPhysicalMovable);
+                        onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                     }
                 }
                 // TODO add none movable (buildings)
@@ -222,9 +228,8 @@ public class PathingService {
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 sortedObstacleSlope.add((ObstacleSlope) obstacle);
-            } else {
-                // TODO add ObstacleTerrainObject;
             }
+            // TODO add ObstacleTerrainObject;
         });
         ObstacleSlope.sort(position, sortedObstacleSlope);
         sortedObstacleSlope.forEach(orca::add);
@@ -240,41 +245,9 @@ public class PathingService {
         return minkowskiSum.doesLineCut(move);
     }
 
-    private boolean setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
-        // 1) Check if pierced
-        double totalRadius = shifty.getRadius() + pusher.getRadius();
-        Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
-        DecimalPosition pusherVelocity = pusher.getPreferredVelocity().multiply(PlanetService.TICK_FACTOR);
-        DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
-        Line move = new Line(pusher.getPosition2d(), pusherTarget);
-        if (!minkowskiSum.doesLineCut(move)) {
-            return false;
-        }
-        // 2) Push away
-        DecimalPosition crossPosition = move.projectOnInfiniteLine(shifty.getPosition2d());
-        DecimalPosition pushAwayDirection;
-        if (crossPosition.equals(shifty.getPosition2d())) {
-            pushAwayDirection = pusherVelocity.rotateCounterClock90();
-        } else {
-            pushAwayDirection = shifty.getPosition2d().sub(crossPosition).normalize();
-        }
-        double distanceSq = totalRadius * totalRadius - pusherTarget.sub(crossPosition).magnitudeSq();
-        double distance;
-        if (distanceSq > 0.0) {
-            distance = Math.sqrt(distanceSq);
-        } else {
-            // Pusher Target does not touch shifty
-            distance = totalRadius;
-        }
-        DecimalPosition shiftyTarget = crossPosition.getPointWithDistance(distance, crossPosition.add(pushAwayDirection), true);
-        DecimalPosition shiftyVelocity = shiftyTarget.sub(shifty.getPosition2d());
-        if (shiftyVelocity.equals(DecimalPosition.NULL)) {
-            // Happens if the touching is very small -> omit
-            return false;
-        }
-        // logger.severe("calculate push away: " + shifty.getSyncItem().getId() + ". pusher: " + pusher.getSyncItem().getId() + ". shiftyVelocity: " + shiftyVelocity);
-        shifty.setupForPushAway(shiftyVelocity.divide(PlanetService.TICK_FACTOR));
-        return true;
+    private void setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
+        DecimalPosition pushAwayDirection = shifty.getPosition2d().sub(pusher.getPosition2d()).normalize();
+        shifty.setupForPushAway(pushAwayDirection.multiply(pusher.getAcceleration() * PlanetService.TICK_FACTOR).divide(PlanetService.TICK_FACTOR));
     }
 
     private void implementPosition() {

@@ -44,45 +44,45 @@ public class WeldSlaveEmulator extends WeldBaseTest {
 
         @Override
         public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-            System.out.println("--- onSpawnSyncItemStart");
+            // System.out.println("--- onSpawnSyncItemStart");
             getBaseItemService().onSlaveSyncBaseItemChanged(getWeldBean(PlanetService.class).getTickCount(), syncBaseItem.getSyncInfo());
         }
 
         @Override
         public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
-            String velocityString = "";
-            if (syncBaseItem.getSyncPhysicalArea().canMove()) {
-                velocityString = " v=" + syncBaseItem.getSyncPhysicalMovable().getVelocity();
-            }
-            String buildupString = "";
-            if (syncBaseItem.getSyncBuilder() != null && syncBaseItem.getSyncBuilder().getCurrentBuildup() != null) {
-                buildupString = " buildup=" + syncBaseItem.getSyncBuilder().getCurrentBuildup().getBuildup();
-            }
-            System.out.println("--- sendSyncBaseItem: " + syncBaseItem.getId() + ". " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + velocityString + buildupString);
+//            String velocityString = "";
+//            if (syncBaseItem.getSyncPhysicalArea().canMove()) {
+//                velocityString = " v=" + syncBaseItem.getSyncPhysicalMovable().getVelocity();
+//            }
+//            String buildupString = "";
+//            if (syncBaseItem.getSyncBuilder() != null && syncBaseItem.getSyncBuilder().getCurrentBuildup() != null) {
+//                buildupString = " buildup=" + syncBaseItem.getSyncBuilder().getCurrentBuildup().getBuildup();
+//            }
+//            System.out.println("--- sendSyncBaseItem: " + syncBaseItem.getId() + ". " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + velocityString + buildupString);
             getBaseItemService().onSlaveSyncBaseItemChanged(getWeldBean(PlanetService.class).getTickCount(), syncBaseItem.getSyncInfo());
         }
 
         @Override
         public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {
-            System.out.println("--- onSyncBoxCreated");
+            // System.out.println("--- onSyncBoxCreated");
             getBoxService().onSlaveSyncBoxItemChanged(syncBoxItem.getSyncInfo());
         }
 
         @Override
         public void onBaseCreated(PlayerBaseFull playerBase) {
-            System.out.println("--- onBaseCreated");
+            // System.out.println("--- onBaseCreated");
             getBaseItemService().createBaseSlave(playerBase.getPlayerBaseInfo());
         }
 
         @Override
         public void onBaseDeleted(PlayerBase playerBase) {
-            System.out.println("--- onBaseDeleted");
+            // System.out.println("--- onBaseDeleted");
             getBaseItemService().deleteBaseSlave(playerBase.getBaseId());
         }
 
         @Override
         public void onSyncItemRemoved(SyncItem serverSyncItem, boolean explode) {
-            System.out.println("--- onSyncItemRemoved");
+            // System.out.println("--- onSyncItemRemoved");
             SyncItem syncItem = getWeldBean(SyncItemContainerService.class).getSyncItem(serverSyncItem.getId());
             if (syncItem instanceof SyncBaseItem) {
                 getWeldBean(BaseItemService.class).onSlaveSyncBaseItemDeleted((SyncBaseItem) syncItem, new SyncItemDeletedInfo().setExplode(explode));

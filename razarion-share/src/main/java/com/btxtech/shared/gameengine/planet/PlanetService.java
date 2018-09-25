@@ -73,7 +73,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private long tickCount;
     private GameEngineMode gameEngineMode;
     private boolean tickRunning;
-    private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
+    // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
 
     @PostConstruct
     public void postConstruct() {
@@ -155,7 +155,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
             baseItemService.afterTick(pendingIdlesToSend, tickCount, executedCommands);
             /// --- new experimental ends
 
-            DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);
+            // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
@@ -226,7 +226,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     }
 
     public List<DebugHelperStatic.TickData> getTickDatas() {
-        return tickDatas;
+        // return tickDatas;
+        return null;
     }
 
     public GameEngineMode getGameEngineMode() {
