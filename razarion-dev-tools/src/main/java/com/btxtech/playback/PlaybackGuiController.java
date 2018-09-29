@@ -118,11 +118,11 @@ public class PlaybackGuiController implements Initializable {
         playbackService.prefTick();
     }
 
-    public void onNextTickButtonClicked(ActionEvent actionEvent) {
+    public void onNextTickButtonClicked() {
         playbackService.nextTick();
     }
 
-    public void onNumberTickFieldChanged(ActionEvent actionEvent) {
+    public void onNumberTickFieldChanged() {
         try {
             if (tickNumberField.getText().trim().isEmpty()) {
                 playbackService.setTick(0);
@@ -130,14 +130,14 @@ public class PlaybackGuiController implements Initializable {
                 playbackService.setTick(Integer.parseInt(tickNumberField.getText()));
             }
         } catch (NumberFormatException t) {
-            tickNumberField.setText(Integer.toString(playbackService.getCurrentTickNumber()));
+            tickNumberField.setText(Long.toString(playbackService.getCurrentTickNumber()));
         } catch (Throwable t) {
             t.printStackTrace();
         }
     }
 
     private void onPlaybackChanged() {
-        tickNumberField.setText(Integer.toString(playbackService.getCurrentTickNumber()));
+        tickNumberField.setText(Long.toString(playbackService.getCurrentTickNumber()));
         masterDateLabel.setText(MILLIS_DATE_FORMAT.format(playbackService.getCurrentMasterTickData().getDate()));
         slaveDateLabel.setText(MILLIS_DATE_FORMAT.format(playbackService.getCurrentSlaveTickData().getDate()));
         masterTickNumberLabel.setText(Integer.toString((int) playbackService.getCurrentMasterTickData().getTickCount()));
