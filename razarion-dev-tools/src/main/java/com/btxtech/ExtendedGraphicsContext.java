@@ -158,6 +158,14 @@ public class ExtendedGraphicsContext {
         }
     }
 
+    public void strokeRay(DecimalPosition start, DecimalPosition direction, double strokeWidth, Color color) {
+        gc.setStroke(color);
+        gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
+        gc.setLineWidth(strokeWidth);
+        DecimalPosition end = start.getPointWithDistance(1000, start.add(direction), true);
+        gc.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+    }
+
     public void strokePolygon(List<DecimalPosition> polygon, double strokeWidth, Color color, boolean showPoint) {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));

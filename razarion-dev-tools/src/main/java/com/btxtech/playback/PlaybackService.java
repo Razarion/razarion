@@ -1,5 +1,6 @@
 package com.btxtech.playback;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.utils.MathHelper;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -70,10 +71,34 @@ public class PlaybackService {
             }
             double distance = slaveItem.getPosition().getDistance(masterItem.getPosition());
             double angle = MathHelper.getAngle(masterItem.getAngle(), slaveItem.getAngle());
-            if (distance > 0.001 || Math.toDegrees(angle) > 1.0) {
-                System.out.println("Tick count: " + tickCount + ". TELEPORTAION: " + masterItem.getId() + ". Distance: " + distance + ". Angle: " + Math.toDegrees(angle) + "Deg");
+            double vDistance = DecimalPosition.zeroIfNull(masterItem.getVelocity()).getDistance(DecimalPosition.zeroIfNull(slaveItem.getVelocity()));
+            double pvDistance = DecimalPosition.zeroIfNull(masterItem.getPreferredVelocity()).getDistance(DecimalPosition.zeroIfNull(slaveItem.getPreferredVelocity()));
+            boolean pathEquals = comparePath(masterItem.getPath(), slaveItem.getPath());
+            if (distance > 0.001 || Math.toDegrees(angle) > 0.001 || vDistance > 0.001 || pvDistance > 0.001 || !pathEquals) {
+                System.out.println("Tick count: " + tickCount + ". TELEPORTATION: " + masterItem.getId() + ". Distance: " + distance + ". vDistance: " + vDistance + ". pvDistance: " + pvDistance + ". Angle: " + Math.toDegrees(angle) + "Deg. Path equals: " + pathEquals);
             }
         });
+    }
+
+    private boolean comparePath(List<DecimalPosition> masterItemPath, List<DecimalPosition> slaveItemPath) {
+        if (masterItemPath == null && slaveItemPath == null) {
+            return true;
+        } else if (masterItemPath != null && slaveItemPath == null) {
+            return false;
+        } else if (masterItemPath == null) {
+            return false;
+        }
+
+        if (masterItemPath.size() != slaveItemPath.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < masterItemPath.size(); i++) {
+            if (!masterItemPath.get(i).equals(slaveItemPath.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private DebugHelperStatic.TickSyncBaseItem findTickSyncBaseItem(List<DebugHelperStatic.TickSyncBaseItem> slave, int id) {
@@ -140,5 +165,30 @@ public class PlaybackService {
 
     public DebugHelperStatic.TickData getCurrentSlaveTickData() {
         return currentSlaveTickData;
+    }
+
+    public String toMasterString() {
+        return dumpItems(currentMasterTickData);
+    }
+
+    public String toSlaveString() {
+        return dumpItems(currentSlaveTickData);
+    }
+
+    private String dumpItems(DebugHelperStatic.TickData tickData) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Tick count: ");
+        builder.append(tickData.getTickCount());
+        builder.append("\nDate: ");
+        builder.append(PlaybackGuiController.MILLIS_DATE_FORMAT.format(tickData.getDate()));
+        for (DebugHelperStatic.TickSyncBaseItem tickSyncBaseItem : tickData.getTickSyncBaseItems()) {
+            builder.append("\n");
+            builder.append(tickSyncBaseItem.getId());
+            builder.append(". Pos: ").append(tickSyncBaseItem.getPosition());
+            builder.append(". Preferred v: ").append(tickSyncBaseItem.getPreferredVelocity());
+            builder.append(". v: ").append(tickSyncBaseItem.getVelocity());
+            builder.append(". Path: ").append(tickSyncBaseItem.getPath());
+        }
+        return builder.toString();
     }
 }

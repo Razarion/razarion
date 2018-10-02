@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
  */
 @Singleton
 public class PlaybackGuiController implements Initializable {
-    private static SimpleDateFormat MILLIS_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
+    public static SimpleDateFormat MILLIS_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
     @FXML
     private AnchorPane anchorPanel;
     @FXML
@@ -148,5 +148,13 @@ public class PlaybackGuiController implements Initializable {
     private void runRender() {
         playbackGuiRenderer.render(showMasterCheck.isSelected() ? playbackService.getCurrentMasterTickData() : null,
                 showSlaveCheck.isSelected() ? playbackService.getCurrentSlaveTickData() : null);
+    }
+
+    public void onDumpButtonClicked() {
+        System.out.println("----- Dump -----");
+        System.out.println("- Master -");
+        System.out.println(playbackService.toMasterString());
+        System.out.println("- Slave -");
+        System.out.println(playbackService.toSlaveString());
     }
 }

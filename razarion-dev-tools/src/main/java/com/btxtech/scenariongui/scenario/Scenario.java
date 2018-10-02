@@ -37,6 +37,7 @@ public abstract class Scenario {
     }
 
     static {
+        register("Geometry 2D", new Geometry2DScenario());
         register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
         register("PathingAccess InSight", new PathingAccessInSightScenario());
         register("Display Polygon", new DisplayPolygonScenario());
@@ -49,7 +50,6 @@ public abstract class Scenario {
         register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
         register("Bresenhams Test", new FillCircleScenario());
         register("Rectangle 2D", new Rectangle2DScenario());
-        register("Triangle2D", new Triangle2DScenario());
         register("Polygon2I Test", new TestPolygon2IScenario());
     }
 
