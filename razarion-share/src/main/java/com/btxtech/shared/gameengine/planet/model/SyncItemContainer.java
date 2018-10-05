@@ -23,6 +23,7 @@ import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 
@@ -48,6 +49,8 @@ public class SyncItemContainer extends SyncBaseAbility {
     private GameLogicService gameLogicService;
     @Inject
     private BaseItemService baseItemService;
+    @Inject
+    private SyncService syncService;
     private ItemContainerType itemContainerType;
     private List<SyncBaseItem> containedItems = new ArrayList<>();
     private DecimalPosition unloadPos;
@@ -87,6 +90,8 @@ public class SyncItemContainer extends SyncBaseAbility {
             containedItems.add(syncBaseItem);
             setupMaxContainingRadius();
             syncBaseItem.setContained(getSyncBaseItem());
+            syncService.sendSyncBaseItem(getSyncBaseItem());
+            syncService.sendSyncBaseItem(syncBaseItem);
             gameLogicService.onSyncItemLoaded(getSyncBaseItem(), syncBaseItem);
         }
     }
@@ -111,12 +116,14 @@ public class SyncItemContainer extends SyncBaseAbility {
         containedItems.removeIf(contained -> {
             if (allowedUnload()) {
                 contained.clearContained(unloadPos);
+                syncService.sendSyncBaseItem(contained);
                 gameLogicService.onSyncItemUnloaded(contained);
                 return true;
             }
             return false;
         });
         setupMaxContainingRadius();
+        syncService.sendSyncBaseItem(getSyncBaseItem());
         gameLogicService.onSyncItemContainerUnloaded(getSyncBaseItem());
     }
 

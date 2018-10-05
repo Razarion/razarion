@@ -224,10 +224,6 @@ public class GameLogicService {
         gameLogicListener.ifPresent(listener -> listener.onResourcesBalanceChanged(playerBase, resources));
     }
 
-    public void onWeaponNewPath(SyncBaseItem syncBaseItem) {
-        gameLogicListener.ifPresent(listener -> listener.onWeaponNewPath(syncBaseItem));
-    }
-
     public void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
         gameLogicListener.ifPresent(listener -> listener.onBotSceneConflictChanged(humanPlayerId, raise, newConflict, oldConflict, botSceneIndicationInfo));
     }

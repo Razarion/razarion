@@ -25,6 +25,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.projectile.ProjectileService;
 import com.btxtech.shared.nativejs.NativeMatrixDto;
@@ -56,6 +57,8 @@ public class SyncWeapon extends SyncBaseAbility {
     private Instance<SyncTurret> syncTurretInstance;
     @Inject
     private NativeMatrixFactory nativeMatrixFactory;
+    @Inject
+    private SyncService syncService;
     private WeaponType weaponType;
     private SyncBaseItem target;
     private boolean followTarget;
@@ -109,7 +112,7 @@ public class SyncWeapon extends SyncBaseAbility {
                 if (!getSyncPhysicalMovable().hasDestination()) {
                     if (baseItemService.getGameEngineMode() == GameEngineMode.MASTER) {
                         getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
-                        gameLogicService.onWeaponNewPath(getSyncBaseItem());
+                        syncService.sendSyncBaseItem(getSyncBaseItem());
                     } else {
                         return true;
                     }
@@ -121,7 +124,7 @@ public class SyncWeapon extends SyncBaseAbility {
                         if (!targetPosition.equals(target.getSyncPhysicalArea().getPosition2d())) {
                             targetPosition = target.getSyncPhysicalArea().getPosition2d();
                             getSyncPhysicalMovable().setPath(pathingService.setupPathToDestination(getSyncBaseItem(), weaponType.getRange(), target));
-                            gameLogicService.onWeaponNewPath(getSyncBaseItem());
+                            syncService.sendSyncBaseItem(getSyncBaseItem());
                         }
                         targetPositionLastCheck = System.currentTimeMillis();
                     }

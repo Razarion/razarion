@@ -5,7 +5,6 @@ import com.btxtech.server.user.PlayerSession;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.MapCollection;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.packets.PlayerBaseInfo;
@@ -21,11 +20,10 @@ import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.ByteArrayOutputStream;
 import java.util.Collection;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by Beat
@@ -40,7 +38,7 @@ public class ClientGameConnectionService {
     @Inject
     private ConnectionTrackingPersistence connectionTrackingPersistence;
     @Inject
-    private PlanetService planetService;
+    private Instance<PlanetService> planetServiceInstance;
     private final MapCollection<HumanPlayerId, ClientGameConnection> gameConnections = new MapCollection<>();
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -75,11 +73,11 @@ public class ClientGameConnectionService {
         sendToClients(GameConnectionPacket.BASE_HUMAN_PLAYER_ID_CHANGED, new PlayerBaseInfo().setBaseId(playerBase.getBaseId()).setHumanPlayerId(playerBase.getHumanPlayerId()));
     }
 
-    public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        SyncBaseItemInfo syncBaseItemInfo = syncBaseItem.getSyncInfo();
-        sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo);
+    public void sendSyncBaseItems(Collection<SyncBaseItemInfo> syncBaseItemInfos) {
+        syncBaseItemInfos.forEach(syncBaseItemInfo -> sendToClients(GameConnectionPacket.SYNC_BASE_ITEM_CHANGED, syncBaseItemInfo));
     }
 
+    @Deprecated
     public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
         if (!syncBaseItem.isAlive()) {
             return;
@@ -168,7 +166,7 @@ public class ClientGameConnectionService {
 
     private void sendInitialSlaveSyncInfo(HumanPlayerId humanPlayerId) {
         try {
-            sendToClient(humanPlayerId, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetService.generateSlaveSyncItemInfo(humanPlayerId));
+            sendToClient(humanPlayerId, GameConnectionPacket.INITIAL_SLAVE_SYNC_INFO, planetServiceInstance.get().generateSlaveSyncItemInfo(humanPlayerId));
         } catch (Throwable throwable) {
             exceptionHandler.handleException(throwable);
         }

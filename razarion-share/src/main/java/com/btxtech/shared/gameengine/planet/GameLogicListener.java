@@ -104,9 +104,6 @@ public interface GameLogicListener {
     default void onFactorySyncItem(SyncBaseItem syncBaseItem, SyncBaseItem createdBy) {
     }
 
-    default void onWeaponNewPath(SyncBaseItem syncBaseItem) {
-    }
-
     default void onBotSceneConflictChanged(HumanPlayerId humanPlayerId, boolean raise, BotSceneConflictConfig newConflict, BotSceneConflictConfig oldConflict, BotSceneIndicationInfo botSceneIndicationInfo) {
     }
 

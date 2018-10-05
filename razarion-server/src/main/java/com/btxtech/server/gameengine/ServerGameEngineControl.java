@@ -17,7 +17,6 @@ import com.btxtech.shared.gameengine.datatypes.BoxContent;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneConflictConfig;
@@ -37,7 +36,6 @@ import com.btxtech.shared.gameengine.planet.bot.BotService;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -95,16 +93,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Inject
     private ItemTrackerPersistence itemTrackerPersistence;
     @Inject
-    private PathingService pathingService;
-    @Inject
     private PathingChangesDisruptor pathingChangesDisruptor;
     @Inject
     private HistoryPersistence historyPersistence;
     //    @Inject
 //    private DebugGui debugGui;
     private final Object reloadLook = new Object();
-    private Set<SyncBaseItem> changedPathings = new HashSet<>();
-    private Set<SyncBaseItem> alreadySentSyncBaseItems = new HashSet<>();
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         //debugGui.display();
@@ -256,8 +250,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @Override
     public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        clientGameConnectionService.onSpawnSyncItemStart(syncBaseItem);
-        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
         itemTrackerPersistence.onSpawnSyncItemStart(syncBaseItem);
     }
 
@@ -319,31 +311,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     }
 
     @Override
-    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
-        alreadySentSyncBaseItems.add(syncBaseItem);
-    }
-
-    @Override
-    public void onMasterCommandSent(SyncBaseItem syncItem) {
-        clientGameConnectionService.sendSyncBaseItem(syncItem);
-    }
-
-    @Override
-    public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
-        if (currentBuildup != null) {
-            clientGameConnectionService.sendSyncBaseItem(currentBuildup);
-        }
-        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
-    }
-
-    @Override
-    public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
-        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
-        clientGameConnectionService.sendSyncBaseItem(createdBy);
-    }
-
-    @Override
     public void onQuestProgressUpdate(HumanPlayerId humanPlayerId, QuestProgressInfo questProgressInfo) {
         systemConnectionService.onQuestProgressInfo(humanPlayerId, questProgressInfo);
     }
@@ -362,27 +329,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Override
     public void onResourcesBalanceChanged(PlayerBase playerBase, int resources) {
         clientGameConnectionService.sendResourcesBalanceChanged(playerBase, resources);
-    }
-
-    @Override
-    public void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
-        clientGameConnectionService.sendSyncBaseItem(container);
-        clientGameConnectionService.sendSyncBaseItem(contained);
-    }
-
-    @Override
-    public void onSyncItemContainerUnloaded(SyncBaseItem container) {
-        clientGameConnectionService.sendSyncBaseItem(container);
-    }
-
-    @Override
-    public void onSyncItemUnloaded(SyncBaseItem contained) {
-        clientGameConnectionService.sendSyncBaseItem(contained);
-    }
-
-    @Override
-    public void onWeaponNewPath(SyncBaseItem syncBaseItem) {
-        clientGameConnectionService.sendSyncBaseItem(syncBaseItem);
     }
 
     public PlanetConfig getPlanetConfig() {
@@ -433,8 +379,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     @Override
     public void onPostTick(SynchronizationSendingContext synchronizationSendingContext) {
-        Set<SyncBaseItem> tmpAlreadySentSyncBaseItems = alreadySentSyncBaseItems;
-        alreadySentSyncBaseItems = new HashSet<>();
-        pathingChangesDisruptor.onPostTick(synchronizationSendingContext.getCollisions(), tmpAlreadySentSyncBaseItems);
+//        Set<SyncBaseItem> tmpAlreadySentSyncBaseItems = alreadySentSyncBaseItems;
+//        alreadySentSyncBaseItems = new HashSet<>();
+//        pathingChangesDisruptor.onPostTick(synchronizationSendingContext.getCollisions(), tmpAlreadySentSyncBaseItems);
     }
 }

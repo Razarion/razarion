@@ -78,12 +78,6 @@ public class TestGameLogicListener implements GameLogicListener {
     }
 
     @Override
-    public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-        testWebSocket.onSpawnSyncItemStart(syncBaseItem);
-        testWebSocket.sendSyncBaseItem(syncBaseItem);
-    }
-
-    @Override
     public void onSyncBaseItemKilledMaster(SyncBaseItem syncBaseItem, SyncBaseItem actor) {
         testWebSocket.onSyncItemRemoved(syncBaseItem, true);
         syncBaseItemKilled.add(syncBaseItem);
@@ -119,46 +113,6 @@ public class TestGameLogicListener implements GameLogicListener {
     @Override
     public void onBoxPicked(HumanPlayerId humanPlayerId, BoxContent boxContent) {
         boxPicked.add(new BoxPickedEntry(humanPlayerId, boxContent));
-    }
-
-    @Override
-    public void onSyncBaseItemIdle(SyncBaseItem syncBaseItem) {
-        testWebSocket.sendSyncBaseItem(syncBaseItem);
-    }
-
-    @Override
-    public void onMasterCommandSent(SyncBaseItem syncItem) {
-        testWebSocket.sendSyncBaseItem(syncItem);
-    }
-
-    @Override
-    public void onSynBuilderStopped(SyncBaseItem syncBaseItem, SyncBaseItem currentBuildup) {
-        if (currentBuildup != null) {
-            testWebSocket.sendSyncBaseItem(currentBuildup);
-        }
-        testWebSocket.sendSyncBaseItem(syncBaseItem);
-    }
-
-    @Override
-    public void onSyncItemLoaded(SyncBaseItem container, SyncBaseItem contained) {
-        testWebSocket.sendSyncBaseItem(container);
-        testWebSocket.sendSyncBaseItem(contained);
-    }
-
-    @Override
-    public void onSyncItemContainerUnloaded(SyncBaseItem container) {
-        testWebSocket.sendSyncBaseItem(container);
-    }
-
-    @Override
-    public void onSyncItemUnloaded(SyncBaseItem contained) {
-        testWebSocket.sendSyncBaseItem(contained);
-    }
-
-    @Override
-    public void onStartBuildingSyncBaseItem(SyncBaseItem createdBy, SyncBaseItem syncBaseItem) {
-        testWebSocket.sendSyncBaseItem(syncBaseItem);
-        testWebSocket.sendSyncBaseItem(createdBy);
     }
 
     @Override

@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
  * on 26.02.2018.
  */
 @Singleton
+@Deprecated
 public class PathingChangesDisruptor implements EventHandler<SingleHolder<Collection<Set<SyncBaseItem>>>> {
     private final static long DE_BOUNCING = 2000;
     private final static long PERIODIC_RUNNER_PERIOD = 500;
@@ -102,6 +103,7 @@ public class PathingChangesDisruptor implements EventHandler<SingleHolder<Collec
         }
     }
 
+    @Deprecated
     private void sendAndAdd(Set<SyncBaseItem> collidingSyncItems) {
         collidingSyncItems.forEach(syncItem -> clientGameConnectionService.sendSyncBaseItem(syncItem));
         synchronized (lastSents) {

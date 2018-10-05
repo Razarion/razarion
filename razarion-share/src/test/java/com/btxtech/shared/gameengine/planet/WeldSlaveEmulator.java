@@ -29,6 +29,7 @@ public class WeldSlaveEmulator extends WeldBaseTest {
 
         testClientWebSocket = new TestClientWebSocket();
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().add(testClientWebSocket);
+        weldMasterBaseTest.getWeldBean(TestSyncService.class).setTestWebSocket(testClientWebSocket);
         getWeldBean(PlanetService.class).initialSlaveSyncItemInfo(weldMasterBaseTest.getPlanetService().generateSlaveSyncItemInfo(userContext.getHumanPlayerId()));
     }
 
@@ -41,27 +42,6 @@ public class WeldSlaveEmulator extends WeldBaseTest {
     }
 
     private class TestClientWebSocket extends TestWebSocket {
-
-        @Override
-        public void onSpawnSyncItemStart(SyncBaseItem syncBaseItem) {
-            // System.out.println("--- onSpawnSyncItemStart");
-            getBaseItemService().onSlaveSyncBaseItemChanged(getWeldBean(PlanetService.class).getTickCount(), syncBaseItem.getSyncInfo());
-        }
-
-        @Override
-        public void sendSyncBaseItem(SyncBaseItem syncBaseItem) {
-//            String velocityString = "";
-//            if (syncBaseItem.getSyncPhysicalArea().canMove()) {
-//                velocityString = " v=" + syncBaseItem.getSyncPhysicalMovable().getVelocity();
-//            }
-//            String buildupString = "";
-//            if (syncBaseItem.getSyncBuilder() != null && syncBaseItem.getSyncBuilder().getCurrentBuildup() != null) {
-//                buildupString = " buildup=" + syncBaseItem.getSyncBuilder().getCurrentBuildup().getBuildup();
-//            }
-//            System.out.println("--- sendSyncBaseItem: " + syncBaseItem.getId() + ". " + syncBaseItem.getSyncPhysicalArea().getPosition2d() + velocityString + buildupString);
-            getBaseItemService().onSlaveSyncBaseItemChanged(getWeldBean(PlanetService.class).getTickCount(), syncBaseItem.getSyncInfo());
-        }
-
         @Override
         public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {
             // System.out.println("--- onSyncBoxCreated");

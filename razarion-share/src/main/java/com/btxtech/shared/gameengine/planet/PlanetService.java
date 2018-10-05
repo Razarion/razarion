@@ -65,6 +65,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private ResourceService resourceService;
     @Inject
     private EnergyService energyService;
+    @Inject
+    private SyncService syncService;
     private boolean pause;
     private SimpleScheduledFuture scheduledFuture;
     private PlanetConfig planetConfig;
@@ -127,19 +129,15 @@ public class PlanetService implements Runnable { // Only available in worker. On
         try {
             tickRunning = true;
             SynchronizationSendingContext synchronizationSendingContext = null;
-            Collection<SyncBaseItem> executedCommands=null;
-            Collection<SyncBaseItem> pendingIdlesToSend = null;
             if (gameEngineMode == GameEngineMode.MASTER) {
                 synchronizationSendingContext = new SynchronizationSendingContext();
-                executedCommands = new LinkedList<>();
-                pendingIdlesToSend = new LinkedList<>();
             }
             planetServiceTracker.startTick();
             questService.tick();
             planetServiceTracker.afterQuestService();
             pathingService.tick(synchronizationSendingContext);
             planetServiceTracker.afterPathingService();
-            baseItemService.tick(pendingIdlesToSend, executedCommands);
+            baseItemService.tick();
             planetServiceTracker.afterBaseItemService();
             projectileService.tick();
             planetServiceTracker.afterProjectileService();
@@ -152,7 +150,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
             planetServiceTracker.endTick();
             /// --- new experimental
             tickCount++;
-            baseItemService.afterTick(pendingIdlesToSend, tickCount, executedCommands);
+            baseItemService.afterTick(tickCount);
+            syncService.afterTick();
             /// --- new experimental ends
 
             // DebugHelperStatic.appendAfterTick(tickDatas, tickCount, syncItemContainerService);

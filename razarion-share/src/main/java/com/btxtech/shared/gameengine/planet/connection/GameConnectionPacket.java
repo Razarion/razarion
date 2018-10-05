@@ -41,8 +41,8 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     // Items
     SYNC_BASE_ITEM_CHANGED(SyncBaseItemInfo.class),
     SYNC_RESOURCE_ITEM_CHANGED(SyncResourceItemInfo.class),
-    SYNC_ITEM_DELETED(SyncItemDeletedInfo.class),
     SYNC_BOX_ITEM_CHANGED(SyncBoxItemInfo.class),
+    SYNC_ITEM_DELETED(SyncItemDeletedInfo.class),
     // Commands
     FACTORY_COMMAND(FactoryCommand.class),
     UNLOAD_CONTAINER_COMMAND(UnloadContainerCommand.class),

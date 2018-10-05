@@ -175,7 +175,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
     private void verifySlavePick(WeldSlaveEmulator permanentSalve, int pickerId, int boxId) {
         SyncBaseItem syncBaseItem = permanentSalve.getSyncItemContainerService().getSyncBaseItem(pickerId);
         Assert.assertFalse(syncBaseItem.isIdle());
-        permanentSalve.getBaseItemService().tick(null, null);
+        permanentSalve.getBaseItemService().tick();
         Assert.assertFalse(syncBaseItem.isIdle());
     }
 

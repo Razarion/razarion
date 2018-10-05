@@ -32,6 +32,7 @@ import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.GameLogicService;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
+import com.btxtech.shared.gameengine.planet.SyncService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 
 import javax.enterprise.context.Dependent;
@@ -54,6 +55,8 @@ public class SyncBuilder extends SyncBaseAbility {
     private TerrainService terrainService;
     @Inject
     private SyncItemContainerService syncItemContainerService;
+    @Inject
+    private SyncService syncService;
     private BuilderType builderType;
     private SyncBaseItem currentBuildup;
     private DecimalPosition toBeBuildPosition;
@@ -97,6 +100,8 @@ public class SyncBuilder extends SyncBaseAbility {
                 }
                 try {
                     currentBuildup = baseItemService.createSyncBaseItem4Builder(toBeBuiltType, toBeBuildPosition, (PlayerBaseFull) getSyncBaseItem().getBase(), getSyncBaseItem());
+                    syncService.sendSyncBaseItem(currentBuildup);
+                    syncService.sendSyncBaseItem(getSyncBaseItem());
                     gameLogicService.onStartBuildingSyncBaseItem(getSyncBaseItem(), currentBuildup);
                     toBeBuildPosition = null;
                     toBeBuiltType = null;
