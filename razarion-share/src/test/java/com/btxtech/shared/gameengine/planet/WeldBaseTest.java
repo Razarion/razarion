@@ -263,7 +263,7 @@ public class WeldBaseTest {
         return staticGameConfig;
     }
 
-    protected PlanetService getPlanetService() {
+    public PlanetService getPlanetService() {
         return planetService;
     }
 

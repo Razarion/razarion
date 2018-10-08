@@ -155,15 +155,15 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         actualTicks.addSlaveTick(slave.getBaseItemService().getSyncBaseItemInfos());
         actualTicks.compareMasterSlave();
         for (int tickCount = 0; tickCount < MAX_TICK_COUNT && (isBaseServiceActive() || isPathingServiceMoving()); tickCount++) {
-            System.out.println("----------------- Start Tick: " + tickCount);
             DebugHelperStatic.setCurrentTick(actualTicks.size());
             tickPlanetService();
+            System.out.println("----------------- Master ticks done: " + getPlanetService().getTickCount());
             slave.tick();
+            System.out.println("----------------- Slave ticks done: " + slave.getPlanetService().getTickCount());
             DebugHelperStatic.printAfterTick(null);
             actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());
             actualTicks.addSlaveTick(slave.getBaseItemService().getSyncBaseItemInfos());
             actualTicks.compareMasterSlave();
-            System.out.println("----------------- End Tick: " + tickCount);
         }
         return actualTicks;
     }
