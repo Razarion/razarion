@@ -37,10 +37,6 @@ public class WeldSlaveEmulator extends WeldBaseTest {
         weldMasterBaseTest.getTestGameLogicListener().getTestWebSocket().remove(testClientWebSocket);
     }
 
-    public void tick() {
-        getWeldBean(PathingService.class).tick(null);
-    }
-
     private class TestClientWebSocket extends TestWebSocket {
         @Override
         public void onSyncBoxCreated(SyncBoxItem syncBoxItem) {

@@ -542,7 +542,15 @@ public class SyncItemContainerService {
     }
 
     public void iterateCellRadiusItem(DecimalPosition center, double radius, Consumer<SyncItem> callback) {
-        Set<SyncItem> syncItems = new TreeSet<>(Comparator.comparingDouble(o -> o.getSyncPhysicalArea().getPosition2d().getDistance(center)));
+        Set<SyncItem> syncItems = new TreeSet<>((o1, o2) -> {
+            double distance1 = o1.getSyncPhysicalArea().getPosition2d().getDistance(center);
+            double distance2 = o2.getSyncPhysicalArea().getPosition2d().getDistance(center);
+            int comparision = Double.compare(distance1, distance2);
+            if (comparision == 0) {
+                return Integer.compare(o1.getId(), o2.getId());
+            }
+            return comparision;
+        });
         iterateCellQuadItem(center, 2.0 * radius + CELL_LENGTH, syncItem -> {
             if (syncItem.getSyncPhysicalArea().getPosition2d().getDistance(center) <= radius) {
                 syncItems.add(syncItem);

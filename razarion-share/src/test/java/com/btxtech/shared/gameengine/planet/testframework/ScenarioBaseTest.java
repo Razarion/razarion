@@ -158,7 +158,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
             DebugHelperStatic.setCurrentTick(actualTicks.size());
             tickPlanetService();
             System.out.println("----------------- Master ticks done: " + getPlanetService().getTickCount());
-            slave.tick();
+            slave.tickPlanetService();
             System.out.println("----------------- Slave ticks done: " + slave.getPlanetService().getTickCount());
             DebugHelperStatic.printAfterTick(null);
             actualTicks.addMasterTick(getBaseItemService().getSyncBaseItemInfos());

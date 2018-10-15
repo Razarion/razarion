@@ -24,8 +24,8 @@ import com.btxtech.shared.gameengine.datatypes.itemtype.PhysicalAreaConfig;
 import com.btxtech.shared.gameengine.datatypes.packets.SyncPhysicalAreaInfo;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
 import com.btxtech.shared.nativejs.NativeVertexDto;
-import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.MathHelper;
 
 import javax.enterprise.context.Dependent;
@@ -43,11 +43,14 @@ import javax.inject.Named;
 @Named(SyncItem.SYNC_PHYSICAL_MOVABLE)
 public class SyncPhysicalMovable extends SyncPhysicalArea {
     private static final double CROWDED_STOP_DETECTION_DISTANCE = 0.1;
+    private static final double STOP_DETECTION_OTHER_UNITS_RADIOS = 20;
     // private Logger logger = Logger.getLogger(SyncPhysicalMovable.class.getName());
     @Inject
     private Instance<Path> instancePath;
+    //    @Inject
+//    private DebugHelper debugHelper;
     @Inject
-    private DebugHelper debugHelper;
+    private SyncItemContainerService syncItemContainerService;
     private double acceleration; // Meter per square second
     private double maxSpeed; // Meter per second
     private double angularVelocity; // Rad per second
@@ -83,14 +86,14 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             preferredVelocity = DecimalPosition.createVector(desiredAngle, speed);
             // debugHelper.debugToConsole(getSyncItem().getId() + ". currentWayPoint(path, " + DebugHelperStatic.generate(getPosition2d()) + ", " + DebugHelperStatic.generate(path.getCurrentWayPoint()) + ", " + DebugHelperStatic.generate(velocity) + ", " + DebugHelperStatic.generate(preferredVelocity) + ");");
         } else {
-            velocity = null;
-            preferredVelocity = null;
+            stop();
         }
     }
 
     public void setupForPushAway(DecimalPosition preferredVelocity) {
         oldPosition = getPosition2d();
         this.preferredVelocity = preferredVelocity;
+        this.velocity = preferredVelocity;
     }
 
     public void stopIfDestinationReached() {
@@ -102,23 +105,43 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             return;
         }
         if (crowded) {
+            // Check target reached within radius and delta
             Circle2D circle = new Circle2D(path.getCurrentWayPoint(), getRadius() + CROWDED_STOP_DETECTION_DISTANCE);
             if (circle.doesLineCut(new Line(oldPosition, getPosition2d()))) {
                 // System.out.println("stopIfDestinationReached: " + getSyncItem().getId() + " crowded");
-                velocity = null;
-                path = null;
-                preferredVelocity = null;
+                stop();
                 return;
             }
+            // Check if other standing Units are blocking target
+            syncItemContainerService.iterateCellQuadBaseItem(getPosition2d(), STOP_DETECTION_OTHER_UNITS_RADIOS, otherSyncBaseItem -> {
+                if(path == null) {
+                    return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
+                }
+                if (otherSyncBaseItem.equals(getSyncItem())) {
+                    return;
+                }
+                if (!otherSyncBaseItem.getSyncPhysicalArea().canMove() || otherSyncBaseItem.getSyncPhysicalMovable().hasDestination()) {
+                    return;
+                }
+                double distance = getSyncItem().getSyncPhysicalArea().getDistance(otherSyncBaseItem);
+                if (distance < 1) {
+                    double otherTargetDistance = otherSyncBaseItem.getSyncPhysicalArea().getDistance(path.getCurrentWayPoint(), 0);
+                    if (otherTargetDistance < 2) {
+                        stop();
+                        return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
+                    }
+                }
+            });
+        }
+        if(path == null) {
+            return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
         }
 
         Line line = new Line(oldPosition, getPosition2d());
         if (line.isPointInLineInclusive(path.getCurrentWayPoint())) {
             // System.out.println("stopIfDestinationReached: " + getSyncItem().getId() + " normal");
-            velocity = null;
-            preferredVelocity = null;
             setPosition2d(path.getCurrentWayPoint(), false);
-            path = null;
+            stop();
         }
     }
 
@@ -142,8 +165,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         return true;
     }
 
+    @Override
     public void stop() {
+        velocity = null;
         path = null;
+        preferredVelocity = null;
     }
 
     public boolean isMoving() {

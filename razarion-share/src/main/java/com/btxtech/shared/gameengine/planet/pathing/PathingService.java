@@ -213,7 +213,7 @@ public class PathingService {
                         setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                         pushAways.add(otherSyncPhysicalMovable);
                         orca.add(otherSyncPhysicalMovable);
-                        onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
+//                        onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                     }
                 }
                 // TODO add none movable (buildings)
@@ -247,7 +247,7 @@ public class PathingService {
 
     private void setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
         DecimalPosition pushAwayDirection = shifty.getPosition2d().sub(pusher.getPosition2d()).normalize();
-        shifty.setupForPushAway(pushAwayDirection.multiply(pusher.getAcceleration() * PlanetService.TICK_FACTOR).divide(PlanetService.TICK_FACTOR));
+        shifty.setupForPushAway(pushAwayDirection.multiply(pusher.getVelocity().dotProduct(pushAwayDirection)));
     }
 
     private void implementPosition() {
@@ -280,12 +280,12 @@ public class PathingService {
         });
     }
 
-    private void onPathingChanged(SyncPhysicalMovable syncBaseItem, SyncPhysicalMovable other) {
-        syncBaseItem.setCrowded();
-        if (synchronizationSendingContext != null) {
-            synchronizationSendingContext.addCollision(syncBaseItem, other);
-        }
-    }
+//    private void onPathingChanged(SyncPhysicalMovable syncBaseItem, SyncPhysicalMovable other) {
+//        syncBaseItem.setCrowded();
+//        if (synchronizationSendingContext != null) {
+//            synchronizationSendingContext.addCollision(syncBaseItem, other);
+//        }
+//    }
 }
 
 

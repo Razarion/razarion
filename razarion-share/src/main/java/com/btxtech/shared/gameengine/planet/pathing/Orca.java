@@ -359,6 +359,9 @@ public class Orca {
         if (lineFail < orcaLines.size()) {
             linearProgram3(obstacleOrcaLines.size(), lineFail);
         }
+        if (newVelocity != null && !preferredVelocity.equalsDelta(newVelocity)) {
+            syncPhysicalMovable.setCrowded();
+        }
     }
 
     /**
@@ -385,7 +388,6 @@ public class Orca {
 
         for (int lineNo = 0; lineNo < orcaLines.size(); lineNo++) {
             if (orcaLines.get(lineNo).getDirection().determinant(orcaLines.get(lineNo).getPoint().sub(newVelocity)) > 0.0) {
-                syncPhysicalMovable.setCrowded();
                 // Result does not satisfy constraint i. Compute new optimal result.
                 DecimalPosition tempResult = newVelocity;
                 if (!linearProgram1(orcaLines, lineNo, optimizationVelocity, optimizeDirection)) {

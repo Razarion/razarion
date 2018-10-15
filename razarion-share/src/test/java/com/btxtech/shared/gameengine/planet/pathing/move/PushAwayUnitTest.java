@@ -21,6 +21,7 @@ public class PushAwayUnitTest extends ScenarioBaseTest {
             }
         });
     }
+
     @Test
     public void singlePushAway2() {
         testScenario(new Scenario("PushAwayUnitTest_singlePushAway2.json", getClass()) {
@@ -28,6 +29,30 @@ public class PushAwayUnitTest extends ScenarioBaseTest {
             protected void createSyncItems() {
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 140), new DecimalPosition(100, 140));
                 createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(60, 141), null);
+            }
+        });
+    }
+
+    @Test
+    public void doublePushAway1() {
+        testScenario(new Scenario("PushAwayUnitTest_doublePushAway1.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 140), new DecimalPosition(100, 140));
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(60, 140), null);
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(64, 140), null);
+            }
+        });
+    }
+
+    @Test
+    public void doublePushAway2() {
+        testScenario(new Scenario("PushAwayUnitTest_doublePushAway2.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 140), new DecimalPosition(100, 140));
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(60, 141), null);
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(64, 141), null);
             }
         });
     }
@@ -97,15 +122,4 @@ public class PushAwayUnitTest extends ScenarioBaseTest {
             }
         });
     }
-
-    @Test
-    public void multiSamePosition1() {
-        testScenario(new Scenario("PushAwayUnitTest_multiSamePosition1.json", getClass()) {
-            @Override
-            protected void createSyncItems() {
-                createSyncBaseItemGroup(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, 5, new DecimalPosition(144, 144), new DecimalPosition(190, 144));
-            }
-        });
-    }
-
 }
