@@ -17,6 +17,7 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
+    private static final int MAX_OVERRUN_COUNT = 10;
     private Logger logger = Logger.getLogger(ClientSimpleScheduledFutureImpl.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -29,6 +30,7 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
     private Runnable runnable;
     private double expected;
     private DomGlobal.SetTimeoutCallbackFn callback;
+    private int overrunCount;
 
     public void init(double milliSDelay, boolean repeating, PerfmonEnum perfmonEnum, Runnable runnable) {
         this.milliSDelay = milliSDelay;
@@ -54,11 +56,16 @@ public class ClientSimpleScheduledFutureImpl implements SimpleScheduledFuture {
         expected = System.currentTimeMillis() + milliSDelay;
         callback = p0 -> {
             double timeDrift = System.currentTimeMillis() - expected;
-            if (timeDrift > milliSDelay) {
-                logger.severe("ClientSimpleScheduledFutureImpl: something really bad happened. Maybe the browser (tab) was inactive? possibly special handling to avoid futile \"catch up\" run. PerfmonEnum: " + perfmonEnum);
-            }
             try {
-                if (!repeating) {
+                if (repeating) {
+                    if (timeDrift > milliSDelay) {
+                        overrunCount++;
+                        if (overrunCount >= MAX_OVERRUN_COUNT) {
+                            logger.severe("ClientSimpleScheduledFutureImpl: something really bad happened. Maybe the browser (tab) was inactive? possibly special handling to avoid futile \"catch up\" run. PerfmonEnum: " + perfmonEnum.orElse(null));
+                            overrunCount = 0;
+                        }
+                    }
+                } else {
                     timerId = null;
                 }
                 perfmonEnum.ifPresent(perfmonService::onEntered);
