@@ -5,10 +5,11 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.ShapeTransform;
 import com.btxtech.shared.gameengine.datatypes.workerdto.NativeUtil;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.nativejs.NativeVertexDto;
-
+import com.btxtech.shared.utils.MathHelper;
 /**
  * Created by Beat
  * 15.05.2016.
@@ -133,6 +134,7 @@ public class ModelMatrices {
 
     public ModelMatrices interpolateVelocity(double factor) {
         if (interpolatableVelocity != null && factor != 0.0) {
+            factor = MathHelper.clamp(factor - PlanetService.TICK_FACTOR, -PlanetService.TICK_FACTOR, 0.0); // Move from old position to actual poaition.
             ModelMatrices modelMatrices = new ModelMatrices(matrix.getNativeMatrixFactory().createTranslation(interpolatableVelocity.x * factor, interpolatableVelocity.y * factor, interpolatableVelocity.z * factor).multiply(matrix));
             modelMatrices.progress = progress;
             modelMatrices.interpolatableVelocity = interpolatableVelocity;
@@ -191,7 +193,7 @@ public class ModelMatrices {
     }
 
     public ModelMatrices calculateFromTurretAngle() {
-        if(turretAngle == null) {
+        if (turretAngle == null) {
             return this;
         }
         NativeMatrix newMatrix = matrix.multiply(matrix.getNativeMatrixFactory().createZRotation(turretAngle));
