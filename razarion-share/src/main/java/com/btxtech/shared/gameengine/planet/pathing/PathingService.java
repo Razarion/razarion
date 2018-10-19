@@ -240,6 +240,9 @@ public class PathingService {
         double totalRadius = shifty.getRadius() + pusher.getRadius();
         Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
         DecimalPosition pusherVelocity = pusher.getPreferredVelocity().multiply(PlanetService.TICK_FACTOR);
+        if(pusherVelocity.equalsDelta(DecimalPosition.NULL)) {
+            return false;
+        }
         DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
         Line move = new Line(pusher.getPosition2d(), pusherTarget);
         return minkowskiSum.doesLineCut(move);
@@ -247,7 +250,7 @@ public class PathingService {
 
     private void setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
         DecimalPosition pushAwayDirection = shifty.getPosition2d().sub(pusher.getPosition2d()).normalize();
-        shifty.setupForPushAway(pushAwayDirection.multiply(pusher.getVelocity().dotProduct(pushAwayDirection)));
+        shifty.setupForPushAway(pushAwayDirection.multiply(DecimalPosition.zeroIfNull(pusher.getVelocity()).dotProduct(pushAwayDirection)));
     }
 
     private void implementPosition() {
