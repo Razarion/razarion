@@ -54,7 +54,7 @@ public class JsonProviderEmulator {
     private TerrainShapeProvider terrainShapeProvider;
     private PlanetEditorProvider planetEditorProvider;
 
-    // TODO @PostConstruct
+    @PostConstruct
     public void connect() {
         Client client = ClientBuilder.newClient();
         ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST);
@@ -76,9 +76,9 @@ public class JsonProviderEmulator {
                 requestContext.getCookies().put("JSESSIONID", sessionCookie);
             }
         });
-        target.proxy(FrontendProvider.class).loginUser("anton@btxtech.com", "test", false);
+        // target.proxy(FrontendProvider.class).loginUser("anton@btxtech.com", "test", false);
         // target.proxy(FrontendProvider.class).loginUser("btxtech@btxtech.com", "test", false);
-        // target.proxy(FrontendProvider.class).loginUser("beat.keller@btxtech.com", "test", false);
+        target.proxy(FrontendProvider.class).loginUser("beat.keller@btxtech.com", "test", false);
         shape3DProvider = target.proxy(Shape3DProvider.class);
         coldGameUiControlConfig = target.proxy(GameUiControlProvider.class);
         terrainShapeProvider = target.proxy(TerrainShapeProvider.class);
