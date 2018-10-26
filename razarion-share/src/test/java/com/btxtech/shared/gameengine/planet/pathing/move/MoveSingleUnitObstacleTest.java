@@ -69,4 +69,15 @@ public class MoveSingleUnitObstacleTest extends ScenarioBaseTest {
         });
     }
 
+
+    @Test
+    public void moveAroundTerrainObject1() {
+        testScenario(new Scenario("MoveSingleUnitObstacleTest_moveAroundTerrainObject1.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(333, 10), new DecimalPosition(450, 140));
+            }
+        });
+    }
+
 }

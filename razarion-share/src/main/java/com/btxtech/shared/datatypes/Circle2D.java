@@ -1,5 +1,6 @@
 package com.btxtech.shared.datatypes;
 
+import com.btxtech.shared.system.debugtool.DebugHelper;
 import com.btxtech.shared.utils.MathHelper;
 
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ public class Circle2D {
             triangles.add(new Vertex(center.getPointWithDistance((i + 1) * segmentAngle, radius), z));
         }
         return triangles;
+    }
+
+    public double getDistance(DecimalPosition point) {
+        return center.getDistance(point) - radius;
     }
 
     public DecimalPosition project(DecimalPosition point) {

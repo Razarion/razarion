@@ -202,10 +202,6 @@ public class SyncPhysicalArea {
         return false;
     }
 
-    public DecimalPosition getVelocity() {
-        return null;
-    }
-
     public void stop() {
 
     }

@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.pathing;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
+import com.btxtech.shared.gameengine.planet.model.SyncPhysicalArea;
 import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 
 import java.util.ArrayList;
@@ -45,10 +46,22 @@ public class Orca {
 
     public void add(SyncPhysicalMovable other) {
 //        DebugHelperStatic.addOrcaAdd(other);
-        DecimalPosition relativePosition = other.getPosition2d().sub(position);
-        DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).sub(DecimalPosition.zeroIfNull(other.getVelocity()));
+        addOrcaLine(other.getPosition2d(), other.getVelocity(), other.getRadius(), 0.5);
+    }
+
+    public void add(SyncPhysicalArea syncPhysicalArea) {
+        addOrcaLine(syncPhysicalArea.getPosition2d(), null, syncPhysicalArea.getRadius(), 1.0);
+    }
+
+    public void add(ObstacleTerrainObject obstacleTerrainObject) {
+        addOrcaLine(obstacleTerrainObject.getCircle().getCenter(), null, obstacleTerrainObject.getCircle().getRadius(), 1.0);
+    }
+
+    private void addOrcaLine(DecimalPosition otherPosition, DecimalPosition otherVelocity, double otherRadius, double uReciprocalFactor) {
+        DecimalPosition relativePosition = otherPosition.sub(position);
+        DecimalPosition relativeVelocity = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).sub(DecimalPosition.zeroIfNull(otherVelocity));
         double distanceSq = relativePosition.magnitudeSq();
-        double combinedRadius = radius + other.getRadius();
+        double combinedRadius = radius + otherRadius;
         double combinedRadiusSq = combinedRadius * combinedRadius;
 
         DecimalPosition u;
@@ -91,7 +104,7 @@ public class Orca {
             DecimalPosition w = relativeVelocity.sub(relativePosition.multiply(PlanetService.TICKS_PER_SECONDS));
 
             double wLength = w.magnitude();
-            if(wLength == 0.0) {
+            if (wLength == 0.0) {
                 // Not properly handled
                 LOGGER.warning("wLength == 0.0 not handled for: " + syncPhysicalMovable);
                 return;
@@ -101,7 +114,7 @@ public class Orca {
             direction = new DecimalPosition(unitW.getY(), -unitW.getX());
             u = unitW.multiply(combinedRadius * PlanetService.TICKS_PER_SECONDS - wLength);
         }
-        DecimalPosition point = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).add(0.5, u);
+        DecimalPosition point = DecimalPosition.zeroIfNull(syncPhysicalMovable.getVelocity()).add(uReciprocalFactor, u);
         OrcaLine orcaLine = new OrcaLine(point, direction);
         orcaLine.setRelativeVelocity(relativeVelocity);
         orcaLine.setRelativePosition(relativePosition);

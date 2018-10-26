@@ -13,21 +13,23 @@ import org.junit.Test;
 public class MoveMultipleUnitObstacleTest extends ScenarioBaseTest {
 
     @Test
-    public void moveThroughDriveWay1() {
-        testScenario(new Scenario("MoveMultipleUnitObstacleTest_moveAroundDriveWay1.json", getClass()) {
+    public void move25ThroughDriveWay1() {
+        testScenario(new Scenario("MoveMultipleUnitObstacleTest_move25ThroughDriveWay1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                DecimalPosition start = new DecimalPosition(136,136);
-                DecimalPosition destination = new DecimalPosition(72,72);
-
-                for (int x = -2; x < 3; x++) {
-                    for (int y = -2; y < 3; y++) {
-                        createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(4 * x + start.getX(), 4 * y + start.getY()), destination);
-                    }
-                }
-
-
+                createSyncBaseItemGroup(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, 5, new DecimalPosition(136, 136), new DecimalPosition(72, 72));
             }
         });
     }
+
+    @Test
+    public void move25AroundTerrainObject1() {
+        testScenario(new Scenario("MoveMultipleUnitObstacleTest_move25AroundTerrainObject1.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemGroup(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, 5, new DecimalPosition(333, 20), new DecimalPosition(450, 140));
+            }
+        });
+    }
+
 }

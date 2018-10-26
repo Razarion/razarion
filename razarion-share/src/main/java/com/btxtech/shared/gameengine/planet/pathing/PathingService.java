@@ -216,7 +216,8 @@ public class PathingService {
 //                        onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                     }
                 }
-                // TODO add none movable (buildings)
+            } else {
+                orca.add(other);
             }
         });
     }
@@ -225,14 +226,20 @@ public class PathingService {
         double lookAheadTerrainDistance = syncBaseItem.getSyncPhysicalArea().getRadius() + DecimalPosition.zeroIfNull(syncBaseItem.getSyncPhysicalMovable().getPreferredVelocity()).magnitude();
         DecimalPosition position = syncBaseItem.getSyncPhysicalArea().getPosition2d();
         List<ObstacleSlope> sortedObstacleSlope = new ArrayList<>();
+        List<ObstacleTerrainObject> sortedObstacleTerrainObject = new ArrayList<>();
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 sortedObstacleSlope.add((ObstacleSlope) obstacle);
+            } else if(obstacle instanceof ObstacleTerrainObject) {
+                sortedObstacleTerrainObject.add((ObstacleTerrainObject) obstacle);
+            } else {
+                throw new IllegalArgumentException("Can not handle: " + obstacle);
             }
-            // TODO add ObstacleTerrainObject;
         });
-        ObstacleSlope.sort(position, sortedObstacleSlope);
+        ObstacleSlope.sortObstacleSlope(position, sortedObstacleSlope);
+        ObstacleSlope.sortObstacleTerrainObject(position, sortedObstacleTerrainObject);
         sortedObstacleSlope.forEach(orca::add);
+        sortedObstacleTerrainObject.forEach(orca::add);
     }
 
     private boolean isPiercing(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {

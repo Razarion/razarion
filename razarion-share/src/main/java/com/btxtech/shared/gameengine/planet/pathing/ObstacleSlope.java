@@ -121,8 +121,12 @@ public class ObstacleSlope extends Obstacle {
                 && nativeObstacle.p1Dx != null && nativeObstacle.p1Dy != null && nativeObstacle.p2C != null && nativeObstacle.p2Dx != null && nativeObstacle.p2Dy != null;
     }
 
-    public static void sort(DecimalPosition pivot, List<ObstacleSlope> obstacleSlopes) {
+    public static void sortObstacleSlope(DecimalPosition pivot, List<ObstacleSlope> obstacleSlopes) {
         obstacleSlopes.sort(Comparator.comparingDouble(o -> pivot.getDistance(o.getNearestPoint(pivot))));
+    }
+
+    public static void sortObstacleTerrainObject(DecimalPosition pivot, List<ObstacleTerrainObject> obstacleSlopes) {
+        obstacleSlopes.sort(Comparator.comparingDouble(o -> o.getCircle().getDistance(pivot)));
     }
 
     @Override

@@ -176,7 +176,6 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
         return (velocity != null && !velocity.equalsDeltaZero()) || (preferredVelocity != null && !preferredVelocity.equalsDeltaZero());
     }
 
-    @Override
     public DecimalPosition getVelocity() {
         return velocity;
     }
