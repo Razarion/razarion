@@ -14,7 +14,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
 
     @Test
     public void moveEast1() {
-        testScenario(new Scenario("moveEast1.json", getClass()) {
+        testScenario(new Scenario("MoveSingleUnitTest_moveEast1.json", getClass()) {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(100, 160));
@@ -24,7 +24,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
 
     @Test
     public void moveEast2() {
-        testScenario(new Scenario("moveEast2.json", getClass()) {
+        testScenario(new Scenario("MoveSingleUnitTest_moveEast2.json", getClass()) {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(60, 160));
@@ -34,7 +34,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
 
     @Test
     public void moveNorth1() {
-        testScenario(new Scenario("moveNorth1.json", getClass()) {
+        testScenario(new Scenario("MoveSingleUnitTest_moveNorth1.json", getClass()) {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(16, 160), new DecimalPosition(16, 176));
@@ -44,7 +44,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
 
     @Test
     public void moveWest1() {
-        testScenario(new Scenario("moveWest1.json", getClass()) {
+        testScenario(new Scenario("MoveSingleUnitTest_moveWest1.json", getClass()) {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(64, 160), new DecimalPosition(16, 160));
@@ -54,7 +54,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
 
     @Test
     public void moveSouth1() {
-        testScenario(new Scenario("moveSouth1.json", getClass()) {
+        testScenario(new Scenario("MoveSingleUnitTest_moveSouth1.json", getClass()) {
             @Override
             protected void createSyncItems() {
                 createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(24, 224), new DecimalPosition(24, 184));

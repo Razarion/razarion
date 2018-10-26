@@ -13,7 +13,6 @@ import javafx.scene.paint.Color;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.btxtech.shared.gameengine.planet.GameTestHelper.createObstacleSlopes;
@@ -120,7 +119,7 @@ public class OrcaTest {
 //                obstacles.add(GameTestHelper.createObstacleSlope(new DecimalPosition(105.278024733339, 104.042797975819), new DecimalPosition(106.1484457143097, 101.3639176522738), new DecimalPosition(0.30901699437486163, -0.9510565162951816), true, new DecimalPosition(0.3090169943749839, -0.9510565162951417), true, new DecimalPosition(0.9510565162951563, 0.30901699437493946)));
                 // ------------- Generated code ends -------------
                 Orca orca = new Orca(syncPhysicalMovable1);
-                ObstacleSlope.sort(syncPhysicalMovable1.getPosition2d(), obstacles);
+                ObstacleSlope.sortObstacleSlope(syncPhysicalMovable1.getPosition2d(), obstacles);
                 int size = obstacles.size() > 10 ? 10 : obstacles.size();
                 double factor = 1.0 / (double)size;
                 for (int i = 0; i < size; i++) {
@@ -190,7 +189,7 @@ public class OrcaTest {
                 new DecimalPosition(55, 25),
                 new DecimalPosition(20, 25)
         ));
-        ObstacleSlope.sort(syncPhysicalMovable.getPosition2d(), obstacles);
+        ObstacleSlope.sortObstacleSlope(syncPhysicalMovable.getPosition2d(), obstacles);
         obstacles.forEach(orca::add);
         orca.solve();
         display(orca, syncPhysicalMovable, obstacles);
@@ -216,7 +215,7 @@ public class OrcaTest {
                 new DecimalPosition(26.699999999999996, 51.2),
                 new DecimalPosition(33.3, 33.2)
         ));
-        ObstacleSlope.sort(syncPhysicalMovable.getPosition2d(), obstacles);
+        ObstacleSlope.sortObstacleSlope(syncPhysicalMovable.getPosition2d(), obstacles);
         obstacles.forEach(orca::add);
         orca.solve();
         display(orca, syncPhysicalMovable, obstacles);
@@ -238,7 +237,7 @@ public class OrcaTest {
                 new DecimalPosition(20, 25)
         );
 
-        ObstacleSlope.sort(syncPhysicalMovable.getPosition2d(), obstacles);
+        ObstacleSlope.sortObstacleSlope(syncPhysicalMovable.getPosition2d(), obstacles);
         obstacles.forEach(orca::add);
         orca.solve();
         display(orca, syncPhysicalMovable, obstacles);

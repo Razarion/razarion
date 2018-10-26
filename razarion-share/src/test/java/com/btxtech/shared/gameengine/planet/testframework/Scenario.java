@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.pathing.PathingService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -96,18 +97,17 @@ public class Scenario {
         return fileName;
     }
 
-    public ScenarioBaseTest.ScenarioTicks readExpectedTicks() throws IOException {
+    public ScenarioTicks readExpectedTicks() throws IOException {
         InputStream inputStream = theClass.getResourceAsStream(fileName);
         if (inputStream == null) {
             throw new IOException("PATH IS WRONG: Resource does not exist: " + theClass.getProtectionDomain().getCodeSource().getLocation().getPath() + fileName);
         }
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return objectMapper.readValue(inputStream, new TypeReference<List<List<SyncBaseItemInfo>>>() {
-        });
+        return objectMapper.readValue(inputStream, ScenarioTicks.class);
     }
 
-    public void save(String saveDir, ScenarioBaseTest.ScenarioTicks expectedScenarioTicks) {
+    public void save(String saveDir, ScenarioTicks expectedScenarioTicks) {
         try {
             File savePath = new File(saveDir, fileName);
             System.out.println("Save expected text case values to: " + savePath);

@@ -56,4 +56,16 @@ public class TwoMovingUnitTest extends ScenarioBaseTest {
         });
     }
 
+
+    @Test
+    public void row1() {
+        testScenario(new Scenario("TwoMovingUnitTest_row1.json", getClass()) {
+            @Override
+            protected void createSyncItems() {
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(36, 160), new DecimalPosition(100, 160));
+            }
+        });
+    }
+
 }
