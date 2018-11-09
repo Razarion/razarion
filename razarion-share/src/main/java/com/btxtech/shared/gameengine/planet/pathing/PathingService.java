@@ -210,7 +210,7 @@ public class PathingService {
                     orca.add(otherSyncPhysicalMovable);
                 } else {
                     if (isPiercing(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable)) {
-                        setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
+                        PathingServiceUtil.setupPushAwayVelocity(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
                         pushAways.add(otherSyncPhysicalMovable);
                         orca.add(otherSyncPhysicalMovable);
 //                        onPathingChanged(syncBaseItem.getSyncPhysicalMovable(), otherSyncPhysicalMovable);
@@ -230,7 +230,7 @@ public class PathingService {
         terrainService.getPathingAccess().getObstacles(position, lookAheadTerrainDistance).forEach(obstacle -> {
             if (obstacle instanceof ObstacleSlope) {
                 sortedObstacleSlope.add((ObstacleSlope) obstacle);
-            } else if(obstacle instanceof ObstacleTerrainObject) {
+            } else if (obstacle instanceof ObstacleTerrainObject) {
                 sortedObstacleTerrainObject.add((ObstacleTerrainObject) obstacle);
             } else {
                 throw new IllegalArgumentException("Can not handle: " + obstacle);
@@ -246,18 +246,13 @@ public class PathingService {
         // 1) Check if pierced
         double totalRadius = shifty.getRadius() + pusher.getRadius();
         Circle2D minkowskiSum = new Circle2D(shifty.getPosition2d(), totalRadius);
-        DecimalPosition pusherVelocity = pusher.getPreferredVelocity().multiply(PlanetService.TICK_FACTOR);
-        if(pusherVelocity.equalsDelta(DecimalPosition.NULL)) {
+        DecimalPosition pusherVelocity = DecimalPosition.zeroIfNull(pusher.getPreferredVelocity()).multiply(PlanetService.TICK_FACTOR);
+        if (pusherVelocity.equalsDelta(DecimalPosition.NULL)) {
             return false;
         }
         DecimalPosition pusherTarget = pusher.getPosition2d().add(pusherVelocity);
         Line move = new Line(pusher.getPosition2d(), pusherTarget);
         return minkowskiSum.doesLineCut(move);
-    }
-
-    private void setupPushAwayVelocity(SyncPhysicalMovable pusher, SyncPhysicalMovable shifty) {
-        DecimalPosition pushAwayDirection = shifty.getPosition2d().sub(pusher.getPosition2d()).normalize();
-        shifty.setupForPushAway(pushAwayDirection.multiply(DecimalPosition.zeroIfNull(pusher.getVelocity()).dotProduct(pushAwayDirection)));
     }
 
     private void implementPosition() {

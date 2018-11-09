@@ -14,6 +14,7 @@ import java.util.logging.Logger;
  * on 29.05.2018.
  */
 // http://gamma.cs.unc.edu/ORCA/
+// Reciprocal n-body Collision Avoidance
 public class Orca {
     public static final double TIME_HORIZON_ITEMS = 10;
     public static final double TIME_HORIZON_OBSTACLES = 2; // Do not make bigger, it becomes unstable

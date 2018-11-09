@@ -53,14 +53,19 @@ public class ScenarioPlaybackController implements Initializable {
     @FXML
     private TableColumn<SyncItemProperty, String> syncItemPropertyTableExpectedValueColumn;
     @FXML
-    private CheckBox showMasterCheck;
+    private CheckBox showMasterActualCheck;
     @FXML
-    private CheckBox showClientCheck;
+    private CheckBox showMasterExpectedCheck;
+    @FXML
+    private CheckBox showSlaveActualCheck;
+    @FXML
+    private CheckBox showSlaveExpectedCheck;
     private ScenarioPlayback scenarioPlayback;
     private int tick;
     private List<SyncBaseItemInfo> currentMasterActual;
-    private List<SyncBaseItemInfo> currentClientActual;
-    private List<SyncBaseItemInfo> currentExpected;
+    private List<SyncBaseItemInfo> currentMasterExpected;
+    private List<SyncBaseItemInfo> currentSlaveActual;
+    private List<SyncBaseItemInfo> currentSlaveExpected;
     private Integer currentSyncBaseItemId;
     private Runnable renderListener;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -69,8 +74,10 @@ public class ScenarioPlaybackController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         animationCheck.selectedProperty().addListener((observable, oldValue, newValue) -> animationTimer(newValue));
-        addRenderListener(showMasterCheck);
-        addRenderListener(showClientCheck);
+        addRenderListener(showMasterActualCheck);
+        addRenderListener(showMasterExpectedCheck);
+        addRenderListener(showSlaveActualCheck);
+        addRenderListener(showSlaveExpectedCheck);
         syncItemPropertyTableNameColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getPropertyName()));
         syncItemPropertyTableNameColumn.setCellFactory(column -> new TableCell<SyncItemProperty, String>() {
             @Override
@@ -191,11 +198,13 @@ public class ScenarioPlaybackController implements Initializable {
 
     private void setupCurrent() {
         currentMasterActual = scenarioPlayback.getActualSyncBaseItemInfo().getMasterTick(tick);
-        currentClientActual = scenarioPlayback.getActualSyncBaseItemInfo().getSlaveTick(tick);
+        currentSlaveActual = scenarioPlayback.getActualSyncBaseItemInfo().getSlaveTick(tick);
         if (scenarioPlayback.getExpectedSyncBaseItemInfo() != null && tick < scenarioPlayback.getExpectedSyncBaseItemInfo().size()) {
-            currentExpected = scenarioPlayback.getExpectedSyncBaseItemInfo().getMasterTick(tick);
+            currentMasterExpected = scenarioPlayback.getExpectedSyncBaseItemInfo().getMasterTick(tick);
+            currentSlaveExpected = scenarioPlayback.getExpectedSyncBaseItemInfo().getSlaveTick(tick);
         } else {
-            currentExpected = null;
+            currentMasterExpected = null;
+            currentSlaveExpected = null;
         }
     }
 
@@ -208,11 +217,17 @@ public class ScenarioPlaybackController implements Initializable {
     }
 
     public void render(WeldTestRenderer weldTestRenderer) {
-        if (showMasterCheck.isSelected()) {
+        if (showMasterActualCheck.isSelected()) {
             currentMasterActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
         }
-        if (showClientCheck.isSelected()) {
-            currentClientActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
+        if (showMasterExpectedCheck.isSelected() && currentMasterExpected != null) {
+            currentMasterExpected.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
+        }
+        if (showSlaveActualCheck.isSelected()) {
+            currentSlaveActual.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
+        }
+        if (showSlaveExpectedCheck.isSelected() && showSlaveExpectedCheck != null) {
+            currentSlaveExpected.forEach(syncBaseItemInfo -> weldTestRenderer.drawSyncBaseItemInfo(syncBaseItemInfo, currentSyncBaseItemId != null && syncBaseItemInfo.getId() == currentSyncBaseItemId));
         }
     }
 
@@ -303,8 +318,8 @@ public class ScenarioPlaybackController implements Initializable {
         try {
             SyncBaseItemInfo actualSyncBaseItemInfo = currentMasterActual.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
             SyncBaseItemInfo expectedSyncBaseItemInfo = null;
-            if (currentExpected != null) {
-                expectedSyncBaseItemInfo = currentExpected.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
+            if (currentMasterExpected != null) {
+                expectedSyncBaseItemInfo = currentMasterExpected.stream().filter(info -> info.getId() == currentSyncBaseItemId).findFirst().orElse(null);
             }
             if (actualSyncBaseItemInfo != null) {
                 syncItemPropertyTable.getItems().add(SyncItemProperty.createInt("Id", actualSyncBaseItemInfo, expectedSyncBaseItemInfo, SyncBaseItemInfo::getId));
