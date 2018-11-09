@@ -56,6 +56,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     private double angularVelocity; // Rad per second
     private Path path;
     private DecimalPosition velocity;
+    private DecimalPosition cosmeticStopVelocity; // Not synchronized
     private DecimalPosition preferredVelocity;
     private DecimalPosition oldPosition;
     private boolean crowded;
@@ -69,6 +70,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public void setupForTick() {
+        cosmeticStopVelocity = null;
         oldPosition = getPosition2d();
         crowded = false;
         if (path != null) {
@@ -114,7 +116,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
             }
             // Check if other standing Units are blocking target
             syncItemContainerService.iterateCellQuadBaseItem(getPosition2d(), STOP_DETECTION_OTHER_UNITS_RADIOS, otherSyncBaseItem -> {
-                if(path == null) {
+                if (path == null) {
                     return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
                 }
                 if (otherSyncBaseItem.equals(getSyncItem())) {
@@ -133,7 +135,7 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
                 }
             });
         }
-        if(path == null) {
+        if (path == null) {
             return; // TODO Ugly performance: can not stop iteration of syncItemContainerService.iterateCellQuadBaseItem()
         }
 
@@ -167,7 +169,11 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
 
     @Override
     public void stop() {
-        velocity = null;
+        if (velocity != null) {
+            double distance = oldPosition.getDistance(getPosition2d());
+            cosmeticStopVelocity = velocity.normalize(distance / PlanetService.TICK_FACTOR);
+            velocity = null;
+        }
         path = null;
         preferredVelocity = null;
     }
@@ -203,14 +209,23 @@ public class SyncPhysicalMovable extends SyncPhysicalArea {
     }
 
     public NativeVertexDto setupInterpolatableVelocity() {
-        if (velocity == null || velocity.equals(DecimalPosition.NULL)) {
+        DecimalPosition interpolatableVelocity = null;
+        if (velocity != null && !velocity.equalsDeltaZero()) {
+            interpolatableVelocity = velocity;
+        }
+        if (interpolatableVelocity == null && cosmeticStopVelocity != null && !cosmeticStopVelocity.equalsDeltaZero()) {
+            interpolatableVelocity = cosmeticStopVelocity;
+        }
+        if (interpolatableVelocity == null) {
             return null;
         }
-        Vertex originalVelocity = new Vertex(velocity, 0);
+
+        Vertex originalVelocity = new Vertex(interpolatableVelocity, 0);
         double angle = originalVelocity.unsignedAngle(getNorm()) - MathHelper.QUARTER_RADIANT;
-        double z = Math.tan(angle) * velocity.magnitude();
+        double z = Math.tan(angle) * interpolatableVelocity.magnitude();
         // Original x and y are taken because game engine does not consider heights
-        return NativeUtil.toNativeVertex(velocity.getX(), velocity.getY(), z);
+        // -> On slopes, the 3D position is faster than normal due to the added z
+        return NativeUtil.toNativeVertex(interpolatableVelocity.getX(), interpolatableVelocity.getY(), z);
     }
 
     public void synchronize(SyncPhysicalAreaInfo syncPhysicalAreaInfo) {
