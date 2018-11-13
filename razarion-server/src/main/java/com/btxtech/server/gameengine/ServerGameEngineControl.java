@@ -44,9 +44,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -92,8 +90,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     private ExceptionHandler exceptionHandler;
     @Inject
     private ItemTrackerPersistence itemTrackerPersistence;
-    @Inject
-    private PathingChangesDisruptor pathingChangesDisruptor;
     @Inject
     private HistoryPersistence historyPersistence;
     //    @Inject
