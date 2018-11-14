@@ -61,6 +61,10 @@ public abstract class AbstractServerGameConnection {
         sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.USE_INVENTORY_ITEM, toJson(useInventoryItem)));
     }
 
+    public void tickCountRequest() {
+        sendToServer(ConnectionMarshaller.marshall(GameConnectionPacket.TICK_COUNT_REQUEST, null));
+    }
+
     public void handleMessage(String text) {
         GameConnectionPacket packet = ConnectionMarshaller.deMarshallPackage(text, GameConnectionPacket.class);
         String jsonString = ConnectionMarshaller.deMarshallPayload(text);
@@ -96,6 +100,9 @@ public abstract class AbstractServerGameConnection {
                 break;
             case INITIAL_SLAVE_SYNC_INFO:
                 gameEngineWorker.onInitialSlaveSyncItemInfo((InitialSlaveSyncItemInfo) param);
+                break;
+            case TICK_COUNT_RESPONSE:
+                planetService.setTickCount((long)((double) param));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);

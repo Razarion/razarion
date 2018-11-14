@@ -31,6 +31,8 @@ public enum GameConnectionPacket implements ConnectionMarshaller.Packet {
     // System
     SET_GAME_SESSION_UUID(String.class),
     INITIAL_SLAVE_SYNC_INFO(InitialSlaveSyncItemInfo.class),
+    TICK_COUNT_REQUEST(Void.class),
+    TICK_COUNT_RESPONSE(Double.class),
     // Base
     CREATE_BASE(DecimalPosition.class),
     BASE_CREATED(PlayerBaseInfo.class),

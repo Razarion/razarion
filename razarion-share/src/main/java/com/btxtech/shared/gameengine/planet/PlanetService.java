@@ -72,7 +72,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
     private PlanetServiceTracker planetServiceTracker = new PlanetServiceTracker();
     private long tickCount;
     private GameEngineMode gameEngineMode;
-    private boolean tickRunning;
     // private List<DebugHelperStatic.TickData> tickDatas = new ArrayList<>();
 
     @PostConstruct
@@ -125,7 +124,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
             return;
         }
         try {
-            tickRunning = true;
             SynchronizationSendingContext synchronizationSendingContext = null;
             if (gameEngineMode == GameEngineMode.MASTER) {
                 synchronizationSendingContext = new SynchronizationSendingContext();
@@ -156,7 +154,6 @@ public class PlanetService implements Runnable { // Only available in worker. On
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
         }
-        tickRunning = false;
     }
 
     public PlanetConfig getPlanetConfig() {
@@ -218,8 +215,8 @@ public class PlanetService implements Runnable { // Only available in worker. On
         return this.tickCount;
     }
 
-    public boolean isTickRunning() {
-        return tickRunning;
+    public void setTickCount(long tickCount) {
+        this.tickCount = tickCount;
     }
 
     public List<DebugHelperStatic.TickData> getTickDatas() {

@@ -12,6 +12,7 @@ import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.command.BaseCommand;
 import com.btxtech.shared.gameengine.planet.BaseItemService;
 import com.btxtech.shared.gameengine.planet.CommandService;
+import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.connection.GameConnectionPacket;
 import com.btxtech.shared.system.ConnectionMarshaller;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -48,6 +49,8 @@ public class ClientGameConnection {
     private CommandService commandService;
     @Inject
     private ServerInventoryService serverInventoryService;
+    @Inject
+    private PlanetService planetService;
     private ObjectMapper mapper = new ObjectMapper();
     private RemoteEndpoint.Async async;
     private Date time;
@@ -111,6 +114,9 @@ public class ClientGameConnection {
             case SET_GAME_SESSION_UUID:
                 gameSessionUuid = (String) param;
                 break;
+            case TICK_COUNT_REQUEST:
+                sendTickSync();
+                break;
             default:
                 throw new IllegalArgumentException("Unknown Packet: " + packet);
         }
@@ -118,6 +124,14 @@ public class ClientGameConnection {
 
     public void sendToClient(String text) {
         async.sendText(text);
+    }
+
+    private void sendTickSync() {
+        try {
+            sendToClient(ConnectionMarshaller.marshall(GameConnectionPacket.TICK_COUNT_RESPONSE, mapper.writeValueAsString((double) planetService.getTickCount())));
+        } catch (Throwable throwable) {
+            exceptionHandler.handleException(throwable);
+        }
     }
 
     public String getGameSessionUuid() {

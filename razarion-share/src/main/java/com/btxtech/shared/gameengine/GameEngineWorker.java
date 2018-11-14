@@ -276,6 +276,7 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
         if (initialSlaveSyncItemInfo.getActualBaseId() != null) {
             playerBase = baseItemService.getPlayerBase4BaseId(initialSlaveSyncItemInfo.getActualBaseId());
         }
+        serverConnection.tickCountRequest();
         sendToClient(GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED, findScrollToBasePosition());
     }
 
