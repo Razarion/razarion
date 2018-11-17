@@ -1,12 +1,9 @@
 package com.btxtech.server.collada;
 
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,6 +12,7 @@ import java.util.Map;
  */
 public class Mesh extends ColladaXml {
     private Polylist polylist;
+    private Triangles triangles;
     private Map<String, Source> sources;
     private Vertices vertices;
 
@@ -30,11 +28,24 @@ public class Mesh extends ColladaXml {
             throw new ColladaRuntimeException("Semantics must be POSITION. " + node);
         }
 
-        polylist = new Polylist(getChild(node, ELEMENT_POLYLIST));
+        Node polylistNode = getChildOrNull(node, ELEMENT_POLYLIST);
+        if (polylistNode != null) {
+            polylist = new Polylist(polylistNode);
+        }
+        Node trianglesNode = getChildOrNull(node, ELEMENT_TRIANGLES);
+        if (trianglesNode != null) {
+            triangles = new Triangles(trianglesNode);
+        }
     }
 
     public VertexContainerBuffer createVertexContainerBuffer() {
-        return polylist.createVertexContainer(sources, vertices);
+        if(polylist != null) {
+            return polylist.createVertexContainer(sources, vertices);
+        }
+        if(triangles != null) {
+            return triangles.createVertexContainer(sources, vertices);
+        }
+        throw new ColladaRuntimeException("polylist == null &&  triangles == null");
     }
 
     @Override

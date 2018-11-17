@@ -38,6 +38,7 @@ public class ColladaXml {
     public static final String ELEMENT_PARAM = "param";
     public static final String ELEMENT_VERTICES = "vertices";
     public static final String ELEMENT_POLYLIST = "polylist";
+    public static final String ELEMENT_TRIANGLES = "triangles";
     public static final String ELEMENT_INPUT = "input";
     public static final String ELEMENT_VCOUNT = "vcount";
     public static final String ELEMENT_NODE = "node";

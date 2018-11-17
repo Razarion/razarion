@@ -26,8 +26,17 @@ import java.util.Map;
 public class ColladaConverterTest {
 
     @Test
-    public void testSimplePlane1() throws Exception {
-        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestSimplePlane01.dae", getClass()), null).createShape3D(99);
+    public void testSimplePlanePolylist1() throws Exception {
+        testSimplePlane1("/collada/TestSimplePlanePolylist01.dae");
+    }
+
+    @Test
+    public void testSimplePlaneTriangle1() throws Exception {
+        testSimplePlane1("/collada/TestSimplePlaneTriangles01.dae");
+    }
+
+    private void testSimplePlane1(String location) throws Exception {
+        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text(location, getClass()), null).createShape3D(99);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(1, shape3D.getElement3Ds().size());
         Element3D planeElement = Shape3DUtils.getElement3D("Plane_Id", shape3D);
@@ -35,7 +44,7 @@ public class ColladaConverterTest {
         VertexContainer vertexContainer = planeElement.getVertexContainers().get(0);
         Assert.assertEquals("99-Plane_Id-PlaneMat-material", vertexContainer.getKey());
 
-        List<VertexContainerBuffer> vertexContainerBuffers = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestSimplePlane01.dae", getClass()), null).createVertexContainerBuffer(99);
+        List<VertexContainerBuffer> vertexContainerBuffers = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text(location, getClass()), null).createVertexContainerBuffer(99);
         Assert.assertEquals(1, vertexContainerBuffers.size());
         VertexContainerBuffer buffer = CollectionUtils.getFirst(vertexContainerBuffers);
         Assert.assertEquals("99-Plane_Id-PlaneMat-material", buffer.getKey());
