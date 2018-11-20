@@ -61,9 +61,11 @@ public class Shape3DBuilder {
         }
         shape3D.setElement3Ds(element3Ds);
         List<ModelMatrixAnimation> modelMatrixAnimations = new ArrayList<>();
-        for (Animation animation : animations) {
-            ModelMatrixAnimation modelMatrixAnimation = animation.convert(shape3D);
-            modelMatrixAnimations.add(modelMatrixAnimation);
+        if (animations != null) {
+            for (Animation animation : animations) {
+                ModelMatrixAnimation modelMatrixAnimation = animation.convert(shape3D);
+                modelMatrixAnimations.add(modelMatrixAnimation);
+            }
         }
         if (colladaConverterMapper != null) {
             for (ModelMatrixAnimation modelMatrixAnimation : modelMatrixAnimations) {
