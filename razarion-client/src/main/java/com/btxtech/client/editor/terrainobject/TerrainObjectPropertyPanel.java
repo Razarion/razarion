@@ -2,6 +2,7 @@ package com.btxtech.client.editor.terrainobject;
 
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
+import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
 import com.google.gwt.user.client.ui.Label;
@@ -25,20 +26,21 @@ public class TerrainObjectPropertyPanel extends AbstractPropertyPanel<TerrainObj
     @Inject
     @AutoBound
     private DataBinder<TerrainObjectConfig> terrainObjectConfigDataBinder;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private Label id;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @Bound
     @DataField
     private TextBox internalName;
-    @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
     private Shape3DReferenceFiled shape3DReferenceFiled;
+    @Inject
+    @Bound
+    @DataField
+    private CommaDoubleBox radius;
 
     public void init(TerrainObjectConfig terrainObjectConfig) {
         terrainObjectConfigDataBinder.setModel(terrainObjectConfig);
