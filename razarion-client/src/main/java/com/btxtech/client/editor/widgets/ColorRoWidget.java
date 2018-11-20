@@ -34,10 +34,17 @@ public class ColorRoWidget implements IsElement {
     private Div colorDiv;
 
     public void init(Color color) {
-        rLabel.setTextContent(DisplayUtils.handleDouble2(color.getR()));
-        gLabel.setTextContent(DisplayUtils.handleDouble2(color.getG()));
-        bLabel.setTextContent(DisplayUtils.handleDouble2(color.getB()));
-        colorDiv.getStyle().setProperty("background-color", color.toHtmlColor());
+        if(color != null) {
+            rLabel.setTextContent(DisplayUtils.handleDouble2(color.getR()));
+            gLabel.setTextContent(DisplayUtils.handleDouble2(color.getG()));
+            bLabel.setTextContent(DisplayUtils.handleDouble2(color.getB()));
+            colorDiv.getStyle().setProperty("background-color", color.toHtmlColor());
+        } else {
+            rLabel.setTextContent("-");
+            gLabel.setTextContent("-");
+            bLabel.setTextContent("-");
+            colorDiv.getStyle().setProperty("background-color", "transparent");
+        }
     }
 
     @Override
