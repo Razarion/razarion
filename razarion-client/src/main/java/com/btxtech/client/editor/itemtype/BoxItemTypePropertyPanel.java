@@ -5,11 +5,11 @@ import com.btxtech.client.editor.widgets.I18nStringWidget;
 import com.btxtech.client.editor.widgets.childtable.ChildTable;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
+import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
-import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.ValueListBox;
@@ -52,7 +52,7 @@ public class BoxItemTypePropertyPanel extends AbstractPropertyPanel<BoxItemType>
     @Inject
     @Bound
     @DataField
-    private DoubleBox radius;
+    private CommaDoubleBox radius;
     @Inject
     @Bound
     @DataField

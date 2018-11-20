@@ -2,6 +2,7 @@ package com.btxtech.client.editor.renderpanel;
 
 import com.btxtech.client.editor.renderer.MonitorRenderTask;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.renderer.Camera;
@@ -66,13 +67,13 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     private Button dumpPositionButton;
     @Inject
     @DataField
-    private DoubleBox translateX;
+    private CommaDoubleBox translateX;
     @Inject
     @DataField
-    private DoubleBox translateY;
+    private CommaDoubleBox translateY;
     @Inject
     @DataField
-    private DoubleBox translateZ;
+    private CommaDoubleBox translateZ;
     @Inject
     @DataField
     private DoubleBox rotateXSlider;

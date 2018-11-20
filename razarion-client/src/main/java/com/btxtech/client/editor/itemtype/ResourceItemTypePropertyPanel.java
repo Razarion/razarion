@@ -4,10 +4,10 @@ import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.I18nStringWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.editor.widgets.shape3dwidget.Shape3DReferenceFiled;
+import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
-import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
@@ -59,7 +59,7 @@ public class ResourceItemTypePropertyPanel extends AbstractPropertyPanel<Resourc
     @Inject
     @Bound
     @DataField
-    private DoubleBox radius;
+    private CommaDoubleBox radius;
     @Inject
     @Bound
     @DataField
