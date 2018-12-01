@@ -3,10 +3,11 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
+import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.persistence.AttributeOverride;
@@ -27,7 +28,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,8 +74,6 @@ public class PlanetEntity {
     private double shadowRotationX;
     private double shadowRotationY;
     private double shadowAlpha;
-    private double shape3DLightRotateX;
-    private double shape3DLightRotateY;
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] miniMapImage;
@@ -106,7 +104,9 @@ public class PlanetEntity {
     public PlanetVisualConfig toPlanetVisualConfig() {
         PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
         planetVisualConfig.setShadowRotationX(shadowRotationX).setShadowRotationY(shadowRotationY).setShadowAlpha(shadowAlpha);
-        planetVisualConfig.setShape3DLightRotateX(shape3DLightRotateX).setShape3DLightRotateY(shape3DLightRotateY);
+        planetVisualConfig.setLightDirection(new Vertex(0, 0, -1)); // TODO replace with value from DB
+        planetVisualConfig.setAmbient(new Color(0.5, 0.5, 0.5)); // TODO replace with value from DB
+        planetVisualConfig.setDiffuse(new Color(0.5, 0.5, 0.5)); // TODO replace with value from DB
         return planetVisualConfig;
     }
 
@@ -114,8 +114,6 @@ public class PlanetEntity {
         shadowRotationX = planetVisualConfig.getShadowRotationX();
         shadowRotationY = planetVisualConfig.getShadowRotationY();
         shadowAlpha = planetVisualConfig.getShadowAlpha();
-        shape3DLightRotateX = planetVisualConfig.getShape3DLightRotateX();
-        shape3DLightRotateY = planetVisualConfig.getShape3DLightRotateY();
     }
 
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {

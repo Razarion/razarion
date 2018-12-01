@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.ServerArquillianBaseTest;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import org.junit.Test;
 import org.unitils.reflectionassert.ReflectionAssert;
@@ -24,7 +25,7 @@ public class PlanetPersistenceTest extends ServerArquillianBaseTest {
         setupPlanets();
 
         PlanetVisualConfig expectedPlanetVisualConfig = new PlanetVisualConfig().setShadowAlpha(0.2).setShadowRotationX(0.33).setShadowRotationY(-0.45);
-        expectedPlanetVisualConfig.setShape3DLightRotateX(-0.23).setShape3DLightRotateY(-0.77);
+        expectedPlanetVisualConfig.setLightDirection(new Vertex(0, 0, -1));
         planetPersistence.updatePlanetVisualConfig(PLANET_1_ID, expectedPlanetVisualConfig);
 
         PlanetVisualConfig actualPlanetVisualConfig = gameUiControlConfigPersistence.loadWarm(Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getPlanetVisualConfig();

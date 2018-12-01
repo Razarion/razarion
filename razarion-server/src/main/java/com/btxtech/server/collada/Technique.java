@@ -11,8 +11,6 @@ import java.util.List;
  */
 public class Technique extends ColladaXml {
     private String shaderModel;
-    private Color ambient;
-    private Color diffuse;
     private Color specular;
     private Color emission;
 
@@ -29,8 +27,6 @@ public class Technique extends ColladaXml {
     }
 
     private void readValues(Node node) {
-        ambient = toColor(node, ELEMENT_AMBIENT, ELEMENT_COLOR);
-        diffuse = toColor(node, ELEMENT_DIFFUSE, ELEMENT_COLOR);
         specular = toColor(node, ELEMENT_SPECULAR, ELEMENT_COLOR);
         emission = toColor(node, ELEMENT_EMISSION, ELEMENT_COLOR);
     }
@@ -51,14 +47,6 @@ public class Technique extends ColladaXml {
         return shaderModel;
     }
 
-    public Color getAmbient() {
-        return ambient;
-    }
-
-    public Color getDiffuse() {
-        return diffuse;
-    }
-
     public Color getSpecular() {
         return specular;
     }
@@ -71,8 +59,6 @@ public class Technique extends ColladaXml {
     public String toString() {
         return "Technique{" +
                 "shaderModel='" + shaderModel + '\'' +
-                ", ambient=" + ambient +
-                ", diffuse=" + diffuse +
                 ", specular=" + specular +
                 ", emission=" + emission +
                 '}';

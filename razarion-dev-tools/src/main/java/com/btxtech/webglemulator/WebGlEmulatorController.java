@@ -3,11 +3,13 @@ package com.btxtech.webglemulator;
 import com.btxtech.persistence.JsonProviderEmulator;
 import com.btxtech.scenariongui.InstanceStringGenerator;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.system.debugtool.DebugHelperStatic;
 import com.btxtech.shared.system.perfmon.PerfmonService;
+import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.control.GameEngineControl;
@@ -18,12 +20,14 @@ import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.ShadowUiService;
+import com.btxtech.uiservice.renderer.ViewService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.btxtech.uiservice.tip.GameTipService;
 import com.btxtech.webglemulator.razarion.RazarionEmulator;
 import com.btxtech.webglemulator.razarion.WorkerEmulator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -44,7 +48,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -80,9 +86,9 @@ public class WebGlEmulatorController implements Initializable {
     @FXML
     private Slider cameraXRotationSlider;
     @FXML
-    private Slider shadowXRotationSlider;
+    private Circle planetElement;
     @FXML
-    private Slider shadowYRotationSlider;
+    private Circle sunElement;
     @FXML
     private Canvas canvas;
     @FXML
@@ -101,6 +107,8 @@ public class WebGlEmulatorController implements Initializable {
     private RazarionEmulator razarionEmulator;
     @Inject
     private VisualUiService visualUiService;
+    @Inject
+    private ViewService viewService;
     @Inject
     private ProjectionTransformation projectionTransformation;
     @Inject
@@ -135,6 +143,8 @@ public class WebGlEmulatorController implements Initializable {
     private GameEngineControl gameEngineControl;
     @Inject
     private WorkerEmulator workerEmulator;
+    private double orgSceneX;
+    private double orgSceneY;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -168,17 +178,46 @@ public class WebGlEmulatorController implements Initializable {
         cameraZRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
             camera.setRotateZ(Math.toRadians(cameraZRotationSlider.getValue()));
         });
-        shadowXRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
-            visualUiService.getPlanetVisualConfig().setShadowRotationX(Math.toRadians(shadowXRotationSlider.getValue()));
-            shadowUiService.setupMatrices();
-            clientViewController.update();
-        });
-        shadowYRotationSlider.valueProperty().addListener((observableValue, number, newValue) -> {
-            visualUiService.getPlanetVisualConfig().setShadowRotationY(Math.toRadians(shadowYRotationSlider.getValue()));
-            shadowUiService.setupMatrices();
-            clientViewController.update();
-        });
+        sunElement.setOnMouseMoved(event -> {
+            try {
+                orgSceneX = event.getSceneX();
+                orgSceneY = event.getSceneY();
 
+                sunElement.toFront();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
+        sunElement.setOnMouseDragged(event -> {
+            try {
+                double offsetX = event.getSceneX() - orgSceneX;
+                double offsetY = event.getSceneY() - orgSceneY;
+
+                double xDiff = sunElement.getCenterX() + offsetX;
+                double yDiff = sunElement.getCenterY() + offsetY;
+                if (MathHelper.getPythagorasC(xDiff, yDiff) > planetElement.getRadius()) {
+                    return;
+                }
+
+                sunElement.setCenterX(xDiff);
+                sunElement.setCenterY(yDiff);
+
+                orgSceneX = event.getSceneX();
+                orgSceneY = event.getSceneY();
+
+                double lightDirectionX = Math.min(xDiff / planetElement.getRadius(), 1.0);
+                double lightDirectionY = -Math.min(yDiff / planetElement.getRadius(), 1.0);
+                double lightDirectionZ = Math.sqrt(1 - lightDirectionX * lightDirectionX - lightDirectionY * lightDirectionY);
+
+                Vertex lightDirection = new Vertex(lightDirectionX, lightDirectionY, -lightDirectionZ);
+                System.out.println("lightDirection: " + lightDirection);
+                visualUiService.getPlanetVisualConfig().setLightDirection(lightDirection);
+                shadowUiService.setupMatrices();
+                viewService.onViewChanged();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
+        });
         showRenderTimeCheckBox.setSelected(razarionEmulator.isShowRenderTime());
     }
 
@@ -192,8 +231,8 @@ public class WebGlEmulatorController implements Initializable {
         yTranslationField.setText(Double.toString(camera.getTranslateY()));
         zTranslationField.setText(Double.toString(camera.getTranslateZ()));
 
-        shadowXRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getPlanetVisualConfig().getShadowRotationX()));
-        shadowYRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getPlanetVisualConfig().getShadowRotationY()));
+//        shadowXRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getPlanetVisualConfig().getShadowRotationX()));
+//        shadowYRotationSlider.valueProperty().set(Math.toDegrees(visualUiService.getPlanetVisualConfig().getShadowRotationY()));
     }
 
     private DecimalPosition toClipCoordinates(DecimalPosition canvasPosition) {
@@ -249,7 +288,7 @@ public class WebGlEmulatorController implements Initializable {
     }
 
     public void onShadowButtonClicked() {
-        if (shadowController.getCanvas() != null) {
+        if (shadowController.isActive()) {
             return;
         }
         try {
@@ -259,6 +298,12 @@ public class WebGlEmulatorController implements Initializable {
             AnchorPane root = loader.load();
             stage.setTitle("Shadow");
             stage.setScene(new Scene(root));
+            stage.setOnHidden(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent event) {
+                    shadowController.setActive(false);
+                }
+            });
 //            stage.setX(-1288);
 //            stage.setY(168);
             stage.setOnCloseRequest(we -> shadowController.setActive(false));

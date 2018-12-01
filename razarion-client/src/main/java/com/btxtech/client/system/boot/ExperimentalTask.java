@@ -8,6 +8,7 @@ import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
@@ -117,7 +118,9 @@ public class ExperimentalTask extends AbstractStartupTask {
     private PlanetVisualConfig defaultPlanetVisualConfig() {
         PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
         planetVisualConfig.setShadowAlpha(0.2).setShadowRotationX(Math.toRadians(-27)).setShadowRotationY(Math.toRadians(0));
-        planetVisualConfig.setShape3DLightRotateX(Math.toRadians(25)).setShape3DLightRotateY(Math.toRadians(290));
+        planetVisualConfig.setDiffuse(new Color(0.5, 0.5, 0.5));
+        planetVisualConfig.setAmbient(new Color(0.5, 0.5, 0.5));
+        planetVisualConfig.setLightDirection(new Vertex(0, 0, -1));
         return planetVisualConfig;
     }
 

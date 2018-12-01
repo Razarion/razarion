@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.scene.shape.*?>
 <?import java.lang.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
@@ -24,7 +26,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="857.0" prefWidth="977.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.webglemulator.WebGlEmulatorController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.btxtech.webglemulator.WebGlEmulatorController">
     <top>
         <ToolBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <items>
@@ -51,11 +53,11 @@
         </ToolBar>
     </top>
     <center>
-        <SplitPane dividerPositions="0.1636060100166945" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <SplitPane dividerPositions="0.23943661971830985" BorderPane.alignment="CENTER">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0">
                     <children>
-                        <VBox prefHeight="537.0" prefWidth="215.0">
+                        <VBox prefHeight="815.0">
                             <children>
                                 <GridPane>
                                     <columnConstraints>
@@ -94,14 +96,14 @@
                                         </Label>
                                     </children>
                                 </GridPane>
-                                <GridPane prefHeight="196.0" prefWidth="216.0">
+                                <GridPane prefHeight="265.0" prefWidth="300.0">
                                     <columnConstraints>
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                     </columnConstraints>
                                     <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints maxHeight="60.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="41.0" minHeight="8.0" prefHeight="16.0" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="60.0" minHeight="0.0" prefHeight="11.0" vgrow="SOMETIMES" />
                                         <RowConstraints maxHeight="61.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
                                         <RowConstraints maxHeight="54.0" minHeight="0.0" prefHeight="29.0" vgrow="SOMETIMES" />
                                         <RowConstraints maxHeight="50.0" minHeight="0.0" prefHeight="36.0" vgrow="SOMETIMES" />
@@ -127,30 +129,35 @@
                                         <Button mnemonicParsing="false" onAction="#onDumpCameraClicked" text="Dump" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
                                     </children>
                                 </GridPane>
-                                <GridPane>
+                                <GridPane prefHeight="250.0" prefWidth="300.0">
                                     <columnConstraints>
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="103.0" minWidth="10.0" prefWidth="66.0" />
-                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="149.0" minWidth="10.0" prefWidth="149.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="112.0" minWidth="10.0" prefWidth="92.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" />
                                     </columnConstraints>
                                     <rowConstraints>
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="105.0" minHeight="5.0" prefHeight="26.0" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="276.0" minHeight="10.0" prefHeight="211.0" vgrow="SOMETIMES" />
+                                        <RowConstraints maxHeight="98.0" minHeight="0.0" prefHeight="15.0" vgrow="SOMETIMES" />
                                     </rowConstraints>
                                     <children>
-                                        <Label text="Shadow" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
+                                        <Label text="Light" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER">
                                             <font>
                                                 <Font size="22.0" />
                                             </font>
                                         </Label>
-                                        <Label text="X Rotation" GridPane.rowIndex="1" />
-                                        <Label text="Y Rotation" GridPane.rowIndex="2" />
-                                        <Slider fx:id="shadowXRotationSlider" majorTickUnit="45.0" max="90.0" min="-90" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                        <Slider fx:id="shadowYRotationSlider" majorTickUnit="45.0" max="90.0" min="-90" showTickLabels="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                        <Label text="Diffuse direction" GridPane.rowIndex="1" />
+                              <Pane prefHeight="100.0" prefWidth="100.0" style="-fx-background-color: #888888;" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <children>
+                                    <Circle fx:id="planetElement" fill="#37ae0c" layoutX="94.0" layoutY="105.0" radius="80.0" stroke="BLACK" strokeType="INSIDE" />
+                                    <Circle fx:id="sunElement" fill="#f5ff1f" layoutX="94.0" layoutY="105.0" radius="10.0" stroke="BLACK" strokeType="INSIDE">
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor></Circle>
+                                 </children>
+                              </Pane>
                                     </children>
                                 </GridPane>
-                        <Separator />
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox prefHeight="75.0" prefWidth="300.0">
                            <children>
                                <Label text="Tick data" />
                                <Button mnemonicParsing="false" onAction="#onSaveTickDataButton" text="Save" />
@@ -161,7 +168,7 @@
                         </VBox>
                     </children>
                 </AnchorPane>
-                <AnchorPane fx:id="centerPanel" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                <AnchorPane fx:id="centerPanel" minHeight="0.0" minWidth="0.0">
                     <children>
                         <Canvas fx:id="canvas" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyReleased" onMouseDragged="#onMouseDragged" onMouseExited="#onMouseOut" onMouseMoved="#onMouseMoved" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" BorderPane.alignment="CENTER" />
                         <VBox fx:id="itemCockpitPanel" layoutX="14.0" layoutY="744.0" prefHeight="200.0" prefWidth="200.0" />

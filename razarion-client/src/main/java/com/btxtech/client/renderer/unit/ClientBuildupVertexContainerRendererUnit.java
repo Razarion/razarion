@@ -7,11 +7,10 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
-import com.btxtech.uiservice.item.BaseItemUiService;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import elemental.html.Float32Array;
@@ -33,16 +32,14 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     @Inject
     private WebGlFacade webGlFacade;
     @Inject
-    private BaseItemUiService baseItemUiService;
-    @Inject
     private ClientShape3DUiService shape3DUiService;
+    @Inject
+    private VisualUiService visualUiService;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute norms;
     private Vec2Float32ArrayShaderAttribute textureCoordinateAttribute;
     private WebGlUniformTexture finishTexture;
     private WebGlUniformTexture buildupTexture;
-    private Color ambient;
-    private Color diffuse;
     private WebGLUniformLocation modelMatrix;
     private WebGLUniformLocation modelNormMatrix;
     private WebGLUniformLocation buildupMatrixUniformLocation;
@@ -81,9 +78,6 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
         norms.fillFloat32Array(shape3DUiService.getNormFloat32Array(vertexContainer));
         textureCoordinateAttribute.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
 
-        ambient = vertexContainer.getAmbient();
-        diffuse = vertexContainer.getDiffuse();
-
         characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
         characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
     }
@@ -92,10 +86,9 @@ public class ClientBuildupVertexContainerRendererUnit extends AbstractBuildupVer
     protected void prepareDraw(Matrix4 buildupMatrix) {
         webGlFacade.useProgram();
 
-
-        webGlFacade.uniform3fNoAlpha(uLightingAmbient, ambient);
-        webGlFacade.uniform3f(uLightingDirection, shape3DUiService.getShape3DLightDirection());
-        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, diffuse);
+        webGlFacade.uniform3fNoAlpha(uLightingAmbient, visualUiService.getAmbient());
+        webGlFacade.uniform3f(uLightingDirection, visualUiService.getLightDirection());
+        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, visualUiService.getDiffuse());
         webGlFacade.uniformMatrix4fv(buildupMatrixUniformLocation, buildupMatrix);
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());

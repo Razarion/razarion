@@ -12,8 +12,6 @@ public class VertexContainer {
     private String materialName;
     private int verticesCount;
     private ShapeTransform shapeTransform;
-    private Color ambient;
-    private Color diffuse;
     private Color specular;
     private Color emission;
     private Integer textureId;
@@ -52,16 +50,6 @@ public class VertexContainer {
         return this;
     }
 
-    public VertexContainer setAmbient(Color ambient) {
-        this.ambient = ambient;
-        return this;
-    }
-
-    public VertexContainer setDiffuse(Color diffuse) {
-        this.diffuse = diffuse;
-        return this;
-    }
-
     public VertexContainer setSpecular(Color specular) {
         this.specular = specular;
         return this;
@@ -75,14 +63,6 @@ public class VertexContainer {
     public VertexContainer setCharacterRepresenting(boolean characterRepresenting) {
         this.characterRepresenting = characterRepresenting;
         return this;
-    }
-
-    public Color getAmbient() {
-        return ambient;
-    }
-
-    public Color getDiffuse() {
-        return diffuse;
     }
 
     public Color getSpecular() {
@@ -127,8 +107,6 @@ public class VertexContainer {
                 "materialId=" + materialId +
                 ", materialName=" + materialName +
                 ", verticesCount=" + verticesCount +
-                ", ambient=" + ambient +
-                ", diffuse=" + diffuse +
                 ", specular=" + specular +
                 ", emission=" + emission +
                 ", textureId=" + textureId +

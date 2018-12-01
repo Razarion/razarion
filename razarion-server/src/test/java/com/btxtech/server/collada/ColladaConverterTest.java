@@ -200,9 +200,7 @@ public class ColladaConverterTest {
         Assert.assertEquals("Chassis_Material", vertexContainer.getMaterialName());
         Assert.assertEquals("Chassis_Material-material", vertexContainer.getMaterialId());
         Assert.assertNull(vertexContainer.getTextureId());
-        Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getAmbient());
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
-        Assert.assertEquals(new Color(0.64, 0.64, 0.64), vertexContainer.getDiffuse());
         Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
         Assert.assertEquals(42, vertexContainer.getVerticesCount());
         VertexContainerBuffer buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
@@ -219,9 +217,7 @@ public class ColladaConverterTest {
         Assert.assertNull("Chassis_Material", vertexContainer.getMaterialName());
         Assert.assertNull("Chassis_Material-material", vertexContainer.getMaterialId());
         Assert.assertNull(vertexContainer.getTextureId());
-        Assert.assertNull(vertexContainer.getAmbient());
         Assert.assertNull(vertexContainer.getEmission());
-        Assert.assertNull(vertexContainer.getDiffuse());
         Assert.assertNull(vertexContainer.getSpecular());
         Assert.assertEquals(57, vertexContainer.getVerticesCount());
         buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
@@ -250,9 +246,7 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material", vertexContainer.getMaterialName());
         Assert.assertEquals("Material-material", vertexContainer.getMaterialId());
         Assert.assertEquals(99, (int) vertexContainer.getTextureId());
-        Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getAmbient());
         Assert.assertEquals(new Color(0, 0, 0), vertexContainer.getEmission());
-        Assert.assertEquals(new Color(0.64, 0.64, 0.64), vertexContainer.getDiffuse());
         Assert.assertEquals(new Color(0.5, 0.5, 0.5), vertexContainer.getSpecular());
         Assert.assertEquals(6, vertexContainer.getVerticesCount());
         VertexContainerBuffer buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
@@ -280,8 +274,6 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material", vertexContainer.getMaterialName());
         Assert.assertEquals("Material-material", vertexContainer.getMaterialId());
         Assert.assertEquals(101, (int) vertexContainer.getTextureId());
-        TestHelper.assertColor(new Color(0.1819462, 1, 0.2208172, 1), vertexContainer.getAmbient());
-        TestHelper.assertColor(new Color(0.8, 0.3, 0.2, 1.0), vertexContainer.getDiffuse());
         Assert.assertNull(vertexContainer.getSpecular());
         TestHelper.assertColor(new Color(0, 0, 0), vertexContainer.getEmission());
         VertexContainerBuffer buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);
@@ -301,8 +293,6 @@ public class ColladaConverterTest {
         Assert.assertEquals("Material_002-material", vertexContainer.getMaterialId());
         Assert.assertEquals("Material_002", vertexContainer.getMaterialName());
         Assert.assertEquals(201, (int) vertexContainer.getTextureId());
-        TestHelper.assertColor(new Color(0.09097311, 0.5, 0.1104086, 1), vertexContainer.getAmbient());
-        TestHelper.assertColor(new Color(0.0, 0.4, 0.8, 1.0), vertexContainer.getDiffuse());
         TestHelper.assertColor(new Color(0.2, 0.3, 0.4, 1.0), vertexContainer.getSpecular());
         TestHelper.assertColor(new Color(123, 123, 123), vertexContainer.getEmission());
         buffer = getVertexContainerBuffer4Key(vertexContainer.getKey(), vertexContainerBuffers);

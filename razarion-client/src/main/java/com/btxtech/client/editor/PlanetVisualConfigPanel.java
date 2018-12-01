@@ -1,6 +1,7 @@
 package com.btxtech.client.editor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.widgets.LightDirectionWidget;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.dto.PlanetVisualConfig;
@@ -48,9 +49,6 @@ public class PlanetVisualConfigPanel extends LeftSideBarContent {
     @AutoBound
     private DataBinder<PlanetVisualConfig> planetVisualConfigDataBinder;
     @Inject
-    @DataField
-    private Label shadowDirectionLabel;
-    @Inject
     @Bound(property = "shadowRotationX", converter = GradToRadConverter.class)
     @DataField
     private DoubleBox shadowRotationXSlider;
@@ -71,41 +69,18 @@ public class PlanetVisualConfigPanel extends LeftSideBarContent {
     @DataField
     private NumberInput shadowAlpha;
     @Inject
+    @Bound
     @DataField
-    private Label shape3DDirectionLabel;
-    @Inject
-    @Bound(property = "shape3DLightRotateX", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shape3DLightRotationXSlider;
-    @Inject
-    @Bound(property = "shape3DLightRotateX", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shape3DLightRotationXBox;
-    @Inject
-    @Bound(property = "shape3DLightRotateY", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shape3DLightRotationYSlider;
-    @Inject
-    @Bound(property = "shape3DLightRotateY", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shape3DLightRotationYBox;
+    private LightDirectionWidget lightDirection;
 
     @PostConstruct
     public void init() {
         planetVisualConfigDataBinder.setModel(visualUiService.getPlanetVisualConfig());
         planetVisualConfigDataBinder.addPropertyChangeHandler(event -> {
             shadowUiService.setupMatrices();
-            shape3DUiService.updateLightDirection();
             viewService.onViewChanged();
-            displayLightDirectionLabels();
             enableSaveButton(true);
         });
-        displayLightDirectionLabels();
-    }
-
-    private void displayLightDirectionLabels() {
-        shadowDirectionLabel.setText(DisplayUtils.formatVertex(shadowUiService.getLightDirection()));
-        shape3DDirectionLabel.setText(DisplayUtils.formatVertex(shape3DUiService.getShape3DLightDirection()));
     }
 
     @Override

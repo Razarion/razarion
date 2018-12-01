@@ -2,6 +2,9 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
 import com.btxtech.shared.gameengine.StaticGameInitEvent;
@@ -25,9 +28,12 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cdimock.TestSimpleExecutorService;
+import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,20 +45,16 @@ import java.util.List;
  */
 public class WeldUiBaseTest {
     // ... work in progress ...
-
     private WeldContainer weldContainer;
-    private TestSimpleExecutorService testSimpleExecutorService;
-    private BaseItemService baseItemService;
-    private PlanetConfig planetConfig;
-    private StaticGameConfig staticGameConfig;
-    private PlanetService planetService;
 
-    protected void setupUiEnvironment() {
-        this.staticGameConfig = staticGameConfig;
-        this.planetConfig = planetConfig;
+    protected void setupUiEnvironment(PlanetVisualConfig planetVisualConfig) {
         // Init weld
         Weld weld = new Weld();
         weldContainer = weld.initialize();
+
+        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(new ColdGameUiControlConfig().setWarmGameUiControlConfig(new WarmGameUiControlConfig().setPlanetVisualConfig(planetVisualConfig))));
+
+        // getWeldBean(Event.class).fire(new WeldUiBaseTest());
     }
 
     public <T> T getWeldBean(Class<T> clazz) {

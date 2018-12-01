@@ -220,6 +220,36 @@ public class Matrix4 {
         return new Matrix4(numbers);
     }
 
+    /**
+     * See http://immersivemath.com/forum/question/rotation-matrix-from-one-vector-to-another/
+     * <p>
+     * Setup a rotation matrix which rotates vBeforeRotation to vAfterRotation
+     *
+     * @param vBeforeRotation normalized vector before rotation
+     * @param vAfterRotation  normalized vector after rotation
+     * @return the rotation matirx
+     */
+    public static Matrix4 createRotationFrom2Vectors(Vertex vBeforeRotation, Vertex vAfterRotation) {
+        if (MathHelper.compareToZeroWithPrecision(vBeforeRotation.magnitude(), 0.0)) {
+            throw new IllegalArgumentException("vBeforeRotation must be normalized: " + vBeforeRotation);
+        }
+        if (MathHelper.compareToZeroWithPrecision(vAfterRotation.magnitude(), 0.0)) {
+            throw new IllegalArgumentException("vAfterRotation must be normalized: " + vBeforeRotation);
+        }
+        if(vBeforeRotation.equalsDelta(vAfterRotation, 0.000001)) {
+            return Matrix4.IDENTITY;
+        }
+        Vertex a = vBeforeRotation.cross(vAfterRotation).normalize(1);
+        double c = vBeforeRotation.dot(vAfterRotation);
+        double s = Math.sin(Math.acos(c));
+        return Matrix4.fromField(new double[][]{
+                {a.getX() * a.getX() * (1 - c) + c, a.getX() * a.getY() * (1 - c) - s * a.getZ(), a.getX() * a.getZ() * (1 - c) + s * a.getY(), 0},
+                {a.getY() * a.getX() * (1 - c) + s * a.getZ(), a.getY() * a.getY() * (1 - c) + c, a.getY() * a.getZ() * (1 - c) - s * a.getX(), 0},
+                {a.getZ() * a.getX() * (1 - c) - s * a.getY(), a.getZ() * a.getY() * (1 - c) + s * a.getX(), a.getZ() * a.getZ() * (1 - c) + c, 0},
+                {0, 0, 0, 1}
+        });
+    }
+
     public static Matrix4 createTranslation(Vertex vertex) {
         return createTranslation(vertex.getX(), vertex.getY(), vertex.getZ());
     }
@@ -255,10 +285,19 @@ public class Matrix4 {
         Vertex y = norm.cross(direction);
         Vertex x = y.cross(norm).normalize(1.0);
         double[][] numbers = {
-                       {x.getX(), y.getX(), norm.getX(), 0},
-                       {x.getY(), y.getY(), norm.getY(), 0},
-                       {x.getZ(), y.getZ(), norm.getZ(), 0},
-                       {0, 0, 0, 1}};
+                {x.getX(), y.getX(), norm.getX(), 0},
+                {x.getY(), y.getY(), norm.getY(), 0},
+                {x.getZ(), y.getZ(), norm.getZ(), 0},
+                {0, 0, 0, 1}};
+        return new Matrix4(numbers);
+    }
+
+    public static Matrix4 createFromAxisAndTranslation(Vertex xAxisDirection, Vertex yAxisDirection, Vertex zAxisDirection, Vertex translation) {
+        double[][] numbers = {
+                {xAxisDirection.getX(), yAxisDirection.getX(), zAxisDirection.getX(), translation.getX()},
+                {xAxisDirection.getY(), yAxisDirection.getY(), zAxisDirection.getY(), translation.getY()},
+                {xAxisDirection.getZ(), yAxisDirection.getZ(), zAxisDirection.getZ(), translation.getZ()},
+                {0, 0, 0, 1}};
         return new Matrix4(numbers);
     }
 

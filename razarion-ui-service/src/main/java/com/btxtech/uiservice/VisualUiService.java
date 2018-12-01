@@ -1,5 +1,7 @@
 package com.btxtech.uiservice;
 
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
@@ -25,5 +27,17 @@ public class VisualUiService {
 
     public PlanetVisualConfig getPlanetVisualConfig() {
         return planetVisualConfig;
+    }
+
+    public Vertex getLightDirection() {
+        return planetVisualConfig.getLightDirection();
+    }
+
+    public Color getAmbient() {
+        return planetVisualConfig.getAmbient();
+    }
+
+    public Color getDiffuse() {
+        return planetVisualConfig.getDiffuse();
     }
 }

@@ -102,6 +102,10 @@ public class Vertex {
         return new Vertex(x / w, y / w, z / w);
     }
 
+    public Vertex negate() {
+        return new Vertex(-x, -y, -z);
+    }
+
     public double magnitude() {
         return Math.sqrt(x * x + y * y + z * z);
     }

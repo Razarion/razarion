@@ -39,7 +39,7 @@ public class Plane3d {
 
     public void setOptionalOrigin(Vertex originToProject, Vertex planeXAxis, Vertex planeYAxis) {
         if (!MathHelper.compareWithPrecision(planeXAxis.dot(getNorm()), 0.0)) {
-            throw new IllegalArgumentException("X Axis is not perpendicular to norm");
+            throw new IllegalArgumentException("X Axis (" + planeXAxis + ") is not perpendicular to norm (" + getNorm() + ")");
         }
         if (!MathHelper.compareWithPrecision(planeYAxis.dot(getNorm()), 0.0)) {
             throw new IllegalArgumentException("Y Axis is not perpendicular to norm");

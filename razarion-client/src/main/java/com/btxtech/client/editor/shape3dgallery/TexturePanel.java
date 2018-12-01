@@ -38,12 +38,6 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
     @Inject
     @DataField
     private CheckboxInput characterRepresentingCheckbox;
-    @Inject
-    @DataField
-    private ColorRoWidget ambient;
-    @Inject
-    @DataField
-    private ColorRoWidget diffuse;
     private VertexContainer vertexContainer;
     private Integer newImageId;
     private Shape3DPropertyPanel shape3DPropertyPanel;
@@ -68,8 +62,6 @@ public class TexturePanel implements TakesValue<VertexContainer>, IsElement {
             }
         });
         characterRepresentingCheckbox.setChecked(vertexContainer.isCharacterRepresenting());
-        ambient.init(vertexContainer.getAmbient());
-        diffuse.init(vertexContainer.getDiffuse());
     }
 
     @Override

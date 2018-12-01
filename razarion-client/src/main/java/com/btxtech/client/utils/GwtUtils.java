@@ -7,6 +7,8 @@ import elemental.events.Event;
 import elemental.events.MouseEvent;
 import elemental.events.WheelEvent;
 import elemental.html.ImageElement;
+import elemental2.dom.HTMLElement;
+import elemental2.svg.SVGSVGElement;
 import org.jboss.errai.common.client.dom.Node;
 
 /**

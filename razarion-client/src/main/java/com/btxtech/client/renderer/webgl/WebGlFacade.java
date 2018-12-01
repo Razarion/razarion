@@ -149,9 +149,6 @@ public class WebGlFacade {
     }
 
     public void uniform3fNoAlpha(WebGLUniformLocation uniformLocation, Color color) {
-        if(color == null) {
-            return;
-        }
         gameCanvas.getCtx3d().uniform3f(uniformLocation, (float) color.getR(), (float) color.getG(), (float) color.getB());
         WebGlUtil.checkLastWebGlError("uniform3f", gameCanvas.getCtx3d());
     }

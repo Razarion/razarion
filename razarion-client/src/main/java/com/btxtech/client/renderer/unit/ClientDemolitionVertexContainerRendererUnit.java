@@ -7,8 +7,8 @@ import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
 import com.btxtech.client.shape3d.ClientShape3DUiService;
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
+import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
@@ -31,13 +31,13 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
     private WebGlFacade webGlFacade;
     @Inject
     private ClientShape3DUiService shape3DUiService;
+    @Inject
+    private VisualUiService visualUiService;
     private Vec3Float32ArrayShaderAttribute positions;
     private Vec3Float32ArrayShaderAttribute norms;
     private Vec2Float32ArrayShaderAttribute textureCoordinateAttribute;
     private WebGlUniformTexture texture;
     private WebGlUniformTexture templateTexture;
-    private Color ambient;
-    private Color diffuse;
     private WebGLUniformLocation modelMatrix;
     private WebGLUniformLocation modelNormMatrix;
     private WebGLUniformLocation uLightingAmbient;
@@ -73,9 +73,6 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
         norms.fillFloat32Array(shape3DUiService.getNormFloat32Array(vertexContainer));
         textureCoordinateAttribute.fillFloat32Array(shape3DUiService.getTextureCoordinateFloat32Array(vertexContainer));
 
-        ambient = vertexContainer.getAmbient();
-        diffuse = vertexContainer.getDiffuse();
-
         characterRepresenting = webGlFacade.getUniformLocation("characterRepresenting");
         characterRepresentingColor = webGlFacade.getUniformLocation("characterRepresentingColor");
     }
@@ -84,9 +81,9 @@ public class ClientDemolitionVertexContainerRendererUnit extends AbstractDemolit
     protected void prepareDraw() {
         webGlFacade.useProgram();
 
-        webGlFacade.uniform3fNoAlpha(uLightingAmbient, ambient);
-        webGlFacade.uniform3f(uLightingDirection, shape3DUiService.getShape3DLightDirection());
-        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, diffuse);
+        webGlFacade.uniform3fNoAlpha(uLightingAmbient, visualUiService.getAmbient());
+        webGlFacade.uniform3f(uLightingDirection, visualUiService.getLightDirection());
+        webGlFacade.uniform3fNoAlpha(uLightingDiffuse, visualUiService.getDiffuse());
 
         // webGlFacade.uniform1f("uSpecularHardness", baseItemUiService.getSpecularHardness());
         // webGlFacade.uniform1f("uSpecularIntensity", baseItemUiService.getSpecularIntensity());

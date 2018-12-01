@@ -1,5 +1,8 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.Color;
+import com.btxtech.shared.datatypes.Vertex;
+
 /**
  * Created by Beat
  * 14.05.2017.
@@ -8,8 +11,9 @@ public class PlanetVisualConfig {
     private double shadowRotationX;
     private double shadowRotationY;
     private double shadowAlpha;
-    private double shape3DLightRotateX;
-    private double shape3DLightRotateY;
+    private Vertex lightDirection;
+    private Color ambient;
+    private Color diffuse;
 
     public double getShadowRotationX() {
         return shadowRotationX;
@@ -38,23 +42,30 @@ public class PlanetVisualConfig {
         return this;
     }
 
-    public double getShape3DLightRotateX() {
-        return shape3DLightRotateX;
+    public Vertex getLightDirection() {
+        return lightDirection;
     }
 
-    public PlanetVisualConfig setShape3DLightRotateX(double shape3DLightRotateX) {
-        this.shape3DLightRotateX = shape3DLightRotateX;
+    public PlanetVisualConfig setLightDirection(Vertex lightDirection) {
+        this.lightDirection = lightDirection;
         return this;
     }
 
-    public double getShape3DLightRotateY() {
-        return shape3DLightRotateY;
+    public Color getAmbient() {
+        return ambient;
     }
 
-    public PlanetVisualConfig setShape3DLightRotateY(double shape3DLightRotateY) {
-        this.shape3DLightRotateY = shape3DLightRotateY;
+    public PlanetVisualConfig setAmbient(Color ambient) {
+        this.ambient = ambient;
         return this;
     }
 
+    public Color getDiffuse() {
+        return diffuse;
+    }
 
+    public PlanetVisualConfig setDiffuse(Color diffuse) {
+        this.diffuse = diffuse;
+        return this;
+    }
 }

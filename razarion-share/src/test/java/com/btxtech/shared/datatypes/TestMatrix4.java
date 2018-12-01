@@ -714,8 +714,56 @@ public class TestMatrix4 {
 //        TestHelper.assertVertex(new Vertex(0, 1, 0), matrix.multiply(new Vertex(0, 0, 1), 1));
     }
 
+    @Test
+    public void createRotationFrom2VectorX() {
+        Matrix4 expectedRotationMatrix = Matrix4.createXRotation(Math.toRadians(60));
+        Vertex zNegRotated = expectedRotationMatrix.multiply(Vertex.Z_NORM_NEG, 1);
+        Matrix4 actualRotationMatrix = Matrix4.createRotationFrom2Vectors(Vertex.Z_NORM_NEG, zNegRotated);
+
+        assertMatrix(expectedRotationMatrix, actualRotationMatrix);
+
+        TestHelper.assertVertex(Vertex.X_NORM, actualRotationMatrix.multiply(Vertex.X_NORM, 1));
+        TestHelper.assertVertex(expectedRotationMatrix.multiply(Vertex.Y_NORM, 1), actualRotationMatrix.multiply(Vertex.Y_NORM, 1));
+        TestHelper.assertVertex(zNegRotated, actualRotationMatrix.multiply(Vertex.Z_NORM_NEG, 1));
+    }
+
+    @Test
+    public void createRotationFrom2VectorY() {
+        Matrix4 expectedRotationMatrix = Matrix4.createYRotation(Math.toRadians(50));
+        Vertex zRotated = expectedRotationMatrix.multiply(Vertex.Z_NORM, 1);
+        Matrix4 actualRotationMatrix = Matrix4.createRotationFrom2Vectors(Vertex.Z_NORM, zRotated);
+
+        assertMatrix(expectedRotationMatrix, actualRotationMatrix);
+    }
+
+    @Test
+    public void createRotationFrom2VectorZ() {
+        Matrix4 expectedRotationMatrix = Matrix4.createZRotation(Math.toRadians(50));
+        Vertex xRotated = expectedRotationMatrix.multiply(Vertex.X_NORM, 1);
+        Matrix4 actualRotationMatrix = Matrix4.createRotationFrom2Vectors(Vertex.X_NORM, xRotated);
+
+        assertMatrix(expectedRotationMatrix, actualRotationMatrix);
+    }
+
+    @Test
+    public void createRotationFrom2VectorMulti() {
+        Matrix4 expectedRotationMatrix = Matrix4.createYRotation(Math.toRadians(50)).multiply(Matrix4.createYRotation(Math.toRadians(80)));
+        Vertex zRotated = expectedRotationMatrix.multiply(Vertex.Z_NORM, 1);
+        Matrix4 actualRotationMatrix = Matrix4.createRotationFrom2Vectors(Vertex.Z_NORM, zRotated);
+
+        assertMatrix(expectedRotationMatrix, actualRotationMatrix);
+    }
+
+    @Test
+    public void createRotationFrom2VectorEquals() {
+        Matrix4 actualRotationMatrix = Matrix4.createRotationFrom2Vectors(Vertex.Y_NORM, Vertex.Y_NORM);
+
+        assertMatrix(Matrix4.IDENTITY, actualRotationMatrix);
+    }
+
     public static void assertMatrix(Matrix4 expected, Matrix4 received) {
         String message = "expected:<" + expected + "> but was:<" + received + ">";
+        // Row 0
         Assert.assertEquals(message, expected.numberAt(0, 0), received.numberAt(0, 0), 0.001);
         Assert.assertEquals(message, expected.numberAt(1, 0), received.numberAt(1, 0), 0.001);
         Assert.assertEquals(message, expected.numberAt(2, 0), received.numberAt(2, 0), 0.001);

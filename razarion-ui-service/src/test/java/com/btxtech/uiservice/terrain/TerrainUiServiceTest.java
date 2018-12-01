@@ -1,6 +1,7 @@
 package com.btxtech.uiservice.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.WeldUiBaseTest;
 import org.junit.Test;
 
@@ -15,7 +16,7 @@ public class TerrainUiServiceTest extends WeldUiBaseTest{
 
     @Test
     public void test() {
-        setupUiEnvironment();
+        setupUiEnvironment(new PlanetVisualConfig());
         TerrainUiService terrainUiService = getWeldBean(TerrainUiService.class);
 
         terrainUiService.calculateMousePositionGroundMesh(new DecimalPosition(1,1));
