@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 public class ScenarioGuiController implements Initializable {
     public AnchorPane anchorPanel;
     public Canvas canvas;
-    public ComboBox<Scenario.ScenarioEntry> scenarioBox;
+    public ComboBox<ScenarioLibrary.ScenarioEntry> scenarioBox;
     public Slider zoomSlider;
     public TextField scaleField;
     public TextField mouseLabel;
@@ -37,14 +37,14 @@ public class ScenarioGuiController implements Initializable {
             canvas.setHeight(height.doubleValue());
             scenarioRenderer.render();
         });
-        scenarioBox.getItems().addAll(Scenario.getScenarios());
-        Scenario scenario = Scenario.getScenarios().get(0).getScenario();
+        scenarioBox.getItems().addAll(ScenarioLibrary.getScenarios());
+        Scenario scenario = ScenarioLibrary.getScenarios().get(0).getScenario();
         scenario.init();
         scenarioRenderer = new ScenarioRenderer(canvas, scenario, 4);
         scaleField.setText(String.format("%.2f", scenarioRenderer.getScale()));
         zoomSlider.setValue(scenarioRenderer.getZoom());
         zoomSlider.valueProperty().addListener((observableValue, number, t1) -> setZoom(zoomSlider.getValue()));
-        scenarioBox.setValue(Scenario.getScenarios().get(0));
+        scenarioBox.setValue(ScenarioLibrary.getScenarios().get(0));
     }
 
     public void onZoomResetButton() {

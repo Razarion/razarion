@@ -164,7 +164,7 @@ public class MathHelper {
     }
 
     public static boolean compareToZeroWithPrecision(double value, double precision) {
-        return compareWithPrecision(value, 0, PRECISION);
+        return compareWithPrecision(value, 0, precision);
     }
 
     public static boolean compareWithPrecision(double value1, double value2, double precision) {

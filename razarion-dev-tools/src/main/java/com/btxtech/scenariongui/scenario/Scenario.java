@@ -11,52 +11,7 @@ import java.util.List;
  * 25.06.2016.
  */
 public abstract class Scenario {
-    private static List<ScenarioEntry> scenarios = new ArrayList<>();
 
-    public static class ScenarioEntry {
-        private String name;
-        private Scenario scenario;
-
-        public ScenarioEntry(String name, Scenario scenario) {
-            this.name = name;
-            this.scenario = scenario;
-        }
-
-        public Scenario getScenario() {
-            return scenario;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
-
-    private static void register(String name, Scenario scenario) {
-        scenarios.add(new ScenarioEntry(name, scenario));
-    }
-
-    static {
-        register("Geometry 2D", new Geometry2DScenario());
-        register("Rasterize Rectangle Algorithm", new RasterizeRectangleAlgorithm());
-        register("PathingAccess InSight", new PathingAccessInSightScenario());
-        register("Display Polygon", new DisplayPolygonScenario());
-        register("JUnit Test", new JUnitTestScenario());
-        register("Polygon2D Test", new TestPolygon2DScenario());
-        register("Draw Polygon", new DrawPolygonScenario());
-        register("Free Random Position", new FreeRandomPositionScenario());
-        register("Simple Terrain", new SimpleTerrainScenario());
-        register("Line Bresenham Algorithm", new LineBresenhamAlgorithm());
-        register("Rasterize Terrain ViewField", new RasterizeTerrainViewFieldScenario());
-        register("Bresenhams Test", new FillCircleScenario());
-        register("Rectangle 2D", new Rectangle2DScenario());
-        register("Polygon2I Test", new TestPolygon2IScenario());
-    }
-
-
-    public static List<ScenarioEntry> getScenarios() {
-        return scenarios;
-    }
 
     abstract public void render(ExtendedGraphicsContext extendedGraphicsContext);
 

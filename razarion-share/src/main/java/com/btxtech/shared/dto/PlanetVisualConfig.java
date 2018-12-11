@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.utils.MathHelper;
 
 /**
  * Created by Beat
@@ -47,6 +48,9 @@ public class PlanetVisualConfig {
     }
 
     public PlanetVisualConfig setLightDirection(Vertex lightDirection) {
+        if (!MathHelper.compareWithPrecision(lightDirection.magnitude(), 1.0, 0.000001)) {
+            throw new IllegalArgumentException("Light direction mus be a unit vector. lightDirection: " + lightDirection + " magnitude: " + lightDirection.magnitude());
+        }
         this.lightDirection = lightDirection;
         return this;
     }

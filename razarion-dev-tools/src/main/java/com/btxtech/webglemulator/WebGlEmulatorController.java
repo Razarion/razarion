@@ -210,7 +210,6 @@ public class WebGlEmulatorController implements Initializable {
                 double lightDirectionZ = Math.sqrt(1 - lightDirectionX * lightDirectionX - lightDirectionY * lightDirectionY);
 
                 Vertex lightDirection = new Vertex(lightDirectionX, lightDirectionY, -lightDirectionZ);
-                System.out.println("lightDirection: " + lightDirection);
                 visualUiService.getPlanetVisualConfig().setLightDirection(lightDirection);
                 shadowUiService.setupMatrices();
                 viewService.onViewChanged();

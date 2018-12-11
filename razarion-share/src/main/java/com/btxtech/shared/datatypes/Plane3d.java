@@ -2,6 +2,9 @@ package com.btxtech.shared.datatypes;
 
 import com.btxtech.shared.utils.MathHelper;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 /**
  * Created by Beat
  * 03.06.2016.
@@ -22,6 +25,7 @@ public class Plane3d {
         b = norm.getY();
         c = norm.getZ();
         d = -(a * point.getX() + b * point.getY() + c * point.getZ());
+        origin = point;
     }
 
     public Plane3d(Vertex point1, Vertex point2, Vertex point3) {
@@ -37,7 +41,36 @@ public class Plane3d {
         return point.add(getNorm().multiply(f));
     }
 
-    public void setOptionalOrigin(Vertex originToProject, Vertex planeXAxis, Vertex planeYAxis) {
+    public DecimalPosition perpendicularZProjectPlaneCoordinates(DecimalPosition pointXY) {
+        if (planeXAxis == null || planeYAxis == null) {
+            throw new IllegalStateException("planeXAxis == null || planeYAxis == null");
+        }
+        double xAxisFactor = ((pointXY.getX() - origin.getX()) * planeYAxis.getY() - (pointXY.getY() - origin.getY()) * planeYAxis.getX()) / (planeXAxis.getX() * planeYAxis.getY() - planeXAxis.getY() * planeYAxis.getX());
+        double yAxisFactor = ((pointXY.getX() - origin.getX()) * planeXAxis.getY() - (pointXY.getY() - origin.getY()) * planeXAxis.getX()) / (planeXAxis.getY() * planeYAxis.getX() - planeXAxis.getX() * planeYAxis.getY());
+        return new DecimalPosition(xAxisFactor, yAxisFactor);
+
+//        DecimalPosition relative2d = pointXY.sub(origin.toXY());
+//        Vertex relative3d = planeXAxis.multiply(relative2d.getX()).add(planeYAxis.multiply(relative2d.getY()));
+//
+//        double x = planeXAxis.dot(relative3d);
+//        double y = planeYAxis.dot(relative3d);
+//
+//        return new DecimalPosition(x, y);
+    }
+
+    public Vertex toAbsolute(DecimalPosition planeCoordinates) {
+        return origin.add(planeXAxis.multiply(planeCoordinates.getX())).add(planeYAxis.multiply(planeCoordinates.getY()));
+    }
+
+    public Vertex calculateAbsoluteMostPosZ(DecimalPosition... planeCoordinates) {
+        return Arrays.stream(planeCoordinates).map(this::toAbsolute).max(Comparator.comparingDouble(Vertex::getZ)).orElseThrow(IllegalArgumentException::new);
+    }
+
+    public Vertex calculateAbsoluteMostNegZ(DecimalPosition... planeCoordinates) {
+        return Arrays.stream(planeCoordinates).map(this::toAbsolute).min(Comparator.comparingDouble(Vertex::getZ)).orElseThrow(IllegalArgumentException::new);
+    }
+
+    public void setOptionalOrigin(Vertex planeXAxis, Vertex planeYAxis) {
         if (!MathHelper.compareWithPrecision(planeXAxis.dot(getNorm()), 0.0)) {
             throw new IllegalArgumentException("X Axis (" + planeXAxis + ") is not perpendicular to norm (" + getNorm() + ")");
         }
@@ -47,23 +80,8 @@ public class Plane3d {
         if (!MathHelper.compareWithPrecision(planeXAxis.dot(planeYAxis), 0.0)) {
             throw new IllegalArgumentException("X Axis and Y Axis are not perpendicular");
         }
-        origin = project(originToProject);
         this.planeXAxis = planeXAxis;
         this.planeYAxis = planeYAxis;
-    }
-
-    public DecimalPosition getPlaneCoordinates(Vertex vertex) {
-        if (origin == null || planeXAxis == null || planeYAxis == null) {
-            throw new IllegalStateException("origin == null || planeXAxis == null || planeYAxis == null");
-        }
-        if (!MathHelper.compareWithPrecision(vertex.distance(project(vertex)), 0.0)) {
-            throw new IllegalArgumentException("Point is not on plane");
-        }
-        Vertex relative = vertex.sub(origin);
-        double x = planeXAxis.dot(relative);
-        double y = planeYAxis.dot(relative);
-
-        return new DecimalPosition(x, y);
     }
 
     public Vertex crossPoint(Line3d line) {

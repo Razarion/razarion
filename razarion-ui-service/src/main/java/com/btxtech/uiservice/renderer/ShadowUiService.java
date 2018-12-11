@@ -4,12 +4,12 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Plane3d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.utils.MathHelper;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -45,13 +45,30 @@ public class ShadowUiService {
 
     public void setupMatrices() {
         // depends on
-        // - projectionTransformation (only one which is done)
+        // - camera + projectionTransformation (only one which is done)
+        // - highestPointInView + lowestPointInView
         // - lightDirection
-        // - terrainUiService.getHighestPointInView()
-        // - visualUiService.getStaticVisualConfig().getShadowRotationX + Y
         setupDepthRendererTransformations();
-        // setupDepthRendererViewTransformation();
         shadowLookupTransformation = TEXTURE_COORDINATE_TRANSFORMATION.multiply(depthProjectionTransformation.multiply(depthViewTransformation));
+    }
+
+    public static void printDecimalPositions(String description, List<DecimalPosition> indexList) {
+        System.out.println("-----------------------------------------------------------");
+        System.out.println(description);
+        System.out.println("List<DecimalPosition> positions = Arrays.asList(" + decimalPositionsToString(indexList) + ");");
+        System.out.println("-----------------------------------------------------------");
+    }
+
+    public static String decimalPositionsToString(List<DecimalPosition> indexList) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < indexList.size(); i++) {
+            DecimalPosition decimalPosition = indexList.get(i);
+            builder.append("new DecimalPosition(").append(decimalPosition.getX()).append(", ").append(decimalPosition.getY()).append(")");
+            if (i < indexList.size() - 1) {
+                builder.append(", ");
+            }
+        }
+        return builder.toString();
     }
 
     private void setupDepthRendererTransformations() {
@@ -59,84 +76,52 @@ public class ShadowUiService {
             logger.warning("setupDepthRendererTransformations(): light direction is too flat. z >= 0. LightDirection: " + visualUiService.getPlanetVisualConfig().getLightDirection());
             return;
         }
-        ViewField viewField = projectionTransformation.calculateViewField(0);
-        if (viewField.hasNullPosition()) {
+        ViewField viewFieldGroundZero = projectionTransformation.calculateViewField(0);
+        if (viewFieldGroundZero.hasNullPosition()) {
             logger.warning("setupDepthRendererTransformations(): viewField.hasNullPosition() can not calculate shadow");
             return;
         }
-        viewField = viewField.calculateAabb();
-
-        Plane3d plane = calculatePlane(viewField);
-
-        Vertex bottomLeftVertex = plane.project(viewField.getBottomLeftVertex());
-        Vertex bottomRightVertex = plane.project(viewField.getBottomRightVertex());
-        Vertex topRightVertex = plane.project(viewField.getTopRightVertex());
-        Vertex topLeftVertex = plane.project(viewField.getTopLeftVertex());
-
-        // Origin
-        double distance = bottomLeftVertex.distance(topRightVertex);
-        if (MathHelper.compareWithPrecision(distance, 0.0)) {
-            logger.warning("setupDepthRendererTransformations(): distance is too small. Light is coming from a very flat angle.");
-            return;
-        }
-        Vertex lightPositionOnPlane = bottomLeftVertex.add(topRightVertex.sub(bottomLeftVertex).normalize(distance / 2.0));
-        double m = -lightPositionOnPlane.getZ() / visualUiService.getPlanetVisualConfig().getLightDirection().getZ();
-        Vertex lightPositionZeroGround = lightPositionOnPlane.add(visualUiService.getPlanetVisualConfig().getLightDirection().multiply(m));
+        ViewField viewFieldHighest = projectionTransformation.calculateViewField(terrainUiService.getHighestPointInView());
+        ViewField viewFieldLowest = projectionTransformation.calculateViewField(terrainUiService.getLowestPointInView());
+        Vertex viewFiledCenterGroundZero = new Vertex(viewFieldGroundZero.calculateCenter(), 0);
+        Plane3d planeViewFieldCenterLightDirection = new Plane3d(visualUiService.getPlanetVisualConfig().getLightDirection().negate(), viewFiledCenterGroundZero);
         Matrix4 planeRotationMatrix = Matrix4.createRotationFrom2Vectors(Vertex.Z_NORM_NEG, visualUiService.getPlanetVisualConfig().getLightDirection());
         Vertex planeXAxis = planeRotationMatrix.multiply(Vertex.X_NORM, 1);
         Vertex planeYAxis = planeRotationMatrix.multiply(Vertex.Y_NORM, 1);
-        plane.setOptionalOrigin(lightPositionZeroGround, planeXAxis, planeYAxis);
+        planeViewFieldCenterLightDirection.setOptionalOrigin(planeXAxis, planeYAxis);
 
-        DecimalPosition bottomLeftPlane = plane.getPlaneCoordinates(bottomLeftVertex);
-        DecimalPosition bottomRightPlane = plane.getPlaneCoordinates(bottomRightVertex);
-        DecimalPosition topRightPlane = plane.getPlaneCoordinates(topRightVertex);
-        DecimalPosition topLeftPlane = plane.getPlaneCoordinates(topLeftVertex);
-        double right = Math.max(bottomLeftPlane.getDistance(bottomRightPlane), topRightPlane.getDistance(topLeftPlane)) / 2.0;
+        DecimalPosition bottomLeftPlaneLowest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldLowest.getBottomLeftVertex().toXY());
+        DecimalPosition bottomLeftPlaneHighest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldHighest.getBottomLeftVertex().toXY());
+        DecimalPosition bottomLeftPlane = new DecimalPosition(Math.min(bottomLeftPlaneLowest.getX(), bottomLeftPlaneHighest.getX()), Math.min(bottomLeftPlaneLowest.getY(), bottomLeftPlaneHighest.getY()));
+
+        DecimalPosition bottomRightPlaneLowest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldLowest.getBottomRightVertex().toXY());
+        DecimalPosition bottomRightPlaneHighest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldHighest.getBottomRightVertex().toXY());
+        DecimalPosition bottomRightPlane = new DecimalPosition(Math.max(bottomRightPlaneLowest.getX(), bottomRightPlaneHighest.getX()), Math.min(bottomRightPlaneLowest.getY(), bottomRightPlaneHighest.getY()));
+
+        DecimalPosition topRightPlaneLowest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldLowest.getTopRightVertex().toXY());
+        DecimalPosition topRightPlaneHighest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldHighest.getTopRightVertex().toXY());
+        DecimalPosition topRightPlane = new DecimalPosition(Math.max(topRightPlaneLowest.getX(), topRightPlaneHighest.getX()), Math.max(topRightPlaneLowest.getY(), topRightPlaneHighest.getY()));
+
+        DecimalPosition topLeftPlaneLowest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldLowest.getTopLeftVertex().toXY());
+        DecimalPosition topLeftPlaneHighest = planeViewFieldCenterLightDirection.perpendicularZProjectPlaneCoordinates(viewFieldHighest.getTopLeftVertex().toXY());
+        DecimalPosition topLeftPlane = new DecimalPosition(Math.min(topLeftPlaneLowest.getX(), topLeftPlaneHighest.getX()), Math.max(topLeftPlaneLowest.getY(), topLeftPlaneHighest.getY()));
+
+        double right = Math.max(bottomLeftPlane.getDistance(bottomRightPlane), topLeftPlane.getDistance(topRightPlane)) / 2.0;
         double top = Math.max(bottomLeftPlane.getDistance(topLeftPlane), bottomRightPlane.getDistance(topRightPlane)) / 2.0;
-        double edge = Math.max(right, top);
 
-        double distanceZero2Plane = lightPositionOnPlane.distance(lightPositionZeroGround);
-        double distanceTerrainLowest = calculateDistanceTerrainLowest(viewField.getBottomLeftVertex(), bottomLeftVertex, 0);
-        distanceTerrainLowest = calculateDistanceTerrainLowest(viewField.getBottomRightVertex(), bottomRightVertex, distanceTerrainLowest);
-        distanceTerrainLowest = calculateDistanceTerrainLowest(viewField.getTopRightVertex(), topRightVertex, distanceTerrainLowest);
-        distanceTerrainLowest = calculateDistanceTerrainLowest(viewField.getTopLeftVertex(), topLeftVertex, distanceTerrainLowest);
+        Vertex lowestPlaneViewFieldCenterLightVector = planeViewFieldCenterLightDirection.calculateAbsoluteMostNegZ(bottomLeftPlane, bottomRightPlane, topRightPlane, topLeftPlane).sub(0, 0, terrainUiService.getHighestPointInView());
+        double centerZNearDistance = lowestPlaneViewFieldCenterLightVector.getZ() / visualUiService.getPlanetVisualConfig().getLightDirection().getZ();
 
-        double distanceZNear2ZFar = distanceZero2Plane + distanceTerrainLowest;
+        Vertex highestPlaneViewFieldCenterLightDirection = planeViewFieldCenterLightDirection.calculateAbsoluteMostPosZ(bottomLeftPlane, bottomRightPlane, topRightPlane, topLeftPlane).sub(0, 0, terrainUiService.getLowestPointInView());
+        double centerZFarDistance = highestPlaneViewFieldCenterLightDirection.getZ() / -visualUiService.getPlanetVisualConfig().getLightDirection().getZ();
 
-        depthProjectionTransformation = Matrix4.makeBalancedOrthographicFrustum(edge, edge, Z_NEAR, Z_NEAR + distanceZNear2ZFar);
+        double zFar = Z_NEAR + centerZNearDistance + centerZFarDistance;
 
-        Vertex lightPosition = lightPositionOnPlane.add(visualUiService.getPlanetVisualConfig().getLightDirection().multiply(-Z_NEAR));
+        Vertex lightPositionViewFieldCenter = planeViewFieldCenterLightDirection.toAbsolute(bottomLeftPlane.add(right, top));
+        Vertex lightPosition = lightPositionViewFieldCenter.add(visualUiService.getPlanetVisualConfig().getLightDirection().multiply(-Z_NEAR - centerZNearDistance));
+
+        depthProjectionTransformation = Matrix4.makeBalancedOrthographicFrustum(right, top, Z_NEAR, zFar);
 
         depthViewTransformation = planeRotationMatrix.multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));
     }
-
-    private double calculateDistanceTerrainLowest(Vertex zeroPosition, Vertex planePosition, double zFar) {
-        Vertex subTerrainVector = visualUiService.getPlanetVisualConfig().getLightDirection().multiply(terrainUiService.getLowestPointInView() / visualUiService.getPlanetVisualConfig().getLightDirection().getZ());
-        return Math.max(zeroPosition.add(subTerrainVector).distance(planePosition), zFar);
-    }
-
-
-    private Plane3d calculatePlane(ViewField viewField) {
-        double m = terrainUiService.getHighestPointInView() / visualUiService.getPlanetVisualConfig().getLightDirection().getZ();
-        Vertex positionOnLightDirectionWithHighestPointInView = visualUiService.getPlanetVisualConfig().getLightDirection().multiply(m);
-
-        Vertex pointOnPlane;
-        // Find the corner which touches ground at height at zero
-        if (visualUiService.getPlanetVisualConfig().getLightDirection().getX() >= 0) {
-            if (visualUiService.getPlanetVisualConfig().getLightDirection().getY() > 0) {
-                pointOnPlane = viewField.getBottomLeftVertex().add(positionOnLightDirectionWithHighestPointInView);
-            } else {
-                pointOnPlane = viewField.getTopLeftVertex().add(positionOnLightDirectionWithHighestPointInView);
-            }
-        } else {
-            if (visualUiService.getPlanetVisualConfig().getLightDirection().getY() > 0) {
-                pointOnPlane = viewField.getBottomRightVertex().add(positionOnLightDirectionWithHighestPointInView);
-            } else {
-                pointOnPlane = viewField.getTopRightVertex().add(positionOnLightDirectionWithHighestPointInView);
-            }
-        }
-
-        return new Plane3d(visualUiService.getPlanetVisualConfig().getLightDirection(), pointOnPlane);
-    }
-
 }

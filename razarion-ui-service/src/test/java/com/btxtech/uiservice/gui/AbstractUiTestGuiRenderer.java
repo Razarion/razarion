@@ -147,6 +147,11 @@ public abstract class AbstractUiTestGuiRenderer {
         postRender();
     }
 
+    protected void drawPosition(DecimalPosition position, double strokeWidth, Color color) {
+        gc.setFill(color);
+        gc.fillOval(position.getX() - strokeWidth * 5.0, position.getY() - strokeWidth * 5.0, strokeWidth * 10.0, strokeWidth * 10.0);
+    }
+
     protected void strokePolygon(List<DecimalPosition> polygon, double strokeWidth, Color color, boolean showPoint) {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
@@ -166,7 +171,7 @@ public abstract class AbstractUiTestGuiRenderer {
         strokePolygon(Vertex.toXY(polygon), strokeWidth, color, showPoint);
     }
 
-    protected void strokeLine(List<DecimalPosition> line, double strokeWidth, Color color, boolean showPoint) {
+    protected void strokeCurve(List<DecimalPosition> line, double strokeWidth, Color color, boolean showPoint) {
         gc.setStroke(color);
         gc.setFill(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0.5));
         gc.setLineWidth(strokeWidth);

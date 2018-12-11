@@ -1,43 +1,16 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.SingleHolder;
-import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
-import com.btxtech.shared.gameengine.InventoryTypeService;
-import com.btxtech.shared.gameengine.ItemTypeService;
-import com.btxtech.shared.gameengine.StaticGameInitEvent;
-import com.btxtech.shared.gameengine.datatypes.PlayerBase;
-import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
-import com.btxtech.shared.gameengine.datatypes.packets.SyncBaseItemInfo;
-import com.btxtech.shared.gameengine.planet.BaseItemService;
-import com.btxtech.shared.gameengine.planet.BoxService;
-import com.btxtech.shared.gameengine.planet.GameLogicService;
-import com.btxtech.shared.gameengine.planet.PlanetService;
-import com.btxtech.shared.gameengine.planet.ResourceService;
-import com.btxtech.shared.gameengine.planet.SyncItemContainerService;
-import com.btxtech.shared.gameengine.planet.energy.EnergyService;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
-import com.btxtech.shared.gameengine.planet.model.SyncBoxItem;
-import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
-import com.btxtech.shared.gameengine.planet.quest.QuestService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.system.SimpleExecutorService;
-import com.btxtech.uiservice.cdimock.TestSimpleExecutorService;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
+import com.btxtech.uiservice.renderer.Camera;
+import com.btxtech.uiservice.renderer.ProjectionTransformation;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Beat
@@ -57,8 +30,54 @@ public class WeldUiBaseTest {
         // getWeldBean(Event.class).fire(new WeldUiBaseTest());
     }
 
-    public <T> T getWeldBean(Class<T> clazz) {
+    protected <T> T getWeldBean(Class<T> clazz) {
         return weldContainer.instance().select(clazz).get();
+    }
+
+    protected void setCamera(double translateX, double translateY) {
+        Camera camera = getWeldBean(Camera.class);
+        camera.setTranslateXY(translateX, translateY);
+    }
+
+    protected void setCamera(double translateX, double translateY, double rotateX) {
+        Camera camera = getWeldBean(Camera.class);
+        camera.setTranslateXY(translateX, translateY);
+        camera.setRotateX(rotateX);
+    }
+
+    protected void setCamera(double translateX, double translateY, double translateZ, double rotateX, double rotateZ) {
+        Camera camera = getWeldBean(Camera.class);
+        camera.setTranslateX(translateX);
+        camera.setTranslateY(translateY);
+        camera.setTranslateZ(translateZ);
+        camera.setRotateX(rotateX);
+        camera.setRotateZ(rotateZ);
+    }
+
+    protected ProjectionTransformation getProjectionTransformation() {
+        return getWeldBean(ProjectionTransformation.class);
+    }
+
+    protected TerrainUiService getTerrainUiService() {
+        return getWeldBean(TerrainUiService.class);
+    }
+
+    protected Vertex toNdcVertex(Vertex4 vertex4) {
+        double ndcX = vertex4.getX() / vertex4.getW();
+        double ndcY = vertex4.getY() / vertex4.getW();
+        double ndcZ = vertex4.getZ() / vertex4.getW();
+
+//        if (ndcX > 1 || ndcX < -1) {
+//            return null;
+//        }
+//        if (ndcY > 1 || ndcY < -1) {
+//            return null;
+//        }
+//        if (ndcZ > 1 || ndcZ < -1) {
+//            return null;
+//        }
+
+        return new Vertex(ndcX, ndcY, ndcZ);
     }
 
 }
