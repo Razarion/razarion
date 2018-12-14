@@ -4,11 +4,8 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.dto.PlanetVisualConfig;
+import com.btxtech.uiservice.AssertHelper;
 import com.btxtech.uiservice.WeldUiBaseTest;
-import com.btxtech.uiservice.gui.AbstractUiTestGuiRenderer;
-import com.btxtech.uiservice.gui.UiTestGuiDisplay;
-import javafx.scene.paint.Color;
-import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -24,78 +21,113 @@ public class ShadowUiServiceTest extends WeldUiBaseTest {
         ShadowUiService shadowUiService = getWeldBean(ShadowUiService.class);
         shadowUiService.setupMatrices();
 
-///////////////
-        System.out.println(runDepthBufferShaderNdc(new Vertex(100, 100, 0)));
-        System.out.println(runDepthBufferShaderNdc(new Vertex(100, 100, 20)));
-        System.out.println(runDepthBufferShaderNdc(new Vertex(100, 100, -2)));
-        // View filed z = 0
-        System.out.println(runDepthBufferShaderNdc(new Vertex(55.81722001353653, 66.86291501015239, 0)));
-        System.out.println(runDepthBufferShaderNdc(new Vertex(144.18277998646346, 66.86291501015239, 0)));
-        System.out.println(runDepthBufferShaderNdc(new Vertex(144.18277998646346, 133.1370849898476, 0)));
-        System.out.println(runDepthBufferShaderNdc(new Vertex(55.81722001353653, 133.1370849898476, 0)));
-        // BL View filed z = 0
-        System.out.println(runDepthBufferShaderNdc(new Vertex(54.712650513874934, 66.03448788540621, 0)));
-//////////////
-
-        System.out.println(getProjectionTransformation().calculateViewField(-2).toList());
-
-        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
-            @Override
-            protected void doRender() {
-                strokePolygon(getProjectionTransformation().calculateViewField(0).toList(), 0.1, Color.BLACK, true);
-                strokePolygon(getProjectionTransformation().calculateViewField(getTerrainUiService().getHighestPointInView()).toList(), 0.1, Color.RED, true);
-                strokePolygon(getProjectionTransformation().calculateViewField(getTerrainUiService().getLowestPointInView()).toList(), 0.1, Color.BLUE, true);
-                drawPosition(getProjectionTransformation().calculateViewField(0).calculateCenter(), 0.1, Color.PINK);
-            }
-        });
-
-
-        Assert.fail("... VERIFY ...");
+        // View field center
+        AssertHelper.assertVertex(0, 0, 0, runDepthBufferShaderNdc(new Vertex(100, 100, 0)));
+        // View field center z = 20
+        AssertHelper.assertVertex(0, 0, -40, runDepthBufferShaderNdc(new Vertex(100, 100, 20)));
+        // View field center z = -2
+        AssertHelper.assertVertex(0, 0, 4, runDepthBufferShaderNdc(new Vertex(100, 100, -2)));
+        // View field BL
+        AssertHelper.assertVertex(-1, -1, 0, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 66.86291501015239, 0)));
+        // View field BR
+        AssertHelper.assertVertex(1, -1, 0, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 66.86291501015239, 0)));
+        // View field TR
+        AssertHelper.assertVertex(1, 1, 0, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 133.1370849898476, 0)));
+        // View field TL
+        AssertHelper.assertVertex(-1, 1, 0, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 133.1370849898476, 0)));
     }
 
     @Test
-    public void testLight60Deg() {
-        Vertex lightDirection = Matrix4.createXRotation(Math.toRadians(60)).multiply(new Vertex(0, 0, -1), 1);
+    public void testLightX45Deg() {
+        Vertex lightDirection = Matrix4.createXRotation(Math.toRadians(45)).multiply(new Vertex(0, 0, -1), 1);
         setupUiEnvironment(new PlanetVisualConfig().setLightDirection(lightDirection));
         setCamera(100, 100, 0);
         ShadowUiService shadowUiService = getWeldBean(ShadowUiService.class);
         shadowUiService.setupMatrices();
 
-        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
-            @Override
-            protected void doRender() {
-                strokePolygon(getProjectionTransformation().calculateViewField(0).toList(), 0.1, Color.BLACK, true);
-                strokePolygon(getProjectionTransformation().calculateViewField(getTerrainUiService().getHighestPointInView()).toList(), 0.1, Color.RED, true);
-                strokePolygon(getProjectionTransformation().calculateViewField(getTerrainUiService().getLowestPointInView()).toList(), 0.1, Color.BLUE, true);
-                drawPosition(getProjectionTransformation().calculateViewField(0).calculateCenter(), 0.1, Color.PINK);
-            }
-        });
-
-
-        Assert.fail("... TODO ...");
+        // View field center
+        AssertHelper.assertVertex(0, 0, 0, runDepthBufferShaderNdc(new Vertex(100, 100, 0)));
+        // View field center z = 20
+        // AssertHelper.assertVertex(0, 0, -40, runDepthBufferShaderNdc(new Vertex(100, 100, 0.6035)));
+        // View field center z = -2
+        // AssertHelper.assertVertex(0, 0, 4, runDepthBufferShaderNdc(new Vertex(100, 100, 0.0603)));
+        // View field BL
+        AssertHelper.assertVertex(-1, -1, -1, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 66.86291501015239, 0)));
+        // View field BR
+        AssertHelper.assertVertex(1, -1, -1, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 66.86291501015239, 0)));
+        // View field TR
+        AssertHelper.assertVertex(1, 1, 1, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 133.1370849898476, 0)));
+        // View field TL
+        AssertHelper.assertVertex(-1, 1, 1, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 133.1370849898476, 0)));
     }
 
     @Test
-    public void testXRot60Deg() {
-        Vertex lightDirection = Matrix4.createXRotation(Math.toRadians(60)).multiply(new Vertex(0, 0, -1), 1);
-
+    public void testLightY45Deg() {
+        Vertex lightDirection = Matrix4.createYRotation(Math.toRadians(45)).multiply(new Vertex(0, 0, -1), 1);
         setupUiEnvironment(new PlanetVisualConfig().setLightDirection(lightDirection));
-        setCamera(100, 100, 80, Math.toRadians(30), 0);
+        setCamera(100, 100, 0);
         ShadowUiService shadowUiService = getWeldBean(ShadowUiService.class);
         shadowUiService.setupMatrices();
 
-        Assert.fail("... TODO ...");
+        // View field center
+        AssertHelper.assertVertex(0, 0, 0, runDepthBufferShaderNdc(new Vertex(100, 100, 0)));
+        // View field center z = 20
+        // AssertHelper.assertVertex(0, 0, -40, runDepthBufferShaderNdc(new Vertex(100, 100, 0.6035)));
+        // View field center z = -2
+        // AssertHelper.assertVertex(0, 0, 4, runDepthBufferShaderNdc(new Vertex(100, 100, 0.0603)));
+        // View field BL
+        AssertHelper.assertVertex(-1, -1, 1, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 66.86291501015239, 0)));
+        // View field BR
+        AssertHelper.assertVertex(1, -1, -1, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 66.86291501015239, 0)));
+        // View field TR
+        AssertHelper.assertVertex(1, 1, -1, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 133.1370849898476, 0)));
+        // View field TL
+        AssertHelper.assertVertex(-1, 1, 1, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 133.1370849898476, 0)));
     }
 
     @Test
-    public void testSpecial() {
-        Vertex lightDirection = new Vertex(0.025, 0.0, -0.975).normalize(1);
-
+    public void testLightXY45Deg() {
+        Vertex lightDirection = Matrix4.createXRotation(Math.toRadians(45)).multiply(Matrix4.createYRotation(Math.toRadians(45))).multiply(new Vertex(0, 0, -1), 1);
         setupUiEnvironment(new PlanetVisualConfig().setLightDirection(lightDirection));
+        setCamera(100, 100, 0);
         ShadowUiService shadowUiService = getWeldBean(ShadowUiService.class);
         shadowUiService.setupMatrices();
 
-        Assert.fail("... TODO ...");
+//        ///////////////
+//        System.out.println(runDepthBufferShaderNdc(new Vertex(100, 100, 0)));
+//        // System.out.println(runDepthBufferShaderNdc(new Vertex(100, 100, 20)));
+//        // System.out.println(runDepthBufferShaderNdc(new Vertex(100, 100, -2)));
+//        // View filed z = 0
+//        System.out.println(runDepthBufferShaderNdc(new Vertex(55.81722001353653, 66.86291501015239, 0)));
+//        System.out.println(runDepthBufferShaderNdc(new Vertex(144.18277998646346, 66.86291501015239, 0)));
+//        System.out.println(runDepthBufferShaderNdc(new Vertex(144.18277998646346, 133.1370849898476, 0)));
+//        System.out.println(runDepthBufferShaderNdc(new Vertex(55.81722001353653, 133.1370849898476, 0)));
+//
+//        UiTestGuiDisplay.show(new AbstractUiTestGuiRenderer() {
+//            @Override
+//            protected void doRender() {
+//                strokePolygon(getProjectionTransformation().calculateViewField(0).toList(), 0.1, Color.BLACK, true);
+//                strokePolygon(getProjectionTransformation().calculateViewField(getTerrainUiService().getHighestPointInView()).toList(), 0.1, Color.RED, true);
+//                strokePolygon(getProjectionTransformation().calculateViewField(getTerrainUiService().getLowestPointInView()).toList(), 0.1, Color.BLUE, true);
+//                drawPosition(getProjectionTransformation().calculateViewField(0).calculateCenter(), 0.1, Color.PINK);
+//            }
+//        });
+//        ///////////////
+
+        // View field center
+        AssertHelper.assertVertex(0, 0, 0, runDepthBufferShaderNdc(new Vertex(100, 100, 0)));
+        // View field center z = 20
+        // AssertHelper.assertVertex(0, 0, -40, runDepthBufferShaderNdc(new Vertex(100, 100, 0.6035)));
+        // View field center z = -2
+        // AssertHelper.assertVertex(0, 0, 4, runDepthBufferShaderNdc(new Vertex(100, 100, 0.0603)));
+        // View field BL
+        AssertHelper.assertVertex(-1, -1, 0.2695, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 66.86291501015239, 0)));
+        // View field BR
+        AssertHelper.assertVertex(0.5808, -0.4523, -0.8782, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 66.86291501015239, 0)));
+        // View field TR
+        AssertHelper.assertVertex(1, 1, -0.2695, runDepthBufferShaderNdc(new Vertex(144.18277998646346, 133.1370849898476, 0)));
+        // View field TL
+        AssertHelper.assertVertex(-0.5808, 0.4523, 0.8782, runDepthBufferShaderNdc(new Vertex(55.81722001353653, 133.1370849898476, 0)));
     }
 
     private Vertex runDepthBufferShaderNdc(Vertex vertex) {
