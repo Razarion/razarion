@@ -21,9 +21,9 @@ import java.util.logging.Logger;
 public class DisplayUtils {
     public static final long MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
     public static final long MILLISECONDS_IN_MINUTE = 1000 * 60;
-    public static final NumberFormat NUMBER_FORMATTER_X_XX = NumberFormat.getFormat("#.##");
-    public static final NumberFormat NUMBER_FORMATTER_X_XXX = NumberFormat.getFormat("#.###");
-    public static final NumberFormat NUMBER_FORMATTER_X_XXXX = NumberFormat.getFormat("#.####");
+    public static final NumberFormat NUMBER_FORMATTER_X_XX = NumberFormat.getFormat("0.00");
+    public static final NumberFormat NUMBER_FORMATTER_X_XXX = NumberFormat.getFormat("0.000");
+    public static final NumberFormat NUMBER_FORMATTER_X_XXXX = NumberFormat.getFormat("0.0000");
     public static final DateTimeFormat DATE_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy");
     public static final DateTimeFormat DATE_TIME_FORMATTER = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss");
     public static final DateTimeFormat DATE_TIME_FORMATTER_MILLIS = DateTimeFormat.getFormat("dd.MM.yyyy HH:mm:ss.SSS");

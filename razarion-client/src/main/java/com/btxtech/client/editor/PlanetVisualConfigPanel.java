@@ -2,7 +2,7 @@ package com.btxtech.client.editor;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.LightDirectionWidget;
-import com.btxtech.common.DisplayUtils;
+import com.btxtech.client.guielements.VertexRoBox;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
@@ -12,7 +12,6 @@ import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.ViewService;
 import com.google.gwt.user.client.ui.DoubleBox;
-import com.google.gwt.user.client.ui.Label;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -72,6 +71,10 @@ public class PlanetVisualConfigPanel extends LeftSideBarContent {
     @Bound
     @DataField
     private LightDirectionWidget lightDirection;
+    @Inject
+    @Bound(property = "lightDirection")
+    @DataField
+    private VertexRoBox lightDirectionBox;
 
     @PostConstruct
     public void init() {
