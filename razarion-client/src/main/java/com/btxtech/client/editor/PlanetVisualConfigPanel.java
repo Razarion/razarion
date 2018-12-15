@@ -6,7 +6,6 @@ import com.btxtech.client.guielements.VertexRoBox;
 import com.btxtech.client.utils.GradToRadConverter;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
-import com.btxtech.uiservice.Shape3DUiService;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ShadowUiService;
@@ -37,8 +36,6 @@ public class PlanetVisualConfigPanel extends LeftSideBarContent {
     @Inject
     private VisualUiService visualUiService;
     @Inject
-    private Shape3DUiService shape3DUiService;
-    @Inject
     private ViewService viewService;
     @Inject
     private GameUiControl gameUiControl;
@@ -47,22 +44,6 @@ public class PlanetVisualConfigPanel extends LeftSideBarContent {
     @Inject
     @AutoBound
     private DataBinder<PlanetVisualConfig> planetVisualConfigDataBinder;
-    @Inject
-    @Bound(property = "shadowRotationX", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shadowRotationXSlider;
-    @Inject
-    @Bound(property = "shadowRotationX", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shadowRotationXBox;
-    @Inject
-    @Bound(property = "shadowRotationY", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shadowRotationYSlider;
-    @Inject
-    @Bound(property = "shadowRotationY", converter = GradToRadConverter.class)
-    @DataField
-    private DoubleBox shadowRotationYBox;
     @Inject
     @Bound
     @DataField

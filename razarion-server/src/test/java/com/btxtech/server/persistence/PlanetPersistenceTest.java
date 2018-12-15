@@ -24,7 +24,7 @@ public class PlanetPersistenceTest extends ServerArquillianBaseTest {
     public void loadStaticGameConfig() throws Exception {
         setupPlanets();
 
-        PlanetVisualConfig expectedPlanetVisualConfig = new PlanetVisualConfig().setShadowAlpha(0.2).setShadowRotationX(0.33).setShadowRotationY(-0.45);
+        PlanetVisualConfig expectedPlanetVisualConfig = new PlanetVisualConfig().setShadowAlpha(0.2);
         expectedPlanetVisualConfig.setLightDirection(new Vertex(0, 0, -1));
         planetPersistence.updatePlanetVisualConfig(PLANET_1_ID, expectedPlanetVisualConfig);
 

@@ -73,8 +73,8 @@ public class LightDirectionWidget implements HasValue<Vertex>, IsElement {
         if (lightDirection != null) {
             double planetRadius = planetElement.r.baseVal.value;
 
-            sunElement.cx.baseVal.value = planetElement.cx.baseVal.value + value.getX() * planetRadius;
-            sunElement.cy.baseVal.value = planetElement.cy.baseVal.value - value.getY() * planetRadius;
+            sunElement.cx.baseVal.value = planetElement.cx.baseVal.value - value.getX() * planetRadius;
+            sunElement.cy.baseVal.value = planetElement.cy.baseVal.value + value.getY() * planetRadius;
         }
         if (fireEvents) {
             fireEvent(null);
@@ -120,7 +120,7 @@ public class LightDirectionWidget implements HasValue<Vertex>, IsElement {
                 double lightDirectionY = -Math.min(yDiff / planetRadius, 1.0);
                 double lightDirectionZ = Math.sqrt(1 - lightDirectionX * lightDirectionX - lightDirectionY * lightDirectionY);
 
-                lightDirection = new Vertex(lightDirectionX, lightDirectionY, -lightDirectionZ);
+                lightDirection = new Vertex(-lightDirectionX, -lightDirectionY, -lightDirectionZ);
 
                 fireEvent(null);
             }

@@ -71,8 +71,12 @@ public class PlanetEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private BaseItemTypeEntity startBaseItemType;
-    private double shadowRotationX;
-    private double shadowRotationY;
+    @AttributeOverrides({
+            @AttributeOverride(name = "x", column = @Column(name = "lightDirectionX")),
+            @AttributeOverride(name = "y", column = @Column(name = "lightDirectionY")),
+            @AttributeOverride(name = "z", column = @Column(name = "lightDirectionZ")),
+    })
+    private Vertex lightDirection;
     private double shadowAlpha;
     @Lob
     @Basic(fetch = FetchType.LAZY)
@@ -103,16 +107,19 @@ public class PlanetEntity {
 
     public PlanetVisualConfig toPlanetVisualConfig() {
         PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
-        planetVisualConfig.setShadowRotationX(shadowRotationX).setShadowRotationY(shadowRotationY).setShadowAlpha(shadowAlpha);
-        planetVisualConfig.setLightDirection(new Vertex(0, 0, -1)); // TODO replace with value from DB
+        planetVisualConfig.setShadowAlpha(shadowAlpha);
+        if(lightDirection != null) {
+            planetVisualConfig.setLightDirection(lightDirection);
+        } else {
+            planetVisualConfig.setLightDirection(Vertex.Z_NORM_NEG);
+        }
         planetVisualConfig.setAmbient(new Color(0.5, 0.5, 0.5)); // TODO replace with value from DB
         planetVisualConfig.setDiffuse(new Color(0.5, 0.5, 0.5)); // TODO replace with value from DB
         return planetVisualConfig;
     }
 
     public void fromPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
-        shadowRotationX = planetVisualConfig.getShadowRotationX();
-        shadowRotationY = planetVisualConfig.getShadowRotationY();
+        lightDirection = planetVisualConfig.getLightDirection();
         shadowAlpha = planetVisualConfig.getShadowAlpha();
     }
 
