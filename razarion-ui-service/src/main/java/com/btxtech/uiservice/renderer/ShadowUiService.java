@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Plane3d;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.uiservice.terrain.TerrainUiService;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -19,12 +20,13 @@ import java.util.logging.Logger;
 public class ShadowUiService {
     private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     private static final double Z_NEAR = 10;
-    private static final int VISIBLE_ZONE_HEIGHT_FALLBACK = 1;
     private static final Matrix4 TEXTURE_COORDINATE_TRANSFORMATION = Matrix4.makeTextureCoordinateTransformation();
     @Inject
     private VisualUiService visualUiService;
     @Inject
     private ProjectionTransformation projectionTransformation;
+    @Inject
+    private TerrainUiService terrainUiService;
     private Matrix4 shadowLookupTransformation;
     private Matrix4 depthProjectionTransformation;
     private Matrix4 depthViewTransformation;
@@ -99,11 +101,13 @@ public class ShadowUiService {
         visibleZoneHeight = Math.max(visibleZoneHeight, planeViewFieldCenterLightDirection.toAbsolute(rectPlane.cornerTopRight()).sub(aabbViewFiledCenterGroundZero.getTopRightVertex()).magnitude());
         visibleZoneHeight = Math.max(visibleZoneHeight, planeViewFieldCenterLightDirection.toAbsolute(rectPlane.cornerTopLeft()).sub(aabbViewFiledCenterGroundZero.getTopLeftVertex()).magnitude());
         visibleZoneHeight *= 2.0;
-        visibleZoneHeight = Math.max(VISIBLE_ZONE_HEIGHT_FALLBACK, visibleZoneHeight);
 
-        depthProjectionTransformation = Matrix4.makeBalancedOrthographicFrustum(rectPlane.width() / 2.0, rectPlane.height() / 2.0, Z_NEAR, Z_NEAR + visibleZoneHeight);
+        double highest = terrainUiService.getHighestPointInView() / visualUiService.getPlanetVisualConfig().getLightDirection().negate().getZ();
+        // TODO lowest -> terrainUiService.getLowestPointInView()
 
-        Vertex lightPosition = viewFieldCenterGroundZero.add(visualUiService.getPlanetVisualConfig().getLightDirection().multiply(-Z_NEAR - visibleZoneHeight / 2.0));
+        depthProjectionTransformation = Matrix4.makeBalancedOrthographicFrustum(rectPlane.width() / 2.0, rectPlane.height() / 2.0, Z_NEAR, Z_NEAR + highest + visibleZoneHeight);
+
+        Vertex lightPosition = viewFieldCenterGroundZero.add(visualUiService.getPlanetVisualConfig().getLightDirection().multiply(-Z_NEAR - highest - visibleZoneHeight / 2.0));
 
         Matrix4 reverseRotationMatrix = Matrix4.createRotationFrom2Vectors(visualUiService.getPlanetVisualConfig().getLightDirection(), Vertex.Z_NORM_NEG);
         depthViewTransformation = reverseRotationMatrix.multiply(Matrix4.createTranslation(-lightPosition.getX(), -lightPosition.getY(), -lightPosition.getZ()));

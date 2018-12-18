@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 @ApplicationScoped
 public class RazarionEmulator {
-    private static final long RENDER_DELAY = 100;
+    private static final long RENDER_DELAY = 200;
     @Inject
     private WebGlEmulatorController controller;
     @Inject
