@@ -12,6 +12,7 @@ import java.util.List;
  */
 @Embeddable
 public class Color {
+    public static final Color GREY = new Color(0.5, 0.5, 0.5);
     private double r;
     private double g;
     private double b;

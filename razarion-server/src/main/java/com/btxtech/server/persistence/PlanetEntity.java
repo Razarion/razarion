@@ -31,6 +31,7 @@ import javax.persistence.Table;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Beat
@@ -77,6 +78,20 @@ public class PlanetEntity {
             @AttributeOverride(name = "z", column = @Column(name = "lightDirectionZ")),
     })
     private Vertex lightDirection;
+    @AttributeOverrides({
+            @AttributeOverride(name = "r", column = @Column(name = "ambientR")),
+            @AttributeOverride(name = "g", column = @Column(name = "ambientG")),
+            @AttributeOverride(name = "b", column = @Column(name = "ambientB")),
+            @AttributeOverride(name = "a", column = @Column(name = "ambientA")),
+    })
+    private Color ambient;
+    @AttributeOverrides({
+            @AttributeOverride(name = "r", column = @Column(name = "diffuseR")),
+            @AttributeOverride(name = "g", column = @Column(name = "diffuseG")),
+            @AttributeOverride(name = "b", column = @Column(name = "diffuseB")),
+            @AttributeOverride(name = "a", column = @Column(name = "diffuseA")),
+    })
+    private Color diffuse;
     private double shadowAlpha;
     @Lob
     @Basic(fetch = FetchType.LAZY)
@@ -108,19 +123,17 @@ public class PlanetEntity {
     public PlanetVisualConfig toPlanetVisualConfig() {
         PlanetVisualConfig planetVisualConfig = new PlanetVisualConfig();
         planetVisualConfig.setShadowAlpha(shadowAlpha);
-        if(lightDirection != null) {
-            planetVisualConfig.setLightDirection(lightDirection);
-        } else {
-            planetVisualConfig.setLightDirection(Vertex.Z_NORM_NEG);
-        }
-        planetVisualConfig.setAmbient(new Color(0.5, 0.5, 0.5)); // TODO replace with value from DB
-        planetVisualConfig.setDiffuse(new Color(0.5, 0.5, 0.5)); // TODO replace with value from DB
+        planetVisualConfig.setLightDirection(Optional.ofNullable(lightDirection).orElse(Vertex.Z_NORM_NEG));
+        planetVisualConfig.setAmbient(Optional.ofNullable(ambient).orElse(Color.GREY));
+        planetVisualConfig.setDiffuse(Optional.ofNullable(diffuse).orElse(Color.GREY));
         return planetVisualConfig;
     }
 
     public void fromPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
         lightDirection = planetVisualConfig.getLightDirection();
         shadowAlpha = planetVisualConfig.getShadowAlpha();
+        ambient = planetVisualConfig.getAmbient();
+        diffuse = planetVisualConfig.getDiffuse();
     }
 
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {

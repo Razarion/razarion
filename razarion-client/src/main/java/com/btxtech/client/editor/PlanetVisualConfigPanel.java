@@ -3,14 +3,14 @@ package com.btxtech.client.editor;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.widgets.LightDirectionWidget;
 import com.btxtech.client.guielements.VertexRoBox;
-import com.btxtech.client.utils.GradToRadConverter;
+import com.btxtech.client.utils.HtmlColor2ColorConverter;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.renderer.ShadowUiService;
 import com.btxtech.uiservice.renderer.ViewService;
-import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -47,15 +47,23 @@ public class PlanetVisualConfigPanel extends LeftSideBarContent {
     @Inject
     @Bound
     @DataField
-    private NumberInput shadowAlpha;
-    @Inject
-    @Bound
-    @DataField
     private LightDirectionWidget lightDirection;
     @Inject
     @Bound(property = "lightDirection")
     @DataField
     private VertexRoBox lightDirectionBox;
+    @Inject
+    @Bound(converter = HtmlColor2ColorConverter.class)
+    @DataField
+    private TextBox ambient;
+    @Inject
+    @Bound(converter = HtmlColor2ColorConverter.class)
+    @DataField
+    private TextBox diffuse;
+    @Inject
+    @Bound
+    @DataField
+    private NumberInput shadowAlpha;
 
     @PostConstruct
     public void init() {

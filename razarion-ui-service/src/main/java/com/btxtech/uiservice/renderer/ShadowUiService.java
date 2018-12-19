@@ -18,9 +18,9 @@ import java.util.logging.Logger;
  */
 @ApplicationScoped
 public class ShadowUiService {
-    private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     private static final double Z_NEAR = 10;
     private static final Matrix4 TEXTURE_COORDINATE_TRANSFORMATION = Matrix4.makeTextureCoordinateTransformation();
+    private Logger logger = Logger.getLogger(ShadowUiService.class.getName());
     @Inject
     private VisualUiService visualUiService;
     @Inject
