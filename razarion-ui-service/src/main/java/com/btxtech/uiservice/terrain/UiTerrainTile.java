@@ -4,7 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
@@ -143,8 +143,8 @@ public class UiTerrainTile {
         return groundSkeletonConfig.getBottomBmScale();
     }
 
-    public LightConfig getGroundLightConfig() {
-        return groundSkeletonConfig.getLightConfig();
+    public SpecularLightConfig getGroundLightConfig() {
+        return groundSkeletonConfig.getSpecularLightConfig();
     }
 
     public double getTopBmDepth() {

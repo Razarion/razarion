@@ -1,11 +1,10 @@
 package com.btxtech.client.editor.water;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.editor.widgets.LightWidget;
+import com.btxtech.client.editor.widgets.SpecularLightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
-import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -32,7 +31,7 @@ public class WaterSidebar extends LeftSideBarContent {
     private DataBinder<WaterConfig> waterDataBinder;
     @Inject
     @DataField
-    private LightWidget lightConfig;
+    private SpecularLightWidget specularLightConfig;
     @Inject
     @Bound
     @DataField
@@ -56,7 +55,7 @@ public class WaterSidebar extends LeftSideBarContent {
     @PostConstruct
     public void init() {
         waterDataBinder.setModel(terrainTypeService.getWaterConfig());
-        lightConfig.setModel(terrainTypeService.getWaterConfig().getLightConfig());
+        specularLightConfig.setModel(terrainTypeService.getWaterConfig().getSpecularLightConfig());
         // TODO terrainUiService.enableEditMode(visualUiService.getStaticVisualConfig().getWaterConfig());
         bmId.setImageId(terrainTypeService.getWaterConfig().getBmId(), imageId -> terrainTypeService.getWaterConfig().setBmId(imageId));
     }

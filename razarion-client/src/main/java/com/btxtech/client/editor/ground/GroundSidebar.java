@@ -3,7 +3,7 @@ package com.btxtech.client.editor.ground;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.editor.widgets.LightWidget;
+import com.btxtech.client.editor.widgets.SpecularLightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.FractalFieldConfig;
@@ -27,8 +27,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -54,7 +52,7 @@ public class GroundSidebar extends LeftSideBarContent {
     private DataBinder<GroundConfig> groundConfigDataBinder;
     @Inject
     @DataField
-    private LightWidget lightConfig;
+    private SpecularLightWidget specularLightConfig;
     @Inject
     @DataField
     private ImageItemWidget topTextureId;
@@ -112,7 +110,7 @@ public class GroundSidebar extends LeftSideBarContent {
     public void init() {
         terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
             groundConfigDataBinder.setModel(groundConfig);
-            lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
+            specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
             topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId));
             topBmId.setImageId(groundConfig.getGroundSkeletonConfig().getTopBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopBmId(imageId));
             bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId));
@@ -128,7 +126,7 @@ public class GroundSidebar extends LeftSideBarContent {
             @Override
             public void callback(GroundConfig groundConfig) {
                 groundConfigDataBinder.setModel(groundConfig);
-                lightConfig.setModel(groundConfig.getGroundSkeletonConfig().getLightConfig());
+                specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
                 // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
             }
         }, exceptionHandler.restErrorHandler("saveGroundConfig failed: ")).saveGroundConfig(groundConfigDataBinder.getModel()));

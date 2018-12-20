@@ -237,4 +237,8 @@ public class WebGlFacade {
             throw new WebGlException("OES_standard_derivatives is no supported");
         }
     }
+
+    public VisualUiService getVisualUiService() {
+        return visualUiService;
+    }
 }

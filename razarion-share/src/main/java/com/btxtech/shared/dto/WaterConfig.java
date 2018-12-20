@@ -1,7 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-
 /**
  * Created by Beat
  * 15.03.2017.
@@ -13,7 +11,7 @@ public class WaterConfig {
     private double bmScale;
     private double bmDepth;
     private double groundLevel;
-    private LightConfig lightConfig;
+    private SpecularLightConfig specularLightConfig;
 
     public double getWaterLevel() {
         return waterLevel;
@@ -69,12 +67,12 @@ public class WaterConfig {
         return this;
     }
 
-    public LightConfig getLightConfig() {
-        return lightConfig;
+    public SpecularLightConfig getSpecularLightConfig() {
+        return specularLightConfig;
     }
 
-    public WaterConfig setLightConfig(LightConfig lightConfig) {
-        this.lightConfig = lightConfig;
+    public WaterConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
+        this.specularLightConfig = specularLightConfig;
         return this;
     }
 }

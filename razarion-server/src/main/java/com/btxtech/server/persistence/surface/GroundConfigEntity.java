@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.LightConfigEmbeddable;
+import com.btxtech.server.persistence.SpecularLightConfigEmbeddable;
 import com.btxtech.server.persistence.PersistenceUtil;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -32,7 +32,7 @@ public class GroundConfigEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Embedded
-    private LightConfigEmbeddable lightConfigEmbeddable;
+    private SpecularLightConfigEmbeddable specularLightConfigEmbeddable;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity topTexture;
@@ -107,10 +107,10 @@ public class GroundConfigEntity {
         bottomBm = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getBottomBmId());
         bottomBmScale = groundConfig.getGroundSkeletonConfig().getBottomBmScale();
         bottomBmDepth = groundConfig.getGroundSkeletonConfig().getBottomBmDepth();
-        if(lightConfigEmbeddable == null) {
-            lightConfigEmbeddable = new LightConfigEmbeddable();
+        if(specularLightConfigEmbeddable == null) {
+            specularLightConfigEmbeddable = new SpecularLightConfigEmbeddable();
         }
-        lightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeletonConfig().getLightConfig());
+        specularLightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
         splattingFractalMin = groundConfig.getSplattingFractalMin();
         splattingFractalMax = groundConfig.getSplattingFractalMax();
         splattingFractalClampMin = groundConfig.getSplattingFractalClampMin();
@@ -160,7 +160,7 @@ public class GroundConfigEntity {
         groundSkeletonConfig.setBottomBmId(PersistenceUtil.getImageIdSafe(bottomBm));
         groundSkeletonConfig.setBottomBmScale(bottomBmScale);
         groundSkeletonConfig.setBottomBmDepth(bottomBmDepth);
-        groundSkeletonConfig.setLightConfig(lightConfigEmbeddable.toLightConfig());
+        groundSkeletonConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
         groundSkeletonConfig.setSplattingXCount(splattingXCount);
         groundSkeletonConfig.setSplattingYCount(splattingYCount);
         double[][] splattingNodes = new double[splattingXCount][splattingYCount];

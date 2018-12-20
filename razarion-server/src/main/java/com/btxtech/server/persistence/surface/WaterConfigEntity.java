@@ -1,7 +1,7 @@
 package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
-import com.btxtech.server.persistence.LightConfigEmbeddable;
+import com.btxtech.server.persistence.SpecularLightConfigEmbeddable;
 import com.btxtech.shared.dto.WaterConfig;
 
 import javax.persistence.Entity;
@@ -31,7 +31,7 @@ public class WaterConfigEntity {
     private double bmScale;
     private double bmDepth;
     private double groundLevel;
-    private LightConfigEmbeddable lightConfig;
+    private SpecularLightConfigEmbeddable specularLightConfig;
 
     public WaterConfig toWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
@@ -40,8 +40,8 @@ public class WaterConfigEntity {
             waterConfig.setBmId(bmId.getId());
         }
         waterConfig.setBmScale(bmScale).setBmDepth(bmDepth);
-        if (lightConfig != null) {
-            waterConfig.setLightConfig(lightConfig.toLightConfig());
+        if (specularLightConfig != null) {
+            waterConfig.setSpecularLightConfig(specularLightConfig.toLightConfig());
         }
         return waterConfig;
     }

@@ -23,7 +23,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private double verticalSpace;
     private Type type;
     private SlopeNode[][] slopeNodes;
-    private LightConfig lightConfig;
+    private SpecularLightConfig specularLightConfig;
     private boolean slopeOriented;
     private Integer textureId;
     private double textureScale;
@@ -153,12 +153,12 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public LightConfig getLightConfig() {
-        return lightConfig;
+    public SpecularLightConfig getSpecularLightConfig() {
+        return specularLightConfig;
     }
 
-    public SlopeSkeletonConfig setLightConfig(LightConfig lightConfig) {
-        this.lightConfig = lightConfig;
+    public SlopeSkeletonConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
+        this.specularLightConfig = specularLightConfig;
         return this;
     }
 

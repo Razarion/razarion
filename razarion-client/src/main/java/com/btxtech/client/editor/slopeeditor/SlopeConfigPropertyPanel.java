@@ -3,7 +3,7 @@ package com.btxtech.client.editor.slopeeditor;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.fractal.FractalDialog;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
-import com.btxtech.client.editor.widgets.LightWidget;
+import com.btxtech.client.editor.widgets.SpecularLightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
@@ -74,7 +74,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private TextBox internalName;
     @Inject
     @DataField
-    private LightWidget lightConfig;
+    private SpecularLightWidget specularLightConfig;
     @Inject
     @DataField
     private ImageItemWidget textureId;
@@ -155,7 +155,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
         terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
         textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId));
         bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setBmId(imageId));
-        lightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
+        specularLightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());
         shapeEditor.init(svgElement, slopeConfig, this, 10.0);
     }
 

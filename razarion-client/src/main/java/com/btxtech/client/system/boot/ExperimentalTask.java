@@ -13,7 +13,7 @@ import com.btxtech.shared.dto.AudioConfig;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
@@ -90,7 +90,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         groundSkeletonConfig.setBottomBmScale(0.025);
         groundSkeletonConfig.setSplattingId(180846);
         groundSkeletonConfig.setSplattingScale(0.01);
-        groundSkeletonConfig.setLightConfig(new LightConfig().setRotationX(-0.7853981633974483).setRotationY(-0.7853981633974483).setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(0.5411764705882353, 0.5411764705882353, 0.5411764705882353)));
+        groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
         return groundSkeletonConfig;
     }
 
@@ -127,10 +127,9 @@ public class ExperimentalTask extends AbstractStartupTask {
     private WaterConfig defaultWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
         waterConfig.setGroundLevel(-2).setBmDepth(7).setTransparency(0.65).setBmId(272480).setBmDepth(20).setBmScale(0.02);
-        LightConfig lightConfig = new LightConfig();
-        lightConfig.setDiffuse(new Color(1, 1, 1)).setAmbient(new Color(1, 1, 1)).setRotationX(Math.toRadians(-20));
-        lightConfig.setRotationY(Math.toRadians(-20)).setSpecularIntensity(1.0).setSpecularHardness(0.5);
-        return waterConfig.setLightConfig(lightConfig);
+        SpecularLightConfig specularLightConfig = new SpecularLightConfig();
+        specularLightConfig.setSpecularIntensity(1.0).setSpecularHardness(0.5);
+        return waterConfig.setSpecularLightConfig(specularLightConfig);
     }
 
     private PlanetConfig defaultPlanetConfig() {

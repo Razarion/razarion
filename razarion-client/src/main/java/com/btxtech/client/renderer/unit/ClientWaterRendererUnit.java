@@ -68,7 +68,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     public void draw(UiTerrainWaterTile uiTerrainWaterTile) {
         webGlFacade.useProgram();
 
-        lightUniforms.setLightUniforms(uiTerrainWaterTile.getWaterConfig().getLightConfig(), webGlFacade);
+        lightUniforms.setLightUniforms(uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig(), webGlFacade);
 
         webGlFacade.uniform1f(uTransparency, uiTerrainWaterTile.getWaterConfig().getTransparency());
         webGlFacade.uniform1f(uBmDepth, uiTerrainWaterTile.getWaterConfig().getBmDepth());

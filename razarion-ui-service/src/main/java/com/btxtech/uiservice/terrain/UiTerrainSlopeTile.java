@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
@@ -75,8 +75,8 @@ public class UiTerrainSlopeTile {
     }
 
 
-    public LightConfig getSlopeLightConfig() {
-        return slopeSkeletonConfig.getLightConfig();
+    public SpecularLightConfig getSlopeLightConfig() {
+        return slopeSkeletonConfig.getSpecularLightConfig();
     }
 
     public double getBmDepth() {

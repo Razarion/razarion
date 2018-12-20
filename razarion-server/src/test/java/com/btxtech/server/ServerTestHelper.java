@@ -45,7 +45,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
@@ -513,7 +513,7 @@ public class ServerTestHelper {
         runInTransaction(em -> {
             SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
             SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-            slopeSkeletonConfigLand.setLightConfig(new LightConfig());
+            slopeSkeletonConfigLand.setSpecularLightConfig(new SpecularLightConfig());
             slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
             slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
             slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
@@ -531,7 +531,7 @@ public class ServerTestHelper {
             SLOPE_LAND_CONFIG_ENTITY_1 = slopeConfigEntity1.getId();
             SlopeConfigEntity slopeConfigEntity2 = new SlopeConfigEntity();
             SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-            slopeSkeletonConfigWater.setLightConfig(new LightConfig());
+            slopeSkeletonConfigWater.setSpecularLightConfig(new SpecularLightConfig());
             slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
             slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setVerticalSpace(6).setHeight(-2);
             slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
@@ -571,7 +571,7 @@ public class ServerTestHelper {
     private GroundConfig setupGroundConfig() throws Exception {
         GroundConfig groundConfig = new GroundConfig();
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        groundSkeletonConfig.setLightConfig(new LightConfig().setDiffuse(Color.fromHtmlColor("#000000")).setAmbient(Color.fromHtmlColor("#000000")));
+        groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
         groundSkeletonConfig.setHeightXCount(1);
         groundSkeletonConfig.setHeightYCount(1);
         groundSkeletonConfig.setHeights(new double[][]{{0}});

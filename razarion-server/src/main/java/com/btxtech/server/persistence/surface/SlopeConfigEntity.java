@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.LightConfigEmbeddable;
+import com.btxtech.server.persistence.SpecularLightConfigEmbeddable;
 import com.btxtech.server.persistence.PersistenceUtil;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Shape;
@@ -41,7 +41,7 @@ public class SlopeConfigEntity {
     private Integer id;
     private String internalName;
     @Embedded
-    private LightConfigEmbeddable lightConfigEmbeddable;
+    private SpecularLightConfigEmbeddable specularLightConfigEmbeddable;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     @OrderColumn(name = "orderColumn")
@@ -86,7 +86,7 @@ public class SlopeConfigEntity {
         slopeSkeletonConfig.setCoastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
         slopeSkeletonConfig.setOuterLineGameEngine(outerLineGameEngine);
         Shape shape = new Shape(toSlopeShapes());
-        slopeSkeletonConfig.setLightConfig(lightConfigEmbeddable.toLightConfig());
+        slopeSkeletonConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
         slopeSkeletonConfig.setRows(shape.getVertexCount());
         slopeSkeletonConfig.setWidth(shape.getDistance());
         slopeSkeletonConfig.setHeight(shape.getZInner());
@@ -128,7 +128,7 @@ public class SlopeConfigEntity {
             shape.add(slopeShapeEntity);
         }
         internalName = slopeConfig.getInternalName();
-        lightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeSkeletonConfig().getLightConfig());
+        specularLightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());
         fractalMin = slopeConfig.getFractalMin();
         fractalMax = slopeConfig.getFractalMax();
         fractalClampMin = slopeConfig.getFractalClampMin();
@@ -163,7 +163,7 @@ public class SlopeConfigEntity {
         shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(0, 0)).setSlopeFactor(1));
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(1, 1)).setSlopeFactor(1));
-        lightConfigEmbeddable = new LightConfigEmbeddable();
+        specularLightConfigEmbeddable = new SpecularLightConfigEmbeddable();
         slopeSkeletonEntries = new ArrayList<>();
     }
 
@@ -180,7 +180,7 @@ public class SlopeConfigEntity {
         return "SlopeConfigEntity{" +
                 "id=" + id +
                 ", internalName='" + internalName + '\'' +
-                ", lightConfigEmbeddable=" + lightConfigEmbeddable +
+                ", specularLightConfigEmbeddable=" + specularLightConfigEmbeddable +
                 ", shape=" + shape +
                 ", bmDepth=" + bmDepth +
                 ", fractalMin=" + fractalMin +

@@ -26,7 +26,7 @@ public class GroundSkeletonConfig {
     private double[][] splattings;
     private int splattingXCount;
     private int splattingYCount;
-    private LightConfig lightConfig;
+    private SpecularLightConfig specularLightConfig;
     private Integer splattingId;
     private double splattingScale;
 
@@ -115,12 +115,12 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public LightConfig getLightConfig() {
-        return lightConfig;
+    public SpecularLightConfig getSpecularLightConfig() {
+        return specularLightConfig;
     }
 
-    public GroundSkeletonConfig setLightConfig(LightConfig lightConfig) {
-        this.lightConfig = lightConfig;
+    public GroundSkeletonConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
+        this.specularLightConfig = specularLightConfig;
         return this;
     }
 

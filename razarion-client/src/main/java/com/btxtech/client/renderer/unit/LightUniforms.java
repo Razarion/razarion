@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
-import com.btxtech.shared.dto.LightConfig;
+import com.btxtech.shared.dto.SpecularLightConfig;
 import elemental.html.WebGLUniformLocation;
 
 /**
@@ -26,12 +26,12 @@ public class LightUniforms {
         uLightSpecularHardness = webGlFacade.getUniformLocation("uLightSpecularHardness" + postfix);
     }
 
-    public void setLightUniforms(LightConfig lightConfig, WebGlFacade webGlFacade) {
-        webGlFacade.uniform3f(uLightDirection, lightConfig.setupDirection());
-        webGlFacade.uniform3fNoAlpha(uLightDiffuse, lightConfig.getDiffuse());
-        webGlFacade.uniform3fNoAlpha(uLightAmbient, lightConfig.getAmbient());
-        webGlFacade.uniform1f(uLightSpecularIntensity, lightConfig.getSpecularIntensity());
-        webGlFacade.uniform1f(uLightSpecularHardness, lightConfig.getSpecularHardness());
+    public void setLightUniforms(SpecularLightConfig specularLightConfig, WebGlFacade webGlFacade) {
+        webGlFacade.uniform3f(uLightDirection, webGlFacade.getVisualUiService().getLightDirection());
+        webGlFacade.uniform3fNoAlpha(uLightDiffuse, webGlFacade.getVisualUiService().getDiffuse());
+        webGlFacade.uniform3fNoAlpha(uLightAmbient, webGlFacade.getVisualUiService().getAmbient());
+        webGlFacade.uniform1f(uLightSpecularIntensity, specularLightConfig.getSpecularIntensity());
+        webGlFacade.uniform1f(uLightSpecularHardness, specularLightConfig.getSpecularHardness());
     }
 
 
