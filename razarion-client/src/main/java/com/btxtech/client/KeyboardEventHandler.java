@@ -4,14 +4,13 @@ package com.btxtech.client;
 import com.btxtech.uiservice.EditorKeyboardListener;
 import com.btxtech.uiservice.SelectionHandler;
 import com.btxtech.uiservice.cockpit.CockpitMode;
-import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.itemplacer.BaseItemPlacerService;
-import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.terrain.TerrainScrollHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import elemental.client.Browser;
 import elemental.events.Event;
 import elemental.events.KeyboardEvent;
+import elemental2.dom.HTMLInputElement;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,24 +41,48 @@ public class KeyboardEventHandler {
         Browser.getWindow().addEventListener(Event.KEYDOWN, evt -> {
             try {
                 KeyboardEvent keyboardEvent = (KeyboardEvent) evt;
+
+                boolean preventScroll = false;
+                if (evt.getSrcElement() instanceof HTMLInputElement) {
+                    HTMLInputElement htmlInputElement = (HTMLInputElement) evt.getSrcElement();
+                    if (htmlInputElement.type.equalsIgnoreCase("text")) {
+                        preventScroll = true;
+                    }
+                    if (htmlInputElement.type.equalsIgnoreCase("number")) {
+                        preventScroll = true;
+                    }
+                }
+
                 switch (keyboardEvent.getKeyCode()) {
                     case 65:
                     case KeyCodes.KEY_LEFT: {
+                        if (preventScroll) {
+                            break;
+                        }
                         terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.LEFT, null);
                         break;
                     }
                     case 68:
                     case KeyCodes.KEY_RIGHT: {
+                        if (preventScroll) {
+                            break;
+                        }
                         terrainScrollHandler.executeAutoScrollKey(TerrainScrollHandler.ScrollDirection.RIGHT, null);
                         break;
                     }
                     case 87:
                     case KeyCodes.KEY_UP: {
+                        if (preventScroll) {
+                            break;
+                        }
                         terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.TOP);
                         break;
                     }
                     case 83:
                     case KeyCodes.KEY_DOWN: {
+                        if (preventScroll) {
+                            break;
+                        }
                         terrainScrollHandler.executeAutoScrollKey(null, TerrainScrollHandler.ScrollDirection.BOTTOM);
                         break;
                     }
@@ -138,11 +161,11 @@ public class KeyboardEventHandler {
                     }
                 }
 
-        } catch (Throwable t) {
-            logger.log(Level.SEVERE, "Handling key up events failed: " + evt, t);
-        }
-    },true);
-}
+            } catch (Throwable t) {
+                logger.log(Level.SEVERE, "Handling key up events failed: " + evt, t);
+            }
+        }, true);
+    }
 
     public void setEditorKeyboardListener(EditorKeyboardListener editorKeyboardListener) {
         this.editorKeyboardListener = editorKeyboardListener;
