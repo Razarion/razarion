@@ -19,7 +19,7 @@ public class RenderUnitControl {
     public static final RenderUnitControl STATUS_BAR = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setWriteDepthBuffer(false).setDpDepthTest(false);
     public static final RenderUnitControl SELECTION_FRAME = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
     public static final RenderUnitControl START_POINT_CIRCLE = new RenderUnitControl().setBlend(Blend.SOURCE_ALPHA).setDpDepthTest(false).setWriteDepthBuffer(false);
-    public static final RenderUnitControl START_POINT_ITEM = new RenderUnitControl().setBlend(Blend.CONST_ALPHA).setConstAlpha(0.5).setBackCull(true);
+    public static final RenderUnitControl START_POINT_ITEM = new RenderUnitControl().setBlend(Blend.CONST_ALPHA).setConstAlpha(0.5);
     public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_IMAGE = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
     public static final RenderUnitControl TERRAIN_ITEM_VISUALIZATION_CORNERS = new RenderUnitControl().setDpDepthTest(false).setWriteDepthBuffer(false);
 
@@ -30,7 +30,6 @@ public class RenderUnitControl {
 
     private boolean dpDepthTest = true;
     private boolean writeDepthBuffer = true;
-    private boolean backCull;
     private Blend blend;
     private double constAlpha;
 
@@ -57,15 +56,6 @@ public class RenderUnitControl {
 
     private RenderUnitControl setWriteDepthBuffer(boolean writeDepthBuffer) {
         this.writeDepthBuffer = writeDepthBuffer;
-        return this;
-    }
-
-    public boolean isBackCull() {
-        return backCull;
-    }
-
-    private RenderUnitControl setBackCull(boolean backCull) {
-        this.backCull = backCull;
         return this;
     }
 

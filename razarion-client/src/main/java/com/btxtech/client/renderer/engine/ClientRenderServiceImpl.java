@@ -1,18 +1,13 @@
 package com.btxtech.client.renderer.engine;
 
-import com.btxtech.client.editor.terrain.TerrainEditorImpl;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
-import com.btxtech.uiservice.terrain.TerrainUiService;
 import elemental.html.WebGLFramebuffer;
 import elemental.html.WebGLRenderingContext;
 import elemental.html.WebGLTexture;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.logging.Logger;
 
@@ -25,15 +20,7 @@ public class ClientRenderServiceImpl extends RenderService {
     public static final int DEPTH_BUFFER_SIZE = 1024;
     private Logger logger = Logger.getLogger(ClientRenderServiceImpl.class.getName());
     @Inject
-    private Instance<AbstractRenderUnit> renderInstance;
-    @Inject
     private GameCanvas gameCanvas;
-    @Inject
-    private Camera camera;
-    @Inject
-    private TerrainUiService terrainUiService;
-    @Inject
-    private TerrainEditorImpl terrainEditor;
     private WebGLFramebuffer shadowFrameBuffer;
     private WebGLTexture colorTexture;
     private WebGLTexture depthTexture;
@@ -68,11 +55,8 @@ public class ClientRenderServiceImpl extends RenderService {
             gameCanvas.getCtx3d().disable(WebGLRenderingContext.DEPTH_TEST);
         }
         gameCanvas.getCtx3d().depthMask(renderUnitControl.isWriteDepthBuffer());
-        if (renderUnitControl.isBackCull()) {
-            gameCanvas.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
-        } else {
-            gameCanvas.getCtx3d().disable(WebGLRenderingContext.CULL_FACE);
-        }
+        gameCanvas.getCtx3d().enable(WebGLRenderingContext.CULL_FACE);
+        gameCanvas.getCtx3d().cullFace(WebGLRenderingContext.BACK);
         if (renderUnitControl.getBlend() != null) {
             gameCanvas.getCtx3d().enable(WebGLRenderingContext.BLEND);
             switch (renderUnitControl.getBlend()) {
