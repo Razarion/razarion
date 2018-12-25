@@ -23,10 +23,6 @@ public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<UiTe
             logger.warning("No TopTextureId in AbstractGroundRendererUnit for: " + helperString());
             return;
         }
-        if (uiTerrainTile.getTopBmId() == null) {
-            logger.warning("No TopBmId in AbstractGroundRendererUnit for: " + helperString());
-            return;
-        }
         if (uiTerrainTile.getSplattingId() == null) {
             logger.warning("No SplattingId in AbstractGroundRendererUnit for: " + helperString());
             return;

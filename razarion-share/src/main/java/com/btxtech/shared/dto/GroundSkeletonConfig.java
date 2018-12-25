@@ -10,9 +10,6 @@ public class GroundSkeletonConfig {
     private int id;
     private Integer topTextureId;
     private double topTextureScale;
-    private Integer topBmId;
-    private double topBmScale;
-    private double topBmDepth;
     private Integer bottomTextureId;
     private double bottomTextureScale;
     private Integer bottomBmId;
@@ -23,6 +20,9 @@ public class GroundSkeletonConfig {
     private int heightXCount;
     private int heightYCount;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
+    private double splattingFadeThreshold;
+    private double splattingOffset;
+    private double splattingGroundBmMultiplicator;
     private double[][] splattings;
     private int splattingXCount;
     private int splattingYCount;
@@ -97,15 +97,6 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public double getTopBmDepth() {
-        return topBmDepth;
-    }
-
-    public GroundSkeletonConfig setTopBmDepth(double topBmDepth) {
-        this.topBmDepth = topBmDepth;
-        return this;
-    }
-
     public double getBottomBmDepth() {
         return bottomBmDepth;
     }
@@ -133,21 +124,30 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public Integer getTopBmId() {
-        return topBmId;
+    public double getSplattingFadeThreshold() {
+        return splattingFadeThreshold;
     }
 
-    public GroundSkeletonConfig setTopBmId(Integer topBmId) {
-        this.topBmId = topBmId;
+    public GroundSkeletonConfig setSplattingFadeThreshold(double splattingFadeThreshold) {
+        this.splattingFadeThreshold = splattingFadeThreshold;
         return this;
     }
 
-    public double getTopBmScale() {
-        return topBmScale;
+    public double getSplattingOffset() {
+        return splattingOffset;
     }
 
-    public GroundSkeletonConfig setTopBmScale(double topBmScale) {
-        this.topBmScale = topBmScale;
+    public GroundSkeletonConfig setSplattingOffset(double splattingOffset) {
+        this.splattingOffset = splattingOffset;
+        return this;
+    }
+
+    public double getSplattingGroundBmMultiplicator() {
+        return splattingGroundBmMultiplicator;
+    }
+
+    public GroundSkeletonConfig setSplattingGroundBmMultiplicator(double splattingGroundBmMultiplicator) {
+        this.splattingGroundBmMultiplicator = splattingGroundBmMultiplicator;
         return this;
     }
 

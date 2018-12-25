@@ -80,9 +80,6 @@ public class ExperimentalTask extends AbstractStartupTask {
         groundSkeletonConfig.setHeights(new double[][]{{1, 1}, {1, 1}});
         groundSkeletonConfig.setTopTextureId(180844);
         groundSkeletonConfig.setTopTextureScale(0.05);
-        groundSkeletonConfig.setTopBmId(180845);
-        groundSkeletonConfig.setTopBmDepth(5.13);
-        groundSkeletonConfig.setTopBmScale(0.025);
         groundSkeletonConfig.setBottomTextureId(180847);
         groundSkeletonConfig.setBottomTextureScale(0.05);
         groundSkeletonConfig.setBottomBmId(180848);

@@ -353,9 +353,6 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
 
         GroundSkeletonConfig groundSkeletonConfig = coldGameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
-        if (groundSkeletonConfig.getTopBmId() != null) {
-            bumpIds.add(groundSkeletonConfig.getTopBmId());
-        }
         if (groundSkeletonConfig.getBottomBmId() != null) {
             bumpIds.add(groundSkeletonConfig.getBottomBmId());
         }

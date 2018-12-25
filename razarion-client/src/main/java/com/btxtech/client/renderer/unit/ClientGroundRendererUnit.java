@@ -35,13 +35,14 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private Vec3Float32ArrayShaderAttribute tangents;
     private Float32ArrayShaderAttribute splattings;
     private WebGlUniformTexture topTexture;
-    private WebGlUniformTexture topBm;
     private WebGlUniformTexture splattingTexture;
     private WebGlUniformTexture bottomTexture;
     private WebGlUniformTexture bottomBm;
     private LightUniforms lightUniforms;
-    private WebGLUniformLocation uTopBmDepth;
     private WebGLUniformLocation uBottomBmDepth;
+    private WebGLUniformLocation uSplattingFadeThreshold;
+    private WebGLUniformLocation uSplattingOffset;
+    private WebGLUniformLocation uSplattingGroundBmMultiplicator;
     private WebGlUniformTexture terrainMarkerTexture;
     private WebGLUniformLocation terrainMarker2DPoints;
     private WebGLUniformLocation terrainMarkerAnimation;
@@ -54,8 +55,10 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         splattings = webGlFacade.createFloat32ArrayShaderAttribute(WebGlFacade.A_GROUND_SPLATTING);
         lightUniforms = new LightUniforms(null, webGlFacade);
-        uTopBmDepth = webGlFacade.getUniformLocation("uTopBmDepth");
         uBottomBmDepth = webGlFacade.getUniformLocation("uBottomBmDepth");
+        uSplattingFadeThreshold = webGlFacade.getUniformLocation("uSplattingFadeThreshold");
+        uSplattingOffset = webGlFacade.getUniformLocation("uSplattingOffset");
+        uSplattingGroundBmMultiplicator = webGlFacade.getUniformLocation("uSplattingGroundBmMultiplicator");
         terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
         terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
         terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
@@ -68,7 +71,6 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
         topTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getTopTextureId(), "uTopTexture", "uTopTextureScale", uiTerrainTile.getTopTextureScale());
-        topBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getTopBmId(), "uTopBm", "uTopBmScale", uiTerrainTile.getTopBmScale(), "uTopBmOnePixel");
         splattingTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getSplattingId(), "uSplatting", "uSplattingScale", uiTerrainTile.getSplattingScale());
         bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
         bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");
@@ -84,8 +86,10 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         webGlFacade.useProgram();
 
         lightUniforms.setLightUniforms(uiTerrainTile.getGroundLightConfig(), webGlFacade);
-        webGlFacade.uniform1f(uTopBmDepth, uiTerrainTile.getTopBmDepth());
         webGlFacade.uniform1f(uBottomBmDepth, uiTerrainTile.getBottomBmDepth());
+        webGlFacade.uniform1f(uSplattingFadeThreshold, uiTerrainTile.getSplattingFadeThreshold());
+        webGlFacade.uniform1f(uSplattingOffset, uiTerrainTile.getSplattingOffset());
+        webGlFacade.uniform1f(uSplattingGroundBmMultiplicator, uiTerrainTile.getSplattingGroundBmMultiplicator());
 
         webGlFacade.activateReceiveShadow();
 
@@ -96,8 +100,6 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
         topTexture.overrideScale(uiTerrainTile.getTopTextureScale());
         topTexture.activate();
-        topBm.overrideScale(uiTerrainTile.getTopBmScale());
-        topBm.activate();
         splattingTexture.overrideScale(uiTerrainTile.getSplattingScale());
         splattingTexture.activate();
         bottomTexture.overrideScale(uiTerrainTile.getBottomTextureScale());

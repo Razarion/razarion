@@ -20,12 +20,11 @@ uniform sampler2D uShadowTexture;
 uniform highp mat4 uNVMatrix;
 uniform sampler2D uTopTexture;
 uniform float uTopTextureScale;
-uniform sampler2D uTopBm;
-uniform float uTopBmScale;
-uniform float uTopBmOnePixel;
-uniform float uTopBmDepth;
 uniform sampler2D uBottomTexture;
 uniform float uBottomTextureScale;
+uniform float uSplattingFadeThreshold;
+uniform float uSplattingOffset;
+uniform float uSplattingGroundBmMultiplicator;
 uniform sampler2D uSplatting;
 uniform float uSplattingScale;
 uniform sampler2D uBottomBm;
@@ -38,7 +37,6 @@ uniform vec4 uTerrainMarker2DPoints;
 uniform float uTerrainMarkerAnimation;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
-const float BIAS = 0.001;
 
 // http://gamedevelopment.tutsplus.com/articles/use-tri-planar-texture-mapping-for-better-terrain--gamedev-13821
 vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
@@ -102,31 +100,25 @@ void main(void) {
     vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
 
     vec4 colorTop = triPlanarTextureMapping(uTopTexture, uTopTextureScale, vec2(0,0));
-    vec3 normTop = bumpMapNorm(uTopBm, uTopBmDepth, uTopBmScale, uTopBmOnePixel);
     vec4 colorBottom = triPlanarTextureMapping(uBottomTexture, uBottomTextureScale, vec2(0,0));
     vec3 normBottom = bumpMapNorm(uBottomBm, uBottomBmDepth, uBottomBmScale, uBottomBmOnePixel);
     float splatting = triPlanarTextureMapping(uSplatting, uSplattingScale, vec2(0,0)).r;
 
-     vec3 norm;
-     vec4 textureColor;
+    vec3 norm;
+    vec4 textureColor;
+    float bottomBmValue = triPlanarTextureMapping(uBottomBm, uBottomBmScale, vec2(0,0)).r;
 
-    // Bottom top splatting
-    if(vGroundSplatting + BIAS >= 1.0) {
-        norm = normTop;
+    float splattingValue = vGroundSplatting - (splatting + bottomBmValue * uSplattingGroundBmMultiplicator) / 2.0 + uSplattingOffset;
+    if(splattingValue > uSplattingFadeThreshold) {
+        norm = vVertexNormal;
         textureColor = colorTop;
-    } else if(vGroundSplatting <= BIAS) {
+    } else if(splattingValue < -uSplattingFadeThreshold) {
         norm = normBottom;
         textureColor = colorBottom;
     } else {
-        float topBmValue = triPlanarTextureMapping(uTopBm, uTopBmScale, vec2(0,0)).r;
-
-        if(topBmValue + splatting < vGroundSplatting) {
-            norm = normTop;
-            textureColor = colorTop;
-        } else {
-            norm = normBottom;
-            textureColor = colorBottom;
-        }
+        float groundTopFactor = splattingValue / (2.0 * uSplattingFadeThreshold) + 0.5;
+        textureColor = mix(colorBottom, colorTop, groundTopFactor);
+        norm = mix(normBottom, vVertexNormal, groundTopFactor);
     }
 
     // Light

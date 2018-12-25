@@ -68,6 +68,11 @@ public class TerrainUiService {
         clearTerrainTiles();
     }
 
+    public void onEditorTerrainChanged() {
+        terrainObjectConfigModelMatrices.clear();
+        clearTerrainTiles();
+    }
+
     private void clearTerrainTiles() {
         for (UiTerrainTile uiTerrainTile : displayTerrainTiles.values()) {
             uiTerrainTile.dispose();

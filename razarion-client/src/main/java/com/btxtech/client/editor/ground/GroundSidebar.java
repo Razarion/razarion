@@ -62,17 +62,6 @@ public class GroundSidebar extends LeftSideBarContent {
     private NumberInput topTextureScale;
     @Inject
     @DataField
-    private ImageItemWidget topBmId;
-    @Bound(property = "groundSkeletonConfig.topBmScale")
-    @Inject
-    @DataField
-    private NumberInput topBmScale;
-    @Inject
-    @Bound(property = "groundSkeletonConfig.topBmDepth")
-    @DataField
-    private NumberInput topBmDepth;
-    @Inject
-    @DataField
     private ImageItemWidget bottomTextureId;
     @Bound(property = "groundSkeletonConfig.bottomTextureScale")
     @Inject
@@ -96,6 +85,18 @@ public class GroundSidebar extends LeftSideBarContent {
     @Inject
     @DataField
     private NumberInput splattingScale;
+    @Bound(property = "groundSkeletonConfig.splattingFadeThreshold")
+    @Inject
+    @DataField
+    private NumberInput splattingFadeThreshold;
+    @Bound(property = "groundSkeletonConfig.splattingOffset")
+    @Inject
+    @DataField
+    private NumberInput splattingOffset;
+    @Bound(property = "groundSkeletonConfig.splattingGroundBmMultiplicator")
+    @Inject
+    @DataField
+    private NumberInput splattingGroundBmMultiplicator;
     @Inject
     @DataField
     private Button fractalSplatting;
@@ -111,24 +112,32 @@ public class GroundSidebar extends LeftSideBarContent {
         terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
             groundConfigDataBinder.setModel(groundConfig);
             specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
-            topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId));
-            topBmId.setImageId(groundConfig.getGroundSkeletonConfig().getTopBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setTopBmId(imageId));
-            bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId));
-            bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId));
-            splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> groundConfig.getGroundSkeletonConfig().setSplattingId(imageId));
+            topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> {
+                groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId);
+                terrainUiService.onEditorTerrainChanged();
+            });
+            bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> {
+                groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId);
+                terrainUiService.onEditorTerrainChanged();
+            });
+            bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> {
+                groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId);
+                terrainUiService.onEditorTerrainChanged();
+            });
+            splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> {
+                groundConfig.getGroundSkeletonConfig().setSplattingId(imageId);
+                terrainUiService.onEditorTerrainChanged();
+            });
             terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
         }, exceptionHandler.restErrorHandler("loadGroundConfig failed: ")).loadGroundConfig();
     }
 
     @Override
     protected void onConfigureDialog() {
-        registerSaveButton(() -> terrainEditorService.call(new RemoteCallback<GroundConfig>() {
-            @Override
-            public void callback(GroundConfig groundConfig) {
-                groundConfigDataBinder.setModel(groundConfig);
-                specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
-                // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
-            }
+        registerSaveButton(() -> terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
+            groundConfigDataBinder.setModel(groundConfig);
+            specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
+            // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
         }, exceptionHandler.restErrorHandler("saveGroundConfig failed: ")).saveGroundConfig(groundConfigDataBinder.getModel()));
         enableSaveButton(true);
     }
