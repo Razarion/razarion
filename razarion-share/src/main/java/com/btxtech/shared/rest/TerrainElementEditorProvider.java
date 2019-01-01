@@ -4,6 +4,7 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 
 import javax.ws.rs.Consumes;
@@ -62,6 +63,12 @@ public interface TerrainElementEditorProvider {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     GroundConfig saveGroundConfig(GroundConfig slopeConfig);
+
+    @PUT
+    @Path("saveWaterConfig")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    WaterConfig saveWaterConfig(WaterConfig waterConfig);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

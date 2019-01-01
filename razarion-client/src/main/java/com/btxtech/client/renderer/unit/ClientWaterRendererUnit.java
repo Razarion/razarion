@@ -32,6 +32,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private Vec3Float32ArrayShaderAttribute positions;
     private WebGlUniformTexture bumpMap;
     private LightUniforms lightUniforms;
+    private WebGLUniformLocation uWaterColor;
     private WebGLUniformLocation uTransparency;
     private WebGLUniformLocation uBmDepth;
     private WebGLUniformLocation animation;
@@ -45,6 +46,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader()).enableTransformation(true));
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         lightUniforms = new LightUniforms(null, webGlFacade);
+        uWaterColor = webGlFacade.getUniformLocation("uWaterColor");
         uTransparency = webGlFacade.getUniformLocation("uTransparency");
         uBmDepth = webGlFacade.getUniformLocation("uBmDepth");
         animation = webGlFacade.getUniformLocation("animation");
@@ -70,6 +72,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         lightUniforms.setLightUniforms(uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig(), webGlFacade);
 
+        webGlFacade.uniform3fNoAlpha(uWaterColor, uiTerrainWaterTile.getWaterConfig().getColor());
         webGlFacade.uniform1f(uTransparency, uiTerrainWaterTile.getWaterConfig().getTransparency());
         webGlFacade.uniform1f(uBmDepth, uiTerrainWaterTile.getWaterConfig().getBmDepth());
         webGlFacade.uniform1f(animation, uiTerrainWaterTile.getWaterAnimation());

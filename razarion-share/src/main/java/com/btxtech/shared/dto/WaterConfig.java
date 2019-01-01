@@ -1,5 +1,7 @@
 package com.btxtech.shared.dto;
 
+import com.btxtech.shared.datatypes.Color;
+
 /**
  * Created by Beat
  * 15.03.2017.
@@ -12,6 +14,7 @@ public class WaterConfig {
     private double bmDepth;
     private double groundLevel;
     private SpecularLightConfig specularLightConfig;
+    private Color color;
 
     public double getWaterLevel() {
         return waterLevel;
@@ -73,6 +76,15 @@ public class WaterConfig {
 
     public WaterConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
         this.specularLightConfig = specularLightConfig;
+        return this;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public WaterConfig setColor(Color color) {
+        this.color = color;
         return this;
     }
 }

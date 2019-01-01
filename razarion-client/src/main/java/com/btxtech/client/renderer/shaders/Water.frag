@@ -13,6 +13,7 @@ uniform float uLightSpecularIntensity;
 uniform float uLightSpecularHardness;
 
 uniform highp mat4 uNVMatrix;
+uniform vec3 uWaterColor;
 uniform float uTransparency;
 uniform sampler2D uBm;
 uniform float uBmScale;
@@ -26,7 +27,6 @@ uniform vec4 uTerrainMarker2DPoints;
 uniform float uTerrainMarkerAnimation;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
-const vec3 WATER_COLOR = vec3(0.05, 0.32, 0.63);
 
 vec3 bumpMapNorm(float scale) {
     vec3 normal = normalize(vVertexNormal);
@@ -72,8 +72,9 @@ void main(void) {
     vec3 norm = bumpMapNorm(uBmScale);
     vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
 
-    vec3 ambient = uLightAmbient * WATER_COLOR;
-    vec3 diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0)* uLightDiffuse * WATER_COLOR /* * shadowFactor */ ;
+    vec3 ambient = uLightAmbient * uWaterColor;
+    vec3 diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0)* uLightDiffuse * uWaterColor /* * shadowFactor */ ;
+    // diffuse = max(dot(normalize(norm), normalize(-correctedLigtDirection)), 0.0)* vec3(1.0, 1.0, 1.0) /* * shadowFactor */ ;
     vec3 specular = setupSpecularLight(correctedLigtDirection, norm, uLightSpecularIntensity, uLightSpecularHardness) /* * shadowFactor */;
     gl_FragColor = vec4(ambient + diffuse + specular, uTransparency) + setupTerrainMarker();
 }

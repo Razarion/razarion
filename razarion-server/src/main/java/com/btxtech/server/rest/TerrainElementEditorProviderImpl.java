@@ -4,6 +4,7 @@ import com.btxtech.server.persistence.TerrainElementPersistence;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -95,6 +96,16 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     public GroundConfig saveGroundConfig(GroundConfig slopeConfig) {
         try {
             return persistenceService.saveGroundConfig(slopeConfig);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            throw t;
+        }
+    }
+
+    @Override
+    public WaterConfig saveWaterConfig(WaterConfig waterConfig) {
+        try {
+            return persistenceService.saveWaterConfig(waterConfig);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

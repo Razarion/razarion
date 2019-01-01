@@ -88,6 +88,19 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
+    @SecurityCheck
+    public WaterConfig saveWaterConfig(WaterConfig waterConfig) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        // Query for total row count in invitations
+        CriteriaQuery<WaterConfigEntity> userQuery = criteriaBuilder.createQuery(WaterConfigEntity.class);
+        Root<WaterConfigEntity> from = userQuery.from(WaterConfigEntity.class);
+        CriteriaQuery<WaterConfigEntity> userSelect = userQuery.select(from);
+        WaterConfigEntity waterConfigEntity = entityManager.createQuery(userSelect).getSingleResult();
+        waterConfigEntity.fromWaterConfig(waterConfig, imagePersistence);
+        return entityManager.merge(waterConfigEntity).toWaterConfig();
+    }
+
+    @Transactional
     public List<ObjectNameId> getSlopeNameIds() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
