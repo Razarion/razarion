@@ -61,6 +61,17 @@ public class WaterSidebar extends LeftSideBarContent {
     @DataField
     private NumberInput bmDepth;
     @Inject
+    @DataField
+    private ImageItemWidget distortionId;
+    @Inject
+    @Bound
+    @DataField
+    private NumberInput distortionScale;
+    @Inject
+    @Bound
+    @DataField
+    private NumberInput distortionStrength;
+    @Inject
     @Bound
     @DataField
     private NumberInput groundLevel;
@@ -72,6 +83,10 @@ public class WaterSidebar extends LeftSideBarContent {
         // TODO terrainUiService.enableEditMode(visualUiService.getStaticVisualConfig().getWaterConfig());
         bmId.setImageId(terrainTypeService.getWaterConfig().getBmId(), imageId -> {
             terrainTypeService.getWaterConfig().setBmId(imageId);
+            terrainUiService.onEditorTerrainChanged();
+        });
+        distortionId.setImageId(terrainTypeService.getWaterConfig().getDistortionId(), imageId -> {
+            terrainTypeService.getWaterConfig().setDistortionId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
     }

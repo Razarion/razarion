@@ -12,6 +12,9 @@ public class WaterConfig {
     private Integer bmId;
     private double bmScale;
     private double bmDepth;
+    private Integer distortionId;
+    private double distortionScale;
+    private double distortionStrength;
     private double groundLevel;
     private SpecularLightConfig specularLightConfig;
     private Color color;
@@ -58,6 +61,33 @@ public class WaterConfig {
 
     public WaterConfig setBmDepth(double bmDepth) {
         this.bmDepth = bmDepth;
+        return this;
+    }
+
+    public Integer getDistortionId() {
+        return distortionId;
+    }
+
+    public WaterConfig setDistortionId(Integer distortionId) {
+        this.distortionId = distortionId;
+        return this;
+    }
+
+    public double getDistortionScale() {
+        return distortionScale;
+    }
+
+    public WaterConfig setDistortionScale(double distortionScale) {
+        this.distortionScale = distortionScale;
+        return this;
+    }
+
+    public double getDistortionStrength() {
+        return distortionStrength;
+    }
+
+    public WaterConfig setDistortionStrength(double distortionStrength) {
+        this.distortionStrength = distortionStrength;
         return this;
     }
 

@@ -51,6 +51,9 @@ public class KeyboardEventHandler {
                     if (htmlInputElement.type.equalsIgnoreCase("number")) {
                         preventScroll = true;
                     }
+                    if (htmlInputElement.type.equalsIgnoreCase("range")) {
+                        preventScroll = true;
+                    }
                 }
 
                 switch (keyboardEvent.getKeyCode()) {

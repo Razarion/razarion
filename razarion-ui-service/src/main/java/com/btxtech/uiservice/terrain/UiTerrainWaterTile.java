@@ -4,6 +4,7 @@ import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.utils.MathHelper;
+import com.btxtech.shared.utils.SignalGenerator;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
@@ -48,15 +49,15 @@ public class UiTerrainWaterTile {
     }
 
     public double getWaterAnimation() {
-        return getWaterAnimation(System.currentTimeMillis(), 2000, 0);
+        return getWaterAnimation(System.currentTimeMillis(), 20000, 0);
     }
 
     public double getWaterAnimation2() {
-        return getWaterAnimation(System.currentTimeMillis(), 2000, 500);
+        return getWaterAnimation(System.currentTimeMillis(), 20000, 5000);
     }
 
     private double getWaterAnimation(long millis, int durationMs, int offsetMs) {
-        return Math.sin(((millis % durationMs) / (double) durationMs + ((double) offsetMs / (double) durationMs)) * MathHelper.ONE_RADIANT);
+        return SignalGenerator.sawtooth(millis, durationMs, offsetMs);
     }
 
     public void dispose() {

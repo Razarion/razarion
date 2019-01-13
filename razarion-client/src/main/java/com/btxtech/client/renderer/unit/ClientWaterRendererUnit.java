@@ -35,8 +35,10 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private WebGLUniformLocation uWaterColor;
     private WebGLUniformLocation uTransparency;
     private WebGLUniformLocation uBmDepth;
+    private WebGLUniformLocation distortionStrength;
     private WebGLUniformLocation animation;
     private WebGLUniformLocation animation2;
+    private WebGlUniformTexture distortionMap;
     private WebGlUniformTexture terrainMarkerTexture;
     private WebGLUniformLocation terrainMarker2DPoints;
     private WebGLUniformLocation terrainMarkerAnimation;
@@ -49,6 +51,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         uWaterColor = webGlFacade.getUniformLocation("uWaterColor");
         uTransparency = webGlFacade.getUniformLocation("uTransparency");
         uBmDepth = webGlFacade.getUniformLocation("uBmDepth");
+        distortionStrength = webGlFacade.getUniformLocation("uDistortionStrength");
         animation = webGlFacade.getUniformLocation("animation");
         animation2 = webGlFacade.getUniformLocation("animation2");
         terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
@@ -64,6 +67,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     protected void fillInternalBuffers(UiTerrainWaterTile uiTerrainWaterTile) {
         positions.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainWaterTile.getTerrainWaterTile().getVertices()));
         bumpMap = webGlFacade.createWebGLBumpMapTexture(uiTerrainWaterTile.getWaterConfig().getBmId(), "uBm", "uBmScale", uiTerrainWaterTile.getWaterConfig().getBmScale(), "uBmOnePixel");
+        distortionMap = webGlFacade.createWebGLTexture(uiTerrainWaterTile.getWaterConfig().getDistortionId(), "distortionMap", "uDistortionScale", uiTerrainWaterTile.getWaterConfig().getDistortionScale());
     }
 
     @Override
@@ -75,13 +79,18 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         webGlFacade.uniform3fNoAlpha(uWaterColor, uiTerrainWaterTile.getWaterConfig().getColor());
         webGlFacade.uniform1f(uTransparency, uiTerrainWaterTile.getWaterConfig().getTransparency());
         webGlFacade.uniform1f(uBmDepth, uiTerrainWaterTile.getWaterConfig().getBmDepth());
-        webGlFacade.uniform1f(animation, uiTerrainWaterTile.getWaterAnimation());
+        webGlFacade.uniform1f(distortionStrength, uiTerrainWaterTile.getWaterConfig().getDistortionStrength());
+
+    webGlFacade.uniform1f(animation, uiTerrainWaterTile.getWaterAnimation());
         webGlFacade.uniform1f(animation2, uiTerrainWaterTile.getWaterAnimation2());
 
         positions.activate();
 
         bumpMap.overrideScale(uiTerrainWaterTile.getWaterConfig().getBmScale());
         bumpMap.activate();
+
+        distortionMap.overrideScale(uiTerrainWaterTile.getWaterConfig().getDistortionScale());
+        distortionMap.activate();
 
         if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
             terrainMarkerTexture.activate();
