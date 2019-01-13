@@ -57,6 +57,8 @@ public class WaterConfigEntity {
             waterConfig.setSpecularLightConfig(specularLightConfig.toLightConfig());
         }
         // TODO ----------
+        waterConfig.setReflectionId(88); // TODO
+        waterConfig.setReflectionScale(0.02); // TODO
         waterConfig.setDistortionId(89); // TODO
         waterConfig.setDistortionScale(0.06); // TODO
         waterConfig.setDistortionStrength(0.11); // TODO

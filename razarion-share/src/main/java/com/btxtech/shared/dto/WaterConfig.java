@@ -9,6 +9,8 @@ import com.btxtech.shared.datatypes.Color;
 public class WaterConfig {
     private double waterLevel;
     private double transparency;
+    private Integer reflectionId;
+    private double reflectionScale;
     private Integer bmId;
     private double bmScale;
     private double bmDepth;
@@ -34,6 +36,24 @@ public class WaterConfig {
 
     public WaterConfig setTransparency(double transparency) {
         this.transparency = transparency;
+        return this;
+    }
+
+    public Integer getReflectionId() {
+        return reflectionId;
+    }
+
+    public WaterConfig setReflectionId(Integer reflectionId) {
+        this.reflectionId = reflectionId;
+        return this;
+    }
+
+    public double getReflectionScale() {
+        return reflectionScale;
+    }
+
+    public WaterConfig setReflectionScale(double reflectionScale) {
+        this.reflectionScale = reflectionScale;
         return this;
     }
 

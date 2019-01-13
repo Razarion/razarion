@@ -51,6 +51,13 @@ public class WaterSidebar extends LeftSideBarContent {
     private TextBox color;
     @Inject
     @DataField
+    private ImageItemWidget reflectionId;
+    @Inject
+    @Bound
+    @DataField
+    private NumberInput reflectionScale;
+    @Inject
+    @DataField
     private ImageItemWidget bmId;
     @Inject
     @Bound
@@ -81,6 +88,10 @@ public class WaterSidebar extends LeftSideBarContent {
         waterDataBinder.setModel(terrainTypeService.getWaterConfig());
         specularLightConfig.setModel(terrainTypeService.getWaterConfig().getSpecularLightConfig());
         // TODO terrainUiService.enableEditMode(visualUiService.getStaticVisualConfig().getWaterConfig());
+        reflectionId.setImageId(terrainTypeService.getWaterConfig().getReflectionId(), imageId -> {
+            terrainTypeService.getWaterConfig().setReflectionId(imageId);
+            terrainUiService.onEditorTerrainChanged();
+        });
         bmId.setImageId(terrainTypeService.getWaterConfig().getBmId(), imageId -> {
             terrainTypeService.getWaterConfig().setBmId(imageId);
             terrainUiService.onEditorTerrainChanged();

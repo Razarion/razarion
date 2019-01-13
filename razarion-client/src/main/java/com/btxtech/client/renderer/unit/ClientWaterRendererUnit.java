@@ -30,15 +30,16 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     @Inject
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
-    private WebGlUniformTexture bumpMap;
     private LightUniforms lightUniforms;
+    private WebGlUniformTexture reflection;
+    private WebGlUniformTexture bumpMap;
+    private WebGlUniformTexture distortionMap;
     private WebGLUniformLocation uWaterColor;
     private WebGLUniformLocation uTransparency;
     private WebGLUniformLocation uBmDepth;
     private WebGLUniformLocation distortionStrength;
     private WebGLUniformLocation animation;
     private WebGLUniformLocation animation2;
-    private WebGlUniformTexture distortionMap;
     private WebGlUniformTexture terrainMarkerTexture;
     private WebGLUniformLocation terrainMarker2DPoints;
     private WebGLUniformLocation terrainMarkerAnimation;
@@ -66,8 +67,9 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     @Override
     protected void fillInternalBuffers(UiTerrainWaterTile uiTerrainWaterTile) {
         positions.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainWaterTile.getTerrainWaterTile().getVertices()));
+        reflection = webGlFacade.createWebGLTexture(uiTerrainWaterTile.getWaterConfig().getReflectionId(), "uReflection", "uReflectionScale", uiTerrainWaterTile.getWaterConfig().getReflectionScale());
         bumpMap = webGlFacade.createWebGLBumpMapTexture(uiTerrainWaterTile.getWaterConfig().getBmId(), "uBm", "uBmScale", uiTerrainWaterTile.getWaterConfig().getBmScale(), "uBmOnePixel");
-        distortionMap = webGlFacade.createWebGLTexture(uiTerrainWaterTile.getWaterConfig().getDistortionId(), "distortionMap", "uDistortionScale", uiTerrainWaterTile.getWaterConfig().getDistortionScale());
+        distortionMap = webGlFacade.createWebGLTexture(uiTerrainWaterTile.getWaterConfig().getDistortionId(), "uDistortionMap", "uDistortionScale", uiTerrainWaterTile.getWaterConfig().getDistortionScale());
     }
 
     @Override
@@ -86,9 +88,10 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         positions.activate();
 
+        reflection.overrideScale(uiTerrainWaterTile.getWaterConfig().getReflectionScale());
+        reflection.activate();
         bumpMap.overrideScale(uiTerrainWaterTile.getWaterConfig().getBmScale());
         bumpMap.activate();
-
         distortionMap.overrideScale(uiTerrainWaterTile.getWaterConfig().getDistortionScale());
         distortionMap.activate();
 

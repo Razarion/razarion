@@ -15,12 +15,14 @@ uniform float uLightSpecularHardness;
 uniform highp mat4 uNVMatrix;
 uniform vec3 uWaterColor;
 uniform float uTransparency;
-uniform sampler2D uBm; //TODO reflection
-uniform sampler2D distortionMap;
-uniform float uDistortionScale;
-uniform float uDistortionStrength;
+uniform sampler2D uReflection;
+uniform sampler2D uBm;
+uniform sampler2D uDistortionMap;
+uniform float uReflectionScale;
 uniform float uBmScale;
 uniform float uBmDepth;
+uniform float uDistortionScale;
+uniform float uDistortionStrength;
 uniform float uBmOnePixel;
 uniform float animation;
 uniform float animation2;
@@ -113,11 +115,11 @@ void main(void) {
     vec3 specular = setupSpecularLight(correctedLigtDirection, norm, uLightSpecularIntensity, uLightSpecularHardness) /* * shadowFactor */;
     gl_FragColor = vec4(ambient + diffuse + specular, uTransparency) + setupTerrainMarker();
     ////////////
-    vec2 distortion1 = texture2D(distortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(animation, 0)).rg * 2.0 - 1.0;
-    vec2 distortion2 = texture2D(distortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(-animation, animation)).rg * 2.0 - 1.0;
+    vec2 distortion1 = texture2D(uDistortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(animation, 0)).rg * 2.0 - 1.0;
+    vec2 distortion2 = texture2D(uDistortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(-animation, animation)).rg * 2.0 - 1.0;
     vec2 totalDistortion = distortion1 + distortion2;
 
-    vec2 reflectionCoord = (vWorldVertexPosition.xy)  * uBmScale + totalDistortion * uDistortionStrength/*  + vec2(0, animation)*/;
-    gl_FragColor = vec4(texture2D(uBm, reflectionCoord).rgb, uTransparency);
+    vec2 reflectionCoord = (vWorldVertexPosition.xy) * uReflectionScale + totalDistortion * uDistortionStrength/*  + vec2(0, animation)*/;
+    gl_FragColor = vec4(texture2D(uReflection, reflectionCoord).rgb, uTransparency);
 }
 
