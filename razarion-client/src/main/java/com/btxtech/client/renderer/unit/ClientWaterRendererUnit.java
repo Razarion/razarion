@@ -30,16 +30,15 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     @Inject
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute positions;
-    private LightUniforms lightUniforms;
+    private WebGLUniformLocation uLightDirection;
+    private WebGLUniformLocation uLightSpecularIntensity;
+    private WebGLUniformLocation uLightSpecularHardness;
     private WebGlUniformTexture reflection;
     private WebGlUniformTexture bumpMap;
     private WebGlUniformTexture distortionMap;
-    private WebGLUniformLocation uWaterColor;
     private WebGLUniformLocation uTransparency;
-    private WebGLUniformLocation uBmDepth;
     private WebGLUniformLocation distortionStrength;
     private WebGLUniformLocation animation;
-    private WebGLUniformLocation animation2;
     private WebGlUniformTexture terrainMarkerTexture;
     private WebGLUniformLocation terrainMarker2DPoints;
     private WebGLUniformLocation terrainMarkerAnimation;
@@ -48,13 +47,12 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     public void init() {
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.waterVertexShader(), Shaders.INSTANCE.waterFragmentShader()).enableTransformation(true));
         positions = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
-        lightUniforms = new LightUniforms(null, webGlFacade);
-        uWaterColor = webGlFacade.getUniformLocation("uWaterColor");
+        uLightDirection = webGlFacade.getUniformLocation("uLightDirection");
+        uLightSpecularIntensity = webGlFacade.getUniformLocation("uLightSpecularIntensity");
+        uLightSpecularHardness = webGlFacade.getUniformLocation("uLightSpecularHardness");
         uTransparency = webGlFacade.getUniformLocation("uTransparency");
-        uBmDepth = webGlFacade.getUniformLocation("uBmDepth");
         distortionStrength = webGlFacade.getUniformLocation("uDistortionStrength");
         animation = webGlFacade.getUniformLocation("animation");
-        animation2 = webGlFacade.getUniformLocation("animation2");
         terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
         terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
         terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
@@ -68,7 +66,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     protected void fillInternalBuffers(UiTerrainWaterTile uiTerrainWaterTile) {
         positions.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainWaterTile.getTerrainWaterTile().getVertices()));
         reflection = webGlFacade.createWebGLTexture(uiTerrainWaterTile.getWaterConfig().getReflectionId(), "uReflection", "uReflectionScale", uiTerrainWaterTile.getWaterConfig().getReflectionScale());
-        bumpMap = webGlFacade.createWebGLBumpMapTexture(uiTerrainWaterTile.getWaterConfig().getBmId(), "uBm", "uBmScale", uiTerrainWaterTile.getWaterConfig().getBmScale(), "uBmOnePixel");
+        bumpMap = webGlFacade.createWebGLTexture(uiTerrainWaterTile.getWaterConfig().getNormMapId(), "uNormMap");
         distortionMap = webGlFacade.createWebGLTexture(uiTerrainWaterTile.getWaterConfig().getDistortionId(), "uDistortionMap", "uDistortionScale", uiTerrainWaterTile.getWaterConfig().getDistortionScale());
     }
 
@@ -76,21 +74,19 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     public void draw(UiTerrainWaterTile uiTerrainWaterTile) {
         webGlFacade.useProgram();
 
-        lightUniforms.setLightUniforms(uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig(), webGlFacade);
+        webGlFacade.uniform3f(uLightDirection, webGlFacade.getVisualUiService().getLightDirection());
+        webGlFacade.uniform1f(uLightSpecularIntensity, uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig().getSpecularIntensity());
+        webGlFacade.uniform1f(uLightSpecularHardness, uiTerrainWaterTile.getWaterConfig().getSpecularLightConfig().getSpecularHardness());
 
-        webGlFacade.uniform3fNoAlpha(uWaterColor, uiTerrainWaterTile.getWaterConfig().getColor());
         webGlFacade.uniform1f(uTransparency, uiTerrainWaterTile.getWaterConfig().getTransparency());
-        webGlFacade.uniform1f(uBmDepth, uiTerrainWaterTile.getWaterConfig().getBmDepth());
         webGlFacade.uniform1f(distortionStrength, uiTerrainWaterTile.getWaterConfig().getDistortionStrength());
 
-    webGlFacade.uniform1f(animation, uiTerrainWaterTile.getWaterAnimation());
-        webGlFacade.uniform1f(animation2, uiTerrainWaterTile.getWaterAnimation2());
+        webGlFacade.uniform1f(animation, uiTerrainWaterTile.getWaterAnimation());
 
         positions.activate();
 
         reflection.overrideScale(uiTerrainWaterTile.getWaterConfig().getReflectionScale());
         reflection.activate();
-        bumpMap.overrideScale(uiTerrainWaterTile.getWaterConfig().getBmScale());
         bumpMap.activate();
         distortionMap.overrideScale(uiTerrainWaterTile.getWaterConfig().getDistortionScale());
         distortionMap.activate();

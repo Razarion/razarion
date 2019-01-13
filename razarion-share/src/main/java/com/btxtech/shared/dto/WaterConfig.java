@@ -11,14 +11,14 @@ public class WaterConfig {
     private double transparency;
     private Integer reflectionId;
     private double reflectionScale;
-    private Integer bmId;
-    private double bmScale;
-    private double bmDepth;
+    private Integer normMapId;
     private Integer distortionId;
     private double distortionScale;
     private double distortionStrength;
+    private double distortionDurationSeconds;
     private double groundLevel;
     private SpecularLightConfig specularLightConfig;
+    @Deprecated
     private Color color;
 
     public double getWaterLevel() {
@@ -57,30 +57,21 @@ public class WaterConfig {
         return this;
     }
 
-    public Integer getBmId() {
-        return bmId;
+    public Integer getNormMapId() {
+        return normMapId;
     }
 
-    public WaterConfig setBmId(Integer bmId) {
-        this.bmId = bmId;
+    public WaterConfig setNormMapId(Integer normMapId) {
+        this.normMapId = normMapId;
         return this;
     }
 
-    public double getBmScale() {
-        return bmScale;
+    public double getDistortionDurationSeconds() {
+        return distortionDurationSeconds;
     }
 
-    public WaterConfig setBmScale(double bmScale) {
-        this.bmScale = bmScale;
-        return this;
-    }
-
-    public double getBmDepth() {
-        return bmDepth;
-    }
-
-    public WaterConfig setBmDepth(double bmDepth) {
-        this.bmDepth = bmDepth;
+    public WaterConfig setDistortionDurationSeconds(double distortionDurationSeconds) {
+        this.distortionDurationSeconds = distortionDurationSeconds;
         return this;
     }
 
@@ -129,10 +120,12 @@ public class WaterConfig {
         return this;
     }
 
+    @Deprecated
     public Color getColor() {
         return color;
     }
 
+    @Deprecated
     public WaterConfig setColor(Color color) {
         this.color = color;
         return this;

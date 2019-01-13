@@ -33,9 +33,7 @@ public class WaterConfigEntity {
     private double waterTransparency;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private ImageLibraryEntity bmId;
-    private double bmScale;
-    private double bmDepth;
+    private ImageLibraryEntity normMapId; // TODO rename on db
     private double groundLevel;
     private SpecularLightConfigEmbeddable specularLightConfig;
     @AttributeOverrides({
@@ -49,19 +47,19 @@ public class WaterConfigEntity {
     public WaterConfig toWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
         waterConfig.setWaterLevel(waterLevel).setGroundLevel(groundLevel).setColor(Optional.ofNullable(color).orElse(new Color(0, 0, 1))).setTransparency(waterTransparency);
-        if (bmId != null) {
-            waterConfig.setBmId(bmId.getId());
+        if (normMapId != null) {
+            waterConfig.setNormMapId(normMapId.getId());
         }
-        waterConfig.setBmScale(bmScale).setBmDepth(bmDepth);
         if (specularLightConfig != null) {
             waterConfig.setSpecularLightConfig(specularLightConfig.toLightConfig());
         }
         // TODO ----------
         waterConfig.setReflectionId(88); // TODO
-        waterConfig.setReflectionScale(0.02); // TODO
+        waterConfig.setReflectionScale(0.01); // TODO
         waterConfig.setDistortionId(89); // TODO
         waterConfig.setDistortionScale(0.06); // TODO
         waterConfig.setDistortionStrength(0.11); // TODO
+        waterConfig.setDistortionDurationSeconds(20); // TODO
         // TODO ends -----
 
         return waterConfig;
@@ -72,9 +70,7 @@ public class WaterConfigEntity {
         groundLevel = waterConfig.getGroundLevel();
         color = waterConfig.getColor();
         waterTransparency = waterConfig.getTransparency();
-        bmId = imagePersistence.getImageLibraryEntity(waterConfig.getBmId());
-        bmScale = waterConfig.getBmScale();
-        bmDepth = waterConfig.getBmDepth();
+        normMapId = imagePersistence.getImageLibraryEntity(waterConfig.getNormMapId());
         specularLightConfig.fromLightConfig(waterConfig.getSpecularLightConfig());
     }
 

@@ -49,15 +49,7 @@ public class UiTerrainWaterTile {
     }
 
     public double getWaterAnimation() {
-        return getWaterAnimation(System.currentTimeMillis(), 20000, 0);
-    }
-
-    public double getWaterAnimation2() {
-        return getWaterAnimation(System.currentTimeMillis(), 20000, 5000);
-    }
-
-    private double getWaterAnimation(long millis, int durationMs, int offsetMs) {
-        return SignalGenerator.sawtooth(millis, durationMs, offsetMs);
+        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int)(waterConfig.getDistortionDurationSeconds() * 1000.0), 0);
     }
 
     public void dispose() {

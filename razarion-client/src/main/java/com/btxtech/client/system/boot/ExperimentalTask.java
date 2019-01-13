@@ -123,7 +123,7 @@ public class ExperimentalTask extends AbstractStartupTask {
 
     private WaterConfig defaultWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
-        waterConfig.setGroundLevel(-2).setBmDepth(7).setTransparency(0.65).setBmId(272480).setBmDepth(20).setBmScale(0.02);
+        waterConfig.setGroundLevel(-2).setTransparency(0.65).setNormMapId(272480);
         SpecularLightConfig specularLightConfig = new SpecularLightConfig();
         specularLightConfig.setSpecularIntensity(1.0).setSpecularHardness(0.5);
         return waterConfig.setSpecularLightConfig(specularLightConfig);

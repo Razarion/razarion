@@ -58,15 +58,7 @@ public class WaterSidebar extends LeftSideBarContent {
     private NumberInput reflectionScale;
     @Inject
     @DataField
-    private ImageItemWidget bmId;
-    @Inject
-    @Bound
-    @DataField
-    private NumberInput bmScale;
-    @Inject
-    @Bound
-    @DataField
-    private NumberInput bmDepth;
+    private ImageItemWidget normMapId;
     @Inject
     @DataField
     private ImageItemWidget distortionId;
@@ -81,6 +73,10 @@ public class WaterSidebar extends LeftSideBarContent {
     @Inject
     @Bound
     @DataField
+    private NumberInput distortionDurationSeconds;
+    @Inject
+    @Bound
+    @DataField
     private NumberInput groundLevel;
 
     @PostConstruct
@@ -92,8 +88,8 @@ public class WaterSidebar extends LeftSideBarContent {
             terrainTypeService.getWaterConfig().setReflectionId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
-        bmId.setImageId(terrainTypeService.getWaterConfig().getBmId(), imageId -> {
-            terrainTypeService.getWaterConfig().setBmId(imageId);
+        normMapId.setImageId(terrainTypeService.getWaterConfig().getNormMapId(), imageId -> {
+            terrainTypeService.getWaterConfig().setNormMapId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
         distortionId.setImageId(terrainTypeService.getWaterConfig().getDistortionId(), imageId -> {
