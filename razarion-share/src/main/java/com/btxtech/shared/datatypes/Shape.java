@@ -60,8 +60,8 @@ public class Shape {
         return distance;
     }
 
-    private Vertex toVertex(DecimalPosition xyPosition) {
-        return new Vertex(xyPosition.getX(), 0, xyPosition.getY());
+    private Vertex toVertex(DecimalPosition xzPosition) {
+        return new Vertex(xzPosition.getX(), 0, xzPosition.getY());
     }
 
     public int getShiftableOffset() {
