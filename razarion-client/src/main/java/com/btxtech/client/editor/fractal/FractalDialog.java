@@ -85,6 +85,7 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
     @DataField
     private Element canvasElement = (Element) Browser.getDocument().createCanvasElement();
     private FractalDisplay fractalDisplay;
+    private ModalDialogPanel<FractalFieldConfig> modalDialogPanel;
 
     @Override
     public void init(FractalFieldConfig fractalFieldConfig) {
@@ -111,13 +112,14 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
                 }
                 fractalFieldConfig.setFractalField(fractalField);
                 fractalDisplay.display(fractalFieldConfig);
+                modalDialogPanel.setApplyValue(fractalFieldConfig);
             });
         }));
     }
 
     @Override
     public void customize(ModalDialogPanel<FractalFieldConfig> modalDialogPanel) {
-        // Ignore
+        this.modalDialogPanel = modalDialogPanel;
     }
 
     @EventHandler("fillButton")
@@ -125,6 +127,7 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
         FractalFieldConfig fractalFieldConfig = fractalConfigDataBinder.getModel();
         FractalFieldGenerator.createFlatField(fractalFieldConfig, fillValue.getValue());
         fractalDisplay.display(fractalFieldConfig);
+        modalDialogPanel.setApplyValue(fractalFieldConfig);
     }
 
     @EventHandler("generateButton")
@@ -133,6 +136,7 @@ public class FractalDialog extends Composite implements ModalDialogContent<Fract
         FractalFieldGenerator.createSaveFractalField(fractalFieldConfig);
         fractalFieldConfig.clampGeneration();
         fractalDisplay.display(fractalFieldConfig);
+        modalDialogPanel.setApplyValue(fractalFieldConfig);
     }
 
     @Override
