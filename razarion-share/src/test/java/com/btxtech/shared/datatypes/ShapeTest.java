@@ -1,8 +1,6 @@
-package com.btxtech.uiservice.terrain.slope;
+package com.btxtech.shared.datatypes;
 
-import com.btxtech.test.TestHelper;
-import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Shape;
+import com.btxtech.shared.TestHelper;
 import com.btxtech.shared.dto.SlopeShape;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,13 +10,13 @@ import java.util.List;
 
 /**
  * Created by Beat
- * 30.01.2016.
+ * on 14.01.2019.
  */
 public class ShapeTest {
 
     @Test
-    public void test2VerticesUpright() throws Exception {
-        Shape shape = new Shape(toShapeEntryEntity(new DecimalPosition(0, 100), new DecimalPosition(0, 0)));
+    public void test2VerticesUpright() {
+        Shape shape = new Shape(toSlopeShapeList(new DecimalPosition(0, 100), new DecimalPosition(0, 0)));
         Assert.assertEquals(2, shape.getVertexCount());
         Assert.assertEquals(0, shape.getShiftableCount());
         Assert.assertFalse(shape.isShiftableEntry(0));
@@ -29,8 +27,8 @@ public class ShapeTest {
     }
 
     @Test
-    public void test3VerticesUpright() throws Exception {
-        Shape shape = new Shape(toShapeEntryEntity(new DecimalPosition(0, 100), new DecimalPosition(0, 50), new DecimalPosition(0, 0)));
+    public void test3VerticesUpright() {
+        Shape shape = new Shape(toSlopeShapeList(new DecimalPosition(0, 100), new DecimalPosition(0, 50), new DecimalPosition(0, 0)));
         Assert.assertEquals(3, shape.getVertexCount());
         Assert.assertEquals(1, shape.getShiftableCount());
         Assert.assertFalse(shape.isShiftableEntry(0));
@@ -47,8 +45,8 @@ public class ShapeTest {
     }
 
     @Test
-    public void test3Vertices() throws Exception {
-        Shape shape = new Shape(toShapeEntryEntity(new DecimalPosition(0, 100), new DecimalPosition(50, 50), new DecimalPosition(100, 0)));
+    public void test3Vertices() {
+        Shape shape = new Shape(toSlopeShapeList(new DecimalPosition(0, 100), new DecimalPosition(50, 50), new DecimalPosition(100, 0)));
         Assert.assertEquals(3, shape.getVertexCount());
         Assert.assertEquals(1, shape.getShiftableCount());
         Assert.assertFalse(shape.isShiftableEntry(0));
@@ -65,8 +63,8 @@ public class ShapeTest {
     }
 
     @Test
-    public void test3Vertices2() throws Exception {
-        Shape shape = new Shape(toShapeEntryEntity(new DecimalPosition(0, 0), new DecimalPosition(50, -25), new DecimalPosition(100, -50)));
+    public void test3Vertices2() {
+        Shape shape = new Shape(toSlopeShapeList(new DecimalPosition(0, 0), new DecimalPosition(50, -25), new DecimalPosition(100, -50)));
         Assert.assertEquals(3, shape.getVertexCount());
         Assert.assertEquals(1, shape.getShiftableCount());
         Assert.assertFalse(shape.isShiftableEntry(0));
@@ -82,7 +80,7 @@ public class ShapeTest {
 
     }
 
-    public static List<SlopeShape> toShapeEntryEntity(DecimalPosition... positions) {
+    public static List<SlopeShape> toSlopeShapeList(DecimalPosition... positions) {
         List<SlopeShape> slopeShapes = new ArrayList<>();
         for (DecimalPosition position : positions) {
             slopeShapes.add(new SlopeShape(position, 0));

@@ -25,8 +25,12 @@ public class Shape {
         return entries.size() - 2;
     }
 
+    public int getShiftableOffset() {
+        return 1;
+    }
+
     public boolean isShiftableEntry(int index) {
-        return index < entries.size() - 1;
+        return index >= getShiftableOffset() && index < entries.size() - 1;
     }
 
     public Vertex getVertex(int index) {
@@ -62,10 +66,6 @@ public class Shape {
 
     private Vertex toVertex(DecimalPosition xzPosition) {
         return new Vertex(xzPosition.getX(), 0, xzPosition.getY());
-    }
-
-    public int getShiftableOffset() {
-        return 1;
     }
 
     public double getZInner() {

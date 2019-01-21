@@ -34,7 +34,6 @@ import com.btxtech.server.user.LoginCookieEntity;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.util.DateUtil;
-import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.I18nString;
@@ -524,7 +523,7 @@ public class ServerTestHelper {
             slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
             slopeConfigEntity1.setDefault();
             List<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2, 5), 1), new SlopeShape(new DecimalPosition(4, 10), 1), new SlopeShape(new DecimalPosition(7, 20), 1));
-            slopeConfigEntity1.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigLand).setInternalName("Land").setShape(shapeLand), imagePersistence);
+            slopeConfigEntity1.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigLand).setInternalName("Land").setSlopeShapes(shapeLand), imagePersistence);
             em.persist(slopeConfigEntity1);
 
 
@@ -543,7 +542,7 @@ public class ServerTestHelper {
             slopeSkeletonConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
             slopeConfigEntity2.setDefault();
             List<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5, 0.5), 0.5f), new SlopeShape(new DecimalPosition(10, -0.1), 1), new SlopeShape(new DecimalPosition(15, -0.8), 1), new SlopeShape(new DecimalPosition(20, -2), 1));
-            slopeConfigEntity2.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigWater).setInternalName("Water").setShape(shapeWater), imagePersistence);
+            slopeConfigEntity2.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigWater).setInternalName("Water").setSlopeShapes(shapeWater), imagePersistence);
             em.persist(slopeConfigEntity2);
             SLOPE_WATER_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();
         });

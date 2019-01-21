@@ -6,8 +6,6 @@ import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
-import elemental.events.Event;
-import elemental.events.EventListener;
 import elemental.events.MouseEvent;
 import elemental.svg.SVGGElement;
 import elemental.svg.SVGLineElement;
@@ -78,7 +76,7 @@ public class ShapeEditor implements Model {
         svg.getStyle().setCursor("all-scroll");
         svg.appendChild(group);
 
-        setup(slopeConfig.getShape());
+        setup(slopeConfig.getSlopeShapes());
     }
 
     private void setup(List<SlopeShape> shapeEntry) {
@@ -131,16 +129,16 @@ public class ShapeEditor implements Model {
     @Override
     public void createCorner(DecimalPosition position, Corner previous) {
         selectionChanged(null);
-        int index = slopeConfig.getShape().indexOf(previous.getSlopeShape());
-        slopeConfig.getShape().add(index + 1, new SlopeShape(position, 0));
-        setup(slopeConfig.getShape());
+        int index = slopeConfig.getSlopeShapes().indexOf(previous.getSlopeShape());
+        slopeConfig.getSlopeShapes().add(index + 1, new SlopeShape(position, 0));
+        setup(slopeConfig.getSlopeShapes());
     }
 
     public void deleteSelectedCorner() {
         SlopeShape slopeShape = selected.getSlopeShape();
         selectionChanged(null);
-        slopeConfig.getShape().remove(slopeShape);
-        setup(slopeConfig.getShape());
+        slopeConfig.getSlopeShapes().remove(slopeShape);
+        setup(slopeConfig.getSlopeShapes());
     }
 
     @Override

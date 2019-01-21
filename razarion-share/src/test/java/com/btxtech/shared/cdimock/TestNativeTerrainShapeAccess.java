@@ -35,7 +35,7 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
             loadedCallback.accept(terrainShape.toNativeTerrainShape());
         } else if (nativeTerrainShapeAccess != null) {
             terrainShape = new TerrainShape();
-            terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess,  () -> {
+            terrainShape.lazyInit(planetConfig, terrainTypeService, nativeTerrainShapeAccess, () -> {
                 loadedCallback.accept(terrainShape.toNativeTerrainShape());
             }, failCallback);
         } else {
@@ -47,13 +47,15 @@ public class TestNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
         this.planetConfig = planetConfig;
     }
 
-    public void setTerrainSlopePositions(List<TerrainSlopePosition> terrainSlopePositions) {
+    public void setTerrainSlopeAndObjectPositions(List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         this.terrainSlopePositions = terrainSlopePositions;
-        nativeTerrainShapeAccess = null;
-    }
-
-    public void setTerrainObjectPositions(List<TerrainObjectPosition> terrainObjectPositions) {
+        if (this.terrainSlopePositions == null) {
+            this.terrainSlopePositions = new ArrayList<>();
+        }
         this.terrainObjectPositions = terrainObjectPositions;
+        if (this.terrainObjectPositions == null) {
+            this.terrainObjectPositions = new ArrayList<>();
+        }
         nativeTerrainShapeAccess = null;
     }
 

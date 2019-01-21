@@ -32,7 +32,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
 
     protected void setupMasterEnvironment(StaticGameConfig staticGameConfig, List<TerrainSlopePosition> terrainSlopePositions) {
         setupEnvironment(staticGameConfig, GameTestContent.setupPlanetConfig());
-        getTestNativeTerrainShapeAccess().setTerrainSlopePositions(terrainSlopePositions);
+        getTestNativeTerrainShapeAccess().setTerrainSlopeAndObjectPositions(terrainSlopePositions, null);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
     }
 

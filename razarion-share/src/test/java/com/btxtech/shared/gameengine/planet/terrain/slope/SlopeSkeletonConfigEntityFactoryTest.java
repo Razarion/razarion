@@ -1,17 +1,18 @@
-package com.btxtech.uiservice.terrain.slope;
+package com.btxtech.shared.gameengine.planet.terrain.slope;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
  * Created by Beat
  * 30.01.2016.
  */
-@SuppressWarnings("NonJREEmulationClassesInClientCode")
 public class SlopeSkeletonConfigEntityFactoryTest {
 
     @Test
     public void testSimple1() throws Exception {
-//        Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(0, 0)));
+        Assert.fail("... TODO ...");
+//        Shape shape = new Shape(ShapeTest.toSlopeShapeList(new Index(0, 100), new Index(0, 0)));
 //        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(1, shape);
 //        slopeSkeletonFactory.sculpt(0, 0);
 //
@@ -25,7 +26,8 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 
     @Test
     public void testSimple2() throws Exception {
-//        Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(0, 50), new Index(0, 0)));
+        Assert.fail("... TODO ...");
+//        Shape shape = new Shape(ShapeTest.toSlopeShapeList(new Index(0, 100), new Index(0, 50), new Index(0, 0)));
 //        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(1, shape);
 //        slopeSkeletonFactory.sculpt(0, 0);
 //
@@ -40,7 +42,8 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 
     @Test
     public void testMultiple() throws Exception {
-//        Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(20, 50), new Index(40, 0)));
+        Assert.fail("... TODO ...");
+//        Shape shape = new Shape(ShapeTest.toSlopeShapeList(new Index(0, 100), new Index(20, 50), new Index(40, 0)));
 //        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(10, shape);
 //        slopeSkeletonFactory.sculpt(0, 0);
 //
@@ -57,7 +60,8 @@ public class SlopeSkeletonConfigEntityFactoryTest {
 
     @Test
     public void testMultipleFractal() throws Exception {
-//        Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(20, 50), new Index(40, 0)));
+        Assert.fail("... TODO ...");
+//        Shape shape = new Shape(ShapeTest.toSlopeShapeList(new Index(0, 100), new Index(20, 50), new Index(40, 0)));
 //        SlopeSkeletonFactory slopeSkeletonFactory = new SlopeSkeletonFactory(100, shape);
 //        slopeSkeletonFactory.sculpt(10, 1);
 //

@@ -1,7 +1,7 @@
-package com.btxtech.uiservice.terrain.slope;
+package com.btxtech.shared.gameengine.planet.terrain.slope;
 
-import com.btxtech.test.TestHelper;
 import com.btxtech.shared.datatypes.Vertex;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
@@ -10,12 +10,12 @@ import java.util.List;
  * Created by Beat
  * 29.01.2016.
  */
-@SuppressWarnings("NonJREEmulationClassesInClientCode")
 public class SlopeTest {
 
     @Test
     public void test3CornersUpright1() throws Exception {
-//        Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(0, 0)));
+        Assert.fail("... TODO ...");
+//        Shape shape = new Shape(ShapeTest.toSlopeShapeList(new Index(0, 100), new Index(0, 0)));
 //        ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
 //        shapeTemplate.sculpt(0, 0);
 //        Plateau plateau = new Plateau(shapeTemplate, 1000, Arrays.asList(new DecimalPosition(0, 0), new DecimalPosition(200, 0), new DecimalPosition(200, 200)));
@@ -35,7 +35,8 @@ public class SlopeTest {
 
     @Test
     public void test4CornersUpright() throws Exception {
-//        Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(0, 0)));
+        Assert.fail("... TODO ...");
+//        Shape shape = new Shape(ShapeTest.toSlopeShapeList(new Index(0, 100), new Index(0, 0)));
 //        ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
 //        shapeTemplate.sculpt(0, 0);
 //        Plateau plateau = new Plateau(shapeTemplate, 1000, Arrays.asList(new DecimalPosition(0, 0), new DecimalPosition(200, 0), new DecimalPosition(200, 200), new DecimalPosition(0, 200)));
@@ -77,7 +78,8 @@ public class SlopeTest {
 
     @Test
     public void test4CornersSlope() throws Exception {
-//        Shape shape = new Shape(ShapeTest.toShapeEntryEntity(new Index(0, 100), new Index(50, 50), new Index(100, 0)));
+        Assert.fail("... TODO ...");
+//        Shape shape = new Shape(ShapeTest.toSlopeShapeList(new Index(0, 100), new Index(50, 50), new Index(100, 0)));
 //        ShapeTemplate shapeTemplate = new ShapeTemplate(1, shape);
 //        shapeTemplate.sculpt(0, 0);
 //        Plateau plateau = new Plateau(shapeTemplate, 1000, Arrays.asList(new DecimalPosition(0, 0), new DecimalPosition(200, 0), new DecimalPosition(200, 200), new DecimalPosition(0, 200)));
@@ -91,9 +93,9 @@ public class SlopeTest {
 
     private void assertTriangle(List<Vertex> vertices, int triangleIndex, Vertex a, Vertex b, Vertex c) {
         int i = triangleIndex * 3;
-        TestHelper.assertVertex(a, vertices.get(i));
-        TestHelper.assertVertex(b, vertices.get(i + 1));
-        TestHelper.assertVertex(c, vertices.get(i + 2));
+        // TestHelper.assertVertex(a, vertices.get(i));
+        // TestHelper.assertVertex(b, vertices.get(i + 1));
+        // TestHelper.assertVertex(c, vertices.get(i + 2));
     }
 
     private void dumpTriangleAsserts(List<Vertex> vertices) {

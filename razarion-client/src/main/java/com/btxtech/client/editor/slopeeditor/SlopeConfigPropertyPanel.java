@@ -2,6 +2,7 @@ package com.btxtech.client.editor.slopeeditor;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.editor.fractal.FractalDialog;
+import com.btxtech.client.editor.fractal.FractalDialogDto;
 import com.btxtech.client.editor.framework.AbstractPropertyPanel;
 import com.btxtech.client.editor.widgets.SpecularLightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
@@ -147,7 +148,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Inject
     @DataField
     private Button restartPlanetButton;
-    private FractalFieldConfig fractalFieldConfig;
+    private FractalDialogDto fractalDialogDto;
 
     @Override
     public void init(SlopeConfig slopeConfig) {
@@ -167,13 +168,14 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @EventHandler("fractalFieldButton")
     private void fractalFieldButtonClick(ClickEvent event) {
         SlopeConfig slopeConfig = slopeConfigDataBinder.getModel();
-        if (fractalFieldConfig == null) {
-            fractalFieldConfig = slopeConfig.toFractalFiledConfig();
+        if (fractalDialogDto == null) {
+            fractalDialogDto = new FractalDialogDto();
+            fractalDialogDto.setFractalFieldConfig(slopeConfig.toFractalFiledConfig());
         }
-        modalDialogManager.show("Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
+        modalDialogManager.show("Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalDialogDto, (button, fractalDialogDto1) -> {
             if (button == DialogButton.Button.APPLY) {
                 SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
-                slopeConfig1.fromFractalFiledConfig(fractalFieldConfig1);
+                slopeConfig1.fromFractalFiledConfig(fractalDialogDto1.getFractalFieldConfig());
             }
         }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
@@ -232,12 +234,11 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
         SlopeConfig slopeConfig = getConfigObject();
-        FractalFieldConfig fractalFieldConfig = this.fractalFieldConfig;
-        if (fractalFieldConfig == null) {
-            fractalFieldConfig = slopeConfig.toFractalFiledConfig();
+        if(fractalDialogDto == null) {
+            return;
         }
-        SlopeModeler.sculpt(slopeConfig, fractalFieldConfig);
-        renderService.fillBuffers();  // May not working
+        SlopeModeler.sculpt(slopeConfig, fractalDialogDto.getFractalField());
+        renderService.fillBuffers();  // TODO May not working
     }
 
     @EventHandler("restartPlanetButton")

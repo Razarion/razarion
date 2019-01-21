@@ -153,24 +153,24 @@ public class GroundSidebar extends LeftSideBarContent {
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
-        modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
-            if (button == DialogButton.Button.APPLY) {
-                GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
-                groundConfig1.fromSplattingFractalFiledConfig(fractalFieldConfig);
-            }
-        }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+//    TODO    modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
+// TODO           if (button == DialogButton.Button.APPLY) {
+// TODO               GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
+// TODO               groundConfig1.fromSplattingFractalFiledConfig(fractalFieldConfig);
+// TODO           }
+// TODO       }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
     @EventHandler("fractalHeight")
     private void fractalHeightButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
         final FractalFieldConfig fractalFieldConfig = groundConfig.toHeightFractalFiledConfig();
-        modalDialogManager.show("Height Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
-            if (button == DialogButton.Button.APPLY) {
-                GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
-                groundConfig1.fromHeightFractalFiledConfig(fractalFieldConfig);
-            }
-        }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
+// TODO       modalDialogManager.show("Height Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
+// TODO           if (button == DialogButton.Button.APPLY) {
+// TODO               GroundConfig groundConfig1 = groundConfigDataBinder.getModel();
+// TODO               groundConfig1.fromHeightFractalFiledConfig(fractalFieldConfig);
+// TODO           }
+// TODO       }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
 
 }

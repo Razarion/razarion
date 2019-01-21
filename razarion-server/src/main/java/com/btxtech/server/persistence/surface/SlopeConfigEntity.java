@@ -116,13 +116,13 @@ public class SlopeConfigEntity {
         slopeConfig.setFractalRoughness(fractalRoughness);
         slopeConfig.setInternalName(internalName);
         slopeConfig.setSlopeSkeletonConfig(toSlopeSkeleton());
-        slopeConfig.setShape(toSlopeShapes());
+        slopeConfig.setSlopeShapes(toSlopeShapes());
         return slopeConfig;
     }
 
     public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence) {
         shape.clear();
-        for (SlopeShape slopeShape : slopeConfig.getShape()) {
+        for (SlopeShape slopeShape : slopeConfig.getSlopeShapes()) {
             SlopeShapeEntity slopeShapeEntity = new SlopeShapeEntity();
             slopeShapeEntity.fromSlopeShape(slopeShape);
             shape.add(slopeShapeEntity);

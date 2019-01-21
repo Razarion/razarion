@@ -77,6 +77,10 @@ public class WaterSidebar extends LeftSideBarContent {
     @Inject
     @Bound
     @DataField
+    private NumberInput waterLevel;
+    @Inject
+    @Bound
+    @DataField
     private NumberInput groundLevel;
 
     @PostConstruct

@@ -114,7 +114,6 @@ public class GroundConfig {
         fractalFieldConfig.setXCount(groundSkeletonConfig.getSplattingXCount());
         fractalFieldConfig.setYCount(groundSkeletonConfig.getSplattingYCount());
         fractalFieldConfig.setFractalRoughness(splattingFractalRoughness);
-        fractalFieldConfig.setFractalField(groundSkeletonConfig.getSplattings());
         return fractalFieldConfig;
     }
 
@@ -126,7 +125,6 @@ public class GroundConfig {
         splattingFractalRoughness = fractalFieldConfig.getFractalRoughness();
         groundSkeletonConfig.setSplattingXCount(fractalFieldConfig.getXCount());
         groundSkeletonConfig.setSplattingYCount(fractalFieldConfig.getYCount());
-        groundSkeletonConfig.setSplattings(fractalFieldConfig.getClampedFractalField());
     }
 
     public FractalFieldConfig toHeightFractalFiledConfig() {
@@ -138,7 +136,6 @@ public class GroundConfig {
         fractalFieldConfig.setXCount(groundSkeletonConfig.getHeightXCount());
         fractalFieldConfig.setYCount(groundSkeletonConfig.getHeightYCount());
         fractalFieldConfig.setFractalRoughness(heightFractalRoughness);
-        fractalFieldConfig.setFractalField(groundSkeletonConfig.getHeights());
         return fractalFieldConfig;
     }
 
@@ -150,6 +147,5 @@ public class GroundConfig {
         heightFractalRoughness = fractalFieldConfig.getFractalRoughness();
         groundSkeletonConfig.setHeightXCount(fractalFieldConfig.getXCount());
         groundSkeletonConfig.setHeightYCount(fractalFieldConfig.getYCount());
-        groundSkeletonConfig.setHeights(fractalFieldConfig.getClampedFractalField());
     }
 }

@@ -1,8 +1,6 @@
-package com.btxtech.uiservice.utils;
+package com.btxtech.shared.utils;
 
-import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.FractalFieldConfig;
-import com.btxtech.shared.utils.MathHelper;
 
 /**
  * Created by Beat
@@ -35,7 +33,7 @@ public class FractalFieldGenerator {
         values[divisions][divisions] = randomInit();
     }
 
-    public void process() {
+    private void process() {
         double rough = roughness;
         for (int i = 0; i < log2; i++) {
             int side = 1 << (log2 - i);
@@ -56,16 +54,8 @@ public class FractalFieldGenerator {
         }
     }
 
-    public double[][] getValues() {
-        return values;
-    }
-
-    public double getValue(int x, int y) {
+    private double getValue(int x, int y) {
         return values[x][y];
-    }
-
-    public double getValue(Index index) {
-        return values[index.getX()][index.getY()];
     }
 
     private void square(int x, int y, int side, double scale) {
@@ -109,12 +99,8 @@ public class FractalFieldGenerator {
         return (Math.random() - 0.5) * delta * scale;
     }
 
-    public double clamp(double value) {
+    private double clamp(double value) {
         return MathHelper.clamp(value, minValue, maxValue);
-    }
-
-    public int getVerticesPerEdge() {
-        return verticesPerEdge;
     }
 
     private void clearValues() {
@@ -125,7 +111,7 @@ public class FractalFieldGenerator {
         }
     }
 
-    public static int nearestPossibleNumber(int number1, int number2) {
+    private static int nearestPossibleNumber(int number1, int number2) {
         int maxNumber = Math.max(number1, number2);
 
         if (MathHelper.isPowerOfTwo(maxNumber - 1)) {
@@ -135,7 +121,19 @@ public class FractalFieldGenerator {
         return MathHelper.nearestPowerOf2Number(maxNumber) + 1;
     }
 
-    public static void createSaveFractalField(FractalFieldConfig fractalFieldConfig) {
+    private static void clamp(FractalFieldConfig fractalFieldConfig, double[][] clampedFractalField) {
+        if (fractalFieldConfig.getClampMax() < 1.0 && fractalFieldConfig.getClampMin() > 0.0) {
+            double minEdge = InterpolationUtils.mix(fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax(), fractalFieldConfig.getClampMin());
+            double maxEdge = InterpolationUtils.mix(fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax(), fractalFieldConfig.getClampMax());
+            for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
+                for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
+                    clampedFractalField[x][y] = MathHelper.clamp(clampedFractalField[x][y], minEdge, maxEdge, fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax());
+                }
+            }
+        }
+    }
+
+    public static double[][] createFractalField(FractalFieldConfig fractalFieldConfig) {
         // long time = System.currentTimeMillis();
         FractalFieldGenerator fractalFieldGenerator = new FractalFieldGenerator(nearestPossibleNumber(fractalFieldConfig.getXCount(), fractalFieldConfig.getYCount()), fractalFieldConfig.getFractalRoughness(), fractalFieldConfig.getFractalMin(), fractalFieldConfig.getFractalMax());
         // time = System.currentTimeMillis();
@@ -147,10 +145,11 @@ public class FractalFieldGenerator {
             }
         }
 
-        fractalFieldConfig.setFractalField(values);
+        clamp(fractalFieldConfig, values);
+        return values;
     }
 
-    public static void createFlatField(FractalFieldConfig fractalFieldConfig, double value) {
+    public static double[][] createFlatField(FractalFieldConfig fractalFieldConfig, double value) {
         double[][] values = new double[fractalFieldConfig.getXCount()][fractalFieldConfig.getYCount()];
         for (int x = 0; x < fractalFieldConfig.getXCount(); x++) {
             for (int y = 0; y < fractalFieldConfig.getYCount(); y++) {
@@ -158,6 +157,6 @@ public class FractalFieldGenerator {
             }
         }
 
-        fractalFieldConfig.setFractalField(values);
+        return values;
     }
 }

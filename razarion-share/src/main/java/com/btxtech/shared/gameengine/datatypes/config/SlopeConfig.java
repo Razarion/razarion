@@ -16,7 +16,7 @@ import java.util.List;
 public class SlopeConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
-    private List<SlopeShape> shape;
+    private List<SlopeShape> slopeShapes;
     private SlopeSkeletonConfig slopeSkeletonConfig;
     private double fractalMin;
     private double fractalMax;
@@ -42,12 +42,12 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public List<SlopeShape> getShape() {
-        return shape;
+    public List<SlopeShape> getSlopeShapes() {
+        return slopeShapes;
     }
 
-    public SlopeConfig setShape(List<SlopeShape> shape) {
-        this.shape = shape;
+    public SlopeConfig setSlopeShapes(List<SlopeShape> slopeShapes) {
+        this.slopeShapes = slopeShapes;
         return this;
     }
 
@@ -116,7 +116,7 @@ public class SlopeConfig implements ObjectNameIdProvider {
         fractalFieldConfig.setClampMin(fractalClampMin);
         fractalFieldConfig.setClampMax(fractalClampMax);
         fractalFieldConfig.setXCount(slopeSkeletonConfig.getSegments());
-        Shape shape = new Shape(this.shape);
+        Shape shape = new Shape(this.slopeShapes);
         fractalFieldConfig.setYCount(shape.getShiftableCount());
         fractalFieldConfig.setFractalRoughness(fractalRoughness);
         return fractalFieldConfig;

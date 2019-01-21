@@ -16,8 +16,6 @@ public class FractalFieldConfig {
     private double fractalRoughness;
     private double clampMin;
     private double clampMax;
-    private double[][] fractalField;
-    private double[][] clampedFractalField;
 
     public int getXCount() {
         return xCount;
@@ -73,33 +71,5 @@ public class FractalFieldConfig {
 
     public void setClampMax(Double clampMax) {
         this.clampMax = clampMax;
-    }
-
-    public void setFractalField(double[][] fractalField) {
-        this.fractalField = fractalField;
-        clampedFractalField = null;
-    }
-
-    public double[][] getClampedFractalField() {
-        if (clampedFractalField != null) {
-            return clampedFractalField;
-        } else {
-            return fractalField;
-        }
-    }
-
-    public void clampGeneration() {
-        if (this.clampMax < 1.0 || this.clampMin > 0.0) {
-            double minEdge = InterpolationUtils.mix(fractalMin, fractalMax, clampMin);
-            double maxEdge = InterpolationUtils.mix(fractalMin, fractalMax, clampMax);
-            clampedFractalField = new double[xCount][yCount];
-            for (int x = 0; x < xCount; x++) {
-                for (int y = 0; y < yCount; y++) {
-                    clampedFractalField[x][y] = MathHelper.clamp(fractalField[x][y], minEdge, maxEdge, fractalMin, fractalMax);
-                }
-            }
-        } else {
-            clampedFractalField = null;
-        }
     }
 }
