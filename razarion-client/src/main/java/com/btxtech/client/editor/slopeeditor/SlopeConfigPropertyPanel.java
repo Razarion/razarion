@@ -11,7 +11,6 @@ import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.utils.BooleanNullConverter;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
@@ -154,8 +153,14 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     public void init(SlopeConfig slopeConfig) {
         slopeConfigDataBinder.setModel(slopeConfig);
         terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
-        textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId));
-        bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> slopeConfig.getSlopeSkeletonConfig().setBmId(imageId));
+        textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> {
+            slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId);
+            terrainUiService.onEditorTerrainChanged();
+        });
+        bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> {
+            slopeConfig.getSlopeSkeletonConfig().setBmId(imageId);
+            terrainUiService.onEditorTerrainChanged();
+        });
         specularLightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());
         shapeEditor.init(svgElement, slopeConfig, this, 10.0);
     }
@@ -234,7 +239,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
         SlopeConfig slopeConfig = getConfigObject();
-        if(fractalDialogDto == null) {
+        if (fractalDialogDto == null) {
             return;
         }
         SlopeModeler.sculpt(slopeConfig, fractalDialogDto.getFractalField());

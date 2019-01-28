@@ -39,6 +39,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private WebGlUniformTexture bottomTexture;
     private WebGlUniformTexture bottomBm;
     private LightUniforms lightUniforms;
+    private SpecularUniforms specularUniforms;
     private WebGLUniformLocation uBottomBmDepth;
     private WebGLUniformLocation uSplattingFadeThreshold;
     private WebGLUniformLocation uSplattingOffset;
@@ -55,6 +56,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         splattings = webGlFacade.createFloat32ArrayShaderAttribute(WebGlFacade.A_GROUND_SPLATTING);
         lightUniforms = new LightUniforms(null, webGlFacade);
+        specularUniforms = new SpecularUniforms(null, webGlFacade);
         uBottomBmDepth = webGlFacade.getUniformLocation("uBottomBmDepth");
         uSplattingFadeThreshold = webGlFacade.getUniformLocation("uSplattingFadeThreshold");
         uSplattingOffset = webGlFacade.getUniformLocation("uSplattingOffset");
@@ -85,7 +87,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     public void draw(UiTerrainTile uiTerrainTile) {
         webGlFacade.useProgram();
 
-        lightUniforms.setLightUniforms(uiTerrainTile.getGroundLightConfig(), webGlFacade);
+        lightUniforms.setLightUniforms(webGlFacade);
+        specularUniforms.setUniforms(uiTerrainTile.getSpecularLightConfig(), webGlFacade);
         webGlFacade.uniform1f(uBottomBmDepth, uiTerrainTile.getBottomBmDepth());
         webGlFacade.uniform1f(uSplattingFadeThreshold, uiTerrainTile.getSplattingFadeThreshold());
         webGlFacade.uniform1f(uSplattingOffset, uiTerrainTile.getSplattingOffset());

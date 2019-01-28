@@ -135,7 +135,7 @@ public class UiTerrainTile {
         return groundSkeletonConfig.getBottomBmScale();
     }
 
-    public SpecularLightConfig getGroundLightConfig() {
+    public SpecularLightConfig getSpecularLightConfig() {
         return groundSkeletonConfig.getSpecularLightConfig();
     }
 

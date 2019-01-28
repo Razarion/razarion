@@ -37,16 +37,18 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private Float32ArrayShaderAttribute groundSplatting;
     private WebGlUniformTexture slopeTexture;
     private WebGlUniformTexture uSlopeBm;
+    private LightUniforms lightUniforms;
+    private SpecularUniforms groundSpecularUniforms;
     private WebGlUniformTexture groundSplattingTexture;
     private WebGlUniformTexture groundTopTexture;
-    private WebGlUniformTexture groundTopBm;
     private WebGlUniformTexture groundBottomTexture;
     private WebGlUniformTexture groundBottomBm;
-    private LightUniforms slopeLightUniforms;
-    private LightUniforms groundLightUniforms;
+    private WebGLUniformLocation uGroundSplattingFadeThreshold;
+    private WebGLUniformLocation uGroundSplattingOffset;
+    private WebGLUniformLocation uGroundSplattingGroundBmMultiplicator;
+    private SpecularUniforms slopeSpecularUniforms;
     private WebGLUniformLocation slopeOriented;
     private WebGLUniformLocation uSlopeBmDepth;
-    private WebGLUniformLocation uGroundTopBmDepth;
     private WebGLUniformLocation uGroundBottomBmDepth;
     private WebGLUniformLocation uHasWater;
     private WebGLUniformLocation uWaterLevel;
@@ -63,11 +65,14 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         tangents = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_TANGENT);
         slopeFactors = webGlFacade.createFloat32ArrayShaderAttribute("aSlopeFactor");
         groundSplatting = webGlFacade.createFloat32ArrayShaderAttribute("aGroundSplatting");
-        slopeLightUniforms = new LightUniforms("Slope", webGlFacade);
-        groundLightUniforms = new LightUniforms("Ground", webGlFacade);
+        lightUniforms = new LightUniforms(null, webGlFacade);
+        uGroundSplattingFadeThreshold = webGlFacade.getUniformLocation("uGroundSplattingFadeThreshold");
+        uGroundSplattingOffset = webGlFacade.getUniformLocation("uGroundSplattingOffset");
+        uGroundSplattingGroundBmMultiplicator = webGlFacade.getUniformLocation("uGroundSplattingGroundBmMultiplicator");
+        slopeSpecularUniforms = new SpecularUniforms("Slope", webGlFacade);
+        groundSpecularUniforms = new SpecularUniforms("Ground", webGlFacade);
         slopeOriented = webGlFacade.getUniformLocation("slopeOriented");
         uSlopeBmDepth = webGlFacade.getUniformLocation("uSlopeBmDepth");
-        uGroundTopBmDepth = webGlFacade.getUniformLocation("uGroundTopBmDepth");
         uGroundBottomBmDepth = webGlFacade.getUniformLocation("uGroundBottomBmDepth");
         uHasWater = webGlFacade.getUniformLocation("uHasWater");
         uWaterLevel = webGlFacade.getUniformLocation("uWaterLevel");
@@ -83,7 +88,6 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         uSlopeBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getBmId(), "uSlopeBm", "uSlopeBmScale", uiTerrainSlopeTile.getBmScale(), "uSlopeBmOnePixel");
 
         groundTopTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getTopTextureId(), "uGroundTopTexture", "uGroundTopTextureScale", uiTerrainSlopeTile.getUiTerrainTile().getTopTextureScale());
-        groundTopBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getUiTerrainTile().getTopTextureId(), "uGroundTopBm", "uGroundTopBmScale", uiTerrainSlopeTile.getUiTerrainTile().getBottomBmScale(), "uGroundTopBmOnePixel"); // TODO remove
         groundSplattingTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getSplattingId(), "uGroundSplatting", "uGroundSplattingScale", uiTerrainSlopeTile.getUiTerrainTile().getSplattingScale());
         groundBottomTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureId(), "uGroundBottomTexture", "uGroundBottomTextureScale", uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureScale());
         groundBottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getUiTerrainTile().getBottomBmId(), "uGroundBottomBm", "uGroundBottomBmScale", uiTerrainSlopeTile.getUiTerrainTile().getBottomBmScale(), "uGroundBottomBmOnePixel");
@@ -100,16 +104,19 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     protected void draw(UiTerrainSlopeTile uiTerrainSlopeTile) {
         webGlFacade.useProgram();
 
-        slopeLightUniforms.setLightUniforms(uiTerrainSlopeTile.getSlopeLightConfig(), webGlFacade);
-        groundLightUniforms.setLightUniforms(uiTerrainSlopeTile.getUiTerrainTile().getGroundLightConfig(), webGlFacade);
-
-        webGlFacade.uniform1b(slopeOriented, uiTerrainSlopeTile.isSlopeOriented());
+        lightUniforms.setLightUniforms(webGlFacade);
 
         // Slope
+        slopeSpecularUniforms.setUniforms(uiTerrainSlopeTile.getSlopeLightConfig(), webGlFacade);
         webGlFacade.uniform1f(uSlopeBmDepth, uiTerrainSlopeTile.getBmDepth());
         //Ground
-        webGlFacade.uniform1f(uGroundTopBmDepth, uiTerrainSlopeTile.getUiTerrainTile().getBottomBmDepth()); // TODO remove
+        groundSpecularUniforms.setUniforms(uiTerrainSlopeTile.getUiTerrainTile().getSpecularLightConfig(), webGlFacade);
         webGlFacade.uniform1f(uGroundBottomBmDepth, uiTerrainSlopeTile.getUiTerrainTile().getBottomBmDepth());
+        webGlFacade.uniform1f(uGroundSplattingFadeThreshold, uiTerrainSlopeTile.getUiTerrainTile().getSplattingFadeThreshold());
+        webGlFacade.uniform1f(uGroundSplattingOffset, uiTerrainSlopeTile.getUiTerrainTile().getSplattingOffset());
+        webGlFacade.uniform1f(uGroundSplattingGroundBmMultiplicator, uiTerrainSlopeTile.getUiTerrainTile().getSplattingGroundBmMultiplicator());
+        webGlFacade.uniform1b(slopeOriented, uiTerrainSlopeTile.isSlopeOriented());
+
         // Water
         webGlFacade.uniform1b(uHasWater, uiTerrainSlopeTile.hasWater());
         webGlFacade.uniform1f(uWaterLevel, uiTerrainSlopeTile.getWaterLevel());
@@ -128,15 +135,12 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
         groundTopTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getTopTextureScale());
         groundTopTexture.activate();
-        groundTopBm.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getTopTextureScale());  // TODO remove
-        groundTopBm.activate();
         groundSplattingTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getSplattingScale());
         groundSplattingTexture.activate();
         groundBottomTexture.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getBottomTextureScale());
         groundBottomTexture.activate();
         groundBottomBm.overrideScale(uiTerrainSlopeTile.getUiTerrainTile().getBottomBmScale());
         groundBottomBm.activate();
-
         webGlFacade.activateReceiveShadow();
 
         if (inGameQuestVisualizationService.isQuestInGamePlaceVisualization()) {
