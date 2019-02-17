@@ -31,6 +31,11 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Integer bmId;
     private double bmScale;
     private double bmDepth;
+    private Integer slopeWaterSplattingId;
+    private double slopeWaterSplattingScale;
+    private double slopeWaterSplattingFactor;
+    private double slopeWaterSplattingFadeThreshold;
+    private double slopeWaterSplattingHeight;
 
     public int getId() {
         return id;
@@ -213,6 +218,51 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     public SlopeNode getSlopeNode(int column, int row) {
         return slopeNodes[column % segments][row];
+    }
+
+    public Integer getSlopeWaterSplattingId() {
+        return slopeWaterSplattingId;
+    }
+
+    public SlopeSkeletonConfig setSlopeWaterSplattingId(Integer slopeWaterSplattingId) {
+        this.slopeWaterSplattingId = slopeWaterSplattingId;
+        return this;
+    }
+
+    public double getSlopeWaterSplattingScale() {
+        return slopeWaterSplattingScale;
+    }
+
+    public SlopeSkeletonConfig setSlopeWaterSplattingScale(double slopeWaterSplattingScale) {
+        this.slopeWaterSplattingScale = slopeWaterSplattingScale;
+        return this;
+    }
+
+    public double getSlopeWaterSplattingFactor() {
+        return slopeWaterSplattingFactor;
+    }
+
+    public SlopeSkeletonConfig setSlopeWaterSplattingFactor(double slopeWaterSplattingFactor) {
+        this.slopeWaterSplattingFactor = slopeWaterSplattingFactor;
+        return this;
+    }
+
+    public double getSlopeWaterSplattingFadeThreshold() {
+        return slopeWaterSplattingFadeThreshold;
+    }
+
+    public SlopeSkeletonConfig setSlopeWaterSplattingFadeThreshold(double slopeWaterSplattingFadeThreshold) {
+        this.slopeWaterSplattingFadeThreshold = slopeWaterSplattingFadeThreshold;
+        return this;
+    }
+
+    public double getSlopeWaterSplattingHeight() {
+        return slopeWaterSplattingHeight;
+    }
+
+    public SlopeSkeletonConfig setSlopeWaterSplattingHeight(double slopeWaterSplattingHeight) {
+        this.slopeWaterSplattingHeight = slopeWaterSplattingHeight;
+        return this;
     }
 
     @Override

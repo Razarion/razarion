@@ -27,6 +27,7 @@ public class UiTerrainSlopeTile {
     private SlopeSkeletonConfig slopeSkeletonConfig;
     private TerrainSlopeTile terrainSlopeTile;
     private WaterConfig waterConfig;
+    private double slopeWaterSplattingFadeThreshold;
 
     public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
         this.uiTerrainTile = uiTerrainTile;

@@ -103,6 +103,9 @@ public class SlopeConfigEntity {
             slopeNodes[slopeSkeletonEntry.getSegmentIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry.toSlopeNode();
         }
         slopeSkeletonConfig.setSlopeNodes(slopeNodes);
+        // TODO --------------
+        slopeSkeletonConfig.setSlopeWaterSplattingId(20).setSlopeWaterSplattingScale(0.1).setSlopeWaterSplattingFactor(1).setSlopeWaterSplattingHeight(-0.1).setSlopeWaterSplattingFadeThreshold(0.8);
+        // TODO ends --------------
         return slopeSkeletonConfig;
     }
 

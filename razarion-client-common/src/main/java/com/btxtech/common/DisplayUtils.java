@@ -149,17 +149,17 @@ public class DisplayUtils {
         }
     }
 
-    public static String handleDouble4(Double value) {
+    public static String handleDouble3(Double value) {
         if (value != null) {
-            return NUMBER_FORMATTER_X_XXXX.format(value);
+            return NUMBER_FORMATTER_X_XXX.format(value);
         } else {
             return "-";
         }
     }
 
-    public static String handleDouble3(Double value) {
+    public static String handleDouble4(Double value) {
         if (value != null) {
-            return NUMBER_FORMATTER_X_XXX.format(value);
+            return NUMBER_FORMATTER_X_XXXX.format(value);
         } else {
             return "-";
         }

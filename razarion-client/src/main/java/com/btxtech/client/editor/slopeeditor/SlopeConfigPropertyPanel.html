@@ -2,11 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="../../../../../webapp/bootstrap-3.3.5-dist/css/bootstrap.min.css">
-    <script src="../../../../../webapp/jquery/jquery-1.11.3.min.js"></script>
-    <script src="../../../../../webapp/bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
-    <title></title>
 </head>
 <body>
 
@@ -19,8 +14,12 @@
         </td>
     </tr>
     <tr>
-        <td>Internal Name</td>
+        <td><label for="internalName">Internal Name</label></td>
         <td><input id="internalName" type="text"></td>
+    </tr>
+    <tr>
+        <td><label for="type">Internal Name</label></td>
+        <td><select id="type"></select></td>
     </tr>
     <tr>
         <td colspan="2">
@@ -50,7 +49,7 @@
         </td>
     </tr>
     <tr>
-        <td>Top Texture Scale</td>
+        <td><label for="textureScale">Texture Scale</label></td>
         <td><input id="textureScale" type="number" step="0.01"></td>
     </tr>
     <tr>
@@ -60,12 +59,42 @@
         </td>
     </tr>
     <tr>
-        <td>Bump Map Scale</td>
+        <td><label for="bmScale">Bump Map Scale</label></td>
         <td><input id="bmScale" type="number" step="0.01"></td>
     </tr>
     <tr>
-        <td>Bump Map Depth</td>
+        <td><label for="bmDepth">Bump Map Depth</label></td>
         <td><input id="bmDepth" type="range" min="0" max="50" step="0.01"></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">Slope Water Splatting (Only if it has water)</td>
+    </tr>
+    <tr>
+        <td>Slope Water Splatting</td>
+        <td>
+            <div id="slopeWaterSplattingId"></div>
+        </td>
+    </tr>
+    <tr>
+        <td><label for="slopeWaterSplattingScale">Slope Water Splatting Scale</label></td>
+        <td><input id="slopeWaterSplattingScale" type="number" min="0" step="0.01"></td>
+    </tr>
+    <tr>
+        <td><label for="slopeWaterSplattingFactor">Slope Water Splatting Factor</label></td>
+        <td><input id="slopeWaterSplattingFactor" type="number" min="0" step="0.01"></td>
+    </tr>
+    <tr>
+        <td><label for="slopeWaterSplattingFadeThreshold">Slope Water Splatting Fade Threshold</label></td>
+        <td><input id="slopeWaterSplattingFadeThreshold" type="number" min="0" step="0.01"> [m]</td>
+    </tr>
+    <tr>
+        <td><label for="slopeWaterSplattingHeight">Slope Water Splatting Height</label></td>
+        <td><input id="slopeWaterSplattingHeight" type="number" min="0" step="0.01"> [m]</td>
     </tr>
     <tr>
         <td colspan="2">
@@ -76,7 +105,7 @@
         <td colspan="2">Shape</td>
     </tr>
     <tr>
-        <td>Vertical Space</td>
+        <td><label for="verticalSpace">Vertical Space</label></td>
         <td><input id="verticalSpace" type="number" min="1.0" step="1"></td>
     </tr>
     <tr>
@@ -98,15 +127,15 @@
     </tr>
     <tr>
         <td colspan="2">
-            Selected: x<input id="selectedXPos" type="number" step="0.01" style="width: 50px;">
-            y<input id="selectedYPos" type="number" step="0.01" style="width: 50px;">
-            Slope Factor<input id="selectedSlopeFactor" type="number" min="0" step="0.01" max="1" style="width: 50px;">
+            <label for="selectedXPos">Selected: x</label><input id="selectedXPos" type="number" step="0.01" style="width: 60px;">
+            <label for="selectedZPos">z</label><input id="selectedZPos" type="number" step="0.01" style="width: 60px;">
+            <label for="selectedSlopeFactor">Slope Factor</label><input id="selectedSlopeFactor" type="number" min="0" step="0.01" max="1" style="width: 50px;">
             <button id="deleteSelected">Delete</button>
         </td>
     </tr>
     <tr>
         <td colspan="2">
-            Helper line<input id="helperLine" type="number">
+            <label for="helperLine">Helper line</label><input id="helperLine" type="number">
         </td>
     </tr>
     <tr>
@@ -118,7 +147,7 @@
         <td colspan="2">Ground Transition</td>
     </tr>
     <tr>
-        <td>Slope Ground Transition</td>
+        <td><label for="slopeOriented">Slope Ground Transition</label></td>
         <td><input id="slopeOriented" type="checkbox">Slope orientated</td>
     </tr>
     <tr>
@@ -127,15 +156,15 @@
         </td>
     </tr>
     <tr>
-        <td>Outer limit (game engin)</td>
+        <td><label for="outerLineGameEngine">Outer limit (game engin)</label></td>
         <td><input id="outerLineGameEngine" type="number" min="0"></td>
     </tr>
     <tr>
-        <td>Delimiter coast water/land (Game engin)</td>
+        <td><label for="coastDelimiterLineGameEngine">Delimiter coast water/land (Game engine)</label></td>
         <td><input id="coastDelimiterLineGameEngine" type="number" min="0"></td>
     </tr>
     <tr>
-        <td>Inner limit (game engin)</td>
+        <td><label for="innerLineGameEngine">Inner limit (game engine)</label></td>
         <td><input id="innerLineGameEngine" type="number" min="0"></td>
     </tr>
     <tr>
@@ -145,7 +174,8 @@
     </tr>
     <tr>
         <td colspan="2">
-            <button id="sculpt">Sculpt</button> (Call before save!)
+            <button id="sculpt">Sculpt</button>
+            (Call before save!)
         </td>
     </tr>
     <tr>

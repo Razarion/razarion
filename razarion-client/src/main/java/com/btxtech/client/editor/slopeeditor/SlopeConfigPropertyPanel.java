@@ -11,6 +11,7 @@ import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.utils.BooleanNullConverter;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
@@ -25,6 +26,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.ValueListBox;
 import elemental.client.Browser;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.CheckboxInput;
@@ -37,6 +39,7 @@ import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
+import java.util.Arrays;
 
 /**
  * Created by Beat
@@ -74,6 +77,9 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private TextBox internalName;
     @Inject
     @DataField
+    private ValueListBox<SlopeSkeletonConfig.Type> type;
+    @Inject
+    @DataField
     private SpecularLightWidget specularLightConfig;
     @Inject
     @DataField
@@ -93,6 +99,25 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Bound(property = "slopeSkeletonConfig.bmDepth")
     @DataField
     private NumberInput bmDepth;
+    @Inject
+    @DataField
+    private ImageItemWidget slopeWaterSplattingId;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.slopeWaterSplattingScale")
+    @DataField
+    private NumberInput slopeWaterSplattingScale;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.slopeWaterSplattingFactor")
+    @DataField
+    private NumberInput slopeWaterSplattingFactor;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.slopeWaterSplattingFadeThreshold")
+    @DataField
+    private NumberInput slopeWaterSplattingFadeThreshold;
+    @Inject
+    @Bound(property = "slopeSkeletonConfig.slopeWaterSplattingHeight")
+    @DataField
+    private NumberInput slopeWaterSplattingHeight;
     @Inject
     @Bound(property = "slopeSkeletonConfig.verticalSpace")
     @DataField
@@ -122,7 +147,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private CommaDoubleBox selectedXPos;
     @Inject
     @DataField
-    private CommaDoubleBox selectedYPos;
+    private CommaDoubleBox selectedZPos;
     @Inject
     @DataField
     private CommaDoubleBox selectedSlopeFactor;
@@ -152,6 +177,11 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     @Override
     public void init(SlopeConfig slopeConfig) {
         slopeConfigDataBinder.setModel(slopeConfig);
+        if (slopeConfig.getSlopeSkeletonConfig().getType() != null) {
+            type.setValue(slopeConfig.getSlopeSkeletonConfig().getType());
+        }
+        type.setAcceptableValues(Arrays.asList(SlopeSkeletonConfig.Type.values()));
+        type.addValueChangeHandler(event -> slopeConfig.getSlopeSkeletonConfig().setType(event.getValue()));
         terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
         textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> {
             slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId);
@@ -162,6 +192,10 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
             terrainUiService.onEditorTerrainChanged();
         });
         specularLightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());
+        slopeWaterSplattingId.setImageId(slopeConfig.getSlopeSkeletonConfig().getSlopeWaterSplattingId(), imageId -> {
+            slopeConfig.getSlopeSkeletonConfig().setSlopeWaterSplattingId(imageId);
+            terrainUiService.onEditorTerrainChanged();
+        });
         shapeEditor.init(svgElement, slopeConfig, this, 10.0);
     }
 
@@ -204,13 +238,13 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     public void onSelectionChanged(Corner corner) {
         if (corner != null) {
             selectedXPos.setValue(corner.getSlopeShape().getPosition().getX());
-            selectedYPos.setValue(corner.getSlopeShape().getPosition().getY());
+            selectedZPos.setValue(corner.getSlopeShape().getPosition().getY());
             selectedSlopeFactor.setValue((double) corner.getSlopeShape().getSlopeFactor());
         } else {
             selectedXPos.setValue(null);
             selectedXPos.setReadOnly(true);
-            selectedYPos.setValue(null);
-            selectedYPos.setReadOnly(true);
+            selectedZPos.setValue(null);
+            selectedZPos.setReadOnly(true);
             selectedSlopeFactor.setValue(null);
             selectedSlopeFactor.setReadOnly(true);
         }
@@ -218,12 +252,12 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
 
     @EventHandler("selectedXPos")
     public void selectedXPosChanged(ChangeEvent e) {
-        shapeEditor.moveSelected(new DecimalPosition(selectedXPos.getValue(), selectedYPos.getValue()));
+        shapeEditor.moveSelected(new DecimalPosition(selectedXPos.getValue(), selectedZPos.getValue()));
     }
 
-    @EventHandler("selectedYPos")
+    @EventHandler("selectedZPos")
     public void selectedYPosChanged(ChangeEvent e) {
-        shapeEditor.moveSelected(new DecimalPosition(selectedXPos.getValue(), selectedYPos.getValue()));
+        shapeEditor.moveSelected(new DecimalPosition(selectedXPos.getValue(), selectedZPos.getValue()));
     }
 
     @EventHandler("selectedSlopeFactor")
