@@ -1,10 +1,11 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.dto.SpecularLightConfig;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
-import com.btxtech.uiservice.VisualUiService;
+import com.btxtech.shared.utils.SignalGenerator;
 import com.btxtech.uiservice.renderer.ModelRenderer;
 import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
 
@@ -21,20 +22,16 @@ public class UiTerrainSlopeTile {
     private SlopeRenderTask slopeRenderTask;
     @Inject
     private TerrainTypeService terrainTypeService;
-    @Inject
-    private VisualUiService visualUiService;
     private ModelRenderer modelRenderer;
     private UiTerrainTile uiTerrainTile;
     private SlopeSkeletonConfig slopeSkeletonConfig;
     private TerrainSlopeTile terrainSlopeTile;
-    private double waterLevel;
-    private double waterGroundLevel;
+    private WaterConfig waterConfig;
 
     public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
         this.uiTerrainTile = uiTerrainTile;
         slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeSkeletonConfigId());
-        waterLevel = terrainTypeService.getWaterConfig().getWaterLevel();
-        waterGroundLevel = terrainTypeService.getWaterConfig().getGroundLevel();
+        waterConfig = terrainTypeService.getWaterConfig();
         this.terrainSlopeTile = terrainSlopeTile;
         modelRenderer = slopeRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);
@@ -99,12 +96,11 @@ public class UiTerrainSlopeTile {
         return slopeSkeletonConfig.getBmScale();
     }
 
-    public double getWaterLevel() {
-        return waterLevel;
+    public WaterConfig getWaterConfig() {
+        return waterConfig;
     }
-
-    public double getWaterGroundLevel() {
-        return waterGroundLevel;
+    public double getWaterAnimation() {
+        return SignalGenerator.sawtooth(System.currentTimeMillis(), (int)(waterConfig.getDistortionDurationSeconds() * 1000.0), 0);
     }
 
     public void dispose() {

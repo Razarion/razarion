@@ -38,6 +38,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
     private WebGlUniformTexture distortionMap;
     private WebGLUniformLocation uTransparency;
     private WebGLUniformLocation distortionStrength;
+    private WebGLUniformLocation normMapDepth;
     private WebGLUniformLocation animation;
     private WebGlUniformTexture terrainMarkerTexture;
     private WebGLUniformLocation terrainMarker2DPoints;
@@ -52,6 +53,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
         uLightSpecularHardness = webGlFacade.getUniformLocation("uLightSpecularHardness");
         uTransparency = webGlFacade.getUniformLocation("uTransparency");
         distortionStrength = webGlFacade.getUniformLocation("uDistortionStrength");
+        normMapDepth = webGlFacade.getUniformLocation("uNormMapDepth");
         animation = webGlFacade.getUniformLocation("animation");
         terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
         terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
@@ -80,6 +82,7 @@ public class ClientWaterRendererUnit extends AbstractWaterRendererUnit {
 
         webGlFacade.uniform1f(uTransparency, uiTerrainWaterTile.getWaterConfig().getTransparency());
         webGlFacade.uniform1f(distortionStrength, uiTerrainWaterTile.getWaterConfig().getDistortionStrength());
+        webGlFacade.uniform1f(normMapDepth, uiTerrainWaterTile.getWaterConfig().getNormMapDepth());
 
         webGlFacade.uniform1f(animation, uiTerrainWaterTile.getWaterAnimation());
 

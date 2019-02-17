@@ -47,12 +47,20 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     private WebGLUniformLocation uGroundSplattingOffset;
     private WebGLUniformLocation uGroundSplattingGroundBmMultiplicator;
     private SpecularUniforms slopeSpecularUniforms;
-    private WebGLUniformLocation slopeOriented;
     private WebGLUniformLocation uSlopeBmDepth;
     private WebGLUniformLocation uGroundBottomBmDepth;
     private WebGLUniformLocation uHasWater;
     private WebGLUniformLocation uWaterLevel;
     private WebGLUniformLocation uWaterGround;
+    private WebGLUniformLocation uWaterLightSpecularIntensity;
+    private WebGLUniformLocation uWaterLightSpecularHardness;
+    private WebGlUniformTexture waterReflection;
+    private WebGlUniformTexture waterBumpMap;
+    private WebGlUniformTexture waterDistortionMap;
+    private WebGLUniformLocation uWaterTransparency;
+    private WebGLUniformLocation waterDistortionStrength;
+    private WebGLUniformLocation waterNormMapDepth;
+    private WebGLUniformLocation waterAnimation;
     private WebGlUniformTexture terrainMarkerTexture;
     private WebGLUniformLocation terrainMarker2DPoints;
     private WebGLUniformLocation terrainMarkerAnimation;
@@ -71,12 +79,17 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         uGroundSplattingGroundBmMultiplicator = webGlFacade.getUniformLocation("uGroundSplattingGroundBmMultiplicator");
         slopeSpecularUniforms = new SpecularUniforms("Slope", webGlFacade);
         groundSpecularUniforms = new SpecularUniforms("Ground", webGlFacade);
-        slopeOriented = webGlFacade.getUniformLocation("slopeOriented");
         uSlopeBmDepth = webGlFacade.getUniformLocation("uSlopeBmDepth");
         uGroundBottomBmDepth = webGlFacade.getUniformLocation("uGroundBottomBmDepth");
         uHasWater = webGlFacade.getUniformLocation("uHasWater");
         uWaterLevel = webGlFacade.getUniformLocation("uWaterLevel");
         uWaterGround = webGlFacade.getUniformLocation("uWaterGround");
+        uWaterLightSpecularIntensity = webGlFacade.getUniformLocation("uWaterLightSpecularIntensity");
+        uWaterLightSpecularHardness = webGlFacade.getUniformLocation("uWaterLightSpecularHardness");
+        uWaterTransparency = webGlFacade.getUniformLocation("uWaterTransparency");
+        waterDistortionStrength = webGlFacade.getUniformLocation("uWaterDistortionStrength");
+        waterNormMapDepth = webGlFacade.getUniformLocation("uWaterNormMapDepth");
+        waterAnimation = webGlFacade.getUniformLocation("uWaterAnimation");
         terrainMarkerTexture = webGlFacade.createTerrainMarkerWebGLTexture("uTerrainMarkerTexture");
         terrainMarker2DPoints = webGlFacade.getUniformLocation("uTerrainMarker2DPoints");
         terrainMarkerAnimation = webGlFacade.getUniformLocation("uTerrainMarkerAnimation");
@@ -97,6 +110,10 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         tangents.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getTangents()));
         slopeFactors.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getSlopeFactors()));
         groundSplatting.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getGroundSplattings()));
+
+        waterReflection = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getWaterConfig().getReflectionId(), "uWaterReflection", "uWaterReflectionScale", uiTerrainSlopeTile.getWaterConfig().getReflectionScale());
+        waterBumpMap = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getWaterConfig().getNormMapId(), "uWaterNormMap");
+        waterDistortionMap = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getWaterConfig().getDistortionId(), "uWaterDistortionMap", "uWaterDistortionScale", uiTerrainSlopeTile.getWaterConfig().getDistortionScale());
     }
 
 
@@ -115,12 +132,23 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         webGlFacade.uniform1f(uGroundSplattingFadeThreshold, uiTerrainSlopeTile.getUiTerrainTile().getSplattingFadeThreshold());
         webGlFacade.uniform1f(uGroundSplattingOffset, uiTerrainSlopeTile.getUiTerrainTile().getSplattingOffset());
         webGlFacade.uniform1f(uGroundSplattingGroundBmMultiplicator, uiTerrainSlopeTile.getUiTerrainTile().getSplattingGroundBmMultiplicator());
-        webGlFacade.uniform1b(slopeOriented, uiTerrainSlopeTile.isSlopeOriented());
 
         // Water
         webGlFacade.uniform1b(uHasWater, uiTerrainSlopeTile.hasWater());
-        webGlFacade.uniform1f(uWaterLevel, uiTerrainSlopeTile.getWaterLevel());
-        webGlFacade.uniform1f(uWaterGround, uiTerrainSlopeTile.getWaterGroundLevel());
+        webGlFacade.uniform1f(uWaterLevel, uiTerrainSlopeTile.getWaterConfig().getWaterLevel());
+        webGlFacade.uniform1f(uWaterGround, uiTerrainSlopeTile.getWaterConfig().getGroundLevel());
+        webGlFacade.uniform1f(uWaterLightSpecularIntensity, uiTerrainSlopeTile.getWaterConfig().getSpecularLightConfig().getSpecularIntensity());
+        webGlFacade.uniform1f(uWaterLightSpecularHardness, uiTerrainSlopeTile.getWaterConfig().getSpecularLightConfig().getSpecularHardness());
+        webGlFacade.uniform1f(uWaterTransparency, uiTerrainSlopeTile.getWaterConfig().getTransparency());
+        webGlFacade.uniform1f(waterDistortionStrength, uiTerrainSlopeTile.getWaterConfig().getDistortionStrength());
+        webGlFacade.uniform1f(waterNormMapDepth, uiTerrainSlopeTile.getWaterConfig().getNormMapDepth());
+
+        webGlFacade.uniform1f(waterAnimation, uiTerrainSlopeTile.getWaterAnimation());
+        waterReflection.overrideScale(uiTerrainSlopeTile.getWaterConfig().getReflectionScale());
+        waterReflection.activate();
+        waterBumpMap.activate();
+        waterDistortionMap.overrideScale(uiTerrainSlopeTile.getWaterConfig().getDistortionScale());
+        waterDistortionMap.activate();
 
         vertices.activate();
         normals.activate();

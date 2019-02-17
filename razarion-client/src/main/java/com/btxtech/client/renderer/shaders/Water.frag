@@ -1,6 +1,5 @@
 precision mediump float;
 
-varying vec3 vVertexNormal;
 varying vec3 vVertexPosition;
 varying vec3 vWorldVertexPosition;
 
@@ -11,10 +10,11 @@ uniform float uLightSpecularHardness;
 
 uniform highp mat4 uNVMatrix;
 uniform float uTransparency;
-uniform sampler2D uReflection;
 uniform sampler2D uNormMap;
+uniform float uNormMapDepth;
 uniform sampler2D uDistortionMap;
 uniform float uReflectionScale;
+uniform sampler2D uReflection;
 uniform float uDistortionScale;
 uniform float uDistortionStrength;
 uniform float animation;
@@ -47,19 +47,27 @@ vec4 setupTerrainMarker() {
     return terrainMarkerColor;
 }
 
-void main(void) {
+// +++ Also used in Slop.frag
+vec3 setupWater() {
+    // Setup ambient
     vec2 distortion1 = texture2D(uDistortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(animation, 0)).rg * 2.0 - 1.0;
     vec2 distortion2 = texture2D(uDistortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(-animation, animation)).rg * 2.0 - 1.0;
     vec2 totalDistortion = distortion1 + distortion2;
-
-    vec2 reflectionCoord = (vWorldVertexPosition.xy) * uReflectionScale + totalDistortion * uDistortionStrength/*  + vec2(0, animation)*/;
-    vec3 refelectionColor = texture2D(uReflection, reflectionCoord).rgb;
-
+    vec2 reflectionCoord = (vWorldVertexPosition.xy) * uReflectionScale + totalDistortion * uDistortionStrength;
+    vec3 ambient = texture2D(uReflection, reflectionCoord).rgb;
+    // Setup specular
+    vec3 norm1 = texture2D(uNormMap, vWorldVertexPosition.xy * uDistortionScale + vec2(animation, 0)).xyz;
+    vec3 norm2 = texture2D(uNormMap, vWorldVertexPosition.xy * uDistortionScale + vec2(-animation, animation)).xyz;
+    vec3 totalNorm = norm1  + norm2;
+    totalNorm = normalize(vec3(totalNorm.x - 1.0, totalNorm.y - 1.0, totalNorm.z / 2.0));
+    totalNorm = mix(vec3(0.0, 0.0, 1.0), totalNorm, uNormMapDepth);
     vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
-     vec3 normal = normalize(vVertexNormal);
-     vec3 normMapColor = texture2D(uNormMap, reflectionCoord).rgb;
-     vec3 specularColor = setupSpecularLight(correctedLigtDirection,  vec3(normMapColor.r * 2.0 - 1.0, normMapColor.g * 2.0 - 1.0, normMapColor.b), uLightSpecularIntensity, uLightSpecularHardness);
+    vec3 specularColor = setupSpecularLight(correctedLigtDirection, totalNorm, uLightSpecularIntensity, uLightSpecularHardness);
+    return ambient + specularColor;
+}
+// +++ Also used in Slop.frag ends
 
-    gl_FragColor = vec4(refelectionColor + specularColor, uTransparency) + setupTerrainMarker();
+void main(void) {
+    gl_FragColor = vec4(setupWater(), uTransparency) + setupTerrainMarker();
 }
 

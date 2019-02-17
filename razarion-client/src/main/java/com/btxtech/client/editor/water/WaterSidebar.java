@@ -46,10 +46,6 @@ public class WaterSidebar extends LeftSideBarContent {
     @DataField
     private NumberInput transparency;
     @Inject
-    @Bound(converter = HtmlColor2ColorConverter.class)
-    @DataField
-    private TextBox color;
-    @Inject
     @DataField
     private ImageItemWidget reflectionId;
     @Inject
@@ -59,6 +55,10 @@ public class WaterSidebar extends LeftSideBarContent {
     @Inject
     @DataField
     private ImageItemWidget normMapId;
+    @Inject
+    @Bound
+    @DataField
+    private NumberInput normMapDepth;
     @Inject
     @DataField
     private ImageItemWidget distortionId;

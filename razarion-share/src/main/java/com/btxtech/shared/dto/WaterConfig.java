@@ -12,14 +12,13 @@ public class WaterConfig {
     private Integer reflectionId;
     private double reflectionScale;
     private Integer normMapId;
+    private double normMapDepth;
     private Integer distortionId;
     private double distortionScale;
     private double distortionStrength;
     private double distortionDurationSeconds;
     private double groundLevel;
     private SpecularLightConfig specularLightConfig;
-    @Deprecated
-    private Color color;
 
     public double getWaterLevel() {
         return waterLevel;
@@ -75,6 +74,15 @@ public class WaterConfig {
         return this;
     }
 
+    public double getNormMapDepth() {
+        return normMapDepth;
+    }
+
+    public WaterConfig setNormMapDepth(double normMapDepth) {
+        this.normMapDepth = normMapDepth;
+        return this;
+    }
+
     public Integer getDistortionId() {
         return distortionId;
     }
@@ -117,17 +125,6 @@ public class WaterConfig {
 
     public WaterConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
         this.specularLightConfig = specularLightConfig;
-        return this;
-    }
-
-    @Deprecated
-    public Color getColor() {
-        return color;
-    }
-
-    @Deprecated
-    public WaterConfig setColor(Color color) {
-        this.color = color;
         return this;
     }
 }

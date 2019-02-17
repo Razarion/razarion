@@ -36,17 +36,10 @@ public class WaterConfigEntity {
     private ImageLibraryEntity normMapId; // TODO rename on db
     private double groundLevel;
     private SpecularLightConfigEmbeddable specularLightConfig;
-    @AttributeOverrides({
-            @AttributeOverride(name = "r", column = @Column(name = "colorRValue")),
-            @AttributeOverride(name = "g", column = @Column(name = "colorGValue")),
-            @AttributeOverride(name = "b", column = @Column(name = "colorBValue")),
-            @AttributeOverride(name = "a", column = @Column(name = "colorAValue")),
-    })
-    private Color color;
 
     public WaterConfig toWaterConfig() {
         WaterConfig waterConfig = new WaterConfig();
-        waterConfig.setWaterLevel(waterLevel).setGroundLevel(groundLevel).setColor(Optional.ofNullable(color).orElse(new Color(0, 0, 1))).setTransparency(waterTransparency);
+        waterConfig.setWaterLevel(waterLevel).setGroundLevel(groundLevel).setTransparency(waterTransparency);
         if (normMapId != null) {
             waterConfig.setNormMapId(normMapId.getId());
         }
@@ -60,6 +53,7 @@ public class WaterConfigEntity {
         waterConfig.setDistortionScale(0.06); // TODO
         waterConfig.setDistortionStrength(0.11); // TODO
         waterConfig.setDistortionDurationSeconds(20); // TODO
+        waterConfig.setNormMapDepth(1.0);
         // TODO ends -----
 
         return waterConfig;
@@ -68,7 +62,6 @@ public class WaterConfigEntity {
     public void fromWaterConfig(WaterConfig waterConfig, ImagePersistence imagePersistence) {
         waterLevel = waterConfig.getWaterLevel();
         groundLevel = waterConfig.getGroundLevel();
-        color = waterConfig.getColor();
         waterTransparency = waterConfig.getTransparency();
         normMapId = imagePersistence.getImageLibraryEntity(waterConfig.getNormMapId());
         specularLightConfig.fromLightConfig(waterConfig.getSpecularLightConfig());

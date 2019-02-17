@@ -29,7 +29,6 @@ uniform sampler2D uSlopeBm;
 uniform float uSlopeBmScale;
 uniform float uSlopeBmOnePixel;
 uniform float uSlopeBmDepth;
-uniform bool slopeOriented;
 // Ground
 uniform float uLightSpecularIntensityGround;
 uniform float uLightSpecularHardnessGround;
@@ -50,17 +49,30 @@ uniform float uGroundSplattingGroundBmMultiplicator;
 uniform bool uHasWater;
 uniform float uWaterLevel;
 uniform float uWaterGround;
+uniform float uWaterTransparency;
+uniform float uWaterLightSpecularIntensity;
+uniform float uWaterLightSpecularHardness;
+uniform sampler2D uWaterNormMap;
+uniform sampler2D uWaterDistortionMap;
+uniform float uWaterReflectionScale;
+uniform sampler2D uWaterReflection;
+uniform float uWaterDistortionScale;
+uniform float uWaterNormMapDepth;
+uniform float uWaterDistortionStrength;
+uniform float uWaterAnimation;
 // Terrain marker
 uniform sampler2D uTerrainMarkerTexture;
 uniform vec4 uTerrainMarker2DPoints;
 uniform float uTerrainMarkerAnimation;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
-const float SLOPE_FACTOR_BIAS = 0.001;
-const float GROUND_FACTOR_BIAS = 0.001;
+const float UNDER_WATER_BIAS = 0.05;
 const float SLOPE_WATER_STRIPE_FADEOUT = 2.0;
-const float SLOPE_WATER_STRIPE_SPECULAR_INTENSITY_FACTOR = 5.0;
 const vec3 UNDER_WATER_COLOR = vec3(1.0, 1.0, 1.0);
+
+const vec3 underWaterTopColor = vec3(0.0, 0.7, 0.8);
+const vec3 underWaterBottomColor = vec3(0.0, 0.1, 0.2);
+
 
 // Vector to RGB -> normVector * 0.5 + 0.5
 // Interpolate x (MIN, MAX) to 0..1: 1.0/(MAX-MIN) * x + MIN/(MAX-MIN)
@@ -122,15 +134,29 @@ vec4 setupTerrainMarker() {
     return terrainMarkerColor;
 }
 
-void setupSlope(inout vec3 norm, inout vec4 textureColor) {
-    textureColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
-    norm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
+void setupSlope(inout vec4 ambient, inout vec4 diffuse, inout vec4 specular) {
+    vec3 correctedLight = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
+    vec4 textureColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
+    vec3 norm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
+
+    ambient = vec4(uLightAmbient, 1.0) * textureColor;
+    diffuse = vec4(max(dot(normalize(norm), -correctedLight), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
+    specular = setupSpecularLight(correctedLight, norm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
 }
 
-void setupGround(inout vec3 norm, inout vec4 textureColor) {
+void setupUnderWater(inout vec4 ambient, inout vec4 diffuse, float underWaterFactor) {
+    vec3 correctedLight = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
+    vec3 color = mix(underWaterBottomColor, underWaterTopColor, underWaterFactor);
+    // vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
+    ambient = vec4(uLightAmbient * color, 1.0);
+    diffuse = vec4(max(dot(normalize(vVertexNormal), normalize(-correctedLight)), 0.0) * color * uLightDiffuse, 1.0);
+}
+
+void setupGround(inout vec4 ambient, inout vec4 diffuse, inout vec4 specular) {
         // Copied from Ground Shader and variable renamed (Ground added) ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
         float shadowFactor = calculateShadowFactor();
-        vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
+        vec3 correctedLight = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
 
         vec4 colorTop = triPlanarTextureMapping(uGroundTopTexture, uGroundTopTextureScale, vec2(0,0));
         vec4 colorBottom = triPlanarTextureMapping(uGroundBottomTexture, uGroundBottomTextureScale, vec2(0,0));
@@ -140,107 +166,146 @@ void setupGround(inout vec3 norm, inout vec4 textureColor) {
         float bottomBmValue = triPlanarTextureMapping(uGroundBottomBm, uGroundBottomBmScale, vec2(0,0)).r;
 
         float splattingValue = vGroundSplatting - (splatting + bottomBmValue * uGroundSplattingGroundBmMultiplicator) / 2.0 + uGroundSplattingOffset;
-        if(splattingValue > uGroundSplattingFadeThreshold) {
+        vec4 textureColor;
+        vec3 norm;
+       if(splattingValue > uGroundSplattingFadeThreshold) {
             norm = vVertexNormal;
             textureColor = colorTop;
-        } else if(splattingValue < -uGroundSplattingFadeThreshold) {
+       } else if(splattingValue < -uGroundSplattingFadeThreshold) {
             norm = normBottom;
             textureColor = colorBottom;
-        } else {
+       } else {
             float groundTopFactor = splattingValue / (2.0 * uGroundSplattingFadeThreshold) + 0.5;
             textureColor = mix(colorBottom, colorTop, groundTopFactor);
             norm = mix(normBottom, vVertexNormal, groundTopFactor);
-        }
-        // Copied from Ground Shader ends +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+       }
+       ambient = vec4(uLightAmbient, 1.0) * textureColor;
+       diffuse = vec4(max(dot(normalize(norm), -correctedLight), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
+       specular = setupSpecularLight(correctedLight, norm, uLightSpecularIntensityGround, uLightSpecularHardnessGround);
+       // Copied from Ground Shader ends +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 }
 
-void main(void) {
-    vec3 correctedLight = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
-    float shadowFactor = calculateShadowFactor();
+// Copied from Water Shader ends +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void setupWater(inout vec4 ambient, inout vec4 diffuse, inout vec4 specular) {
+    // Setup ambient
+    vec2 distortion1 = texture2D(uWaterDistortionMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(uWaterAnimation, 0)).rg * 2.0 - 1.0;
+    vec2 distortion2 = texture2D(uWaterDistortionMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(-uWaterAnimation, uWaterAnimation)).rg * 2.0 - 1.0;
+    vec2 totalDistortion = distortion1 + distortion2;
+    vec2 reflectionCoord = (vVertexPositionCoord.xy) * uWaterReflectionScale + totalDistortion * uWaterDistortionStrength;
+    ambient =  vec4(texture2D(uWaterReflection, reflectionCoord).rgb, 1.0);
+    // Diffuse
+    diffuse = vec4(0.0, 0.0, 0.0, 1.0);
+    // Setup specular
+    vec3 norm1 = texture2D(uWaterNormMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(uWaterAnimation, 0)).xyz;
+    vec3 norm2 = texture2D(uWaterNormMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(-uWaterAnimation, uWaterAnimation)).xyz;
+    vec3 totalNorm = norm1  + norm2;
+    totalNorm = normalize(vec3(totalNorm.x - 1.0, totalNorm.y - 1.0, totalNorm.z / 2.0));
+    totalNorm = mix(vec3(0.0, 0.0, 1.0), totalNorm, uWaterNormMapDepth);
+    vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
+    specular = setupSpecularLight(correctedLigtDirection, totalNorm, uWaterLightSpecularIntensity, uWaterLightSpecularHardness);
+}
+// Copied from Water Shader ends +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+void main(void) {
+    float shadowFactor = 1.0;
     vec4 ambient;
     vec4 diffuse;
-
-    vec4 textureColor;
-    vec3 correctedNorm;
     vec4 specular;
 
-    if(vSlopeFactor < SLOPE_FACTOR_BIAS) {
-        setupGround(correctedNorm, textureColor);
-    } else if(vSlopeFactor + SLOPE_FACTOR_BIAS > 1.0) {
-        // Slope
+    if(vSlopeFactor <= 0.0) {
+        // Render full ground
+       setupGround(ambient, diffuse, specular);
+    } else if(vSlopeFactor >= 1.0) {
+        // Render full slope
+        vec4 textureColor;
+        vec3 correctedNorm;
         if(uHasWater) {
+            // TODO two bugs
+            // TODO Specular calculation different to water
+            // TODO Small stripe between water and coast
             float z = vVertexPositionCoord.z;
-            if(z > uWaterLevel) {
-                // Over water level: render normal slope
-                float MAX_WAVE_Z = 0.5;
-                setupSlope(correctedNorm, textureColor);
-                specular = setupSpecularLight(correctedLight, correctedNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
- //               if(z - uWaterLevel < MAX_WAVE_Z) {
-                    float waveFactor = (z - uWaterLevel) / MAX_WAVE_Z;
-                    float waterLevelFactor  = texture2D(uSlopeBm, vVertexPositionCoord.xy * uSlopeBmScale).r - 0.5;
-                    waveFactor += waterLevelFactor;
-                    if(waveFactor <= 1.0) {
-                        // Transition water foam
-                        if(waveFactor < 0.0) {
-                            // Pure water
-                            correctedNorm = normalize(vVertexNormal);
-                            textureColor = vec4(1.0, 1.0, 1.0, 1.0);
-                        } else {
-                            // Transition water foam
-                            correctedNorm = mix(normalize(vVertexNormal), correctedNorm, waveFactor);
-                            textureColor = mix(vec4(1.0, 1.0, 1.0, 1.0), textureColor, waveFactor);
-                        }
-                    }
+            if(z >= uWaterLevel) {
+                shadowFactor = calculateShadowFactor();
+
+                vec4 slopeAmbient;
+                vec4 slopeDiffuse;
+                vec4 slopeSpecular;
+                setupSlope(slopeAmbient, slopeDiffuse, slopeSpecular);
+
+                vec4 waterAmbient;
+                vec4 waterDiffuse;
+                vec4 waterSpecular;
+                setupWater(waterAmbient, waterDiffuse, waterSpecular);
+                vec4 underWaterAmbient;
+                vec4 underWaterDiffuse;
+                setupUnderWater(underWaterAmbient, underWaterDiffuse, 1.0);
+                ambient = mix(underWaterAmbient, waterAmbient, uWaterTransparency);
+                diffuse = mix(underWaterDiffuse, waterDiffuse, uWaterTransparency);
+                specular = mix(vec4(0.0, 0.0, 0.0, 1.0), waterSpecular, uWaterTransparency);
+
+//                float xxxxxxx = uWaterTransparency;
+//                xxxxxxx += 1.0;
+
+//                specular = vec4(0.0, 0.0, 0.0, 1.0);
+//                diffuse = vec4(1.0, 0.0, 0.0, 1.0);
+//                ambient = vec4(1.0, 0.0, 0.0, 1.0);
+
+
+//                // Over water level: render normal slope
+//                shadowFactor = calculateShadowFactor();
+//                setupSlope(correctedNorm, textureColor);
+//                float MAX_WAVE_Z = 0.5;
+//                float waveFactor = (z - uWaterLevel) / MAX_WAVE_Z;
+//                float waterLevelFactor  = texture2D(uSlopeBm, vVertexPositionCoord.xy * uSlopeBmScale).r - 0.5;
+//                waveFactor = clamp(waveFactor + waterLevelFactor, 0.0, 1.0);
+//                if(waveFactor >= 1.0) {
+//                    // Over water level
+//                    render ground
+//                } else if(waveFactor <= 0.0) {
+//                    // Under water level
+//                    float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
+//                    setupUnderWater(ambient, diffuse, underWaterFactor);
+//                    specular = vec4(0.0, 0.0, 0.0, 1.0);
+//                } else {
+//                    // Transition water coast
+//                }
+////
+////                    // Transition water foam
+////                    if(waveFactor < 0.0) {
+////                        // Pure water
+////                        setupUnderWater(ambient, diffuse, 1.0);
+////                        specular = vec4(0.0, 0.0, 0.0, 1.0);
+////                   } else {
+////                        // Transition water foam
+////                        vec4 waterFoamColor = mix(vec4(UNDER_WATER_COLOR, 1.0), vec4(setupWater(), 1.0), uWaterTransparency);
+////                        correctedNorm = mix(normalize(vVertexNormal), correctedNorm, waveFactor);
+////                        textureColor = mix(waterFoamColor, textureColor, waveFactor);
+////                        ambient = vec4(uLightAmbient, 1.0) * textureColor;
+////                        diffuse = vec4(max(dot(normalize(correctedNorm), -correctedLight), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
+////                        specular = setupSpecularLight(correctedLight, correctedNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
+////                    }
+////                }
             } else {
-                // Under water level: render slope fadeout
+                // Under water
                 float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
-                vec3 slopeNorm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
-                vec3 ambient = uLightAmbient * UNDER_WATER_COLOR * underWaterFactor;
-                vec3 diffuse = vec3(max(dot(normalize(slopeNorm), normalize(-correctedLight)), 0.0) * underWaterFactor * uLightDiffuse * UNDER_WATER_COLOR);
-                gl_FragColor = vec4(vec3(ambient + diffuse), 1.0) * shadowFactor;
-                return;
+                setupUnderWater(ambient, diffuse, underWaterFactor);
+                specular = vec4(0.0, 0.0, 0.0, 1.0);
+//                diffuse = vec4(1.0, 0.0, 0.0, 1.0);
+//                ambient = vec4(1.0, 0.0, 0.0, 1.0);
             }
         } else {
-            setupSlope(correctedNorm, textureColor);
-            specular = setupSpecularLight(correctedLight, correctedNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
+            shadowFactor = calculateShadowFactor();
+            setupSlope(ambient, diffuse, specular);
         }
-        ambient = vec4(uLightAmbient, 1.0) * textureColor;
-        diffuse = vec4(max(dot(normalize(correctedNorm), -correctedLight), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
-  } else {
-       // Transition
+    } else {
+       // Render slope-ground transition
 
-       // Ground
-       vec3 groundNorm;
-       vec4 groundColor;
-       setupGround(groundNorm, groundColor);
+       float slopeBmFactor = triPlanarTextureMapping(uSlopeBm, uSlopeBmScale, vec2(0,0)).r - 0.5;
 
-       // Slope
-       vec3 slopeNorm;
-       vec4 slopeColor;
-       setupSlope(slopeNorm, slopeColor);
-       float slopeBmFactor = triPlanarTextureMapping(uSlopeBm, uSlopeBmScale, vec2(0,0)).r;
-
-       bool renderSlope;
-       if(slopeOriented) {
-           vec3 perpendicular = normalize((uNVMatrix * vec4(0.0, 0.0, 1.0, 1.0)).xyz);
-           float flatFactor = max(dot(slopeNorm, perpendicular), 0.0) - slopeBmFactor;
-           renderSlope = flatFactor < vSlopeFactor;
+       if(vSlopeFactor + slopeBmFactor > 1.0) {
+            setupSlope(ambient, diffuse, specular);
        } else {
-           float groundBottomBmValue = triPlanarTextureMapping(uGroundBottomBm, uGroundBottomBmScale, vec2(0,0)).r;
-           float correctedSlopeFactor = vSlopeFactor - 0.5;
-           renderSlope = slopeBmFactor + correctedSlopeFactor > groundBottomBmValue;
-       }
-
-       // Caluclate transition
-       if(renderSlope) {
-           ambient = vec4(uLightAmbient, 1.0) * slopeColor;
-           diffuse = vec4(max(dot(normalize(slopeNorm), -correctedLight), 0.0) * uLightDiffuse * slopeColor.rgb, 1.0);
-           specular = setupSpecularLight(correctedLight, slopeNorm, uLightSpecularIntensitySlope, uLightSpecularHardnessSlope);
-       } else  {
-           ambient = vec4(uLightAmbient, 1.0) * groundColor;
-           diffuse = vec4(max(dot(normalize(groundNorm), -correctedLight), 0.0) * uLightDiffuse * groundColor.rgb, 1.0);
-           specular = setupSpecularLight(correctedLight, groundNorm, uLightSpecularIntensityGround, uLightSpecularHardnessGround);
+           setupGround(ambient, diffuse, specular);
        }
    }
 

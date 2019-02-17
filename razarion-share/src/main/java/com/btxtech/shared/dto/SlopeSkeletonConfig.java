@@ -24,6 +24,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Type type;
     private SlopeNode[][] slopeNodes;
     private SpecularLightConfig specularLightConfig;
+    @Deprecated
     private boolean slopeOriented;
     private Integer textureId;
     private double textureScale;
@@ -163,10 +164,12 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     }
 
     // Errai can not handle is-getter. Most likely chained properties with UI binding.
+    @Deprecated
     public boolean getSlopeOriented() {
         return slopeOriented;
     }
 
+    @Deprecated
     public SlopeSkeletonConfig setSlopeOriented(boolean slopeOriented) {
         this.slopeOriented = slopeOriented;
         return this;
