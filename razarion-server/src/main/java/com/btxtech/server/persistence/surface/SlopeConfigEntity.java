@@ -104,7 +104,7 @@ public class SlopeConfigEntity {
         }
         slopeSkeletonConfig.setSlopeNodes(slopeNodes);
         // TODO --------------
-        slopeSkeletonConfig.setSlopeWaterSplattingId(20).setSlopeWaterSplattingScale(0.1).setSlopeWaterSplattingFactor(1).setSlopeWaterSplattingHeight(-0.1).setSlopeWaterSplattingFadeThreshold(0.8);
+        slopeSkeletonConfig.setSlopeWaterSplattingId(20).setSlopeWaterSplattingScale(0.1).setSlopeWaterSplattingFactor(0.5).setSlopeWaterSplattingHeight(-0.22).setSlopeWaterSplattingFadeThreshold(0.2);
         // TODO ends --------------
         return slopeSkeletonConfig;
     }

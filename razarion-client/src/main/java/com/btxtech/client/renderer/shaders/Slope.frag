@@ -143,7 +143,10 @@ vec4 setupTerrainMarker() {
 void setupSlope(inout vec4 ambient, inout vec4 diffuse, inout vec4 specular) {
     vec3 correctedLight = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
     vec4 textureColor = triPlanarTextureMapping(uSlopeTexture, uSlopeTextureScale, vec2(0,0));
-    vec3 norm = bumpMapNorm(uSlopeBm, uSlopeBmDepth, uSlopeBmScale, uSlopeBmOnePixel);
+
+    vec3 norm = texture2D(uSlopeBm, vVertexPositionCoord.xy * uSlopeBmScale).xyz;
+    norm = normalize(vec3(norm.x - 1.0, norm.y - 1.0, norm.z / 2.0));
+    norm = mix(normalize((uNVMatrix * vec4(norm, 1.0)).xyz), vVertexNormal, uSlopeBmDepth);
 
     ambient = vec4(uLightAmbient, 1.0) * textureColor;
     diffuse = vec4(max(dot(normalize(norm), -correctedLight), 0.0) * uLightDiffuse * textureColor.rgb, 1.0);
@@ -249,9 +252,12 @@ void main(void) {
                 vec4 waterDiffuse = mix(underWaterDiffuse, waterSurfaceDiffuse, uWaterTransparency);
                 vec4 waterSpecular = mix(vec4(0.0, 0.0, 0.0, 1.0), waterSurfaceSpecular, uWaterTransparency);
 
+//                float splattingMap1 = texture2D(uSlopeWaterSplatting, vVertexPositionCoord.xy * uSlopeWaterSplattingScale + vec2(uWaterAnimation, 0)).r * 2.0 - 1.0;
+//                float splattingMap2 = texture2D(uSlopeWaterSplatting, vVertexPositionCoord.xy * uSlopeWaterSplattingScale + vec2(-uWaterAnimation, uWaterAnimation)).r * 2.0 - 1.0;
+//                float splattingMap = (splattingMap1 + splattingMap2) * uSlopeWaterSplattingFactor;
                 float splattingMap = (texture2D(uSlopeWaterSplatting, vVertexPositionCoord.xy * uSlopeWaterSplattingScale).r -0.5) * uSlopeWaterSplattingFactor;
                 float splattingHeight = z + splattingMap;
-                if(splattingHeight > uSlopeWaterSplattingHeight / 2.0 + uSlopeWaterSplattingFadeThreshold / 2.0) {
+                if(splattingHeight > uSlopeWaterSplattingHeight + uSlopeWaterSplattingFadeThreshold / 2.0) {
                     // Over slope water tranittion
                     ambient = slopeAmbient;
                     diffuse = slopeDiffuse;
@@ -260,7 +266,7 @@ void main(void) {
 //                    diffuse = vec4(0.0, 1.0, 0.0, 1.0); // TODO REMOVE
 //                    specular = vec4(0.0, 0.0, 0.0, 1.0); // TODO REMOVE
 
-                } else if(splattingHeight < uSlopeWaterSplattingHeight / 2.0 - uSlopeWaterSplattingFadeThreshold / 2.0) {
+                } else if(splattingHeight < uSlopeWaterSplattingHeight - uSlopeWaterSplattingFadeThreshold / 2.0) {
                     // Under slope water tranittion
                     // float underWaterFactor = (z - uWaterGround) / (uWaterLevel - uWaterGround);
                     ambient = waterAmbient;
@@ -269,9 +275,9 @@ void main(void) {
 //                    ambient = vec4(0.0, 0.0, 1.0, 1.0); // TODO REMOVE
 //                    diffuse = vec4(0.0, 0.0, 1.0, 1.0); // TODO REMOVE
 //                    specular = vec4(0.0, 0.0, 0.0, 1.0); // TODO REMOVE
-              } else {
+                } else {
                     // In slope water tranittion
-                    float mixFactor = (splattingHeight - (uSlopeWaterSplattingHeight / 2.0 - uSlopeWaterSplattingFadeThreshold / 2.0)) / uSlopeWaterSplattingFadeThreshold;
+                    float mixFactor = (splattingHeight - uSlopeWaterSplattingHeight)/uSlopeWaterSplattingFadeThreshold + 0.5;
                     ambient = mix(waterAmbient, slopeAmbient, mixFactor);
                     diffuse = mix(waterDiffuse, slopeDiffuse, mixFactor);
                     specular = mix(waterSpecular, slopeSpecular, mixFactor);
