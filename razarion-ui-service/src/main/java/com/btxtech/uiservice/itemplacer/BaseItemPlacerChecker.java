@@ -86,24 +86,29 @@ public class BaseItemPlacerChecker {
 
     private void setupGeometry(BaseItemType baseItemType, BaseItemPlacerConfig baseItemPlacerConfig) {
         relativeItemPositions = new ArrayList<>();
-        double value = Math.sqrt(baseItemPlacerConfig.getBaseItemCount());
-        int columns = (int) Math.ceil(value);
-        int rows = (int) Math.round(value);
         double itemRadius = baseItemType.getPhysicalAreaConfig().getRadius() + SAFETY_DISTANCE;
-        double columnOffset = (double) (columns - 1) * itemRadius;
-        double rowOffset = (double) (rows - 1) * itemRadius;
-        int count = 0;
-        for (int column = 0; column < columns; column++) {
-            for (int row = 0; row < rows; row++) {
-                count++;
-                if (count <= baseItemPlacerConfig.getBaseItemCount()) {
-                    double xPos = (double) column * baseItemType.getPhysicalAreaConfig().getRadius() * 2.0 - columnOffset;
-                    double yPos = (double) row * baseItemType.getPhysicalAreaConfig().getRadius() * 2.0 - rowOffset;
-                    relativeItemPositions.add(new DecimalPosition(xPos, yPos));
+        double bipcEnemyFreeRadius = baseItemPlacerConfig.getEnemyFreeRadius() != null ? baseItemPlacerConfig.getEnemyFreeRadius() : 0;
+        if (baseItemPlacerConfig.getBaseItemCount() == 1) {
+            relativeItemPositions.add(new DecimalPosition(0, 0));
+            enemyFreeRadius = itemRadius + bipcEnemyFreeRadius;
+        } else {
+            double value = Math.sqrt(baseItemPlacerConfig.getBaseItemCount());
+            int columns = (int) Math.ceil(value);
+            int rows = (int) Math.round(value);
+            double columnOffset = (double) (columns - 1) * itemRadius;
+            double rowOffset = (double) (rows - 1) * itemRadius;
+            int count = 0;
+            for (int column = 0; column < columns; column++) {
+                for (int row = 0; row < rows; row++) {
+                    count++;
+                    if (count <= baseItemPlacerConfig.getBaseItemCount()) {
+                        double xPos = (double) column * baseItemType.getPhysicalAreaConfig().getRadius() * 2.0 - columnOffset;
+                        double yPos = (double) row * baseItemType.getPhysicalAreaConfig().getRadius() * 2.0 - rowOffset;
+                        relativeItemPositions.add(new DecimalPosition(xPos, yPos));
+                    }
                 }
             }
+            enemyFreeRadius = bipcEnemyFreeRadius + MathHelper.getPythagorasC((double) columns * itemRadius, (double) rows * itemRadius);
         }
-        double bipcEnemyFreeRadius = baseItemPlacerConfig.getEnemyFreeRadius() != null ? baseItemPlacerConfig.getEnemyFreeRadius() : 0;
-        enemyFreeRadius = bipcEnemyFreeRadius + MathHelper.getPythagorasC((double) columns * itemRadius, (double) rows * itemRadius);
     }
 }
