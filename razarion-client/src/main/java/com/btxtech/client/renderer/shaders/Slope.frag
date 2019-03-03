@@ -89,9 +89,9 @@ vec4 triPlanarTextureMapping(sampler2D sampler, float scale, vec2 addCoord) {
 
     float b = (blending.x + blending.y + blending.z);
     blending /= vec3(b, b, b);
-    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz * scale + addCoord);
-    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz * scale + addCoord);
-    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy * scale + addCoord);
+    vec4 xAxisTop = texture2D(sampler, vVertexPositionCoord.yz / scale + addCoord); // TODO scale calculation correct -> copy from here
+    vec4 yAxisTop = texture2D(sampler, vVertexPositionCoord.xz / scale + addCoord);
+    vec4 zAxisTop = texture2D(sampler, vVertexPositionCoord.xy / scale + addCoord);
     return xAxisTop * blending.x + yAxisTop * blending.y + zAxisTop * blending.z;
 }
 
@@ -195,23 +195,22 @@ void setupGround(inout vec4 ambient, inout vec4 diffuse, inout vec4 specular) {
 }
 
 // Copied from Water Shader ends +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void setupWater(inout vec4 ambient, inout vec4 diffuse, inout vec4 specular) {
+void setupWater(inout vec4 ambient, inout vec4 specular) {
     // Setup ambient
-    vec2 distortion1 = texture2D(uWaterDistortionMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(uWaterAnimation, 0)).rg * 2.0 - 1.0;
-    vec2 distortion2 = texture2D(uWaterDistortionMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(-uWaterAnimation, uWaterAnimation)).rg * 2.0 - 1.0;
+    vec2 distortion1 = texture2D(uWaterDistortionMap, vVertexPositionCoord.xy / uWaterDistortionScale + vec2(uWaterAnimation, 0.5)).rg * 2.0 - 1.0;
+    vec2 distortion2 = texture2D(uWaterDistortionMap, vVertexPositionCoord.xy / uWaterDistortionScale + vec2(-uWaterAnimation, uWaterAnimation)).rg * 2.0 - 1.0;
     vec2 totalDistortion = distortion1 + distortion2;
-    vec2 reflectionCoord = (vVertexPositionCoord.xy) * uWaterReflectionScale + totalDistortion * uWaterDistortionStrength;
+    vec2 reflectionCoord = (vVertexPositionCoord.xy) / uWaterReflectionScale + totalDistortion * uWaterDistortionStrength;
     ambient =  vec4(texture2D(uWaterReflection, reflectionCoord).rgb, 1.0);
-    // Diffuse
-    diffuse = vec4(0.0, 0.0, 0.0, 1.0);
     // Setup specular
-    vec3 norm1 = texture2D(uWaterNormMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(uWaterAnimation, 0)).xyz;
-    vec3 norm2 = texture2D(uWaterNormMap, vVertexPositionCoord.xy * uWaterDistortionScale + vec2(-uWaterAnimation, uWaterAnimation)).xyz;
-    vec3 totalNorm = norm1  + norm2;
-    totalNorm = normalize(vec3(totalNorm.x - 1.0, totalNorm.y - 1.0, totalNorm.z / 2.0));
-    totalNorm = mix(vec3(0.0, 0.0, 1.0), totalNorm, uWaterNormMapDepth);
-    vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
-    specular = setupSpecularLight(correctedLigtDirection, totalNorm, uWaterLightSpecularIntensity, uWaterLightSpecularHardness);
+    vec3 normMap1 = texture2D(uWaterNormMap, vVertexPositionCoord.xy / uWaterDistortionScale + vec2(uWaterAnimation, 0.5)).xyz;
+    vec3 normMap2 = texture2D(uWaterNormMap, vVertexPositionCoord.xy / uWaterDistortionScale + vec2(-uWaterAnimation, uWaterAnimation)).xyz;
+    vec3 normMap = normMap1 + normMap2;
+    normMap = normalize(vec3(normMap.x - 1.0, normMap.y - 1.0, normMap.z / 2.0));
+    normMap = mix(vec3(0.0, 0.0, 1.0), normMap, uWaterNormMapDepth);
+    vec3 correctedNorm = normalize((uNVMatrix * vec4(normMap, 1.0)).xyz);
+    vec3 correctedLightDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
+    specular = setupSpecularLight(correctedLightDirection, correctedNorm, uWaterLightSpecularIntensity, uWaterLightSpecularHardness);
 }
 // Copied from Water Shader ends +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -242,14 +241,13 @@ void main(void) {
                 setupSlope(slopeAmbient, slopeDiffuse, slopeSpecular);
 
                 vec4 waterSurfaceAmbient;
-                vec4 waterSurfaceDiffuse;
                 vec4 waterSurfaceSpecular;
-                setupWater(waterSurfaceAmbient, waterSurfaceDiffuse, waterSurfaceSpecular);
+                setupWater(waterSurfaceAmbient, waterSurfaceSpecular);
                 vec4 underWaterAmbient;
                 vec4 underWaterDiffuse;
                 setupUnderWater(underWaterAmbient, underWaterDiffuse, 1.0);
                 vec4 waterAmbient = mix(underWaterAmbient, waterSurfaceAmbient, uWaterTransparency);
-                vec4 waterDiffuse = mix(underWaterDiffuse, waterSurfaceDiffuse, uWaterTransparency);
+                vec4 waterDiffuse = mix(underWaterDiffuse, vec4(0.0, 0.0, 0.0, 1.0), uWaterTransparency);
                 vec4 waterSpecular = mix(vec4(0.0, 0.0, 0.0, 1.0), waterSurfaceSpecular, uWaterTransparency);
 
 //                float splattingMap1 = texture2D(uSlopeWaterSplatting, vVertexPositionCoord.xy * uSlopeWaterSplattingScale + vec2(uWaterAnimation, 0)).r * 2.0 - 1.0;
