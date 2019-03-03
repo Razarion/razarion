@@ -11,5 +11,5 @@ void main(void) {
     vVertexPosition = (uVMatrix * vec4(aVertexPosition, 1.0)).xyz;
     vWorldVertexPosition = aVertexPosition.xyz;
 
-    gl_Position = uPMatrix * uVMatrix * vec4(aVertexPosition, 1.0);
+    gl_Position = uPMatrix * vec4(vVertexPosition, 1.0);
 }

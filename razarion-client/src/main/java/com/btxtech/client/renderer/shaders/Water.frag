@@ -25,11 +25,11 @@ uniform float uTerrainMarkerAnimation;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 
-vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
-     vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
-     vec3 eyeDirection = normalize(-vVertexPosition.xyz);
-     float factor = pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
-     return SPECULAR_LIGHT_COLOR * factor;
+vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
+    vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
+    vec3 eyeDirection = normalize(-vVertexPosition.xyz);
+    float factor = pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
+    return vec4(SPECULAR_LIGHT_COLOR * factor, 1.0);
 }
 
 vec4 setupTerrainMarker() {
@@ -48,26 +48,29 @@ vec4 setupTerrainMarker() {
 }
 
 // +++ Also used in Slop.frag
-vec3 setupWater() {
+void setupWater(inout vec4 ambient, inout vec4 specular) {
     // Setup ambient
-    vec2 distortion1 = texture2D(uDistortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(animation, 0)).rg * 2.0 - 1.0;
-    vec2 distortion2 = texture2D(uDistortionMap, vWorldVertexPosition.xy * uDistortionScale + vec2(-animation, animation)).rg * 2.0 - 1.0;
+    vec2 distortion1 = texture2D(uDistortionMap, vWorldVertexPosition.xy / uDistortionScale + vec2(animation, 0.5)).rg * 2.0 - 1.0;
+    vec2 distortion2 = texture2D(uDistortionMap, vWorldVertexPosition.xy / uDistortionScale + vec2(-animation, animation)).rg * 2.0 - 1.0;
     vec2 totalDistortion = distortion1 + distortion2;
-    vec2 reflectionCoord = (vWorldVertexPosition.xy) * uReflectionScale + totalDistortion * uDistortionStrength;
-    vec3 ambient = texture2D(uReflection, reflectionCoord).rgb;
-    // Setup specular
-    vec3 norm1 = texture2D(uNormMap, vWorldVertexPosition.xy * uDistortionScale + vec2(animation, 0)).xyz;
-    vec3 norm2 = texture2D(uNormMap, vWorldVertexPosition.xy * uDistortionScale + vec2(-animation, animation)).xyz;
-    vec3 totalNorm = norm1  + norm2;
-    totalNorm = normalize(vec3(totalNorm.x - 1.0, totalNorm.y - 1.0, totalNorm.z / 2.0));
-    totalNorm = mix(vec3(0.0, 0.0, 1.0), totalNorm, uNormMapDepth);
-    vec3 correctedLigtDirection = (uNVMatrix * vec4(uLightDirection, 1.0)).xyz;
-    vec3 specularColor = setupSpecularLight(correctedLigtDirection, totalNorm, uLightSpecularIntensity, uLightSpecularHardness);
-    return ambient + specularColor;
+    vec2 reflectionCoord = (vWorldVertexPosition.xy) / uReflectionScale + totalDistortion * uDistortionStrength;
+    ambient = vec4(texture2D(uReflection, reflectionCoord).rgb, 1.0);
+    // Setup norm map and light
+    vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
+    vec3 normMap1 = texture2D(uNormMap, vWorldVertexPosition.xy / uDistortionScale + vec2(animation, 0.5)).xyz;
+    vec3 normMap2 = texture2D(uNormMap, vWorldVertexPosition.xy / uDistortionScale + vec2(-animation, animation)).xyz;
+    vec3 normMap = normMap1 + normMap2;
+    normMap = normalize(vec3(normMap.x - 1.0, normMap.y - 1.0, normMap.z / 2.0));
+    normMap = mix(vec3(0.0, 0.0, 1.0), normMap, uNormMapDepth);
+    vec3 correctedNorm = normalize((uNVMatrix * vec4(normMap, 1.0)).xyz);
+    specular = setupSpecularLight(correctedLightDirection, correctedNorm, uLightSpecularIntensity, uLightSpecularHardness);
 }
 // +++ Also used in Slop.frag ends
 
 void main(void) {
-    gl_FragColor = vec4(setupWater(), uTransparency) + setupTerrainMarker();
+    vec4 ambient;
+    vec4 specular;
+    setupWater(ambient, specular);
+    gl_FragColor = vec4(ambient.rgb + specular.rgb, uTransparency) + setupTerrainMarker();
 }
 
