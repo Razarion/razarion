@@ -25,11 +25,11 @@ uniform float uTerrainMarkerAnimation;
 
 const vec3 SPECULAR_LIGHT_COLOR = vec3(1.0, 1.0, 1.0);
 
-vec4 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
+vec3 setupSpecularLight(vec3 correctedLightDirection, vec3 correctedNorm, float intensity, float hardness) {
     vec3 reflectionDirection = normalize(reflect(correctedLightDirection, normalize(correctedNorm)));
     vec3 eyeDirection = normalize(-vVertexPosition.xyz);
     float factor = pow(max(dot(reflectionDirection, eyeDirection), 0.0), hardness) * intensity;
-    return vec4(SPECULAR_LIGHT_COLOR * factor, 1.0);
+    return SPECULAR_LIGHT_COLOR * factor;
 }
 
 vec4 setupTerrainMarker() {
@@ -48,13 +48,13 @@ vec4 setupTerrainMarker() {
 }
 
 // +++ Also used in Slop.frag
-void setupWater(inout vec4 ambient, inout vec4 specular) {
+void setupWater(inout vec3 ambient, inout vec3 specular) {
     // Setup ambient
     vec2 distortion1 = texture2D(uDistortionMap, vWorldVertexPosition.xy / uDistortionScale + vec2(animation, 0.5)).rg * 2.0 - 1.0;
     vec2 distortion2 = texture2D(uDistortionMap, vWorldVertexPosition.xy / uDistortionScale + vec2(-animation, animation)).rg * 2.0 - 1.0;
     vec2 totalDistortion = distortion1 + distortion2;
     vec2 reflectionCoord = (vWorldVertexPosition.xy) / uReflectionScale + totalDistortion * uDistortionStrength;
-    ambient = vec4(texture2D(uReflection, reflectionCoord).rgb, 1.0);
+    ambient = texture2D(uReflection, reflectionCoord).rgb;
     // Setup norm map and light
     vec3 correctedLightDirection = normalize((uNVMatrix * vec4(uLightDirection, 1.0)).xyz);
     vec3 normMap1 = texture2D(uNormMap, vWorldVertexPosition.xy / uDistortionScale + vec2(animation, 0.5)).xyz;
@@ -68,9 +68,9 @@ void setupWater(inout vec4 ambient, inout vec4 specular) {
 // +++ Also used in Slop.frag ends
 
 void main(void) {
-    vec4 ambient;
-    vec4 specular;
+    vec3 ambient;
+    vec3 specular;
     setupWater(ambient, specular);
-    gl_FragColor = vec4(ambient.rgb + specular.rgb, uTransparency) + setupTerrainMarker();
+    gl_FragColor = vec4(ambient + specular, uTransparency) + setupTerrainMarker();
 }
 
