@@ -54,6 +54,9 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     @DataField
     private Label rendererCount;
     @Inject
+    @DataField("updateButton")
+    private Button updateButton;
+    @Inject
     @DataField("topButton")
     private Button topButton;
     @Inject
@@ -107,16 +110,22 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
         // TODO wireMode.setChecked(renderService.isWire());
         showNorm.setChecked(renderService.isShowNorm());
         displayLightDirectionLabel();
+        rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
+        renderTasks.setValue(renderService.getRenderTasks().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
+        updateCamera();
+    }
+
+    private void updateCamera() {
+        translateX.setValue(camera.getTranslateX());
+        translateY.setValue(camera.getTranslateY());
+        translateZ.setValue(camera.getTranslateZ());
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
         openingAngleYBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(normalProjectionTransformation.getFovY())));
         rotateZBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateZ())));
         rotateZSlider.setValue(Math.toDegrees(camera.getRotateZ()));
-        rendererCount.setText(Integer.toString(renderService.getRenderQueueSize()));
         rotateXBox.setText(DisplayUtils.NUMBER_FORMATTER_X_XX.format(Math.toDegrees(camera.getRotateX())));
         rotateXSlider.setValue(Math.toDegrees(camera.getRotateX()));
-        renderTasks.setValue(renderService.getRenderTasks().stream().map(RenderTaskModel::new).collect(Collectors.toList()));
     }
-
 
     @EventHandler("showMonitor")
     public void showMonitorChanged(ChangeEvent e) {
@@ -145,6 +154,21 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     private void displayLightDirectionLabel() {
         Vertex direction = camera.getDirection();
         directionLabel.setText(DisplayUtils.formatVertex(direction));
+    }
+
+    @EventHandler("translateX")
+    public void translateXBoxChanged(ChangeEvent e) {
+        camera.setTranslateX(translateX.getValue());
+    }
+
+    @EventHandler("translateY")
+    public void translateYBoxChanged(ChangeEvent e) {
+        camera.setTranslateY(translateY.getValue());
+    }
+
+    @EventHandler("translateZ")
+    public void translateZBoxChanged(ChangeEvent e) {
+        camera.setTranslateZ(translateZ.getValue());
     }
 
     @EventHandler("rotateXSlider")
@@ -181,6 +205,11 @@ public class RenderEngineEditorPanel extends LeftSideBarContent {
     public void openingAngleYBoxChanged(ChangeEvent e) {
         normalProjectionTransformation.setFovY(Math.toRadians(openingAngleYBox.getValue()));
         openingAngleYSlider.setValue(Math.toDegrees(normalProjectionTransformation.getFovY()));
+    }
+
+    @EventHandler("updateButton")
+    private void handleUpdateButtonClick(ClickEvent event) {
+        updateCamera();
     }
 
     @EventHandler("topButton")
