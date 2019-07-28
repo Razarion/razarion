@@ -187,7 +187,7 @@
                             <arguments>
                                 <argument>install</argument>
                                 <argument>-g</argument>
-                                <argument>@angular/cli</argument>
+                                <argument>@angular/cli@^1.6.7</argument>
                             </arguments>
                         </configuration>
                     </execution>
