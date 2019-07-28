@@ -277,7 +277,13 @@ public abstract class GameEngineWorker implements PlanetTickListener, QuestListe
             playerBase = baseItemService.getPlayerBase4BaseId(initialSlaveSyncItemInfo.getActualBaseId());
         }
         serverConnection.tickCountRequest();
-        sendToClient(GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED, findScrollToBasePosition());
+        DecimalPosition basePosition = findScrollToBasePosition();
+        if(basePosition != null) {
+            sendToClient(GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED, basePosition);
+        } else {
+            // Marshaller can not handle null value
+            sendToClient(GameEngineControlPackage.Command.INITIAL_SLAVE_SYNCHRONIZED_NO_BASE);
+        }
     }
 
     private DecimalPosition findScrollToBasePosition() {

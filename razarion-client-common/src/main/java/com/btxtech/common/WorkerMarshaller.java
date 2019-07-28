@@ -61,6 +61,7 @@ public class WorkerMarshaller {
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
             case CONNECTION_LOST:
+            case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
                 break;
             // Single JSON data
             case START_BOTS:
@@ -170,6 +171,7 @@ public class WorkerMarshaller {
             case INITIALIZED:
             case TICK_UPDATE_RESPONSE_FAIL:
             case CONNECTION_LOST:
+            case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
                 break;
             case INITIALIZE:
                 data.add(fromJson(array.getString(DATA_OFFSET_0), StaticGameConfig.class));

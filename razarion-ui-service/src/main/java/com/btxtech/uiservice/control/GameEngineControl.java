@@ -388,6 +388,9 @@ public abstract class GameEngineControl {
             case INITIAL_SLAVE_SYNCHRONIZED:
                 gameUiControl.onInitialSlaveSynchronized((DecimalPosition) controlPackage.getData(0));
                 break;
+            case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
+                gameUiControl.onInitialSlaveSynchronized(null);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
         }

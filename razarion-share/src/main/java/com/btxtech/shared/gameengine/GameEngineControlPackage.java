@@ -22,6 +22,7 @@ public class GameEngineControlPackage {
         PERFMON_RESPONSE,
         CONNECTION_LOST,
         INITIAL_SLAVE_SYNCHRONIZED,
+        INITIAL_SLAVE_SYNCHRONIZED_NO_BASE, // Marshaller can not handle null value
         // Bot
         START_BOTS,
         EXECUTE_BOT_COMMANDS,
