@@ -94,10 +94,7 @@ public class GameCanvas {
         canvas.getElement().getStyle().setHeight(100, Style.Unit.PCT);
         canvas.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
         // Create 3d context
-        ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "experimental-webgl");
-        if (ctx3d == null) {
-            ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "webgl");
-        }
+        ctx3d = WebGlUtil.getContext(canvas.getCanvasElement(), "webgl");
         if (ctx3d == null) {
             Browser.getWindow().alert("WebGL not supported ?!?!?!");
         }
