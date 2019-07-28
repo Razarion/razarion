@@ -200,6 +200,7 @@
                     <strict>true</strict>
                     <inplace>true</inplace>
                     <deploy>${project.parent.basedir}${raz.web-dir}debug</deploy>
+                    <!--<bindAddress>0.0.0.0</bindAddress>-->
                     <!--<saveSource>true</saveSource>-->
                     <!--<style>DETAILED</style>-->
                     <!-- Only work with modified gwt-maven-plugin -->

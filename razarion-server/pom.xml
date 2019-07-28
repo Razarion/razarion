@@ -177,6 +177,35 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
+                        <id>Install angular cli for all</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                                <argument>-g</argument>
+                                <argument>@angular/cli</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>NPM install frontend</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${project.basedir}/src/main/angular/frontend</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>Build angular frontend</id>
                         <phase>generate-resources</phase>
                         <goals>
@@ -191,6 +220,20 @@
                                 <!--<argument>&#45;&#45;env=dev</argument>-->
                                 <argument>--output-path=${project.build.directory}/ROOT</argument>
                                 <argument>--base-href=/</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>NPM install backend</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>npm</executable>
+                            <workingDirectory>${project.basedir}/src/main/angular/backend</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
                             </arguments>
                         </configuration>
                     </execution>
