@@ -4,6 +4,7 @@ import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.cdimock.TestNativeTerrainShapeAccess;
 import com.btxtech.shared.cdimock.TestSimpleExecutorService;
 import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
+import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.SlopeNode;
@@ -26,15 +27,22 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
+import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Assert;
 
+import java.io.File;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -319,6 +327,28 @@ public class WeldBaseTest {
 
     public void showDisplay(Object... userObject) {
         getWeldBean(WeldDisplay.class).show(userObject);
+    }
+
+    public void exportTriangles(String filename, Index... terrainTileIndices) {
+        List<Double> positions = new ArrayList<>();
+        List<Double> norms = new ArrayList<>();
+        Map<String, List<Double>> slope = new HashMap<>();
+        Arrays.stream(terrainTileIndices).forEach(terrainTileIndex -> {
+            TerrainTile terrainTile = getTerrainService().generateTerrainTile(terrainTileIndex);
+            if (terrainTile.getTerrainSlopeTiles() != null) {
+                Arrays.stream(terrainTile.getTerrainSlopeTiles()).forEach(terrainSlopeTile -> {
+                    Arrays.stream(terrainSlopeTile.getVertices()).forEach(positions::add);
+                    Arrays.stream(terrainSlopeTile.getNorms()).forEach(norms::add);
+                });
+            }
+        });
+        slope.put("positions", positions);
+        slope.put("norms", norms);
+        try {
+            new ObjectMapper().writeValue(new File(filename), slope);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {

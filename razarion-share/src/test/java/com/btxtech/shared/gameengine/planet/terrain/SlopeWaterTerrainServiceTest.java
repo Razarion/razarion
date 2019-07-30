@@ -11,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -72,6 +73,50 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         // AssertTerrainShape.saveTerrainShape(getTerrainShape(), "testWaterShape1.json");
         AssertTerrainShape.assertTerrainShape(getClass(), "testWaterShape1.json", getTerrainShape());
+    }
+
+    @Test
+    public void generateTerrainThreeJs() {
+        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
+        SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
+        slopeSkeletonConfigWater.setId(10).setType(SlopeSkeletonConfig.Type.WATER);
+        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setVerticalSpace(6).setHeight(-0.3);
+        SlopeNode[][] slopeNodes = new SlopeNode[][]{
+                {GameTestHelper.createSlopeNode(5, 0.0, 0.5),},
+                {GameTestHelper.createSlopeNode(10, -0.1, 1),},
+                {GameTestHelper.createSlopeNode(15, -0.2, 1),},
+                {GameTestHelper.createSlopeNode(20, -0.3, 1),}
+        };
+        slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
+        slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
+
+        List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
+        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
+        terrainSlopePositionLand.setId(1);
+        terrainSlopePositionLand.setSlopeConfigId(10);
+        terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 50, null), GameTestHelper.createTerrainSlopeCorner(200, 50, null), GameTestHelper.createTerrainSlopeCorner(200, 200, null), GameTestHelper.createTerrainSlopeCorner(50, 200, null)));
+        terrainSlopePositions.add(terrainSlopePositionLand);
+
+        double[][] heights = new double[][]{
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0},
+                {0, 0, 0}
+        };
+        double[][] splattings = new double[][]{
+                {0.7, 0.8, 0.9, 0.5},
+                {0.4, 0.5, 0.6, 0.6},
+                {0.1, 0.2, 0.3, 0.3}
+        };
+
+        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions, null);
+
+        exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\ocean1.json", new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        showDisplay();
+
+        Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");
     }
 
     @Test
