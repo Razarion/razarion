@@ -14,9 +14,6 @@ public class UvContext {
     }
 
     public double getUvY() {
-        if (lastPosition == null) {
-            return 0;
-        }
         return uvY;
     }
 }

@@ -38,8 +38,8 @@ public abstract class AbstractBorder {
         for (int i = 0; i < count; i++) {
             DecimalPosition pointFromStart = setupInnerPointFormStart(length, i);
             DecimalPosition outer = setupOuterPointFormStart(length, i);
-            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, outer, uvContext.getUvY(), calculateDrivewayHeightFactor(pointFromStart, next)));
             uvContext.addToUv(outer);
+            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, outer, uvContext.getUvY(), calculateDrivewayHeightFactor(pointFromStart, next)));
         }
     }
 
