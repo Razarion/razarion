@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.gui;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.btxtech.shared.gameengine.planet.gui.scenarioplayback.ScenarioPlaybackController;
+import com.btxtech.shared.gameengine.planet.gui.userobject.InstanceStringGenerator;
 import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.ScenarioPlayback;
 import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
@@ -100,6 +101,7 @@ public class WeldTestController implements Initializable {
     private TestCaseGenerator testCaseGenerator;
     private ScenarioPlaybackController scenarioPlaybackController;
     private int tickCount;
+    private List<DecimalPosition> polygon = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -184,6 +186,10 @@ public class WeldTestController implements Initializable {
 
     public void onMousePressed(MouseEvent event) {
         DecimalPosition position = weldTestRenderer.convertMouseToModel(event);
+        polygon.add(position);
+        weldTestRenderer.render(scenarioPlaybackController);
+        System.out.println("-------------------- Slope --------------------------------");
+        System.out.println(InstanceStringGenerator.generateSlope(polygon));
         onMousePressedTerrain(position);
     }
 
@@ -305,6 +311,14 @@ public class WeldTestController implements Initializable {
 
     public boolean renderSyncItems() {
         return syncItemsCheck.isSelected();
+    }
+
+    public boolean renderPolygon() {
+        return polygon != null && polygon.size() >= 3;
+    }
+
+    public List<DecimalPosition> getPolygon() {
+        return polygon;
     }
 
     public void onTickButton() {

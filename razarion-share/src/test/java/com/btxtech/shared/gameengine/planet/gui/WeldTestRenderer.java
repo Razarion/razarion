@@ -339,6 +339,9 @@ public class WeldTestRenderer {
         if (DebugHelperStatic.getPositions() != null) {
             drawPositions(DebugHelperStatic.getPositions(), FAT_LINE_WIDTH, Color.RED);
         }
+        if(weldTestController.renderPolygon()) {
+            strokePolygon(weldTestController.getPolygon(), 1, Color.RED, true);
+        }
     }
 
     private void renderTerrainShapeAccess() {
