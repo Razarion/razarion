@@ -51,4 +51,9 @@ public class LineBorder extends AbstractBorder {
     public DecimalPosition getInnerStart() {
         return innerStart;
     }
+
+    @Override
+    protected double toUvYSegmentLength(double horizontalSpace) {
+        return horizontalSpace;
+    }
 }

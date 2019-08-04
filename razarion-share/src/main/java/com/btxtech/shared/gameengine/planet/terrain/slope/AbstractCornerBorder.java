@@ -44,6 +44,8 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
         return 2.0 * Math.asin(horizontalSpace / (2.0 * getDistance()));
     }
 
-
-
+    @Override
+    protected double toUvYSegmentLength(double horizontalSpace) {
+        return horizontalSpace / 2.0;
+    }
 }

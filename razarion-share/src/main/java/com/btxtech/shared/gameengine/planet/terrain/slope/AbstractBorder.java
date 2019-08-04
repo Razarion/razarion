@@ -22,6 +22,8 @@ public abstract class AbstractBorder {
 
     protected abstract double getSegmentLength(int count);
 
+    protected abstract double toUvYSegmentLength(double horizontalSpace);
+
     public abstract DecimalPosition getInnerStart();
 
     protected abstract DecimalPosition setupInnerPointFormStart(double verticalSpace, int count);
@@ -35,12 +37,13 @@ public abstract class AbstractBorder {
     public void fillVerticalSegments(List<VerticalSegment> verticalSegments, Slope slope, double horizontalSpace, AbstractBorder next, UvContext uvContext) {
         int count = getSegmentCount(horizontalSpace);
         double length = getSegmentLength(count);
+        double uvYSegmentLength = toUvYSegmentLength(length);
         for (int i = 0; i < count; i++) {
             DecimalPosition pointFromStart = setupInnerPointFormStart(length, i);
             DecimalPosition outer = setupOuterPointFormStart(length, i);
-            uvContext.addToUv(outer);
             uvContext.setTerminationSegment(i == count - 1);
-            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, outer, uvContext.getUvY(), uvContext.getUvYTermination(length), calculateDrivewayHeightFactor(pointFromStart, next)));
+            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, outer, uvContext.getUvY(), uvContext.getUvYTermination(uvYSegmentLength), calculateDrivewayHeightFactor(pointFromStart, next)));
+            uvContext.addToUv(uvYSegmentLength);
         }
     }
 
