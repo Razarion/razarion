@@ -1,5 +1,7 @@
 package com.btxtech.shared;
 
+import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 
 /**
@@ -12,22 +14,25 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
     private double[] vertices;
     private double[] norms;
     private double[] tangents;
+    private double[] uvs;
     private double[] slopeFactors;
     private double[] groundSplattings;
 
     @Override
-    public void init(int slopeSkeletonConfigId, int vertexSize, int scalarSize) {
+    public void init(int slopeSkeletonConfigId, int vertexSize, int decimalPositionSize, int scalarSize) {
         this.slopeSkeletonConfigId = slopeSkeletonConfigId;
         vertices = new double[vertexSize];
         norms = new double[vertexSize];
         tangents = new double[vertexSize];
+        uvs = new double[decimalPositionSize];
         slopeFactors = new double[scalarSize];
         groundSplattings = new double[scalarSize];
     }
 
+
     @Override
-    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double slopeFactor, double splatting) {
-        int cornerScalarIndex = triangleCornerIndex * 3;
+    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double vwX, double vwY, double slopeFactor, double splatting) {
+        int cornerScalarIndex = triangleCornerIndex * Vertex.getComponentsPerVertex();
         vertices[cornerScalarIndex] = vertexX;
         vertices[cornerScalarIndex + 1] = vertexY;
         vertices[cornerScalarIndex + 2] = vertexZ;
@@ -37,6 +42,9 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
         tangents[cornerScalarIndex] = tangentX;
         tangents[cornerScalarIndex + 1] = tangentY;
         tangents[cornerScalarIndex + 2] = tangentZ;
+        int cornerDecimalPositionIndex = triangleCornerIndex * DecimalPosition.getComponentsPerDecimalPosition();
+        uvs[cornerDecimalPositionIndex] = vwX;
+        uvs[cornerDecimalPositionIndex + 1] = vwY;
         slopeFactors[triangleCornerIndex] = slopeFactor;
         groundSplattings[triangleCornerIndex] = splatting;
     }
@@ -69,6 +77,11 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
     @Override
     public double[] getTangents() {
         return tangents;
+    }
+
+    @Override
+    public double[] getUvs() {
+        return uvs;
     }
 
     @Override

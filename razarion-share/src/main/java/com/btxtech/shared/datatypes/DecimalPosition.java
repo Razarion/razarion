@@ -546,4 +546,8 @@ public class DecimalPosition {
         }
     }
 
+    public static int getComponentsPerDecimalPosition() {
+        return 2;
+    }
+
 }

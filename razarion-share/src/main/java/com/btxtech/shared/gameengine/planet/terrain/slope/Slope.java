@@ -27,7 +27,6 @@ public class Slope {
     private final double outerGroundHeight;
     private final double innerGroundHeight;
     private final TerrainTypeService terrainTypeService;
-    private List<AbstractBorder> borders = new ArrayList<>();
     private List<VerticalSegment> verticalSegments = new ArrayList<>();
     private Polygon2D innerRenderEnginePolygon; // Ground water renderer border
     private Polygon2D outerRenderEnginePolygon; // Ground water renderer border
@@ -48,14 +47,14 @@ public class Slope {
         this.innerGroundHeight = inverted ? outerGroundHeight - slopeSkeletonConfig.getHeight() : outerGroundHeight + slopeSkeletonConfig.getHeight();
         if (slopeSkeletonConfig.getWidth() <= 0.0) {
             throw new IllegalArgumentException("Slope <constructor> slopeSkeletonConfig.getWidth() <= 0.0 for slopeId: " + slopeId + " with slopeSkeletonConfig id: " + slopeSkeletonConfig.getId());
-        } else {
-            setupSlopingBorder(new ArrayList<>(corners));
         }
+        List<AbstractBorder> borders = setupSlopingBorder(new ArrayList<>(corners));
 
         // Setup vertical segments
+        UvContext uvContext = new UvContext();
         for (int i = 0; i < borders.size(); i++) {
             AbstractBorder border = borders.get(i);
-            border.fillVerticalSegments(verticalSegments, this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders));
+            border.fillVerticalSegments(verticalSegments, this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders), uvContext);
         }
 
         setupLimitationPolygon();
@@ -77,7 +76,7 @@ public class Slope {
         this.children = children;
     }
 
-    private void setupSlopingBorder(List<TerrainSlopeCorner> terrainSlopeCorners) {
+    private List<AbstractBorder> setupSlopingBorder(List<TerrainSlopeCorner> terrainSlopeCorners) {
         // Setup driveways
         List<Corner> corners = new ArrayList<>();
         while (true) {
@@ -130,12 +129,14 @@ public class Slope {
             }
         }
         // Setup whole contour
+        List<AbstractBorder> borders = new ArrayList<>();
         for (int i = 0; i < cornerBorders.size(); i++) {
             AbstractCornerBorder current = cornerBorders.get(i);
             AbstractCornerBorder next = cornerBorders.get(CollectionUtils.getCorrectedIndex(i + 1, cornerBorders.size()));
             borders.add(current);
             borders.add(new LineBorder(current, next, slopeSkeletonConfig.getWidth(), current.getDrivewayHeightFactor()));
         }
+        return borders;
     }
 
     private int computeSafetyDistanceViolatedIndex(List<Corner> corners) {

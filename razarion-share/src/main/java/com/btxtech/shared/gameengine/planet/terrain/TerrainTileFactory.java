@@ -210,6 +210,8 @@ public class TerrainTileFactory {
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
             Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation(fractionalSlope.isInverted());
+            double uvX = 0;
+            Vertex lastPosition = null;
             for (int row = 0; row - 1 < slopeSkeletonConfig.getRows(); row++) {
                 SlopeNode slopeNode;
                 if (row == 0) {
@@ -223,7 +225,11 @@ public class TerrainTileFactory {
                 }
                 Vertex transformedPoint = transformationMatrix.multiply(skeletonVertex, 1.0);
                 transformedPoint = transformedPoint.add(0, 0, fractionalSlope.getGroundHeight());
-                terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileContext.interpolateSplattin(transformedPoint.toXY()));
+                if(lastPosition != null) {
+                    uvX +=  lastPosition.distance(transformedPoint);
+                }
+                lastPosition = transformedPoint;
+                terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()),setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileContext.interpolateSplattin(transformedPoint.toXY()));
             }
             vertexColumn++;
         }

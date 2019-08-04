@@ -332,6 +332,7 @@ public class WeldBaseTest {
     public void exportTriangles(String filename, Index... terrainTileIndices) {
         List<Double> positions = new ArrayList<>();
         List<Double> norms = new ArrayList<>();
+        List<Double> uvs = new ArrayList<>();
         Map<String, List<Double>> slope = new HashMap<>();
         Arrays.stream(terrainTileIndices).forEach(terrainTileIndex -> {
             TerrainTile terrainTile = getTerrainService().generateTerrainTile(terrainTileIndex);
@@ -339,11 +340,13 @@ public class WeldBaseTest {
                 Arrays.stream(terrainTile.getTerrainSlopeTiles()).forEach(terrainSlopeTile -> {
                     Arrays.stream(terrainSlopeTile.getVertices()).forEach(positions::add);
                     Arrays.stream(terrainSlopeTile.getNorms()).forEach(norms::add);
+                    Arrays.stream(terrainSlopeTile.getUvs()).forEach(uvs::add);
                 });
             }
         });
         slope.put("positions", positions);
         slope.put("norms", norms);
+        slope.put("uvs", uvs);
         try {
             new ObjectMapper().writeValue(new File(filename), slope);
         } catch (IOException e) {

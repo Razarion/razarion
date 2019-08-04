@@ -1,7 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.Matrix4;
 
 /**
  * Created by Beat
@@ -13,12 +12,14 @@ public class VerticalSegment {
     private DecimalPosition inner;
     private DecimalPosition outer;
     private double drivewayHeightFactor;
+    private double uvY;
 
-    public VerticalSegment(Slope slope, int index, DecimalPosition inner, DecimalPosition outer, double drivewayHeightFactor) {
+    public VerticalSegment(Slope slope, int index, DecimalPosition inner, DecimalPosition outer, double uvY, double drivewayHeightFactor) {
         this.slope = slope;
         this.index = index;
         this.inner = inner;
         this.outer = outer;
+        this.uvY = uvY;
         this.drivewayHeightFactor = drivewayHeightFactor;
     }
 
@@ -44,5 +45,9 @@ public class VerticalSegment {
 
     public double getDrivewayHeightFactor() {
         return drivewayHeightFactor;
+    }
+
+    public double getUvY() {
+        return uvY;
     }
 }

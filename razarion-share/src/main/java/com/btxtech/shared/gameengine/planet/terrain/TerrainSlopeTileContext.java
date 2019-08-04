@@ -33,8 +33,8 @@ public class TerrainSlopeTileContext {
         mesh = new SlopeVertex[xCount][yCount];
     }
 
-    public void addVertex(int x, int y, Vertex vertex, double slopeFactor, double splatting) {
-        mesh[x][y] = new SlopeVertex(vertex, slopeFactor, splatting);
+    public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, double slopeFactor, double splatting) {
+        mesh[x][y] = new SlopeVertex(vertex, uv, slopeFactor, splatting);
     }
 
     public TerrainSlopeTile getTerrainSlopeTile() {
@@ -44,7 +44,7 @@ public class TerrainSlopeTileContext {
     public void triangulation(boolean invert) {
         terrainSlopeTile = jsInteropObjectFactory.generateTerrainSlopeTile();
         int verticesCount = (xCount - 1) * (yCount - 1) * 6;
-        terrainSlopeTile.init(slopeSkeletonConfigId, verticesCount * Vertex.getComponentsPerVertex(), verticesCount);
+        terrainSlopeTile.init(slopeSkeletonConfigId, verticesCount * Vertex.getComponentsPerVertex(), verticesCount * DecimalPosition.getComponentsPerDecimalPosition(), verticesCount);
         int triangleIndex = 0;
         for (int x = 1; x < xCount - 2; x++) {
             for (int y = 0; y < yCount - 1; y++) {
@@ -61,6 +61,10 @@ public class TerrainSlopeTileContext {
                 Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY(), invert);
                 Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY(), normBR);
                 Vertex tangentTL = setupTangent(x, y + 1, vertexTL.toXY(), normTL);
+                DecimalPosition uvBL = mesh[x][y].getUv();
+                DecimalPosition uvBR = mesh[x + 1][y].getUv();
+                DecimalPosition uvTR = mesh[x + 1][y + 1].getUv();
+                DecimalPosition uvTL = mesh[x][y + 1].getUv();
                 double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
                 double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
                 double splattingBR = mesh[x + 1][y].getSplatting();
@@ -74,9 +78,9 @@ public class TerrainSlopeTileContext {
                     double slopeFactorBL = mesh[x][y].getSlopeFactor();
                     double splattingBL = mesh[x][y].getSplatting();
 
-                    insertTriangleCorner(vertexBL, normBL, tangentBL, slopeFactorBL, splattingBL, triangleCornerIndex);
-                    insertTriangleCorner(vertexBR, normBR, tangentBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
-                    insertTriangleCorner(vertexTL, normTL, tangentTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                    insertTriangleCorner(vertexBL, normBL, tangentBL, uvBL, slopeFactorBL, splattingBL, triangleCornerIndex);
+                    insertTriangleCorner(vertexBR, normBR, tangentBR, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
+                    insertTriangleCorner(vertexTL, normTL, tangentTL, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
                     triangleIndex++;
                 }
 
@@ -88,9 +92,9 @@ public class TerrainSlopeTileContext {
                     double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
                     double splattingTR = mesh[x + 1][y + 1].getSplatting();
 
-                    insertTriangleCorner(vertexBR, normBR, tangentBR, slopeFactorBR, splattingBR, triangleCornerIndex);
-                    insertTriangleCorner(vertexTR, normTR, tangentTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
-                    insertTriangleCorner(vertexTL, normTL, tangentTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                    insertTriangleCorner(vertexBR, normBR, tangentBR, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex);
+                    insertTriangleCorner(vertexTR, normTR, tangentTR, uvTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
+                    insertTriangleCorner(vertexTL, normTL, tangentTL, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
                     triangleIndex++;
                 }
             }
@@ -153,19 +157,25 @@ public class TerrainSlopeTileContext {
         }
     }
 
-    private void insertTriangleCorner(Vertex vertex, Vertex norm, Vertex tangent, double slopeFactor, double splatting, int triangleCornerIndex) {
-        terrainSlopeTile.setTriangleCorner(triangleCornerIndex, vertex.getX(), vertex.getY(), vertex.getZ(), norm.getX(), norm.getY(), norm.getZ(), tangent.getX(), tangent.getY(), tangent.getZ(), slopeFactor, splatting);
+    private void insertTriangleCorner(Vertex vertex, Vertex norm, Vertex tangent, DecimalPosition uv, double slopeFactor, double splatting, int triangleCornerIndex) {
+        terrainSlopeTile.setTriangleCorner(triangleCornerIndex, vertex.getX(), vertex.getY(), vertex.getZ(), norm.getX(), norm.getY(), norm.getZ(), tangent.getX(), tangent.getY(), tangent.getZ(), uv.getX(), uv.getY(), slopeFactor, splatting);
     }
 
     private class SlopeVertex {
         private final Vertex vertex;
+        private final DecimalPosition uv;
         private final double slopeFactor;
         private final double splatting;
 
-        public SlopeVertex(Vertex vertex, double slopeFactor, double splatting) {
+        public SlopeVertex(Vertex vertex, DecimalPosition uv, double slopeFactor, double splatting) {
             this.vertex = vertex;
+            this.uv = uv;
             this.slopeFactor = slopeFactor;
             this.splatting = splatting;
+        }
+
+        public DecimalPosition getUv() {
+            return uv;
         }
 
         public Vertex getVertex() {

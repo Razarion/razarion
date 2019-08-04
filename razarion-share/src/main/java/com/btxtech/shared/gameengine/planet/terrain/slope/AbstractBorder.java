@@ -3,7 +3,6 @@ package com.btxtech.shared.gameengine.planet.terrain.slope;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.utils.MathHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,12 +32,14 @@ public abstract class AbstractBorder {
         return distance;
     }
 
-    public void fillVerticalSegments(List<VerticalSegment> verticalSegments, Slope slope, double verticalSpace, AbstractBorder next) {
+    public void fillVerticalSegments(List<VerticalSegment> verticalSegments, Slope slope, double verticalSpace, AbstractBorder next, UvContext uvContext) {
         int count = getSegmentCount(verticalSpace);
         double length = getSegmentLength(count);
         for (int i = 0; i < count; i++) {
             DecimalPosition pointFromStart = setupInnerPointFormStart(length, i);
-            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, setupOuterPointFormStart(length, i), calculateDrivewayHeightFactor(pointFromStart, next)));
+            DecimalPosition outer = setupOuterPointFormStart(length, i);
+            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, outer, uvContext.getUvY(), calculateDrivewayHeightFactor(pointFromStart, next)));
+            uvContext.addToUv(outer);
         }
     }
 
