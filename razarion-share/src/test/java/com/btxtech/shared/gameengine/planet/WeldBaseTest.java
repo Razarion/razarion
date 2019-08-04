@@ -333,6 +333,7 @@ public class WeldBaseTest {
         List<Double> positions = new ArrayList<>();
         List<Double> norms = new ArrayList<>();
         List<Double> uvs = new ArrayList<>();
+        List<Double> waterPositions = new ArrayList<>();
         Map<String, List<Double>> slope = new HashMap<>();
         Arrays.stream(terrainTileIndices).forEach(terrainTileIndex -> {
             TerrainTile terrainTile = getTerrainService().generateTerrainTile(terrainTileIndex);
@@ -343,10 +344,14 @@ public class WeldBaseTest {
                     Arrays.stream(terrainSlopeTile.getUvs()).forEach(uvs::add);
                 });
             }
+            if(terrainTile.getTerrainWaterTile() != null) {
+                Arrays.stream(terrainTile.getTerrainWaterTile().getVertices()).forEach(waterPositions::add);
+            }
         });
         slope.put("positions", positions);
         slope.put("norms", norms);
         slope.put("uvs", uvs);
+        slope.put("waterPositions", waterPositions);
         try {
             new ObjectMapper().writeValue(new File(filename), slope);
         } catch (IOException e) {

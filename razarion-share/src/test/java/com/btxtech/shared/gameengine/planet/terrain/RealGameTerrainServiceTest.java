@@ -33,17 +33,17 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 5000, 5000));
 
         setupTerrainTypeService(new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-        }, new double[][]{
                 {0.0, 0.0, 0.0},
                 {1.0, 0.0, 0.0},
                 {0.0, 0.0, 1.0},
                 {0.0, 0.0, 0.0},
-        }, slopeSkeletonConfigs, null, planetConfig, terrainSlopePositions, null);
+        }, slopeSkeletonConfigs, null, new double[][]{
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+                {0, 0, 0, 0},
+        }, planetConfig, terrainSlopePositions, null, null);
 
     }
 

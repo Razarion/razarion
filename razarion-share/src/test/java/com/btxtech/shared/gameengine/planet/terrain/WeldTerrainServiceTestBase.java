@@ -14,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
-import com.btxtech.shared.gameengine.planet.WeldBaseTest;
 import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 
@@ -31,9 +30,13 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(double[][] heights, double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
+    protected void setupTerrainTypeService(double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, WaterConfig waterConfig) {
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
-        staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
+        if (waterConfig != null) {
+            staticGameConfig.setWaterConfig(waterConfig);
+        } else {
+            staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
+        }
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         groundSkeletonConfig.setHeights(toColumnRow(heights));

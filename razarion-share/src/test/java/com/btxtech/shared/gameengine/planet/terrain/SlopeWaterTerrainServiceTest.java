@@ -7,6 +7,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
@@ -59,7 +60,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions, null);
+        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -114,7 +115,10 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions, null);
+        WaterConfig waterConfig = new WaterConfig();
+        waterConfig.setWaterLevel(-0.10);
+
+        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, waterConfig);
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\ocean1.json", new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
         showDisplay();
@@ -158,7 +162,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions, null);
+        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -227,7 +231,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions);
+        setupTerrainTypeService(splattings, slopeSkeletonConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
 
         // showDisplay();
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));

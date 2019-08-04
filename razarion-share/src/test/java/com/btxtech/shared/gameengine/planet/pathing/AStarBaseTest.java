@@ -121,7 +121,7 @@ public abstract class AStarBaseTest extends WeldTerrainServiceTestBase {
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(212, 325))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(223, 290))));
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, terrainObjectPositions);
+        setupTerrainTypeService(splattings, slopeSkeletonConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
     }
 
     protected SimplePath setupPath(double actorRadius, TerrainType actorTerrainType, DecimalPosition actorPosition, double range, double targetRadius, TerrainType targetTerrainType, DecimalPosition targetPosition) {

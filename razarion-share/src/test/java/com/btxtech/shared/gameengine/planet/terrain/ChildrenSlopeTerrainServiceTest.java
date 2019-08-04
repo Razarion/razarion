@@ -119,6 +119,6 @@ public class ChildrenSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(heights, splattings, slopeSkeletonConfigs, null, null, terrainSlopePositions, null);
+        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
     }
 }
