@@ -124,7 +124,7 @@ public class JsonProviderEmulator {
         System.out.println("List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();");
         System.out.println("SlopeSkeletonConfig skeletonConfig = new SlopeSkeletonConfig();");
         System.out.println("skeletonConfig.setId(" + slopeSkeletonConfig.getId() + ").setType(SlopeSkeletonConfig.Type." + slopeSkeletonConfig.getType() + ");");
-        System.out.println("skeletonConfig.setRows(" + slopeSkeletonConfig.getRows() + ").setSegments(" + slopeSkeletonConfig.getSegments() + ").setWidth(" + slopeSkeletonConfig.getWidth() + ").setVerticalSpace(" + slopeSkeletonConfig.getVerticalSpace() + ").setHeight(" + slopeSkeletonConfig.getHeight() + ");");
+        System.out.println("skeletonConfig.setRows(" + slopeSkeletonConfig.getRows() + ").setSegments(" + slopeSkeletonConfig.getSegments() + ").setWidth(" + slopeSkeletonConfig.getWidth() + ").setHorizontalSpace(" + slopeSkeletonConfig.getHorizontalSpace() + ").setHeight(" + slopeSkeletonConfig.getHeight() + ");");
         System.out.println("SlopeNode[][] slopeNodes = new SlopeNode[][]{");
         for (int x = 0; x < slopeSkeletonConfig.getSegments(); x++) {
             System.out.print("{");

@@ -225,11 +225,15 @@ public class TerrainTileFactory {
                 }
                 Vertex transformedPoint = transformationMatrix.multiply(skeletonVertex, 1.0);
                 transformedPoint = transformedPoint.add(0, 0, fractionalSlope.getGroundHeight());
-                if(lastPosition != null) {
-                    uvX +=  lastPosition.distance(transformedPoint);
+                if (lastPosition != null) {
+                    uvX += lastPosition.distance(transformedPoint);
+                }
+                DecimalPosition uvTermination = null;
+                if (fractionalSlopeSegment.hasUvYTermination()) {
+                    uvTermination = new DecimalPosition(uvX, fractionalSlopeSegment.getUvYTermination());
                 }
                 lastPosition = transformedPoint;
-                terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()),setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileContext.interpolateSplattin(transformedPoint.toXY()));
+                terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileContext.interpolateSplattin(transformedPoint.toXY()));
             }
             vertexColumn++;
         }
@@ -392,7 +396,7 @@ public class TerrainTileFactory {
             return;
         }
         Arrays.stream(nativeTerrainShapeObjectLists).forEach(nativeTerrainShapeObjectList -> {
-            if(nativeTerrainShapeObjectList.positions == null || nativeTerrainShapeObjectList.positions.length == 0) {
+            if (nativeTerrainShapeObjectList.positions == null || nativeTerrainShapeObjectList.positions.length == 0) {
                 return;
             }
             TerrainTileObjectList terrainTileObjectList = terrainTileContext.createAndAddTerrainTileObjectList();

@@ -57,7 +57,7 @@ public class SlopeConfigEntity {
     private double fractalClampMin;
     private double fractalClampMax;
     private double fractalRoughness;
-    private double verticalSpace;
+    private double horizontalSpace;
     private int segments;
     private boolean slopeOriented;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
@@ -90,7 +90,7 @@ public class SlopeConfigEntity {
         slopeSkeletonConfig.setRows(shape.getVertexCount());
         slopeSkeletonConfig.setWidth(shape.getDistance());
         slopeSkeletonConfig.setHeight(shape.getZInner());
-        slopeSkeletonConfig.setVerticalSpace(verticalSpace);
+        slopeSkeletonConfig.setHorizontalSpace(horizontalSpace);
         slopeSkeletonConfig.setType(type);
         slopeSkeletonConfig.setSlopeOriented(slopeOriented);
         slopeSkeletonConfig.setTextureId(PersistenceUtil.getImageIdSafe(texture));
@@ -146,7 +146,7 @@ public class SlopeConfigEntity {
         bm = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getBmId());
         bmScale = slopeConfig.getSlopeSkeletonConfig().getBmScale();
         bmDepth = slopeConfig.getSlopeSkeletonConfig().getBmDepth();
-        verticalSpace = slopeConfig.getSlopeSkeletonConfig().getVerticalSpace();
+        horizontalSpace = slopeConfig.getSlopeSkeletonConfig().getHorizontalSpace();
         slopeOriented = slopeConfig.getSlopeSkeletonConfig().getSlopeOriented();
         segments = slopeConfig.getSlopeSkeletonConfig().getSegments();
         slopeSkeletonEntries.clear();
@@ -161,7 +161,7 @@ public class SlopeConfigEntity {
 
     public void setDefault() {
         segments = 1;
-        verticalSpace = 0.5;
+        horizontalSpace = 0.5;
         type = SlopeSkeletonConfig.Type.LAND;
         shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(0, 0)).setSlopeFactor(1));
@@ -191,7 +191,7 @@ public class SlopeConfigEntity {
                 ", fractalClampMin=" + fractalClampMin +
                 ", fractalClampMax=" + fractalClampMax +
                 ", fractalRoughness=" + fractalRoughness +
-                ", verticalSpace=" + verticalSpace +
+                ", horizontalSpace=" + horizontalSpace +
                 ", slopeOriented=" + slopeOriented +
                 ", segments=" + segments +
                 ", type=" + type +

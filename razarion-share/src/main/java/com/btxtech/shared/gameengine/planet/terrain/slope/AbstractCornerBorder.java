@@ -22,11 +22,11 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
     protected abstract double getAngle();
 
     @Override
-    protected int getSegmentCount(double verticalSpace) {
-        if (verticalSpace >= 2.0 * getDistance()) {
+    protected int getSegmentCount(double horizontalSpace) {
+        if (horizontalSpace >= 2.0 * getDistance()) {
             return 1;
         }
-        double nodeAngle = getSegmentAngle(verticalSpace);
+        double nodeAngle = getSegmentAngle(horizontalSpace);
         int count = (int) Math.round(getAngle() / nodeAngle);
         if (count > 0) {
             return count;
@@ -40,8 +40,8 @@ public abstract class AbstractCornerBorder extends AbstractBorder {
         return 2.0 * getDistance() * Math.sin(getAngle() / (double) count / 2.0);
     }
 
-    protected double getSegmentAngle(double verticalSpace) {
-        return 2.0 * Math.asin(verticalSpace / (2.0 * getDistance()));
+    protected double getSegmentAngle(double horizontalSpace) {
+        return 2.0 * Math.asin(horizontalSpace / (2.0 * getDistance()));
     }
 
 

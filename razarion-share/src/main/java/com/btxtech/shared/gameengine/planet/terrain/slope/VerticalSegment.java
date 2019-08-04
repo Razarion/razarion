@@ -13,13 +13,15 @@ public class VerticalSegment {
     private DecimalPosition outer;
     private double drivewayHeightFactor;
     private double uvY;
+    private Double uvYTermination;
 
-    public VerticalSegment(Slope slope, int index, DecimalPosition inner, DecimalPosition outer, double uvY, double drivewayHeightFactor) {
+    public VerticalSegment(Slope slope, int index, DecimalPosition inner, DecimalPosition outer, double uvY, Double uvYTermination, double drivewayHeightFactor) {
         this.slope = slope;
         this.index = index;
         this.inner = inner;
         this.outer = outer;
         this.uvY = uvY;
+        this.uvYTermination = uvYTermination;
         this.drivewayHeightFactor = drivewayHeightFactor;
     }
 
@@ -49,5 +51,9 @@ public class VerticalSegment {
 
     public double getUvY() {
         return uvY;
+    }
+
+    public Double getUvYTermination() {
+        return uvYTermination;
     }
 }

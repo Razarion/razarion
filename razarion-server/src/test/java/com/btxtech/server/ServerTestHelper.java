@@ -514,7 +514,7 @@ public class ServerTestHelper {
             SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
             slopeSkeletonConfigLand.setSpecularLightConfig(new SpecularLightConfig());
             slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-            slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+            slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
             slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(2, 0, 5)).setSlopeFactor(1)},
                     {new SlopeNode().setPosition(new Vertex(4, 0, 10)).setSlopeFactor(0.7)},
@@ -532,7 +532,7 @@ public class ServerTestHelper {
             SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
             slopeSkeletonConfigWater.setSpecularLightConfig(new SpecularLightConfig());
             slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-            slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setVerticalSpace(6).setHeight(-2);
+            slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
             slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(5, 0, 0.5)).setSlopeFactor(0.5)},
                     {new SlopeNode().setPosition(new Vertex(10, 0, -0.1)).setSlopeFactor(1)},

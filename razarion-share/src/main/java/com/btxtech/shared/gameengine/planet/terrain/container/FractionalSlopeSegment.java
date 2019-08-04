@@ -15,6 +15,7 @@ public class FractionalSlopeSegment {
     private int index;
     private double drivewayHeightFactor;
     private double uvY;
+    private Double uvYTermination;
 
     public FractionalSlopeSegment() {
     }
@@ -27,6 +28,7 @@ public class FractionalSlopeSegment {
             drivewayHeightFactor = nativeFractionalSlopeSegment.drivewayHeightFactor;
         }
         uvY = nativeFractionalSlopeSegment.uvY;
+        uvYTermination = nativeFractionalSlopeSegment.uvYTermination;
     }
 
     public int getIndex() {
@@ -65,8 +67,20 @@ public class FractionalSlopeSegment {
         return uvY;
     }
 
+    public boolean hasUvYTermination() {
+        return uvYTermination != null;
+    }
+
+    public Double getUvYTermination() {
+        return uvYTermination;
+    }
+
     public void setUvY(double uvY) {
         this.uvY = uvY;
+    }
+
+    public void setUvYTermination(Double uvYTermination) {
+        this.uvYTermination = uvYTermination;
     }
 
     public Matrix4 setupTransformation(boolean inverted) {
@@ -102,6 +116,7 @@ public class FractionalSlopeSegment {
         fractionalSlopeSegment.setOuter(verticalSegment.getOuter());
         fractionalSlopeSegment.setDrivewayHeightFactor(verticalSegment.getDrivewayHeightFactor());
         fractionalSlopeSegment.setUvY(verticalSegment.getUvY());
+        fractionalSlopeSegment.setUvYTermination(verticalSegment.getUvYTermination());
         return fractionalSlopeSegment;
     }
 
@@ -116,6 +131,7 @@ public class FractionalSlopeSegment {
             nativeFractionalSlopeSegment.drivewayHeightFactor = drivewayHeightFactor;
         }
         nativeFractionalSlopeSegment.uvY = uvY;
+        nativeFractionalSlopeSegment.uvYTermination = uvYTermination;
         return nativeFractionalSlopeSegment;
     }
 }

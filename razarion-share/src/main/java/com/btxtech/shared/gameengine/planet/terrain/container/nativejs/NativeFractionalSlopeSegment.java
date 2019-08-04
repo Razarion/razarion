@@ -15,4 +15,5 @@ public class NativeFractionalSlopeSegment {
     public int index;
     public Double drivewayHeightFactor;
     public double uvY;
+    public Double uvYTermination;
 }

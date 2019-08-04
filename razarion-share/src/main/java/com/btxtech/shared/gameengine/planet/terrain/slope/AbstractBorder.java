@@ -18,7 +18,7 @@ public abstract class AbstractBorder {
         this.drivewayHeightFactor = drivewayHeightFactor;
     }
 
-    protected abstract int getSegmentCount(double verticalSpace);
+    protected abstract int getSegmentCount(double horizontalSpace);
 
     protected abstract double getSegmentLength(int count);
 
@@ -32,14 +32,15 @@ public abstract class AbstractBorder {
         return distance;
     }
 
-    public void fillVerticalSegments(List<VerticalSegment> verticalSegments, Slope slope, double verticalSpace, AbstractBorder next, UvContext uvContext) {
-        int count = getSegmentCount(verticalSpace);
+    public void fillVerticalSegments(List<VerticalSegment> verticalSegments, Slope slope, double horizontalSpace, AbstractBorder next, UvContext uvContext) {
+        int count = getSegmentCount(horizontalSpace);
         double length = getSegmentLength(count);
         for (int i = 0; i < count; i++) {
             DecimalPosition pointFromStart = setupInnerPointFormStart(length, i);
             DecimalPosition outer = setupOuterPointFormStart(length, i);
             uvContext.addToUv(outer);
-            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, outer, uvContext.getUvY(), calculateDrivewayHeightFactor(pointFromStart, next)));
+            uvContext.setTerminationSegment(i == count - 1);
+            verticalSegments.add(new VerticalSegment(slope, verticalSegments.size(), pointFromStart, outer, uvContext.getUvY(), uvContext.getUvYTermination(length), calculateDrivewayHeightFactor(pointFromStart, next)));
         }
     }
 

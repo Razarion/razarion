@@ -21,19 +21,10 @@ public class LineBorder extends AbstractBorder {
         outerEnd = next.getOuterStart();
     }
 
-    public LineBorder(DecimalPosition current, DecimalPosition next) {
-        super(0, 0);
-        innerStart = current;
-        innerEnd = next;
-        outerStart = current;
-        outerEnd = next;
-    }
-
-
     @Override
-    protected int getSegmentCount(double verticalSpace) {
+    protected int getSegmentCount(double horizontalSpace) {
         double distance = innerStart.getDistance(innerEnd);
-        int segments = (int) Math.round(distance / verticalSpace);
+        int segments = (int) Math.round(distance / horizontalSpace);
         if (segments > 0) {
             return segments;
         } else {

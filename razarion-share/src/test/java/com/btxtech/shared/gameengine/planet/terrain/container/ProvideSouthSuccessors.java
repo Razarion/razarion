@@ -31,7 +31,7 @@ public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 1, 0.3),},
                 {GameTestHelper.createSlopeNode(4, 5, 1),},

@@ -55,7 +55,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig skeletonConfig = new SlopeSkeletonConfig();
         skeletonConfig.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        skeletonConfig.setRows(10).setSegments(100).setWidth(9.8).setVerticalSpace(3.0).setHeight(8.2);
+        skeletonConfig.setRows(10).setSegments(100).setWidth(9.8).setHorizontalSpace(3.0).setHeight(8.2);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(1.4, 0.0, 0.1), GameTestHelper.createSlopeNode(3.5999998569488527, 0.0, 0.3), GameTestHelper.createSlopeNode(4.6, 1.0, 0.9), GameTestHelper.createSlopeNode(5.2, 2.4, 1.0), GameTestHelper.createSlopeNode(5.4, 3.7, 1.0), GameTestHelper.createSlopeNode(5.7, 5.1, 1.0), GameTestHelper.createSlopeNode(6.1, 6.8, 1.0), GameTestHelper.createSlopeNode(7.400000095367432, 8.8, 0.8), GameTestHelper.createSlopeNode(8.800000953674317, 8.2, 0.5), GameTestHelper.createSlopeNode(9.8, 8.2, 0.0)},
                 {GameTestHelper.createSlopeNode(1.4, 0.0, 0.1), GameTestHelper.createSlopeNode(3.5999998569488527, 0.0, 0.3), GameTestHelper.createSlopeNode(4.6, 1.0, 0.9), GameTestHelper.createSlopeNode(5.2, 2.4, 1.0), GameTestHelper.createSlopeNode(5.4, 3.7, 1.0), GameTestHelper.createSlopeNode(5.7, 5.1, 1.0), GameTestHelper.createSlopeNode(6.1, 6.8, 1.0), GameTestHelper.createSlopeNode(7.400000095367432, 8.8, 0.8), GameTestHelper.createSlopeNode(8.800000953674317, 8.2, 0.5), GameTestHelper.createSlopeNode(9.8, 8.2, 0.0)},

@@ -33,8 +33,8 @@ public class TerrainSlopeTileContext {
         mesh = new SlopeVertex[xCount][yCount];
     }
 
-    public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, double slopeFactor, double splatting) {
-        mesh[x][y] = new SlopeVertex(vertex, uv, slopeFactor, splatting);
+    public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor, double splatting) {
+        mesh[x][y] = new SlopeVertex(vertex, uv, uvTermination, slopeFactor, splatting);
     }
 
     public TerrainSlopeTile getTerrainSlopeTile() {
@@ -62,9 +62,10 @@ public class TerrainSlopeTileContext {
                 Vertex tangentBR = setupTangent(x + 1, y, vertexBR.toXY(), normBR);
                 Vertex tangentTL = setupTangent(x, y + 1, vertexTL.toXY(), normTL);
                 DecimalPosition uvBL = mesh[x][y].getUv();
-                DecimalPosition uvBR = mesh[x + 1][y].getUv();
-                DecimalPosition uvTR = mesh[x + 1][y + 1].getUv();
+                DecimalPosition uvBR = mesh[x][y].isUvTermination() ? mesh[x][y].getUvTermination() : mesh[x + 1][y].getUv();
+                DecimalPosition uvTR = mesh[x][y + 1].isUvTermination() ? mesh[x][y + 1].getUvTermination() : mesh[x + 1][y + 1].getUv();
                 DecimalPosition uvTL = mesh[x][y + 1].getUv();
+
                 double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
                 double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
                 double splattingBR = mesh[x + 1][y].getSplatting();
@@ -164,18 +165,28 @@ public class TerrainSlopeTileContext {
     private class SlopeVertex {
         private final Vertex vertex;
         private final DecimalPosition uv;
+        private final DecimalPosition uvTermination;
         private final double slopeFactor;
         private final double splatting;
 
-        public SlopeVertex(Vertex vertex, DecimalPosition uv, double slopeFactor, double splatting) {
+        public SlopeVertex(Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor, double splatting) {
             this.vertex = vertex;
             this.uv = uv;
+            this.uvTermination = uvTermination;
             this.slopeFactor = slopeFactor;
             this.splatting = splatting;
         }
 
         public DecimalPosition getUv() {
             return uv;
+        }
+
+        public boolean isUvTermination() {
+            return uvTermination != null;
+        }
+
+        public DecimalPosition getUvTermination() {
+            return uvTermination;
         }
 
         public Vertex getVertex() {

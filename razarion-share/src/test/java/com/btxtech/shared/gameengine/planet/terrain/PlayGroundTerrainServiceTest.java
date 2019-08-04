@@ -66,7 +66,7 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
         slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setVerticalSpace(5).setHeight(20);
+        slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
         slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 8, 0.7),},
@@ -79,7 +79,7 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
         slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setVerticalSpace(5).setHeight(-2);
+        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(5).setHeight(-2);
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 0),},
                 {GameTestHelper.createSlopeNode(5, -0.5, 1),},

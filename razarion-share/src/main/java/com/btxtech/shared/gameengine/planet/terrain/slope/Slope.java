@@ -54,7 +54,8 @@ public class Slope {
         UvContext uvContext = new UvContext();
         for (int i = 0; i < borders.size(); i++) {
             AbstractBorder border = borders.get(i);
-            border.fillVerticalSegments(verticalSegments, this, slopeSkeletonConfig.getVerticalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders), uvContext);
+            uvContext.setTerminationBorder(i == borders.size() - 1);
+            border.fillVerticalSegments(verticalSegments, this, slopeSkeletonConfig.getHorizontalSpace(), CollectionUtils.getCorrectedElement(i + 1, borders), uvContext);
         }
 
         setupLimitationPolygon();

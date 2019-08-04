@@ -20,7 +20,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
-    private double verticalSpace;
+    private double horizontalSpace;
     private Type type;
     private SlopeNode[][] slopeNodes;
     private SpecularLightConfig specularLightConfig;
@@ -132,12 +132,12 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public double getVerticalSpace() {
-        return verticalSpace;
+    public double getHorizontalSpace() {
+        return horizontalSpace;
     }
 
-    public SlopeSkeletonConfig setVerticalSpace(double verticalSpace) {
-        this.verticalSpace = verticalSpace;
+    public SlopeSkeletonConfig setHorizontalSpace(double horizontalSpace) {
+        this.horizontalSpace = horizontalSpace;
         return this;
     }
 
