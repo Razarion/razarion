@@ -9,6 +9,7 @@ import jsinterop.annotations.JsType;
 @JsType(name = "NativeTerrainShapeNode", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeTerrainShapeNode {
     public double[] fullDrivewayHeights; // bl, br, tr, tl
+    public double[] offsetToOuter; // bl, br, tr, tl
     public Double gameEngineHeight;
     public Double renderEngineHeight;
     public NativeVertex[][] groundSlopeConnections;

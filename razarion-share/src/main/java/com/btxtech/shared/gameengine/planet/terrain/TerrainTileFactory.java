@@ -296,9 +296,9 @@ public class TerrainTileFactory {
 
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode == null && !terrainShapeTile.isRenderLand()) {
-                terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight());
+                terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), null); // TODO replace null
             } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
-                terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel());
+                terrainWaterTileContext.insertNode(terrainTileContext.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel(), terrainShapeNode.getOffsetToOuter());
             } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
                 terrainShapeNode.getWaterSegments().forEach(segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE, terrainWaterTileContext::insertWaterRim));
             }

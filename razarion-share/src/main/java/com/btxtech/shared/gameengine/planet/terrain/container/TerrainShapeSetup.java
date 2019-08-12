@@ -157,6 +157,8 @@ public class TerrainShapeSetup {
                 for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setFullWaterLevel(slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel());
+                    // Slow
+                    terrainShapeNode.setOffsetToOuter(setupOffsetToOuter(slope, nodeIndex));
                     terrainShapeNode.setDoNotRenderGround(true);
                 }
             } else {
@@ -274,6 +276,17 @@ public class TerrainShapeSetup {
                 processSlope(childSlope, dirtyTerrainShapeNodes);
             }
         }
+    }
+
+    private double[] setupOffsetToOuter(Slope slope, Index nodeIndex) {
+        Rectangle2D absoluteNode = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+        // bl, br, tr, tl
+        return new double[]{
+                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerBottomLeft()),
+                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerBottomRight()),
+                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerTopRight()),
+                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerTopLeft())
+        };
     }
 
     // Rename setup game engine / render engine

@@ -20,13 +20,14 @@ public class TerrainWaterTileContext {
     private JsInteropObjectFactory jsInteropObjectFactory;
     private TerrainTileContext terrainTileContext;
     private List<Vertex> triangleCorners = new ArrayList<>();
+    private List<Double> offsetToOuterCorner = new ArrayList<>();
     private int waterNodeCount;
 
     public void init(TerrainTileContext terrainTileContext) {
         this.terrainTileContext = terrainTileContext;
     }
 
-    public void insertNode(Index nodeIndex, double waterLevel) {
+    public void insertNode(Index nodeIndex, double waterLevel, double[] offsetToOuter) {
         Rectangle2D rect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
 
 
@@ -34,6 +35,10 @@ public class TerrainWaterTileContext {
         Vertex bottomRight = new Vertex(rect.cornerBottomRight(), waterLevel);
         Vertex topRight = new Vertex(rect.cornerTopRight(), waterLevel);
         Vertex topLeft = new Vertex(rect.cornerTopLeft(), waterLevel);
+        Double offsetToOuterBottomLeft = offsetToOuter != null ? offsetToOuter[0] : null;
+        Double offsetToOuterBottomRight = offsetToOuter != null ? offsetToOuter[1] : null;
+        Double offsetToOuterTopRight = offsetToOuter != null ? offsetToOuter[2] : null;
+        Double offsetToOuterTopLeft = offsetToOuter != null ? offsetToOuter[3] : null;
 
         if (!terrainTileContext.checkPlayGround(bottomLeft, bottomRight, topRight, topLeft)) {
             return;
@@ -43,10 +48,17 @@ public class TerrainWaterTileContext {
         triangleCorners.add(bottomLeft);
         triangleCorners.add(bottomRight);
         triangleCorners.add(topLeft);
+        offsetToOuterCorner.add(offsetToOuterBottomLeft);
+        offsetToOuterCorner.add(offsetToOuterBottomRight);
+        offsetToOuterCorner.add(offsetToOuterTopLeft);
         // Triangle 2
         triangleCorners.add(bottomRight);
         triangleCorners.add(topRight);
         triangleCorners.add(topLeft);
+        offsetToOuterCorner.add(offsetToOuterBottomRight);
+        offsetToOuterCorner.add(offsetToOuterTopRight);
+        offsetToOuterCorner.add(offsetToOuterTopLeft);
+
         waterNodeCount++;
     }
 
@@ -57,6 +69,9 @@ public class TerrainWaterTileContext {
         triangleCorners.add(vertexA);
         triangleCorners.add(vertexB);
         triangleCorners.add(vertexC);
+        offsetToOuterCorner.add(null); // TODO fill
+        offsetToOuterCorner.add(null); // TODO fill
+        offsetToOuterCorner.add(null); // TODO fill
     }
 
     public void complete() {
@@ -64,10 +79,10 @@ public class TerrainWaterTileContext {
             return;
         }
         TerrainWaterTile terrainWaterTile = jsInteropObjectFactory.generateTerrainWaterTile();
-        terrainWaterTile.initArray(triangleCorners.size() * Vertex.getComponentsPerVertex());
+        terrainWaterTile.initArray(triangleCorners.size() * Vertex.getComponentsPerVertex(), triangleCorners.size());
         for (int i = 0; i < triangleCorners.size(); i++) {
             Vertex vertex = triangleCorners.get(i);
-            terrainWaterTile.setTriangleCorner(i, vertex.getX(), vertex.getY(), vertex.getZ());
+            terrainWaterTile.setTriangleCorner(i, vertex.getX(), vertex.getY(), vertex.getZ(), offsetToOuterCorner.get(i));
         }
         terrainWaterTile.setVertexCount(triangleCorners.size());
         terrainTileContext.setTerrainWaterTile(terrainWaterTile);

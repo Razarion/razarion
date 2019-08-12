@@ -155,6 +155,10 @@ public class Polygon2D {
         }
     }
 
+    public double findNearestDistance(DecimalPosition position) {
+        return lines.stream().mapToDouble(line -> line.getShortestDistance(position)).min().orElseThrow(IllegalStateException::new);
+    }
+
     public double getInnerAngle(int index) {
         return getCorner(index).angle(getCorner(index + 1), getCorner(index - 1));
     }

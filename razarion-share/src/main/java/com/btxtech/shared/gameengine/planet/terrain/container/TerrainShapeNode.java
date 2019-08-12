@@ -1,6 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain.container;
 
-import com.btxtech.shared.datatypes.Circle2D;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Vertex;
@@ -38,6 +37,7 @@ public class TerrainShapeNode {
     private Boolean doNotRenderGround;
     private Double renderEngineHeight;
     private Boolean fullRenderEngineDriveway;
+    private double[] offsetToOuter; // bl, br, tr, tl
     // Game and render engine
     private double[] drivewayHeights; // bl, br, tr, tl
     private Double fullWaterLevel;
@@ -48,6 +48,7 @@ public class TerrainShapeNode {
 
     public TerrainShapeNode(NativeTerrainShapeNode nativeTerrainShapeNode) {
         drivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
+        offsetToOuter = nativeTerrainShapeNode.offsetToOuter;
         gameEngineHeight = nativeTerrainShapeNode.gameEngineHeight;
         renderEngineHeight = nativeTerrainShapeNode.renderEngineHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
@@ -105,6 +106,10 @@ public class TerrainShapeNode {
 
     public void setDrivewayHeights(double[] drivewayHeights) {
         this.drivewayHeights = drivewayHeights;
+    }
+
+    public void setOffsetToOuter(double[] offsetToOuter) {
+        this.offsetToOuter = offsetToOuter;
     }
 
     public void setRenderEngineHeight(Double renderEngineHeight) {
@@ -181,6 +186,10 @@ public class TerrainShapeNode {
 
     public Double getFullWaterLevel() {
         return fullWaterLevel;
+    }
+
+    public double[] getOffsetToOuter() {
+        return offsetToOuter;
     }
 
     public boolean hasSubNodes() {
@@ -311,6 +320,7 @@ public class TerrainShapeNode {
     public NativeTerrainShapeNode toNativeTerrainShapeNode() {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
         nativeTerrainShapeNode.fullDrivewayHeights = drivewayHeights;
+        nativeTerrainShapeNode.offsetToOuter = offsetToOuter;
         nativeTerrainShapeNode.gameEngineHeight = gameEngineHeight;
         nativeTerrainShapeNode.renderEngineHeight = renderEngineHeight;
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
