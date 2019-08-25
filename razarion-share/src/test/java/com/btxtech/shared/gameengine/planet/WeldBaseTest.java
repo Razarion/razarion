@@ -27,22 +27,17 @@ import com.btxtech.shared.gameengine.planet.model.SyncPhysicalMovable;
 import com.btxtech.shared.gameengine.planet.model.SyncResourceItem;
 import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
+import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Assert;
 
 import java.io.File;
-import java.io.IOException;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -329,37 +324,10 @@ public class WeldBaseTest {
         getWeldBean(WeldDisplay.class).show(userObject);
     }
 
-    public void exportTriangles(String filename, Index... terrainTileIndices) {
-        List<Double> positions = new ArrayList<>();
-        List<Double> norms = new ArrayList<>();
-        List<Double> uvs = new ArrayList<>();
-        List<Double> waterPositions = new ArrayList<>();
-        List<Double> offsetToOuters = new ArrayList<>();
-        Map<String, List<Double>> slope = new HashMap<>();
-        Arrays.stream(terrainTileIndices).forEach(terrainTileIndex -> {
-            TerrainTile terrainTile = getTerrainService().generateTerrainTile(terrainTileIndex);
-            if (terrainTile.getTerrainSlopeTiles() != null) {
-                Arrays.stream(terrainTile.getTerrainSlopeTiles()).forEach(terrainSlopeTile -> {
-                    Arrays.stream(terrainSlopeTile.getVertices()).forEach(positions::add);
-                    Arrays.stream(terrainSlopeTile.getNorms()).forEach(norms::add);
-                    Arrays.stream(terrainSlopeTile.getUvs()).forEach(uvs::add);
-                });
-            }
-            if(terrainTile.getTerrainWaterTile() != null) {
-                Arrays.stream(terrainTile.getTerrainWaterTile().getVertices()).forEach(waterPositions::add);
-                Arrays.stream(terrainTile.getTerrainWaterTile().getOffsetToOuters()).forEach(offsetToOuters::add);
-            }
-        });
-        slope.put("positions", positions);
-        slope.put("norms", norms);
-        slope.put("uvs", uvs);
-        slope.put("waterPositions", waterPositions);
-        slope.put("offsetToOuters", offsetToOuters);
-        try {
-            new ObjectMapper().writeValue(new File(filename), slope);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void exportTriangles(String filename, String directorname, Index... terrainTileIndices) {
+        AssertTerrainTile.saveTerrainTiles(Arrays.stream(terrainTileIndices).map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex)).collect(Collectors.toList()),
+                filename, directorname);
+        System.out.println("exportTriangles(): " + new File(directorname, filename));
     }
 
     protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {

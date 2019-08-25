@@ -23,13 +23,13 @@ public class TerrainSlopeTileContext {
     private int yCount;
     private SlopeVertex[][] mesh;
     private TerrainSlopeTile terrainSlopeTile;
-    private TerrainTileContext terrainTileContext;
+    private TerrainTileBuilder terrainTileBuilder;
 
-    public void init(int slopeSkeletonConfigId, int xCount, int yCount, TerrainTileContext terrainTileContext) {
+    public void init(int slopeSkeletonConfigId, int xCount, int yCount, TerrainTileBuilder terrainTileBuilder) {
         this.slopeSkeletonConfigId = slopeSkeletonConfigId;
         this.xCount = xCount;
         this.yCount = yCount;
-        this.terrainTileContext = terrainTileContext;
+        this.terrainTileBuilder = terrainTileBuilder;
         mesh = new SlopeVertex[xCount][yCount];
     }
 
@@ -37,7 +37,7 @@ public class TerrainSlopeTileContext {
         mesh[x][y] = new SlopeVertex(vertex, uv, uvTermination, slopeFactor, splatting);
     }
 
-    public TerrainSlopeTile getTerrainSlopeTile() {
+    public TerrainSlopeTile generate() {
         return terrainSlopeTile;
     }
 
@@ -53,7 +53,7 @@ public class TerrainSlopeTileContext {
                 Vertex vertexTR = mesh[x + 1][y + 1].getVertex();
                 Vertex vertexTL = mesh[x][y + 1].getVertex();
 
-                if (!terrainTileContext.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+                if (!terrainTileBuilder.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
                     continue;
                 }
 
@@ -108,12 +108,12 @@ public class TerrainSlopeTileContext {
         if (y == 0) {
             // Ground skeleton no respected
             // Outer take norm from ground
-            // return terrainTileContext.interpolateNorm(absolutePosition, Vertex.Z_NORM);
+            // return terrainTileBuilder.interpolateNorm(absolutePosition, Vertex.Z_NORM);
             vertical = mesh[x][y + 1].getVertex().sub(mesh[x][0].getVertex());
         } else if (y == yCount - 1) {
             // Ground skeleton no respected
             // Inner take norm from ground
-            // return terrainTileContext.interpolateNorm(absolutePosition, Vertex.Z_NORM);
+            // return terrainTileBuilder.interpolateNorm(absolutePosition, Vertex.Z_NORM);
             vertical = mesh[x][y].getVertex().sub(mesh[x][y - 1].getVertex());
         } else {
             vertical = mesh[x][y + 1].getVertex().sub(mesh[x][y - 1].getVertex());
@@ -137,10 +137,10 @@ public class TerrainSlopeTileContext {
         try {
 //            if (y == 0) {
 //                // Outer take tangent from ground
-//                return terrainTileContext.interpolateTangent(absolutePosition, norm);
+//                return terrainTileBuilder.interpolateTangent(absolutePosition, norm);
 //            } else if (y == yCount - 1) {
 //                // Inner take tangent from ground
-//                return terrainTileContext.interpolateTangent(absolutePosition, norm);
+//                return terrainTileBuilder.interpolateTangent(absolutePosition, norm);
 //            }
 
 //            Vertex current = mesh[x][y].getVertex();

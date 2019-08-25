@@ -397,7 +397,7 @@ public class WeldTestRenderer {
             gc.setLineWidth(LINE_WIDTH);
             for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
                 int vertexScalarIndex = vertexIndex * 3;
-                fillTriangle(terrainTile.getGroundVertices(), terrainTile.getGroundNorms(), terrainTile.getGroundTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
+                fillTriangle(terrainTile.getGroundVertices(), terrainTile.getGroundNorms(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
                 strokeZTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
             }
         }
@@ -433,7 +433,7 @@ public class WeldTestRenderer {
         }
     }
 
-    private void fillTriangle(double[] groundVertices, double[] groundNorms, double[] groundTangents, int index1, int index2, int index3) {
+    private void fillTriangle(double[] groundVertices, double[] groundNorms, int index1, int index2, int index3) {
         int fillIndex = index2;
         double[] fillVertices = groundNorms;
         gc.setFill(color4Norm(new Vertex(fillVertices[fillIndex], fillVertices[fillIndex + 1], fillVertices[fillIndex + 2])));
@@ -783,7 +783,7 @@ public class WeldTestRenderer {
             displayObstacles(terrainShapeNode);
         }
         if (weldTestController.renderGroundSlopeConnections()) {
-            displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
+            // TODO displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
         }
         if (weldTestController.renderShapeWater()) {
             displayShapeWater(terrainShapeNode.getWaterSegments());

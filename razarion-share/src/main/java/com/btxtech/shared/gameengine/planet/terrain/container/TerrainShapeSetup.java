@@ -148,19 +148,42 @@ public class TerrainShapeSetup {
                     if (outerPiercings != null) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         for (List<DecimalPosition> outerPiercing : outerPiercings) {
+                            terrainShapeNode.setRenderHideGround(true);
                             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
                             terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), true, null, 0));
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0));
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0), null);
                         }
                     }
                 }
+                // Setup inner water
                 for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    terrainShapeNode.setRenderHideGround(true);
+                    terrainShapeNode.setRenderInnerLiquidSlopeId(slope.getSlopeSkeletonConfig().getId());
+                    terrainShapeNode.setRenderLiquidOffsetToOuter(setupOffsetToOuter(slope, nodeIndex)); // Slow
                     terrainShapeNode.setFullWaterLevel(slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel());
-                    // Slow
-                    terrainShapeNode.setOffsetToOuter(setupOffsetToOuter(slope, nodeIndex));
-                    terrainShapeNode.setDoNotRenderGround(true);
                 }
+                // Setup inner seabed
+                Polygon2DRasterizer innerRasterizer = Polygon2DRasterizer.create(slope.getInnerRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
+                for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
+                    TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                    terrainShapeNode.setRenderHideGround(false);
+                    terrainShapeNode.setRenderInnerSlopeId(slope.getSlopeSkeletonConfig().getId());
+                    terrainShapeNode.setInnerGroundHeight(slope.getInnerGroundHeight());
+                }
+                // Setup slope inner seabed connection (render engine)
+                for (Index nodeIndex : innerRasterizer.getPiercedTiles()) {
+                    List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
+                    if (innerPiercings != null) {
+                        TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
+                        for (List<DecimalPosition> innerPiercing : innerPiercings) {
+                            terrainShapeNode.setRenderHideGround(true);
+                            Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
+                        }
+                    }
+                }
+
             } else {
                 setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getInnerGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), null);
                 setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getInnerGroundHeight(), null);
@@ -174,15 +197,14 @@ public class TerrainShapeSetup {
                         for (List<DecimalPosition> innerPiercing : innerPiercings) {
                             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
                             terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), true, null, 0));
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0));
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
                         }
                     }
                 }
                 for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setFullWaterLevel(null);
-                    terrainShapeNode.setRenderEngineHeight(slope.getInnerGroundHeight());
-                    terrainShapeNode.setDoNotRenderGround(false);
+                    terrainShapeNode.setInnerGroundHeight(slope.getInnerGroundHeight());
                 }
             }
         } else {
@@ -199,10 +221,10 @@ public class TerrainShapeSetup {
                 List<List<DecimalPosition>> outerPiercings = slopeContext.getOuterPiercings(nodeIndex);
                 for (List<DecimalPosition> outerPiercing : outerPiercings) {
                     Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0));
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0), null);
                 }
                 // Set height
-                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getOuterGroundHeight());
+                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setInnerGroundHeight(slope.getOuterGroundHeight()); // TODO this is may wrong
             }
 
             Polygon2DRasterizer innerRasterizer = Polygon2DRasterizer.create(slope.getInnerRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
@@ -216,12 +238,12 @@ public class TerrainShapeSetup {
                     // Inner slope ground connection regarding driveway break line
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0));
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()));
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeSkeletonConfig().getId());
                     } else {
                         if (innerPiercings != null) {
                             for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                                terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()));
+                                terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeSkeletonConfig().getId());
                             }
                         }
                     }
@@ -229,12 +251,12 @@ public class TerrainShapeSetup {
                     // Inner slope ground connection
                     if (innerPiercings != null) {
                         for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0));
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
                         }
                     }
                 }
                 // Set height
-                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getInnerGroundHeight());
+                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setInnerGroundHeight(slope.getInnerGroundHeight());
             }
             for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
                 completeUnderSlope.remove(nodeIndex);
@@ -246,10 +268,10 @@ public class TerrainShapeSetup {
                     if (breakingGroundPiercing != null) {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         terrainShapeNode.setDrivewayBreakingLine(true);
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0));
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()));
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeSkeletonConfig().getId());
                     }
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getOuterGroundHeight()); // TODO replace with innerGroundHeight?
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setInnerGroundHeight(slope.getOuterGroundHeight()); // TODO replace with innerGroundHeight?
                 }
 
                 // TerrainNode completely in driveway
@@ -258,17 +280,16 @@ public class TerrainShapeSetup {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setDrivewayHeights(driveway.generateDrivewayHeights(terrainRect.toCorners()));
                     terrainShapeNode.setFullRenderEngineDriveway(true);
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getOuterGroundHeight()); // TODO replace with innerGroundHeight?
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setInnerGroundHeight(slope.getOuterGroundHeight()); // TODO replace with innerGroundHeight?
                 } else {
-                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getInnerGroundHeight());
+                    terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setInnerGroundHeight(slope.getInnerGroundHeight());
                 }
             }
 
 
             // Completely under slope
             for (Index nodeIndex : completeUnderSlope) {
-                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setDoNotRenderGround(true);
-                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setRenderEngineHeight(slope.getInnerGroundHeight());
+                terrainShape.getOrCreateTerrainShapeNode(nodeIndex).setInnerGroundHeight(slope.getInnerGroundHeight()); // TODO  Used?
             }
         }
         if (slope.getChildren() != null) {

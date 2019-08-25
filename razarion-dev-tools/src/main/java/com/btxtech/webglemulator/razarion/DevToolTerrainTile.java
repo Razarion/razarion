@@ -37,29 +37,6 @@ public class DevToolTerrainTile extends TerrainTile {
     }
 
     @Override
-    public void initGroundArrays(int groundSizeVec, int groundSizeScalar, int nodes) {
-        groundVertices = new double[groundSizeVec];
-        groundNorms = new double[groundSizeVec];
-        groundTangents = new double[groundSizeVec];
-        groundSplattings = new double[groundSizeScalar];
-    }
-
-    @Override
-    public void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting) {
-        int cornerScalarIndex = triangleCornerIndex * 3;
-        groundVertices[cornerScalarIndex] = vertexX;
-        groundVertices[cornerScalarIndex + 1] = vertexY;
-        groundVertices[cornerScalarIndex + 2] = vertexZ;
-        groundNorms[cornerScalarIndex] = normX;
-        groundNorms[cornerScalarIndex + 1] = normY;
-        groundNorms[cornerScalarIndex + 2] = normZ;
-        groundTangents[cornerScalarIndex] = tangentX;
-        groundTangents[cornerScalarIndex + 1] = tangentY;
-        groundTangents[cornerScalarIndex + 2] = tangentZ;
-        groundSplattings[triangleCornerIndex] = splatting;
-    }
-
-    @Override
     public int getIndexX() {
         return indexX;
     }
@@ -77,11 +54,6 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public double[] getGroundNorms() {
         return groundNorms;
-    }
-
-    @Override
-    public double[] getGroundTangents() {
-        return groundTangents;
     }
 
     @Override

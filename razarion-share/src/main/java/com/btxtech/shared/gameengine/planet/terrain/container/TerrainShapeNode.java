@@ -15,7 +15,9 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeVer
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -25,21 +27,23 @@ import java.util.logging.Logger;
 public class TerrainShapeNode {
     public static final double DEFAULT_HEIGHT = 0;
     private static Logger logger = Logger.getLogger(TerrainShapeNode.class.getName());
-    private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
     // Game engine
+    private TerrainShapeSubNode[] terrainShapeSubNodes; // bl, br, tr, tl
     private TerrainType terrainType;
     private Collection<Obstacle> obstacles;
     private Double gameEngineHeight;
     private Boolean fullGameEngineDriveway;
     // Render engine
-    private List<List<Vertex>> groundSlopeConnections;
+    private Map<Integer, List<List<Vertex>>> groundSlopeConnections;
     private List<List<Vertex>> waterSegments;
-    private Boolean doNotRenderGround;
-    private Double renderEngineHeight;
+    private Integer renderInnerSlopeId;
+    private boolean renderHideGround;
+    private Integer renderInnerLiquidSlopeId;
     private Boolean fullRenderEngineDriveway;
-    private double[] offsetToOuter; // bl, br, tr, tl
+    private double[] renderOffsetToOuter; // bl, br, tr, tl
     // Game and render engine
     private double[] drivewayHeights; // bl, br, tr, tl
+    private double innerGroundHeight;
     private Double fullWaterLevel;
     private Boolean drivewayBreakingLine;
 
@@ -48,11 +52,9 @@ public class TerrainShapeNode {
 
     public TerrainShapeNode(NativeTerrainShapeNode nativeTerrainShapeNode) {
         drivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
-        offsetToOuter = nativeTerrainShapeNode.offsetToOuter;
-        gameEngineHeight = nativeTerrainShapeNode.gameEngineHeight;
-        renderEngineHeight = nativeTerrainShapeNode.renderEngineHeight;
+        renderOffsetToOuter = nativeTerrainShapeNode.offsetToOuter;
+        innerGroundHeight = nativeTerrainShapeNode.innerGroundHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
-        doNotRenderGround = nativeTerrainShapeNode.doNotRenderGround;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
         fullGameEngineDriveway = nativeTerrainShapeNode.fullGameEngineDriveway;
         fullRenderEngineDriveway = nativeTerrainShapeNode.fullRenderEngineDriveway;
@@ -70,15 +72,18 @@ public class TerrainShapeNode {
             }
             this.obstacles = obstacles;
         }
+        renderInnerSlopeId = nativeTerrainShapeNode.renderInnerSlopeId;
+        renderHideGround = nativeTerrainShapeNode.renderHideGround;
+        renderInnerLiquidSlopeId = nativeTerrainShapeNode.renderInnerLiquidSlopeId;
         if (nativeTerrainShapeNode.groundSlopeConnections != null) {
-            groundSlopeConnections = new ArrayList<>();
-            for (NativeVertex[] nativeGroundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
-                List<Vertex> groundSlopeConnection = new ArrayList<>();
-                for (NativeVertex nativeVertex : nativeGroundSlopeConnection) {
-                    groundSlopeConnection.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
-                }
-                groundSlopeConnections.add(groundSlopeConnection);
-            }
+            groundSlopeConnections = nativeTerrainShapeNode.groundSlopeConnections;
+//            TODO for (NativeVertex[] nativeGroundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
+//                List<Vertex> groundSlopeConnection = new ArrayList<>();
+//                for (NativeVertex nativeVertex : nativeGroundSlopeConnection) {
+//                    groundSlopeConnection.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
+//                }
+//                groundSlopeConnections.add(groundSlopeConnection);
+//            }
         }
         if (nativeTerrainShapeNode.waterSegments != null) {
             waterSegments = new ArrayList<>();
@@ -108,30 +113,26 @@ public class TerrainShapeNode {
         this.drivewayHeights = drivewayHeights;
     }
 
-    public void setOffsetToOuter(double[] offsetToOuter) {
-        this.offsetToOuter = offsetToOuter;
+    public void setRenderLiquidOffsetToOuter(double[] offsetToOuter) {
+        this.renderOffsetToOuter = offsetToOuter;
     }
 
-    public void setRenderEngineHeight(Double renderEngineHeight) {
-        this.renderEngineHeight = renderEngineHeight;
+    public void setInnerGroundHeight(double innerGroundHeight) {
+        this.innerGroundHeight = innerGroundHeight;
     }
 
     public void setGameEngineHeight(Double gameEngineHeight) {
         this.gameEngineHeight = gameEngineHeight;
     }
 
-    public void setDoNotRenderGround(boolean doNotRenderGround) {
-        this.doNotRenderGround = doNotRenderGround;
-    }
-
-    public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection) {
+    public void addGroundSlopeConnections(List<Vertex> groundSlopeConnection, Integer slopeId) {
         if (groundSlopeConnection == null) {
             return;
         }
         if (groundSlopeConnections == null) {
-            groundSlopeConnections = new ArrayList<>();
+            groundSlopeConnections = new HashMap<>();
         }
-        groundSlopeConnections.add(groundSlopeConnection);
+        groundSlopeConnections.computeIfAbsent(slopeId, integer -> new ArrayList<>()).add(groundSlopeConnection);
     }
 
     public void addWaterSegments(List<Vertex> waterSegment) {
@@ -144,8 +145,28 @@ public class TerrainShapeNode {
         waterSegments.add(waterSegment);
     }
 
-    public boolean isRenderGround() {
-        return groundSlopeConnections == null && waterSegments == null && !getDoNotRenderGround();
+    public void setRenderInnerSlopeId(Integer renderInnerSlopeId) {
+        this.renderInnerSlopeId = renderInnerSlopeId;
+    }
+
+    public Integer getRenderInnerSlopeId() {
+        return renderInnerSlopeId;
+    }
+
+    public void setRenderHideGround(boolean renderHideGround) {
+        this.renderHideGround = renderHideGround;
+    }
+
+    public boolean isRenderHideGround() {
+        return renderHideGround;
+    }
+
+    public Integer getRenderInnerLiquidSlopeId() {
+        return renderInnerLiquidSlopeId;
+    }
+
+    public void setRenderInnerLiquidSlopeId(Integer renderInnerLiquidSlopeId) {
+        this.renderInnerLiquidSlopeId = renderInnerLiquidSlopeId;
     }
 
     public boolean isFullRenderEngineDriveway() {
@@ -188,8 +209,8 @@ public class TerrainShapeNode {
         return fullWaterLevel;
     }
 
-    public double[] getOffsetToOuter() {
-        return offsetToOuter;
+    public double[] getRenderOffsetToOuter() {
+        return renderOffsetToOuter;
     }
 
     public boolean hasSubNodes() {
@@ -245,10 +266,6 @@ public class TerrainShapeNode {
         }
     }
 
-    public boolean getDoNotRenderGround() {
-        return doNotRenderGround != null && doNotRenderGround;
-    }
-
     public double getGameEngineHeight() {
         if (gameEngineHeight != null) {
             return gameEngineHeight;
@@ -261,19 +278,15 @@ public class TerrainShapeNode {
         return gameEngineHeight;
     }
 
-    public double getRenderEngineHeight() {
-        if (renderEngineHeight != null) {
-            return renderEngineHeight;
-        } else {
-            return 0;
-        }
+    public double getInnerGroundHeight() {
+        return innerGroundHeight;
     }
 
     public TerrainShapeSubNode getTerrainShapeSubNode(DecimalPosition nodeRelative) {
         return TerrainShapeSubNode.getTerrainShapeSubNode(0, nodeRelative, terrainShapeSubNodes);
     }
 
-    public List<List<Vertex>> getGroundSlopeConnections() {
+    public Map<Integer, List<List<Vertex>>> getGroundSlopeConnections() {
         return groundSlopeConnections;
     }
 
@@ -320,19 +333,23 @@ public class TerrainShapeNode {
     public NativeTerrainShapeNode toNativeTerrainShapeNode() {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
         nativeTerrainShapeNode.fullDrivewayHeights = drivewayHeights;
-        nativeTerrainShapeNode.offsetToOuter = offsetToOuter;
-        nativeTerrainShapeNode.gameEngineHeight = gameEngineHeight;
-        nativeTerrainShapeNode.renderEngineHeight = renderEngineHeight;
+        nativeTerrainShapeNode.offsetToOuter = renderOffsetToOuter;
+        nativeTerrainShapeNode.innerGroundHeight = innerGroundHeight;
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeNode.fullGameEngineDriveway = fullGameEngineDriveway;
         nativeTerrainShapeNode.fullRenderEngineDriveway = fullRenderEngineDriveway;
-        if (groundSlopeConnections != null) {
-            nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
-            for (int i = 0; i < groundSlopeConnections.size(); i++) {
-                List<Vertex> groundSlopeConnection = groundSlopeConnections.get(i);
-                nativeTerrainShapeNode.groundSlopeConnections[i] = groundSlopeConnection.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
-            }
-        }
+        nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections;
+        nativeTerrainShapeNode.renderInnerSlopeId = renderInnerSlopeId;
+        nativeTerrainShapeNode.renderHideGround = renderHideGround;
+        nativeTerrainShapeNode.renderInnerLiquidSlopeId = renderInnerLiquidSlopeId;
+
+        // TODO if (groundSlopeConnections != null) {
+        // TODO nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
+        // TODO  for (int i = 0; i < groundSlopeConnections.size(); i++) {
+        // TODO List<Vertex> groundSlopeConnection = groundSlopeConnections.get(i);
+        // TODO nativeTerrainShapeNode.groundSlopeConnections[i] = groundSlopeConnection.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
+        // TODO }
+        // TODO }
         if (waterSegments != null) {
             nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
             for (int i = 0; i < waterSegments.size(); i++) {
@@ -344,7 +361,6 @@ public class TerrainShapeNode {
         if (obstacles != null) {
             nativeTerrainShapeNode.obstacles = obstacles.stream().map(Obstacle::toNativeObstacle).toArray(NativeObstacle[]::new);
         }
-        nativeTerrainShapeNode.doNotRenderGround = doNotRenderGround;
         nativeTerrainShapeNode.nativeTerrainShapeSubNodes = TerrainShapeSubNode.toNativeTerrainShapeSubNode(terrainShapeSubNodes);
         nativeTerrainShapeNode.drivewayBreakingLine = drivewayBreakingLine;
         return nativeTerrainShapeNode;

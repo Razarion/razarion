@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
@@ -15,35 +16,43 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Beat
  * 03.04.2017.
  */
 @Dependent
-public class TerrainTileContext {
+public class TerrainTileBuilder {
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
     private Instance<TerrainSlopeTileContext> terrainSlopeTileContextInstance;
+    @Deprecated
     private Index terrainTileIndex;
     private TerrainTile terrainTile;
     private int offsetIndexX;
     private int offsetIndexY;
     private Collection<TerrainSlopeTileContext> terrainSlopeTileContexts;
+    @Deprecated
     private GroundSkeletonConfig groundSkeletonConfig;
-    private List<Vertex> groundSlopeConnectionVertices = new ArrayList<>();
-    private List<Vertex> groundSlopeConnectionNorms = new ArrayList<>();
-    private List<Vertex> groundSlopeConnectionTangents = new ArrayList<>();
-    private List<Double> groundSlopeConnectionSplattings = new ArrayList<>();
-    private int triangleCornerIndex;
+
+    private List<Vertex> groundVertices = new ArrayList<>();
+    private List<Vertex> groundNorms = new ArrayList<>();
+    private List<Double> groundGplattings = new ArrayList<>();
+    private MapList<Integer, Vertex> groundSlopeVertices = new MapList<>();
+    private MapList<Integer, Vertex> groundSlopeNorms = new MapList<>();
     private Rectangle2D playGround;
+
 
     public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, GroundSkeletonConfig groundSkeletonConfig, Rectangle2D playGround) {
         this.terrainTileIndex = terrainTileIndex;
         this.groundSkeletonConfig = groundSkeletonConfig;
+
         this.terrainTile = jsInteropObjectFactory.generateTerrainTile();
+
         terrainTile.init(terrainTileIndex.getX(), terrainTileIndex.getY());
         offsetIndexX = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         offsetIndexY = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
@@ -59,28 +68,38 @@ public class TerrainTileContext {
         }
     }
 
-    public void initGround() {
-        int nodes = (int) Math.pow(TerrainUtil.TERRAIN_TILE_NODES_COUNT, 2);
-        int verticesCount = groundSlopeConnectionVertices.size() + nodes * 6;
-        terrainTile.initGroundArrays(verticesCount * Vertex.getComponentsPerVertex(), verticesCount, nodes);
-    }
+    public TerrainTile generate() {
+        terrainTile.setGroundVertexCount(groundVertices.size());
+        terrainTile.setGroundVertices(Vertex.toArray(groundVertices));
+        terrainTile.setGroundNorms(Vertex.toArray(groundNorms));
+        terrainTile.setGroundSplattings(groundGplattings.stream().mapToDouble(value -> value).toArray());
 
-    public void setGroundVertexCount() {
-        terrainTile.setGroundVertexCount(triangleCornerIndex);
-    }
+        Map<Integer, double[]> terrainTileGroundSlopeVertices = new HashMap<>();
+        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, Vertex.toArray(vertices)));
+        terrainTile.setGroundSlopeVertices(terrainTileGroundSlopeVertices);
+        Map<Integer, double[]> terrainTileGroundNorms = new HashMap<>();
+        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, Vertex.toArray(vertices)));
+        terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
 
-    public void setLandWaterProportion(double landWaterProportion) {
-        terrainTile.setLandWaterProportion(landWaterProportion);
-    }
+       //  TODO groundSlopeVertices.
 
-    public TerrainSlopeTileContext createTerrainSlopeTileContext(int slopeSkeletonConfigId, int xCount, int yCount) {
-        TerrainSlopeTileContext terrainSlopeTileContext = terrainSlopeTileContextInstance.get();
-        terrainSlopeTileContext.init(slopeSkeletonConfigId, xCount, yCount, this);
-        if (terrainSlopeTileContexts == null) {
-            terrainSlopeTileContexts = new ArrayList<>();
+        if (terrainSlopeTileContexts != null) {
+            for (TerrainSlopeTileContext terrainSlopeTileContext : terrainSlopeTileContexts) {
+                terrainTile.addTerrainSlopeTile(terrainSlopeTileContext.generate());
+            }
         }
-        terrainSlopeTileContexts.add(terrainSlopeTileContext);
-        return terrainSlopeTileContext;
+        return terrainTile;
+    }
+
+    public void addTriangleCorner(Vertex vertex, Vertex norm, double splatting, Integer slopeId) {
+        if (slopeId != null) {
+            groundSlopeVertices.put(slopeId, vertex);
+            groundSlopeNorms.put(slopeId, norm);
+        } else {
+            groundVertices.add(vertex);
+            groundNorms.add(norm);
+            groundGplattings.add(splatting);
+        }
     }
 
     public double interpolateSplattin(DecimalPosition absolutePosition) {
@@ -121,37 +140,7 @@ public class TerrainTileContext {
         }
     }
 
-    public Vertex interpolateTangent(DecimalPosition absolutePosition, Vertex norm) {
-        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
-
-        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-        Vertex tangentBR = setupTangent(bottomLeft.getX() + 1, bottomLeft.getY(), norm);
-        Vertex tangentTL = setupTangent(bottomLeft.getX(), bottomLeft.getY() + 1, norm);
-        if (triangle1.isInside(offset)) {
-            Vertex weight = triangle1.interpolate(offset);
-            Vertex tangentBL = setupTangent(bottomLeft.getX(), bottomLeft.getY(), norm);
-            return tangentBL.multiply(weight.getX()).add(tangentBR.multiply(weight.getY())).add(tangentTL.multiply(weight.getZ())).normalize(1.0);
-        } else {
-            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
-            Vertex weight = triangle2.interpolate(offset);
-            Vertex tangentTR = setupTangent(bottomLeft.getX() + 1, bottomLeft.getY() + 1, norm);
-            return tangentBR.multiply(weight.getX()).add(tangentTR.multiply(weight.getY()).add(tangentTL.multiply(weight.getZ()))).normalize(1.0);
-        }
-    }
-
-    public void insertTriangleCorner(Vertex vertex, Vertex norm, Vertex tangent, double splatting) {
-        terrainTile.setGroundTriangleCorner(triangleCornerIndex, vertex.getX(), vertex.getY(), vertex.getZ(), norm.getX(), norm.getY(), norm.getZ(), tangent.getX(), tangent.getY(), tangent.getZ(), splatting);
-        triangleCornerIndex++;
-    }
-
-    @Deprecated // Find better solution
-    public void insertDisplayHeight(Index nodeIndex, double height) {
-        Index relativeNodeIndex = new Index(nodeIndex.getX() - TerrainUtil.toNodeIndex(terrainTileIndex.getX()), nodeIndex.getY() - TerrainUtil.toNodeIndex(terrainTileIndex.getY()));
-        // TODO terrainTile.setDisplayHeight(TerrainUtil.filedToArrayNodeIndex(relativeNodeIndex), height);
-    }
-
-    public void insertTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
+    public void addTriangleGroundSlopeConnection(Vertex vertexA, Vertex vertexB, Vertex vertexC, Integer slopeId) {
         if (!checkPlayGround(vertexA, vertexB, vertexC)) {
             return;
         }
@@ -159,28 +148,34 @@ public class TerrainTileContext {
         DecimalPosition positionA = vertexA.toXY();
         DecimalPosition positionB = vertexB.toXY();
         DecimalPosition positionC = vertexC.toXY();
-        groundSlopeConnectionVertices.add(vertexA);
-        groundSlopeConnectionVertices.add(vertexB);
-        groundSlopeConnectionVertices.add(vertexC);
         Vertex norm = vertexA.cross(vertexB, vertexC).normalize(1.0);
-        groundSlopeConnectionNorms.add(interpolateNorm(positionA, norm));
-        groundSlopeConnectionNorms.add(interpolateNorm(positionB, norm));
-        groundSlopeConnectionNorms.add(interpolateNorm(positionC, norm));
-        groundSlopeConnectionTangents.add(interpolateTangent(positionA, norm));
-        groundSlopeConnectionTangents.add(interpolateTangent(positionB, norm));
-        groundSlopeConnectionTangents.add(interpolateTangent(positionC, norm));
-        groundSlopeConnectionSplattings.add(interpolateSplattin(positionA));
-        groundSlopeConnectionSplattings.add(interpolateSplattin(positionB));
-        groundSlopeConnectionSplattings.add(interpolateSplattin(positionC));
+
+        addTriangleCorner(vertexA, interpolateNorm(positionA, norm), interpolateSplattin(positionA), slopeId);
+        addTriangleCorner(vertexB, interpolateNorm(positionB, norm), interpolateSplattin(positionB), slopeId);
+        addTriangleCorner(vertexC, interpolateNorm(positionC, norm), interpolateSplattin(positionC), slopeId);
     }
 
-    public TerrainTile complete() {
-        if (terrainSlopeTileContexts != null) {
-            for (TerrainSlopeTileContext terrainSlopeTileContext : terrainSlopeTileContexts) {
-                terrainTile.addTerrainSlopeTile(terrainSlopeTileContext.getTerrainSlopeTile());
-            }
+    // ----------------------------------------------------------------------------------------------------------------------------
+
+
+    public void setLandWaterProportion(double landWaterProportion) {
+        terrainTile.setLandWaterProportion(landWaterProportion);
+    }
+
+    public TerrainSlopeTileContext createTerrainSlopeTileContext(int slopeSkeletonConfigId, int xCount, int yCount) {
+        TerrainSlopeTileContext terrainSlopeTileContext = terrainSlopeTileContextInstance.get();
+        terrainSlopeTileContext.init(slopeSkeletonConfigId, xCount, yCount, this);
+        if (terrainSlopeTileContexts == null) {
+            terrainSlopeTileContexts = new ArrayList<>();
         }
-        return terrainTile;
+        terrainSlopeTileContexts.add(terrainSlopeTileContext);
+        return terrainSlopeTileContext;
+    }
+
+    @Deprecated // Find better solution
+    public void insertDisplayHeight(Index nodeIndex, double height) {
+        Index relativeNodeIndex = new Index(nodeIndex.getX() - TerrainUtil.toNodeIndex(terrainTileIndex.getX()), nodeIndex.getY() - TerrainUtil.toNodeIndex(terrainTileIndex.getY()));
+        // TODO terrainTile.setDisplayHeight(TerrainUtil.filedToArrayNodeIndex(relativeNodeIndex), height);
     }
 
     public double getSplatting(int xNode, int yNode) {
@@ -232,12 +227,6 @@ public class TerrainTileContext {
             return norm.cross(biTangent).normalize(1.0);
         } else {
             return Vertex.X_NORM;
-        }
-    }
-
-    public void insertSlopeGroundConnection() {
-        for (int i = 0; i < groundSlopeConnectionVertices.size(); i++) {
-            insertTriangleCorner(groundSlopeConnectionVertices.get(i), groundSlopeConnectionNorms.get(i), groundSlopeConnectionTangents.get(i), groundSlopeConnectionSplattings.get(i));
         }
     }
 

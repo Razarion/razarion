@@ -81,12 +81,12 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
         slopeSkeletonConfigWater.setId(10).setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-0.3);
+        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-4);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, 0.0, 0.5),},
                 {GameTestHelper.createSlopeNode(10, -0.1, 1),},
-                {GameTestHelper.createSlopeNode(15, -0.2, 1),},
-                {GameTestHelper.createSlopeNode(20, -0.3, 1),}
+                {GameTestHelper.createSlopeNode(15, -2, 1),},
+                {GameTestHelper.createSlopeNode(20, -4, 1),}
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
@@ -120,8 +120,8 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, waterConfig);
 
-        exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\ocean1.json", new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        showDisplay();
+        exportTriangles("terrain-tiles.json","C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\", new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        // showDisplay();
 
         Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");
     }

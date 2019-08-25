@@ -265,6 +265,18 @@ public class Vertex {
         return positions.stream().map(decimalPosition -> new Vertex(decimalPosition, z)).collect(Collectors.toList());
     }
 
+    public static double[] toArray(List<Vertex> vertices) {
+        double[] array = new double[vertices.size() * getComponentsPerVertex()];
+        for (int i = 0; i < vertices.size(); i++) {
+            int arrayIndex = i * getComponentsPerVertex();
+            Vertex vertex = vertices.get(i);
+            array[arrayIndex] = vertex.getX();
+            array[arrayIndex + 1] = vertex.getY();
+            array[arrayIndex + 2] = vertex.getZ();
+        }
+        return array;
+    }
+
     public static Comparator<Vertex> createVertexComparator1(double delta) {
         return (v1, v2) -> {
             if (v1.equalsDelta(v2, delta)) {

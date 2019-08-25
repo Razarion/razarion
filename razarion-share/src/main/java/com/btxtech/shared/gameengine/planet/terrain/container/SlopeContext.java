@@ -59,7 +59,7 @@ public class SlopeContext {
         return Collections.emptyList();
     }
 
-    public List<List<DecimalPosition>> getOuterPiercings(Index nodeIndex) {
+    public List<List<DecimalPosition>>   getOuterPiercings(Index nodeIndex) {
         List<List<DecimalPosition>> result = outerPiercings.get(nodeIndex);
         if (result != null) {
             return result;

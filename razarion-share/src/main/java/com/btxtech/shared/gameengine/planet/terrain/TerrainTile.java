@@ -1,7 +1,11 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import jsinterop.annotations.JsType;
+
+import java.util.Map;
 
 /**
  * Created by Beat
@@ -9,23 +13,42 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainTile", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainTile {
+    private Map<Integer, double[]> groundSlopeVertices; // TODO remove if used in Javascript Interop GWT
+    private Map<Integer, double[]> groundSlopeNorms; // TODO remove if used in Javascript Interop GWT
+
     public native void init(int indexX, int indexY);
-
-    public native void initGroundArrays(int groundSizeVec, int groundSizeScalar, int nodes);
-
-    public native void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting);
 
     public native int getIndexX();
 
     public native int getIndexY();
 
+    public native void setGroundVertices(double[] groundVertices);
+
     public native double[] getGroundVertices();
+
+    public native void setGroundNorms(double[] groundNorms);
 
     public native double[] getGroundNorms();
 
-    public native double[] getGroundTangents();
+    public native void setGroundSplattings(double[] groundSplattings);
 
     public native double[] getGroundSplattings();
+
+    public Map<Integer, double[]> getGroundSlopeVertices() {
+        return groundSlopeVertices;
+    }
+
+    public void setGroundSlopeVertices(Map<Integer, double[]> groundSlopeVertices) {
+        this.groundSlopeVertices = groundSlopeVertices;
+    }
+
+    public Map<Integer, double[]> getGroundSlopeNorms() {
+        return groundSlopeNorms;
+    }
+
+    public void setGroundSlopeNorms(Map<Integer, double[]> groundSlopeNorms) {
+        this.groundSlopeNorms = groundSlopeNorms;
+    }
 
     public native void setGroundVertexCount(int groundVertexCount);
 

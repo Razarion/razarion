@@ -23,7 +23,6 @@ public class TestTerrainTile extends TerrainTile {
     private int groundVertexCount;
     private double[] groundVertices;
     private double[] groundNorms;
-    private double[] groundTangents;
     private double[] groundSplattings;
     private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
     private TestTerrainWaterTile terrainWaterTile;
@@ -36,29 +35,6 @@ public class TestTerrainTile extends TerrainTile {
     public void init(int indexX, int indexY) {
         this.indexX = indexX;
         this.indexY = indexY;
-    }
-
-    @Override
-    public void initGroundArrays(int groundSizeVec, int groundSizeScalar, int nodes) {
-        groundVertices = new double[groundSizeVec];
-        groundNorms = new double[groundSizeVec];
-        groundTangents = new double[groundSizeVec];
-        groundSplattings = new double[groundSizeScalar];
-    }
-
-    @Override
-    public void setGroundTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double splatting) {
-        int cornerScalarIndex = triangleCornerIndex * 3;
-        groundVertices[cornerScalarIndex] = vertexX;
-        groundVertices[cornerScalarIndex + 1] = vertexY;
-        groundVertices[cornerScalarIndex + 2] = vertexZ;
-        groundNorms[cornerScalarIndex] = normX;
-        groundNorms[cornerScalarIndex + 1] = normY;
-        groundNorms[cornerScalarIndex + 2] = normZ;
-        groundTangents[cornerScalarIndex] = tangentX;
-        groundTangents[cornerScalarIndex + 1] = tangentY;
-        groundTangents[cornerScalarIndex + 2] = tangentZ;
-        groundSplattings[triangleCornerIndex] = splatting;
     }
 
     @Override
@@ -77,13 +53,18 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
+    public void setGroundVertices(double[] groundVertices) {
+        this.groundVertices = groundVertices;
+    }
+
+    @Override
     public double[] getGroundNorms() {
         return groundNorms;
     }
 
     @Override
-    public double[] getGroundTangents() {
-        return groundTangents;
+    public void setGroundNorms(double[] groundNorms) {
+        this.groundNorms = groundNorms;
     }
 
     @Override
@@ -92,6 +73,10 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
+    public void setGroundSplattings(double[] groundSplattings) {
+        this.groundSplattings = groundSplattings;
+    }
+
     public void setGroundVertexCount(int groundVertexCount) {
         this.groundVertexCount = groundVertexCount;
     }

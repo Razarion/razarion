@@ -18,13 +18,13 @@ import java.util.List;
 public class TerrainWaterTileContext {
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
-    private TerrainTileContext terrainTileContext;
+    private TerrainTileBuilder terrainTileBuilder;
     private List<Vertex> triangleCorners = new ArrayList<>();
     private List<Double> offsetToOuterCorner = new ArrayList<>();
     private int waterNodeCount;
 
-    public void init(TerrainTileContext terrainTileContext) {
-        this.terrainTileContext = terrainTileContext;
+    public void init(TerrainTileBuilder terrainTileBuilder) {
+        this.terrainTileBuilder = terrainTileBuilder;
     }
 
     public void insertNode(Index nodeIndex, double waterLevel, double[] offsetToOuter) {
@@ -40,7 +40,7 @@ public class TerrainWaterTileContext {
         Double offsetToOuterTopRight = offsetToOuter != null ? offsetToOuter[2] : null;
         Double offsetToOuterTopLeft = offsetToOuter != null ? offsetToOuter[3] : null;
 
-        if (!terrainTileContext.checkPlayGround(bottomLeft, bottomRight, topRight, topLeft)) {
+        if (!terrainTileBuilder.checkPlayGround(bottomLeft, bottomRight, topRight, topLeft)) {
             return;
         }
 
@@ -63,7 +63,7 @@ public class TerrainWaterTileContext {
     }
 
     public void insertWaterRim(Vertex vertexA, Vertex vertexB, Vertex vertexC) {
-        if (!terrainTileContext.checkPlayGround(vertexA, vertexB, vertexC)) {
+        if (!terrainTileBuilder.checkPlayGround(vertexA, vertexB, vertexC)) {
             return;
         }
         triangleCorners.add(vertexA);
@@ -85,7 +85,7 @@ public class TerrainWaterTileContext {
             terrainWaterTile.setTriangleCorner(i, vertex.getX(), vertex.getY(), vertex.getZ(), offsetToOuterCorner.get(i));
         }
         terrainWaterTile.setVertexCount(triangleCorners.size());
-        terrainTileContext.setTerrainWaterTile(terrainWaterTile);
+        terrainTileBuilder.setTerrainWaterTile(terrainWaterTile);
     }
 
     public int getWaterNodeCount() {

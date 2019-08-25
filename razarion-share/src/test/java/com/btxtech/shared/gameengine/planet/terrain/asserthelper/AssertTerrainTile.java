@@ -96,7 +96,6 @@ public class AssertTerrainTile {
         } else {
             Assert.assertArrayEquals("Ground Vertices", expected.getGroundVertices(), actual.getGroundVertices(), 0.001);
             Assert.assertArrayEquals("Ground Norms", expected.getGroundNorms(), actual.getGroundNorms(), 0.001);
-            Assert.assertArrayEquals("Ground Tangents", expected.getGroundTangents(), actual.getGroundTangents(), 0.001);
             Assert.assertArrayEquals("Ground Splattings", expected.getGroundSplattings(), actual.getGroundSplattings(), 0.001);
             Assert.assertEquals("Ground Vertex Count", expected.getGroundVertexCount(), actual.getGroundVertexCount());
             Assert.assertEquals("Height", expected.getHeight(), actual.getHeight(), 0.001);
@@ -248,12 +247,16 @@ public class AssertTerrainTile {
         Assert.assertArrayEquals("tileIndex: " + tileIndex, expected.toColumnMajorArray(), actual.toColumnMajorArray(), 0.0001);
     }
 
-    public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {
+    public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName, String directoryName) {
         try {
-            new ObjectMapper().writeValue(new File(SAVE_DIRECTORY, fileName), terrainTiles);
+            new ObjectMapper().writeValue(new File(directoryName, fileName), terrainTiles);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName) {
+        saveTerrainTiles(terrainTiles, fileName, SAVE_DIRECTORY);
     }
 
     public static void saveTerrainTile(TerrainTile terrainTile, String fileName) {

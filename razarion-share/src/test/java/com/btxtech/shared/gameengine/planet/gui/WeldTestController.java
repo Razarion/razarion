@@ -228,7 +228,7 @@ public class WeldTestController implements Initializable {
             System.out.println("No terrain shape node at: " + position);
             return;
         }
-        System.out.println("RenderEngineHeight: " + terrainShapeNode.getRenderEngineHeight());
+//        System.out.println("RenderEngineHeight: " + terrainShapeNode.getRenderEngineHeight());
         System.out.println("GameEngineHeight: " + terrainShapeNode.getGameEngineHeight());
 //        if (terrainShapeNode.isFullDriveway()) {
 //            System.out.println("getDrivewayHeightBL: " + terrainShapeNode.getDrivewayHeightBL());
