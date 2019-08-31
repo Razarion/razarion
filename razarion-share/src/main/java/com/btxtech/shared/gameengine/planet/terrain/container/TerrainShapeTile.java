@@ -41,6 +41,7 @@ public class TerrainShapeTile {
 
     private TerrainShapeNode[][] terrainShapeNodes;
     private Double renderFullWaterLevel;
+    private Integer renderFullWaterSlopeId;
     private Double uniformGroundHeight;
     private List<FractionalSlope> fractionalSlopes;
     private NativeTerrainShapeObjectList[] nativeTerrainShapeObjectLists;
@@ -49,12 +50,24 @@ public class TerrainShapeTile {
         return renderFullWaterLevel == null;
     }
 
+    public Double getRenderFullWaterLevel() {
+        return renderFullWaterLevel;
+    }
+
     public TerrainType getTerrainType() {
         return renderFullWaterLevel == null ? TerrainType.LAND : TerrainType.WATER;
     }
 
     public void setRenderFullWaterLevel(Double renderFullWaterLevel) {
         this.renderFullWaterLevel = renderFullWaterLevel;
+    }
+
+    public Integer getRenderFullWaterSlopeId() {
+        return renderFullWaterSlopeId;
+    }
+
+    public void setRenderFullWaterSlopeId(Integer renderFullWaterSlopeId) {
+        this.renderFullWaterSlopeId = renderFullWaterSlopeId;
     }
 
     public boolean hasNodes() {

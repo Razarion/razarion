@@ -103,4 +103,8 @@ public class MapList<K, L> {
     public void clear() {
         map.clear();
     }
+
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
 }

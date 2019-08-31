@@ -18,7 +18,6 @@ import java.util.List;
 public class DevToolTerrainTile extends TerrainTile {
     private int indexX;
     private int indexY;
-    private int groundVertexCount;
     private double[] groundVertices;
     private double[] groundNorms;
     private double[] groundTangents;
@@ -47,7 +46,7 @@ public class DevToolTerrainTile extends TerrainTile {
     }
 
     @Override
-    public double[] getGroundVertices() {
+    public double[] getGroundPositions() {
         return groundVertices;
     }
 
@@ -74,16 +73,6 @@ public class DevToolTerrainTile extends TerrainTile {
     @Override
     public TerrainNode[][] getTerrainNodes() {
         return terrainNodes;
-    }
-
-    @Override
-    public void setGroundVertexCount(int groundVertexCount) {
-        this.groundVertexCount = groundVertexCount;
-    }
-
-    @Override
-    public int getGroundVertexCount() {
-        return groundVertexCount;
     }
 
     @Override

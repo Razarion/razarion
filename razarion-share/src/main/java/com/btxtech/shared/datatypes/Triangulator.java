@@ -39,7 +39,7 @@ public class Triangulator {
         List<Integer> convexCornerIndices = new LinkedList<>();
         // Interior angle is larger than 180 degrees.
         List<Integer> reflexCornerIndices = new LinkedList<>();
-        Polygon2D polygon = new Polygon2D(Vertex.toXY(vertexPolygon));
+        Polygon2D polygon = new Polygon2D(Vertex.toXY(vertexPolygon)); // TODO only flat triangles supported. Z is removed.
         List<DecimalPosition> polygonCorners = polygon.getCorners();
         for (int i = 0; i < polygonCorners.size(); i++) {
             if (polygon.getInnerAngle(i) > MathHelper.HALF_RADIANT) {

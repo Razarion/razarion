@@ -36,7 +36,7 @@ public abstract class AbstractGroundRendererUnit extends AbstractRenderUnit<UiTe
             return;
         }
         fillBuffersInternal(uiTerrainTile);
-        setElementCount(uiTerrainTile.getVertexCount());
+        // TODO setElementCount(uiTerrainTile.getVertexCount());
     }
 
     @Override

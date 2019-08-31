@@ -13,13 +13,13 @@ import java.util.Map;
 @JsType(name = "NativeTerrainShapeNode", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeTerrainShapeNode {
     public double[] fullDrivewayHeights; // bl, br, tr, tl
-    public double[] offsetToOuter; // bl, br, tr, tl
+    public double[] renderWaterOffsetToOuter; // bl, br, tr, tl
     public Double innerGroundHeight;
     public Map<Integer, List<List<Vertex>>> groundSlopeConnections; // TODO Map not working here
-    public NativeVertex[][] waterSegments;
+    public Map<Integer, List<List<Vertex>>> waterSegments; // TODO Map not working here
     public Integer renderInnerSlopeId; // TODO  Integer is not working here because Integer.intValue() is not defined
     public boolean renderHideGround;
-    public Integer renderInnerLiquidSlopeId; // TODO  Integer is not working here because Integer.intValue() is not defined
+    public Integer renderInnerWaterSlopeId; // TODO  Integer is not working here because Integer.intValue() is not defined
     public Double fullWaterLevel;
     public NativeObstacle[] obstacles;
     public NativeTerrainShapeSubNode[] nativeTerrainShapeSubNodes; // bl, br, tr, tl

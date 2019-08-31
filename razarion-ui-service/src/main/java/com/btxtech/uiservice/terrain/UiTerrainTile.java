@@ -99,10 +99,6 @@ public class UiTerrainTile {
         return terrainTile;
     }
 
-    public Integer getVertexCount() {
-        return terrainTile.getGroundVertexCount();
-    }
-
     public Integer getTopTextureId() {
         return groundSkeletonConfig.getTopTextureId();
     }

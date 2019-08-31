@@ -33,7 +33,7 @@ public class DevToolGroundNormRendererUnit extends AbstractGroundRendererUnit im
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.LINES).setPaint(Color.BLACK).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(DevToolRenderUtil.setupNormDoubles(uiTerrainTile.getTerrainTile().getGroundVertices(), uiTerrainTile.getTerrainTile().getGroundNorms()));
+        webGlProgramEmulator.setDoubles(DevToolRenderUtil.setupNormDoubles(uiTerrainTile.getTerrainTile().getGroundPositions(), uiTerrainTile.getTerrainTile().getGroundNorms()));
     }
 
     @Override

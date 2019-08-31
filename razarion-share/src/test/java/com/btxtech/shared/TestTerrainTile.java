@@ -20,7 +20,6 @@ import java.util.List;
 public class TestTerrainTile extends TerrainTile {
     private int indexX;
     private int indexY;
-    private int groundVertexCount;
     private double[] groundVertices;
     private double[] groundNorms;
     private double[] groundSplattings;
@@ -48,13 +47,13 @@ public class TestTerrainTile extends TerrainTile {
     }
 
     @Override
-    public double[] getGroundVertices() {
+    public double[] getGroundPositions() {
         return groundVertices;
     }
 
     @Override
-    public void setGroundVertices(double[] groundVertices) {
-        this.groundVertices = groundVertices;
+    public void setGroundPositions(double[] groundPositions) {
+        this.groundVertices = groundPositions;
     }
 
     @Override
@@ -75,15 +74,6 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public void setGroundSplattings(double[] groundSplattings) {
         this.groundSplattings = groundSplattings;
-    }
-
-    public void setGroundVertexCount(int groundVertexCount) {
-        this.groundVertexCount = groundVertexCount;
-    }
-
-    @Override
-    public int getGroundVertexCount() {
-        return groundVertexCount;
     }
 
     @Override

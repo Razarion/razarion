@@ -38,7 +38,7 @@ public class DevToolGroundRendererUnit extends AbstractGroundRendererUnit implem
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
         webGlProgramEmulator = new WebGlProgramEmulator().setRenderMode(RenderMode.TRIANGLES).setPaint(Color.GREEN).setVertexShader(this);
-        webGlProgramEmulator.setDoubles(uiTerrainTile.getTerrainTile().getGroundVertices());
+        webGlProgramEmulator.setDoubles(uiTerrainTile.getTerrainTile().getGroundPositions());
     }
 
     @Override

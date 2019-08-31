@@ -39,7 +39,7 @@ public class TerrainTileBuilder {
     @Deprecated
     private GroundSkeletonConfig groundSkeletonConfig;
 
-    private List<Vertex> groundVertices = new ArrayList<>();
+    private List<Vertex> groundPositions = new ArrayList<>();
     private List<Vertex> groundNorms = new ArrayList<>();
     private List<Double> groundGplattings = new ArrayList<>();
     private MapList<Integer, Vertex> groundSlopeVertices = new MapList<>();
@@ -69,8 +69,7 @@ public class TerrainTileBuilder {
     }
 
     public TerrainTile generate() {
-        terrainTile.setGroundVertexCount(groundVertices.size());
-        terrainTile.setGroundVertices(Vertex.toArray(groundVertices));
+        terrainTile.setGroundPositions(Vertex.toArray(groundPositions));
         terrainTile.setGroundNorms(Vertex.toArray(groundNorms));
         terrainTile.setGroundSplattings(groundGplattings.stream().mapToDouble(value -> value).toArray());
 
@@ -96,7 +95,7 @@ public class TerrainTileBuilder {
             groundSlopeVertices.put(slopeId, vertex);
             groundSlopeNorms.put(slopeId, norm);
         } else {
-            groundVertices.add(vertex);
+            groundPositions.add(vertex);
             groundNorms.add(norm);
             groundGplattings.add(splatting);
         }
@@ -153,6 +152,10 @@ public class TerrainTileBuilder {
         addTriangleCorner(vertexA, interpolateNorm(positionA, norm), interpolateSplattin(positionA), slopeId);
         addTriangleCorner(vertexB, interpolateNorm(positionB, norm), interpolateSplattin(positionB), slopeId);
         addTriangleCorner(vertexC, interpolateNorm(positionC, norm), interpolateSplattin(positionC), slopeId);
+    }
+
+    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
+        terrainTile.setTerrainWaterTiles(terrainWaterTiles);
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
@@ -228,10 +231,6 @@ public class TerrainTileBuilder {
         } else {
             return Vertex.X_NORM;
         }
-    }
-
-    public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
-        terrainTile.setTerrainWaterTile(terrainWaterTile);
     }
 
     public Index toAbsoluteNodeIndex(Index nodeRelativeIndex) {

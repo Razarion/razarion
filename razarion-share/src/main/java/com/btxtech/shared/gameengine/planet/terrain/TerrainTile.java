@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import jsinterop.annotations.JsType;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,6 +16,7 @@ import java.util.Map;
 public abstract class TerrainTile {
     private Map<Integer, double[]> groundSlopeVertices; // TODO remove if used in Javascript Interop GWT
     private Map<Integer, double[]> groundSlopeNorms; // TODO remove if used in Javascript Interop GWT
+    private List<TerrainWaterTile> terrainWaterTilea;
 
     public native void init(int indexX, int indexY);
 
@@ -22,9 +24,9 @@ public abstract class TerrainTile {
 
     public native int getIndexY();
 
-    public native void setGroundVertices(double[] groundVertices);
+    public native void setGroundPositions(double[] groundPositions);
 
-    public native double[] getGroundVertices();
+    public native double[] getGroundPositions();
 
     public native void setGroundNorms(double[] groundNorms);
 
@@ -50,15 +52,19 @@ public abstract class TerrainTile {
         this.groundSlopeNorms = groundSlopeNorms;
     }
 
-    public native void setGroundVertexCount(int groundVertexCount);
-
-    public native int getGroundVertexCount();
-
     public native void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile);
 
     public native TerrainSlopeTile[] getTerrainSlopeTiles();
 
     public native void setTerrainWaterTile(TerrainWaterTile terrainWaterTile);
+
+    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTilea) {
+        this.terrainWaterTilea = terrainWaterTilea;
+    }
+
+    public List<TerrainWaterTile> getTerrainWaterTilea() {
+        return terrainWaterTilea;
+    }
 
     public native TerrainWaterTile getTerrainWaterTile();
 

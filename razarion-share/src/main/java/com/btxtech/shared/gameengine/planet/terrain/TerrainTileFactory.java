@@ -38,9 +38,9 @@ public class TerrainTileFactory {
     public static final double IGNORE_SMALLER_TRIANGLE = 0.01;
     // private Logger logger = Logger.getLogger(TerrainTileFactory.class.getName());
     @Inject
-    private Instance<TerrainTileBuilder> terrainTileContextInstance;
+    private Instance<TerrainTileBuilder> terrainTileBuilderInstance;
     @Inject
-    private Instance<TerrainWaterTileContext> terrainWaterTileContextInstance;
+    private Instance<TerrainWaterTileBuilder> terrainWaterTileContextInstance;
     @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
@@ -55,7 +55,7 @@ public class TerrainTileFactory {
 
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
-        TerrainTileBuilder terrainTileBuilder = terrainTileContextInstance.get();
+        TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
         terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainTypeService.getGroundSkeletonConfig(), terrainShape.getPlayGround());
         insertSlopeGroundConnectionPart(terrainTileBuilder, terrainShapeTile);
         insertGroundPart(terrainTileBuilder, terrainShapeTile);
@@ -260,22 +260,23 @@ public class TerrainTileFactory {
             terrainTileBuilder.setLandWaterProportion(0);
         }
 
-        TerrainWaterTileContext terrainWaterTileContext = terrainWaterTileContextInstance.get();
-        terrainWaterTileContext.init(terrainTileBuilder);
+        TerrainWaterTileBuilder terrainWaterTileBuilder = terrainWaterTileContextInstance.get();
+        terrainWaterTileBuilder.init(terrainTileBuilder);
 
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
-            if (terrainShapeNode == null && !terrainShapeTile.isRenderLand()) {
-                terrainWaterTileContext.insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getUniformGroundHeight(), null); // TODO replace null
+            if (terrainShapeNode == null && terrainShapeTile.getRenderFullWaterLevel() != null) {
+                terrainWaterTileBuilder.insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getRenderFullWaterLevel(), null /*TODO replace null*/, terrainShapeTile.getRenderFullWaterSlopeId());
             } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
-                terrainWaterTileContext.insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel(), terrainShapeNode.getRenderOffsetToOuter());
+                terrainWaterTileBuilder.insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel(), terrainShapeNode.getRenderWaterOffsetToOuter(), terrainShapeNode.getRenderInnerWaterSlopeId());
             } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
-                terrainShapeNode.getWaterSegments().forEach(segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE, terrainWaterTileContext::insertWaterRim));
+                terrainShapeNode.getWaterSegments().forEach((slopeId, segments) ->  segments.forEach(segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> {
+                    // TODO getWaterSegmentsOffsetToOuter()
+                    terrainWaterTileBuilder.insertWaterRim(vertex1, -1 /*TODO remove*/, vertex2, -1 /*TODO remove*/, vertex3, -1 /*TODO remove*/, slopeId);
+                })));
             }
         });
 
-        terrainWaterTileContext.complete();
-
-        terrainTileBuilder.setLandWaterProportion(1.0 - (double) terrainWaterTileContext.getWaterNodeCount() / (double) (TerrainUtil.TERRAIN_TILE_NODES_COUNT * TerrainUtil.TERRAIN_TILE_NODES_COUNT));
+        terrainTileBuilder.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
     }
 
     private void insertHeightAndType(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {

@@ -35,12 +35,13 @@ public class TerrainShapeNode {
     private Boolean fullGameEngineDriveway;
     // Render engine
     private Map<Integer, List<List<Vertex>>> groundSlopeConnections;
-    private List<List<Vertex>> waterSegments;
     private Integer renderInnerSlopeId;
     private boolean renderHideGround;
-    private Integer renderInnerLiquidSlopeId;
     private Boolean fullRenderEngineDriveway;
-    private double[] renderOffsetToOuter; // bl, br, tr, tl
+    private Integer renderInnerWaterSlopeId;
+    private Map<Integer, List<List<Vertex>>> waterSegments;
+    private Map<Integer, List<List<Double>>> waterSegmentsOffsetToOuter;
+    private double[] renderWaterOffsetToOuter; // bl, br, tr, tl
     // Game and render engine
     private double[] drivewayHeights; // bl, br, tr, tl
     private double innerGroundHeight;
@@ -52,7 +53,7 @@ public class TerrainShapeNode {
 
     public TerrainShapeNode(NativeTerrainShapeNode nativeTerrainShapeNode) {
         drivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
-        renderOffsetToOuter = nativeTerrainShapeNode.offsetToOuter;
+        renderWaterOffsetToOuter = nativeTerrainShapeNode.renderWaterOffsetToOuter;
         innerGroundHeight = nativeTerrainShapeNode.innerGroundHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
@@ -74,7 +75,7 @@ public class TerrainShapeNode {
         }
         renderInnerSlopeId = nativeTerrainShapeNode.renderInnerSlopeId;
         renderHideGround = nativeTerrainShapeNode.renderHideGround;
-        renderInnerLiquidSlopeId = nativeTerrainShapeNode.renderInnerLiquidSlopeId;
+        renderInnerWaterSlopeId = nativeTerrainShapeNode.renderInnerWaterSlopeId;
         if (nativeTerrainShapeNode.groundSlopeConnections != null) {
             groundSlopeConnections = nativeTerrainShapeNode.groundSlopeConnections;
 //            TODO for (NativeVertex[] nativeGroundSlopeConnection : nativeTerrainShapeNode.groundSlopeConnections) {
@@ -86,14 +87,15 @@ public class TerrainShapeNode {
 //            }
         }
         if (nativeTerrainShapeNode.waterSegments != null) {
-            waterSegments = new ArrayList<>();
-            for (NativeVertex[] nativeWaterSegment : nativeTerrainShapeNode.waterSegments) {
-                List<Vertex> waterSegment = new ArrayList<>();
-                for (NativeVertex nativeVertex : nativeWaterSegment) {
-                    waterSegment.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
-                }
-                waterSegments.add(waterSegment);
-            }
+            waterSegments = nativeTerrainShapeNode.waterSegments;
+//   TODO         waterSegments = new ArrayList<>();
+//            for (NativeVertex[] nativeWaterSegment : nativeTerrainShapeNode.waterSegments) {
+//                List<Vertex> waterSegment = new ArrayList<>();
+//                for (NativeVertex nativeVertex : nativeWaterSegment) {
+//                    waterSegment.add(new Vertex(nativeVertex.x, nativeVertex.y, nativeVertex.z));
+//                }
+//                waterSegments.add(waterSegment);
+//            }
         }
         terrainShapeSubNodes = TerrainShapeSubNode.fromNativeTerrainShapeSubNode(0, nativeTerrainShapeNode.nativeTerrainShapeSubNodes);
     }
@@ -113,8 +115,8 @@ public class TerrainShapeNode {
         this.drivewayHeights = drivewayHeights;
     }
 
-    public void setRenderLiquidOffsetToOuter(double[] offsetToOuter) {
-        this.renderOffsetToOuter = offsetToOuter;
+    public void setRenderWaterOffsetToOuter(double[] offsetToOuter) {
+        this.renderWaterOffsetToOuter = offsetToOuter;
     }
 
     public void setInnerGroundHeight(double innerGroundHeight) {
@@ -135,14 +137,14 @@ public class TerrainShapeNode {
         groundSlopeConnections.computeIfAbsent(slopeId, integer -> new ArrayList<>()).add(groundSlopeConnection);
     }
 
-    public void addWaterSegments(List<Vertex> waterSegment) {
+    public void addWaterSegments(List<Vertex> waterSegment, int slopeId) {
         if (waterSegment == null) {
             return;
         }
         if (waterSegments == null) {
-            waterSegments = new ArrayList<>();
+            waterSegments = new HashMap<>();
         }
-        waterSegments.add(waterSegment);
+        waterSegments.computeIfAbsent(slopeId, integer -> new ArrayList<>()).add(waterSegment);
     }
 
     public void setRenderInnerSlopeId(Integer renderInnerSlopeId) {
@@ -161,12 +163,12 @@ public class TerrainShapeNode {
         return renderHideGround;
     }
 
-    public Integer getRenderInnerLiquidSlopeId() {
-        return renderInnerLiquidSlopeId;
+    public Integer getRenderInnerWaterSlopeId() {
+        return renderInnerWaterSlopeId;
     }
 
-    public void setRenderInnerLiquidSlopeId(Integer renderInnerLiquidSlopeId) {
-        this.renderInnerLiquidSlopeId = renderInnerLiquidSlopeId;
+    public void setRenderInnerWaterSlopeId(Integer renderInnerWaterSlopeId) {
+        this.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
     }
 
     public boolean isFullRenderEngineDriveway() {
@@ -209,8 +211,8 @@ public class TerrainShapeNode {
         return fullWaterLevel;
     }
 
-    public double[] getRenderOffsetToOuter() {
-        return renderOffsetToOuter;
+    public double[] getRenderWaterOffsetToOuter() {
+        return renderWaterOffsetToOuter;
     }
 
     public boolean hasSubNodes() {
@@ -290,8 +292,16 @@ public class TerrainShapeNode {
         return groundSlopeConnections;
     }
 
-    public List<List<Vertex>> getWaterSegments() {
+    public Map<Integer, List<List<Vertex>>> getWaterSegments() {
         return waterSegments;
+    }
+
+    public Map<Integer, List<List<Double>>> getWaterSegmentsOffsetToOuter() {
+        return waterSegmentsOffsetToOuter;
+    }
+
+    public void setWaterSegmentsOffsetToOuter(Map<Integer, List<List<Double>>> waterSegmentsOffsetToOuter) {
+        this.waterSegmentsOffsetToOuter = waterSegmentsOffsetToOuter;
     }
 
     public Collection<Obstacle> getObstacles() {
@@ -333,7 +343,7 @@ public class TerrainShapeNode {
     public NativeTerrainShapeNode toNativeTerrainShapeNode() {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
         nativeTerrainShapeNode.fullDrivewayHeights = drivewayHeights;
-        nativeTerrainShapeNode.offsetToOuter = renderOffsetToOuter;
+        nativeTerrainShapeNode.renderWaterOffsetToOuter = renderWaterOffsetToOuter;
         nativeTerrainShapeNode.innerGroundHeight = innerGroundHeight;
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeNode.fullGameEngineDriveway = fullGameEngineDriveway;
@@ -341,7 +351,7 @@ public class TerrainShapeNode {
         nativeTerrainShapeNode.groundSlopeConnections = groundSlopeConnections;
         nativeTerrainShapeNode.renderInnerSlopeId = renderInnerSlopeId;
         nativeTerrainShapeNode.renderHideGround = renderHideGround;
-        nativeTerrainShapeNode.renderInnerLiquidSlopeId = renderInnerLiquidSlopeId;
+        nativeTerrainShapeNode.renderInnerWaterSlopeId = renderInnerWaterSlopeId;
 
         // TODO if (groundSlopeConnections != null) {
         // TODO nativeTerrainShapeNode.groundSlopeConnections = new NativeVertex[groundSlopeConnections.size()][];
@@ -351,11 +361,12 @@ public class TerrainShapeNode {
         // TODO }
         // TODO }
         if (waterSegments != null) {
-            nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
-            for (int i = 0; i < waterSegments.size(); i++) {
-                List<Vertex> waterSegment = waterSegments.get(i);
-                nativeTerrainShapeNode.waterSegments[i] = waterSegment.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
-            }
+//      TODO      nativeTerrainShapeNode.waterSegments = new NativeVertex[waterSegments.size()][];
+//            for (int i = 0; i < waterSegments.size(); i++) {
+//                List<Vertex> waterSegment = waterSegments.get(i);
+//                nativeTerrainShapeNode.waterSegments[i] = waterSegment.stream().map(NativeHelper::fromVertex).toArray(NativeVertex[]::new);
+//            }
+            nativeTerrainShapeNode.waterSegments = waterSegments;
         }
         nativeTerrainShapeNode.fullWaterLevel = fullWaterLevel;
         if (obstacles != null) {

@@ -8,15 +8,31 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainWaterTile", namespace = "com.btxtech.shared.nativejs")
 public class TerrainWaterTile {
-    public native void initArray(int sizeVertex, int sizeScalar);
+    private int slopeId;
+    private double[] vertices;
+    private double[] offsetToOuters;
 
-    public native void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, Double offsetToOuter);
+    public int getSlopeId() {
+        return slopeId;
+    }
 
-    public native double[] getVertices();
+    public void setSlopeId(int slopeId) {
+        this.slopeId = slopeId;
+    }
 
-    public native Double[] getOffsetToOuters();
+    public void setVertices(double[] vertices) {
+        this.vertices = vertices;
+    }
 
-    public native void setVertexCount(int vertexCount);
+    public double[] getVertices() {
+        return vertices;
+    }
 
-    public native int getVertexCount();
+    public double[] getOffsetToOuters() {
+        return offsetToOuters;
+    }
+
+    public void setOffsetToOuters(double[] offsetToOuters) {
+        this.offsetToOuters = offsetToOuters;
+    }
 }

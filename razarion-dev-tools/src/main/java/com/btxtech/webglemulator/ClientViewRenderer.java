@@ -135,7 +135,7 @@ public class ClientViewRenderer extends Abstract2dRenderer {
     }
 
     private void renderTriangles(ExtendedGraphicsContext egc, TerrainTile terrainTile) {
-        egc.strokeTriangles(terrainTile.getGroundVertices(), 0.1, Color.GREEN);
+        egc.strokeTriangles(terrainTile.getGroundPositions(), 0.1, Color.GREEN);
         if (terrainTile.getTerrainSlopeTiles() != null) {
             for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
                 egc.strokeTriangles(terrainSlopeTile.getVertices(), 0.1, Color.DARKGRAY);

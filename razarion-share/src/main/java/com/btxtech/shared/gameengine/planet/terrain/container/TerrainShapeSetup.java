@@ -150,7 +150,7 @@ public class TerrainShapeSetup {
                         for (List<DecimalPosition> outerPiercing : outerPiercings) {
                             terrainShapeNode.setRenderHideGround(true);
                             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), true, null, 0));
+                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), true, null, 0), slope.getSlopeSkeletonConfig().getId());
                             terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, outerPiercing, slope.getOuterGroundHeight(), false, null, 0), null);
                         }
                     }
@@ -159,8 +159,8 @@ public class TerrainShapeSetup {
                 for (Index nodeIndex : outerRasterizer.getInnerTiles()) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setRenderHideGround(true);
-                    terrainShapeNode.setRenderInnerLiquidSlopeId(slope.getSlopeSkeletonConfig().getId());
-                    terrainShapeNode.setRenderLiquidOffsetToOuter(setupOffsetToOuter(slope, nodeIndex)); // Slow
+                    terrainShapeNode.setRenderInnerWaterSlopeId(slope.getSlopeSkeletonConfig().getId());
+                    terrainShapeNode.setRenderWaterOffsetToOuter(setupOffsetToOuter(slope, nodeIndex)); // Slow
                     terrainShapeNode.setFullWaterLevel(slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel());
                 }
                 // Setup inner seabed
@@ -196,7 +196,7 @@ public class TerrainShapeSetup {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         for (List<DecimalPosition> innerPiercing : innerPiercings) {
                             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), true, null, 0));
+                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel(), true, null, 0), slope.getSlopeSkeletonConfig().getId());
                             terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
                         }
                     }

@@ -34,7 +34,7 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
 
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-        vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundVertices()));
+        vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundPositions()));
     }
 
     @Override

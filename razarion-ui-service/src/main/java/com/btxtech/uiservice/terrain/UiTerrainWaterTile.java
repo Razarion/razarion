@@ -40,10 +40,6 @@ public class UiTerrainWaterTile {
         return terrainWaterTile;
     }
 
-    public int getVertexCount() {
-        return terrainWaterTile.getVertexCount();
-    }
-
     public WaterConfig getWaterConfig() {
         return waterConfig;
     }

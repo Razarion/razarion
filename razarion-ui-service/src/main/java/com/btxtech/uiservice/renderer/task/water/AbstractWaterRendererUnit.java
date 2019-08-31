@@ -24,7 +24,7 @@ public abstract class AbstractWaterRendererUnit extends AbstractRenderUnit<UiTer
             return;
         }
         fillInternalBuffers(uiTerrainWaterTile);
-        setElementCount(uiTerrainWaterTile.getVertexCount());
+        // TODO setElementCount(uiTerrainWaterTile.getVertexCount());
     }
 
     @Override

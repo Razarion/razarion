@@ -395,11 +395,11 @@ public class WeldTestRenderer {
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);
-            for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
-                int vertexScalarIndex = vertexIndex * 3;
-                fillTriangle(terrainTile.getGroundVertices(), terrainTile.getGroundNorms(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
-                strokeZTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
-            }
+//      TODO      for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+//                int vertexScalarIndex = vertexIndex * 3;
+//                fillTriangle(terrainTile.getGroundPositions(), terrainTile.getGroundNorms(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
+//                strokeZTriangle(terrainTile.getGroundPositions(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
+//            }
         }
 
         if (weldTestController.renderTerrainTileTerrainType() || weldTestController.renderTerrainTileHeight()) {
@@ -590,13 +590,13 @@ public class WeldTestRenderer {
     private void renderTileSplatting(TerrainTile terrainTile) {
         gc.setLineWidth(FAT_LINE_WIDTH);
 
-        for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
-            int vertexScalarIndex = vertexIndex * 3;
-            Color color1 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex], 0);
-            Color color2 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 1], 0);
-            Color color3 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 2], 0);
-            strokeGradientTriangle(terrainTile.getGroundVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6, color1, color2, color3);
-        }
+//    TODO    for (int vertexIndex = 0; vertexIndex < terrainTile.getGroundVertexCount(); vertexIndex += 3) {
+//            int vertexScalarIndex = vertexIndex * 3;
+//            Color color1 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex], 0);
+//            Color color2 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 1], 0);
+//            Color color3 = Color.color(0, terrainTile.getGroundSplattings()[vertexIndex + 2], 0);
+//            strokeGradientTriangle(terrainTile.getGroundPositions(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6, color1, color2, color3);
+//        }
 
         if (terrainTile.getTerrainSlopeTiles() != null) {
             for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
@@ -619,15 +619,15 @@ public class WeldTestRenderer {
     private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
         gc.setLineWidth(LINE_WIDTH);
         gc.setStroke(Color.BLUE);
-        for (int vertexIndex = 0; vertexIndex < terrainWaterTile.getVertexCount(); vertexIndex += 3) {
-            int vertexScalarIndex = vertexIndex * 3;
-
-            double[] xCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex], terrainWaterTile.getVertices()[vertexScalarIndex + 3], terrainWaterTile.getVertices()[vertexScalarIndex + 6]};
-            double[] yCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex + 1], terrainWaterTile.getVertices()[vertexScalarIndex + 4], terrainWaterTile.getVertices()[vertexScalarIndex + 7]};
-            gc.strokePolygon(xCorners, yCorners, 3);
-            //gc.setFill(Color.color(1, 0, 0, 0.3));
-            //gc.fillPolygon(xCorners, yCorners, 3);
-        }
+// TODO        for (int vertexIndex = 0; vertexIndex < terrainWaterTile.getVertexCount(); vertexIndex += 3) {
+//            int vertexScalarIndex = vertexIndex * 3;
+//
+//            double[] xCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex], terrainWaterTile.getVertices()[vertexScalarIndex + 3], terrainWaterTile.getVertices()[vertexScalarIndex + 6]};
+//            double[] yCorners = new double[]{terrainWaterTile.getVertices()[vertexScalarIndex + 1], terrainWaterTile.getVertices()[vertexScalarIndex + 4], terrainWaterTile.getVertices()[vertexScalarIndex + 7]};
+//            gc.strokePolygon(xCorners, yCorners, 3);
+//            //gc.setFill(Color.color(1, 0, 0, 0.3));
+//            //gc.fillPolygon(xCorners, yCorners, 3);
+//        }
     }
 
 
@@ -786,7 +786,7 @@ public class WeldTestRenderer {
             // TODO displayGroundSlopeConnections(terrainShapeNode.getGroundSlopeConnections());
         }
         if (weldTestController.renderShapeWater()) {
-            displayShapeWater(terrainShapeNode.getWaterSegments());
+            // TODO displayShapeWater(terrainShapeNode.getWaterSegments());
         }
         if (weldTestController.renderShapeTerrainType() && terrainShapeNode.getTerrainType() != null) {
             gc.setFill(color4TerrainType(terrainShapeNode.getTerrainType()));

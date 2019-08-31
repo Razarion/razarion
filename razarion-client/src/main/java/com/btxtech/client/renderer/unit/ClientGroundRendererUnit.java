@@ -77,7 +77,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
         bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");
 
-        vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundVertices()));
+        vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundPositions()));
         normals.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundNorms()));
         // TODO tangents.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundTangents()));
         splattings.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundSplattings()));
