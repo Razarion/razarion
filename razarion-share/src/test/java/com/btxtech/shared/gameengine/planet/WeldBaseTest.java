@@ -29,11 +29,13 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Assert;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -324,10 +326,17 @@ public class WeldBaseTest {
         getWeldBean(WeldDisplay.class).show(userObject);
     }
 
-    public void exportTriangles(String filename, String directorname, Index... terrainTileIndices) {
+    public void exportTriangles(String directorname, Index... terrainTileIndices) {
         AssertTerrainTile.saveTerrainTiles(Arrays.stream(terrainTileIndices).map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex)).collect(Collectors.toList()),
-                filename, directorname);
-        System.out.println("exportTriangles(): " + new File(directorname, filename));
+                "terrain-tiles.json", directorname);
+        try {
+            new ObjectMapper().writeValue(new File(directorname, "static-game-config.json"),  getStaticGameConfig());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("exportTriangles(): " + new File(directorname));
+
     }
 
     protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
