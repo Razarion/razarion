@@ -23,7 +23,6 @@ public class DevToolTerrainTile extends TerrainTile {
     private double[] groundTangents;
     private double[] groundSplattings;
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
-    private TerrainWaterTile terrainWaterTile;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
@@ -89,16 +88,6 @@ public class DevToolTerrainTile extends TerrainTile {
             return null;
         }
         return terrainSlopeTiles.toArray(new TerrainSlopeTile[terrainSlopeTiles.size()]);
-    }
-
-    @Override
-    public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
-        this.terrainWaterTile = terrainWaterTile;
-    }
-
-    @Override
-    public TerrainWaterTile getTerrainWaterTile() {
-        return terrainWaterTile;
     }
 
     @Override

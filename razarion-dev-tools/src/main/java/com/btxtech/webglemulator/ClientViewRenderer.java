@@ -141,8 +141,8 @@ public class ClientViewRenderer extends Abstract2dRenderer {
                 egc.strokeTriangles(terrainSlopeTile.getVertices(), 0.1, Color.DARKGRAY);
             }
         }
-        if (terrainTile.getTerrainWaterTile() != null) {
-            egc.strokeTriangles(terrainTile.getTerrainWaterTile().getVertices(), 0.1, Color.BLUE);
-        }
+//   TODO     if (terrainTile.getTerrainWaterTile() != null) {
+//            egc.strokeTriangles(terrainTile.getTerrainWaterTile().getVertices(), 0.1, Color.BLUE);
+//        }
     }
 }

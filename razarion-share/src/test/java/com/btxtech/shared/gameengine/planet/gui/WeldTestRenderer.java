@@ -388,10 +388,10 @@ public class WeldTestRenderer {
         }
 
         if (weldTestController.renderTerrainTileWater()) {
-            gc.setLineWidth(LINE_WIDTH);
-            if (terrainTile.getTerrainWaterTile() != null) {
-                drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
-            }
+//   TODO         gc.setLineWidth(LINE_WIDTH);
+//            if (terrainTile.getTerrainWaterTile() != null) {
+//                drawTerrainWaterTile(terrainTile.getTerrainWaterTile());
+//            }
         }
         if (weldTestController.renderTerrainTileGround()) {
             gc.setLineWidth(LINE_WIDTH);

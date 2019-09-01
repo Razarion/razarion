@@ -4,7 +4,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -24,7 +23,6 @@ public class TestTerrainTile extends TerrainTile {
     private double[] groundNorms;
     private double[] groundSplattings;
     private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
-    private TestTerrainWaterTile terrainWaterTile;
     private double landWaterProportion;
     private TestTerrainNode[][] testTerrainNodes;
     private double height;
@@ -90,16 +88,6 @@ public class TestTerrainTile extends TerrainTile {
             return null;
         }
         return terrainSlopeTiles.toArray(new TerrainSlopeTile[terrainSlopeTiles.size()]);
-    }
-
-    @Override
-    public void setTerrainWaterTile(TerrainWaterTile terrainWaterTile) {
-        this.terrainWaterTile = (TestTerrainWaterTile) terrainWaterTile;
-    }
-
-    @Override
-    public TerrainWaterTile getTerrainWaterTile() {
-        return terrainWaterTile;
     }
 
     @Override

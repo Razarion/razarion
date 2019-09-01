@@ -117,13 +117,13 @@ public class AssertTerrainTile {
             }
         }
         // Water
-        if (expected.getTerrainWaterTile() != null || expected.getTerrainWaterTile() != null) {
-            if (expected.getTerrainWaterTile() != null && expected.getTerrainWaterTile() != null) {
-                compare(expected.getTerrainWaterTile(), actual.getTerrainWaterTile());
-            } else {
-                Assert.fail("TerrainWaterTile is invalid. Expected: " + expected.getTerrainWaterTile() + " Actual: " + actual.getTerrainWaterTile());
-            }
-        }
+//    TODO    if (expected.getTerrainWaterTile() != null || expected.getTerrainWaterTile() != null) {
+//            if (expected.getTerrainWaterTile() != null && expected.getTerrainWaterTile() != null) {
+//                compare(expected.getTerrainWaterTile(), actual.getTerrainWaterTile());
+//            } else {
+//                Assert.fail("TerrainWaterTile is invalid. Expected: " + expected.getTerrainWaterTile() + " Actual: " + actual.getTerrainWaterTile());
+//            }
+//        }
         // Terrain nodes
         if (expected.getTerrainNodes() != null && actual.getTerrainNodes() != null) {
             for (int x = 0; x < TerrainUtil.TERRAIN_TILE_NODES_COUNT; x++) {

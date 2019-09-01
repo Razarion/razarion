@@ -75,18 +75,18 @@ public class UiTerrainTile {
         this.terrainTile = terrainTile;
         modelRenderer = groundRenderTask.createModelRenderer(this);
         modelRenderer.setActive(active);
-        if (terrainTile.getTerrainSlopeTiles() != null) {
-            uiTerrainSlopeTiles = new ArrayList<>();
-            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-                UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
-                uiTerrainSlopeTile.init(active, this, terrainSlopeTile);
-                uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
-            }
-        }
-        if (terrainTile.getTerrainWaterTile() != null) {
-            uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
-            uiTerrainWaterTile.init(active, terrainTile.getTerrainWaterTile());
-        }
+//   TODO     if (terrainTile.getTerrainSlopeTiles() != null) {
+//            uiTerrainSlopeTiles = new ArrayList<>();
+//            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+//                UiTerrainSlopeTile uiTerrainSlopeTile = uiTerrainSlopeTileInstance.get();
+//                uiTerrainSlopeTile.init(active, this, terrainSlopeTile);
+//                uiTerrainSlopeTiles.add(uiTerrainSlopeTile);
+//            }
+//        }
+//        if (terrainTile.getTerrainWaterTile() != null) {
+//            uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
+//            uiTerrainWaterTile.init(active, terrainTile.getTerrainWaterTile());
+//        }
         if(active) {
             MapList<Integer, ModelMatrices> terrainObjects = getTerrainObjectModelMatrices();
             if(terrainObjects != null) {

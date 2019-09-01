@@ -1,7 +1,5 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import jsinterop.annotations.JsType;
 
@@ -16,7 +14,7 @@ import java.util.Map;
 public abstract class TerrainTile {
     private Map<Integer, double[]> groundSlopeVertices; // TODO remove if used in Javascript Interop GWT
     private Map<Integer, double[]> groundSlopeNorms; // TODO remove if used in Javascript Interop GWT
-    private List<TerrainWaterTile> terrainWaterTilea;
+    private List<TerrainWaterTile> terrainWaterTiles;
 
     public native void init(int indexX, int indexY);
 
@@ -56,17 +54,13 @@ public abstract class TerrainTile {
 
     public native TerrainSlopeTile[] getTerrainSlopeTiles();
 
-    public native void setTerrainWaterTile(TerrainWaterTile terrainWaterTile);
-
     public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTilea) {
-        this.terrainWaterTilea = terrainWaterTilea;
+        this.terrainWaterTiles = terrainWaterTilea;
     }
 
-    public List<TerrainWaterTile> getTerrainWaterTilea() {
-        return terrainWaterTilea;
+    public List<TerrainWaterTile> getTerrainWaterTiles() {
+        return terrainWaterTiles;
     }
-
-    public native TerrainWaterTile getTerrainWaterTile();
 
     public native double getLandWaterProportion();
 

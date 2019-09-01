@@ -51,7 +51,7 @@ public class TerrainTileBuilder {
         this.terrainTileIndex = terrainTileIndex;
         this.groundSkeletonConfig = groundSkeletonConfig;
 
-        this.terrainTile = jsInteropObjectFactory.generateTerrainTile();
+        terrainTile = jsInteropObjectFactory.generateTerrainTile();
 
         terrainTile.init(terrainTileIndex.getX(), terrainTileIndex.getY());
         offsetIndexX = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
