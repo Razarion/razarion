@@ -80,7 +80,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
     public void generateTerrainThreeJs() {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
         SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-        slopeSkeletonConfigWater.setId(10).setType(SlopeSkeletonConfig.Type.WATER);
+        slopeSkeletonConfigWater.setId(10).setInternalName("Ocean Beach").setType(SlopeSkeletonConfig.Type.WATER);
         slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-4);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, 0.0, 0.5),},
@@ -90,6 +90,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
+        slopeSkeletonConfigWater.setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.2).setWaterTransparency(0.5).setWaterBeginsOffset(10.0).setWaterFadeoutDistance(3.0).setWaterAnimationDuration(30.0);
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

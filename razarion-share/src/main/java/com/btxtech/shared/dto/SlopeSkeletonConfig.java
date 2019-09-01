@@ -31,10 +31,25 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Integer bmId;
     private double bmScale;
     private double bmDepth;
+    private Double waterShininess;
+    private Double waterSpecularStrength;
+    private Double waterReflectionScale;
+    private Double waterMapScale;
+    private Double waterDistortionStrength;
+    private Double waterBumpMapDepth;
+    private Double waterTransparency;
+    private Double waterBeginsOffset;
+    private Double waterFadeoutDistance;
+    private Double waterAnimationDuration;
+    @Deprecated
     private Integer slopeWaterSplattingId;
+    @Deprecated
     private double slopeWaterSplattingScale;
+    @Deprecated
     private double slopeWaterSplattingFactor;
+    @Deprecated
     private double slopeWaterSplattingFadeThreshold;
+    @Deprecated
     private double slopeWaterSplattingHeight;
 
     public int getId() {
@@ -218,6 +233,96 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     public SlopeNode getSlopeNode(int column, int row) {
         return slopeNodes[column % segments][row];
+    }
+
+    public Double getWaterShininess() {
+        return waterShininess;
+    }
+
+    public SlopeSkeletonConfig setWaterShininess(Double waterShininess) {
+        this.waterShininess = waterShininess;
+        return this;
+    }
+
+    public Double getWaterSpecularStrength() {
+        return waterSpecularStrength;
+    }
+
+    public SlopeSkeletonConfig setWaterSpecularStrength(Double waterSpecularStrength) {
+        this.waterSpecularStrength = waterSpecularStrength;
+        return this;
+    }
+
+    public Double getWaterReflectionScale() {
+        return waterReflectionScale;
+    }
+
+    public SlopeSkeletonConfig setWaterReflectionScale(Double waterReflectionScale) {
+        this.waterReflectionScale = waterReflectionScale;
+        return this;
+    }
+
+    public Double getWaterMapScale() {
+        return waterMapScale;
+    }
+
+    public SlopeSkeletonConfig setWaterMapScale(Double waterMapScale) {
+        this.waterMapScale = waterMapScale;
+        return this;
+    }
+
+    public Double getWaterDistortionStrength() {
+        return waterDistortionStrength;
+    }
+
+    public SlopeSkeletonConfig setWaterDistortionStrength(Double waterDistortionStrength) {
+        this.waterDistortionStrength = waterDistortionStrength;
+        return this;
+    }
+
+    public Double getWaterBumpMapDepth() {
+        return waterBumpMapDepth;
+    }
+
+    public SlopeSkeletonConfig setWaterBumpMapDepth(Double waterBumpMapDepth) {
+        this.waterBumpMapDepth = waterBumpMapDepth;
+        return this;
+    }
+
+    public Double getWaterTransparency() {
+        return waterTransparency;
+    }
+
+    public SlopeSkeletonConfig setWaterTransparency(Double waterTransparency) {
+        this.waterTransparency = waterTransparency;
+        return this;
+    }
+
+    public Double getWaterBeginsOffset() {
+        return waterBeginsOffset;
+    }
+
+    public SlopeSkeletonConfig setWaterBeginsOffset(Double waterBeginsOffset) {
+        this.waterBeginsOffset = waterBeginsOffset;
+        return this;
+    }
+
+    public Double getWaterFadeoutDistance() {
+        return waterFadeoutDistance;
+    }
+
+    public SlopeSkeletonConfig setWaterFadeoutDistance(Double waterFadeoutDistance) {
+        this.waterFadeoutDistance = waterFadeoutDistance;
+        return this;
+    }
+
+    public Double getWaterAnimationDuration() {
+        return waterAnimationDuration;
+    }
+
+    public SlopeSkeletonConfig setWaterAnimationDuration(Double waterAnimationDuration) {
+        this.waterAnimationDuration = waterAnimationDuration;
+        return this;
     }
 
     public Integer getSlopeWaterSplattingId() {
