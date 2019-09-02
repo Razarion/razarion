@@ -105,7 +105,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
     @Override
     protected void fillBuffer(UiTerrainSlopeTile uiTerrainSlopeTile) {
         slopeTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getTextureId(), "uSlopeTexture", "uSlopeTextureScale", uiTerrainSlopeTile.getTextureScale());
-        uSlopeBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getBmId(), "uSlopeBm", "uSlopeBmScale", uiTerrainSlopeTile.getBmScale(), "uSlopeBmOnePixel");
+        // TODO uSlopeBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainSlopeTile.getBmId(), "uSlopeBm", "uSlopeBmScale", uiTerrainSlopeTile.getBmScale(), "uSlopeBmOnePixel");
         slopeWaterSplatting= webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getSlopeSkeletonConfig().getSlopeWaterSplattingId(), "uSlopeWaterSplatting", "uSlopeWaterSplattingScale", uiTerrainSlopeTile.getSlopeSkeletonConfig().getSlopeWaterSplattingScale());
 
         groundTopTexture = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getUiTerrainTile().getTopTextureId(), "uGroundTopTexture", "uGroundTopTextureScale", uiTerrainSlopeTile.getUiTerrainTile().getTopTextureScale());
@@ -169,7 +169,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
 
         slopeTexture.overrideScale(uiTerrainSlopeTile.getTextureScale());
         slopeTexture.activate();
-        uSlopeBm.overrideScale(uiTerrainSlopeTile.getBmScale());
+        // TODO uSlopeBm.overrideScale(uiTerrainSlopeTile.getBmScale());
         uSlopeBm.activate();
 
         slopeWaterSplatting.activate();

@@ -329,8 +329,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         }
 
         for (SlopeSkeletonConfig slopeSkeletonConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
-            if (slopeSkeletonConfig.getTextureId() != null) {
-                textureIds.add(slopeSkeletonConfig.getTextureId());
+            if (slopeSkeletonConfig.getSlopeTextureId() != null) {
+                textureIds.add(slopeSkeletonConfig.getSlopeTextureId());
             }
         }
 
@@ -347,8 +347,8 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public Set<Integer> getAllBumpTextureIds() {
         Set<Integer> bumpIds = new HashSet<>();
         for (SlopeSkeletonConfig slopeSkeletonConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
-            if (slopeSkeletonConfig.getBmId() != null) {
-                bumpIds.add(slopeSkeletonConfig.getBmId());
+            if (slopeSkeletonConfig.getSlopeBumpMapId() != null) {
+                bumpIds.add(slopeSkeletonConfig.getSlopeBumpMapId());
             }
         }
 

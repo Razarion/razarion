@@ -65,11 +65,11 @@ public class UiTerrainSlopeTile {
     }
 
     public Integer getTextureId() {
-        return slopeSkeletonConfig.getTextureId();
+        return slopeSkeletonConfig.getSlopeTextureId();
     }
 
     public Integer getBmId() {
-        return slopeSkeletonConfig.getBmId();
+        return slopeSkeletonConfig.getSlopeBumpMapId();
     }
 
 
@@ -78,11 +78,7 @@ public class UiTerrainSlopeTile {
     }
 
     public double getBmDepth() {
-        return slopeSkeletonConfig.getBmDepth();
-    }
-
-    public boolean isSlopeOriented() {
-        return slopeSkeletonConfig.getSlopeOriented();
+        return slopeSkeletonConfig.getSlopeBumpMapDepth();
     }
 
     public boolean hasWater() {
@@ -90,11 +86,7 @@ public class UiTerrainSlopeTile {
     }
 
     public double getTextureScale() {
-        return slopeSkeletonConfig.getTextureScale();
-    }
-
-    public double getBmScale() {
-        return slopeSkeletonConfig.getBmScale();
+        return slopeSkeletonConfig.getSlopeTextureScale();
     }
 
     public WaterConfig getWaterConfig() {

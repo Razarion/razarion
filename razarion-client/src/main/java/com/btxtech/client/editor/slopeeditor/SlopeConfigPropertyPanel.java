@@ -183,12 +183,12 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
         type.setAcceptableValues(Arrays.asList(SlopeSkeletonConfig.Type.values()));
         type.addValueChangeHandler(event -> slopeConfig.getSlopeSkeletonConfig().setType(event.getValue()));
         terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
-        textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getTextureId(), imageId -> {
-            slopeConfig.getSlopeSkeletonConfig().setTextureId(imageId);
+        textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getSlopeTextureId(), imageId -> {
+            slopeConfig.getSlopeSkeletonConfig().setSlopeTextureId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
-        bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getBmId(), imageId -> {
-            slopeConfig.getSlopeSkeletonConfig().setBmId(imageId);
+        bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getSlopeBumpMapId(), imageId -> {
+            slopeConfig.getSlopeSkeletonConfig().setSlopeBumpMapId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
         specularLightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());

@@ -24,13 +24,14 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Type type;
     private SlopeNode[][] slopeNodes;
     private SpecularLightConfig specularLightConfig;
-    @Deprecated
-    private boolean slopeOriented;
-    private Integer textureId;
-    private double textureScale;
-    private Integer bmId;
-    private double bmScale;
-    private double bmDepth;
+    private Integer slopeTextureId;
+    private double slopeTextureScale;
+    private Integer slopeBumpMapId;
+    private double slopeBumpMapDepth;
+//    private double slopeShininess;
+//    private Double slopeSpecularStrength;
+//    private Double slopeDistortionStrength;
+//    private Double slopeAnimationDuration;
     private Double waterShininess;
     private Double waterSpecularStrength;
     private Double waterReflectionScale;
@@ -111,12 +112,12 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return height;
     }
 
-    public double getBmDepth() {
-        return bmDepth;
+    public double getSlopeBumpMapDepth() {
+        return slopeBumpMapDepth;
     }
 
-    public SlopeSkeletonConfig setBmDepth(double bmDepth) {
-        this.bmDepth = bmDepth;
+    public SlopeSkeletonConfig setSlopeBumpMapDepth(double slopeBumpMapDepth) {
+        this.slopeBumpMapDepth = slopeBumpMapDepth;
         return this;
     }
 
@@ -183,51 +184,30 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    // Errai can not handle is-getter. Most likely chained properties with UI binding.
-    @Deprecated
-    public boolean getSlopeOriented() {
-        return slopeOriented;
+    public Integer getSlopeTextureId() {
+        return slopeTextureId;
     }
 
-    @Deprecated
-    public SlopeSkeletonConfig setSlopeOriented(boolean slopeOriented) {
-        this.slopeOriented = slopeOriented;
+    public SlopeSkeletonConfig setSlopeTextureId(Integer slopeTextureId) {
+        this.slopeTextureId = slopeTextureId;
         return this;
     }
 
-    public Integer getTextureId() {
-        return textureId;
+    public double getSlopeTextureScale() {
+        return slopeTextureScale;
     }
 
-    public SlopeSkeletonConfig setTextureId(Integer textureId) {
-        this.textureId = textureId;
+    public SlopeSkeletonConfig setSlopeTextureScale(double slopeTextureScale) {
+        this.slopeTextureScale = slopeTextureScale;
         return this;
     }
 
-    public double getTextureScale() {
-        return textureScale;
+    public Integer getSlopeBumpMapId() {
+        return slopeBumpMapId;
     }
 
-    public SlopeSkeletonConfig setTextureScale(double textureScale) {
-        this.textureScale = textureScale;
-        return this;
-    }
-
-    public Integer getBmId() {
-        return bmId;
-    }
-
-    public SlopeSkeletonConfig setBmId(Integer bmId) {
-        this.bmId = bmId;
-        return this;
-    }
-
-    public double getBmScale() {
-        return bmScale;
-    }
-
-    public SlopeSkeletonConfig setBmScale(double bmScale) {
-        this.bmScale = bmScale;
+    public SlopeSkeletonConfig setSlopeBumpMapId(Integer slopeBumpMapId) {
+        this.slopeBumpMapId = slopeBumpMapId;
         return this;
     }
 

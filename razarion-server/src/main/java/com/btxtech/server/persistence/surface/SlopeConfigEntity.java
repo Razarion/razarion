@@ -59,7 +59,6 @@ public class SlopeConfigEntity {
     private double fractalRoughness;
     private double horizontalSpace;
     private int segments;
-    private boolean slopeOriented;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(nullable = false)
     private List<SlopeNodeEntity> slopeSkeletonEntries;
@@ -70,7 +69,6 @@ public class SlopeConfigEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private ImageLibraryEntity bm;
-    private double bmScale;
     private double bmDepth;
 
     public Integer getId() {
@@ -92,12 +90,10 @@ public class SlopeConfigEntity {
         slopeSkeletonConfig.setHeight(shape.getZInner());
         slopeSkeletonConfig.setHorizontalSpace(horizontalSpace);
         slopeSkeletonConfig.setType(type);
-        slopeSkeletonConfig.setSlopeOriented(slopeOriented);
-        slopeSkeletonConfig.setTextureId(PersistenceUtil.getImageIdSafe(texture));
-        slopeSkeletonConfig.setTextureScale(textureScale);
-        slopeSkeletonConfig.setBmId(PersistenceUtil.getImageIdSafe(bm));
-        slopeSkeletonConfig.setBmScale(bmScale);
-        slopeSkeletonConfig.setBmDepth(bmDepth);
+        slopeSkeletonConfig.setSlopeTextureId(PersistenceUtil.getImageIdSafe(texture));
+        slopeSkeletonConfig.setSlopeTextureScale(textureScale);
+        slopeSkeletonConfig.setSlopeBumpMapId(PersistenceUtil.getImageIdSafe(bm));
+        slopeSkeletonConfig.setSlopeBumpMapDepth(bmDepth);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
         for (SlopeNodeEntity slopeSkeletonEntry : slopeSkeletonEntries) {
             slopeNodes[slopeSkeletonEntry.getSegmentIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry.toSlopeNode();
@@ -141,13 +137,11 @@ public class SlopeConfigEntity {
         innerLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getInnerLineGameEngine();
         coastDelimiterLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getCoastDelimiterLineGameEngine();
         outerLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getOuterLineGameEngine();
-        texture = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getTextureId());
-        textureScale = slopeConfig.getSlopeSkeletonConfig().getTextureScale();
-        bm = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getBmId());
-        bmScale = slopeConfig.getSlopeSkeletonConfig().getBmScale();
-        bmDepth = slopeConfig.getSlopeSkeletonConfig().getBmDepth();
+        texture = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getSlopeTextureId());
+        textureScale = slopeConfig.getSlopeSkeletonConfig().getSlopeTextureScale();
+        bm = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getSlopeBumpMapId());
+        bmDepth = slopeConfig.getSlopeSkeletonConfig().getSlopeBumpMapDepth();
         horizontalSpace = slopeConfig.getSlopeSkeletonConfig().getHorizontalSpace();
-        slopeOriented = slopeConfig.getSlopeSkeletonConfig().getSlopeOriented();
         segments = slopeConfig.getSlopeSkeletonConfig().getSegments();
         slopeSkeletonEntries.clear();
         for (int x = 0; x < segments; x++) {
@@ -192,7 +186,6 @@ public class SlopeConfigEntity {
                 ", fractalClampMax=" + fractalClampMax +
                 ", fractalRoughness=" + fractalRoughness +
                 ", horizontalSpace=" + horizontalSpace +
-                ", slopeOriented=" + slopeOriented +
                 ", segments=" + segments +
                 ", type=" + type +
                 '}';
