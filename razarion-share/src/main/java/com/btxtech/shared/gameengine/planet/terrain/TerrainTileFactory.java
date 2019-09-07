@@ -40,8 +40,6 @@ public class TerrainTileFactory {
     @Inject
     private Instance<TerrainTileBuilder> terrainTileBuilderInstance;
     @Inject
-    private Instance<TerrainWaterTileBuilder> terrainWaterTileContextInstance;
-    @Inject
     private TerrainTypeService terrainTypeService;
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
@@ -175,10 +173,12 @@ public class TerrainTileFactory {
 
     private void generateSlopeTerrainTile(TerrainTileBuilder terrainTileBuilder, FractionalSlope fractionalSlope) {
         SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeSkeletonConfigId());
-        TerrainSlopeTileContext terrainSlopeTileContext = terrainTileBuilder.createTerrainSlopeTileContext(fractionalSlope.getSlopeSkeletonConfigId(), fractionalSlope.getFractionalSlopeSegments().size(), slopeSkeletonConfig.getRows() + 1);
+        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(fractionalSlope.getSlopeSkeletonConfigId(), fractionalSlope.getFractionalSlopeSegments().size(), slopeSkeletonConfig.getRows() + 1);
+        terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh(fractionalSlope.getSlopeSkeletonConfigId());
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
             Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation(fractionalSlope.isInverted());
+            // Setup Slope
             double uvX = 0;
             Vertex lastPosition = null;
             for (int row = 0; row - 1 < slopeSkeletonConfig.getRows(); row++) {
@@ -202,11 +202,23 @@ public class TerrainTileFactory {
                     uvTermination = new DecimalPosition(uvX, fractionalSlopeSegment.getUvYTermination());
                 }
                 lastPosition = transformedPoint;
-                terrainSlopeTileContext.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileBuilder.interpolateSplattin(transformedPoint.toXY()));
+                terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileBuilder.interpolateSplattin(transformedPoint.toXY()));
             }
             vertexColumn++;
+            // Setup water
+            DecimalPosition uvTerminationOuter = null;
+            DecimalPosition uvTerminationInner = null;
+            if (fractionalSlopeSegment.hasUvYTermination()) {
+                uvTerminationOuter = new DecimalPosition(0, fractionalSlopeSegment.getUvYTermination());
+                uvTerminationInner = new DecimalPosition(slopeSkeletonConfig.getWidth(), fractionalSlopeSegment.getUvYTermination());
+            }
+            Vertex waterOuter = transformationMatrix.multiply(new Vertex(0, 0, 0), 1.0).add(0, 0, fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel());
+            Vertex waterInner = transformationMatrix.multiply(new Vertex(slopeSkeletonConfig.getWidth(), 0, 0), 1.0).add(0, 0, fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel());
+            terrainTileBuilder.getTerrainWaterTileBuilder().addWaterMeshVertex(waterOuter, new DecimalPosition(0, fractionalSlopeSegment.getUvY()), uvTerminationOuter,
+                    waterInner, new DecimalPosition(slopeSkeletonConfig.getWidth(), fractionalSlopeSegment.getUvY()), uvTerminationInner);
         }
-        terrainSlopeTileContext.triangulation(fractionalSlope.isInverted());
+        terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted());
+        terrainTileBuilder.getTerrainWaterTileBuilder().triangulateWaterMesh();
     }
 
     private static double setupSlopeFactor(SlopeNode slopeNode, double drivewayHeightFactor) {
@@ -260,23 +272,19 @@ public class TerrainTileFactory {
             terrainTileBuilder.setLandWaterProportion(0);
         }
 
-        TerrainWaterTileBuilder terrainWaterTileBuilder = terrainWaterTileContextInstance.get();
-        terrainWaterTileBuilder.init(terrainTileBuilder);
 
         terrainShapeTile.iterateOverTerrainNodes((nodeRelativeIndex, terrainShapeNode, iterationControl) -> {
             if (terrainShapeNode == null && terrainShapeTile.getRenderFullWaterLevel() != null) {
-                terrainWaterTileBuilder.insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getRenderFullWaterLevel(), null /*TODO replace null*/, terrainShapeTile.getRenderFullWaterSlopeId());
+                terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeTile.getRenderFullWaterLevel(), terrainShapeTile.getRenderFullWaterSlopeId());
             } else if (terrainShapeNode != null && terrainShapeNode.isFullWater()) {
-                terrainWaterTileBuilder.insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel(), terrainShapeNode.getRenderWaterOffsetToOuter(), terrainShapeNode.getRenderInnerWaterSlopeId());
+                terrainTileBuilder.getTerrainWaterTileBuilder().insertNode(terrainTileBuilder.toAbsoluteNodeIndex(nodeRelativeIndex), terrainShapeNode.getFullWaterLevel(), terrainShapeNode.getRenderInnerWaterSlopeId());
             } else if (terrainShapeNode != null && terrainShapeNode.getWaterSegments() != null) {
-                terrainShapeNode.getWaterSegments().forEach((slopeId, segments) ->  segments.forEach(segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> {
-                    // TODO getWaterSegmentsOffsetToOuter()
-                    terrainWaterTileBuilder.insertWaterRim(vertex1, -1 /*TODO remove*/, vertex2, -1 /*TODO remove*/, vertex3, -1 /*TODO remove*/, slopeId);
+                terrainShapeNode.getWaterSegments().forEach((slopeId, segments) -> segments.forEach(segment -> Triangulator.calculate(segment, IGNORE_SMALLER_TRIANGLE, (vertex1, vertex2, vertex3) -> {
+                    terrainTileBuilder.getTerrainWaterTileBuilder().insertWaterRim(vertex1, vertex2, vertex3, slopeId);
                 })));
             }
         });
 
-        terrainTileBuilder.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
     }
 
     private void insertHeightAndType(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {

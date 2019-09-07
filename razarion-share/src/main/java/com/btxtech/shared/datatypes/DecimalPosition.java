@@ -550,4 +550,14 @@ public class DecimalPosition {
         return 2;
     }
 
+    public static double[] toArray(List<DecimalPosition> decimalPositions) {
+        double[] array = new double[decimalPositions.size() * getComponentsPerDecimalPosition()];
+        for (int i = 0; i < decimalPositions.size(); i++) {
+            int arrayIndex = i * getComponentsPerDecimalPosition();
+            DecimalPosition decimalPosition = decimalPositions.get(i);
+            array[arrayIndex] = decimalPosition.getX();
+            array[arrayIndex + 1] = decimalPosition.getY();
+        }
+        return array;
+    }
 }

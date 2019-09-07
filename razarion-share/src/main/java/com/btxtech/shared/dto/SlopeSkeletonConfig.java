@@ -32,6 +32,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 //    private Double slopeSpecularStrength;
 //    private Double slopeDistortionStrength;
 //    private Double slopeAnimationDuration;
+    private Double waterLevel;
     private Double waterShininess;
     private Double waterSpecularStrength;
     private Double waterReflectionScale;
@@ -39,9 +40,9 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Double waterDistortionStrength;
     private Double waterBumpMapDepth;
     private Double waterTransparency;
-    private Double waterBeginsOffset;
-    private Double waterFadeoutDistance;
     private Double waterAnimationDuration;
+    private Double shallowWaterTextureId;
+    private Double shallowWaterTextureScale;
     @Deprecated
     private Integer slopeWaterSplattingId;
     @Deprecated
@@ -215,6 +216,15 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return slopeNodes[column % segments][row];
     }
 
+    public Double getWaterLevel() {
+        return waterLevel;
+    }
+
+    public SlopeSkeletonConfig setWaterLevel(Double waterLevel) {
+        this.waterLevel = waterLevel;
+        return this;
+    }
+
     public Double getWaterShininess() {
         return waterShininess;
     }
@@ -278,30 +288,30 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Double getWaterBeginsOffset() {
-        return waterBeginsOffset;
-    }
-
-    public SlopeSkeletonConfig setWaterBeginsOffset(Double waterBeginsOffset) {
-        this.waterBeginsOffset = waterBeginsOffset;
-        return this;
-    }
-
-    public Double getWaterFadeoutDistance() {
-        return waterFadeoutDistance;
-    }
-
-    public SlopeSkeletonConfig setWaterFadeoutDistance(Double waterFadeoutDistance) {
-        this.waterFadeoutDistance = waterFadeoutDistance;
-        return this;
-    }
-
     public Double getWaterAnimationDuration() {
         return waterAnimationDuration;
     }
 
     public SlopeSkeletonConfig setWaterAnimationDuration(Double waterAnimationDuration) {
         this.waterAnimationDuration = waterAnimationDuration;
+        return this;
+    }
+
+    public Double getShallowWaterTextureId() {
+        return shallowWaterTextureId;
+    }
+
+    public SlopeSkeletonConfig setShallowWaterTextureId(Double shallowWaterTextureId) {
+        this.shallowWaterTextureId = shallowWaterTextureId;
+        return this;
+    }
+
+    public Double getShallowWaterTextureScale() {
+        return shallowWaterTextureScale;
+    }
+
+    public SlopeSkeletonConfig setShallowWaterTextureScale(Double shallowWaterTextureScale) {
+        this.shallowWaterTextureScale = shallowWaterTextureScale;
         return this;
     }
 

@@ -160,7 +160,6 @@ public class TerrainShapeSetup {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setRenderHideGround(true);
                     terrainShapeNode.setRenderInnerWaterSlopeId(slope.getSlopeSkeletonConfig().getId());
-                    terrainShapeNode.setRenderWaterOffsetToOuter(setupOffsetToOuter(slope, nodeIndex)); // Slow
                     terrainShapeNode.setFullWaterLevel(slope.getOuterGroundHeight() + terrainTypeService.getWaterConfig().getWaterLevel());
                 }
                 // Setup inner seabed
@@ -297,17 +296,6 @@ public class TerrainShapeSetup {
                 processSlope(childSlope, dirtyTerrainShapeNodes);
             }
         }
-    }
-
-    private double[] setupOffsetToOuter(Slope slope, Index nodeIndex) {
-        Rectangle2D absoluteNode = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-        // bl, br, tr, tl
-        return new double[]{
-                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerBottomLeft()),
-                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerBottomRight()),
-                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerTopRight()),
-                slope.getOuterRenderEnginePolygon().findNearestDistance(absoluteNode.cornerTopLeft())
-        };
     }
 
     // Rename setup game engine / render engine

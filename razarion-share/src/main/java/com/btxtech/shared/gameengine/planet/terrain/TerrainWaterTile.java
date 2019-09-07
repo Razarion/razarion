@@ -10,7 +10,8 @@ import jsinterop.annotations.JsType;
 public class TerrainWaterTile {
     private int slopeId;
     private double[] vertices;
-    private double[] offsetToOuters;
+    private double[] slopeVertices;
+    private double[] slopeUvs;
 
     public int getSlopeId() {
         return slopeId;
@@ -28,11 +29,19 @@ public class TerrainWaterTile {
         return vertices;
     }
 
-    public double[] getOffsetToOuters() {
-        return offsetToOuters;
+    public double[] getSlopeVertices() {
+        return slopeVertices;
     }
 
-    public void setOffsetToOuters(double[] offsetToOuters) {
-        this.offsetToOuters = offsetToOuters;
+    public void setSlopeVertices(double[] slopeVertices) {
+        this.slopeVertices = slopeVertices;
+    }
+
+    public double[] getSlopeUvs() {
+        return slopeUvs;
+    }
+
+    public void setSlopeUvs(double[] slopeUvs) {
+        this.slopeUvs = slopeUvs;
     }
 }

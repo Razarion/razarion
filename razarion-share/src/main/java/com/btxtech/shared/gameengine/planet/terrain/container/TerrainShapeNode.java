@@ -40,8 +40,6 @@ public class TerrainShapeNode {
     private Boolean fullRenderEngineDriveway;
     private Integer renderInnerWaterSlopeId;
     private Map<Integer, List<List<Vertex>>> waterSegments;
-    private Map<Integer, List<List<Double>>> waterSegmentsOffsetToOuter;
-    private double[] renderWaterOffsetToOuter; // bl, br, tr, tl
     // Game and render engine
     private double[] drivewayHeights; // bl, br, tr, tl
     private double innerGroundHeight;
@@ -53,7 +51,6 @@ public class TerrainShapeNode {
 
     public TerrainShapeNode(NativeTerrainShapeNode nativeTerrainShapeNode) {
         drivewayHeights = nativeTerrainShapeNode.fullDrivewayHeights;
-        renderWaterOffsetToOuter = nativeTerrainShapeNode.renderWaterOffsetToOuter;
         innerGroundHeight = nativeTerrainShapeNode.innerGroundHeight;
         fullWaterLevel = nativeTerrainShapeNode.fullWaterLevel;
         drivewayBreakingLine = nativeTerrainShapeNode.drivewayBreakingLine;
@@ -113,10 +110,6 @@ public class TerrainShapeNode {
 
     public void setDrivewayHeights(double[] drivewayHeights) {
         this.drivewayHeights = drivewayHeights;
-    }
-
-    public void setRenderWaterOffsetToOuter(double[] offsetToOuter) {
-        this.renderWaterOffsetToOuter = offsetToOuter;
     }
 
     public void setInnerGroundHeight(double innerGroundHeight) {
@@ -211,10 +204,6 @@ public class TerrainShapeNode {
         return fullWaterLevel;
     }
 
-    public double[] getRenderWaterOffsetToOuter() {
-        return renderWaterOffsetToOuter;
-    }
-
     public boolean hasSubNodes() {
         return terrainShapeSubNodes != null;
     }
@@ -296,14 +285,6 @@ public class TerrainShapeNode {
         return waterSegments;
     }
 
-    public Map<Integer, List<List<Double>>> getWaterSegmentsOffsetToOuter() {
-        return waterSegmentsOffsetToOuter;
-    }
-
-    public void setWaterSegmentsOffsetToOuter(Map<Integer, List<List<Double>>> waterSegmentsOffsetToOuter) {
-        this.waterSegmentsOffsetToOuter = waterSegmentsOffsetToOuter;
-    }
-
     public Collection<Obstacle> getObstacles() {
         return obstacles;
     }
@@ -343,7 +324,6 @@ public class TerrainShapeNode {
     public NativeTerrainShapeNode toNativeTerrainShapeNode() {
         NativeTerrainShapeNode nativeTerrainShapeNode = new NativeTerrainShapeNode();
         nativeTerrainShapeNode.fullDrivewayHeights = drivewayHeights;
-        nativeTerrainShapeNode.renderWaterOffsetToOuter = renderWaterOffsetToOuter;
         nativeTerrainShapeNode.innerGroundHeight = innerGroundHeight;
         nativeTerrainShapeNode.terrainTypeOrdinal = TerrainType.toOrdinal(terrainType);
         nativeTerrainShapeNode.fullGameEngineDriveway = fullGameEngineDriveway;

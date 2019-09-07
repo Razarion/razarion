@@ -29,13 +29,15 @@ public class TerrainTileBuilder {
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
-    private Instance<TerrainSlopeTileContext> terrainSlopeTileContextInstance;
+    private Instance<TerrainSlopeTileBuilder> terrainSlopeTileContextInstance;
+    @Inject
+    private TerrainWaterTileBuilder terrainWaterTileBuilder;
     @Deprecated
     private Index terrainTileIndex;
     private TerrainTile terrainTile;
     private int offsetIndexX;
     private int offsetIndexY;
-    private Collection<TerrainSlopeTileContext> terrainSlopeTileContexts;
+    private Collection<TerrainSlopeTileBuilder> terrainSlopeTileBuilders;
     @Deprecated
     private GroundSkeletonConfig groundSkeletonConfig;
 
@@ -50,6 +52,7 @@ public class TerrainTileBuilder {
     public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, GroundSkeletonConfig groundSkeletonConfig, Rectangle2D playGround) {
         this.terrainTileIndex = terrainTileIndex;
         this.groundSkeletonConfig = groundSkeletonConfig;
+        terrainWaterTileBuilder.init(this);
 
         terrainTile = jsInteropObjectFactory.generateTerrainTile();
 
@@ -69,6 +72,8 @@ public class TerrainTileBuilder {
     }
 
     public TerrainTile generate() {
+        terrainTile.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
+
         terrainTile.setGroundPositions(Vertex.toArray(groundPositions));
         terrainTile.setGroundNorms(Vertex.toArray(groundNorms));
         terrainTile.setGroundSplattings(groundGplattings.stream().mapToDouble(value -> value).toArray());
@@ -82,9 +87,9 @@ public class TerrainTileBuilder {
 
        //  TODO groundSlopeVertices.
 
-        if (terrainSlopeTileContexts != null) {
-            for (TerrainSlopeTileContext terrainSlopeTileContext : terrainSlopeTileContexts) {
-                terrainTile.addTerrainSlopeTile(terrainSlopeTileContext.generate());
+        if (terrainSlopeTileBuilders != null) {
+            for (TerrainSlopeTileBuilder terrainSlopeTileBuilder : terrainSlopeTileBuilders) {
+                terrainTile.addTerrainSlopeTile(terrainSlopeTileBuilder.generate());
             }
         }
         return terrainTile;
@@ -154,8 +159,8 @@ public class TerrainTileBuilder {
         addTriangleCorner(vertexC, interpolateNorm(positionC, norm), interpolateSplattin(positionC), slopeId);
     }
 
-    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
-        terrainTile.setTerrainWaterTiles(terrainWaterTiles);
+    public TerrainWaterTileBuilder getTerrainWaterTileBuilder() {
+        return terrainWaterTileBuilder;
     }
 
     // ----------------------------------------------------------------------------------------------------------------------------
@@ -165,14 +170,14 @@ public class TerrainTileBuilder {
         terrainTile.setLandWaterProportion(landWaterProportion);
     }
 
-    public TerrainSlopeTileContext createTerrainSlopeTileContext(int slopeSkeletonConfigId, int xCount, int yCount) {
-        TerrainSlopeTileContext terrainSlopeTileContext = terrainSlopeTileContextInstance.get();
-        terrainSlopeTileContext.init(slopeSkeletonConfigId, xCount, yCount, this);
-        if (terrainSlopeTileContexts == null) {
-            terrainSlopeTileContexts = new ArrayList<>();
+    public TerrainSlopeTileBuilder createTerrainSlopeTileContext(int slopeSkeletonConfigId, int xCount, int yCount) {
+        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainSlopeTileContextInstance.get();
+        terrainSlopeTileBuilder.init(slopeSkeletonConfigId, xCount, yCount, this);
+        if (terrainSlopeTileBuilders == null) {
+            terrainSlopeTileBuilders = new ArrayList<>();
         }
-        terrainSlopeTileContexts.add(terrainSlopeTileContext);
-        return terrainSlopeTileContext;
+        terrainSlopeTileBuilders.add(terrainSlopeTileBuilder);
+        return terrainSlopeTileBuilder;
     }
 
     @Deprecated // Find better solution

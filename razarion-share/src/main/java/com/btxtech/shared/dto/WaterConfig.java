@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.Color;
  * Created by Beat
  * 15.03.2017.
  */
+@Deprecated
 public class WaterConfig {
     private double waterLevel;
     private double transparency;

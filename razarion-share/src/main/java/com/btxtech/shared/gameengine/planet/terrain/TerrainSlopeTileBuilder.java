@@ -14,8 +14,8 @@ import java.util.logging.Logger;
  * 03.04.2017.
  */
 @Dependent
-public class TerrainSlopeTileContext {
-    private Logger logger = Logger.getLogger(TerrainSlopeTileContext.class.getName());
+public class TerrainSlopeTileBuilder {
+    private Logger logger = Logger.getLogger(TerrainSlopeTileBuilder.class.getName());
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
     private int slopeSkeletonConfigId;

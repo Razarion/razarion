@@ -13,7 +13,6 @@ import java.util.Map;
 @JsType(name = "NativeTerrainShapeNode", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeTerrainShapeNode {
     public double[] fullDrivewayHeights; // bl, br, tr, tl
-    public double[] renderWaterOffsetToOuter; // bl, br, tr, tl
     public Double innerGroundHeight;
     public Map<Integer, List<List<Vertex>>> groundSlopeConnections; // TODO Map not working here
     public Map<Integer, List<List<Vertex>>> waterSegments; // TODO Map not working here
