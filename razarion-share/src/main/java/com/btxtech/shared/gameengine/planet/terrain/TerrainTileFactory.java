@@ -174,7 +174,7 @@ public class TerrainTileFactory {
     private void generateSlopeTerrainTile(TerrainTileBuilder terrainTileBuilder, FractionalSlope fractionalSlope) {
         SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeSkeletonConfigId());
         TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(fractionalSlope.getSlopeSkeletonConfigId(), fractionalSlope.getFractionalSlopeSegments().size(), slopeSkeletonConfig.getRows() + 1);
-        terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh(fractionalSlope.getSlopeSkeletonConfigId());
+        terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh(fractionalSlope.getSlopeSkeletonConfigId(), slopeSkeletonConfig.getHorizontalSpace());
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
             Matrix4 transformationMatrix = fractionalSlopeSegment.setupTransformation(fractionalSlope.isInverted());
@@ -205,20 +205,10 @@ public class TerrainTileFactory {
                 terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileBuilder.interpolateSplattin(transformedPoint.toXY()));
             }
             vertexColumn++;
-            // Setup water
-            DecimalPosition uvTerminationOuter = null;
-            DecimalPosition uvTerminationInner = null;
-            if (fractionalSlopeSegment.hasUvYTermination()) {
-                uvTerminationOuter = new DecimalPosition(0, fractionalSlopeSegment.getUvYTermination());
-                uvTerminationInner = new DecimalPosition(slopeSkeletonConfig.getWidth(), fractionalSlopeSegment.getUvYTermination());
-            }
-            Vertex waterOuter = transformationMatrix.multiply(new Vertex(0, 0, 0), 1.0).add(0, 0, fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel());
-            Vertex waterInner = transformationMatrix.multiply(new Vertex(slopeSkeletonConfig.getWidth(), 0, 0), 1.0).add(0, 0, fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel());
-            terrainTileBuilder.getTerrainWaterTileBuilder().addWaterMeshVertex(waterOuter, new DecimalPosition(0, fractionalSlopeSegment.getUvY()), uvTerminationOuter,
-                    waterInner, new DecimalPosition(slopeSkeletonConfig.getWidth(), fractionalSlopeSegment.getUvY()), uvTerminationInner);
+            terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeSkeletonConfig.getWidth(), fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
         }
         terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted());
-        terrainTileBuilder.getTerrainWaterTileBuilder().triangulateWaterMesh();
+        terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh();
     }
 
     private static double setupSlopeFactor(SlopeNode slopeNode, double drivewayHeightFactor) {

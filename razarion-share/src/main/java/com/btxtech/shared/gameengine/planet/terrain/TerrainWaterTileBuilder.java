@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
+import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -25,10 +26,11 @@ public class TerrainWaterTileBuilder {
     private MapList<Integer, Vertex> trianglePositions = new MapList<>();
     private MapList<Integer, Vertex> slopeTrianglePositions = new MapList<>();
     private MapList<Integer, DecimalPosition> slopeTriangleUvs = new MapList<>();
-    private List<Vertex[]> tmpMesh;
-    private List<DecimalPosition[]> tmpUvMesh;
-    private List<DecimalPosition[]> tmpUvTerminationMesh;
+    private List<Vertex[]> tmpShallowWaterMesh;
+    private List<DecimalPosition[]> tmpUvShallowWaterMesh;
+    private List<DecimalPosition[]> tmpUvTerminationShallowWaterMesh;
     private Integer tmpSlopeId;
+    private Double tmpDesiredDistance;
 
     public void init(TerrainTileBuilder terrainTileBuilder) {
         this.terrainTileBuilder = terrainTileBuilder;
@@ -91,57 +93,79 @@ public class TerrainWaterTileBuilder {
         return terrainWaterTiles;
     }
 
-    public void startWaterMesh(int slopeSkeletonConfigId) {
+    public void startWaterMesh(int slopeSkeletonConfigId, double desiredDistance) {
         tmpSlopeId = slopeSkeletonConfigId;
-        tmpMesh = new ArrayList<>();
-        tmpUvMesh = new ArrayList<>();
-        tmpUvTerminationMesh = new ArrayList<>();
+        tmpDesiredDistance = desiredDistance;
+        tmpShallowWaterMesh = new ArrayList<>();
+        tmpUvShallowWaterMesh = new ArrayList<>();
+        tmpUvTerminationShallowWaterMesh = new ArrayList<>();
     }
 
-    public void addWaterMeshVertex(Vertex waterOuter, DecimalPosition uvOuter, DecimalPosition uvTerminationOuter,
-                                   Vertex waterInner, DecimalPosition uvInner, DecimalPosition uvTerminationInner) {
-        tmpMesh.add(new Vertex[]{waterOuter, waterInner});
-        tmpUvMesh.add(new DecimalPosition[]{uvOuter, uvInner});
-        tmpUvTerminationMesh.add(new DecimalPosition[]{uvTerminationOuter, uvTerminationInner});
-    }
+    public void addShallowWaterMeshVertices(Matrix4 transformationMatrix, double width, double waterLevel, double uvY, Double uvYTermination) {
+        int parts = Math.max(1, (int) Math.round(width / tmpDesiredDistance));
+        double distance = width / (double) parts;
+        parts++;
 
-    public void triangulateWaterMesh() {
-        for (int i = 0; i < tmpMesh.size() - 1; i++) {
-            Vertex vertexBL = tmpMesh.get(i)[0];
-            Vertex vertexBR = tmpMesh.get(i + 1)[0];
-            Vertex vertexTR = tmpMesh.get(i + 1)[1];
-            Vertex vertexTL = tmpMesh.get(i)[1];
-
-            if (!terrainTileBuilder.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
-                continue;
-            }
-
-            DecimalPosition uvBL = tmpUvMesh.get(i)[0];
-            DecimalPosition uvBR = tmpUvTerminationMesh.get(i)[0] != null ? tmpUvTerminationMesh.get(i)[0] : tmpUvMesh.get(i + 1)[0];
-            DecimalPosition uvTR = tmpUvTerminationMesh.get(i)[1] != null ? tmpUvTerminationMesh.get(i)[1] : tmpUvMesh.get(i + 1)[1];
-            DecimalPosition uvTL = tmpUvMesh.get(i)[1];
-
-            if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
-                slopeTrianglePositions.put(tmpSlopeId, vertexBL);
-                slopeTrianglePositions.put(tmpSlopeId, vertexBR);
-                slopeTrianglePositions.put(tmpSlopeId, vertexTL);
-                slopeTriangleUvs.put(tmpSlopeId, uvBL);
-                slopeTriangleUvs.put(tmpSlopeId, uvBR);
-                slopeTriangleUvs.put(tmpSlopeId, uvTL);
-            }
-
-            if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
-                slopeTrianglePositions.put(tmpSlopeId, vertexBR);
-                slopeTrianglePositions.put(tmpSlopeId, vertexTR);
-                slopeTrianglePositions.put(tmpSlopeId, vertexTL);
-                slopeTriangleUvs.put(tmpSlopeId, uvBR);
-                slopeTriangleUvs.put(tmpSlopeId, uvTR);
-                slopeTriangleUvs.put(tmpSlopeId, uvTL);
+        Vertex[] vertices = new Vertex[parts];
+        DecimalPosition[] uvs = new DecimalPosition[parts];
+        DecimalPosition[] uvTerminations = new DecimalPosition[parts];
+        for (int i = 0; i < parts; i++) {
+            double x = distance * i;
+            vertices[i] = transformationMatrix.multiply(new Vertex(x, 0, 0), 1.0).add(0, 0, waterLevel);
+            uvs[i] = new DecimalPosition(x, uvY);
+            if (uvYTermination != null) {
+                uvTerminations[i] = new DecimalPosition(x, uvYTermination);
+            } else {
+                uvTerminations[i] = null;
             }
         }
-        tmpMesh = null;
-        tmpUvMesh = null;
-        tmpUvTerminationMesh = null;
+
+        tmpShallowWaterMesh.add(vertices);
+        tmpUvShallowWaterMesh.add(uvs);
+        tmpUvTerminationShallowWaterMesh.add(uvTerminations);
+    }
+
+    public void triangulateShallowWaterMesh() {
+        for (int x = 0; x < tmpShallowWaterMesh.size() - 3; x++) { // TODO -3 ??? remove fragemnt for norm... but why -3???
+            for (int y = 0; y < tmpShallowWaterMesh.get(x).length - 1; y++) {
+
+                Vertex vertexBL = tmpShallowWaterMesh.get(x)[y];
+                Vertex vertexBR = tmpShallowWaterMesh.get(x + 1)[y];
+                Vertex vertexTR = tmpShallowWaterMesh.get(x + 1)[y + 1];
+                Vertex vertexTL = tmpShallowWaterMesh.get(x)[y + 1];
+
+                if (!terrainTileBuilder.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+                    continue;
+                }
+
+                DecimalPosition uvBL = tmpUvShallowWaterMesh.get(x)[y];
+                DecimalPosition uvBR = tmpUvTerminationShallowWaterMesh.get(x)[y] != null ? tmpUvTerminationShallowWaterMesh.get(x)[y] : tmpUvShallowWaterMesh.get(x + 1)[y];
+                DecimalPosition uvTR = tmpUvTerminationShallowWaterMesh.get(x)[y + 1] != null ? tmpUvTerminationShallowWaterMesh.get(x)[y + 1] : tmpUvShallowWaterMesh.get(x + 1)[y + 1];
+                DecimalPosition uvTL = tmpUvShallowWaterMesh.get(x)[y + 1];
+
+                if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
+                    slopeTrianglePositions.put(tmpSlopeId, vertexBL);
+                    slopeTrianglePositions.put(tmpSlopeId, vertexBR);
+                    slopeTrianglePositions.put(tmpSlopeId, vertexTL);
+                    slopeTriangleUvs.put(tmpSlopeId, uvBL);
+                    slopeTriangleUvs.put(tmpSlopeId, uvBR);
+                    slopeTriangleUvs.put(tmpSlopeId, uvTL);
+                }
+
+                if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
+                    slopeTrianglePositions.put(tmpSlopeId, vertexBR);
+                    slopeTrianglePositions.put(tmpSlopeId, vertexTR);
+                    slopeTrianglePositions.put(tmpSlopeId, vertexTL);
+                    slopeTriangleUvs.put(tmpSlopeId, uvBR);
+                    slopeTriangleUvs.put(tmpSlopeId, uvTR);
+                    slopeTriangleUvs.put(tmpSlopeId, uvTL);
+                }
+            }
+        }
+        tmpShallowWaterMesh = null;
+        tmpUvShallowWaterMesh = null;
+        tmpUvTerminationShallowWaterMesh = null;
         tmpSlopeId = null;
+        tmpDesiredDistance = null;
     }
 }

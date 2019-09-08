@@ -14,13 +14,13 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
     private int segments;
+    private double horizontalSpace;
     private int rows;
     private double width;
     private double height;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
-    private double horizontalSpace;
     private Type type;
     private SlopeNode[][] slopeNodes;
     private SpecularLightConfig specularLightConfig;

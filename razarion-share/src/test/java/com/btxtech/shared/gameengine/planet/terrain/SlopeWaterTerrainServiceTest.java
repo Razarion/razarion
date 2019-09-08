@@ -122,7 +122,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, waterConfig);
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\", new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
-        showDisplay();
+        // showDisplay();
 
         Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");
     }
