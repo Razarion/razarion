@@ -43,6 +43,8 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Double waterAnimationDuration;
     private Double shallowWaterTextureId;
     private Double shallowWaterTextureScale;
+    private Double shallowDistortionStrength;
+    private Double shallowAnimation;
     @Deprecated
     private Integer slopeWaterSplattingId;
     @Deprecated
@@ -312,6 +314,24 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     public SlopeSkeletonConfig setShallowWaterTextureScale(Double shallowWaterTextureScale) {
         this.shallowWaterTextureScale = shallowWaterTextureScale;
+        return this;
+    }
+
+    public Double getShallowDistortionStrength() {
+        return shallowDistortionStrength;
+    }
+
+    public SlopeSkeletonConfig setShallowDistortionStrength(Double shallowDistortionStrength) {
+        this.shallowDistortionStrength = shallowDistortionStrength;
+        return this;
+    }
+
+    public Double getShallowAnimation() {
+        return shallowAnimation;
+    }
+
+    public SlopeSkeletonConfig setShallowAnimation(Double shallowAnimation) {
+        this.shallowAnimation = shallowAnimation;
         return this;
     }
 
