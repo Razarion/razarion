@@ -266,6 +266,9 @@ public class Vertex {
     }
 
     public static double[] toArray(List<Vertex> vertices) {
+        if (vertices == null) {
+            return null;
+        }
         double[] array = new double[vertices.size() * getComponentsPerVertex()];
         for (int i = 0; i < vertices.size(); i++) {
             int arrayIndex = i * getComponentsPerVertex();

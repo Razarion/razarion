@@ -551,6 +551,9 @@ public class DecimalPosition {
     }
 
     public static double[] toArray(List<DecimalPosition> decimalPositions) {
+        if (decimalPositions == null) {
+            return null;
+        }
         double[] array = new double[decimalPositions.size() * getComponentsPerDecimalPosition()];
         for (int i = 0; i < decimalPositions.size(); i++) {
             int arrayIndex = i * getComponentsPerDecimalPosition();
