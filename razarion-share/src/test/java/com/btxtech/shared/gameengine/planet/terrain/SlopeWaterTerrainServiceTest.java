@@ -90,7 +90,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
-        slopeSkeletonConfigWater.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.2).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowAnimation(8.0).setShallowDistortionStrength(1.0);
+        slopeSkeletonConfigWater.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.2).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowAnimation(8.0).setShallowDistortionStrength(1.0).setFresnelOffset(0.8).setFresnelDelta(0.4);
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();

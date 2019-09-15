@@ -33,6 +33,8 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 //    private Double slopeDistortionStrength;
 //    private Double slopeAnimationDuration;
     private Double waterLevel;
+    private Double fresnelOffset;
+    private Double fresnelDelta;
     private Double waterShininess;
     private Double waterSpecularStrength;
     private Double waterReflectionScale;
@@ -224,6 +226,24 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     public SlopeSkeletonConfig setWaterLevel(Double waterLevel) {
         this.waterLevel = waterLevel;
+        return this;
+    }
+
+    public Double getFresnelOffset() {
+        return fresnelOffset;
+    }
+
+    public SlopeSkeletonConfig setFresnelOffset(Double fresnelOffset) {
+        this.fresnelOffset = fresnelOffset;
+        return this;
+    }
+
+    public Double getFresnelDelta() {
+        return fresnelDelta;
+    }
+
+    public SlopeSkeletonConfig setFresnelDelta(Double fresnelDelta) {
+        this.fresnelDelta = fresnelDelta;
         return this;
     }
 
