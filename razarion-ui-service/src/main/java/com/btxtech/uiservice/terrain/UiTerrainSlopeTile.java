@@ -89,6 +89,7 @@ public class UiTerrainSlopeTile {
         return slopeSkeletonConfig.getSlopeTextureScale();
     }
 
+    @Deprecated
     public WaterConfig getWaterConfig() {
         return waterConfig;
     }

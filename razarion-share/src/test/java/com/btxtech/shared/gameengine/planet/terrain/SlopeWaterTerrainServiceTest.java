@@ -90,7 +90,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         };
         slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
         slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
-        slopeSkeletonConfigWater.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.2).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowAnimation(8.0).setShallowDistortionStrength(1.0).setFresnelOffset(0.8).setFresnelDelta(0.4);
+        slopeSkeletonConfigWater.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.5).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowAnimation(8.0).setShallowDistortionStrength(1.0).setFresnelOffset(0.8).setFresnelDelta(0.4);
         slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
@@ -116,12 +116,15 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        WaterConfig waterConfig = new WaterConfig();
-        waterConfig.setWaterLevel(-0.10);
+        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, waterConfig);
-
-        exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\", new Index(0, 0), new Index(0, 1), new Index(1, 0), new Index(1, 1));
+        exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\",
+                new Index(0, 0),
+                new Index(0, 1),
+                new Index(1, 0),
+                new Index(1, 1),
+                new Index(2, 0),
+                new Index(2, 1));
         // showDisplay();
 
         Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");

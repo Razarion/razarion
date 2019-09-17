@@ -96,6 +96,7 @@ public class TerrainTypeService {
         return terrainObjectConfig;
     }
 
+    @Deprecated
     public WaterConfig getWaterConfig() {
         return waterConfig;
     }
