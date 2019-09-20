@@ -29,6 +29,7 @@ import com.btxtech.shared.gameengine.planet.quest.QuestService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
 import com.btxtech.shared.system.SimpleExecutorService;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -330,7 +331,9 @@ public class WeldBaseTest {
         AssertTerrainTile.saveTerrainTiles(Arrays.stream(terrainTileIndices).map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex)).collect(Collectors.toList()),
                 "terrain-tiles.json", directorname);
         try {
-            new ObjectMapper().writeValue(new File(directorname, "static-game-config.json"),  getStaticGameConfig());
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);;
+            objectMapper.writeValue(new File(directorname, "static-game-config.json"),  getStaticGameConfig());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

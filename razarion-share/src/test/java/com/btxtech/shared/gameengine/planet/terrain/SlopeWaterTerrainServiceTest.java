@@ -7,7 +7,6 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
@@ -79,44 +78,62 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void generateTerrainThreeJs() {
         List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-        slopeSkeletonConfigWater.setId(10).setInternalName("Ocean Beach").setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-4);
-        SlopeNode[][] slopeNodes = new SlopeNode[][]{
+        // Setup water
+        SlopeSkeletonConfig waterConfig = new SlopeSkeletonConfig();
+        waterConfig.setId(1).setInternalName("Ocean Beach").setType(SlopeSkeletonConfig.Type.WATER);
+        waterConfig.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-4);
+        SlopeNode[][] waterSlopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, 0.0, 0.5),},
                 {GameTestHelper.createSlopeNode(10, -0.1, 1),},
                 {GameTestHelper.createSlopeNode(15, -2, 1),},
                 {GameTestHelper.createSlopeNode(20, -4, 1),}
         };
-        slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigWater.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
-        slopeSkeletonConfigWater.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.5).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowAnimation(8.0).setShallowDistortionStrength(1.0).setFresnelOffset(0.8).setFresnelDelta(0.4);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
-
+        waterConfig.setSlopeNodes(toColumnRow(waterSlopeNodes));
+        waterConfig.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
+        waterConfig.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.5).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowWaterAnimation(8.0).setShallowWaterDistortionStrength(1.0).setWaterFresnelOffset(0.8).setWaterFresnelDelta(0.4);
+        slopeSkeletonConfigs.add(waterConfig);
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
-        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
-        terrainSlopePositionLand.setId(1);
-        terrainSlopePositionLand.setSlopeConfigId(10);
-        //  terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 50, null), GameTestHelper.createTerrainSlopeCorner(200, 50, null), GameTestHelper.createTerrainSlopeCorner(200, 200, null), GameTestHelper.createTerrainSlopeCorner(50, 200, null)));
-        terrainSlopePositionLand.setPolygon(
+        TerrainSlopePosition waterPositionLand = new TerrainSlopePosition();
+        waterPositionLand.setId(1).setSlopeConfigId(1);
+        //  waterPositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 50, null), GameTestHelper.createTerrainSlopeCorner(200, 50, null), GameTestHelper.createTerrainSlopeCorner(200, 200, null), GameTestHelper.createTerrainSlopeCorner(50, 200, null)));
+        waterPositionLand.setPolygon(
                 Arrays.asList(GameTestHelper.createTerrainSlopeCorner(44.5000, 52.0000, null), GameTestHelper.createTerrainSlopeCorner(70.5000, 69.0000, null), GameTestHelper.createTerrainSlopeCorner(90.5000, 77.0000, null), GameTestHelper.createTerrainSlopeCorner(111.5000, 62.0000, null), GameTestHelper.createTerrainSlopeCorner(130.5000, 49.0000, null), GameTestHelper.createTerrainSlopeCorner(149.5000, 47.0000, null), GameTestHelper.createTerrainSlopeCorner(167.5000, 39.0000, null), GameTestHelper.createTerrainSlopeCorner(191.5000, 39.0000, null), GameTestHelper.createTerrainSlopeCorner(211.5000, 40.0000, null), GameTestHelper.createTerrainSlopeCorner(231.5000, 57.0000, null), GameTestHelper.createTerrainSlopeCorner(256.5000, 79.0000, null), GameTestHelper.createTerrainSlopeCorner(247.5000, 93.0000, null), GameTestHelper.createTerrainSlopeCorner(232.5000, 103.0000, null), GameTestHelper.createTerrainSlopeCorner(209.5000, 104.0000, null), GameTestHelper.createTerrainSlopeCorner(190.5000, 118.0000, null), GameTestHelper.createTerrainSlopeCorner(183.5000, 143.0000, null), GameTestHelper.createTerrainSlopeCorner(193.5000, 153.0000, null), GameTestHelper.createTerrainSlopeCorner(216.5000, 162.0000, null), GameTestHelper.createTerrainSlopeCorner(235.5000, 168.0000, null), GameTestHelper.createTerrainSlopeCorner(254.5000, 184.0000, null), GameTestHelper.createTerrainSlopeCorner(266.5000, 208.0000, null), GameTestHelper.createTerrainSlopeCorner(266.5000, 236.0000, null), GameTestHelper.createTerrainSlopeCorner(246.5000, 260.0000, null), GameTestHelper.createTerrainSlopeCorner(218.5000, 268.0000, null), GameTestHelper.createTerrainSlopeCorner(180.5000, 272.0000, null), GameTestHelper.createTerrainSlopeCorner(159.5000, 282.0000, null), GameTestHelper.createTerrainSlopeCorner(132.5000, 282.0000, null), GameTestHelper.createTerrainSlopeCorner(100.5000, 282.0000, null), GameTestHelper.createTerrainSlopeCorner(73.5000, 276.0000, null), GameTestHelper.createTerrainSlopeCorner(58.5000, 266.0000, null), GameTestHelper.createTerrainSlopeCorner(51.5000, 240.0000, null), GameTestHelper.createTerrainSlopeCorner(38.5000, 215.0000, null), GameTestHelper.createTerrainSlopeCorner(43.5000, 198.0000, null), GameTestHelper.createTerrainSlopeCorner(75.5000, 196.0000, null), GameTestHelper.createTerrainSlopeCorner(102.5000, 183.0000, null), GameTestHelper.createTerrainSlopeCorner(104.5000, 161.0000, null), GameTestHelper.createTerrainSlopeCorner(88.5000, 155.0000, null), GameTestHelper.createTerrainSlopeCorner(59.5000, 150.0000, null), GameTestHelper.createTerrainSlopeCorner(46.5000, 133.0000, null), GameTestHelper.createTerrainSlopeCorner(25.5000, 113.0000, null), GameTestHelper.createTerrainSlopeCorner(25.5000, 95.0000, null), GameTestHelper.createTerrainSlopeCorner(34.5000, 88.0000, null), GameTestHelper.createTerrainSlopeCorner(40.5000, 72.0000, null))
         );
-        terrainSlopePositions.add(terrainSlopePositionLand);
-
-        double[][] heights = new double[][]{
+        terrainSlopePositions.add(waterPositionLand);
+        // Setup razarion industries
+        SlopeSkeletonConfig riConfig = new SlopeSkeletonConfig();
+        riConfig.setId(2).setInternalName("Razarion Industries").setType(SlopeSkeletonConfig.Type.LAND);
+        riConfig.setRows(5).setSegments(1).setWidth(6).setHorizontalSpace(6).setHeight(6);
+        SlopeNode[][] riSlopeNodes = new SlopeNode[][]{
+                {GameTestHelper.createSlopeNode(2, 0, 0)},
+                {GameTestHelper.createSlopeNode(2, 2, 0)},
+                {GameTestHelper.createSlopeNode(2, 4, 0)},
+                {GameTestHelper.createSlopeNode(2, 6, 0)},
+                {GameTestHelper.createSlopeNode(4, 6, 0)}
+        };
+        riConfig.setSlopeNodes(toColumnRow(riSlopeNodes));
+        slopeSkeletonConfigs.add(riConfig);
+        TerrainSlopePosition riPositionLand = new TerrainSlopePosition();
+        riPositionLand.setId(2).setSlopeConfigId(2);
+        riPositionLand.setPolygon(
+                Arrays.asList(GameTestHelper.createTerrainSlopeCorner(359.5000, 139.0000, null), GameTestHelper.createTerrainSlopeCorner(343.5000, 82.0000, null), GameTestHelper.createTerrainSlopeCorner(394.5000, 36.0000, null), GameTestHelper.createTerrainSlopeCorner(460.5000, 54.0000, null), GameTestHelper.createTerrainSlopeCorner(481.5000, 130.0000, null))
+        );
+        terrainSlopePositions.add(riPositionLand);
+        // Setup ground
+        double[][] groundHeights = new double[][]{
                 {0, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0}
         };
-        double[][] splattings = new double[][]{
+        double[][] groundSplattings = new double[][]{
                 {0.7, 0.8, 0.9, 0.5},
                 {0.4, 0.5, 0.6, 0.6},
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(groundSplattings, slopeSkeletonConfigs, null, groundHeights, null, terrainSlopePositions, null, null);
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\",
                 new Index(0, 0),
@@ -125,7 +142,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 new Index(1, 1),
                 new Index(2, 0),
                 new Index(2, 1));
-        // showDisplay();
+         showDisplay();
 
         Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");
     }

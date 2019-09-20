@@ -205,7 +205,9 @@ public class TerrainTileFactory {
                 terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileBuilder.interpolateSplattin(transformedPoint.toXY()));
             }
             vertexColumn++;
-            terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeSkeletonConfig.getWidth(), slopeSkeletonConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
+            if (slopeSkeletonConfig.hasWater()) {
+                terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeSkeletonConfig.getWidth(), slopeSkeletonConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
+            }
         }
         terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted());
         terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh(fractionalSlope.getSlopeSkeletonConfigId());

@@ -33,8 +33,8 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 //    private Double slopeDistortionStrength;
 //    private Double slopeAnimationDuration;
     private Double waterLevel;
-    private Double fresnelOffset;
-    private Double fresnelDelta;
+    private Double waterFresnelOffset;
+    private Double waterFresnelDelta;
     private Double waterShininess;
     private Double waterSpecularStrength;
     private Double waterReflectionScale;
@@ -45,8 +45,8 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Double waterAnimationDuration;
     private Double shallowWaterTextureId;
     private Double shallowWaterTextureScale;
-    private Double shallowDistortionStrength;
-    private Double shallowAnimation;
+    private Double shallowWaterDistortionStrength;
+    private Double shallowWaterAnimation;
     @Deprecated
     private Integer slopeWaterSplattingId;
     @Deprecated
@@ -220,6 +220,10 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return slopeNodes[column % segments][row];
     }
 
+    public boolean hasWater() {
+        return waterLevel != null;
+    }
+
     public Double getWaterLevel() {
         return waterLevel;
     }
@@ -229,21 +233,21 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Double getFresnelOffset() {
-        return fresnelOffset;
+    public Double getWaterFresnelOffset() {
+        return waterFresnelOffset;
     }
 
-    public SlopeSkeletonConfig setFresnelOffset(Double fresnelOffset) {
-        this.fresnelOffset = fresnelOffset;
+    public SlopeSkeletonConfig setWaterFresnelOffset(Double waterFresnelOffset) {
+        this.waterFresnelOffset = waterFresnelOffset;
         return this;
     }
 
-    public Double getFresnelDelta() {
-        return fresnelDelta;
+    public Double getWaterFresnelDelta() {
+        return waterFresnelDelta;
     }
 
-    public SlopeSkeletonConfig setFresnelDelta(Double fresnelDelta) {
-        this.fresnelDelta = fresnelDelta;
+    public SlopeSkeletonConfig setWaterFresnelDelta(Double waterFresnelDelta) {
+        this.waterFresnelDelta = waterFresnelDelta;
         return this;
     }
 
@@ -337,21 +341,21 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Double getShallowDistortionStrength() {
-        return shallowDistortionStrength;
+    public Double getShallowWaterDistortionStrength() {
+        return shallowWaterDistortionStrength;
     }
 
-    public SlopeSkeletonConfig setShallowDistortionStrength(Double shallowDistortionStrength) {
-        this.shallowDistortionStrength = shallowDistortionStrength;
+    public SlopeSkeletonConfig setShallowWaterDistortionStrength(Double shallowWaterDistortionStrength) {
+        this.shallowWaterDistortionStrength = shallowWaterDistortionStrength;
         return this;
     }
 
-    public Double getShallowAnimation() {
-        return shallowAnimation;
+    public Double getShallowWaterAnimation() {
+        return shallowWaterAnimation;
     }
 
-    public SlopeSkeletonConfig setShallowAnimation(Double shallowAnimation) {
-        this.shallowAnimation = shallowAnimation;
+    public SlopeSkeletonConfig setShallowWaterAnimation(Double shallowWaterAnimation) {
+        this.shallowWaterAnimation = shallowWaterAnimation;
         return this;
     }
 

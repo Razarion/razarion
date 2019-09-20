@@ -14,6 +14,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.shared.utils.CollectionUtils;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -249,7 +250,9 @@ public class AssertTerrainTile {
 
     public static void saveTerrainTiles(Collection<TerrainTile> terrainTiles, String fileName, String directoryName) {
         try {
-            new ObjectMapper().writeValue(new File(directoryName, fileName), terrainTiles);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);;
+            objectMapper.writeValue(new File(directoryName, fileName), terrainTiles);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
