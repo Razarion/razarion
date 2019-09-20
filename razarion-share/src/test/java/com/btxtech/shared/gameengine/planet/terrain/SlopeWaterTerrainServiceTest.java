@@ -141,7 +141,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 new Index(1, 1),
                 new Index(2, 0),
                 new Index(2, 1));
-         showDisplay();
+        //  showDisplay();
 
         Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");
     }
