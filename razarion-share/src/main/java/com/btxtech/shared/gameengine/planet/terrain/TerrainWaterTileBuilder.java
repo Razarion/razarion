@@ -77,7 +77,7 @@ public class TerrainWaterTileBuilder {
         slopeIds.addAll(shallowTrianglePositions.getKeys());
         slopeIds.forEach(slopeId -> {
             TerrainWaterTile terrainWaterTile = jsInteropObjectFactory.generateTerrainWaterTile();
-            terrainWaterTile.setSlopeId(slopeId);
+            terrainWaterTile.setSlopeConfigId(slopeId);
             terrainWaterTile.setVertices(Vertex.toArray(trianglePositions.get(slopeId)));
             terrainWaterTile.setShallowVertices(Vertex.toArray(shallowTrianglePositions.get(slopeId)));
             terrainWaterTile.setShallowUvs(DecimalPosition.toArray(shallowTriangleUvs.get(slopeId)));

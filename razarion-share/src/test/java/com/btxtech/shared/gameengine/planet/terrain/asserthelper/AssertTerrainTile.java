@@ -148,7 +148,7 @@ public class AssertTerrainTile {
     }
 
     private void compare(TerrainSlopeTile expected, TerrainSlopeTile actual) {
-        Assert.assertEquals("Slope Skeleton Config Id", expected.getSlopeSkeletonConfigId(), actual.getSlopeSkeletonConfigId());
+        Assert.assertEquals("Slope Skeleton Config Id", expected.getSlopeConfigId(), actual.getSlopeConfigId());
         Assert.assertArrayEquals("Slope Vertices", expected.getVertices(), actual.getVertices(), 0.001);
         Assert.assertArrayEquals("Slope Norms", expected.getNorms(), actual.getNorms(), 0.001);
         Assert.assertArrayEquals("Slope Tangents", expected.getTangents(), actual.getTangents(), 0.001);

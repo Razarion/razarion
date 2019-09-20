@@ -8,11 +8,11 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainSlopeTile", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainSlopeTile {
-    public native void init(int slopeSkeletonConfigId, int vertexSize, int decimalPositionSize, int scalarSize);
+    public native void init(int slopeConfigId, int vertexSize, int decimalPositionSize, int scalarSize);
 
     public native void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double vwX, double vwY, double slopeFactor, double splatting);
 
-    public native int getSlopeSkeletonConfigId();
+    public native int getSlopeConfigId();
 
     public native void setSlopeVertexCount(int slopeVertexCount);
 

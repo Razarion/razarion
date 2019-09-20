@@ -19,8 +19,8 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
     private double[] groundSplattings;
 
     @Override
-    public void init(int slopeSkeletonConfigId, int vertexSize, int decimalPositionSize, int scalarSize) {
-        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
+    public void init(int slopeConfigId, int vertexSize, int decimalPositionSize, int scalarSize) {
+        this.slopeSkeletonConfigId = slopeConfigId;
         vertices = new double[vertexSize];
         norms = new double[vertexSize];
         tangents = new double[vertexSize];
@@ -49,7 +49,7 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
     }
 
     @Override
-    public int getSlopeSkeletonConfigId() {
+    public int getSlopeConfigId() {
         return slopeSkeletonConfigId;
     }
 
