@@ -116,8 +116,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         TerrainSlopePosition riPositionLand = new TerrainSlopePosition();
         riPositionLand.setId(2).setSlopeConfigId(2);
         riPositionLand.setPolygon(
-                Arrays.asList(GameTestHelper.createTerrainSlopeCorner(359.5000, 139.0000, null), GameTestHelper.createTerrainSlopeCorner(343.5000, 82.0000, null), GameTestHelper.createTerrainSlopeCorner(394.5000, 36.0000, null), GameTestHelper.createTerrainSlopeCorner(460.5000, 54.0000, null), GameTestHelper.createTerrainSlopeCorner(481.5000, 130.0000, null))
-        );
+                Arrays.asList(GameTestHelper.createTerrainSlopeCorner(394.1889, 36.3111, null), GameTestHelper.createTerrainSlopeCorner(450.7889, 54.5111, null), GameTestHelper.createTerrainSlopeCorner(456.5889, 129.3111, null), GameTestHelper.createTerrainSlopeCorner(359.5889, 139.1111, null), GameTestHelper.createTerrainSlopeCorner(343.1889, 82.5111, null))       );
         terrainSlopePositions.add(riPositionLand);
         // Setup ground
         double[][] groundHeights = new double[][]{
