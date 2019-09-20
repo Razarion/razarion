@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
@@ -92,6 +93,24 @@
                         </AnchorPane>
                     </content>
                 </TitledPane>
+            <TitledPane prefHeight="200.0" prefWidth="200.0" text="Tools">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="21.0" prefWidth="210.0">
+                           <children>
+                              <CheckBox mnemonicParsing="false" onAction="#onPolygonDumpCheck" text="Polygon Mode">
+                                 <padding>
+                                    <Insets right="5.0" />
+                                 </padding>
+                              </CheckBox>
+                              <Button mnemonicParsing="false" onAction="#onPolygonDumpButton" text="Dump To Consol" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </content>
+            </TitledPane>
             </panes>
         </Accordion>
     </right>

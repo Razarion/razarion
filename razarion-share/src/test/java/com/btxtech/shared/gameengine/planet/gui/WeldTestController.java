@@ -10,6 +10,7 @@ import com.btxtech.shared.gameengine.planet.gui.userobject.TestCaseGenerator;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainService;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeNode;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -101,7 +102,7 @@ public class WeldTestController implements Initializable {
     private TestCaseGenerator testCaseGenerator;
     private ScenarioPlaybackController scenarioPlaybackController;
     private int tickCount;
-    private List<DecimalPosition> polygon = new ArrayList<>();
+    private List<DecimalPosition> polygon;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -186,10 +187,10 @@ public class WeldTestController implements Initializable {
 
     public void onMousePressed(MouseEvent event) {
         DecimalPosition position = weldTestRenderer.convertMouseToModel(event);
-        polygon.add(position);
+        if (polygon != null) {
+            polygon.add(position);
+        }
         weldTestRenderer.render(scenarioPlaybackController);
-        System.out.println("-------------------- Slope --------------------------------");
-        System.out.println(InstanceStringGenerator.generateSlope(polygon));
         onMousePressedTerrain(position);
     }
 
@@ -349,5 +350,21 @@ public class WeldTestController implements Initializable {
         } catch (Throwable t) {
             t.printStackTrace();
         }
+    }
+
+    public void onPolygonDumpCheck(ActionEvent actionEvent) {
+        if (((CheckBox) actionEvent.getSource()).isSelected()) {
+            polygon = new ArrayList<>();
+        } else {
+            polygon = null;
+        }
+    }
+
+    public void onPolygonDumpButton() {
+        if (polygon != null) {
+            System.out.println("-------------------- Slope --------------------------------");
+            System.out.println(InstanceStringGenerator.generateSlope(polygon));
+        }
+
     }
 }
