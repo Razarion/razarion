@@ -28,7 +28,13 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private double slopeTextureScale;
     private Integer slopeBumpMapId;
     private double slopeBumpMapDepth;
-//    private double slopeShininess;
+    private Integer groundTextureId;
+    private Double groundTextureScale;
+    private Integer groundBumpMapId;
+    private Double groundBumpMapDepth;
+    private Double groundShininess;
+    private Double groundSpecularStrength;
+    //    private double slopeShininess;
 //    private Double slopeSpecularStrength;
 //    private Double slopeDistortionStrength;
 //    private Double slopeAnimationDuration;
@@ -36,10 +42,13 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Double waterFresnelOffset;
     private Double waterFresnelDelta;
     private Double waterShininess;
+    private Integer waterReflectionId;
     private Double waterSpecularStrength;
     private Double waterReflectionScale;
     private Double waterMapScale;
+    private Integer waterDistortionId;
     private Double waterDistortionStrength;
+    private Integer waterBumpMapId;
     private Double waterBumpMapDepth;
     private Double waterTransparency;
     private Double waterAnimationDuration;
@@ -123,6 +132,60 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     public SlopeSkeletonConfig setSlopeBumpMapDepth(double slopeBumpMapDepth) {
         this.slopeBumpMapDepth = slopeBumpMapDepth;
+        return this;
+    }
+
+    public Integer getGroundTextureId() {
+        return groundTextureId;
+    }
+
+    public SlopeSkeletonConfig setGroundTextureId(Integer groundTextureId) {
+        this.groundTextureId = groundTextureId;
+        return this;
+    }
+
+    public Double getGroundTextureScale() {
+        return groundTextureScale;
+    }
+
+    public SlopeSkeletonConfig setGroundTextureScale(Double groundTextureScale) {
+        this.groundTextureScale = groundTextureScale;
+        return this;
+    }
+
+    public Integer getGroundBumpMapId() {
+        return groundBumpMapId;
+    }
+
+    public SlopeSkeletonConfig setGroundBumpMapId(Integer groundBumpMapId) {
+        this.groundBumpMapId = groundBumpMapId;
+        return this;
+    }
+
+    public Double getGroundBumpMapDepth() {
+        return groundBumpMapDepth;
+    }
+
+    public SlopeSkeletonConfig setGroundBumpMapDepth(Double groundBumpMapDepth) {
+        this.groundBumpMapDepth = groundBumpMapDepth;
+        return this;
+    }
+
+    public Double getGroundShininess() {
+        return groundShininess;
+    }
+
+    public SlopeSkeletonConfig setGroundShininess(Double groundShininess) {
+        this.groundShininess = groundShininess;
+        return this;
+    }
+
+    public Double getGroundSpecularStrength() {
+        return groundSpecularStrength;
+    }
+
+    public SlopeSkeletonConfig setGroundSpecularStrength(Double groundSpecularStrength) {
+        this.groundSpecularStrength = groundSpecularStrength;
         return this;
     }
 
@@ -269,6 +332,15 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
+    public Integer getWaterReflectionId() {
+        return waterReflectionId;
+    }
+
+    public SlopeSkeletonConfig setWaterReflectionId(Integer waterReflectionId) {
+        this.waterReflectionId = waterReflectionId;
+        return this;
+    }
+
     public Double getWaterReflectionScale() {
         return waterReflectionScale;
     }
@@ -287,12 +359,30 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
+    public Integer getWaterDistortionId() {
+        return waterDistortionId;
+    }
+
+    public SlopeSkeletonConfig setWaterDistortionId(Integer waterDistortionId) {
+        this.waterDistortionId = waterDistortionId;
+        return this;
+    }
+
     public Double getWaterDistortionStrength() {
         return waterDistortionStrength;
     }
 
     public SlopeSkeletonConfig setWaterDistortionStrength(Double waterDistortionStrength) {
         this.waterDistortionStrength = waterDistortionStrength;
+        return this;
+    }
+
+    public Integer getWaterBumpMapId() {
+        return waterBumpMapId;
+    }
+
+    public SlopeSkeletonConfig setWaterBumpMapId(Integer waterBumpMapId) {
+        this.waterBumpMapId = waterBumpMapId;
         return this;
     }
 

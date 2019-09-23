@@ -90,7 +90,8 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         };
         waterConfig.setSlopeNodes(toColumnRow(waterSlopeNodes));
         waterConfig.setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
-        waterConfig.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionStrength(0.05).setWaterBumpMapDepth(0.5).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowWaterAnimation(8.0).setShallowWaterDistortionStrength(1.0).setWaterFresnelOffset(0.8).setWaterFresnelDelta(0.4);
+        waterConfig.setWaterLevel(-0.10).setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionId(3).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionId(4).setWaterDistortionStrength(0.05).setWaterBumpMapId(5).setWaterBumpMapDepth(0.5).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setShallowWaterTextureScale(20.0).setShallowWaterAnimation(8.0).setShallowWaterDistortionStrength(1.0).setWaterFresnelOffset(0.8).setWaterFresnelDelta(0.4);
+        waterConfig.setGroundTextureId(6).setGroundTextureScale(700.0).setGroundBumpMapId(7).setGroundBumpMapDepth(1.0).setGroundSpecularStrength(1.0).setGroundShininess(30.0);
         slopeSkeletonConfigs.add(waterConfig);
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition waterPositionLand = new TerrainSlopePosition();
@@ -102,7 +103,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(waterPositionLand);
         // Setup razarion industries
         SlopeSkeletonConfig riConfig = new SlopeSkeletonConfig();
-        riConfig.setId(2).setInternalName("Razarion Industries").setType(SlopeSkeletonConfig.Type.LAND);
+        riConfig.setId(2).setInternalName("Razar Industries").setType(SlopeSkeletonConfig.Type.LAND);
         riConfig.setRows(5).setSegments(1).setWidth(6).setHorizontalSpace(6).setHeight(6);
         SlopeNode[][] riSlopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 0)},
@@ -112,11 +113,12 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(4, 6, 0)}
         };
         riConfig.setSlopeNodes(toColumnRow(riSlopeNodes));
+        riConfig.setGroundTextureId(1).setGroundTextureScale(50.0).setGroundBumpMapId(2).setGroundBumpMapDepth(0.5).setGroundShininess(30.0).setGroundSpecularStrength(1.0);
         slopeSkeletonConfigs.add(riConfig);
         TerrainSlopePosition riPositionLand = new TerrainSlopePosition();
         riPositionLand.setId(2).setSlopeConfigId(2);
         riPositionLand.setPolygon(
-                Arrays.asList(GameTestHelper.createTerrainSlopeCorner(394.1889, 36.3111, null), GameTestHelper.createTerrainSlopeCorner(450.7889, 54.5111, null), GameTestHelper.createTerrainSlopeCorner(456.5889, 129.3111, null), GameTestHelper.createTerrainSlopeCorner(359.5889, 139.1111, null), GameTestHelper.createTerrainSlopeCorner(343.1889, 82.5111, null))       );
+                Arrays.asList(GameTestHelper.createTerrainSlopeCorner(394.1889, 36.3111, null), GameTestHelper.createTerrainSlopeCorner(450.7889, 54.5111, null), GameTestHelper.createTerrainSlopeCorner(456.5889, 129.3111, null), GameTestHelper.createTerrainSlopeCorner(359.5889, 139.1111, null), GameTestHelper.createTerrainSlopeCorner(343.1889, 82.5111, null)));
         terrainSlopePositions.add(riPositionLand);
         // Setup ground
         double[][] groundHeights = new double[][]{
