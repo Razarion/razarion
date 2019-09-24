@@ -28,16 +28,18 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private double slopeTextureScale;
     private Integer slopeBumpMapId;
     private double slopeBumpMapDepth;
+    private double slopeShininess;
+    private double slopeSpecularStrength;
+    private Integer slopeFoamTextureId;
+    private Integer slopeFoamDistortionId;
+    private Double slopeFoamDistortionStrength;
+    private Double slopeFoamAnimationDuration;
     private Integer groundTextureId;
     private Double groundTextureScale;
     private Integer groundBumpMapId;
     private Double groundBumpMapDepth;
     private Double groundShininess;
     private Double groundSpecularStrength;
-    //    private double slopeShininess;
-//    private Double slopeSpecularStrength;
-//    private Double slopeDistortionStrength;
-//    private Double slopeAnimationDuration;
     private Double waterLevel;
     private Double waterFresnelOffset;
     private Double waterFresnelDelta;
@@ -132,6 +134,60 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     public SlopeSkeletonConfig setSlopeBumpMapDepth(double slopeBumpMapDepth) {
         this.slopeBumpMapDepth = slopeBumpMapDepth;
+        return this;
+    }
+
+    public double getSlopeShininess() {
+        return slopeShininess;
+    }
+
+    public SlopeSkeletonConfig setSlopeShininess(double slopeShininess) {
+        this.slopeShininess = slopeShininess;
+        return this;
+    }
+
+    public double getSlopeSpecularStrength() {
+        return slopeSpecularStrength;
+    }
+
+    public SlopeSkeletonConfig setSlopeSpecularStrength(double slopeSpecularStrength) {
+        this.slopeSpecularStrength = slopeSpecularStrength;
+        return this;
+    }
+
+    public Integer getSlopeFoamTextureId() {
+        return slopeFoamTextureId;
+    }
+
+    public SlopeSkeletonConfig setSlopeFoamTextureId(Integer slopeFoamTextureId) {
+        this.slopeFoamTextureId = slopeFoamTextureId;
+        return this;
+    }
+
+    public Integer getSlopeFoamDistortionId() {
+        return slopeFoamDistortionId;
+    }
+
+    public SlopeSkeletonConfig setSlopeFoamDistortionId(Integer slopeFoamDistortionId) {
+        this.slopeFoamDistortionId = slopeFoamDistortionId;
+        return this;
+    }
+
+    public Double getSlopeFoamDistortionStrength() {
+        return slopeFoamDistortionStrength;
+    }
+
+    public SlopeSkeletonConfig setSlopeFoamDistortionStrength(Double slopeFoamDistortionStrength) {
+        this.slopeFoamDistortionStrength = slopeFoamDistortionStrength;
+        return this;
+    }
+
+    public Double getSlopeFoamAnimationDuration() {
+        return slopeFoamAnimationDuration;
+    }
+
+    public SlopeSkeletonConfig setSlopeFoamAnimationDuration(Double slopeFoamAnimationDuration) {
+        this.slopeFoamAnimationDuration = slopeFoamAnimationDuration;
         return this;
     }
 
