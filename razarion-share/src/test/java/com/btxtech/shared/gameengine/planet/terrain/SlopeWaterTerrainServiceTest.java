@@ -104,16 +104,16 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         // Setup razarion industries
         SlopeSkeletonConfig riConfig = new SlopeSkeletonConfig();
         riConfig.setId(2).setInternalName("Razar Industries").setType(SlopeSkeletonConfig.Type.LAND);
-        riConfig.setRows(5).setSegments(1).setWidth(6).setHorizontalSpace(6).setHeight(6);
+        riConfig.setRows(5).setSegments(1).setWidth(10).setHorizontalSpace(6).setHeight(6);
         SlopeNode[][] riSlopeNodes = new SlopeNode[][]{
-                {GameTestHelper.createSlopeNode(2, 0, 0)},
-                {GameTestHelper.createSlopeNode(2, 2, 0)},
-                {GameTestHelper.createSlopeNode(2, 4, 0)},
-                {GameTestHelper.createSlopeNode(2, 6, 0)},
-                {GameTestHelper.createSlopeNode(4, 6, 0)}
+                {GameTestHelper.createSlopeNode(6, 0, 0)},
+                {GameTestHelper.createSlopeNode(6, 2, 0)},
+                {GameTestHelper.createSlopeNode(6, 4, 0)},
+                {GameTestHelper.createSlopeNode(6, 6, 0)},
+                {GameTestHelper.createSlopeNode(10, 6, 0)}
         };
         riConfig.setSlopeNodes(toColumnRow(riSlopeNodes));
-        riConfig.setGroundTextureId(1).setGroundTextureScale(50.0).setGroundBumpMapId(2).setGroundBumpMapDepth(0.5).setGroundShininess(30.0).setGroundSpecularStrength(1.0);
+        riConfig.setGroundTextureId(1).setGroundTextureScale(21.0).setGroundBumpMapId(2).setGroundBumpMapDepth(0.5).setGroundShininess(3.0).setGroundSpecularStrength(0.5);
         slopeSkeletonConfigs.add(riConfig);
         TerrainSlopePosition riPositionLand = new TerrainSlopePosition();
         riPositionLand.setId(2).setSlopeConfigId(2);

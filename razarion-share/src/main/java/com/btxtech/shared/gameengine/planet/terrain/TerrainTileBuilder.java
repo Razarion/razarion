@@ -82,7 +82,7 @@ public class TerrainTileBuilder {
         groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, Vertex.toArray(vertices)));
         terrainTile.setGroundSlopeVertices(terrainTileGroundSlopeVertices);
         Map<Integer, double[]> terrainTileGroundNorms = new HashMap<>();
-        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, Vertex.toArray(vertices)));
+        groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, Vertex.toArray(vertices)));
         terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
 
        //  TODO groundSlopeVertices.
