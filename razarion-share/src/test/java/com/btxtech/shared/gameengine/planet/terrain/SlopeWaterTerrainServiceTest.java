@@ -116,7 +116,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(10, 6, 0)}
         };
         riConfig.setSlopeNodes(toColumnRow(riSlopeNodes));
-        riConfig.setSlopeTextureId(8).setSlopeBumpMapId(9).setSlopeTextureScale(21).setSlopeBumpMapDepth(0.5).setSlopeShininess(3.0).setSlopeSpecularStrength(0.5);
+        riConfig.setSlopeTextureId(12).setSlopeBumpMapId(13).setSlopeTextureScale(10).setSlopeBumpMapDepth(0.5).setSlopeShininess(3.0).setSlopeSpecularStrength(0.5);
         riConfig.setGroundTextureId(1).setGroundTextureScale(21.0).setGroundBumpMapId(2).setGroundBumpMapDepth(0.5).setGroundShininess(3.0).setGroundSpecularStrength(0.5);
         slopeSkeletonConfigs.add(riConfig);
         TerrainSlopePosition riPositionLand = new TerrainSlopePosition();
