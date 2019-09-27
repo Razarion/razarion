@@ -13,7 +13,6 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
     private int slopeVertexCount;
     private double[] vertices;
     private double[] norms;
-    private double[] tangents;
     private double[] uvs;
     private double[] slopeFactors;
     private double[] groundSplattings;
@@ -23,14 +22,13 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
         this.slopeSkeletonConfigId = slopeConfigId;
         vertices = new double[vertexSize];
         norms = new double[vertexSize];
-        tangents = new double[vertexSize];
         uvs = new double[decimalPositionSize];
         slopeFactors = new double[scalarSize];
         groundSplattings = new double[scalarSize];
     }
 
     @Override
-    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double vwX, double vwY, double slopeFactor, double splatting) {
+    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double vwX, double vwY, double slopeFactor, double splatting) {
         int cornerVertexIndex = triangleCornerIndex * Vertex.getComponentsPerVertex();
         vertices[cornerVertexIndex] = vertexX;
         vertices[cornerVertexIndex + 1] = vertexY;
@@ -38,9 +36,6 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
         norms[cornerVertexIndex] = normX;
         norms[cornerVertexIndex + 1] = normY;
         norms[cornerVertexIndex + 2] = normZ;
-        tangents[cornerVertexIndex] = tangentX;
-        tangents[cornerVertexIndex + 1] = tangentY;
-        tangents[cornerVertexIndex + 2] = tangentZ;
         int cornerDecimalPositionIndex = triangleCornerIndex * DecimalPosition.getComponentsPerDecimalPosition();
         uvs[cornerDecimalPositionIndex] = vwX;
         uvs[cornerDecimalPositionIndex + 1] = vwY;
@@ -71,11 +66,6 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
     @Override
     public double[] getNorms() {
         return norms;
-    }
-
-    @Override
-    public double[] getTangents() {
-        return tangents;
     }
 
     @Override

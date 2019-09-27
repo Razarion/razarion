@@ -10,7 +10,7 @@ import jsinterop.annotations.JsType;
 public abstract class TerrainSlopeTile {
     public native void init(int slopeConfigId, int vertexSize, int decimalPositionSize, int scalarSize);
 
-    public native void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double vwX, double vwY, double slopeFactor, double splatting);
+    public native void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double vwX, double vwY, double slopeFactor, double splatting);
 
     public native int getSlopeConfigId();
 
@@ -21,8 +21,6 @@ public abstract class TerrainSlopeTile {
     public native double[] getVertices();
 
     public native double[] getNorms();
-
-    public native double[] getTangents();
 
     public native double[] getUvs();
 

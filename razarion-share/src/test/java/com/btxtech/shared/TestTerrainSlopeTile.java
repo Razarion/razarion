@@ -13,7 +13,6 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
     private int slopeVertexCount;
     private double[] vertices;
     private double[] norms;
-    private double[] tangents;
     private double[] uvs;
     private double[] slopeFactors;
     private double[] groundSplattings;
@@ -23,7 +22,6 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
         this.slopeSkeletonConfigId = slopeConfigId;
         vertices = new double[vertexSize];
         norms = new double[vertexSize];
-        tangents = new double[vertexSize];
         uvs = new double[decimalPositionSize];
         slopeFactors = new double[scalarSize];
         groundSplattings = new double[scalarSize];
@@ -31,7 +29,7 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
 
 
     @Override
-    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double tangentX, double tangentY, double tangentZ, double vwX, double vwY, double slopeFactor, double splatting) {
+    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double vwX, double vwY, double slopeFactor, double splatting) {
         int cornerScalarIndex = triangleCornerIndex * Vertex.getComponentsPerVertex();
         vertices[cornerScalarIndex] = vertexX;
         vertices[cornerScalarIndex + 1] = vertexY;
@@ -39,9 +37,6 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
         norms[cornerScalarIndex] = normX;
         norms[cornerScalarIndex + 1] = normY;
         norms[cornerScalarIndex + 2] = normZ;
-        tangents[cornerScalarIndex] = tangentX;
-        tangents[cornerScalarIndex + 1] = tangentY;
-        tangents[cornerScalarIndex + 2] = tangentZ;
         int cornerDecimalPositionIndex = triangleCornerIndex * DecimalPosition.getComponentsPerDecimalPosition();
         uvs[cornerDecimalPositionIndex] = vwX;
         uvs[cornerDecimalPositionIndex + 1] = vwY;
@@ -72,11 +67,6 @@ public class TestTerrainSlopeTile extends TerrainSlopeTile {
     @Override
     public double[] getNorms() {
         return norms;
-    }
-
-    @Override
-    public double[] getTangents() {
-        return tangents;
     }
 
     @Override
