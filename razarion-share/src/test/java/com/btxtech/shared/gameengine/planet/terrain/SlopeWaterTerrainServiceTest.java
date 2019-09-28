@@ -88,7 +88,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(15, -2, 1),},
                 {GameTestHelper.createSlopeNode(20, -4, 1),}
         };
-        waterConfig.setSlopeNodes(toColumnRow(waterSlopeNodes));
+        waterConfig.setSlopeNodes(toColumnRow(waterSlopeNodes)).setInterpolateNorm(true);
         waterConfig.setSlopeTextureId(8).setSlopeBumpMapId(9).setSlopeTextureScale(21).setSlopeBumpMapDepth(0.5).setSlopeShininess(3.0).setSlopeSpecularStrength(0.5);
         waterConfig.setSlopeFoamTextureId(11).setSlopeFoamDistortionId(10).setSlopeFoamAnimationDuration(10.0).setSlopeFoamDistortionStrength(1.0);
         waterConfig.setGroundTextureId(6).setGroundTextureScale(700.0).setGroundBumpMapId(7).setGroundBumpMapDepth(1.0).setGroundSpecularStrength(1.0).setGroundShininess(30.0);
@@ -117,7 +117,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(2, 6, 0)},
                 {GameTestHelper.createSlopeNode(2, 5, 0)}
         };
-        riConfig.setSlopeNodes(toColumnRow(riSlopeNodes));
+        riConfig.setSlopeNodes(toColumnRow(riSlopeNodes)).setInterpolateNorm(false);
         riConfig.setSlopeTextureId(12).setSlopeBumpMapId(13).setSlopeTextureScale(28).setSlopeBumpMapDepth(0.5).setSlopeShininess(3.0).setSlopeSpecularStrength(0.5);
         riConfig.setGroundTextureId(1).setGroundTextureScale(21.0).setGroundBumpMapId(2).setGroundBumpMapDepth(0.5).setGroundShininess(3.0).setGroundSpecularStrength(0.5);
         slopeSkeletonConfigs.add(riConfig);

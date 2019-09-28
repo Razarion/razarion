@@ -23,6 +23,8 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private double coastDelimiterLineGameEngine;
     private Type type;
     private SlopeNode[][] slopeNodes;
+    private boolean interpolateNorm;
+    @Deprecated
     private SpecularLightConfig specularLightConfig;
     private Integer slopeTextureId;
     private double slopeTextureScale;
@@ -299,10 +301,21 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
+    public boolean isInterpolateNorm() {
+        return interpolateNorm;
+    }
+
+    public SlopeSkeletonConfig setInterpolateNorm(boolean interpolateNorm) {
+        this.interpolateNorm = interpolateNorm;
+        return this;
+    }
+
+    @Deprecated
     public SpecularLightConfig getSpecularLightConfig() {
         return specularLightConfig;
     }
 
+    @Deprecated
     public SlopeSkeletonConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
         this.specularLightConfig = specularLightConfig;
         return this;

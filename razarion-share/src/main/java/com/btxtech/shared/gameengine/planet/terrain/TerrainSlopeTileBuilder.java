@@ -41,7 +41,7 @@ public class TerrainSlopeTileBuilder {
         return terrainSlopeTile;
     }
 
-    public void triangulation(boolean invert) {
+    public void triangulation(boolean invert, boolean interpolateNorm) {
         terrainSlopeTile = jsInteropObjectFactory.generateTerrainSlopeTile();
         int verticesCount = (xCount - 1) * (yCount - 1) * 6;
         terrainSlopeTile.init(slopeSkeletonConfigId, verticesCount * Vertex.getComponentsPerVertex(), verticesCount * DecimalPosition.getComponentsPerDecimalPosition(), verticesCount);
@@ -76,9 +76,11 @@ public class TerrainSlopeTileBuilder {
                     double slopeFactorBL = mesh[x][y].getSlopeFactor();
                     double splattingBL = mesh[x][y].getSplatting();
 
-                    insertTriangleCorner(vertexBL, normBL, uvBL, slopeFactorBL, splattingBL, triangleCornerIndex);
-                    insertTriangleCorner(vertexBR, normBR, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
-                    insertTriangleCorner(vertexTL, normTL, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                    Vertex norm = vertexBL.cross(vertexBR, vertexTL).normalize(1.0);
+
+                    insertTriangleCorner(vertexBL, interpolateNorm ? normBL : norm, uvBL, slopeFactorBL, splattingBL, triangleCornerIndex);
+                    insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
+                    insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
                     triangleIndex++;
                 }
 
@@ -89,9 +91,11 @@ public class TerrainSlopeTileBuilder {
                     double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
                     double splattingTR = mesh[x + 1][y + 1].getSplatting();
 
-                    insertTriangleCorner(vertexBR, normBR, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex);
-                    insertTriangleCorner(vertexTR, normTR, uvTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
-                    insertTriangleCorner(vertexTL, normTL, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                    Vertex norm = vertexTR.cross(vertexTL, vertexBR).normalize(1.0);
+
+                    insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex);
+                    insertTriangleCorner(vertexTR, interpolateNorm ? normTR : norm, uvTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
+                    insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
                     triangleIndex++;
                 }
             }

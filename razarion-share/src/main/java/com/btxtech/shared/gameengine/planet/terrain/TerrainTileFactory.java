@@ -209,7 +209,7 @@ public class TerrainTileFactory {
                 terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeSkeletonConfig.getWidth(), slopeSkeletonConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
             }
         }
-        terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted());
+        terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted(), slopeSkeletonConfig.isInterpolateNorm());
         terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh(fractionalSlope.getSlopeSkeletonConfigId());
     }
 
