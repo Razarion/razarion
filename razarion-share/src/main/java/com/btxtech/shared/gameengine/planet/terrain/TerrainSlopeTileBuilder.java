@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.context.Dependent;
@@ -18,6 +19,8 @@ public class TerrainSlopeTileBuilder {
     private Logger logger = Logger.getLogger(TerrainSlopeTileBuilder.class.getName());
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
+    @Inject
+    private ExceptionHandler exceptionHandler;
     private int slopeSkeletonConfigId;
     private int xCount;
     private int yCount;
@@ -48,55 +51,59 @@ public class TerrainSlopeTileBuilder {
         int triangleIndex = 0;
         for (int x = 1; x < xCount - 2; x++) {
             for (int y = 0; y < yCount - 1; y++) {
-                Vertex vertexBL = mesh[x][y].getVertex();
-                Vertex vertexBR = mesh[x + 1][y].getVertex();
-                Vertex vertexTR = mesh[x + 1][y + 1].getVertex();
-                Vertex vertexTL = mesh[x][y + 1].getVertex();
+                try {
+                    Vertex vertexBL = mesh[x][y].getVertex();
+                    Vertex vertexBR = mesh[x + 1][y].getVertex();
+                    Vertex vertexTR = mesh[x + 1][y + 1].getVertex();
+                    Vertex vertexTL = mesh[x][y + 1].getVertex();
 
-                if (!terrainTileBuilder.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
-                    continue;
-                }
+                    if (!terrainTileBuilder.checkPlayGround(vertexBL, vertexBR, vertexTR, vertexTL)) {
+                        continue;
+                    }
 
-                Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY(), invert);
-                Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY(), invert);
-                DecimalPosition uvBL = mesh[x][y].getUv();
-                DecimalPosition uvBR = mesh[x][y].isUvTermination() ? mesh[x][y].getUvTermination() : mesh[x + 1][y].getUv();
-                DecimalPosition uvTR = mesh[x][y + 1].isUvTermination() ? mesh[x][y + 1].getUvTermination() : mesh[x + 1][y + 1].getUv();
-                DecimalPosition uvTL = mesh[x][y + 1].getUv();
+                    Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY(), invert);
+                    Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY(), invert);
+                    DecimalPosition uvBL = mesh[x][y].getUv();
+                    DecimalPosition uvBR = mesh[x][y].isUvTermination() ? mesh[x][y].getUvTermination() : mesh[x + 1][y].getUv();
+                    DecimalPosition uvTR = mesh[x][y + 1].isUvTermination() ? mesh[x][y + 1].getUvTermination() : mesh[x + 1][y + 1].getUv();
+                    DecimalPosition uvTL = mesh[x][y + 1].getUv();
 
-                double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
-                double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
-                double splattingBR = mesh[x + 1][y].getSplatting();
-                double splattingTL = mesh[x][y + 1].getSplatting();
+                    double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
+                    double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
+                    double splattingBR = mesh[x + 1][y].getSplatting();
+                    double splattingTL = mesh[x][y + 1].getSplatting();
 
-                if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
-                    int triangleCornerIndex = triangleIndex * 3;
+                    if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
+                        int triangleCornerIndex = triangleIndex * 3;
 
-                    Vertex normBL = setupNorm(x, y, vertexBL.toXY(), invert);
-                    double slopeFactorBL = mesh[x][y].getSlopeFactor();
-                    double splattingBL = mesh[x][y].getSplatting();
+                        Vertex normBL = setupNorm(x, y, vertexBL.toXY(), invert);
+                        double slopeFactorBL = mesh[x][y].getSlopeFactor();
+                        double splattingBL = mesh[x][y].getSplatting();
 
-                    Vertex norm = vertexBL.cross(vertexBR, vertexTL).normalize(1.0);
+                        Vertex norm = vertexBL.cross(vertexBR, vertexTL).normalize(1.0);
 
-                    insertTriangleCorner(vertexBL, interpolateNorm ? normBL : norm, uvBL, slopeFactorBL, splattingBL, triangleCornerIndex);
-                    insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
-                    insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
-                    triangleIndex++;
-                }
+                        insertTriangleCorner(vertexBL, interpolateNorm ? normBL : norm, uvBL, slopeFactorBL, splattingBL, triangleCornerIndex);
+                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
+                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                        triangleIndex++;
+                    }
 
-                if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
-                    int triangleCornerIndex = triangleIndex * 3;
+                    if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
+                        int triangleCornerIndex = triangleIndex * 3;
 
-                    Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY(), invert);
-                    double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
-                    double splattingTR = mesh[x + 1][y + 1].getSplatting();
+                        Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY(), invert);
+                        double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
+                        double splattingTR = mesh[x + 1][y + 1].getSplatting();
 
-                    Vertex norm = vertexTR.cross(vertexTL, vertexBR).normalize(1.0);
+                        Vertex norm = vertexTR.cross(vertexTL, vertexBR).normalize(1.0);
 
-                    insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex);
-                    insertTriangleCorner(vertexTR, interpolateNorm ? normTR : norm, uvTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
-                    insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
-                    triangleIndex++;
+                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex);
+                        insertTriangleCorner(vertexTR, interpolateNorm ? normTR : norm, uvTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
+                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                        triangleIndex++;
+                    }
+                }catch (Throwable t) {
+                    exceptionHandler.handleException(t);
                 }
             }
         }
