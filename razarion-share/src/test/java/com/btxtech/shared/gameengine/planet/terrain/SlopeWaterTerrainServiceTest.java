@@ -2,11 +2,14 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
+import com.btxtech.shared.dto.TextureScaleConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
@@ -127,20 +130,20 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 Arrays.asList(GameTestHelper.createTerrainSlopeCorner(394.1889, 36.3111, null), GameTestHelper.createTerrainSlopeCorner(450.7889, 54.5111, null), GameTestHelper.createTerrainSlopeCorner(456.5889, 129.3111, null), GameTestHelper.createTerrainSlopeCorner(359.5889, 139.1111, 1), GameTestHelper.createTerrainSlopeCorner(343.1889, 82.5111, 1)));
         terrainSlopePositions.add(riPositionLand);
         // Setup ground
-        double[][] groundHeights = new double[][]{
+        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
+        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new TextureScaleConfig().setId(14).setScale(50)).setBumpMapId(15).setBumpMapDepth(0.5).setShininess(30).setSpecularStrength(0.5));
+        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new TextureScaleConfig().setId(16).setScale(50)).setBumpMapId(17).setBumpMapDepth(0.5).setShininess(30).setSpecularStrength(0.5));
+        groundSkeletonConfig.setHeightXCount(3).setHeightYCount(5).setHeights(toColumnRow(new double[][]{
                 {0, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0},
-                {0, 0, 0}
-        };
-        double[][] groundSplattings = new double[][]{
+                {0, 0, 0}}));
+        groundSkeletonConfig.setSplattingXCount(4).setSplattingYCount(3).setSplattings(toColumnRow(new double[][]{
                 {0.7, 0.8, 0.9, 0.5},
                 {0.4, 0.5, 0.6, 0.6},
-                {0.1, 0.2, 0.3, 0.3}
-        };
-
-        setupTerrainTypeService(groundSplattings, slopeSkeletonConfigs, null, groundHeights, null, terrainSlopePositions, null, null);
+                {0.1, 0.2, 0.3, 0.3}}));
+        setupTerrainTypeService(null, slopeSkeletonConfigs, null, null, null, terrainSlopePositions, null, groundSkeletonConfig);
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\",
                 new Index(0, 0),

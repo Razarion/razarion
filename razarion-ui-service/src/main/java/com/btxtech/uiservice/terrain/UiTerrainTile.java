@@ -100,7 +100,8 @@ public class UiTerrainTile {
     }
 
     public Integer getTopTextureId() {
-        return groundSkeletonConfig.getTopTextureId();
+        // TODO return groundSkeletonConfig.getTopTextureId();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public Integer getSplattingId() {
@@ -108,15 +109,18 @@ public class UiTerrainTile {
     }
 
     public Integer getBottomTextureId() {
-        return groundSkeletonConfig.getBottomTextureId();
+        // TODO return groundSkeletonConfig.getBottomTextureId();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public Integer getBottomBmId() {
-        return groundSkeletonConfig.getBottomBmId();
+        // TODO return groundSkeletonConfig.getBottomBmId();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public double getTopTextureScale() {
-        return groundSkeletonConfig.getTopTextureScale();
+        // TODO return groundSkeletonConfig.getTopTextureScale();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public double getSplattingScale() {
@@ -124,11 +128,13 @@ public class UiTerrainTile {
     }
 
     public double getBottomTextureScale() {
-        return groundSkeletonConfig.getBottomTextureScale();
+        // TODO return groundSkeletonConfig.getBottomTextureScale();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public double getBottomBmScale() {
-        return groundSkeletonConfig.getBottomBmScale();
+        // TODO return groundSkeletonConfig.getBottomBmScale();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public SpecularLightConfig getSpecularLightConfig() {
@@ -136,7 +142,8 @@ public class UiTerrainTile {
     }
 
     public double getBottomBmDepth() {
-        return groundSkeletonConfig.getBottomBmDepth();
+        // TODO return groundSkeletonConfig.getBottomBmDepth();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {

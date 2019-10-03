@@ -112,23 +112,23 @@ public class GroundSidebar extends LeftSideBarContent {
         terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
             groundConfigDataBinder.setModel(groundConfig);
             specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
-            topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> {
-                groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId);
-                terrainUiService.onEditorTerrainChanged();
-            });
-            bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> {
-                groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId);
-                terrainUiService.onEditorTerrainChanged();
-            });
-            bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> {
-                groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId);
-                terrainUiService.onEditorTerrainChanged();
-            });
-            splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> {
-                groundConfig.getGroundSkeletonConfig().setSplattingId(imageId);
-                terrainUiService.onEditorTerrainChanged();
-            });
-            terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
+//   TODO         topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> {
+//                groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId);
+//                terrainUiService.onEditorTerrainChanged();
+//            });
+//            bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> {
+//                groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId);
+//                terrainUiService.onEditorTerrainChanged();
+//            });
+//            bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> {
+//                groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId);
+//                terrainUiService.onEditorTerrainChanged();
+//            });
+//            splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> {
+//                groundConfig.getGroundSkeletonConfig().setSplattingId(imageId);
+//                terrainUiService.onEditorTerrainChanged();
+//            });
+//            terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
         }, exceptionHandler.restErrorHandler("loadGroundConfig failed: ")).loadGroundConfig();
     }
 

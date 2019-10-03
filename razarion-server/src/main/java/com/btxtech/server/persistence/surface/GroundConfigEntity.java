@@ -95,13 +95,13 @@ public class GroundConfigEntity {
     }
 
     public void fromGroundConfig(GroundConfig groundConfig, ImagePersistence imagePersistence) {
-        topTexture = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getTopTextureId());
-        topTextureScale = groundConfig.getGroundSkeletonConfig().getTopTextureScale();
-        bottomTexture = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getBottomTextureId());
-        bottomTextureScale = groundConfig.getGroundSkeletonConfig().getBottomTextureScale();
-        bottomBm = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getBottomBmId());
-        bottomBmScale = groundConfig.getGroundSkeletonConfig().getBottomBmScale();
-        bottomBmDepth = groundConfig.getGroundSkeletonConfig().getBottomBmDepth();
+        // TODO topTexture = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getTopTextureId());
+        // TODO topTextureScale = groundConfig.getGroundSkeletonConfig().getTopTextureScale();
+        // TODO bottomTexture = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getBottomTextureId());
+        // TODO bottomTextureScale = groundConfig.getGroundSkeletonConfig().getBottomTextureScale();
+        // TODO bottomBm = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getBottomBmId());
+        // TODO bottomBmScale = groundConfig.getGroundSkeletonConfig().getBottomBmScale();
+        // TODO bottomBmDepth = groundConfig.getGroundSkeletonConfig().getBottomBmDepth();
         if (specularLightConfigEmbeddable == null) {
             specularLightConfigEmbeddable = new SpecularLightConfigEmbeddable();
         }
@@ -148,16 +148,16 @@ public class GroundConfigEntity {
     public GroundSkeletonConfig generateGroundSkeleton() {
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         groundSkeletonConfig.setId(id);
-        groundSkeletonConfig.setTopTextureId(PersistenceUtil.getImageIdSafe(topTexture));
-        groundSkeletonConfig.setTopTextureScale(topTextureScale);
+        // TODO groundSkeletonConfig.setTopTextureId(PersistenceUtil.getImageIdSafe(topTexture));
+        // TODO groundSkeletonConfig.setTopTextureScale(topTextureScale);
         groundSkeletonConfig.setSplattingFadeThreshold(splattingFadeThreshold);
         groundSkeletonConfig.setSplattingOffset(splattingOffset);
         groundSkeletonConfig.setSplattingGroundBmMultiplicator(splattingGroundBmMultiplicator);
-        groundSkeletonConfig.setBottomTextureId(PersistenceUtil.getImageIdSafe(bottomTexture));
-        groundSkeletonConfig.setBottomTextureScale(bottomTextureScale);
-        groundSkeletonConfig.setBottomBmId(PersistenceUtil.getImageIdSafe(bottomBm));
-        groundSkeletonConfig.setBottomBmScale(bottomBmScale);
-        groundSkeletonConfig.setBottomBmDepth(bottomBmDepth);
+        // TODO groundSkeletonConfig.setBottomTextureId(PersistenceUtil.getImageIdSafe(bottomTexture));
+        // TODO groundSkeletonConfig.setBottomTextureScale(bottomTextureScale);
+        // TODO groundSkeletonConfig.setBottomBmId(PersistenceUtil.getImageIdSafe(bottomBm));
+        // TODO groundSkeletonConfig.setBottomBmScale(bottomBmScale);
+        // TODO groundSkeletonConfig.setBottomBmDepth(bottomBmDepth);
         groundSkeletonConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
         groundSkeletonConfig.setSplattingXCount(splattingXCount);
         groundSkeletonConfig.setSplattingYCount(splattingYCount);

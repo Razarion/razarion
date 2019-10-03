@@ -8,34 +8,52 @@ import com.btxtech.shared.utils.CollectionUtils;
  */
 public class GroundSkeletonConfig {
     private int id;
-    private Integer topTextureId;
-    private double topTextureScale;
-    private Integer bottomTextureId;
-    private double bottomTextureScale;
-    private Integer bottomBmId;
-    private double bottomBmScale;
-    private double bottomBmDepth;
+    private PhongMaterialConfig topTexture;
+    private PhongMaterialConfig bottomTexture;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
+    @Deprecated
     private double[][] heights;
+    @Deprecated
     private int heightXCount;
+    @Deprecated
     private int heightYCount;
-    // errai: setter and getter must be available for arrays.Otherwise the array is always null
+    private Integer splattingId;
+    private double splattingScale;
     private double splattingFadeThreshold;
     private double splattingOffset;
+    @Deprecated
     private double splattingGroundBmMultiplicator;
+    // errai: setter and getter must be available for arrays.Otherwise the array is always null
     private double[][] splattings;
     private int splattingXCount;
     private int splattingYCount;
+    @Deprecated
     private SpecularLightConfig specularLightConfig;
-    private Integer splattingId;
-    private double splattingScale;
+
+    public GroundSkeletonConfig setId(int id) {
+        this.id = id;
+        return this;
+    }
 
     public int getId() {
         return id;
     }
 
-    public GroundSkeletonConfig setId(int id) {
-        this.id = id;
+    public PhongMaterialConfig getTopTexture() {
+        return topTexture;
+    }
+
+    public GroundSkeletonConfig setTopTexture(PhongMaterialConfig topTexture) {
+        this.topTexture = topTexture;
+        return this;
+    }
+
+    public PhongMaterialConfig getBottomTexture() {
+        return bottomTexture;
+    }
+
+    public GroundSkeletonConfig setBottomTexture(PhongMaterialConfig bottomTexture) {
+        this.bottomTexture = bottomTexture;
         return this;
     }
 
@@ -97,30 +115,12 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public double getBottomBmDepth() {
-        return bottomBmDepth;
-    }
-
-    public GroundSkeletonConfig setBottomBmDepth(double bottomBmDepth) {
-        this.bottomBmDepth = bottomBmDepth;
-        return this;
-    }
-
     public SpecularLightConfig getSpecularLightConfig() {
         return specularLightConfig;
     }
 
     public GroundSkeletonConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
         this.specularLightConfig = specularLightConfig;
-        return this;
-    }
-
-    public Integer getTopTextureId() {
-        return topTextureId;
-    }
-
-    public GroundSkeletonConfig setTopTextureId(Integer topTextureId) {
-        this.topTextureId = topTextureId;
         return this;
     }
 
@@ -160,10 +160,6 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public Integer getBottomTextureId() {
-        return bottomTextureId;
-    }
-
     public double getSplattingScale() {
         return splattingScale;
     }
@@ -173,42 +169,4 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public void setBottomTextureId(Integer bottomTextureId) {
-        this.bottomTextureId = bottomTextureId;
-    }
-
-    public double getBottomTextureScale() {
-        return bottomTextureScale;
-    }
-
-    public GroundSkeletonConfig setBottomTextureScale(double bottomTextureScale) {
-        this.bottomTextureScale = bottomTextureScale;
-        return this;
-    }
-
-    public Integer getBottomBmId() {
-        return bottomBmId;
-    }
-
-    public GroundSkeletonConfig setBottomBmId(Integer bottomBmId) {
-        this.bottomBmId = bottomBmId;
-        return this;
-    }
-
-    public double getBottomBmScale() {
-        return bottomBmScale;
-    }
-
-    public void setBottomBmScale(double bottomBmScale) {
-        this.bottomBmScale = bottomBmScale;
-    }
-
-    public double getTopTextureScale() {
-        return topTextureScale;
-    }
-
-    public GroundSkeletonConfig setTopTextureScale(double topTextureScale) {
-        this.topTextureScale = topTextureScale;
-        return this;
-    }
 }

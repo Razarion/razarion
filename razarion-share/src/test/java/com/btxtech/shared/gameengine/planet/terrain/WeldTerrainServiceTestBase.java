@@ -30,21 +30,19 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, WaterConfig waterConfig) {
+    protected void setupTerrainTypeService(double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundSkeletonConfig groundSkeletonConfig) {
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
-        if (waterConfig != null) {
-            staticGameConfig.setWaterConfig(waterConfig);
-        } else {
-            staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
+        staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
+        if(groundSkeletonConfig == null) {
+            groundSkeletonConfig = new GroundSkeletonConfig();
+            groundSkeletonConfig.setHeights(toColumnRow(heights));
+            groundSkeletonConfig.setHeightXCount(heights[0].length);
+            groundSkeletonConfig.setHeightYCount(heights.length);
+            groundSkeletonConfig.setSplattings(toColumnRow(splattings));
+            groundSkeletonConfig.setSplattingXCount(splattings[0].length);
+            groundSkeletonConfig.setSplattingYCount(splattings.length);
         }
-        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
-        groundSkeletonConfig.setHeights(toColumnRow(heights));
-        groundSkeletonConfig.setHeightXCount(heights[0].length);
-        groundSkeletonConfig.setHeightYCount(heights.length);
-        groundSkeletonConfig.setSplattings(toColumnRow(splattings));
-        groundSkeletonConfig.setSplattingXCount(splattings[0].length);
-        groundSkeletonConfig.setSplattingYCount(splattings.length);
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();

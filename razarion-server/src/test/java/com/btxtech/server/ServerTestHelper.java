@@ -578,9 +578,9 @@ public class ServerTestHelper {
         groundSkeletonConfig.setSplattingYCount(1);
         groundSkeletonConfig.setSplattings(new double[][]{{0}});
         groundSkeletonConfig.setSplattingId(onePixelImageId);
-        groundSkeletonConfig.setBottomBmId(onePixelImageId);
-        groundSkeletonConfig.setBottomTextureId(onePixelImageId);
-        groundSkeletonConfig.setTopTextureId(onePixelImageId);
+        // TODO groundSkeletonConfig.setBottomBmId(onePixelImageId);
+        // TODO groundSkeletonConfig.setBottomTextureId(onePixelImageId);
+        // TODO groundSkeletonConfig.setTopTextureId(onePixelImageId);
         groundConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         return groundConfig;
     }
