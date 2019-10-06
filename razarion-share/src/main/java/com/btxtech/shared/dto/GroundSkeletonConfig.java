@@ -10,6 +10,9 @@ public class GroundSkeletonConfig {
     private int id;
     private PhongMaterialConfig topTexture;
     private PhongMaterialConfig bottomTexture;
+    private ImageScaleConfig splatting;
+    private double splattingFadeThreshold;
+    private double splattingOffset;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
     @Deprecated
     private double[][] heights;
@@ -17,10 +20,6 @@ public class GroundSkeletonConfig {
     private int heightXCount;
     @Deprecated
     private int heightYCount;
-    private Integer splattingId;
-    private double splattingScale;
-    private double splattingFadeThreshold;
-    private double splattingOffset;
     @Deprecated
     private double splattingGroundBmMultiplicator;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
@@ -54,6 +53,33 @@ public class GroundSkeletonConfig {
 
     public GroundSkeletonConfig setBottomTexture(PhongMaterialConfig bottomTexture) {
         this.bottomTexture = bottomTexture;
+        return this;
+    }
+
+    public ImageScaleConfig getSplatting() {
+        return splatting;
+    }
+
+    public GroundSkeletonConfig setSplatting(ImageScaleConfig splatting) {
+        this.splatting = splatting;
+        return this;
+    }
+
+    public double getSplattingFadeThreshold() {
+        return splattingFadeThreshold;
+    }
+
+    public GroundSkeletonConfig setSplattingFadeThreshold(double splattingFadeThreshold) {
+        this.splattingFadeThreshold = splattingFadeThreshold;
+        return this;
+    }
+
+    public double getSplattingOffset() {
+        return splattingOffset;
+    }
+
+    public GroundSkeletonConfig setSplattingOffset(double splattingOffset) {
+        this.splattingOffset = splattingOffset;
         return this;
     }
 
@@ -124,24 +150,6 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public double getSplattingFadeThreshold() {
-        return splattingFadeThreshold;
-    }
-
-    public GroundSkeletonConfig setSplattingFadeThreshold(double splattingFadeThreshold) {
-        this.splattingFadeThreshold = splattingFadeThreshold;
-        return this;
-    }
-
-    public double getSplattingOffset() {
-        return splattingOffset;
-    }
-
-    public GroundSkeletonConfig setSplattingOffset(double splattingOffset) {
-        this.splattingOffset = splattingOffset;
-        return this;
-    }
-
     public double getSplattingGroundBmMultiplicator() {
         return splattingGroundBmMultiplicator;
     }
@@ -150,23 +158,4 @@ public class GroundSkeletonConfig {
         this.splattingGroundBmMultiplicator = splattingGroundBmMultiplicator;
         return this;
     }
-
-    public Integer getSplattingId() {
-        return splattingId;
-    }
-
-    public GroundSkeletonConfig setSplattingId(Integer splattingId) {
-        this.splattingId = splattingId;
-        return this;
-    }
-
-    public double getSplattingScale() {
-        return splattingScale;
-    }
-
-    public GroundSkeletonConfig setSplattingScale(double splattingScale) {
-        this.splattingScale = splattingScale;
-        return this;
-    }
-
 }

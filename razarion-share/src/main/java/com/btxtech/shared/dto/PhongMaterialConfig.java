@@ -1,17 +1,17 @@
 package com.btxtech.shared.dto;
 
 public class PhongMaterialConfig {
-    private TextureScaleConfig textureScaleConfig;
+    private ImageScaleConfig textureScaleConfig;
     private Integer bumpMapId;
     private double bumpMapDepth;
     private double shininess;
     private double specularStrength;
 
-    public TextureScaleConfig getTextureScaleConfig() {
+    public ImageScaleConfig getTextureScaleConfig() {
         return textureScaleConfig;
     }
 
-    public PhongMaterialConfig setTextureScaleConfig(TextureScaleConfig textureScaleConfig) {
+    public PhongMaterialConfig setTextureScaleConfig(ImageScaleConfig textureScaleConfig) {
         this.textureScaleConfig = textureScaleConfig;
         return this;
     }

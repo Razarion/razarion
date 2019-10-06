@@ -9,7 +9,7 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.dto.TextureScaleConfig;
+import com.btxtech.shared.dto.ImageScaleConfig;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
@@ -131,8 +131,9 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(riPositionLand);
         // Setup ground
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new TextureScaleConfig().setId(14).setScale(50)).setBumpMapId(15).setBumpMapDepth(0.5).setShininess(30).setSpecularStrength(0.5));
-        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new TextureScaleConfig().setId(16).setScale(50)).setBumpMapId(17).setBumpMapDepth(0.5).setShininess(30).setSpecularStrength(0.5));
+        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(14).setScale(50)).setBumpMapId(15).setBumpMapDepth(0.5).setShininess(30).setSpecularStrength(0.5));
+        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(16).setScale(50)).setBumpMapId(17).setBumpMapDepth(0.5).setShininess(30).setSpecularStrength(0.5));
+        groundSkeletonConfig.setSplatting(new ImageScaleConfig().setId(18).setScale(100)).setSplattingFadeThreshold(10).setSplattingOffset(5);
         groundSkeletonConfig.setHeightXCount(3).setHeightYCount(5).setHeights(toColumnRow(new double[][]{
                 {0, 0, 0},
                 {0, 0, 0},

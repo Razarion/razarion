@@ -1,6 +1,6 @@
 package com.btxtech.shared.dto;
 
-public class TextureScaleConfig {
+public class ImageScaleConfig {
     private Integer id;
     private double scale;
 
@@ -8,7 +8,7 @@ public class TextureScaleConfig {
         return id;
     }
 
-    public TextureScaleConfig setId(Integer id) {
+    public ImageScaleConfig setId(Integer id) {
         this.id = id;
         return this;
     }
@@ -17,7 +17,7 @@ public class TextureScaleConfig {
         return scale;
     }
 
-    public TextureScaleConfig setScale(double scale) {
+    public ImageScaleConfig setScale(double scale) {
         this.scale = scale;
         return this;
     }
