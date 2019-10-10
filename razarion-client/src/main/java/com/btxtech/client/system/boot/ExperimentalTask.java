@@ -85,8 +85,8 @@ public class ExperimentalTask extends AbstractStartupTask {
         // TODO groundSkeletonConfig.setBottomBmId(180848);
         // TODO groundSkeletonConfig.setBottomBmDepth(5.04);
         // TODO groundSkeletonConfig.setBottomBmScale(0.025);
-        groundSkeletonConfig.setSplattingId(180846);
-        groundSkeletonConfig.setSplattingScale(0.01);
+        // TODO groundSkeletonConfig.setSplattingId(180846);
+        // TODO groundSkeletonConfig.setSplattingScale(0.01);
         groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
         return groundSkeletonConfig;
     }

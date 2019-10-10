@@ -577,7 +577,7 @@ public class ServerTestHelper {
         groundSkeletonConfig.setSplattingXCount(1);
         groundSkeletonConfig.setSplattingYCount(1);
         groundSkeletonConfig.setSplattings(new double[][]{{0}});
-        groundSkeletonConfig.setSplattingId(onePixelImageId);
+        // TODO groundSkeletonConfig.setSplattingId(onePixelImageId);
         // TODO groundSkeletonConfig.setBottomBmId(onePixelImageId);
         // TODO groundSkeletonConfig.setBottomTextureId(onePixelImageId);
         // TODO groundSkeletonConfig.setTopTextureId(onePixelImageId);

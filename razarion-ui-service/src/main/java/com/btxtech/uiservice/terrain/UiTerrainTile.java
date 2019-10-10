@@ -105,7 +105,7 @@ public class UiTerrainTile {
     }
 
     public Integer getSplattingId() {
-        return groundSkeletonConfig.getSplattingId();
+        return groundSkeletonConfig.getSplatting().getId();
     }
 
     public Integer getBottomTextureId() {
@@ -124,7 +124,7 @@ public class UiTerrainTile {
     }
 
     public double getSplattingScale() {
-        return groundSkeletonConfig.getSplattingScale();
+        return groundSkeletonConfig.getSplatting().getScale();
     }
 
     public double getBottomTextureScale() {
@@ -159,7 +159,8 @@ public class UiTerrainTile {
     }
 
     public double getSplattingGroundBmMultiplicator() {
-        return groundSkeletonConfig.getSplattingGroundBmMultiplicator();
+        // Todo return groundSkeletonConfig.getSplattingGroundBmMultiplicator();
+        return 0;
     }
 
     public void setSlopeSkeletonConfig(SlopeSkeletonConfig skeletonConfig) {

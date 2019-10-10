@@ -20,8 +20,6 @@ public class GroundSkeletonConfig {
     private int heightXCount;
     @Deprecated
     private int heightYCount;
-    @Deprecated
-    private double splattingGroundBmMultiplicator;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
     private double[][] splattings;
     private int splattingXCount;
@@ -147,15 +145,6 @@ public class GroundSkeletonConfig {
 
     public GroundSkeletonConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
         this.specularLightConfig = specularLightConfig;
-        return this;
-    }
-
-    public double getSplattingGroundBmMultiplicator() {
-        return splattingGroundBmMultiplicator;
-    }
-
-    public GroundSkeletonConfig setSplattingGroundBmMultiplicator(double splattingGroundBmMultiplicator) {
-        this.splattingGroundBmMultiplicator = splattingGroundBmMultiplicator;
         return this;
     }
 }

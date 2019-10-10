@@ -113,7 +113,7 @@ public class GroundConfigEntity {
         splattingFractalRoughness = groundConfig.getSplattingFractalRoughness();
         splattingFadeThreshold = groundConfig.getGroundSkeletonConfig().getSplattingFadeThreshold();
         splattingOffset = groundConfig.getGroundSkeletonConfig().getSplattingOffset();
-        splattingGroundBmMultiplicator = groundConfig.getGroundSkeletonConfig().getSplattingGroundBmMultiplicator();
+        // TODO splattingGroundBmMultiplicator = groundConfig.getGroundSkeletonConfig().getSplattingGroundBmMultiplicator();
         splattingXCount = groundConfig.getGroundSkeletonConfig().getSplattingXCount();
         splattingYCount = groundConfig.getGroundSkeletonConfig().getSplattingYCount();
         if (splattings == null) {
@@ -125,8 +125,8 @@ public class GroundConfigEntity {
                 splattings.add(new GroundSplattingEntity(x, y, groundConfig.getGroundSkeletonConfig().getSplattings()[x][y]));
             }
         }
-        splatting = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getSplattingId());
-        splattingScale = groundConfig.getGroundSkeletonConfig().getSplattingScale();
+        splatting = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getSplatting().getId());
+        splattingScale = groundConfig.getGroundSkeletonConfig().getSplatting().getScale();
         heightFractalMin = groundConfig.getHeightFractalMin();
         heightFractalMax = groundConfig.getHeightFractalMax();
         heightFractalClampMin = groundConfig.getHeightFractalClampMin();
@@ -152,7 +152,7 @@ public class GroundConfigEntity {
         // TODO groundSkeletonConfig.setTopTextureScale(topTextureScale);
         groundSkeletonConfig.setSplattingFadeThreshold(splattingFadeThreshold);
         groundSkeletonConfig.setSplattingOffset(splattingOffset);
-        groundSkeletonConfig.setSplattingGroundBmMultiplicator(splattingGroundBmMultiplicator);
+        // TODO groundSkeletonConfig.setSplattingGroundBmMultiplicator(splattingGroundBmMultiplicator);
         // TODO groundSkeletonConfig.setBottomTextureId(PersistenceUtil.getImageIdSafe(bottomTexture));
         // TODO groundSkeletonConfig.setBottomTextureScale(bottomTextureScale);
         // TODO groundSkeletonConfig.setBottomBmId(PersistenceUtil.getImageIdSafe(bottomBm));
@@ -168,8 +168,8 @@ public class GroundConfigEntity {
         groundSkeletonConfig.setSplattings(splattingNodes);
         groundSkeletonConfig.setHeightXCount(heightXCount);
         groundSkeletonConfig.setHeightYCount(heightYCount);
-        groundSkeletonConfig.setSplattingId(PersistenceUtil.getImageIdSafe(splatting));
-        groundSkeletonConfig.setSplattingScale(splattingScale);
+        // TODO groundSkeletonConfig.setSplattingId(PersistenceUtil.getImageIdSafe(splatting));
+        // TODO groundSkeletonConfig.setSplattingScale(splattingScale);
         double[][] heightNodes = new double[heightXCount][heightYCount];
         for (GroundHeightEntity groundHeightEntity : heights) {
             heightNodes[groundHeightEntity.getXIndex()][groundHeightEntity.getYIndex()] = groundHeightEntity.getHeight();
