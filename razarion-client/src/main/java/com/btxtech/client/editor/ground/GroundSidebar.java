@@ -111,7 +111,7 @@ public class GroundSidebar extends LeftSideBarContent {
     public void init() {
         terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
             groundConfigDataBinder.setModel(groundConfig);
-            specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
+            // TODO            specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
 //   TODO         topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> {
 //                groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId);
 //                terrainUiService.onEditorTerrainChanged();
@@ -136,7 +136,7 @@ public class GroundSidebar extends LeftSideBarContent {
     protected void onConfigureDialog() {
         registerSaveButton(() -> terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
             groundConfigDataBinder.setModel(groundConfig);
-            specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
+            // TODO specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
             // TODO terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
         }, exceptionHandler.restErrorHandler("saveGroundConfig failed: ")).saveGroundConfig(groundConfigDataBinder.getModel()));
         enableSaveButton(true);
@@ -152,7 +152,7 @@ public class GroundSidebar extends LeftSideBarContent {
     @EventHandler("fractalSplatting")
     private void fractalSplattingButtonClick(ClickEvent event) {
         GroundConfig groundConfig = groundConfigDataBinder.getModel();
-        FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
+        // TODO     FractalFieldConfig fractalFieldConfig = groundConfig.toSplattingFractalFiledConfig();
 //    TODO    modalDialogManager.show("Splatting Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalFieldConfig, (button, fractalFieldConfig1) -> {
 // TODO           if (button == DialogButton.Button.APPLY) {
 // TODO               GroundConfig groundConfig1 = groundConfigDataBinder.getModel();

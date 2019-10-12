@@ -35,19 +35,10 @@ public class UiTerrainTileTestOld {
                 {0, 10, 0, 0},
                 {0, 0, 0, 0}
         };
-        double[][] splattings = new double[][]{
-                {0.7, 0.8, 0.9},
-                {0.4, 0.5, 0.6},
-                {0.1, 0.2, 0.3}
-        };
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         groundSkeletonConfig.setHeights(toColumnRow(heights));
         groundSkeletonConfig.setHeightXCount(heights[0].length);
         groundSkeletonConfig.setHeightYCount(heights.length);
-        groundSkeletonConfig.setSplattings(toColumnRow(splattings));
-        groundSkeletonConfig.setSplattingXCount(splattings[0].length);
-        groundSkeletonConfig.setSplattingYCount(splattings.length);
-
 
         GroundRenderTask groundRenderTask = EasyMock.createNiceMock(GroundRenderTask.class);
         ModelRenderer modelRenderer = EasyMock.createNiceMock(ModelRenderer.class);

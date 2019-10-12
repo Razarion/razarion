@@ -62,7 +62,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -140,11 +140,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0}}));
-        groundSkeletonConfig.setSplattingXCount(4).setSplattingYCount(3).setSplattings(toColumnRow(new double[][]{
-                {0.7, 0.8, 0.9, 0.5},
-                {0.4, 0.5, 0.6, 0.6},
-                {0.1, 0.2, 0.3, 0.3}}));
-        setupTerrainTypeService(null, slopeSkeletonConfigs, null, null, null, terrainSlopePositions, null, groundSkeletonConfig);
+        setupTerrainTypeService(slopeSkeletonConfigs, null, null, null, terrainSlopePositions, null, groundSkeletonConfig);
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\terrain\\",
                 new Index(0, 0),
@@ -194,7 +190,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeSkeletonConfigs, null, heights, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -263,7 +259,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
 
         // showDisplay();
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));

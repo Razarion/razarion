@@ -117,7 +117,7 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         normals.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getNorms()));
         // TODO tangents.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getTangents()));
         slopeFactors.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getSlopeFactors()));
-        groundSplatting.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getGroundSplattings()));
+        // TODO groundSplatting.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getGroundSplattings()));
 
         waterReflection = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getWaterConfig().getReflectionId(), "uWaterReflection", "uWaterReflectionScale", uiTerrainSlopeTile.getWaterConfig().getReflectionScale());
         waterBumpMap = webGlFacade.createWebGLTexture(uiTerrainSlopeTile.getWaterConfig().getNormMapId(), "uWaterNormMap");

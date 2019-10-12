@@ -11,11 +11,6 @@ public class GroundConfig {
     private double heightFractalMax;
     private double heightFractalClampMin;
     private double heightFractalClampMax;
-    private double splattingFractalRoughness;
-    private double splattingFractalMin;
-    private double splattingFractalMax;
-    private double splattingFractalClampMin;
-    private double splattingFractalClampMax;
 
     public GroundSkeletonConfig getGroundSkeletonConfig() {
         return groundSkeletonConfig;
@@ -63,68 +58,6 @@ public class GroundConfig {
 
     public void setHeightFractalRoughness(double heightFractalRoughness) {
         this.heightFractalRoughness = heightFractalRoughness;
-    }
-
-    public double getSplattingFractalRoughness() {
-        return splattingFractalRoughness;
-    }
-
-    public void setSplattingFractalRoughness(double splattingFractalRoughness) {
-        this.splattingFractalRoughness = splattingFractalRoughness;
-    }
-
-    public double getSplattingFractalMin() {
-        return splattingFractalMin;
-    }
-
-    public void setSplattingFractalMin(double splattingFractalMin) {
-        this.splattingFractalMin = splattingFractalMin;
-    }
-
-    public double getSplattingFractalMax() {
-        return splattingFractalMax;
-    }
-
-    public void setSplattingFractalMax(double splattingFractalMax) {
-        this.splattingFractalMax = splattingFractalMax;
-    }
-
-    public double getSplattingFractalClampMin() {
-        return splattingFractalClampMin;
-    }
-
-    public void setSplattingFractalClampMin(double splattingFractalClampMin) {
-        this.splattingFractalClampMin = splattingFractalClampMin;
-    }
-
-    public double getSplattingFractalClampMax() {
-        return splattingFractalClampMax;
-    }
-
-    public void setSplattingFractalClampMax(double splattingFractalClampMax) {
-        this.splattingFractalClampMax = splattingFractalClampMax;
-    }
-
-    public FractalFieldConfig toSplattingFractalFiledConfig() {
-        FractalFieldConfig fractalFieldConfig = new FractalFieldConfig();
-        fractalFieldConfig.setFractalMin(splattingFractalMin);
-        fractalFieldConfig.setFractalMax(splattingFractalMax);
-        fractalFieldConfig.setClampMin(splattingFractalClampMin);
-        fractalFieldConfig.setClampMax(splattingFractalClampMax);
-        fractalFieldConfig.setXCount(groundSkeletonConfig.getSplattingXCount());
-        fractalFieldConfig.setYCount(groundSkeletonConfig.getSplattingYCount());
-        fractalFieldConfig.setFractalRoughness(splattingFractalRoughness);
-        return fractalFieldConfig;
-    }
-
-    public void fromSplattingFractalFiledConfig(FractalFieldConfig fractalFieldConfig) {
-        splattingFractalMin = fractalFieldConfig.getFractalMin();
-        splattingFractalMax = fractalFieldConfig.getFractalMax();
-        splattingFractalClampMin = fractalFieldConfig.getClampMin();
-        splattingFractalClampMax = fractalFieldConfig.getClampMax();
-        splattingFractalRoughness = fractalFieldConfig.getFractalRoughness();
-        groundSkeletonConfig.setSplattingXCount(fractalFieldConfig.getXCount());
-        groundSkeletonConfig.setSplattingYCount(fractalFieldConfig.getYCount());
     }
 
     public FractalFieldConfig toHeightFractalFiledConfig() {

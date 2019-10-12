@@ -570,13 +570,13 @@ public class ServerTestHelper {
     private GroundConfig setupGroundConfig() throws Exception {
         GroundConfig groundConfig = new GroundConfig();
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
+        // TODO groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
         groundSkeletonConfig.setHeightXCount(1);
         groundSkeletonConfig.setHeightYCount(1);
         groundSkeletonConfig.setHeights(new double[][]{{0}});
-        groundSkeletonConfig.setSplattingXCount(1);
-        groundSkeletonConfig.setSplattingYCount(1);
-        groundSkeletonConfig.setSplattings(new double[][]{{0}});
+        // TODO groundSkeletonConfig.setSplattingXCount(1);
+        // TODO groundSkeletonConfig.setSplattingYCount(1);
+        // TODO groundSkeletonConfig.setSplattings(new double[][]{{0}});
         // TODO groundSkeletonConfig.setSplattingId(onePixelImageId);
         // TODO groundSkeletonConfig.setBottomBmId(onePixelImageId);
         // TODO groundSkeletonConfig.setBottomTextureId(onePixelImageId);

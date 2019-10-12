@@ -43,7 +43,6 @@ public class TerrainTileBuilder {
 
     private List<Vertex> groundPositions = new ArrayList<>();
     private List<Vertex> groundNorms = new ArrayList<>();
-    private List<Double> groundGplattings = new ArrayList<>();
     private MapList<Integer, Vertex> groundSlopeVertices = new MapList<>();
     private MapList<Integer, Vertex> groundSlopeNorms = new MapList<>();
     private Rectangle2D playGround;
@@ -76,7 +75,6 @@ public class TerrainTileBuilder {
 
         terrainTile.setGroundPositions(Vertex.toArray(groundPositions));
         terrainTile.setGroundNorms(Vertex.toArray(groundNorms));
-        terrainTile.setGroundSplattings(groundGplattings.stream().mapToDouble(value -> value).toArray());
 
         Map<Integer, double[]> terrainTileGroundSlopeVertices = new HashMap<>();
         groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, Vertex.toArray(vertices)));
@@ -85,7 +83,7 @@ public class TerrainTileBuilder {
         groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, Vertex.toArray(vertices)));
         terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
 
-       //  TODO groundSlopeVertices.
+        //  TODO groundSlopeVertices.
 
         if (terrainSlopeTileBuilders != null) {
             for (TerrainSlopeTileBuilder terrainSlopeTileBuilder : terrainSlopeTileBuilders) {
@@ -95,33 +93,13 @@ public class TerrainTileBuilder {
         return terrainTile;
     }
 
-    public void addTriangleCorner(Vertex vertex, Vertex norm, double splatting, Integer slopeId) {
+    public void addTriangleCorner(Vertex vertex, Vertex norm, Integer slopeId) {
         if (slopeId != null) {
             groundSlopeVertices.put(slopeId, vertex);
             groundSlopeNorms.put(slopeId, norm);
         } else {
             groundPositions.add(vertex);
             groundNorms.add(norm);
-            groundGplattings.add(splatting);
-        }
-    }
-
-    public double interpolateSplattin(DecimalPosition absolutePosition) {
-        Index bottomLeft = TerrainUtil.toNode(absolutePosition);
-        DecimalPosition offset = absolutePosition.divide(TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH).sub(new DecimalPosition(bottomLeft));
-
-        Triangle2d triangle1 = new Triangle2d(new DecimalPosition(0, 0), new DecimalPosition(1, 0), new DecimalPosition(0, 1));
-        double splattingBR = getSplatting(bottomLeft.getX() + 1, bottomLeft.getY());
-        double splattingTL = getSplatting(bottomLeft.getX(), bottomLeft.getY() + 1);
-        if (triangle1.isInside(offset)) {
-            Vertex weight = triangle1.interpolate(offset);
-            double splattingBL = getSplatting(bottomLeft.getX(), bottomLeft.getY());
-            return weight.getX() * splattingBL + weight.getY() * splattingBR + weight.getZ() * splattingTL;
-        } else {
-            Triangle2d triangle2 = new Triangle2d(new DecimalPosition(1, 0), new DecimalPosition(1, 1), new DecimalPosition(0, 1));
-            Vertex weight = triangle2.interpolate(offset);
-            double splattingTR = getSplatting(bottomLeft.getX() + 1, bottomLeft.getY() + 1);
-            return weight.getX() * splattingBR + weight.getY() * splattingTR + weight.getZ() * splattingTL;
         }
     }
 
@@ -154,9 +132,9 @@ public class TerrainTileBuilder {
         DecimalPosition positionC = vertexC.toXY();
         Vertex norm = vertexA.cross(vertexB, vertexC).normalize(1.0);
 
-        addTriangleCorner(vertexA, interpolateNorm(positionA, norm), interpolateSplattin(positionA), slopeId);
-        addTriangleCorner(vertexB, interpolateNorm(positionB, norm), interpolateSplattin(positionB), slopeId);
-        addTriangleCorner(vertexC, interpolateNorm(positionC, norm), interpolateSplattin(positionC), slopeId);
+        addTriangleCorner(vertexA, interpolateNorm(positionA, norm), slopeId);
+        addTriangleCorner(vertexB, interpolateNorm(positionB, norm), slopeId);
+        addTriangleCorner(vertexC, interpolateNorm(positionC, norm), slopeId);
     }
 
     public TerrainWaterTileBuilder getTerrainWaterTileBuilder() {
@@ -184,10 +162,6 @@ public class TerrainTileBuilder {
     public void insertDisplayHeight(Index nodeIndex, double height) {
         Index relativeNodeIndex = new Index(nodeIndex.getX() - TerrainUtil.toNodeIndex(terrainTileIndex.getX()), nodeIndex.getY() - TerrainUtil.toNodeIndex(terrainTileIndex.getY()));
         // TODO terrainTile.setDisplayHeight(TerrainUtil.filedToArrayNodeIndex(relativeNodeIndex), height);
-    }
-
-    public double getSplatting(int xNode, int yNode) {
-        return groundSkeletonConfig.getSplattings()[CollectionUtils.getCorrectedIndex(xNode, groundSkeletonConfig.getSplattingXCount())][CollectionUtils.getCorrectedIndexInvert(yNode, groundSkeletonConfig.getSplattingYCount())];
     }
 
     public Vertex setupVertex(int x, int y, double additionHeight) {

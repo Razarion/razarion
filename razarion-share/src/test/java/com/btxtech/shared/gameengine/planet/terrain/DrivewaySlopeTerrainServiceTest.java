@@ -181,6 +181,6 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setRadius(5));
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
     }
 }

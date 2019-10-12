@@ -73,7 +73,7 @@ public class BigTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setPlayGround(new Rectangle2D(50, 50, 5000, 5000));
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, null, heights, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeSkeletonConfigs, null, heights, planetConfig, terrainSlopePositions, null, null);
     }
 
 

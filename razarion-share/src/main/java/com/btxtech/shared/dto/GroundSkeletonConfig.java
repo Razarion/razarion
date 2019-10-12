@@ -20,12 +20,6 @@ public class GroundSkeletonConfig {
     private int heightXCount;
     @Deprecated
     private int heightYCount;
-    // errai: setter and getter must be available for arrays.Otherwise the array is always null
-    private double[][] splattings;
-    private int splattingXCount;
-    private int splattingYCount;
-    @Deprecated
-    private SpecularLightConfig specularLightConfig;
 
     public GroundSkeletonConfig setId(int id) {
         this.id = id;
@@ -112,39 +106,4 @@ public class GroundSkeletonConfig {
         return this;
     }
 
-    public double[][] getSplattings() {
-        return splattings;
-    }
-
-    public GroundSkeletonConfig setSplattings(double[][] splattings) {
-        this.splattings = splattings;
-        return this;
-    }
-
-    public int getSplattingXCount() {
-        return splattingXCount;
-    }
-
-    public GroundSkeletonConfig setSplattingXCount(int splattingXCount) {
-        this.splattingXCount = splattingXCount;
-        return this;
-    }
-
-    public int getSplattingYCount() {
-        return splattingYCount;
-    }
-
-    public GroundSkeletonConfig setSplattingYCount(int splattingYCount) {
-        this.splattingYCount = splattingYCount;
-        return this;
-    }
-
-    public SpecularLightConfig getSpecularLightConfig() {
-        return specularLightConfig;
-    }
-
-    public GroundSkeletonConfig setSpecularLightConfig(SpecularLightConfig specularLightConfig) {
-        this.specularLightConfig = specularLightConfig;
-        return this;
-    }
 }

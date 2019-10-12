@@ -337,9 +337,9 @@ public class ScenarioService implements QuestListener {
         groundSkeletonConfig.setHeightXCount(1);
         groundSkeletonConfig.setHeightYCount(1);
         groundSkeletonConfig.setHeights(new double[][]{{0.0}});
-        groundSkeletonConfig.setSplattingXCount(1);
-        groundSkeletonConfig.setSplattingYCount(1);
-        groundSkeletonConfig.setSplattings(new double[][]{{0.0}});
+        // TODO groundSkeletonConfig.setSplattingXCount(1);
+        // TODO groundSkeletonConfig.setSplattingYCount(1);
+        // TODO groundSkeletonConfig.setSplattings(new double[][]{{0.0}});
         return groundSkeletonConfig;
     }
 

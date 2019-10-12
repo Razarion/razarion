@@ -86,11 +86,11 @@ public class GroundConfigEntity {
         groundConfig.setHeightFractalMax(heightFractalMax);
         groundConfig.setHeightFractalClampMin(heightFractalClampMin);
         groundConfig.setHeightFractalClampMax(heightFractalClampMax);
-        groundConfig.setSplattingFractalRoughness(splattingFractalRoughness);
-        groundConfig.setSplattingFractalMin(splattingFractalMin);
-        groundConfig.setSplattingFractalMax(splattingFractalMax);
-        groundConfig.setSplattingFractalClampMin(splattingFractalClampMin);
-        groundConfig.setSplattingFractalClampMax(splattingFractalClampMax);
+        // TODO groundConfig.setSplattingFractalRoughness(splattingFractalRoughness);
+        // TODO groundConfig.setSplattingFractalMin(splattingFractalMin);
+        // TODO groundConfig.setSplattingFractalMax(splattingFractalMax);
+        // TODO groundConfig.setSplattingFractalClampMin(splattingFractalClampMin);
+        // TODO groundConfig.setSplattingFractalClampMax(splattingFractalClampMax);
         return groundConfig;
     }
 
@@ -105,24 +105,24 @@ public class GroundConfigEntity {
         if (specularLightConfigEmbeddable == null) {
             specularLightConfigEmbeddable = new SpecularLightConfigEmbeddable();
         }
-        specularLightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
-        splattingFractalMin = groundConfig.getSplattingFractalMin();
-        splattingFractalMax = groundConfig.getSplattingFractalMax();
-        splattingFractalClampMin = groundConfig.getSplattingFractalClampMin();
-        splattingFractalClampMax = groundConfig.getSplattingFractalClampMax();
-        splattingFractalRoughness = groundConfig.getSplattingFractalRoughness();
+        // TODO specularLightConfigEmbeddable.fromLightConfig(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
+        // TODO splattingFractalMin = groundConfig.getSplattingFractalMin();
+        // TODO splattingFractalMax = groundConfig.getSplattingFractalMax();
+        // TODO splattingFractalClampMin = groundConfig.getSplattingFractalClampMin();
+        // TODO splattingFractalClampMax = groundConfig.getSplattingFractalClampMax();
+        // TODO splattingFractalRoughness = groundConfig.getSplattingFractalRoughness();
         splattingFadeThreshold = groundConfig.getGroundSkeletonConfig().getSplattingFadeThreshold();
         splattingOffset = groundConfig.getGroundSkeletonConfig().getSplattingOffset();
         // TODO splattingGroundBmMultiplicator = groundConfig.getGroundSkeletonConfig().getSplattingGroundBmMultiplicator();
-        splattingXCount = groundConfig.getGroundSkeletonConfig().getSplattingXCount();
-        splattingYCount = groundConfig.getGroundSkeletonConfig().getSplattingYCount();
+        // TODO splattingXCount = groundConfig.getGroundSkeletonConfig().getSplattingXCount();
+        // TODO splattingYCount = groundConfig.getGroundSkeletonConfig().getSplattingYCount();
         if (splattings == null) {
             splattings = new ArrayList<>();
         }
         splattings.clear();
         for (int x = 0; x < splattingXCount; x++) {
             for (int y = 0; y < splattingYCount; y++) {
-                splattings.add(new GroundSplattingEntity(x, y, groundConfig.getGroundSkeletonConfig().getSplattings()[x][y]));
+                // TODO  splattings.add(new GroundSplattingEntity(x, y, groundConfig.getGroundSkeletonConfig().getSplattings()[x][y]));
             }
         }
         splatting = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getSplatting().getId());
@@ -158,14 +158,14 @@ public class GroundConfigEntity {
         // TODO groundSkeletonConfig.setBottomBmId(PersistenceUtil.getImageIdSafe(bottomBm));
         // TODO groundSkeletonConfig.setBottomBmScale(bottomBmScale);
         // TODO groundSkeletonConfig.setBottomBmDepth(bottomBmDepth);
-        groundSkeletonConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
-        groundSkeletonConfig.setSplattingXCount(splattingXCount);
-        groundSkeletonConfig.setSplattingYCount(splattingYCount);
+        // TODO groundSkeletonConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
+        // TODO groundSkeletonConfig.setSplattingXCount(splattingXCount);
+        // TODO groundSkeletonConfig.setSplattingYCount(splattingYCount);
         double[][] splattingNodes = new double[splattingXCount][splattingYCount];
         for (GroundSplattingEntity groundSplattingEntity : splattings) {
             splattingNodes[groundSplattingEntity.getXIndex()][groundSplattingEntity.getYIndex()] = groundSplattingEntity.getSplatting();
         }
-        groundSkeletonConfig.setSplattings(splattingNodes);
+        // TODO groundSkeletonConfig.setSplattings(splattingNodes);
         groundSkeletonConfig.setHeightXCount(heightXCount);
         groundSkeletonConfig.setHeightYCount(heightYCount);
         // TODO groundSkeletonConfig.setSplattingId(PersistenceUtil.getImageIdSafe(splatting));

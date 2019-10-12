@@ -30,10 +30,6 @@ public abstract class TerrainTile {
 
     public native double[] getGroundNorms();
 
-    public native void setGroundSplattings(double[] groundSplattings);
-
-    public native double[] getGroundSplattings();
-
     public Map<Integer, double[]> getGroundSlopeVertices() {
         return groundSlopeVertices;
     }

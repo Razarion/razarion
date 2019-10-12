@@ -19,7 +19,6 @@ public class TestToolTerrainTile extends TerrainTile {
     private double[] groundVertices;
     private double[] groundNorms;
     private double[] groundTangents;
-    private double[] groundSplattings;
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
@@ -49,11 +48,6 @@ public class TestToolTerrainTile extends TerrainTile {
     @Override
     public double[] getGroundNorms() {
         return groundNorms;
-    }
-
-    @Override
-    public double[] getGroundSplattings() {
-        return groundSplattings;
     }
 
     @Override

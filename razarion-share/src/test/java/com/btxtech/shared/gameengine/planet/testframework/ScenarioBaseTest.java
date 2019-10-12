@@ -115,7 +115,7 @@ public class ScenarioBaseTest extends WeldTerrainServiceTestBase {
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(1).setPosition(new DecimalPosition(420, 115))));
         terrainObjectPositions.add((new TerrainObjectPosition().setTerrainObjectId(3).setScale(0.5).setPosition(new DecimalPosition(450, 75))));
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
     }
 
     protected void testScenario(Scenario scenario) {

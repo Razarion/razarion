@@ -15,7 +15,6 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
     private double[] norms;
     private double[] uvs;
     private double[] slopeFactors;
-    private double[] groundSplattings;
 
     @Override
     public void init(int slopeConfigId, int vertexSize, int decimalPositionSize, int scalarSize) {
@@ -24,11 +23,10 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
         norms = new double[vertexSize];
         uvs = new double[decimalPositionSize];
         slopeFactors = new double[scalarSize];
-        groundSplattings = new double[scalarSize];
     }
 
     @Override
-    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double vwX, double vwY, double slopeFactor, double splatting) {
+    public void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double vwX, double vwY, double slopeFactor) {
         int cornerVertexIndex = triangleCornerIndex * Vertex.getComponentsPerVertex();
         vertices[cornerVertexIndex] = vertexX;
         vertices[cornerVertexIndex + 1] = vertexY;
@@ -40,7 +38,6 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
         uvs[cornerDecimalPositionIndex] = vwX;
         uvs[cornerDecimalPositionIndex + 1] = vwY;
         slopeFactors[triangleCornerIndex] = slopeFactor;
-        groundSplattings[triangleCornerIndex] = splatting;
     }
 
     @Override
@@ -76,10 +73,5 @@ public class DevToolTerrainSlopeTile extends TerrainSlopeTile {
     @Override
     public double[] getSlopeFactors() {
         return slopeFactors;
-    }
-
-    @Override
-    public double[] getGroundSplattings() {
-        return groundSplattings;
     }
 }

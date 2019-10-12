@@ -598,22 +598,22 @@ public class WeldTestRenderer {
 //            strokeGradientTriangle(terrainTile.getGroundPositions(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6, color1, color2, color3);
 //        }
 
-        if (terrainTile.getTerrainSlopeTiles() != null) {
-            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
-                for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
-                    int vertexScalarIndex = vertexIndex * 3;
-
-                    double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
-                    double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
-
-                    double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
-
-                    DecimalPosition position = new DecimalPosition(xCorner, yCorner);
-                    DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
-                    gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
-                }
-            }
-        }
+//   TODO    if (terrainTile.getTerrainSlopeTiles() != null) {
+//            for (TerrainSlopeTile terrainSlopeTile : terrainTile.getTerrainSlopeTiles()) {
+//                for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex++) {
+//                    int vertexScalarIndex = vertexIndex * 3;
+//
+//    TODO                double xCorner = terrainSlopeTile.getVertices()[vertexScalarIndex];
+//    TODO                double yCorner = terrainSlopeTile.getVertices()[vertexScalarIndex + 1];
+//
+//     TODO               double splatting = terrainSlopeTile.getGroundSplattings()[vertexIndex];
+//
+//    TODO                DecimalPosition position = new DecimalPosition(xCorner, yCorner);
+//                    DecimalPosition splattingAsPosition = position.getPointWithDistance(MathHelper.QUARTER_RADIANT, splatting * 8);
+//                    gc.strokeLine(position.getX(), position.getY(), splattingAsPosition.getX(), splattingAsPosition.getY());
+//                }
+//            }
+//        }
     }
 
     private void drawTerrainWaterTile(TerrainWaterTile terrainWaterTile) {

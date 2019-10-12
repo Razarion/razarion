@@ -21,7 +21,6 @@ public class TestTerrainTile extends TerrainTile {
     private int indexY;
     private double[] groundVertices;
     private double[] groundNorms;
-    private double[] groundSplattings;
     private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
     private double landWaterProportion;
     private TestTerrainNode[][] testTerrainNodes;
@@ -62,16 +61,6 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public void setGroundNorms(double[] groundNorms) {
         this.groundNorms = groundNorms;
-    }
-
-    @Override
-    public double[] getGroundSplattings() {
-        return groundSplattings;
-    }
-
-    @Override
-    public void setGroundSplattings(double[] groundSplattings) {
-        this.groundSplattings = groundSplattings;
     }
 
     @Override

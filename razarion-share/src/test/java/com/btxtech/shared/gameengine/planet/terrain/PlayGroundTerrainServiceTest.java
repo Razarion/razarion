@@ -111,7 +111,7 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setPlayGround(new Rectangle2D(50, 50, 200, 200));
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 2, 2));
 
-        setupTerrainTypeService(splattings, slopeSkeletonConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
     }
 
 }

@@ -19,12 +19,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testGroundTileGeneration1() {
         // Run test
-        setupTerrainTypeService(new double[][]{
-                {0.0, 0.0, 0.0},
-                {1.0, 0.0, 0.0},
-                {0.0, 0.0, 1.0},
-                {0.0, 0.0, 0.0},
-        }, null, null, new double[][]{
+        setupTerrainTypeService(null, null, new double[][]{
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
@@ -50,12 +45,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testGroundTileGeneration2() {
         // Run test
-        setupTerrainTypeService(new double[][]{
-                {0.0, 0.0, 0.0},
-                {0.0, 0.5, 0.8},
-                {0.0, 0.1, 0.0},
-                {0.0, 0.0, 0.3},
-        }, null, null, new double[][]{
+        setupTerrainTypeService(null, null, new double[][]{
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
@@ -83,12 +73,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 20, 20));
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 3200, 3200));
 
-        setupTerrainTypeService(new double[][]{
-                {0.0, 0.0, 0.0},
-                {0.0, 0.5, 0.8},
-                {0.0, 0.1, 0.0},
-                {0.0, 0.0, 0.3},
-        }, null, null, new double[][]{
+        setupTerrainTypeService(null, null, new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 0, 0, 0},
@@ -116,12 +101,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setPlayGround(new Rectangle2D(-320, -320, 640, 640));
 
         // Run test
-        setupTerrainTypeService(new double[][]{
-                {0.0, 0.0, 0.0},
-                {0.0, 0.5, 0.8},
-                {0.0, 0.1, 0.0},
-                {0.0, 0.0, 0.3},
-        }, null, null, new double[][]{
+        setupTerrainTypeService(null, null, new double[][]{
                 {4, 0, 0, 0},
                 {0, 1, 0, 0},
                 {0, 0, 0, 0},

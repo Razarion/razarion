@@ -7,8 +7,6 @@ import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -16,7 +14,7 @@ import java.util.logging.Logger;
  */
 @Dependent
 public class TerrainSlopeTileBuilder {
-    private Logger logger = Logger.getLogger(TerrainSlopeTileBuilder.class.getName());
+    // private Logger logger = Logger.getLogger(TerrainSlopeTileBuilder.class.getName());
     @Inject
     private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
@@ -36,8 +34,8 @@ public class TerrainSlopeTileBuilder {
         mesh = new SlopeVertex[xCount][yCount];
     }
 
-    public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor, double splatting) {
-        mesh[x][y] = new SlopeVertex(vertex, uv, uvTermination, slopeFactor, splatting);
+    public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor) {
+        mesh[x][y] = new SlopeVertex(vertex, uv, uvTermination, slopeFactor);
     }
 
     public TerrainSlopeTile generate() {
@@ -70,21 +68,18 @@ public class TerrainSlopeTileBuilder {
 
                     double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
                     double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
-                    double splattingBR = mesh[x + 1][y].getSplatting();
-                    double splattingTL = mesh[x][y + 1].getSplatting();
 
                     if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
                         int triangleCornerIndex = triangleIndex * 3;
 
                         Vertex normBL = setupNorm(x, y, vertexBL.toXY(), invert);
                         double slopeFactorBL = mesh[x][y].getSlopeFactor();
-                        double splattingBL = mesh[x][y].getSplatting();
 
                         Vertex norm = vertexBL.cross(vertexBR, vertexTL).normalize(1.0);
 
-                        insertTriangleCorner(vertexBL, interpolateNorm ? normBL : norm, uvBL, slopeFactorBL, splattingBL, triangleCornerIndex);
-                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex + 1);
-                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                        insertTriangleCorner(vertexBL, interpolateNorm ? normBL : norm, uvBL, slopeFactorBL, triangleCornerIndex);
+                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, triangleCornerIndex + 1);
+                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, triangleCornerIndex + 2);
                         triangleIndex++;
                     }
 
@@ -93,16 +88,15 @@ public class TerrainSlopeTileBuilder {
 
                         Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY(), invert);
                         double slopeFactorTR = mesh[x + 1][y + 1].getSlopeFactor();
-                        double splattingTR = mesh[x + 1][y + 1].getSplatting();
 
                         Vertex norm = vertexTR.cross(vertexTL, vertexBR).normalize(1.0);
 
-                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, splattingBR, triangleCornerIndex);
-                        insertTriangleCorner(vertexTR, interpolateNorm ? normTR : norm, uvTR, slopeFactorTR, splattingTR, triangleCornerIndex + 1);
-                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, splattingTL, triangleCornerIndex + 2);
+                        insertTriangleCorner(vertexBR, interpolateNorm ? normBR : norm, uvBR, slopeFactorBR, triangleCornerIndex);
+                        insertTriangleCorner(vertexTR, interpolateNorm ? normTR : norm, uvTR, slopeFactorTR, triangleCornerIndex + 1);
+                        insertTriangleCorner(vertexTL, interpolateNorm ? normTL : norm, uvTL, slopeFactorTL, triangleCornerIndex + 2);
                         triangleIndex++;
                     }
-                }catch (Throwable t) {
+                } catch (Throwable t) {
                     exceptionHandler.handleException(t);
                 }
             }
@@ -140,8 +134,8 @@ public class TerrainSlopeTileBuilder {
         }
     }
 
-    private void insertTriangleCorner(Vertex vertex, Vertex norm, DecimalPosition uv, double slopeFactor, double splatting, int triangleCornerIndex) {
-        terrainSlopeTile.setTriangleCorner(triangleCornerIndex, vertex.getX(), vertex.getY(), vertex.getZ(), norm.getX(), norm.getY(), norm.getZ(), uv.getX(), uv.getY(), slopeFactor, splatting);
+    private void insertTriangleCorner(Vertex vertex, Vertex norm, DecimalPosition uv, double slopeFactor, int triangleCornerIndex) {
+        terrainSlopeTile.setTriangleCorner(triangleCornerIndex, vertex.getX(), vertex.getY(), vertex.getZ(), norm.getX(), norm.getY(), norm.getZ(), uv.getX(), uv.getY(), slopeFactor);
     }
 
     private class SlopeVertex {
@@ -149,14 +143,12 @@ public class TerrainSlopeTileBuilder {
         private final DecimalPosition uv;
         private final DecimalPosition uvTermination;
         private final double slopeFactor;
-        private final double splatting;
 
-        public SlopeVertex(Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor, double splatting) {
+        public SlopeVertex(Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor) {
             this.vertex = vertex;
             this.uv = uv;
             this.uvTermination = uvTermination;
             this.slopeFactor = slopeFactor;
-            this.splatting = splatting;
         }
 
         public DecimalPosition getUv() {
@@ -177,10 +169,6 @@ public class TerrainSlopeTileBuilder {
 
         public double getSlopeFactor() {
             return slopeFactor;
-        }
-
-        public double getSplatting() {
-            return splatting;
         }
     }
 }

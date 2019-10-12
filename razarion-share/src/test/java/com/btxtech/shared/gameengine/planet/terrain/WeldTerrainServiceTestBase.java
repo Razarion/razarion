@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(double[][] splattings, List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundSkeletonConfig groundSkeletonConfig) {
+    protected void setupTerrainTypeService(List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundSkeletonConfig groundSkeletonConfig) {
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         if(groundSkeletonConfig == null) {
@@ -38,9 +38,6 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
             groundSkeletonConfig.setHeights(toColumnRow(heights));
             groundSkeletonConfig.setHeightXCount(heights[0].length);
             groundSkeletonConfig.setHeightYCount(heights.length);
-            groundSkeletonConfig.setSplattings(toColumnRow(splattings));
-            groundSkeletonConfig.setSplattingXCount(splattings[0].length);
-            groundSkeletonConfig.setSplattingYCount(splattings.length);
         }
         staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);

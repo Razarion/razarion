@@ -138,7 +138,8 @@ public class UiTerrainTile {
     }
 
     public SpecularLightConfig getSpecularLightConfig() {
-        return groundSkeletonConfig.getSpecularLightConfig();
+        // TODO rreturn groundSkeletonConfig.getSpecularLightConfig();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public double getBottomBmDepth() {

@@ -72,9 +72,9 @@ public class ExperimentalTask extends AbstractStartupTask {
 
     private GroundSkeletonConfig defaultGroundSkeletonConfig() {
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        groundSkeletonConfig.setSplattingXCount(1);
-        groundSkeletonConfig.setSplattingYCount(1);
-        groundSkeletonConfig.setSplattings(new double[][]{{1, 1}, {1, 1}});
+        // TODO groundSkeletonConfig.setSplattingXCount(1);
+        // TODO groundSkeletonConfig.setSplattingYCount(1);
+        // TODO groundSkeletonConfig.setSplattings(new double[][]{{1, 1}, {1, 1}});
         groundSkeletonConfig.setHeightXCount(1);
         groundSkeletonConfig.setHeightYCount(1);
         groundSkeletonConfig.setHeights(new double[][]{{1, 1}, {1, 1}});
@@ -87,7 +87,7 @@ public class ExperimentalTask extends AbstractStartupTask {
         // TODO groundSkeletonConfig.setBottomBmScale(0.025);
         // TODO groundSkeletonConfig.setSplattingId(180846);
         // TODO groundSkeletonConfig.setSplattingScale(0.01);
-        groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
+        // TODO groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
         return groundSkeletonConfig;
     }
 

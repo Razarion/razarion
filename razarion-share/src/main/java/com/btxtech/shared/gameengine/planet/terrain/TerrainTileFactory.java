@@ -115,7 +115,7 @@ public class TerrainTileFactory {
         Vertex normTR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, topYNode, null);
         Vertex normTL = terrainTileBuilder.addGroundSkeletonNorm(xNode, topYNode, null);
 
-        addTerrainRectangle(terrainTileBuilder, xNode, yNode, rightXNode, topYNode, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, slopeId);
+        addTerrainRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, slopeId);
     }
 
     private void addDrivewayTerrainRectangle(Index absoluteNodeIndex, TerrainShapeNode terrainShapeNode, Integer slopeId, TerrainTileBuilder terrainTileBuilder) {
@@ -143,23 +143,18 @@ public class TerrainTileFactory {
         Vertex normTR = terrainTileBuilder.addGroundSkeletonNorm(rightXNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(1, 1)));
         Vertex normTL = terrainTileBuilder.addGroundSkeletonNorm(xNode, topYNode, setupDrivewayGroundNorm(terrainShapeNode, new DecimalPosition(0, 1)));
 
-        addTerrainRectangle(terrainTileBuilder, xNode, yNode, rightXNode, topYNode, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, slopeId);
+        addTerrainRectangle(terrainTileBuilder, vertexBL, vertexBR, vertexTR, vertexTL, normBL, normBR, normTR, normTL, slopeId);
     }
 
-    private void addTerrainRectangle(TerrainTileBuilder terrainTileBuilder, int xNode, int yNode, int rightXNode, int topYNode, Vertex vertexBL, Vertex vertexBR, Vertex vertexTR, Vertex vertexTL, Vertex normBL, Vertex normBR, Vertex normTR, Vertex normTL, Integer slopeId) {
-        double splattingBL = terrainTileBuilder.getSplatting(xNode, yNode);
-        double splattingBR = terrainTileBuilder.getSplatting(rightXNode, yNode);
-        double splattingTR = terrainTileBuilder.getSplatting(rightXNode, topYNode);
-        double splattingTL = terrainTileBuilder.getSplatting(xNode, topYNode);
-
+    private void addTerrainRectangle(TerrainTileBuilder terrainTileBuilder, Vertex vertexBL, Vertex vertexBR, Vertex vertexTR, Vertex vertexTL, Vertex normBL, Vertex normBR, Vertex normTR, Vertex normTL, Integer slopeId) {
         // Triangle 1
-        terrainTileBuilder.addTriangleCorner(vertexBL, normBL, splattingBL, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexBR, normBR, splattingBR, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexTL, normTL, splattingTL, slopeId);
+        terrainTileBuilder.addTriangleCorner(vertexBL, normBL, slopeId);
+        terrainTileBuilder.addTriangleCorner(vertexBR, normBR, slopeId);
+        terrainTileBuilder.addTriangleCorner(vertexTL, normTL, slopeId);
         // Triangle 2
-        terrainTileBuilder.addTriangleCorner(vertexBR, normBR, splattingBR, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexTR, normTR, splattingTR, slopeId);
-        terrainTileBuilder.addTriangleCorner(vertexTL, normTL, splattingTL, slopeId);
+        terrainTileBuilder.addTriangleCorner(vertexBR, normBR, slopeId);
+        terrainTileBuilder.addTriangleCorner(vertexTR, normTR, slopeId);
+        terrainTileBuilder.addTriangleCorner(vertexTL, normTL, slopeId);
     }
 
     private void insertSlopePart(TerrainTileBuilder terrainTileBuilder, TerrainShapeTile terrainShapeTile) {
@@ -202,7 +197,7 @@ public class TerrainTileFactory {
                     uvTermination = new DecimalPosition(uvX, fractionalSlopeSegment.getUvYTermination());
                 }
                 lastPosition = transformedPoint;
-                terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()), terrainTileBuilder.interpolateSplattin(transformedPoint.toXY()));
+                terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()));
             }
             vertexColumn++;
             if (slopeSkeletonConfig.hasWater()) {
