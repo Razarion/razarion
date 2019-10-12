@@ -21,55 +21,62 @@ public class FractalFieldConfig {
         return xCount;
     }
 
-    public void setXCount(int xCount) {
+    public FractalFieldConfig setXCount(int xCount) {
         this.xCount = xCount;
+        return this;
     }
 
     public int getYCount() {
         return yCount;
     }
 
-    public void setYCount(int yCount) {
+    public FractalFieldConfig setYCount(int yCount) {
         this.yCount = yCount;
+        return this;
     }
 
     public double getFractalMin() {
         return fractalMin;
     }
 
-    public void setFractalMin(double fractalMin) {
+    public FractalFieldConfig setFractalMin(double fractalMin) {
         this.fractalMin = fractalMin;
+        return this;
     }
 
     public double getFractalMax() {
         return fractalMax;
     }
 
-    public void setFractalMax(double fractalMax) {
+    public FractalFieldConfig setFractalMax(double fractalMax) {
         this.fractalMax = fractalMax;
+        return this;
     }
 
     public double getFractalRoughness() {
         return fractalRoughness;
     }
 
-    public void setFractalRoughness(double fractalRoughness) {
+    public FractalFieldConfig setFractalRoughness(double fractalRoughness) {
         this.fractalRoughness = fractalRoughness;
+        return this;
     }
 
     public Double getClampMin() {
         return clampMin;
     }
 
-    public void setClampMin(Double clampMin) {
+    public FractalFieldConfig setClampMin(Double clampMin) {
         this.clampMin = clampMin;
+        return this;
     }
 
     public Double getClampMax() {
         return clampMax;
     }
 
-    public void setClampMax(Double clampMax) {
+    public FractalFieldConfig setClampMax(Double clampMax) {
         this.clampMax = clampMax;
+        return this;
     }
 }
