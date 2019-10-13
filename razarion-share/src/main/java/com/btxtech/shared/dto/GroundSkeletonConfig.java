@@ -11,6 +11,7 @@ public class GroundSkeletonConfig {
     private PhongMaterialConfig topTexture;
     private PhongMaterialConfig bottomTexture;
     private ImageScaleConfig splatting;
+    private double splattingScale2;
     private double splattingFadeThreshold;
     private double splattingOffset;
     // errai: setter and getter must be available for arrays.Otherwise the array is always null
@@ -54,6 +55,15 @@ public class GroundSkeletonConfig {
 
     public GroundSkeletonConfig setSplatting(ImageScaleConfig splatting) {
         this.splatting = splatting;
+        return this;
+    }
+
+    public double getSplattingScale2() {
+        return splattingScale2;
+    }
+
+    public GroundSkeletonConfig setSplattingScale2(double splattingScale2) {
+        this.splattingScale2 = splattingScale2;
         return this;
     }
 
