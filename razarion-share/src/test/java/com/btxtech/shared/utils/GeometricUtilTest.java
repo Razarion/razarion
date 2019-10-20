@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.datatypes.Vertex;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -135,4 +136,19 @@ public class GeometricUtilTest {
         GeometricUtilTest.assertIndices(positions, actual);
     }
 
+    @Test
+    public void isTriangleValid() {
+        // Negative tests
+        Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(0, 0, 0), new Vertex(0, 0, 0), new Vertex(0, 0, 0)));
+        Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(1, 1, 1), new Vertex(1, 1, 1), new Vertex(1, 1, 1)));
+        Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(1, 1, 1), new Vertex(1, 1, 1), new Vertex(0, 0, 0)));
+
+        Assert.assertFalse(GeometricUtil.isTriangleValid(new Vertex(353.37352621418523, 142.99428575323748, 0.0),
+                new Vertex(346.77619643213797, 144.9058795416752, 0.0),
+                new Vertex(353.37352621418523, 142.99428575323748, 0.5)));
+
+
+        // Positive tests
+        Assert.assertTrue(GeometricUtil.isTriangleValid(new Vertex(1, 0, 0), new Vertex(0, 1, 0), new Vertex(0, 0, 0)));
+    }
 }

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
+import com.btxtech.shared.utils.GeometricUtil;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -59,6 +60,12 @@ public class TerrainSlopeTileBuilder {
                         continue;
                     }
 
+                    boolean triangle1Valid = GeometricUtil.isTriangleValid(vertexBL, vertexBR, vertexTL);
+                    boolean triangle2Valid = GeometricUtil.isTriangleValid(vertexBR, vertexTR, vertexTL);
+                    if (!triangle1Valid && !triangle2Valid) {
+                        continue;
+                    }
+
                     Vertex normBR = setupNorm(x + 1, y, vertexBR.toXY(), invert);
                     Vertex normTL = setupNorm(x, y + 1, vertexTL.toXY(), invert);
                     DecimalPosition uvBL = mesh[x][y].getUv();
@@ -69,7 +76,7 @@ public class TerrainSlopeTileBuilder {
                     double slopeFactorBR = mesh[x + 1][y].getSlopeFactor();
                     double slopeFactorTL = mesh[x][y + 1].getSlopeFactor();
 
-                    if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
+                    if (triangle1Valid) {
                         int triangleCornerIndex = triangleIndex * 3;
 
                         Vertex normBL = setupNorm(x, y, vertexBL.toXY(), invert);
@@ -83,7 +90,7 @@ public class TerrainSlopeTileBuilder {
                         triangleIndex++;
                     }
 
-                    if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
+                    if (triangle2Valid) {
                         int triangleCornerIndex = triangleIndex * 3;
 
                         Vertex normTR = setupNorm(x + 1, y + 1, vertexTR.toXY(), invert);
@@ -105,20 +112,25 @@ public class TerrainSlopeTileBuilder {
     }
 
     private Vertex setupNorm(int x, int y, DecimalPosition absolutePosition, boolean swap) {
-        Vertex vertical;
+        Vertex verticalUnnormed;
         if (y == 0) {
             // Ground skeleton not respected
             // Outer take norm from ground
             // return terrainTileBuilder.interpolateNorm(absolutePosition, Vertex.Z_NORM);
-            vertical = mesh[x][y + 1].getVertex().sub(mesh[x][0].getVertex());
+            verticalUnnormed = mesh[x][y + 1].getVertex().sub(mesh[x][0].getVertex());
         } else if (y == yCount - 1) {
             // Ground skeleton no respected
             // Inner take norm from ground
             // return terrainTileBuilder.interpolateNorm(absolutePosition, Vertex.Z_NORM);
-            vertical = mesh[x][y].getVertex().sub(mesh[x][y - 1].getVertex());
+            verticalUnnormed = mesh[x][y].getVertex().sub(mesh[x][y - 1].getVertex());
         } else {
-            vertical = mesh[x][y + 1].getVertex().sub(mesh[x][y - 1].getVertex());
+            verticalUnnormed = mesh[x][y + 1].getVertex().sub(mesh[x][y - 1].getVertex());
         }
+        if (verticalUnnormed.magnitude() == 0.0) {
+            // Driveway bottom -> all triangles are squashed
+            return Vertex.Z_NORM;
+        }
+        Vertex vertical = verticalUnnormed.normalize(1);
 
         Vertex east = mesh[x + 1][y].getVertex();
         Vertex west = mesh[x - 1][y].getVertex();

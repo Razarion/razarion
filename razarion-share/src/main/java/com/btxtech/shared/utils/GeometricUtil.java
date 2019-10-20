@@ -296,4 +296,12 @@ public class GeometricUtil {
         return plane;
     }
 
+    public static boolean isTriangleValid(Vertex a, Vertex b, Vertex c) {
+        return isTriangleValid(a, b, c, 0.001);
+    }
+
+    public static boolean isTriangleValid(Vertex a, Vertex b, Vertex c, double minDelta) {
+        return !a.equalsDelta(b, minDelta) && !a.equalsDelta(c, minDelta) && !b.equalsDelta(c, minDelta);
+    }
+
 }
