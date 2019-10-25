@@ -12,9 +12,13 @@ import com.btxtech.shared.datatypes.shape.VertexContainerBuffer;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.shared.utils.Shape3DUtils;
 import com.btxtech.test.TestHelper;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -392,6 +396,26 @@ public class ColladaConverterTest {
         assertTimeValueSample(modelMatrixAnimation, createTvs(41L, 0), createTvs(10416L, 360));
 
     }
+
+    @Test
+    public void generateShapeThreeJs() throws Exception {
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(
+                TestHelper.readStringFromFile("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\HelperCube.dae"),
+                new TestMapper(null, null)
+        );
+        List<VertexContainerBuffer> vertexContainerBuffer = shape3DBuilder.createVertexContainerBuffer(1);
+        String directorname = "C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\shapes-3d.json";
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);;
+            objectMapper.writeValue(new File(directorname),  vertexContainerBuffer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("generateShapeThreeJs(): " + directorname);
+
+    }
+
 
     private void assertTimeValueSample(ModelMatrixAnimation modelMatrixAnimation, TimeValueSample... expectedTimeValueSamples) {
         Assert.assertEquals(expectedTimeValueSamples.length, modelMatrixAnimation.getTimeValueSamples().size());

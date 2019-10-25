@@ -9,14 +9,19 @@ import org.junit.Assert;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Beat
@@ -130,6 +135,20 @@ public class TestHelper {
             double[] array = (double[]) ois.readObject();
             ois.close();
             return array;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String readStringFromFile(String filePath) {
+        try {
+            StringBuilder contentBuilder = new StringBuilder();
+            try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
+                stream.forEach(s -> contentBuilder.append(s).append("\n"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return contentBuilder.toString();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

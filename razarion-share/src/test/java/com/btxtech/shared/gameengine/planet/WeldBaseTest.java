@@ -7,6 +7,7 @@ import com.btxtech.shared.cdimock.TestSimpleScheduledFuture;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.gameengine.InventoryTypeService;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -328,8 +329,10 @@ public class WeldBaseTest {
     }
 
     public void exportTriangles(String directorname, Index... terrainTileIndices) {
+        // Export TerrainTile
         AssertTerrainTile.saveTerrainTiles(Arrays.stream(terrainTileIndices).map(terrainTileIndex -> getTerrainService().generateTerrainTile(terrainTileIndex)).collect(Collectors.toList()),
                 "terrain-tiles.json", directorname);
+        // Export StaticGameConfig
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);;
@@ -337,9 +340,7 @@ public class WeldBaseTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         System.out.println("exportTriangles(): " + new File(directorname));
-
     }
 
     protected SlopeNode[][] toColumnRow(SlopeNode[][] rowColumn) {
