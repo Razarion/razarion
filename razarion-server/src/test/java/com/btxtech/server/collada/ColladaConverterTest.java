@@ -400,15 +400,19 @@ public class ColladaConverterTest {
     @Test
     public void generateShapeThreeJs() throws Exception {
         Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(
-                TestHelper.readStringFromFile("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\HelperCube.dae"),
+                TestHelper.readStringFromFile("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Bush01.dae"),
                 new TestMapper(null, null)
         );
-        List<VertexContainerBuffer> vertexContainerBuffer = shape3DBuilder.createVertexContainerBuffer(1);
+        int shapeId = 1;
+        ThreeJsShape threeJsShape = new ThreeJsShape();
+        threeJsShape.shape3D = shape3DBuilder.createShape3D(shapeId);
+        threeJsShape.vertexContainerBuffer = shape3DBuilder.createVertexContainerBuffer(shapeId);
         String directorname = "C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\shapes-3d.json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);;
-            objectMapper.writeValue(new File(directorname),  vertexContainerBuffer);
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+            ;
+            objectMapper.writeValue(new File(directorname), threeJsShape);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -416,6 +420,18 @@ public class ColladaConverterTest {
 
     }
 
+    private static class ThreeJsShape{
+        private Shape3D shape3D;
+        private List<VertexContainerBuffer> vertexContainerBuffer;
+
+        public Shape3D getShape3D() {
+            return shape3D;
+        }
+
+        public List<VertexContainerBuffer> getVertexContainerBuffer() {
+            return vertexContainerBuffer;
+        }
+    }
 
     private void assertTimeValueSample(ModelMatrixAnimation modelMatrixAnimation, TimeValueSample... expectedTimeValueSamples) {
         Assert.assertEquals(expectedTimeValueSamples.length, modelMatrixAnimation.getTimeValueSamples().size());
