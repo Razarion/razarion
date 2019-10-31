@@ -122,7 +122,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {GameTestHelper.createSlopeNode(1.5, 2.8, 1)}
         };
         riConfig.setSlopeNodes(toColumnRow(riSlopeNodes)).setInterpolateNorm(false);
-        riConfig.setSlopeTextureId(12).setSlopeBumpMapId(13).setSlopeTextureScale(16).setSlopeBumpMapDepth(0.5).setSlopeShininess(3.0).setSlopeSpecularStrength(0.5);
+        riConfig.setSlopeTextureId(12).setSlopeBumpMapId(13).setSlopeTextureScale(16).setSlopeBumpMapDepth(0.5).setSlopeShininess(20.0).setSlopeSpecularStrength(0.5);
         riConfig.setGroundTextureId(1).setGroundTextureScale(8.0).setGroundBumpMapId(2).setGroundBumpMapDepth(0.5).setGroundShininess(3.0).setGroundSpecularStrength(0.5);
         // TODO remove
         riConfig.setSlopeSplattingId(19).setSlopeSplattingScale1(50.0).setSlopeSplattingScale2(500.0).setSlopeSplattingOffset(0.5).setSlopeSplattingFadeThreshold(0.5);
@@ -139,9 +139,9 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(riPositionLand);
         // Setup ground
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(14).setScale(50)).setBumpMapId(15).setBumpMapDepth(0.5).setShininess(3).setSpecularStrength(0.5));
-        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(16).setScale(50)).setBumpMapId(17).setBumpMapDepth(0.5).setShininess(30).setSpecularStrength(0.5));
-        groundSkeletonConfig.setSplatting(new ImageScaleConfig().setId(18).setScale(50)).setSplattingScale2(1000).setSplattingFadeThreshold(0.05).setSplattingOffset(0.5);
+        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(14).setScale(80)).setBumpMapId(15).setBumpMapDepth(0.5).setShininess(3).setSpecularStrength(0.5));
+        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(16).setScale(100)).setBumpMapId(17).setBumpMapDepth(0.5).setShininess(3).setSpecularStrength(0.5));
+        groundSkeletonConfig.setSplatting(new ImageScaleConfig().setId(18).setScale(50)).setSplattingScale2(1000).setSplattingFadeThreshold(0.2).setSplattingOffset(0.5);
         groundSkeletonConfig.setHeightXCount(3).setHeightYCount(5).setHeights(toColumnRow(new double[][]{
                 {0, 0, 0},
                 {0, 0, 0},
