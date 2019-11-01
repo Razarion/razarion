@@ -400,7 +400,7 @@ public class ColladaConverterTest {
     @Test
     public void generateShapeThreeJs() throws Exception {
         Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(
-                TestHelper.readStringFromFile("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Bush01.dae"),
+                TestHelper.readStringFromFile("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Plant01.dae"),
                 new TestMapper(null, null)
         );
         int shapeId = 1;

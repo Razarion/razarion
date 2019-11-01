@@ -96,7 +96,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         waterConfig.setSlopeTextureId(8).setSlopeBumpMapId(9).setSlopeTextureScale(43.1).setSlopeBumpMapDepth(0.5).setSlopeShininess(3.0).setSlopeSpecularStrength(0.5);
         waterConfig.setSlopeFoamTextureId(11).setSlopeFoamDistortionId(10).setSlopeFoamAnimationDuration(10.0).setSlopeFoamDistortionStrength(1.0);
         waterConfig.setGroundTextureId(6).setGroundTextureScale(700.0).setGroundBumpMapId(7).setGroundBumpMapDepth(1.0).setGroundSpecularStrength(1.0).setGroundShininess(30.0);
-        waterConfig.setSlopeSplattingId(19).setSlopeSplattingScale1(23.0).setSlopeSplattingScale2(600.0).setSlopeSplattingOffset(0.5).setSlopeSplattingFadeThreshold(0.05);
+        waterConfig.setSlopeSplattingId(19).setSlopeSplattingScale1(23.0).setSlopeSplattingScale2(600.0).setSlopeSplattingOffset(0.55).setSlopeSplattingFadeThreshold(0.05);
         waterConfig.setWaterLevel(-0.10).setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
         // TODO Fresnel disable not working properly
         waterConfig.setWaterShininess(30.0).setWaterSpecularStrength(1.0).setWaterReflectionId(3).setWaterReflectionScale(200.0).setWaterMapScale(40.0).setWaterDistortionId(4).setWaterDistortionStrength(0.05).setWaterBumpMapId(5).setWaterBumpMapDepth(0.5).setWaterTransparency(0.5).setWaterAnimationDuration(30.0).setWaterFresnelOffset(1.0).setWaterFresnelDelta(0.0);
