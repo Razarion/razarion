@@ -16,9 +16,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -399,28 +402,35 @@ public class ColladaConverterTest {
 
     @Test
     public void generateShapeThreeJs() throws Exception {
-        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(
-                TestHelper.readStringFromFile("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Plant01.dae"),
-                new TestMapper(null, null)
-        );
-        int shapeId = 1;
-        ThreeJsShape threeJsShape = new ThreeJsShape();
-        threeJsShape.shape3D = shape3DBuilder.createShape3D(shapeId);
-        threeJsShape.vertexContainerBuffer = shape3DBuilder.createVertexContainerBuffer(shapeId);
-        String directorname = "C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\shapes-3d.json";
+        Map<String, Integer> textures = new HashMap<>();
+        textures.put("Material_001-material", 20);
+        textures.put("Trunk-material", 21);
+        textures.put("Leaves-material", 22);
+        TestMapper testMapper = new TestMapper(textures, null);
+        List<ThreeJsShape> threeJsShapes = new ArrayList<>();
+        threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Plant02.dae", 1, testMapper));
+        threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\PalmTree3.dae", 2, testMapper));
+        String directoryName = "C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\shapes-3d.json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-            ;
-            objectMapper.writeValue(new File(directorname), threeJsShape);
+            objectMapper.writeValue(new File(directoryName), threeJsShapes);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("generateShapeThreeJs(): " + directorname);
+        System.out.println("generateShapeThreeJs(): " + directoryName);
 
     }
 
-    private static class ThreeJsShape{
+    private ThreeJsShape loadShape3D(String fileName, int shapeId, ColladaConverterMapper colladaConverterMapper) throws IOException, SAXException, ParserConfigurationException {
+        ThreeJsShape threeJsShape = new ThreeJsShape();
+        Shape3DBuilder shape3DBuilder = ColladaConverter.createShape3DBuilder(TestHelper.readStringFromFile(fileName), colladaConverterMapper);
+        threeJsShape.shape3D = shape3DBuilder.createShape3D(shapeId);
+        threeJsShape.vertexContainerBuffer = shape3DBuilder.createVertexContainerBuffer(shapeId);
+        return threeJsShape;
+    }
+
+    private static class ThreeJsShape {
         private Shape3D shape3D;
         private List<VertexContainerBuffer> vertexContainerBuffer;
 
