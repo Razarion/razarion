@@ -9,6 +9,8 @@ import com.btxtech.shared.datatypes.shape.AnimationTrigger;
 public interface ColladaConverterMapper {
     Integer getTextureId(String materialId);
 
+    Double getAlphaCutout(String materialId);
+
     boolean isCharacterRepresenting(String materialId);
 
     AnimationTrigger getAnimationTrigger(String animationId);

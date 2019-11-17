@@ -66,6 +66,11 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
+    public Double getAlphaCutout(String materialId) {
+        throw new UnsupportedOperationException("...TODO...");
+    }
+
+    @Override
     public boolean isCharacterRepresenting(String materialId) {
         Boolean characterRepresenting = characterRepresentings.get(materialId);
         return characterRepresenting != null && characterRepresenting;

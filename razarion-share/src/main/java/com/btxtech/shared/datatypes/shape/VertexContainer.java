@@ -17,6 +17,7 @@ public class VertexContainer {
     private Double shininess;
     private Color emission;
     private Integer textureId;
+    private Double alphaCutout;
     private boolean characterRepresenting;
 
     public String getKey() {
@@ -103,6 +104,14 @@ public class VertexContainer {
 
     public Integer getTextureId() {
         return textureId;
+    }
+
+    public Double getAlphaCutout() {
+        return alphaCutout;
+    }
+
+    public void setAlphaCutout(Double alphaCutout) {
+        this.alphaCutout = alphaCutout;
     }
 
     public String getMaterialId() {

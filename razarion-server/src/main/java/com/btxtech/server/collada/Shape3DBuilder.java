@@ -54,6 +54,7 @@ public class Shape3DBuilder {
                     String materialId = vertexContainer.getMaterialId();
                     if (materialId != null) {
                         vertexContainer.setTextureId(colladaConverterMapper.getTextureId(materialId));
+                        vertexContainer.setAlphaCutout(colladaConverterMapper.getAlphaCutout(materialId));
                     }
                     vertexContainer.setCharacterRepresenting(colladaConverterMapper.isCharacterRepresenting(materialId));
                 }
