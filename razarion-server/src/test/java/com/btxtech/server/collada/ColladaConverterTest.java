@@ -410,6 +410,7 @@ public class ColladaConverterTest {
         List<ThreeJsShape> threeJsShapes = new ArrayList<>();
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Plant02.dae", 1, testMapper));
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\PalmTree3.dae", 2, testMapper));
+        threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\HelperSphere4m.dae", 3, testMapper));
         String directoryName = "C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\shapes-3d.json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();

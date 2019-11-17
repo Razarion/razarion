@@ -31,6 +31,7 @@ public class ColladaXml {
     public static final String ELEMENT_EFFECT = "effect";
     public static final String ELEMENT_MESH = "mesh";
     public static final String ELEMENT_SOURCE = "source";
+    public static final String ELEMENT_FLOAT = "float";
     public static final String ELEMENT_FLOAT_ARRAY = "float_array";
     public static final String ELEMENT_NAME_ARRAY = "Name_array";
     public static final String ELEMENT_TECHNIQUE_COMMON = "technique_common";
@@ -46,16 +47,18 @@ public class ColladaXml {
     public static final String ELEMENT_MATRIX = "matrix";
     public static final String ELEMENT_ROTATE = "rotate";
     public static final String ELEMENT_SCALE = "scale";
-    public static final String ELEMENT_TRANSLATE= "translate";
+    public static final String ELEMENT_TRANSLATE = "translate";
     public static final String ELEMENT_LOOKAT = "lookat";
     public static final String ELEMENT_SKEW = "skew";
     public static final String ELEMENT_PROFILE_ = "profile_";
     public static final String ELEMENT_TECHNIQUE = "technique";
     public static final String ELEMENT_LAMBERT = "lambert";
     public static final String ELEMENT_PHONG = "phong";
+    public static final String ELEMENT_BLINN = "blinn";
     public static final String ELEMENT_AMBIENT = "ambient";
     public static final String ELEMENT_DIFFUSE = "diffuse";
     public static final String ELEMENT_SPECULAR = "specular";
+    public static final String ELEMENT_SHININESS = "shininess";
     public static final String ELEMENT_EMISSION = "emission";
     public static final String ELEMENT_ANIMATION = "animation";
     public static final String ELEMENT_INSTANCE_EFFECT = "instance_effect";
@@ -168,6 +171,20 @@ public class ColladaXml {
         return null;
     }
 
+
+    protected Double readElementInnerValueAsDouble(Node node, String... elementNames) {
+        Node chainedChildNode = getChainedChild(node, elementNames);
+        if (chainedChildNode != null && chainedChildNode.getFirstChild() != null) {
+            try {
+                return Double.parseDouble(chainedChildNode.getFirstChild().getNodeValue());
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                throw new ColladaRuntimeException("Error parsing float " + chainedChildNode.getFirstChild().getNodeValue(), e);
+            }
+        } else {
+            return null;
+        }
+    }
 
     protected List<Double> readElementInnerValueAsDoubles(Node node, String... elementNames) {
         Node chainedChildNode = getChainedChild(node, elementNames);

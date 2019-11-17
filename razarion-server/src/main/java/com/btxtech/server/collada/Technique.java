@@ -11,23 +11,38 @@ import java.util.List;
  */
 public class Technique extends ColladaXml {
     private String shaderModel;
+    private Color diffuse;
     private Color specular;
+    private Double shininess;
     private Color emission;
 
     public Technique(Node node) {
-        List<Node> lamberts = getChildren(node, ELEMENT_LAMBERT);
-        if (!lamberts.isEmpty()) {
-            shaderModel = ELEMENT_LAMBERT;
-            readValues(lamberts.get(0));
-        } else {
-            List<Node> phongs = getChildren(node, ELEMENT_PHONG);
-            shaderModel = ELEMENT_PHONG;
-            readValues(phongs.get(0));
-        }
+        getChildren(node, ELEMENT_LAMBERT).forEach(this::readLambertValues);
+        getChildren(node, ELEMENT_PHONG).forEach(this::readPhongValues);
+        getChildren(node, ELEMENT_BLINN).forEach(this::readBlinnValues);
     }
 
-    private void readValues(Node node) {
+    private void readLambertValues(Node node) {
+        shaderModel = ELEMENT_LAMBERT;
+        diffuse = toColor(node, ELEMENT_DIFFUSE, ELEMENT_COLOR);
         specular = toColor(node, ELEMENT_SPECULAR, ELEMENT_COLOR);
+        shininess = readElementInnerValueAsDouble(node, ELEMENT_SHININESS, ELEMENT_FLOAT);
+        emission = toColor(node, ELEMENT_EMISSION, ELEMENT_COLOR);
+    }
+
+    private void readPhongValues(Node node) {
+        shaderModel = ELEMENT_PHONG;
+        diffuse = toColor(node, ELEMENT_DIFFUSE, ELEMENT_COLOR);
+        specular = toColor(node, ELEMENT_SPECULAR, ELEMENT_COLOR);
+        shininess = readElementInnerValueAsDouble(node, ELEMENT_SHININESS, ELEMENT_FLOAT);
+        emission = toColor(node, ELEMENT_EMISSION, ELEMENT_COLOR);
+    }
+
+    private void readBlinnValues(Node node) {
+        shaderModel = ELEMENT_BLINN;
+        diffuse = toColor(node, ELEMENT_DIFFUSE, ELEMENT_COLOR);
+        specular = toColor(node, ELEMENT_SPECULAR, ELEMENT_COLOR);
+        shininess = readElementInnerValueAsDouble(node, ELEMENT_SHININESS, ELEMENT_FLOAT);
         emission = toColor(node, ELEMENT_EMISSION, ELEMENT_COLOR);
     }
 
@@ -43,12 +58,16 @@ public class Technique extends ColladaXml {
         }
     }
 
-    public String getShaderModel() {
-        return shaderModel;
+    public Color getDiffuse() {
+        return diffuse;
     }
 
     public Color getSpecular() {
         return specular;
+    }
+
+    public Double getShininess() {
+        return shininess;
     }
 
     public Color getEmission() {
@@ -59,7 +78,9 @@ public class Technique extends ColladaXml {
     public String toString() {
         return "Technique{" +
                 "shaderModel='" + shaderModel + '\'' +
+                ", diffuse=" + diffuse +
                 ", specular=" + specular +
+                ", shininess=" + shininess +
                 ", emission=" + emission +
                 '}';
     }

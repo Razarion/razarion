@@ -65,7 +65,9 @@ public class NodeScene extends NameIdColladaXml {
             vertexContainer.setMaterialName(materialName);
             vertexContainer.setVerticesCount(vertexContainerBuffer.calculateVertexCount());
             if (effect != null && effect.getTechnique() != null) {
+                vertexContainer.setDiffuse(effect.getTechnique().getDiffuse());
                 vertexContainer.setSpecular(effect.getTechnique().getSpecular());
+                vertexContainer.setShininess(effect.getTechnique().getShininess());
                 vertexContainer.setEmission(effect.getTechnique().getEmission());
             }
             element3DBuilder.addVertexContainer(vertexContainer, vertexContainerBuffer);
