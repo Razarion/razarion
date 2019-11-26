@@ -17,6 +17,7 @@ public class VertexContainer {
     private Double shininess;
     private Color emission;
     private Integer textureId;
+    private Integer bumpMapId;
     private Double alphaCutout;
     private boolean characterRepresenting;
 
@@ -104,6 +105,14 @@ public class VertexContainer {
 
     public Integer getTextureId() {
         return textureId;
+    }
+
+    public Integer getBumpMapId() {
+        return bumpMapId;
+    }
+
+    public void setBumpMapId(Integer bumpMapId) {
+        this.bumpMapId = bumpMapId;
     }
 
     public Double getAlphaCutout() {

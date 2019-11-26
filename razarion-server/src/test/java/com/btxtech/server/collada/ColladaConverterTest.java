@@ -239,8 +239,8 @@ public class ColladaConverterTest {
     public void testTerrainObject1() throws Exception {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 99);
-        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null, null)).createShape3D(111);
-        List<VertexContainerBuffer> vertexContainerBuffers = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null, null)).createVertexContainerBuffer(111);
+        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null, null, null)).createShape3D(111);
+        List<VertexContainerBuffer> vertexContainerBuffers = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/plane1.dae", getClass()), new TestMapper(textures, null, null, null)).createVertexContainerBuffer(111);
         Assert.assertEquals(1, vertexContainerBuffers.size());
 
         Assert.assertNull(shape3D.getModelMatrixAnimations());
@@ -268,10 +268,10 @@ public class ColladaConverterTest {
         Map<String, Integer> textures = new HashMap<>();
         textures.put("Material-material", 101);
         textures.put("Material_002-material", 201);
-        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null, null)).createShape3D(87);
+        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null, null, null)).createShape3D(87);
         Assert.assertNull(shape3D.getModelMatrixAnimations());
         Assert.assertEquals(2, shape3D.getElement3Ds().size());
-        List<VertexContainerBuffer> vertexContainerBuffers = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null, null)).createVertexContainerBuffer(87);
+        List<VertexContainerBuffer> vertexContainerBuffers = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestTerrainObject1.dae", getClass()), new TestMapper(textures, null, null, null)).createVertexContainerBuffer(87);
         Assert.assertEquals(2, vertexContainerBuffers.size());
 
         Element3D plane029 = Shape3DUtils.getElement3D("Plane_029", shape3D);
@@ -323,7 +323,7 @@ public class ColladaConverterTest {
         animationTriggers.put("RotPlane_rotation_euler_X", AnimationTrigger.SINGLE_RUN);
         animationTriggers.put("RotPlane_rotation_euler_Y", AnimationTrigger.SINGLE_RUN);
 
-        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, animationTriggers, null)).createShape3D(76);
+        Shape3D shape3D = ColladaConverter.createShape3DBuilder(TestHelper.resource2Text("/collada/TestAnnimation01.dae", getClass()), new TestMapper(null, null, animationTriggers, null)).createShape3D(76);
         Assert.assertEquals(9, shape3D.getModelMatrixAnimations().size());
         Assert.assertEquals(3, shape3D.getElement3Ds().size());
 
@@ -406,15 +406,19 @@ public class ColladaConverterTest {
         textures.put("Material_001-material", 20);
         textures.put("Trunk-material", 21);
         textures.put("Leaves-material", 22);
+        textures.put("Rock1Material-material", 23);
         Map<String, Double> alphaCutouts = new HashMap<>();
         alphaCutouts.put("Material_001-material", 0.33);
         alphaCutouts.put("Trunk-material", 0.0);
         alphaCutouts.put("Leaves-material", 0.5);
-        TestMapper testMapper = new TestMapper(textures, null, alphaCutouts);
+        Map<String, Integer> bumpMaps = new HashMap<>();
+        bumpMaps.put("Rock1Material-material", 24);
+        TestMapper testMapper = new TestMapper(textures, bumpMaps, null, alphaCutouts);
         List<ThreeJsShape> threeJsShapes = new ArrayList<>();
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Plant02.dae", 1, testMapper));
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\PalmTree3.dae", 2, testMapper));
-        threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\HelperSphere4m.dae", 3, testMapper));
+        // threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\HelperSphere4m.dae", 3, testMapper));
+        threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Rock1.dae", 4, testMapper));
         String directoryName = "C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\shapes-3d.json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -464,11 +468,13 @@ public class ColladaConverterTest {
 
     private class TestMapper implements ColladaConverterMapper {
         private Map<String, Integer> textures;
+        private Map<String, Integer> bumpMaps;
         private Map<String, AnimationTrigger> animationTriggers;
         private Map<String, Double> alphaCutouts;
 
-        public TestMapper(Map<String, Integer> textures, Map<String, AnimationTrigger> animationTriggers, Map<String, Double> alphaCutouts) {
+        public TestMapper(Map<String, Integer> textures, Map<String, Integer> bumpMaps, Map<String, AnimationTrigger> animationTriggers, Map<String, Double> alphaCutouts) {
             this.textures = textures;
+            this.bumpMaps = bumpMaps;
             this.animationTriggers = animationTriggers;
             this.alphaCutouts = alphaCutouts;
         }
@@ -477,6 +483,15 @@ public class ColladaConverterTest {
         public Integer getTextureId(String materialId) {
             if (textures != null) {
                 return textures.get(materialId);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public Integer getBumpMapId(String materialId) {
+            if (bumpMaps != null) {
+                return bumpMaps.get(materialId);
             } else {
                 return null;
             }
