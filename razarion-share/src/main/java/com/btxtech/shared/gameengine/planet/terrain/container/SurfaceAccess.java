@@ -7,11 +7,14 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.utils.InterpolationUtils;
 
+import java.util.logging.Logger;
+
 /**
  * Created by Beat
  * on 19.06.2017.
  */
 public class SurfaceAccess {
+    final private static Logger LOGGER = Logger.getLogger(SurfaceAccess.class.getName());
     private TerrainShape terrainShape;
 
     public SurfaceAccess(TerrainShape terrainShape) {
@@ -25,7 +28,7 @@ public class SurfaceAccess {
     }
 
     public double getInterpolatedZ(DecimalPosition absolutePosition) {
-        return terrainShape.terrainImpactCallback(absolutePosition, new TerrainImpactCallback<Double>() {
+        Double z = terrainShape.terrainImpactCallback(absolutePosition, new TerrainImpactCallback<Double>() {
             @Override
             public Double landNoTile(Index tileIndex) {
                 return interpolateHeightFromGroundSkeletonConfig(absolutePosition);
@@ -93,6 +96,10 @@ public class SurfaceAccess {
                 throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() TerrainShapeSubNode at: " + absolutePosition + " TerrainType: " + terrainShapeNode.getTerrainType());
             }
         });
+        if (z == null) {
+            throw new IllegalArgumentException("SurfaceAccess.getInterpolatedZ() TerrainShapeNode at: " + absolutePosition + "  has no z-position");
+        }
+        return z;
     }
 
     public Vertex getInterpolatedNorm(DecimalPosition absolutePosition) {
