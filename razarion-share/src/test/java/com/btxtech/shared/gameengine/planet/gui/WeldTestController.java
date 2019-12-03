@@ -103,6 +103,7 @@ public class WeldTestController implements Initializable {
     private ScenarioPlaybackController scenarioPlaybackController;
     private int tickCount;
     private List<DecimalPosition> polygon;
+    private List<DecimalPosition> positions;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -189,6 +190,9 @@ public class WeldTestController implements Initializable {
         DecimalPosition position = weldTestRenderer.convertMouseToModel(event);
         if (polygon != null) {
             polygon.add(position);
+        }
+        if (positions != null) {
+            positions.add(position);
         }
         weldTestRenderer.render(scenarioPlaybackController);
         onMousePressedTerrain(position);
@@ -318,8 +322,16 @@ public class WeldTestController implements Initializable {
         return polygon != null && polygon.size() >= 3;
     }
 
+    public boolean renderPositions() {
+        return positions != null && !positions.isEmpty();
+    }
+
     public List<DecimalPosition> getPolygon() {
         return polygon;
+    }
+
+    public List<DecimalPosition> getPositions() {
+        return positions;
     }
 
     public void onTickButton() {
@@ -366,5 +378,22 @@ public class WeldTestController implements Initializable {
             System.out.println(InstanceStringGenerator.generateSlope(polygon));
         }
 
+    }
+
+    public void onPositionsDumpCheck(ActionEvent actionEvent) {
+        if (((CheckBox) actionEvent.getSource()).isSelected()) {
+            positions = new ArrayList<>();
+        } else {
+            positions = null;
+        }
+        weldTestRenderer.render(scenarioPlaybackController);
+    }
+
+    public void onPositionsDumpButton() {
+        if (positions != null) {
+            System.out.println("-------------------- Positions --------------------------------");
+            System.out.println(InstanceStringGenerator.generateSimpleDecimalPositionList(positions));
+        }
+        weldTestRenderer.render(scenarioPlaybackController);
     }
 }

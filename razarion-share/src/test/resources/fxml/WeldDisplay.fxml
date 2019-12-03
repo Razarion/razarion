@@ -107,6 +107,16 @@
                               <Button mnemonicParsing="false" onAction="#onPolygonDumpButton" text="Dump To Consol" />
                            </children>
                         </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="21.0" prefWidth="210.0">
+                           <children>
+                              <CheckBox mnemonicParsing="false" onAction="#onPositionsDumpCheck" text="Position Mode">
+                                 <padding>
+                                    <Insets right="5.0" />
+                                 </padding>
+                              </CheckBox>
+                              <Button mnemonicParsing="false" onAction="#onPositionsDumpButton" text="Dump To Consol" />
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                </content>
