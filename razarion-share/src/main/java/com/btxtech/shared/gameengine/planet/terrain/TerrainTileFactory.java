@@ -370,8 +370,17 @@ public class TerrainTileFactory {
                 try {
                     double z = terrainService.getSurfaceAccess().getInterpolatedZ(new DecimalPosition(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y));
                     NativeMatrix newMatrix = nativeMatrixFactory.createTranslation(nativeTerrainObjectPosition.x, nativeTerrainObjectPosition.y, z);
-                    newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(nativeTerrainObjectPosition.scale, nativeTerrainObjectPosition.scale, nativeTerrainObjectPosition.scale));
-                    newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(nativeTerrainObjectPosition.rotationZ));
+                    if (nativeTerrainObjectPosition.offset != null) {
+                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createTranslation(nativeTerrainObjectPosition.offset.x, nativeTerrainObjectPosition.offset.y, nativeTerrainObjectPosition.offset.z));
+                    }
+                    if (nativeTerrainObjectPosition.scale != null) {
+                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createScale(nativeTerrainObjectPosition.scale.x, nativeTerrainObjectPosition.scale.y, nativeTerrainObjectPosition.scale.z));
+                    }
+                    if (nativeTerrainObjectPosition.rotation != null) {
+                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createXRotation(nativeTerrainObjectPosition.rotation.x));
+                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createYRotation(nativeTerrainObjectPosition.rotation.y));
+                        newMatrix = newMatrix.multiply(nativeMatrixFactory.createZRotation(nativeTerrainObjectPosition.rotation.z));
+                    }
                     terrainTileObjectList.addModel(newMatrix);
                 } catch (Throwable t) {
                     exceptionHandler.handleException(t);

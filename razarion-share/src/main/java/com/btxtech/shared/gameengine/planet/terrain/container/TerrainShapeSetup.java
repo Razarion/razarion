@@ -19,6 +19,7 @@ import com.btxtech.shared.gameengine.planet.pathing.ObstacleTerrainObject;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeTerrainShapeObjectPosition;
+import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeVertex;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Driveway;
 import com.btxtech.shared.gameengine.planet.terrain.slope.Slope;
 import com.btxtech.shared.gameengine.planet.terrain.slope.VerticalSegment;
@@ -29,11 +30,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -724,8 +723,24 @@ public class TerrainShapeSetup {
                     NativeTerrainShapeObjectPosition nativeTerrainShapeObjectPosition = new NativeTerrainShapeObjectPosition();
                     nativeTerrainShapeObjectPosition.x = terrainObjectPosition.getPosition().getX();
                     nativeTerrainShapeObjectPosition.y = terrainObjectPosition.getPosition().getY();
-                    nativeTerrainShapeObjectPosition.scale = terrainObjectPosition.getScale();
-                    nativeTerrainShapeObjectPosition.rotationZ = terrainObjectPosition.getRotationZ();
+                    if (terrainObjectPosition.get_Scale() != null) {
+                        nativeTerrainShapeObjectPosition.scale = new NativeVertex();
+                        nativeTerrainShapeObjectPosition.scale.x = terrainObjectPosition.get_Scale().getX();
+                        nativeTerrainShapeObjectPosition.scale.y = terrainObjectPosition.get_Scale().getY();
+                        nativeTerrainShapeObjectPosition.scale.z = terrainObjectPosition.get_Scale().getZ();
+                    }
+                    if (terrainObjectPosition.getRotation() != null) {
+                        nativeTerrainShapeObjectPosition.rotation = new NativeVertex();
+                        nativeTerrainShapeObjectPosition.rotation.x = terrainObjectPosition.getRotation().getX();
+                        nativeTerrainShapeObjectPosition.rotation.y = terrainObjectPosition.getRotation().getY();
+                        nativeTerrainShapeObjectPosition.rotation.z = terrainObjectPosition.getRotation().getZ();
+                    }
+                    if (terrainObjectPosition.getOffset() != null) {
+                        nativeTerrainShapeObjectPosition.offset = new NativeVertex();
+                        nativeTerrainShapeObjectPosition.offset.x = terrainObjectPosition.getOffset().getX();
+                        nativeTerrainShapeObjectPosition.offset.y = terrainObjectPosition.getOffset().getY();
+                        nativeTerrainShapeObjectPosition.offset.z = terrainObjectPosition.getOffset().getZ();
+                    }
                     nativeTerrainShapeObjectList.positions[positionIndex] = nativeTerrainShapeObjectPosition;
                 }
                 nativeTerrainShapeObjectLists[terrainObjectIdIndex++] = nativeTerrainShapeObjectList;

@@ -10,6 +10,7 @@ import jsinterop.annotations.JsType;
 public class NativeTerrainShapeObjectPosition {
     public double x;
     public double y;
-    public double scale;
-    public double rotationZ;
+    public NativeVertex scale;
+    public NativeVertex rotation;
+    public NativeVertex offset;
 }

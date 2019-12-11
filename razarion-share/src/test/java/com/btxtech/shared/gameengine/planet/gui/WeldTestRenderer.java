@@ -908,8 +908,8 @@ public class WeldTestRenderer {
             if (nativeTerrainShapeObjectList.positions != null) {
                 double radius = terrainTypeService.getTerrainObjectConfig(nativeTerrainShapeObjectList.terrainObjectId).getRadius();
                 Arrays.stream(nativeTerrainShapeObjectList.positions).forEach(nativeTerrainShapeObjectPosition -> {
-                    double correctedRadius = radius * nativeTerrainShapeObjectPosition.scale;
-                    gc.strokeOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
+                    // TODO double correctedRadius = radius * nativeTerrainShapeObjectPosition.scale;
+                    // TODO gc.strokeOval(nativeTerrainShapeObjectPosition.x - correctedRadius, nativeTerrainShapeObjectPosition.y - correctedRadius, 2.0 * correctedRadius, 2.0 * correctedRadius);
                 });
             }
         });

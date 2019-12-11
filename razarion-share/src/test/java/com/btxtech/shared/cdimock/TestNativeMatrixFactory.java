@@ -37,18 +37,18 @@ public class TestNativeMatrixFactory extends NativeMatrixFactory {
     }
 
     @Override
-    public NativeMatrix createXRotation(double rad) {
-        throw new UnsupportedOperationException("Only works between worker and client");
+    public NativeMatrix createXRotation(double x) {
+        return new TestNativeMatrix(Matrix4.createXRotation(x));
     }
 
     @Override
-    public NativeMatrix createYRotation(double rad) {
-        throw new UnsupportedOperationException("Only works between worker and client");
+    public NativeMatrix createYRotation(double y) {
+        return new TestNativeMatrix(Matrix4.createYRotation(y));
     }
 
     @Override
-    public NativeMatrix createZRotation(double rad) {
-        return new TestNativeMatrix(Matrix4.createZRotation(rad));
+    public NativeMatrix createZRotation(double z) {
+        return new TestNativeMatrix(Matrix4.createZRotation(z));
     }
 
     @Override

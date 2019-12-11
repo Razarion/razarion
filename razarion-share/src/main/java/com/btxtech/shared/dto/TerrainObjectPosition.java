@@ -2,6 +2,7 @@ package com.btxtech.shared.dto;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Matrix4;
+import com.btxtech.shared.datatypes.Vertex;
 
 /**
  * Created by Beat
@@ -11,8 +12,9 @@ public class TerrainObjectPosition {
     private Integer id;
     private int terrainObjectId;
     private DecimalPosition position;
-    private double scale;
-    private double rotationZ;
+    private Vertex scale;
+    private Vertex rotation;
+    private Vertex offset;
 
     public int getId() {
         return id;
@@ -45,21 +47,51 @@ public class TerrainObjectPosition {
         return this;
     }
 
-    public double getScale() {
+    public Vertex getRotation() {
+        return rotation;
+    }
+
+    public TerrainObjectPosition setRotation(Vertex rotation) {
+        this.rotation = rotation;
+        return this;
+    }
+
+    public Vertex get_Scale() {
         return scale;
     }
 
-    public TerrainObjectPosition setScale(double scale) {
+    public TerrainObjectPosition setScale(Vertex scale) {
         this.scale = scale;
         return this;
     }
 
-    public double getRotationZ() {
-        return rotationZ;
+    public Vertex getOffset() {
+        return offset;
     }
 
+    public TerrainObjectPosition setOffset(Vertex offset) {
+        this.offset = offset;
+        return this;
+    }
+
+    @Deprecated
+    public double getScale() {
+        return 0;
+    }
+
+    @Deprecated
+    public TerrainObjectPosition setScale(double scale) {
+        this.scale = new Vertex(scale, scale, scale);
+        return this;
+    }
+
+    @Deprecated
+    public double getRotationZ() {
+        return 0;
+    }
+
+    @Deprecated
     public TerrainObjectPosition setRotationZ(double rotationZ) {
-        this.rotationZ = rotationZ;
         return this;
     }
 }

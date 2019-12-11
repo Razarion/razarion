@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SlopeNode;
@@ -148,7 +149,75 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0, 0, 0},
                 {0, 0, 0},
                 {0, 0, 0}}));
-        setupTerrainTypeService(slopeSkeletonConfigs, null, null, null, terrainSlopePositions, null, groundSkeletonConfig);
+        // Terrain Objects
+        List<TerrainObjectConfig> terrainObjectConfigs = new ArrayList<>();
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(1).setInternalName("Palm Tree").setShape3DId(2).setRadius(2));
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setInternalName("Rock").setShape3DId(4).setRadius(2));
+        terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setInternalName("Bush").setShape3DId(1).setRadius(2));
+        List<TerrainObjectPosition> terrainObjectPositions = new ArrayList<>();
+
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(1).setPosition(new DecimalPosition(276.875, 227.350)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(0))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(2).setTerrainObjectId(1).setPosition(new DecimalPosition(319.625, 220.350)).setScale(1.5).setRotation(new Vertex(0, 0, Math.toRadians(56))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(3).setTerrainObjectId(1).setPosition(new DecimalPosition(276.625, 210.350)).setScale(0.7).setRotation(new Vertex(0, 0, Math.toRadians(0))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(4).setTerrainObjectId(1).setPosition(new DecimalPosition(260.875, 175.850)).setScale(1.2).setRotation(new Vertex(0, 0, Math.toRadians(22))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(5).setTerrainObjectId(1).setPosition(new DecimalPosition(287.625, 164.350)).setScale(0.5).setRotation(new Vertex(0, 0, Math.toRadians(0))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(6).setTerrainObjectId(1).setPosition(new DecimalPosition(271.125, 137.100)).setScale(1.1).setRotation(new Vertex(0, 0, Math.toRadians(80))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(7).setTerrainObjectId(1).setPosition(new DecimalPosition(283.125, 106.600)).setScale(0.9).setRotation(new Vertex(0, 0, Math.toRadians(0))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(8).setTerrainObjectId(1).setPosition(new DecimalPosition(258.375, 75.600)).setScale(1.7).setRotation(new Vertex(0, 0, Math.toRadians(180))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(9).setTerrainObjectId(1).setPosition(new DecimalPosition(312.875, 75.100)).setScale(1.1).setRotation(new Vertex(0, 0, Math.toRadians(270))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(10).setTerrainObjectId(1).setPosition(new DecimalPosition(335.125, 89.85)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(22))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(11).setTerrainObjectId(1).setPosition(new DecimalPosition(236.375, 117.350)).setScale(1.2).setRotation(new Vertex(0, 0, Math.toRadians(55))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(12).setTerrainObjectId(1).setPosition(new DecimalPosition(237.375, 159.100)).setScale(0.5).setRotation(new Vertex(0, 0, Math.toRadians(78))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(13).setTerrainObjectId(1).setPosition(new DecimalPosition(244.375, 171.600)).setScale(1.4).setRotation(new Vertex(0, 0, Math.toRadians(24))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(14).setTerrainObjectId(1).setPosition(new DecimalPosition(245.125, 195.100)).setScale(0.3).setRotation(new Vertex(0, 0, Math.toRadians(86))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(15).setTerrainObjectId(1).setPosition(new DecimalPosition(241.125, 209.100)).setScale(1.5).setRotation(new Vertex(0, 0, Math.toRadians(22))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(16).setTerrainObjectId(1).setPosition(new DecimalPosition(271.875, 244.350)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(180))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(17).setTerrainObjectId(1).setPosition(new DecimalPosition(324.125, 243.850)).setScale(1.1).setRotation(new Vertex(0, 0, Math.toRadians(280))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(18).setTerrainObjectId(1).setPosition(new DecimalPosition(334.375, 210.850)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(200))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(19).setTerrainObjectId(1).setPosition(new DecimalPosition(362.875, 174.600)).setScale(1.1).setRotation(new Vertex(0, 0, Math.toRadians(300))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(20).setTerrainObjectId(1).setPosition(new DecimalPosition(363.875, 234.100)).setScale(0.9).setRotation(new Vertex(0, 0, Math.toRadians(312))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(21).setTerrainObjectId(1).setPosition(new DecimalPosition(392.875, 180.350)).setScale(1.3).setRotation(new Vertex(0, 0, Math.toRadians(355))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(22).setTerrainObjectId(1).setPosition(new DecimalPosition(377.375, 209.600)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(18))));
+
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(24).setTerrainObjectId(2).setPosition(new DecimalPosition(304.854, 236.629)).setScale(1.1).setOffset(new Vertex(0, 0, -2)).setRotation(new Vertex(Math.toRadians(0), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(25).setTerrainObjectId(2).setPosition(new DecimalPosition(290.354, 216.629)).setScale(0.5).setOffset(new Vertex(0, 0, 0)).setRotation(new Vertex(Math.toRadians(12), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(311.604, 203.129)).setScale(1.4).setOffset(new Vertex(0, 0, -2)).setRotation(new Vertex(Math.toRadians(180), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(316, 169)).setScale(2).setOffset(new Vertex(0, 0, -5)).setRotation(new Vertex(Math.toRadians(100), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(282, 196)).setScale(2).setOffset(new Vertex(0, 0, -5)).setRotation(new Vertex(Math.toRadians(10), Math.toRadians(180), Math.toRadians(200))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(250.354, 155.629)).setScale(0.3).setOffset(new Vertex(0, 0, 0)).setRotation(new Vertex(Math.toRadians(250), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(253.854, 131.879)).setScale(1.1).setOffset(new Vertex(0, 0, -2)).setRotation(new Vertex(Math.toRadians(1), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(251.354, 102.629)).setScale(0.6).setOffset(new Vertex(0, 0, -1)).setRotation(new Vertex(Math.toRadians(27), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(314.854, 130.879)).setScale(1.3).setOffset(new Vertex(0, 0, -2)).setRotation(new Vertex(Math.toRadians(53), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(298.854, 144.129)).setScale(1).setOffset(new Vertex(0, 0, -1)).setRotation(new Vertex(Math.toRadians(12), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(277.104, 80.629)).setScale(0.6).setOffset(new Vertex(0, 0, -0)).setRotation(new Vertex(Math.toRadians(345), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(296.604, 97.129)).setScale(1.1).setOffset(new Vertex(0, 0, -1)).setRotation(new Vertex(Math.toRadians(2), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(362.354, 213.129)).setScale(0.6).setOffset(new Vertex(0, 0, 0)).setRotation(new Vertex(Math.toRadians(46), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(348.104, 199.379)).setScale(1.1).setOffset(new Vertex(0, 0, -1)).setRotation(new Vertex(Math.toRadians(111), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(345.604, 168.629)).setScale(1.2).setOffset(new Vertex(0, 0, -1)).setRotation(new Vertex(Math.toRadians(288), Math.toRadians(80), Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(23).setTerrainObjectId(2).setPosition(new DecimalPosition(328.354, 189.129)).setScale(0.7).setOffset(new Vertex(0, 0, 0)).setRotation(new Vertex(Math.toRadians(300), Math.toRadians(80), Math.toRadians(20))));
+
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(298.710, 172.610)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(10))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(277.043, 186.610)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(20))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(259.043, 208.610)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(40))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(264.710, 125.610)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(50))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(314.376, 106.276)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(60))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(287.710, 131.276)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(70))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(330.442, 126.20)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(80))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(315.942, 95.950)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(90))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(297.442, 80.450)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(100))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(266.942, 100.45)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(110))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(293.442, 120.45)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(120))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(273.942, 153.95)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(130))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(257.442, 187.95)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(140))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(269.942, 201.45)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(150))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(273.942, 173.70)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(160))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(304.192, 190.70)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(170))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(340.692, 224.95)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(180))));
+        terrainObjectPositions.add(new TerrainObjectPosition().setId(1).setTerrainObjectId(3).setPosition(new DecimalPosition(292.942, 236.70)).setScale(1).setRotation(new Vertex(0, 0, Math.toRadians(190))));
+
+
+
+        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, null, null, terrainSlopePositions, terrainObjectPositions, groundSkeletonConfig);
 
         exportTriangles("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\",
                 new Index(0, 0),
@@ -157,7 +226,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 new Index(1, 1),
                 new Index(2, 0),
                 new Index(2, 1));
-        //  showDisplay();
+         // showDisplay();
 
         Assert.fail("*** This is not actually a test. Generate Triangles for threejs_razarion ***");
     }
