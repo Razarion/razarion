@@ -50,8 +50,8 @@ public abstract class TerrainTile {
 
     public native TerrainSlopeTile[] getTerrainSlopeTiles();
 
-    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTilea) {
-        this.terrainWaterTiles = terrainWaterTilea;
+    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
+        this.terrainWaterTiles = terrainWaterTiles;
     }
 
     public List<TerrainWaterTile> getTerrainWaterTiles() {
