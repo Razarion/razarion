@@ -76,7 +76,7 @@ public class ShapeEditor implements Model {
         svg.getStyle().setCursor("all-scroll");
         svg.appendChild(group);
 
-        setup(slopeConfig.getSlopeShapes());
+        // TODO setup(slopeConfig.getSlopeShapes());
     }
 
     private void setup(List<SlopeShape> shapeEntry) {
@@ -129,16 +129,16 @@ public class ShapeEditor implements Model {
     @Override
     public void createCorner(DecimalPosition position, Corner previous) {
         selectionChanged(null);
-        int index = slopeConfig.getSlopeShapes().indexOf(previous.getSlopeShape());
-        slopeConfig.getSlopeShapes().add(index + 1, new SlopeShape(position, 0));
-        setup(slopeConfig.getSlopeShapes());
+        // TODO int index = slopeConfig.getSlopeShapes().indexOf(previous.getSlopeShape());
+        // TODO slopeConfig.getSlopeShapes().add(index + 1, new SlopeShape(position, 0));
+        // TODO setup(slopeConfig.getSlopeShapes());
     }
 
     public void deleteSelectedCorner() {
         SlopeShape slopeShape = selected.getSlopeShape();
         selectionChanged(null);
-        slopeConfig.getSlopeShapes().remove(slopeShape);
-        setup(slopeConfig.getSlopeShapes());
+        // TODO slopeConfig.getSlopeShapes().remove(slopeShape);
+        // TODO setup(slopeConfig.getSlopeShapes());
     }
 
     @Override

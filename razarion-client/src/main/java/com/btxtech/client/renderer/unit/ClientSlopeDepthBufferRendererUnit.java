@@ -39,7 +39,7 @@ public class ClientSlopeDepthBufferRendererUnit extends AbstractSlopeRendererUni
 
     @Override
     protected void fillBuffer(UiTerrainSlopeTile uiTerrainSlopeTile) {
-        vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getVertices()));
+        // TODO vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainSlopeTile.getTerrainSlopeTile().getVertices()));
     }
 
     @Override

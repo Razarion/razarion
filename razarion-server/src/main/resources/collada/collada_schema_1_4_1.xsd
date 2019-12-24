@@ -1006,7 +1006,7 @@
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
-	<!-- Geometry Elements -->
+	<!-- SlopeGeometry Elements -->
 	<xs:element name="geometry">
 		<xs:annotation>
 			<xs:documentation>

@@ -31,7 +31,7 @@ public class UiTerrainSlopeTile {
 
     public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
         this.uiTerrainTile = uiTerrainTile;
-        slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeConfigId());
+        slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeSkeletonConfigId());
         waterConfig = terrainTypeService.getWaterConfig();
         this.terrainSlopeTile = terrainSlopeTile;
         modelRenderer = slopeRenderTask.createModelRenderer(this);
@@ -60,8 +60,9 @@ public class UiTerrainSlopeTile {
         }
     }
 
+    @Deprecated
     public int getSlopeVertexCount() {
-        return terrainSlopeTile.getSlopeVertexCount();
+        throw new UnsupportedOperationException();
     }
 
     public Integer getTextureId() {

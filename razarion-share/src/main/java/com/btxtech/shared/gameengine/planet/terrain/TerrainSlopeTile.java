@@ -1,5 +1,6 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
+import com.btxtech.shared.gameengine.planet.terrain.container.SlopeGeometry;
 import jsinterop.annotations.JsType;
 
 /**
@@ -8,21 +9,40 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainSlopeTile", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainSlopeTile {
-    public native void init(int slopeConfigId, int vertexSize, int decimalPositionSize, int scalarSize);
+    private int slopeSkeletonConfigId;
+    private SlopeGeometry outerSlopeGeometry;
+    private SlopeGeometry centerSlopeGeometry;
+    private SlopeGeometry innerSlopeGeometry;
 
-    public native void setTriangleCorner(int triangleCornerIndex, double vertexX, double vertexY, double vertexZ, double normX, double normY, double normZ, double vwX, double vwY, double slopeFactor);
+    public int getSlopeSkeletonConfigId() {
+        return slopeSkeletonConfigId;
+    }
 
-    public native int getSlopeConfigId();
+    public void setSlopeSkeletonConfigId(int slopeSkeletonConfigId) {
+        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
+    }
 
-    public native void setSlopeVertexCount(int slopeVertexCount);
+    public SlopeGeometry getOuterSlopeGeometry() {
+        return outerSlopeGeometry;
+    }
 
-    public native int getSlopeVertexCount();
+    public void setOuterSlopeGeometry(SlopeGeometry outerSlopeGeometry) {
+        this.outerSlopeGeometry = outerSlopeGeometry;
+    }
 
-    public native double[] getVertices();
+    public SlopeGeometry getCenterSlopeGeometry() {
+        return centerSlopeGeometry;
+    }
 
-    public native double[] getNorms();
+    public void setCenterSlopeGeometry(SlopeGeometry centerSlopeGeometry) {
+        this.centerSlopeGeometry = centerSlopeGeometry;
+    }
 
-    public native double[] getUvs();
+    public SlopeGeometry getInnerSlopeGeometry() {
+        return innerSlopeGeometry;
+    }
 
-    public native double[] getSlopeFactors();
+    public void setInnerSlopeGeometry(SlopeGeometry innerSlopeGeometry) {
+        this.innerSlopeGeometry = innerSlopeGeometry;
+    }
 }

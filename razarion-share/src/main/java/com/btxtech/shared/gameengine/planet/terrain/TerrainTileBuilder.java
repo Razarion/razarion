@@ -7,9 +7,9 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
-import com.btxtech.shared.utils.CollectionUtils;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -148,9 +148,9 @@ public class TerrainTileBuilder {
         terrainTile.setLandWaterProportion(landWaterProportion);
     }
 
-    public TerrainSlopeTileBuilder createTerrainSlopeTileContext(int slopeSkeletonConfigId, int xCount, int yCount) {
+    public TerrainSlopeTileBuilder createTerrainSlopeTileContext(SlopeSkeletonConfig slopeSkeletonConfig, int xCount) {
         TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainSlopeTileContextInstance.get();
-        terrainSlopeTileBuilder.init(slopeSkeletonConfigId, xCount, yCount, this);
+        terrainSlopeTileBuilder.init(slopeSkeletonConfig, xCount, slopeSkeletonConfig.getRows(), this);
         if (terrainSlopeTileBuilders == null) {
             terrainSlopeTileBuilders = new ArrayList<>();
         }

@@ -1,10 +1,13 @@
 package com.btxtech.shared.dto;
 
 
+import java.util.List;
+
 /**
  * Created by Beat
  * 08.05.2016.
  */
+// TODO rename to SlopeConfig
 public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     public enum Type {
         LAND,
@@ -13,6 +16,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
 
     private int id;
     private String internalName;
+    private List<SlopeShape> slopeShapes;
     private int segments;
     private double horizontalSpace;
     private int rows;
@@ -36,12 +40,7 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     private Integer slopeFoamDistortionId;
     private Double slopeFoamDistortionStrength;
     private Double slopeFoamAnimationDuration;
-    private Integer groundTextureId;
-    private Double groundTextureScale;
-    private Integer groundBumpMapId;
-    private Double groundBumpMapDepth;
-    private Double groundShininess;
-    private Double groundSpecularStrength;
+    private GroundSkeletonConfig groundSkeletonConfig;
     private Integer slopeSplattingId;
     private Double slopeSplattingScale1;
     private Double slopeSplattingScale2;
@@ -92,6 +91,14 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
     public SlopeSkeletonConfig setInternalName(String internalName) {
         this.internalName = internalName;
         return this;
+    }
+
+    public List<SlopeShape> getSlopeShapes() {
+        return slopeShapes;
+    }
+
+    public void setSlopeShapes(List<SlopeShape> slopeShapes) {
+        this.slopeShapes = slopeShapes;
     }
 
     @Override
@@ -198,57 +205,12 @@ public class SlopeSkeletonConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getGroundTextureId() {
-        return groundTextureId;
+    public GroundSkeletonConfig getGroundSkeletonConfig() {
+        return groundSkeletonConfig;
     }
 
-    public SlopeSkeletonConfig setGroundTextureId(Integer groundTextureId) {
-        this.groundTextureId = groundTextureId;
-        return this;
-    }
-
-    public Double getGroundTextureScale() {
-        return groundTextureScale;
-    }
-
-    public SlopeSkeletonConfig setGroundTextureScale(Double groundTextureScale) {
-        this.groundTextureScale = groundTextureScale;
-        return this;
-    }
-
-    public Integer getGroundBumpMapId() {
-        return groundBumpMapId;
-    }
-
-    public SlopeSkeletonConfig setGroundBumpMapId(Integer groundBumpMapId) {
-        this.groundBumpMapId = groundBumpMapId;
-        return this;
-    }
-
-    public Double getGroundBumpMapDepth() {
-        return groundBumpMapDepth;
-    }
-
-    public SlopeSkeletonConfig setGroundBumpMapDepth(Double groundBumpMapDepth) {
-        this.groundBumpMapDepth = groundBumpMapDepth;
-        return this;
-    }
-
-    public Double getGroundShininess() {
-        return groundShininess;
-    }
-
-    public SlopeSkeletonConfig setGroundShininess(Double groundShininess) {
-        this.groundShininess = groundShininess;
-        return this;
-    }
-
-    public Double getGroundSpecularStrength() {
-        return groundSpecularStrength;
-    }
-
-    public SlopeSkeletonConfig setGroundSpecularStrength(Double groundSpecularStrength) {
-        this.groundSpecularStrength = groundSpecularStrength;
+    public SlopeSkeletonConfig setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
+        this.groundSkeletonConfig = groundSkeletonConfig;
         return this;
     }
 

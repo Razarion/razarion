@@ -168,7 +168,7 @@ public class TerrainTileFactory {
 
     private void generateSlopeTerrainTile(TerrainTileBuilder terrainTileBuilder, FractionalSlope fractionalSlope) {
         SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeSkeletonConfigId());
-        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(fractionalSlope.getSlopeSkeletonConfigId(), fractionalSlope.getFractionalSlopeSegments().size(), slopeSkeletonConfig.getRows() + 1);
+        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(slopeSkeletonConfig, fractionalSlope.getFractionalSlopeSegments().size());
         terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh();
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
@@ -176,13 +176,8 @@ public class TerrainTileFactory {
             // Setup Slope
             double uvX = 0;
             Vertex lastPosition = null;
-            for (int row = 0; row - 1 < slopeSkeletonConfig.getRows(); row++) {
-                SlopeNode slopeNode;
-                if (row == 0) {
-                    slopeNode = new SlopeNode().setPosition(new Vertex(0, 0, 0)).setSlopeFactor(0);
-                } else {
-                    slopeNode = slopeSkeletonConfig.getSlopeNode(fractionalSlopeSegment.getIndex(), row - 1);
-                }
+            for (int row = 0; row < slopeSkeletonConfig.getRows(); row++) {
+                SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(fractionalSlopeSegment.getIndex(), row);
                 Vertex skeletonVertex = slopeNode.getPosition();
                 if (fractionalSlopeSegment.getDrivewayHeightFactor() < 1.0) {
                     skeletonVertex = skeletonVertex.multiply(1.0, 1.0, fractionalSlopeSegment.getDrivewayHeightFactor());

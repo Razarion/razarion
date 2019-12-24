@@ -276,7 +276,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
         if (fractalDialogDto == null) {
             return;
         }
-        SlopeModeler.sculpt(slopeConfig, fractalDialogDto.getFractalField());
+        SlopeModeler.sculpt(slopeConfig.getSlopeSkeletonConfig(), fractalDialogDto.getFractalField());
         renderService.fillBuffers();  // TODO May not working
     }
 

@@ -519,10 +519,10 @@ public class WeldTestRenderer {
 
     private void drawTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
         gc.setLineWidth(LINE_WIDTH);
-        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
-            int vertexScalarIndex = vertexIndex * 3;
+        // TODO for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {
+        // TODO    int vertexScalarIndex = vertexIndex * 3;
             // fillTriangle(terrainSlopeTile.getVertices(), terrainSlopeTile.getNorms(), terrainSlopeTile.getTangents(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
-            strokeZTriangle(terrainSlopeTile.getVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
+            // TODO strokeZTriangle(terrainSlopeTile.getVertices(), vertexScalarIndex, vertexScalarIndex + 3, vertexScalarIndex + 6);
 
 //            double[] xCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex], terrainSlopeTile.getVertices()[vertexScalarIndex + 3], terrainSlopeTile.getVertices()[vertexScalarIndex + 6]};
 //            double[] yCorners = new double[]{terrainSlopeTile.getVertices()[vertexScalarIndex + 1], terrainSlopeTile.getVertices()[vertexScalarIndex + 4], terrainSlopeTile.getVertices()[vertexScalarIndex + 7]};
@@ -530,7 +530,7 @@ public class WeldTestRenderer {
 //            gc.strokePolygon(xCorners, yCorners, 3);
             // gc.setFill(Color.color(1, 0, 0, 0.3));
             // gc.fillPolygon(xCorners, yCorners, 3);
-        }
+        // TODO       }
 //        // Norm
 //        gc.setStroke(Color.RED);
 //        for (int vertexIndex = 0; vertexIndex < terrainSlopeTile.getSlopeVertexCount(); vertexIndex += 3) {

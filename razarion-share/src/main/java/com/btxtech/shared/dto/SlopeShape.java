@@ -22,16 +22,18 @@ public class SlopeShape {
         this.slopeFactor = slopeFactor;
     }
 
-    public void setPosition(DecimalPosition position) {
+    public SlopeShape setPosition(DecimalPosition position) {
         this.position = position;
+        return this;
     }
 
     public DecimalPosition getPosition() {
         return position;
     }
 
-    public void setSlopeFactor(float slopeFactor) {
+    public SlopeShape setSlopeFactor(float slopeFactor) {
         this.slopeFactor = slopeFactor;
+        return this;
     }
 
     public float getSlopeFactor() {

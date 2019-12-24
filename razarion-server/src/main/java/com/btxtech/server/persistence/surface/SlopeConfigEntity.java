@@ -115,17 +115,17 @@ public class SlopeConfigEntity {
         slopeConfig.setFractalRoughness(fractalRoughness);
         slopeConfig.setInternalName(internalName);
         slopeConfig.setSlopeSkeletonConfig(toSlopeSkeleton());
-        slopeConfig.setSlopeShapes(toSlopeShapes());
+        // TODO  slopeConfig.setSlopeShapes(toSlopeShapes());
         return slopeConfig;
     }
 
     public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence) {
         shape.clear();
-        for (SlopeShape slopeShape : slopeConfig.getSlopeShapes()) {
-            SlopeShapeEntity slopeShapeEntity = new SlopeShapeEntity();
-            slopeShapeEntity.fromSlopeShape(slopeShape);
-            shape.add(slopeShapeEntity);
-        }
+        // TODO  for (SlopeShape slopeShape : slopeConfig.getSlopeShapes()) {
+        // TODO     SlopeShapeEntity slopeShapeEntity = new SlopeShapeEntity();
+        // TODO     slopeShapeEntity.fromSlopeShape(slopeShape);
+        // TODO     shape.add(slopeShapeEntity);
+        // TODO  }
         internalName = slopeConfig.getInternalName();
         specularLightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());
         fractalMin = slopeConfig.getFractalMin();

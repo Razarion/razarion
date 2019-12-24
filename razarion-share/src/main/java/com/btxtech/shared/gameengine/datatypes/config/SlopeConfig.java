@@ -1,27 +1,28 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
-import com.btxtech.shared.datatypes.Shape;
 import com.btxtech.shared.dto.FractalFieldConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
-import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.SlopeSkeletonConfig;
-
-import java.util.List;
 
 /**
  * Created by Beat
  * 08.05.2016.
  */
+@Deprecated // Moved to SlopeSkeletonConfig
 public class SlopeConfig implements ObjectNameIdProvider {
     private int id;
     private String internalName;
-    private List<SlopeShape> slopeShapes;
     private SlopeSkeletonConfig slopeSkeletonConfig;
+    @Deprecated
     private double fractalMin;
+    @Deprecated
     private double fractalMax;
+    @Deprecated
     private double fractalClampMin;
+    @Deprecated
     private double fractalClampMax;
+    @Deprecated
     private double fractalRoughness;
 
     public int getId() {
@@ -39,15 +40,6 @@ public class SlopeConfig implements ObjectNameIdProvider {
 
     public SlopeConfig setInternalName(String internalName) {
         this.internalName = internalName;
-        return this;
-    }
-
-    public List<SlopeShape> getSlopeShapes() {
-        return slopeShapes;
-    }
-
-    public SlopeConfig setSlopeShapes(List<SlopeShape> slopeShapes) {
-        this.slopeShapes = slopeShapes;
         return this;
     }
 
@@ -116,9 +108,9 @@ public class SlopeConfig implements ObjectNameIdProvider {
         fractalFieldConfig.setClampMin(fractalClampMin);
         fractalFieldConfig.setClampMax(fractalClampMax);
         fractalFieldConfig.setXCount(slopeSkeletonConfig.getSegments());
-        Shape shape = new Shape(this.slopeShapes);
-        fractalFieldConfig.setYCount(shape.getShiftableCount());
-        fractalFieldConfig.setFractalRoughness(fractalRoughness);
+        // TODO Shape shape = new Shape(this.slopeShapes);
+        // TODO fractalFieldConfig.setYCount(shape.getShiftableCount());
+        // TODO fractalFieldConfig.setFractalRoughness(fractalRoughness);
         return fractalFieldConfig;
     }
 
