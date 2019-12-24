@@ -4,16 +4,14 @@ import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFra
 import com.btxtech.shared.gameengine.planet.terrain.container.nativejs.NativeFractionalSlopeSegment;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by Beat
  * on 19.06.2017.
  */
 public class FractionalSlope {
-    private int slopeSkeletonConfigId;
+    private int slopeConfigId;
     private double groundHeight;
     private boolean inverted;
     private List<FractionalSlopeSegment> fractionalSlopeSegments;
@@ -22,7 +20,7 @@ public class FractionalSlope {
     }
 
     public FractionalSlope(NativeFractionalSlope nativeFractionalSlope) {
-        slopeSkeletonConfigId = nativeFractionalSlope.slopeSkeletonConfigId;
+        slopeConfigId = nativeFractionalSlope.slopeConfigId;
         groundHeight = nativeFractionalSlope.groundHeight;
         inverted = nativeFractionalSlope.inverted;
         fractionalSlopeSegments = new ArrayList<>();
@@ -32,8 +30,8 @@ public class FractionalSlope {
         }
     }
 
-    public int getSlopeSkeletonConfigId() {
-        return slopeSkeletonConfigId;
+    public int getSlopeConfigId() {
+        return slopeConfigId;
     }
 
     public double getGroundHeight() {
@@ -52,8 +50,8 @@ public class FractionalSlope {
         return fractionalSlopeSegments;
     }
 
-    public void setSlopeSkeletonConfigId(int slopeSkeletonConfigId) {
-        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
+    public void setSlopeConfigId(int slopeConfigId) {
+        this.slopeConfigId = slopeConfigId;
     }
 
     public void setGroundHeight(double groundHeight) {
@@ -66,7 +64,7 @@ public class FractionalSlope {
 
     public NativeFractionalSlope toNativeFractionalSlope() {
         NativeFractionalSlope nativeFractionalSlope = new NativeFractionalSlope();
-        nativeFractionalSlope.slopeSkeletonConfigId = slopeSkeletonConfigId;
+        nativeFractionalSlope.slopeConfigId = slopeConfigId;
         nativeFractionalSlope.groundHeight = groundHeight;
         nativeFractionalSlope.inverted = inverted;
         if(fractionalSlopeSegments != null) {

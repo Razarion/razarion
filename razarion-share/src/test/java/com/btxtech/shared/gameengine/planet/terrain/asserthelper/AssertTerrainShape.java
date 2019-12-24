@@ -125,7 +125,7 @@ public interface AssertTerrainShape {
     }
 
     static void compareFractionalSlope(NativeFractionalSlope expectedFractionalSlope, NativeFractionalSlope actualFractionalSlope1) {
-        Assert.assertEquals("slopeSkeletonConfigId", expectedFractionalSlope.slopeSkeletonConfigId, actualFractionalSlope1.slopeSkeletonConfigId);
+        Assert.assertEquals("slopeConfigId", expectedFractionalSlope.slopeConfigId, actualFractionalSlope1.slopeConfigId);
         Assert.assertEquals("groundHeight", expectedFractionalSlope.groundHeight, actualFractionalSlope1.groundHeight, 0.001);
         Assert.assertEquals("inverted", expectedFractionalSlope.inverted, actualFractionalSlope1.inverted);
 

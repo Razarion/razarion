@@ -6,8 +6,8 @@ import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
@@ -81,7 +81,7 @@ public interface GameTestContent {
         staticGameConfig.setResourceItemTypes(setupResourceItemType());
         staticGameConfig.setBoxItemTypes(setupBoxItemType());
         staticGameConfig.setInventoryItems(setupInventoryItems());
-        staticGameConfig.setSlopeSkeletonConfigs(setupSlopeSkeletonConfigs());
+        staticGameConfig.setSlopeConfigs(setupSlopeSkeletonConfigs());
         staticGameConfig.setDrivewayConfigs(setupDriveways());
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         return staticGameConfig;
@@ -303,10 +303,10 @@ public interface GameTestContent {
         return new QuestConfig().setId(QUEST_CONFIG_2_ID).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_CREATED).setComparisonConfig(new ComparisonConfig().setTypeCount(typeCount)));
     }
 
-    static List<SlopeSkeletonConfig> setupSlopeSkeletonConfigs() {
+    static List<SlopeConfig> setupSlopeSkeletonConfigs() {
         // Land
-        SlopeSkeletonConfig skeletonConfigLand = new SlopeSkeletonConfig();
-        skeletonConfigLand.setId(SLOPE_SKELETON_CONFIG_LAND_ID).setType(SlopeSkeletonConfig.Type.LAND);
+        SlopeConfig skeletonConfigLand = new SlopeConfig();
+        skeletonConfigLand.setId(SLOPE_SKELETON_CONFIG_LAND_ID).setType(SlopeConfig.Type.LAND);
         skeletonConfigLand.setRows(5).setSegments(10).setWidth(9.8).setHorizontalSpace(3.0).setHeight(8.2);
         skeletonConfigLand.setSlopeNodes(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(1.4, 0.1, 0.1), GameTestHelper.createSlopeNode(4.6, 1.0, 0.9), GameTestHelper.createSlopeNode(5.4, 3.7, 1.0), GameTestHelper.createSlopeNode(7.0, 8.3, 0.8), GameTestHelper.createSlopeNode(9.8, 8.2, 0.0)},
@@ -322,8 +322,8 @@ public interface GameTestContent {
         });
         skeletonConfigLand.setInnerLineGameEngine(8).setCoastDelimiterLineGameEngine(0.0).setOuterLineGameEngine(2);
         // Water
-        SlopeSkeletonConfig skeletonConfigWater = new SlopeSkeletonConfig();
-        skeletonConfigWater.setId(SLOPE_SKELETON_CONFIG_WATER_ID).setType(SlopeSkeletonConfig.Type.WATER);
+        SlopeConfig skeletonConfigWater = new SlopeConfig();
+        skeletonConfigWater.setId(SLOPE_SKELETON_CONFIG_WATER_ID).setType(SlopeConfig.Type.WATER);
         skeletonConfigWater.setRows(3).setSegments(5).setWidth(15.6).setHorizontalSpace(3.0).setHeight(-1.9);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(3.5, 0.6, 0.5), GameTestHelper.createSlopeNode(10.5, -1.2, 1.0), GameTestHelper.createSlopeNode(15.6, -1.9, 1.0)},
@@ -335,10 +335,10 @@ public interface GameTestContent {
         skeletonConfigWater.setSlopeNodes(slopeNodes);
         skeletonConfigWater.setInnerLineGameEngine(11.0).setCoastDelimiterLineGameEngine(8.0).setOuterLineGameEngine(4.0);
 
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        slopeSkeletonConfigs.add(skeletonConfigLand);
-        slopeSkeletonConfigs.add(skeletonConfigWater);
-        return slopeSkeletonConfigs;
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
+        slopeConfigs.add(skeletonConfigLand);
+        slopeConfigs.add(skeletonConfigWater);
+        return slopeConfigs;
     }
 
     static List<DrivewayConfig> setupDriveways() {

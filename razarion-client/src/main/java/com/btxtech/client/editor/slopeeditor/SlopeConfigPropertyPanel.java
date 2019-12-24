@@ -11,9 +11,9 @@ import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.utils.BooleanNullConverter;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.gameengine.planet.terrain.slope.SlopeModeler;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.uiservice.control.GameUiControl;
@@ -46,7 +46,7 @@ import java.util.Arrays;
  * 06.11.2015.
  */
 @Templated("SlopeConfigPropertyPanel.html#slope")
-public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig> implements SelectedCornerListener {
+public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig_OLD> implements SelectedCornerListener {
     // private Logger logger = Logger.getLogger(SlopeConfigPropertyPanel.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;
@@ -66,7 +66,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private GameUiControl gameUiControl;
     @Inject
     @AutoBound
-    private DataBinder<SlopeConfig> slopeConfigDataBinder;
+    private DataBinder<SlopeConfig_OLD> slopeConfigDataBinder;
     @Inject
     @Bound
     @DataField
@@ -77,7 +77,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private TextBox internalName;
     @Inject
     @DataField
-    private ValueListBox<SlopeSkeletonConfig.Type> type;
+    private ValueListBox<SlopeConfig.Type> type;
     @Inject
     @DataField
     private SpecularLightWidget specularLightConfig;
@@ -175,46 +175,46 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
     private FractalDialogDto fractalDialogDto;
 
     @Override
-    public void init(SlopeConfig slopeConfig) {
-        slopeConfigDataBinder.setModel(slopeConfig);
-        if (slopeConfig.getSlopeSkeletonConfig().getType() != null) {
-            type.setValue(slopeConfig.getSlopeSkeletonConfig().getType());
+    public void init(SlopeConfig_OLD slopeConfigOLD) {
+        slopeConfigDataBinder.setModel(slopeConfigOLD);
+        if (slopeConfigOLD.getSlopeConfig().getType() != null) {
+            type.setValue(slopeConfigOLD.getSlopeConfig().getType());
         }
-        type.setAcceptableValues(Arrays.asList(SlopeSkeletonConfig.Type.values()));
-        type.addValueChangeHandler(event -> slopeConfig.getSlopeSkeletonConfig().setType(event.getValue()));
-        terrainUiService.enableEditMode(slopeConfig.getSlopeSkeletonConfig());
-        textureId.setImageId(slopeConfig.getSlopeSkeletonConfig().getSlopeTextureId(), imageId -> {
-            slopeConfig.getSlopeSkeletonConfig().setSlopeTextureId(imageId);
+        type.setAcceptableValues(Arrays.asList(SlopeConfig.Type.values()));
+        type.addValueChangeHandler(event -> slopeConfigOLD.getSlopeConfig().setType(event.getValue()));
+        terrainUiService.enableEditMode(slopeConfigOLD.getSlopeConfig());
+        textureId.setImageId(slopeConfigOLD.getSlopeConfig().getSlopeTextureId(), imageId -> {
+            slopeConfigOLD.getSlopeConfig().setSlopeTextureId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
-        bmId.setImageId(slopeConfig.getSlopeSkeletonConfig().getSlopeBumpMapId(), imageId -> {
-            slopeConfig.getSlopeSkeletonConfig().setSlopeBumpMapId(imageId);
+        bmId.setImageId(slopeConfigOLD.getSlopeConfig().getSlopeBumpMapId(), imageId -> {
+            slopeConfigOLD.getSlopeConfig().setSlopeBumpMapId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
-        specularLightConfig.setModel(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());
-        slopeWaterSplattingId.setImageId(slopeConfig.getSlopeSkeletonConfig().getSlopeWaterSplattingId(), imageId -> {
-            slopeConfig.getSlopeSkeletonConfig().setSlopeWaterSplattingId(imageId);
+        specularLightConfig.setModel(slopeConfigOLD.getSlopeConfig().getSpecularLightConfig());
+        slopeWaterSplattingId.setImageId(slopeConfigOLD.getSlopeConfig().getSlopeWaterSplattingId(), imageId -> {
+            slopeConfigOLD.getSlopeConfig().setSlopeWaterSplattingId(imageId);
             terrainUiService.onEditorTerrainChanged();
         });
-        shapeEditor.init(svgElement, slopeConfig, this, 10.0);
+        shapeEditor.init(svgElement, slopeConfigOLD, this, 10.0);
     }
 
     @Override
-    public SlopeConfig getConfigObject() {
+    public SlopeConfig_OLD getConfigObject() {
         return slopeConfigDataBinder.getModel();
     }
 
     @EventHandler("fractalFieldButton")
     private void fractalFieldButtonClick(ClickEvent event) {
-        SlopeConfig slopeConfig = slopeConfigDataBinder.getModel();
+        SlopeConfig_OLD slopeConfigOLD = slopeConfigDataBinder.getModel();
         if (fractalDialogDto == null) {
             fractalDialogDto = new FractalDialogDto();
-            fractalDialogDto.setFractalFieldConfig(slopeConfig.toFractalFiledConfig());
+            fractalDialogDto.setFractalFieldConfig(slopeConfigOLD.toFractalFiledConfig());
         }
         modalDialogManager.show("Fractal Dialog", ClientModalDialogManagerImpl.Type.QUEUE_ABLE, FractalDialog.class, fractalDialogDto, (button, fractalDialogDto1) -> {
             if (button == DialogButton.Button.APPLY) {
-                SlopeConfig slopeConfig1 = slopeConfigDataBinder.getModel();
-                slopeConfig1.fromFractalFiledConfig(fractalDialogDto1.getFractalFieldConfig());
+                SlopeConfig_OLD slopeConfigOLD1 = slopeConfigDataBinder.getModel();
+                slopeConfigOLD1.fromFractalFiledConfig(fractalDialogDto1.getFractalFieldConfig());
             }
         }, null, DialogButton.Button.CANCEL, DialogButton.Button.APPLY);
     }
@@ -272,11 +272,11 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig>
 
     @EventHandler("sculpt")
     private void sculptButtonClick(ClickEvent event) {
-        SlopeConfig slopeConfig = getConfigObject();
+        SlopeConfig_OLD slopeConfigOLD = getConfigObject();
         if (fractalDialogDto == null) {
             return;
         }
-        SlopeModeler.sculpt(slopeConfig.getSlopeSkeletonConfig(), fractalDialogDto.getFractalField());
+        SlopeModeler.sculpt(slopeConfigOLD.getSlopeConfig(), fractalDialogDto.getFractalField());
         renderService.fillBuffers();  // TODO May not working
     }
 

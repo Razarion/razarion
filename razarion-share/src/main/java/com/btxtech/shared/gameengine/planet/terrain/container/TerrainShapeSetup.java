@@ -10,7 +10,7 @@ import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.Polygon2DRasterizer;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -109,8 +109,8 @@ public class TerrainShapeSetup {
     }
 
     private Slope setupSlope(TerrainSlopePosition terrainSlopePosition, double groundHeight) {
-        SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
-        Slope slope = new Slope(terrainSlopePosition.getId(), slopeSkeletonConfig, terrainSlopePosition.isInverted(), terrainSlopePosition.getPolygon(), groundHeight, terrainTypeService);
+        SlopeConfig slopeConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
+        Slope slope = new Slope(terrainSlopePosition.getId(), slopeConfig, terrainSlopePosition.isInverted(), terrainSlopePosition.getPolygon(), groundHeight, terrainTypeService);
         setupSlopeChildren(slope, terrainSlopePosition.getChildren(), slope.getInnerGroundHeight());
         return slope;
     }
@@ -138,8 +138,8 @@ public class TerrainShapeSetup {
             // Setup TerrainType (game engine)
             if (!slope.isInverted()) {
                 setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getOuterGroundHeight(), null);
-                setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getOuterGroundHeight() + slope.getSlopeSkeletonConfig().getWaterLevel(), null);
-                setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER, slope.getOuterGroundHeight() + slope.getSlopeSkeletonConfig().getWaterLevel(), null);
+                setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getOuterGroundHeight() + slope.getSlopeConfig().getWaterLevel(), null);
+                setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER, slope.getOuterGroundHeight() + slope.getSlopeConfig().getWaterLevel(), null);
                 // Setup slope ground connection (render engine)
                 Polygon2DRasterizer outerRasterizer = Polygon2DRasterizer.create(slope.getOuterRenderEnginePolygon(), TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH);
                 for (Index nodeIndex : outerRasterizer.getPiercedTiles()) {
@@ -161,10 +161,10 @@ public class TerrainShapeSetup {
                 for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
                     TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                     terrainShapeNode.setRenderHideGround(false);
-                    terrainShapeNode.setRenderInnerSlopeId(slope.getSlopeSkeletonConfig().getId());
+                    terrainShapeNode.setRenderInnerSlopeId(slope.getSlopeConfig().getId());
                     terrainShapeNode.setInnerGroundHeight(slope.getInnerGroundHeight());
-                    terrainShapeNode.setRenderInnerWaterSlopeId(slope.getSlopeSkeletonConfig().getId());
-                    terrainShapeNode.setFullWaterLevel(slope.getOuterGroundHeight() + slope.getSlopeSkeletonConfig().getWaterLevel());
+                    terrainShapeNode.setRenderInnerWaterSlopeId(slope.getSlopeConfig().getId());
+                    terrainShapeNode.setFullWaterLevel(slope.getOuterGroundHeight() + slope.getSlopeConfig().getWaterLevel());
                 }
                 // Setup slope inner seabed connection (render engine)
                 for (Index nodeIndex : innerRasterizer.getPiercedTiles()) {
@@ -173,13 +173,13 @@ public class TerrainShapeSetup {
                     List<List<DecimalPosition>> innerPiercings = slopeContext.getInnerPiercings(nodeIndex);
                     for (List<DecimalPosition> innerPiercing : innerPiercings) {
                         Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                        terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + slope.getSlopeSkeletonConfig().getWaterLevel(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
+                        terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + slope.getSlopeConfig().getWaterLevel(), false, null, 0), slope.getSlopeConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getId());
                     }
                 }
 
             } else {
-                setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getInnerGroundHeight() + slope.getSlopeSkeletonConfig().getWaterLevel(), null);
+                setupTerrainType(slope.getOuterGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.WATER_COAST, slope.getInnerGroundHeight() + slope.getSlopeConfig().getWaterLevel(), null);
                 setupTerrainType(slope.getCoastDelimiterPolygonTerrainType(), dirtyTerrainShapeNodes, TerrainType.LAND_COAST, slope.getInnerGroundHeight(), null);
                 setupTerrainType(slope.getInnerGameEnginePolygon(), dirtyTerrainShapeNodes, TerrainType.LAND, slope.getInnerGroundHeight(), null);
                 // Setup slope ground connection (render engine)
@@ -190,8 +190,8 @@ public class TerrainShapeSetup {
                         TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                         for (List<DecimalPosition> innerPiercing : innerPiercings) {
                             Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
-                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + slope.getSlopeSkeletonConfig().getWaterLevel(), true, null, 0), slope.getSlopeSkeletonConfig().getId());
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
+                            terrainShapeNode.addWaterSegments(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getOuterGroundHeight() + slope.getSlopeConfig().getWaterLevel(), true, null, 0), slope.getSlopeConfig().getId());
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getId());
                         }
                     }
                 }
@@ -228,7 +228,7 @@ public class TerrainShapeSetup {
             for (Index nodeIndex : innerRasterizer.getInnerTiles()) {
                 TerrainShapeNode terrainShapeNode = terrainShape.getOrCreateTerrainShapeNode(nodeIndex);
                 terrainShapeNode.setRenderHideGround(false);
-                terrainShapeNode.setRenderInnerSlopeId(slope.getSlopeSkeletonConfig().getId());
+                terrainShapeNode.setRenderInnerSlopeId(slope.getSlopeConfig().getId());
                 terrainShapeNode.setInnerGroundHeight(slope.getInnerGroundHeight());
                 Rectangle2D terrainRect = TerrainUtil.toAbsoluteNodeRectangle(nodeIndex);
                 Driveway fractalDriveway = slope.getDrivewayIfInsideOrTouching(terrainRect);
@@ -237,8 +237,8 @@ public class TerrainShapeSetup {
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
                         terrainShapeNode.setDrivewayBreakingLine(true);
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeSkeletonConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getId());
                     }
                     terrainShapeNode.setInnerGroundHeight(slope.getOuterGroundHeight()); // TODO replace with innerGroundHeight?
                 }
@@ -261,17 +261,17 @@ public class TerrainShapeSetup {
                     // Inner slope ground connection regarding driveway break line
                     List<DecimalPosition> breakingGroundPiercing = fractalDriveway.setupPiercingLine(terrainRect, true);
                     if (breakingGroundPiercing != null) {
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeSkeletonConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, breakingGroundPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, fractalDriveway.setupPiercingLine(terrainRect, false), slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getId());
                     } else {
                         for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeSkeletonConfig().getId());
+                            terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, fractalDriveway, slope.getOuterGroundHeight()), slope.getSlopeConfig().getId());
                         }
                     }
                 } else {
                     // Inner slope ground connection
                     for (List<DecimalPosition> innerPiercing : innerPiercings) {
-                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeSkeletonConfig().getId());
+                        terrainShapeNode.addGroundSlopeConnections(setupSlopeGroundConnection(terrainRect, innerPiercing, slope.getInnerGroundHeight(), false, null, 0), slope.getSlopeConfig().getId());
                     }
                 }
             }
@@ -357,7 +357,7 @@ public class TerrainShapeSetup {
         if (start < 0) {
             // Slope is completely inside a tile
             FractionalSlope fractionalSlope = new FractionalSlope();
-            fractionalSlope.setSlopeSkeletonConfigId(slope.getSlopeSkeletonConfig().getId());
+            fractionalSlope.setSlopeConfigId(slope.getSlopeConfig().getId());
             if (slope.isInverted()) {
                 fractionalSlope.setGroundHeight(slope.getInnerGroundHeight());
             } else {
@@ -436,7 +436,7 @@ public class TerrainShapeSetup {
                     fractionalSlopeSegments.add(FractionalSlopeSegment.fromVerticalSegment(successor));
                 }
                 FractionalSlope fractionalSlope = new FractionalSlope();
-                fractionalSlope.setSlopeSkeletonConfigId(slope.getSlopeSkeletonConfig().getId());
+                fractionalSlope.setSlopeConfigId(slope.getSlopeConfig().getId());
                 if (slope.isInverted()) {
                     fractionalSlope.setGroundHeight(slope.getInnerGroundHeight());
                 } else {

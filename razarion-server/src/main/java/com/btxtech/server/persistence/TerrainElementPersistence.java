@@ -13,10 +13,10 @@ import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -112,7 +112,7 @@ public class TerrainElementPersistence {
 
     @Transactional
     @SecurityCheck
-    public SlopeConfig createSlopeConfig() {
+    public SlopeConfig_OLD createSlopeConfig() {
         SlopeConfigEntity slopeConfigEntity = new SlopeConfigEntity();
         slopeConfigEntity.setDefault();
         entityManager.persist(slopeConfigEntity);
@@ -120,12 +120,12 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public SlopeConfig readSlopeConfig(int id) {
+    public SlopeConfig_OLD readSlopeConfig(int id) {
         return entityManager.find(SlopeConfigEntity.class, id).toSlopeConfig();
     }
 
     @Transactional
-    public List<SlopeConfig> readSlopeConfigs() {
+    public List<SlopeConfig_OLD> readSlopeConfigs() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
         Root<SlopeConfigEntity> root = userQuery.from(SlopeConfigEntity.class);
@@ -136,7 +136,7 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public List<SlopeSkeletonConfig> loadSlopeSkeletons() {
+    public List<SlopeConfig> loadSlopeSkeletons() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SlopeConfigEntity> userQuery = criteriaBuilder.createQuery(SlopeConfigEntity.class);
         Root<SlopeConfigEntity> root = userQuery.from(SlopeConfigEntity.class);
@@ -148,9 +148,9 @@ public class TerrainElementPersistence {
 
     @Transactional
     @SecurityCheck
-    public void updateSlopeConfig(SlopeConfig slopeConfig) {
-        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, slopeConfig.getId());
-        slopeConfigEntity.fromSlopeConfig(slopeConfig, imagePersistence);
+    public void updateSlopeConfig(SlopeConfig_OLD slopeConfigOLD) {
+        SlopeConfigEntity slopeConfigEntity = entityManager.find(SlopeConfigEntity.class, slopeConfigOLD.getId());
+        slopeConfigEntity.fromSlopeConfig(slopeConfigOLD, imagePersistence);
         entityManager.merge(slopeConfigEntity);
     }
 

@@ -2,7 +2,6 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -20,7 +19,7 @@ public class StaticGameConfig {
     private GroundSkeletonConfig groundSkeletonConfig;
     @Deprecated
     private WaterConfig waterConfig;
-    private List<SlopeSkeletonConfig> slopeSkeletonConfigs;
+    private List<SlopeConfig> slopeConfigs;
     private List<TerrainObjectConfig> terrainObjectConfigs;
     private List<BaseItemType> baseItemTypes;
     private List<ResourceItemType> resourceItemTypes;
@@ -48,12 +47,12 @@ public class StaticGameConfig {
         this.waterConfig = waterConfig;
     }
 
-    public List<SlopeSkeletonConfig> getSlopeSkeletonConfigs() {
-        return slopeSkeletonConfigs;
+    public List<SlopeConfig> getSlopeConfigs() {
+        return slopeConfigs;
     }
 
-    public StaticGameConfig setSlopeSkeletonConfigs(List<SlopeSkeletonConfig> slopeSkeletonConfigs) {
-        this.slopeSkeletonConfigs = slopeSkeletonConfigs;
+    public StaticGameConfig setSlopeConfigs(List<SlopeConfig> slopeConfigs) {
+        this.slopeConfigs = slopeConfigs;
         return this;
     }
 

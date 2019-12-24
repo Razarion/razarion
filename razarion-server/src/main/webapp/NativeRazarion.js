@@ -556,8 +556,8 @@ com = {
                 },
 
                 TerrainSlopeTile: function () {
-                    this.init = function (slopeSkeletonConfigId, vertexSize, scalarSize) {
-                        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
+                    this.init = function (slopeConfigId, vertexSize, scalarSize) {
+                        this.slopeConfigId = slopeConfigId;
                         this.vertices = new Float32Array(vertexSize);
                         this.norms = new Float32Array(vertexSize);
                         this.tangents = new Float32Array(vertexSize);
@@ -580,8 +580,8 @@ com = {
                         this.groundSplattings[triangleCornerIndex] = splatting;
                     };
 
-                    this.getSlopeSkeletonConfigId = function () {
-                        return this.slopeSkeletonConfigId;
+                    this.getSlopeConfigId = function () {
+                        return this.slopeConfigId;
                     };
 
                     this.setSlopeVertexCount = function (slopeVertexCount) {
@@ -613,11 +613,11 @@ com = {
                     };
 
                     this.toArray = function () {
-                        return [this.slopeSkeletonConfigId, this.slopeVertexCount, this.vertices, this.norms, this.tangents, this.slopeFactors, this.groundSplattings];
+                        return [this.slopeConfigId, this.slopeVertexCount, this.vertices, this.norms, this.tangents, this.slopeFactors, this.groundSplattings];
                     };
 
                     this.fromArray = function (array) {
-                        this.slopeSkeletonConfigId = array[0];
+                        this.slopeConfigId = array[0];
                         this.slopeVertexCount = array[1];
                         this.vertices = array[2];
                         this.norms = array[3];

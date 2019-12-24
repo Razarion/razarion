@@ -1,8 +1,8 @@
 package com.btxtech.shared.gameengine.planet.terrain.slope;
 
 import com.btxtech.shared.datatypes.Shape;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 
 /**
  * Created by Beat
@@ -10,9 +10,9 @@ import com.btxtech.shared.dto.SlopeSkeletonConfig;
  */
 public class SlopeModeler {
     // private Logger logger = Logger.getLogger(ShapeTemplate.class.getName());
-    public static void sculpt(SlopeSkeletonConfig slopeSkeletonConfig, double[][] fractalField) {
-        int segments = slopeSkeletonConfig.getSegments();
-        Shape shape = new Shape(slopeSkeletonConfig.getSlopeShapes());
+    public static void sculpt(SlopeConfig slopeConfig, double[][] fractalField) {
+        int segments = slopeConfig.getSegments();
+        Shape shape = new Shape(slopeConfig.getSlopeShapes());
         int rows = shape.getVertexCount();
 
         SlopeNode[][] slopeNodes = new SlopeNode[segments][rows];
@@ -34,10 +34,10 @@ public class SlopeModeler {
             }
         }
 
-        slopeSkeletonConfig.setSlopeNodes(slopeNodes);
-        slopeSkeletonConfig.setWidth(shape.getDistance());
-        slopeSkeletonConfig.setHeight(shape.getZInner());
-        slopeSkeletonConfig.setSegments(segments);
-        slopeSkeletonConfig.setRows(rows);
+        slopeConfig.setSlopeNodes(slopeNodes);
+        slopeConfig.setWidth(shape.getDistance());
+        slopeConfig.setHeight(shape.getZInner());
+        slopeConfig.setSegments(segments);
+        slopeConfig.setRows(rows);
     }
 }

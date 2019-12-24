@@ -5,7 +5,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundSkeletonConfig groundSkeletonConfig) {
+    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundSkeletonConfig groundSkeletonConfig) {
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         if(groundSkeletonConfig == null) {
@@ -40,7 +40,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
             groundSkeletonConfig.setHeightYCount(heights.length);
         }
         staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
-        staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
+        staticGameConfig.setSlopeConfigs(slopeConfigs);
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();
         drivewayConfigs.add(new DrivewayConfig().setId(DRIVEWAY_ID_1).setAngle(Math.toRadians(20)));

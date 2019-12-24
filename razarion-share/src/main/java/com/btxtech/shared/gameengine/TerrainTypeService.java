@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.dto.DrivewayConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -19,7 +19,7 @@ import java.util.Map;
  */
 @Singleton
 public class TerrainTypeService {
-    private Map<Integer, SlopeSkeletonConfig> slopeSkeletonConfigs = new HashMap<>();
+    private Map<Integer, SlopeConfig> slopeSkeletonConfigs = new HashMap<>();
     private GroundSkeletonConfig groundSkeletonConfig;
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
     private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
@@ -32,16 +32,16 @@ public class TerrainTypeService {
     public void init(StaticGameConfig staticGameConfig) {
         waterConfig = staticGameConfig.getWaterConfig();
         groundSkeletonConfig = staticGameConfig.getGroundSkeletonConfig();
-        setSlopeSkeletonConfigs(staticGameConfig.getSlopeSkeletonConfigs());
+        setSlopeSkeletonConfigs(staticGameConfig.getSlopeConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
         setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
     }
 
-    public void setSlopeSkeletonConfigs(Collection<SlopeSkeletonConfig> slopeSkeletonConfigs) {
+    public void setSlopeSkeletonConfigs(Collection<SlopeConfig> slopeConfigs) {
         this.slopeSkeletonConfigs.clear();
-        if (slopeSkeletonConfigs != null) {
-            for (SlopeSkeletonConfig slopeSkeletonConfig : slopeSkeletonConfigs) {
-                this.slopeSkeletonConfigs.put(slopeSkeletonConfig.getId(), slopeSkeletonConfig);
+        if (slopeConfigs != null) {
+            for (SlopeConfig slopeConfig : slopeConfigs) {
+                this.slopeSkeletonConfigs.put(slopeConfig.getId(), slopeConfig);
             }
         }
     }
@@ -72,15 +72,15 @@ public class TerrainTypeService {
         this.groundSkeletonConfig = groundSkeletonConfig;
     }
 
-    public SlopeSkeletonConfig getSlopeSkeleton(int id) {
-        SlopeSkeletonConfig slopeSkeletonConfig = slopeSkeletonConfigs.get(id);
-        if (slopeSkeletonConfig == null) {
+    public SlopeConfig getSlopeSkeleton(int id) {
+        SlopeConfig slopeConfig = slopeSkeletonConfigs.get(id);
+        if (slopeConfig == null) {
             throw new IllegalArgumentException("No entry in integerSlopeSkeletonMap for id: " + id);
         }
-        return slopeSkeletonConfig;
+        return slopeConfig;
     }
 
-    public Collection<SlopeSkeletonConfig> getSlopeSkeletonConfigs() {
+    public Collection<SlopeConfig> getSlopeSkeletonConfigs() {
         return slopeSkeletonConfigs.values();
     }
 
@@ -118,11 +118,11 @@ public class TerrainTypeService {
         terrainObjectConfigs.remove(terrainObjectConfig.getId());
     }
 
-    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
-        slopeSkeletonConfigs.put(slopeSkeletonConfig.getId(), slopeSkeletonConfig);
+    public void overrideSlopeSkeletonConfig(SlopeConfig slopeConfig) {
+        slopeSkeletonConfigs.put(slopeConfig.getId(), slopeConfig);
     }
 
-    public void deleteSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
-        slopeSkeletonConfigs.remove(slopeSkeletonConfig.getId());
+    public void deleteSlopeSkeletonConfig(SlopeConfig slopeConfig) {
+        slopeSkeletonConfigs.remove(slopeConfig.getId());
     }
 }

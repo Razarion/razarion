@@ -6,7 +6,7 @@ import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
@@ -30,7 +30,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -117,10 +116,10 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
 
     private void drawSlope(Rectangle2D playground, List<TerrainSlopePosition> terrainSlopePositions) {
         for (TerrainSlopePosition terrainSlopePosition : terrainSlopePositions) {
-            SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
-            switch (slopeSkeletonConfig.getType()) {
+            SlopeConfig slopeConfig = terrainTypeService.getSlopeSkeleton(terrainSlopePosition.getSlopeConfigId());
+            switch (slopeConfig.getType()) {
                 case LAND:
-                    drawPlateau(playground, terrainSlopePosition, slopeSkeletonConfig);
+                    drawPlateau(playground, terrainSlopePosition, slopeConfig);
                     break;
                 case WATER:
                     if (terrainSlopePosition.isInverted()) {
@@ -130,7 +129,7 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
                     }
                     break;
                 default:
-                    logger.warning("MiniMapDialog.generateMiniTerrain() unknown slopeSkeletonConfig.getType(): " + slopeSkeletonConfig.getType());
+                    logger.warning("MiniMapDialog.generateMiniTerrain() unknown slopeConfig.getType(): " + slopeConfig.getType());
             }
             if (terrainSlopePosition.getChildren() != null) {
                 drawSlope(playground, terrainSlopePosition.getChildren());
@@ -138,9 +137,9 @@ public class MiniMapDialog extends Composite implements ModalDialogContent<Void>
         }
     }
 
-    private void drawPlateau(Rectangle2D playground, TerrainSlopePosition terrainSlopePosition, SlopeSkeletonConfig slopeSkeletonConfig) {
+    private void drawPlateau(Rectangle2D playground, TerrainSlopePosition terrainSlopePosition, SlopeConfig slopeConfig) {
         ctx.setStrokeStyle(SLOPE_COLOR);
-        ctx.setLineWidth((float) slopeSkeletonConfig.getWidth());
+        ctx.setLineWidth((float) slopeConfig.getWidth());
 
         doPolygon(playground, terrainSlopePosition);
         ctx.stroke();

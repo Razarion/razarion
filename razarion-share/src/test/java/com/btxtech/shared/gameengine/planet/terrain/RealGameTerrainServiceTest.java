@@ -3,8 +3,8 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
  */
 public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
 
-    private void setup(List<SlopeSkeletonConfig> slopeSkeletonConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
+    private void setup(List<SlopeConfig> slopeConfigs, List<TerrainSlopePosition> terrainSlopePositions) {
         PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 5000, 5000));
 
-        setupTerrainTypeService(slopeSkeletonConfigs, null, new double[][]{
+        setupTerrainTypeService(slopeConfigs, null, new double[][]{
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
                 {0, 0, 0, 0},
@@ -47,9 +47,9 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
 // SlopeId: 116
 // SlopeConfigId: 1
 // ---------------------------Slope shape---------------------------
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig skeletonConfig = new SlopeSkeletonConfig();
-        skeletonConfig.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
+        SlopeConfig skeletonConfig = new SlopeConfig();
+        skeletonConfig.setId(1).setType(SlopeConfig.Type.LAND);
         skeletonConfig.setRows(10).setSegments(100).setWidth(9.8).setHorizontalSpace(3.0).setHeight(8.2);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(1.4, 0.0, 0.1), GameTestHelper.createSlopeNode(3.5999998569488527, 0.0, 0.3), GameTestHelper.createSlopeNode(4.6, 1.0, 0.9), GameTestHelper.createSlopeNode(5.2, 2.4, 1.0), GameTestHelper.createSlopeNode(5.4, 3.7, 1.0), GameTestHelper.createSlopeNode(5.7, 5.1, 1.0), GameTestHelper.createSlopeNode(6.1, 6.8, 1.0), GameTestHelper.createSlopeNode(7.400000095367432, 8.8, 0.8), GameTestHelper.createSlopeNode(8.800000953674317, 8.2, 0.5), GameTestHelper.createSlopeNode(9.8, 8.2, 0.0)},
@@ -155,7 +155,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
         };
         skeletonConfig.setSlopeNodes(slopeNodes);
         skeletonConfig.setInnerLineGameEngine(9.0).setCoastDelimiterLineGameEngine(0.0).setOuterLineGameEngine(4.0);
-        slopeSkeletonConfigs.add(skeletonConfig);
+        slopeConfigs.add(skeletonConfig);
 // ---------------------------Slope corners---------------------------
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
 
@@ -174,7 +174,7 @@ public class RealGameTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(terrainSlopePosition2);
 // -----------------------------------------------------
 
-        setup(slopeSkeletonConfigs, terrainSlopePositions);
+        setup(slopeConfigs, terrainSlopePositions);
 
         getWeldBean(PathingService.class).setupPathToDestination(GameTestHelper.createMockSyncBaseItem(3, TerrainType.LAND, new DecimalPosition(187, 499)), new DecimalPosition(192, 437));
 

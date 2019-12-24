@@ -4,8 +4,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -28,33 +28,33 @@ import java.util.List;
 public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     private void setup(List<TerrainSlopePosition> terrainSlopePositions) {
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
 
-        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+        SlopeConfig slopeConfigLand = new SlopeConfig();
+        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
+        slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 8, 0.7),},
                 {GameTestHelper.createSlopeNode(7, 12, 0.7),},
                 {GameTestHelper.createSlopeNode(10, 20, 0.7),},
                 {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         }));
-        slopeSkeletonConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(7);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
+        slopeConfigLand.setOuterLineGameEngine(2).setInnerLineGameEngine(7);
+        slopeConfigs.add(slopeConfigLand);
 
-        SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-        slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(5).setSegments(1).setWidth(12).setHorizontalSpace(5).setHeight(-2);
-        slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+        SlopeConfig slopeConfigWater = new SlopeConfig();
+        slopeConfigWater.setId(2).setType(SlopeConfig.Type.WATER);
+        slopeConfigWater.setRows(5).setSegments(1).setWidth(12).setHorizontalSpace(5).setHeight(-2);
+        slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(1, 0, 1),},
                 {GameTestHelper.createSlopeNode(2, 0, 0.7),},
                 {GameTestHelper.createSlopeNode(4, 0, 0.7),},
                 {GameTestHelper.createSlopeNode(8, -3, 0.7),},
                 {GameTestHelper.createSlopeNode(12, -10, 0.7),},
         }));
-        slopeSkeletonConfigWater.setOuterLineGameEngine(4).setCoastDelimiterLineGameEngine(8).setInnerLineGameEngine(11);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
+        slopeConfigWater.setOuterLineGameEngine(4).setCoastDelimiterLineGameEngine(8).setInnerLineGameEngine(11);
+        slopeConfigs.add(slopeConfigWater);
 
 
         double[][] heights = new double[][]{
@@ -74,7 +74,7 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         planetConfig.setPlayGround(new Rectangle2D(50, 50, 5000, 5000));
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
 
-        setupTerrainTypeService(slopeSkeletonConfigs, null, heights, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, heights, planetConfig, terrainSlopePositions, null, null);
     }
 
     private List<TerrainSlopePosition> setupSlope(int slopeConfigId, boolean inverted, List<TerrainSlopePosition> children, TerrainSlopeCorner... slopePolygon) {

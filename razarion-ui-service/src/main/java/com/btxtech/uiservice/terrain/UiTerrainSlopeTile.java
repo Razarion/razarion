@@ -1,6 +1,6 @@
 package com.btxtech.uiservice.terrain;
 
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -24,14 +24,14 @@ public class UiTerrainSlopeTile {
     private TerrainTypeService terrainTypeService;
     private ModelRenderer modelRenderer;
     private UiTerrainTile uiTerrainTile;
-    private SlopeSkeletonConfig slopeSkeletonConfig;
+    private SlopeConfig slopeConfig;
     private TerrainSlopeTile terrainSlopeTile;
     private WaterConfig waterConfig;
     private double slopeWaterSplattingFadeThreshold;
 
     public void init(boolean active, UiTerrainTile uiTerrainTile, TerrainSlopeTile terrainSlopeTile) {
         this.uiTerrainTile = uiTerrainTile;
-        slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeSkeletonConfigId());
+        slopeConfig = terrainTypeService.getSlopeSkeleton(terrainSlopeTile.getSlopeConfigId());
         waterConfig = terrainTypeService.getWaterConfig();
         this.terrainSlopeTile = terrainSlopeTile;
         modelRenderer = slopeRenderTask.createModelRenderer(this);
@@ -50,13 +50,13 @@ public class UiTerrainSlopeTile {
         return uiTerrainTile;
     }
 
-    public SlopeSkeletonConfig getSlopeSkeletonConfig() {
-        return slopeSkeletonConfig;
+    public SlopeConfig getSlopeConfig() {
+        return slopeConfig;
     }
 
-    public void overrideSlopeSkeletonConfig(SlopeSkeletonConfig slopeSkeletonConfig) {
-        if (slopeSkeletonConfig.getId() == this.slopeSkeletonConfig.getId()) {
-            this.slopeSkeletonConfig = slopeSkeletonConfig;
+    public void overrideSlopeSkeletonConfig(SlopeConfig slopeConfig) {
+        if (slopeConfig.getId() == this.slopeConfig.getId()) {
+            this.slopeConfig = slopeConfig;
         }
     }
 
@@ -66,28 +66,28 @@ public class UiTerrainSlopeTile {
     }
 
     public Integer getTextureId() {
-        return slopeSkeletonConfig.getSlopeTextureId();
+        return slopeConfig.getSlopeTextureId();
     }
 
     public Integer getBmId() {
-        return slopeSkeletonConfig.getSlopeBumpMapId();
+        return slopeConfig.getSlopeBumpMapId();
     }
 
 
     public SpecularLightConfig getSlopeLightConfig() {
-        return slopeSkeletonConfig.getSpecularLightConfig();
+        return slopeConfig.getSpecularLightConfig();
     }
 
     public double getBmDepth() {
-        return slopeSkeletonConfig.getSlopeBumpMapDepth();
+        return slopeConfig.getSlopeBumpMapDepth();
     }
 
     public boolean hasWater() {
-        return slopeSkeletonConfig.getType() == SlopeSkeletonConfig.Type.WATER;
+        return slopeConfig.getType() == SlopeConfig.Type.WATER;
     }
 
     public double getTextureScale() {
-        return slopeSkeletonConfig.getSlopeTextureScale();
+        return slopeConfig.getSlopeTextureScale();
     }
 
     @Deprecated

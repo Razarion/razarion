@@ -3,7 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
@@ -141,10 +141,10 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
     }
 
     private void setup(List<TerrainObjectPosition> terrainObjectPositions, TerrainSlopeCorner... slopePolygon) {
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
+        SlopeConfig slopeConfigLand = new SlopeConfig();
+        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
         SlopeNode[][] slopeNodes = new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 8, 0.7),},
@@ -152,9 +152,9 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 {GameTestHelper.createSlopeNode(10, 20, 0.7),},
                 {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         };
-        slopeSkeletonConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
-        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
+        slopeConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
+        slopeConfigLand.setSlopeNodes(toColumnRow(slopeNodes));
+        slopeConfigs.add(slopeConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
@@ -181,6 +181,6 @@ public class DrivewaySlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setRadius(5));
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
 
-        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
     }
 }

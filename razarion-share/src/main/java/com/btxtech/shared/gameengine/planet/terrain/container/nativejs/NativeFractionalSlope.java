@@ -8,7 +8,7 @@ import jsinterop.annotations.JsType;
  */
 @JsType(name = "NativeFractionalSlope", isNative = true, namespace = "com.btxtech.shared.nativejs")
 public class NativeFractionalSlope {
-    public int slopeSkeletonConfigId;
+    public int slopeConfigId;
     public double groundHeight;
     public boolean inverted;
     public NativeFractionalSlopeSegment[] fractionalSlopeSegments;

@@ -76,7 +76,7 @@ public class Driveway {
         DecimalPosition last = CollectionUtils.getCorrectedElement(startSlopeIndex - 1, input).getPosition();
         double angle = startSlopePosition.angle(last, endSlopePosition);
         if (angle < MathHelper.THREE_QUARTER_RADIANT) {
-            startSlopeBreaking = slope.getSlopeSkeletonConfig().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
+            startSlopeBreaking = slope.getSlopeConfig().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
         } else {
             startSlopeBreaking = 0;
         }
@@ -86,7 +86,7 @@ public class Driveway {
         DecimalPosition next = CollectionUtils.getCorrectedElement(endSlopeIndex + 1, input).getPosition();
         double angle = endSlopePosition.angle(startSlopePosition, next);
         if (angle < MathHelper.THREE_QUARTER_RADIANT) {
-            endSlopeBreaking = slope.getSlopeSkeletonConfig().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
+            endSlopeBreaking = slope.getSlopeConfig().getWidth() / Math.tan((MathHelper.THREE_QUARTER_RADIANT + angle) / 2.0);
         } else {
             endSlopeBreaking = 0;
         }

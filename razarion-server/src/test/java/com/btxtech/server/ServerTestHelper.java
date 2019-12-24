@@ -44,11 +44,11 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -58,7 +58,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -511,40 +511,40 @@ public class ServerTestHelper {
     protected void setupSlopeConfigEntities() throws Exception {
         runInTransaction(em -> {
             SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
-            SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-            slopeSkeletonConfigLand.setSpecularLightConfig(new SpecularLightConfig());
-            slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-            slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
-            slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+            SlopeConfig slopeConfigLand = new SlopeConfig();
+            slopeConfigLand.setSpecularLightConfig(new SpecularLightConfig());
+            slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+            slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
+            slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(2, 0, 5)).setSlopeFactor(1)},
                     {new SlopeNode().setPosition(new Vertex(4, 0, 10)).setSlopeFactor(0.7)},
                     {new SlopeNode().setPosition(new Vertex(7, 0, 20)).setSlopeFactor(0.7)},
             }));
-            slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
+            slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
             slopeConfigEntity1.setDefault();
             List<SlopeShape> shapeLand = Arrays.asList(new SlopeShape(new DecimalPosition(2, 5), 1), new SlopeShape(new DecimalPosition(4, 10), 1), new SlopeShape(new DecimalPosition(7, 20), 1));
-            slopeSkeletonConfigLand.setSlopeShapes(shapeLand);
-            slopeConfigEntity1.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigLand).setInternalName("Land"), imagePersistence);
+            slopeConfigLand.setSlopeShapes(shapeLand);
+            slopeConfigEntity1.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigLand).setInternalName("Land"), imagePersistence);
             em.persist(slopeConfigEntity1);
 
 
             SLOPE_LAND_CONFIG_ENTITY_1 = slopeConfigEntity1.getId();
             SlopeConfigEntity slopeConfigEntity2 = new SlopeConfigEntity();
-            SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-            slopeSkeletonConfigWater.setSpecularLightConfig(new SpecularLightConfig());
-            slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-            slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
-            slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+            SlopeConfig slopeConfigWater = new SlopeConfig();
+            slopeConfigWater.setSpecularLightConfig(new SpecularLightConfig());
+            slopeConfigWater.setId(2).setType(SlopeConfig.Type.WATER);
+            slopeConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
+            slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                     {new SlopeNode().setPosition(new Vertex(5, 0, 0.5)).setSlopeFactor(0.5)},
                     {new SlopeNode().setPosition(new Vertex(10, 0, -0.1)).setSlopeFactor(1)},
                     {new SlopeNode().setPosition(new Vertex(15, 0, -0.8)).setSlopeFactor(1)},
                     {new SlopeNode().setPosition(new Vertex(20, 0, -2)).setSlopeFactor(1)},
             }));
-            slopeSkeletonConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
+            slopeConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
             slopeConfigEntity2.setDefault();
             List<SlopeShape> shapeWater = Arrays.asList(new SlopeShape(new DecimalPosition(5, 0.5), 0.5f), new SlopeShape(new DecimalPosition(10, -0.1), 1), new SlopeShape(new DecimalPosition(15, -0.8), 1), new SlopeShape(new DecimalPosition(20, -2), 1));
-            slopeSkeletonConfigWater.setSlopeShapes(shapeWater);
-            slopeConfigEntity2.fromSlopeConfig(new SlopeConfig().setSlopeSkeletonConfig(slopeSkeletonConfigWater).setInternalName("Water"), imagePersistence);
+            slopeConfigWater.setSlopeShapes(shapeWater);
+            slopeConfigEntity2.fromSlopeConfig(new SlopeConfig_OLD().setSlopeConfig(slopeConfigWater).setInternalName("Water"), imagePersistence);
             em.persist(slopeConfigEntity2);
             SLOPE_WATER_CONFIG_ENTITY_2 = slopeConfigEntity2.getId();
         });

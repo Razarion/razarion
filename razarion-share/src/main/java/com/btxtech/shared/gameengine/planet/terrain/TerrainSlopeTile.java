@@ -9,17 +9,17 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainSlopeTile", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainSlopeTile {
-    private int slopeSkeletonConfigId;
+    private int slopeConfigId;
     private SlopeGeometry outerSlopeGeometry;
     private SlopeGeometry centerSlopeGeometry;
     private SlopeGeometry innerSlopeGeometry;
 
-    public int getSlopeSkeletonConfigId() {
-        return slopeSkeletonConfigId;
+    public int getSlopeConfigId() {
+        return slopeConfigId;
     }
 
-    public void setSlopeSkeletonConfigId(int slopeSkeletonConfigId) {
-        this.slopeSkeletonConfigId = slopeSkeletonConfigId;
+    public void setSlopeConfigId(int slopeConfigId) {
+        this.slopeConfigId = slopeConfigId;
     }
 
     public SlopeGeometry getOuterSlopeGeometry() {

@@ -44,6 +44,6 @@ public abstract class AbstractSlopeRendererUnit extends AbstractRenderUnit<UiTer
 
     @Override
     public String helperString() {
-        return "Slope: " + getRenderData().getSlopeSkeletonConfig().getId() + " " + getRenderData().getSlopeSkeletonConfig().getInternalName();
+        return "Slope: " + getRenderData().getSlopeConfig().getId() + " " + getRenderData().getSlopeConfig().getInternalName();
     }
 }

@@ -5,7 +5,7 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -32,7 +32,7 @@ public interface TerrainElementEditorProvider {
     @POST
     @Path("createSlopeConfig")
     @Produces(MediaType.APPLICATION_JSON)
-    SlopeConfig createSlopeConfig();
+    SlopeConfig_OLD createSlopeConfig();
 
     @DELETE
     @Path("deleteBaseItemType/{id}")
@@ -41,17 +41,17 @@ public interface TerrainElementEditorProvider {
     @POST
     @Path("updateSlopeConfig")
     @Consumes(MediaType.APPLICATION_JSON)
-    void updateSlopeConfig(SlopeConfig slopeConfig);
+    void updateSlopeConfig(SlopeConfig_OLD slopeConfigOLD);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readSlopeConfig/{id}")
-    SlopeConfig readSlopeConfig(@PathParam("id") int id);
+    SlopeConfig_OLD readSlopeConfig(@PathParam("id") int id);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readSlopeConfigs")
-    List<SlopeConfig> readSlopeConfigs();
+    List<SlopeConfig_OLD> readSlopeConfigs();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)

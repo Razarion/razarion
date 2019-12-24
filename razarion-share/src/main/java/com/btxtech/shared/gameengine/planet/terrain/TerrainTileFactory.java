@@ -6,8 +6,8 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangulator;
 import com.btxtech.shared.datatypes.Vertex;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlope;
 import com.btxtech.shared.gameengine.planet.terrain.container.FractionalSlopeSegment;
@@ -167,8 +167,8 @@ public class TerrainTileFactory {
     }
 
     private void generateSlopeTerrainTile(TerrainTileBuilder terrainTileBuilder, FractionalSlope fractionalSlope) {
-        SlopeSkeletonConfig slopeSkeletonConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeSkeletonConfigId());
-        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(slopeSkeletonConfig, fractionalSlope.getFractionalSlopeSegments().size());
+        SlopeConfig slopeConfig = terrainTypeService.getSlopeSkeleton(fractionalSlope.getSlopeConfigId());
+        TerrainSlopeTileBuilder terrainSlopeTileBuilder = terrainTileBuilder.createTerrainSlopeTileContext(slopeConfig, fractionalSlope.getFractionalSlopeSegments().size());
         terrainTileBuilder.getTerrainWaterTileBuilder().startWaterMesh();
         int vertexColumn = 0;
         for (FractionalSlopeSegment fractionalSlopeSegment : fractionalSlope.getFractionalSlopeSegments()) {
@@ -176,8 +176,8 @@ public class TerrainTileFactory {
             // Setup Slope
             double uvX = 0;
             Vertex lastPosition = null;
-            for (int row = 0; row < slopeSkeletonConfig.getRows(); row++) {
-                SlopeNode slopeNode = slopeSkeletonConfig.getSlopeNode(fractionalSlopeSegment.getIndex(), row);
+            for (int row = 0; row < slopeConfig.getRows(); row++) {
+                SlopeNode slopeNode = slopeConfig.getSlopeNode(fractionalSlopeSegment.getIndex(), row);
                 Vertex skeletonVertex = slopeNode.getPosition();
                 if (fractionalSlopeSegment.getDrivewayHeightFactor() < 1.0) {
                     skeletonVertex = skeletonVertex.multiply(1.0, 1.0, fractionalSlopeSegment.getDrivewayHeightFactor());
@@ -195,12 +195,12 @@ public class TerrainTileFactory {
                 terrainSlopeTileBuilder.addVertex(vertexColumn, row, transformedPoint, new DecimalPosition(uvX, fractionalSlopeSegment.getUvY()), uvTermination, setupSlopeFactor(slopeNode, fractionalSlopeSegment.getDrivewayHeightFactor()));
             }
             vertexColumn++;
-            if (slopeSkeletonConfig.hasWater()) {
-                terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeSkeletonConfig.getWidth(), slopeSkeletonConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeSkeletonConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
+            if (slopeConfig.hasWater()) {
+                terrainTileBuilder.getTerrainWaterTileBuilder().addShallowWaterMeshVertices(transformationMatrix, slopeConfig.getWidth(), slopeConfig.getHorizontalSpace(), fractionalSlope.getGroundHeight() + slopeConfig.getWaterLevel(), fractionalSlopeSegment.getUvY(), fractionalSlopeSegment.getUvYTermination());
             }
         }
-        terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted(), slopeSkeletonConfig.isInterpolateNorm());
-        terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh(fractionalSlope.getSlopeSkeletonConfigId());
+        terrainSlopeTileBuilder.triangulation(fractionalSlope.isInverted(), slopeConfig.isInterpolateNorm());
+        terrainTileBuilder.getTerrainWaterTileBuilder().triangulateShallowWaterMesh(fractionalSlope.getSlopeConfigId());
     }
 
     private static double setupSlopeFactor(SlopeNode slopeNode, double drivewayHeightFactor) {

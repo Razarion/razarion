@@ -6,10 +6,10 @@ import com.btxtech.server.persistence.SpecularLightConfigEmbeddable;
 import com.btxtech.server.persistence.PersistenceUtil;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Shape;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -48,7 +48,7 @@ public class SlopeConfigEntity {
     private List<SlopeShapeEntity> shape;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private SlopeSkeletonConfig.Type type;
+    private SlopeConfig.Type type;
     private double outerLineGameEngine;
     private double innerLineGameEngine;
     private double coastDelimiterLineGameEngine;
@@ -75,79 +75,79 @@ public class SlopeConfigEntity {
         return id;
     }
 
-    public SlopeSkeletonConfig toSlopeSkeleton() {
-        SlopeSkeletonConfig slopeSkeletonConfig = new SlopeSkeletonConfig();
-        slopeSkeletonConfig.setId(id);
-        slopeSkeletonConfig.setInternalName(internalName);
-        slopeSkeletonConfig.setSegments(segments);
-        slopeSkeletonConfig.setInnerLineGameEngine(innerLineGameEngine);
-        slopeSkeletonConfig.setCoastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
-        slopeSkeletonConfig.setOuterLineGameEngine(outerLineGameEngine);
+    public SlopeConfig toSlopeSkeleton() {
+        SlopeConfig slopeConfig = new SlopeConfig();
+        slopeConfig.setId(id);
+        slopeConfig.setInternalName(internalName);
+        slopeConfig.setSegments(segments);
+        slopeConfig.setInnerLineGameEngine(innerLineGameEngine);
+        slopeConfig.setCoastDelimiterLineGameEngine(coastDelimiterLineGameEngine);
+        slopeConfig.setOuterLineGameEngine(outerLineGameEngine);
         Shape shape = new Shape(toSlopeShapes());
-        slopeSkeletonConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
-        slopeSkeletonConfig.setRows(shape.getVertexCount());
-        slopeSkeletonConfig.setWidth(shape.getDistance());
-        slopeSkeletonConfig.setHeight(shape.getZInner());
-        slopeSkeletonConfig.setHorizontalSpace(horizontalSpace);
-        slopeSkeletonConfig.setType(type);
-        slopeSkeletonConfig.setSlopeTextureId(PersistenceUtil.getImageIdSafe(texture));
-        slopeSkeletonConfig.setSlopeTextureScale(textureScale);
-        slopeSkeletonConfig.setSlopeBumpMapId(PersistenceUtil.getImageIdSafe(bm));
-        slopeSkeletonConfig.setSlopeBumpMapDepth(bmDepth);
+        slopeConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
+        slopeConfig.setRows(shape.getVertexCount());
+        slopeConfig.setWidth(shape.getDistance());
+        slopeConfig.setHeight(shape.getZInner());
+        slopeConfig.setHorizontalSpace(horizontalSpace);
+        slopeConfig.setType(type);
+        slopeConfig.setSlopeTextureId(PersistenceUtil.getImageIdSafe(texture));
+        slopeConfig.setSlopeTextureScale(textureScale);
+        slopeConfig.setSlopeBumpMapId(PersistenceUtil.getImageIdSafe(bm));
+        slopeConfig.setSlopeBumpMapDepth(bmDepth);
         SlopeNode[][] slopeNodes = new SlopeNode[segments][shape.getVertexCount()];
         for (SlopeNodeEntity slopeSkeletonEntry : slopeSkeletonEntries) {
             slopeNodes[slopeSkeletonEntry.getSegmentIndex()][slopeSkeletonEntry.getRowIndex()] = slopeSkeletonEntry.toSlopeNode();
         }
-        slopeSkeletonConfig.setSlopeNodes(slopeNodes);
+        slopeConfig.setSlopeNodes(slopeNodes);
         // TODO --------------
-        slopeSkeletonConfig.setSlopeWaterSplattingId(20).setSlopeWaterSplattingScale(0.1).setSlopeWaterSplattingFactor(0.5).setSlopeWaterSplattingHeight(-0.22).setSlopeWaterSplattingFadeThreshold(0.2);
+        slopeConfig.setSlopeWaterSplattingId(20).setSlopeWaterSplattingScale(0.1).setSlopeWaterSplattingFactor(0.5).setSlopeWaterSplattingHeight(-0.22).setSlopeWaterSplattingFadeThreshold(0.2);
         // TODO ends --------------
-        return slopeSkeletonConfig;
-    }
-
-    public SlopeConfig toSlopeConfig() {
-        SlopeConfig slopeConfig = new SlopeConfig();
-        slopeConfig.setId(id);
-        slopeConfig.setFractalMin(fractalMin);
-        slopeConfig.setFractalMax(fractalMax);
-        slopeConfig.setFractalClampMin(fractalClampMin);
-        slopeConfig.setFractalClampMax(fractalClampMax);
-        slopeConfig.setFractalRoughness(fractalRoughness);
-        slopeConfig.setInternalName(internalName);
-        slopeConfig.setSlopeSkeletonConfig(toSlopeSkeleton());
-        // TODO  slopeConfig.setSlopeShapes(toSlopeShapes());
         return slopeConfig;
     }
 
-    public void fromSlopeConfig(SlopeConfig slopeConfig, ImagePersistence imagePersistence) {
+    public SlopeConfig_OLD toSlopeConfig() {
+        SlopeConfig_OLD slopeConfigOLD = new SlopeConfig_OLD();
+        slopeConfigOLD.setId(id);
+        slopeConfigOLD.setFractalMin(fractalMin);
+        slopeConfigOLD.setFractalMax(fractalMax);
+        slopeConfigOLD.setFractalClampMin(fractalClampMin);
+        slopeConfigOLD.setFractalClampMax(fractalClampMax);
+        slopeConfigOLD.setFractalRoughness(fractalRoughness);
+        slopeConfigOLD.setInternalName(internalName);
+        slopeConfigOLD.setSlopeConfig(toSlopeSkeleton());
+        // TODO  slopeConfigOLD.setSlopeShapes(toSlopeShapes());
+        return slopeConfigOLD;
+    }
+
+    public void fromSlopeConfig(SlopeConfig_OLD slopeConfigOLD, ImagePersistence imagePersistence) {
         shape.clear();
-        // TODO  for (SlopeShape slopeShape : slopeConfig.getSlopeShapes()) {
+        // TODO  for (SlopeShape slopeShape : slopeConfigOLD.getSlopeShapes()) {
         // TODO     SlopeShapeEntity slopeShapeEntity = new SlopeShapeEntity();
         // TODO     slopeShapeEntity.fromSlopeShape(slopeShape);
         // TODO     shape.add(slopeShapeEntity);
         // TODO  }
-        internalName = slopeConfig.getInternalName();
-        specularLightConfigEmbeddable.fromLightConfig(slopeConfig.getSlopeSkeletonConfig().getSpecularLightConfig());
-        fractalMin = slopeConfig.getFractalMin();
-        fractalMax = slopeConfig.getFractalMax();
-        fractalClampMin = slopeConfig.getFractalClampMin();
-        fractalClampMax = slopeConfig.getFractalClampMax();
-        fractalRoughness = slopeConfig.getFractalRoughness();
-        type = slopeConfig.getSlopeSkeletonConfig().getType();
-        innerLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getInnerLineGameEngine();
-        coastDelimiterLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getCoastDelimiterLineGameEngine();
-        outerLineGameEngine = slopeConfig.getSlopeSkeletonConfig().getOuterLineGameEngine();
-        texture = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getSlopeTextureId());
-        textureScale = slopeConfig.getSlopeSkeletonConfig().getSlopeTextureScale();
-        bm = imagePersistence.getImageLibraryEntity(slopeConfig.getSlopeSkeletonConfig().getSlopeBumpMapId());
-        bmDepth = slopeConfig.getSlopeSkeletonConfig().getSlopeBumpMapDepth();
-        horizontalSpace = slopeConfig.getSlopeSkeletonConfig().getHorizontalSpace();
-        segments = slopeConfig.getSlopeSkeletonConfig().getSegments();
+        internalName = slopeConfigOLD.getInternalName();
+        specularLightConfigEmbeddable.fromLightConfig(slopeConfigOLD.getSlopeConfig().getSpecularLightConfig());
+        fractalMin = slopeConfigOLD.getFractalMin();
+        fractalMax = slopeConfigOLD.getFractalMax();
+        fractalClampMin = slopeConfigOLD.getFractalClampMin();
+        fractalClampMax = slopeConfigOLD.getFractalClampMax();
+        fractalRoughness = slopeConfigOLD.getFractalRoughness();
+        type = slopeConfigOLD.getSlopeConfig().getType();
+        innerLineGameEngine = slopeConfigOLD.getSlopeConfig().getInnerLineGameEngine();
+        coastDelimiterLineGameEngine = slopeConfigOLD.getSlopeConfig().getCoastDelimiterLineGameEngine();
+        outerLineGameEngine = slopeConfigOLD.getSlopeConfig().getOuterLineGameEngine();
+        texture = imagePersistence.getImageLibraryEntity(slopeConfigOLD.getSlopeConfig().getSlopeTextureId());
+        textureScale = slopeConfigOLD.getSlopeConfig().getSlopeTextureScale();
+        bm = imagePersistence.getImageLibraryEntity(slopeConfigOLD.getSlopeConfig().getSlopeBumpMapId());
+        bmDepth = slopeConfigOLD.getSlopeConfig().getSlopeBumpMapDepth();
+        horizontalSpace = slopeConfigOLD.getSlopeConfig().getHorizontalSpace();
+        segments = slopeConfigOLD.getSlopeConfig().getSegments();
         slopeSkeletonEntries.clear();
         for (int x = 0; x < segments; x++) {
             for (int y = 0; y < shape.size(); y++) {
                 SlopeNodeEntity slopeNodeEntity = new SlopeNodeEntity();
-                slopeNodeEntity.fromSlopeNode(x, y, slopeConfig.getSlopeSkeletonConfig().getSlopeNodes()[x][y]);
+                slopeNodeEntity.fromSlopeNode(x, y, slopeConfigOLD.getSlopeConfig().getSlopeNodes()[x][y]);
                 slopeSkeletonEntries.add(slopeNodeEntity);
             }
         }
@@ -156,7 +156,7 @@ public class SlopeConfigEntity {
     public void setDefault() {
         segments = 1;
         horizontalSpace = 0.5;
-        type = SlopeSkeletonConfig.Type.LAND;
+        type = SlopeConfig.Type.LAND;
         shape = new ArrayList<>();
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(0, 0)).setSlopeFactor(1));
         shape.add(new SlopeShapeEntity().setPosition(new DecimalPosition(1, 1)).setSlopeFactor(1));

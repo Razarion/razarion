@@ -4,8 +4,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -62,32 +62,32 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
     }
 
     private void setup(List<TerrainObjectPosition> terrainObjectPositions, List<TerrainSlopePosition> terrainSlopePositions) {
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
 
-        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+        SlopeConfig slopeConfigLand = new SlopeConfig();
+        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.setRows(5).setSegments(1).setWidth(11).setHorizontalSpace(5).setHeight(20);
+        slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 1),},
                 {GameTestHelper.createSlopeNode(4, 8, 0.7),},
                 {GameTestHelper.createSlopeNode(7, 12, 0.7),},
                 {GameTestHelper.createSlopeNode(10, 20, 0.7),},
                 {GameTestHelper.createSlopeNode(11, 20, 0.7),},
         }));
-        slopeSkeletonConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
+        slopeConfigLand.setOuterLineGameEngine(3).setInnerLineGameEngine(7);
+        slopeConfigs.add(slopeConfigLand);
 
-        SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-        slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(5).setHeight(-2);
-        slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+        SlopeConfig slopeConfigWater = new SlopeConfig();
+        slopeConfigWater.setId(2).setType(SlopeConfig.Type.WATER);
+        slopeConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(5).setHeight(-2);
+        slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 0, 0),},
                 {GameTestHelper.createSlopeNode(5, -0.5, 1),},
                 {GameTestHelper.createSlopeNode(10, -1, 1),},
                 {GameTestHelper.createSlopeNode(20, -2, 1),},
         }));
-        slopeSkeletonConfigWater.setOuterLineGameEngine(5).setInnerLineGameEngine(18).setCoastDelimiterLineGameEngine(12);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
+        slopeConfigWater.setOuterLineGameEngine(5).setInnerLineGameEngine(18).setCoastDelimiterLineGameEngine(12);
+        slopeConfigs.add(slopeConfigWater);
 
         double[][] heights = new double[][]{
                 {0, 0, 0, 0},
@@ -111,7 +111,7 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setPlayGround(new Rectangle2D(50, 50, 200, 200));
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 2, 2));
 
-        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, terrainObjectPositions, null);
     }
 
 }

@@ -3,10 +3,9 @@ package com.btxtech.uiservice.control;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.BaseItemPlacerConfig;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.SceneConfig;
 import com.btxtech.shared.dto.SlaveQuestInfo;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.ViewFieldConfig;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.gameengine.InventoryTypeService;
@@ -328,9 +327,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             }
         }
 
-        for (SlopeSkeletonConfig slopeSkeletonConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
-            if (slopeSkeletonConfig.getSlopeTextureId() != null) {
-                textureIds.add(slopeSkeletonConfig.getSlopeTextureId());
+        for (SlopeConfig slopeConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeConfigs()) {
+            if (slopeConfig.getSlopeTextureId() != null) {
+                textureIds.add(slopeConfig.getSlopeTextureId());
             }
         }
 
@@ -347,9 +346,9 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 
     public Set<Integer> getAllBumpTextureIds() {
         Set<Integer> bumpIds = new HashSet<>();
-        for (SlopeSkeletonConfig slopeSkeletonConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeSkeletonConfigs()) {
-            if (slopeSkeletonConfig.getSlopeBumpMapId() != null) {
-                bumpIds.add(slopeSkeletonConfig.getSlopeBumpMapId());
+        for (SlopeConfig slopeConfig : coldGameUiControlConfig.getStaticGameConfig().getSlopeConfigs()) {
+            if (slopeConfig.getSlopeBumpMapId() != null) {
+                bumpIds.add(slopeConfig.getSlopeBumpMapId());
             }
         }
 

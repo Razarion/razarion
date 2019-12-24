@@ -7,7 +7,6 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 /**
  * Created by Beat
@@ -26,7 +25,7 @@ public class StaticGameConfigPersistence {
 
     public StaticGameConfig loadStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setSlopeSkeletonConfigs(terrainElementPersistence.loadSlopeSkeletons());
+        staticGameConfig.setSlopeConfigs(terrainElementPersistence.loadSlopeSkeletons());
         staticGameConfig.setDrivewayConfigs(terrainElementPersistence.loadDrivewayConfigs());
         staticGameConfig.setGroundSkeletonConfig(terrainElementPersistence.loadGroundSkeleton());
         staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());

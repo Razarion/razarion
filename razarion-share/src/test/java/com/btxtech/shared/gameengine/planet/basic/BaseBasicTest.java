@@ -3,8 +3,8 @@ package com.btxtech.shared.gameengine.planet.basic;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.PlayerBase;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -32,29 +32,29 @@ public class BaseBasicTest extends WeldMasterBaseTest {
     protected void setup() {
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
 
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
+        SlopeConfig slopeConfigLand = new SlopeConfig();
+        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.setRows(3).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
+        slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 5, 1),},
                 {GameTestHelper.createSlopeNode(4, 10, 0.7),},
                 {GameTestHelper.createSlopeNode(7, 20, 0.7),},
         }));
-        slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
+        slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(6);
+        slopeConfigs.add(slopeConfigLand);
 
-        SlopeSkeletonConfig slopeSkeletonConfigWater = new SlopeSkeletonConfig();
-        slopeSkeletonConfigWater.setId(2).setType(SlopeSkeletonConfig.Type.WATER);
-        slopeSkeletonConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
-        slopeSkeletonConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+        SlopeConfig slopeConfigWater = new SlopeConfig();
+        slopeConfigWater.setId(2).setType(SlopeConfig.Type.WATER);
+        slopeConfigWater.setRows(4).setSegments(1).setWidth(20).setHorizontalSpace(6).setHeight(-2);
+        slopeConfigWater.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(5, 0.5, 0.5),},
                 {GameTestHelper.createSlopeNode(10, -0.1, 1),},
                 {GameTestHelper.createSlopeNode(15, -0.8, 1),},
                 {GameTestHelper.createSlopeNode(20, -2, 1),}
         }));
-        slopeSkeletonConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigWater);
+        slopeConfigWater.setOuterLineGameEngine(8).setCoastDelimiterLineGameEngine(10).setInnerLineGameEngine(16);
+        slopeConfigs.add(slopeConfigWater);
 
         // Land slope
         TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
@@ -75,7 +75,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
 
 
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
-        staticGameConfig.setSlopeSkeletonConfigs(slopeSkeletonConfigs);
+        staticGameConfig.setSlopeConfigs(slopeConfigs);
 
         setupMasterEnvironment(staticGameConfig, terrainSlopePositions);
     }

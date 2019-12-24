@@ -2,7 +2,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 import com.btxtech.shared.utils.GeometricUtil;
@@ -21,7 +21,7 @@ public class TerrainSlopeTileBuilder {
     private JsInteropObjectFactory jsInteropObjectFactory;
     @Inject
     private ExceptionHandler exceptionHandler;
-    private SlopeSkeletonConfig slopeSkeletonConfig;
+    private SlopeConfig slopeConfig;
     private int xCount;
     private int yCount;
     private SlopeVertex[][] mesh;
@@ -31,13 +31,13 @@ public class TerrainSlopeTileBuilder {
     private SlopeGeometryContext centerSlopeGeometryContext = new SlopeGeometryContext();
     private SlopeGeometryContext innerSlopeGeometryContext = new SlopeGeometryContext();
 
-    public void init(SlopeSkeletonConfig slopeSkeletonConfig, int xCount, int yCount, TerrainTileBuilder terrainTileBuilder) {
-        this.slopeSkeletonConfig = slopeSkeletonConfig;
+    public void init(SlopeConfig slopeConfig, int xCount, int yCount, TerrainTileBuilder terrainTileBuilder) {
+        this.slopeConfig = slopeConfig;
         this.xCount = xCount;
         this.yCount = yCount;
         this.terrainTileBuilder = terrainTileBuilder;
         mesh = new SlopeVertex[xCount][yCount];
-        polygon2Segment = TerrainUtil.setupSegmentLookup(slopeSkeletonConfig.getSlopeShapes());
+        polygon2Segment = TerrainUtil.setupSegmentLookup(slopeConfig.getSlopeShapes());
     }
 
     public void addVertex(int x, int y, Vertex vertex, DecimalPosition uv, DecimalPosition uvTermination, double slopeFactor) {
@@ -46,7 +46,7 @@ public class TerrainSlopeTileBuilder {
 
     public TerrainSlopeTile generate() {
         TerrainSlopeTile terrainSlopeTile = jsInteropObjectFactory.generateTerrainSlopeTile();
-        terrainSlopeTile.setSlopeSkeletonConfigId(slopeSkeletonConfig.getId());
+        terrainSlopeTile.setSlopeConfigId(slopeConfig.getId());
         if(!outerSlopeGeometryContext.isEmpty()) {
             terrainSlopeTile.setOuterSlopeGeometry(outerSlopeGeometryContext.generate());
         }

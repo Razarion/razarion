@@ -7,7 +7,7 @@ import org.junit.Test;
  * Created by Beat
  * 30.01.2016.
  */
-public class SlopeSkeletonConfigEntityFactoryTest {
+public class SlopeConfigEntityFactoryTest {
 
     @Test
     public void testSimple1() throws Exception {

@@ -116,7 +116,7 @@ public class TerrainWaterTileBuilder {
         tmpUvTerminationShallowWaterMesh.add(uvTerminations);
     }
 
-    public void triangulateShallowWaterMesh(int slopeSkeletonConfigId) {
+    public void triangulateShallowWaterMesh(int slopeConfigId) {
         for (int x = 0; x < tmpShallowWaterMesh.size() - 3; x++) { // TODO -3 ??? remove fragemnt for norm... but why -3???
             for (int y = 0; y < tmpShallowWaterMesh.get(x).length - 1; y++) {
 
@@ -135,21 +135,21 @@ public class TerrainWaterTileBuilder {
                 DecimalPosition uvTL = tmpUvShallowWaterMesh.get(x)[y + 1];
 
                 if (!vertexBL.equalsDelta(vertexBR, 0.001)) {
-                    shallowTrianglePositions.put(slopeSkeletonConfigId, vertexBL);
-                    shallowTrianglePositions.put(slopeSkeletonConfigId, vertexBR);
-                    shallowTrianglePositions.put(slopeSkeletonConfigId, vertexTL);
-                    shallowTriangleUvs.put(slopeSkeletonConfigId, uvBL);
-                    shallowTriangleUvs.put(slopeSkeletonConfigId, uvBR);
-                    shallowTriangleUvs.put(slopeSkeletonConfigId, uvTL);
+                    shallowTrianglePositions.put(slopeConfigId, vertexBL);
+                    shallowTrianglePositions.put(slopeConfigId, vertexBR);
+                    shallowTrianglePositions.put(slopeConfigId, vertexTL);
+                    shallowTriangleUvs.put(slopeConfigId, uvBL);
+                    shallowTriangleUvs.put(slopeConfigId, uvBR);
+                    shallowTriangleUvs.put(slopeConfigId, uvTL);
                 }
 
                 if (!vertexTL.equalsDelta(vertexTR, 0.001)) {
-                    shallowTrianglePositions.put(slopeSkeletonConfigId, vertexBR);
-                    shallowTrianglePositions.put(slopeSkeletonConfigId, vertexTR);
-                    shallowTrianglePositions.put(slopeSkeletonConfigId, vertexTL);
-                    shallowTriangleUvs.put(slopeSkeletonConfigId, uvBR);
-                    shallowTriangleUvs.put(slopeSkeletonConfigId, uvTR);
-                    shallowTriangleUvs.put(slopeSkeletonConfigId, uvTL);
+                    shallowTrianglePositions.put(slopeConfigId, vertexBR);
+                    shallowTrianglePositions.put(slopeConfigId, vertexTR);
+                    shallowTrianglePositions.put(slopeConfigId, vertexTL);
+                    shallowTriangleUvs.put(slopeConfigId, uvBR);
+                    shallowTriangleUvs.put(slopeConfigId, uvTR);
+                    shallowTriangleUvs.put(slopeConfigId, uvTL);
                 }
             }
         }

@@ -5,7 +5,7 @@ import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -33,7 +33,7 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public SlopeConfig createSlopeConfig() {
+    public SlopeConfig_OLD createSlopeConfig() {
         try {
             return persistenceService.createSlopeConfig();
         } catch (Throwable t) {
@@ -43,7 +43,7 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public SlopeConfig readSlopeConfig(int id) {
+    public SlopeConfig_OLD readSlopeConfig(int id) {
         try {
             return persistenceService.readSlopeConfig(id);
         } catch (Throwable t) {
@@ -53,7 +53,7 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public List<SlopeConfig> readSlopeConfigs() {
+    public List<SlopeConfig_OLD> readSlopeConfigs() {
         try {
             return persistenceService.readSlopeConfigs();
         } catch (Throwable t) {
@@ -63,9 +63,9 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     }
 
     @Override
-    public void updateSlopeConfig(SlopeConfig slopeConfig) {
+    public void updateSlopeConfig(SlopeConfig_OLD slopeConfigOLD) {
         try {
-            persistenceService.updateSlopeConfig(slopeConfig);
+            persistenceService.updateSlopeConfig(slopeConfigOLD);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;

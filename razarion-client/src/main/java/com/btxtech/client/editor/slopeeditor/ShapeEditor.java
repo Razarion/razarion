@@ -3,7 +3,7 @@ package com.btxtech.client.editor.slopeeditor;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.SlopeShape;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.google.gwt.dom.client.Element;
 import elemental.client.Browser;
 import elemental.events.MouseEvent;
@@ -32,13 +32,13 @@ public class ShapeEditor implements Model {
     private SVGTransform translateTransform;
     private SVGTransform scaleTransform;
     private DecimalPosition lastScrollPosition;
-    private SlopeConfig slopeConfig;
+    private SlopeConfig_OLD slopeConfigOLD;
     private SelectedCornerListener selectedCornerListener;
     private SVGLineElement helperLine;
     private Corner selected;
 
-    protected void init(Element svgElement, SlopeConfig slopeConfig, SelectedCornerListener selectedCornerListener, Double scale) {
-        this.slopeConfig = slopeConfig;
+    protected void init(Element svgElement, SlopeConfig_OLD slopeConfigOLD, SelectedCornerListener selectedCornerListener, Double scale) {
+        this.slopeConfigOLD = slopeConfigOLD;
         this.selectedCornerListener = selectedCornerListener;
         this.svg = (SVGSVGElement) svgElement;
 
@@ -76,7 +76,7 @@ public class ShapeEditor implements Model {
         svg.getStyle().setCursor("all-scroll");
         svg.appendChild(group);
 
-        // TODO setup(slopeConfig.getSlopeShapes());
+        // TODO setup(slopeConfigOLD.getSlopeShapes());
     }
 
     private void setup(List<SlopeShape> shapeEntry) {
@@ -129,16 +129,16 @@ public class ShapeEditor implements Model {
     @Override
     public void createCorner(DecimalPosition position, Corner previous) {
         selectionChanged(null);
-        // TODO int index = slopeConfig.getSlopeShapes().indexOf(previous.getSlopeShape());
-        // TODO slopeConfig.getSlopeShapes().add(index + 1, new SlopeShape(position, 0));
-        // TODO setup(slopeConfig.getSlopeShapes());
+        // TODO int index = slopeConfigOLD.getSlopeShapes().indexOf(previous.getSlopeShape());
+        // TODO slopeConfigOLD.getSlopeShapes().add(index + 1, new SlopeShape(position, 0));
+        // TODO setup(slopeConfigOLD.getSlopeShapes());
     }
 
     public void deleteSelectedCorner() {
         SlopeShape slopeShape = selected.getSlopeShape();
         selectionChanged(null);
-        // TODO slopeConfig.getSlopeShapes().remove(slopeShape);
-        // TODO setup(slopeConfig.getSlopeShapes());
+        // TODO slopeConfigOLD.getSlopeShapes().remove(slopeShape);
+        // TODO setup(slopeConfigOLD.getSlopeShapes());
     }
 
     @Override

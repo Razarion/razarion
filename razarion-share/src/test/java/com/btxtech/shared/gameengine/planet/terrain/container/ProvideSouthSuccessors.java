@@ -2,8 +2,8 @@ package com.btxtech.shared.gameengine.planet.terrain.container;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
-import com.btxtech.shared.dto.SlopeSkeletonConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -28,18 +28,18 @@ import java.util.List;
 public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
 
     private void setup() {
-        List<SlopeSkeletonConfig> slopeSkeletonConfigs = new ArrayList<>();
-        SlopeSkeletonConfig slopeSkeletonConfigLand = new SlopeSkeletonConfig();
-        slopeSkeletonConfigLand.setId(1).setType(SlopeSkeletonConfig.Type.LAND);
-        slopeSkeletonConfigLand.setRows(4).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
-        slopeSkeletonConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
+        List<SlopeConfig> slopeConfigs = new ArrayList<>();
+        SlopeConfig slopeConfigLand = new SlopeConfig();
+        slopeConfigLand.setId(1).setType(SlopeConfig.Type.LAND);
+        slopeConfigLand.setRows(4).setSegments(1).setWidth(7).setHorizontalSpace(5).setHeight(20);
+        slopeConfigLand.setSlopeNodes(toColumnRow(new SlopeNode[][]{
                 {GameTestHelper.createSlopeNode(2, 1, 0.3),},
                 {GameTestHelper.createSlopeNode(4, 5, 1),},
                 {GameTestHelper.createSlopeNode(8, 10, 0.7),},
                 {GameTestHelper.createSlopeNode(10, 20, 0.7),},
         }));
-        slopeSkeletonConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(8);
-        slopeSkeletonConfigs.add(slopeSkeletonConfigLand);
+        slopeConfigLand.setOuterLineGameEngine(1).setInnerLineGameEngine(8);
+        slopeConfigs.add(slopeConfigLand);
 
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
 //        TerrainSlopePosition terrainSlopePositionLand = new TerrainSlopePosition();
@@ -73,7 +73,7 @@ public class ProvideSouthSuccessors extends WeldTerrainServiceTestBase {
                 new TerrainObjectPosition().setTerrainObjectId(3).setPosition(new DecimalPosition(70, 82)).setScale(1)
         );
 
-        setupTerrainTypeService(slopeSkeletonConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
     }
 
     @Test
