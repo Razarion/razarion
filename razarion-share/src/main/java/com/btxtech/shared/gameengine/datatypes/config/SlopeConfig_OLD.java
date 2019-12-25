@@ -8,7 +8,7 @@ import com.btxtech.shared.dto.ObjectNameIdProvider;
  * Created by Beat
  * 08.05.2016.
  */
-@Deprecated // Moved to SlopeConfig
+@Deprecated // Delete
 public class SlopeConfig_OLD implements ObjectNameIdProvider {
     private int id;
     private String internalName;
