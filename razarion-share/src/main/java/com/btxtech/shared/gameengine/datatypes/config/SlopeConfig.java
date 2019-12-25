@@ -47,11 +47,8 @@ public class SlopeConfig implements ObjectNameIdProvider {
     private Double slopeFoamDistortionStrength;
     private Double slopeFoamAnimationDuration;
     private GroundSkeletonConfig groundSkeletonConfig;
-    private Integer slopeSplattingId;
-    private Double slopeSplattingScale1;
-    private Double slopeSplattingScale2;
-    private Double slopeSplattingFadeThreshold;
-    private Double slopeSplattingOffset;
+    private SlopeGroundSplattingConfig outerSplatting;
+    private SlopeGroundSplattingConfig innerSplatting;
     private Double waterLevel;
     private Double waterFresnelOffset;
     private Double waterFresnelDelta;
@@ -220,48 +217,21 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Integer getSlopeSplattingId() {
-        return slopeSplattingId;
+    public SlopeGroundSplattingConfig getOuterSplatting() {
+        return outerSplatting;
     }
 
-    public SlopeConfig setSlopeSplattingId(Integer slopeSplattingId) {
-        this.slopeSplattingId = slopeSplattingId;
+    public SlopeConfig setOuterSplatting(SlopeGroundSplattingConfig outerSplatting) {
+        this.outerSplatting = outerSplatting;
         return this;
     }
 
-    public Double getSlopeSplattingScale1() {
-        return slopeSplattingScale1;
+    public SlopeGroundSplattingConfig getInnerSplatting() {
+        return innerSplatting;
     }
 
-    public SlopeConfig setSlopeSplattingScale1(Double slopeSplattingScale1) {
-        this.slopeSplattingScale1 = slopeSplattingScale1;
-        return this;
-    }
-
-    public Double getSlopeSplattingScale2() {
-        return slopeSplattingScale2;
-    }
-
-    public SlopeConfig setSlopeSplattingScale2(Double slopeSplattingScale2) {
-        this.slopeSplattingScale2 = slopeSplattingScale2;
-        return this;
-    }
-
-    public Double getSlopeSplattingFadeThreshold() {
-        return slopeSplattingFadeThreshold;
-    }
-
-    public SlopeConfig setSlopeSplattingFadeThreshold(Double slopeSplattingFadeThreshold) {
-        this.slopeSplattingFadeThreshold = slopeSplattingFadeThreshold;
-        return this;
-    }
-
-    public Double getSlopeSplattingOffset() {
-        return slopeSplattingOffset;
-    }
-
-    public SlopeConfig setSlopeSplattingOffset(Double slopeSplattingOffset) {
-        this.slopeSplattingOffset = slopeSplattingOffset;
+    public SlopeConfig setInnerSplatting(SlopeGroundSplattingConfig innerSplatting) {
+        this.innerSplatting = innerSplatting;
         return this;
     }
 
