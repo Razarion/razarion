@@ -205,7 +205,7 @@ public class TerrainTileFactory {
 
     private static double setupSlopeFactor(SlopeNode slopeNode, double drivewayHeightFactor) {
         if (MathHelper.compareWithPrecision(1.0, slopeNode.getSlopeFactor())) {
-            return 1 * drivewayHeightFactor;
+            return 1.0;
         } else if (MathHelper.compareWithPrecision(0.0, slopeNode.getSlopeFactor())) {
             return 0;
         }
