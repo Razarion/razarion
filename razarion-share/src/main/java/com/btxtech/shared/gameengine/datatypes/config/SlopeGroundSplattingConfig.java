@@ -2,10 +2,10 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 public class SlopeGroundSplattingConfig {
     private Integer imageId;
-    private Double scale1;
-    private Double scale2;
+    private Double scale;
     private Double fadeThreshold;
     private Double offset;
+    private Double impact;
 
     public Integer getImageId() {
         return imageId;
@@ -16,21 +16,12 @@ public class SlopeGroundSplattingConfig {
         return this;
     }
 
-    public Double getScale1() {
-        return scale1;
+    public Double getScale() {
+        return scale;
     }
 
-    public SlopeGroundSplattingConfig setScale1(Double scale1) {
-        this.scale1 = scale1;
-        return this;
-    }
-
-    public Double getScale2() {
-        return scale2;
-    }
-
-    public SlopeGroundSplattingConfig setScale2(Double scale2) {
-        this.scale2 = scale2;
+    public SlopeGroundSplattingConfig setScale(Double scale) {
+        this.scale = scale;
         return this;
     }
 
@@ -49,6 +40,15 @@ public class SlopeGroundSplattingConfig {
 
     public SlopeGroundSplattingConfig setOffset(Double offset) {
         this.offset = offset;
+        return this;
+    }
+
+    public Double getImpact() {
+        return impact;
+    }
+
+    public SlopeGroundSplattingConfig setImpact(Double impact) {
+        this.impact = impact;
         return this;
     }
 }
