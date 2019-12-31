@@ -105,7 +105,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         waterConfig.setInnerSplatting(new SlopeGroundSplattingConfig().setImageId(19).setScale(300.0).setImpact(0.58).setOffset(0.5).setFadeThreshold(0.1));
         waterConfig.setWaterLevel(-0.10).setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
         waterConfig.setWaterShininess(30.0).setWaterSpecularStrength(0.7).setWaterReflectionId(3).setWaterReflectionScale(80.0).setWaterMapScale(40.0).setWaterDistortionId(4).setWaterDistortionStrength(0.05).setWaterBumpMapId(5).setWaterBumpMapDepth(0.5).setWaterTransparency(0.75).setWaterAnimationDuration(30.0).setWaterFresnelOffset(0.7).setWaterFresnelDelta(0.8);
-        waterConfig.setShallowWaterTextureScale(43.1).setShallowWaterAnimation(8.0).setShallowWaterDistortionStrength(1.0);
+        waterConfig.setShallowWaterTextureId(25).setShallowWaterTextureScale(43.1).setShallowWaterStencilId(26).setShallowWaterDistortionId(27).setShallowWaterAnimation(8.0).setShallowWaterDistortionStrength(1.0);
         slopeConfigs.add(waterConfig);
         List<TerrainSlopePosition> terrainSlopePositions = new ArrayList<>();
         TerrainSlopePosition waterPositionLand = new TerrainSlopePosition();

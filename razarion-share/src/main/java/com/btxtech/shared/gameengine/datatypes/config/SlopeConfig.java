@@ -63,10 +63,12 @@ public class SlopeConfig implements ObjectNameIdProvider {
     private Double waterBumpMapDepth;
     private Double waterTransparency;
     private Double waterAnimationDuration;
-    private Double shallowWaterTextureId;
+    private Integer shallowWaterTextureId;
     private Double shallowWaterTextureScale;
+    private Integer shallowWaterDistortionId;
     private Double shallowWaterDistortionStrength;
     private Double shallowWaterAnimation;
+    private Integer shallowWaterStencilId;
     @Deprecated
     private Integer slopeWaterSplattingId;
     @Deprecated
@@ -470,11 +472,11 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public Double getShallowWaterTextureId() {
+    public Integer getShallowWaterTextureId() {
         return shallowWaterTextureId;
     }
 
-    public SlopeConfig setShallowWaterTextureId(Double shallowWaterTextureId) {
+    public SlopeConfig setShallowWaterTextureId(Integer shallowWaterTextureId) {
         this.shallowWaterTextureId = shallowWaterTextureId;
         return this;
     }
@@ -503,6 +505,24 @@ public class SlopeConfig implements ObjectNameIdProvider {
 
     public SlopeConfig setShallowWaterAnimation(Double shallowWaterAnimation) {
         this.shallowWaterAnimation = shallowWaterAnimation;
+        return this;
+    }
+
+    public Integer getShallowWaterStencilId() {
+        return shallowWaterStencilId;
+    }
+
+    public SlopeConfig setShallowWaterStencilId(Integer shallowWaterStencilId) {
+        this.shallowWaterStencilId = shallowWaterStencilId;
+        return this;
+    }
+
+    public Integer getShallowWaterDistortionId() {
+        return shallowWaterDistortionId;
+    }
+
+    public SlopeConfig setShallowWaterDistortionId(Integer shallowWaterDistortionId) {
+        this.shallowWaterDistortionId = shallowWaterDistortionId;
         return this;
     }
 
