@@ -142,8 +142,8 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainSlopePositions.add(riPositionLand);
         // Setup ground
         GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(14).setScale(80)).setBumpMapId(15).setBumpMapDepth(0.5).setShininess(3).setSpecularStrength(0.5));
-        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(16).setScale(100)).setBumpMapId(17).setBumpMapDepth(1.0).setShininess(3).setSpecularStrength(0.5));
+        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(14).setScale(50)).setBumpMapId(15).setBumpMapDepth(0.2).setShininess(3).setSpecularStrength(0.5));
+        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(16).setScale(50)).setBumpMapId(17).setBumpMapDepth(0.8).setShininess(5).setSpecularStrength(0.5));
         groundSkeletonConfig.setSplatting(new ImageScaleConfig().setId(18).setScale(50)).setSplattingScale2(1000).setSplattingFadeThreshold(0.2).setSplattingOffset(0.5);
         groundSkeletonConfig.setHeightXCount(3).setHeightYCount(5).setHeights(toColumnRow(new double[][]{
                 {0, 0, 0},
