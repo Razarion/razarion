@@ -18,6 +18,7 @@ public class VertexContainer {
     private Color emission;
     private Integer textureId;
     private Integer bumpMapId;
+    private Double bumpMapDepth;
     private Double alphaCutout;
     private boolean characterRepresenting;
 
@@ -113,6 +114,14 @@ public class VertexContainer {
 
     public void setBumpMapId(Integer bumpMapId) {
         this.bumpMapId = bumpMapId;
+    }
+
+    public Double getBumpMapDepth() {
+        return bumpMapDepth;
+    }
+
+    public void setBumpMapDepth(Double bumpMapDepth) {
+        this.bumpMapDepth = bumpMapDepth;
     }
 
     public Double getAlphaCutout() {

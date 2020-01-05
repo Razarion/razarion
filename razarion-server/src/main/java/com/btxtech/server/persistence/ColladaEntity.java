@@ -71,6 +71,11 @@ public class ColladaEntity implements ColladaConverterMapper {
     }
 
     @Override
+    public Double getBumpMapDepth(String materialId) {
+        throw new UnsupportedOperationException("...TODO...");
+    }
+
+    @Override
     public Double getAlphaCutout(String materialId) {
         throw new UnsupportedOperationException("...TODO...");
     }

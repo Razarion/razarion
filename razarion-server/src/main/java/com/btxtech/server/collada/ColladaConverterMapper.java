@@ -11,6 +11,8 @@ public interface ColladaConverterMapper {
 
     Integer getBumpMapId(String materialId);
 
+    Double getBumpMapDepth(String materialId);
+
     Double getAlphaCutout(String materialId);
 
     boolean isCharacterRepresenting(String materialId);
