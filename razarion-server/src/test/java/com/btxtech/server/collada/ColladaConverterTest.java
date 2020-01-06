@@ -408,6 +408,7 @@ public class ColladaConverterTest {
         textures.put("Leaves-material", 22);
         textures.put("Rock1Material-material", 23);
         textures.put("Sphere-material", 28);
+        textures.put("MatRock2-material", 30);
         Map<String, Double> alphaCutouts = new HashMap<>();
         alphaCutouts.put("Material_001-material", 0.33);
         alphaCutouts.put("Trunk-material", 0.0);
@@ -415,15 +416,18 @@ public class ColladaConverterTest {
         Map<String, Integer> bumpMapIds = new HashMap<>();
         bumpMapIds.put("Rock1Material-material", 24);
         bumpMapIds.put("Sphere-material", 29);
+        bumpMapIds.put("MatRock2-material", 31);
         Map<String, Double> bumpMapDepths = new HashMap<>();
         bumpMapDepths.put("Rock1Material-material", 0.5);
         bumpMapDepths.put("Sphere-material", 0.5);
+        bumpMapDepths.put("MatRock2-material", 0.3);
         TestMapper testMapper = new TestMapper(textures, bumpMapIds, bumpMapDepths, null, alphaCutouts);
         List<ThreeJsShape> threeJsShapes = new ArrayList<>();
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Plant02.dae", 1, testMapper));
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\PalmTree3.dae", 2, testMapper));
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\HelperSphere4m.dae", 3, testMapper));
         threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Rock1.dae", 4, testMapper));
+        threeJsShapes.add(loadShape3D("C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\models\\Rock2.dae", 5, testMapper));
         String directoryName = "C:\\dev\\projects\\razarion\\code\\threejs_razarion\\src\\razarion_generated\\shapes-3d.json";
         try {
             ObjectMapper objectMapper = new ObjectMapper();
