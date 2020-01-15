@@ -6,13 +6,13 @@
 
     <container qualifier="wildfly" default="true">
         <configuration>
-            <property name="managementAddress">192.168.99.100</property>
+            <property name="managementAddress">localhost</property>
             <property name="managementPort">32768</property>
             <property name="username">admin</property>
-            <property name="password">Admin#007</property>
+            <property name="password">1234</property>
         </configuration>
         <protocol type="Servlet 3.0">
-            <property name="host">192.168.99.100</property>
+            <property name="host">localhost</property>
             <property name="port">32778</property>
         </protocol>
 
