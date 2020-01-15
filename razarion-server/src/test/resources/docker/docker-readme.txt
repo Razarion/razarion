@@ -1,6 +1,6 @@
 # !!! On windows line separator must be corrected on shell scripts (LF UNIX)
 # Start Docker Quick Start Terminal if Dockertools is used
-# cd /c/dev/projects/razarion/code/razarion/razarion-server/src/test/resources/docker
+# cd c:\dev\projects\razarion\code\razarion\razarion-server\src\test\resources\docker
 
 # Build container
 docker build -t wildfly_ok_1 .

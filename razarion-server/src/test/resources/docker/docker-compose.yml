@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  web:
+    build: wildfly/.
+    ports:
+      - "32778:8080"
+      - "32768:9990"
