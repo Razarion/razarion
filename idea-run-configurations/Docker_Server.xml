@@ -1,0 +1,52 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Docker Server" type="JBossConfiguration" factoryName="Remote" APPLICATION_SERVER_NAME="JBoss 18.0.0.Final" ALTERNATIVE_JRE_ENABLED="false">
+    <option name="PORT" value="32778" />
+    <option name="LOCAL" value="false" />
+    <option name="OPEN_IN_BROWSER_URL" value="http://localhost:32778" />
+    <option name="UPDATING_POLICY" value="hot-swap-classes" />
+    <deployment>
+      <artifact name="razarion-server:war">
+        <settings DEPLOYMENT_METHOD="Staging" />
+      </artifact>
+    </deployment>
+    <server-settings>
+      <data>
+        <option name="credentialAlias" value="bdcc0d00-4968-41f0-a29e-c956a18ccca7" />
+        <option name="managementPort" value="32768" />
+        <option name="serverGroup" value="" />
+        <option name="stagingRemotePath" value="/tmp/stage" />
+        <option name="transportHostId" value="9ad7ec48-64c5-4bca-8318-7cf9b7faa662" />
+        <option name="transportStagingTarget">
+          <TransportTarget>
+            <option name="id" value="3b21c695-7ba8-4e7e-b41b-61aa0e48d510" />
+            <id>3b21c695-7ba8-4e7e-b41b-61aa0e48d510</id>
+          </TransportTarget>
+        </option>
+        <option name="username" value="admin" />
+        <username>admin</username>
+        <credential-alias>bdcc0d00-4968-41f0-a29e-c956a18ccca7</credential-alias>
+        <management-port>32768</management-port>
+        <server-group />
+        <transport-target>
+          <TransportTarget>
+            <option name="id" value="3b21c695-7ba8-4e7e-b41b-61aa0e48d510" />
+            <id>3b21c695-7ba8-4e7e-b41b-61aa0e48d510</id>
+          </TransportTarget>
+        </transport-target>
+        <staging-path>/tmp/stage</staging-path>
+        <host-id>9ad7ec48-64c5-4bca-8318-7cf9b7faa662</host-id>
+      </data>
+    </server-settings>
+    <predefined_log_file enabled="true" id="JBoss" />
+    <RunnerSettings RunnerId="Debug">
+      <option name="DEBUG_PORT" value="60784" />
+      <option name="LOCAL" value="false" />
+    </RunnerSettings>
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="razarion-server:war" />
+      </option>
+    </method>
+  </configuration>
+</component>
