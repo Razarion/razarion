@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="WebGlEmulatorMain" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="com.btxtech.webglemulator.WebGlEmulatorMain" />
+    <module name="razarion-dev-tools" />
+    <option name="VM_PARAMETERS" value="-Djava.util.logging.config.file=C:\dev\projects\razarion\code\razarion\razarion-dev-tools\src\main\resources\logging.properties" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.btxtech.webglemulator.razarion.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <RunnerSettings RunnerId="Debug with VisualVM">
+      <option name="visualVMId" value="101244521098908" />
+    </RunnerSettings>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

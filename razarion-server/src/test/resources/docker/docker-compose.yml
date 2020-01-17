@@ -6,3 +6,5 @@ services:
     ports:
       - "32778:8080"
       - "32768:9990"
+    volumes:
+      - ./stage:/tmp/stage
