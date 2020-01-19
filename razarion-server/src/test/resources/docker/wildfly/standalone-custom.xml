@@ -429,6 +429,9 @@
             <mail-session name="default" jndi-name="java:jboss/mail/Default">
                 <smtp-server outbound-socket-binding-ref="mail-smtp"/>
             </mail-session>
+            <mail-session name="RazarionMail" jndi-name="java:/RazarionMail">
+                <smtp-server outbound-socket-binding-ref="mail-smtp" ssl="false" username="vmail" password="somepassword" />
+            </mail-session>
         </subsystem>
         <subsystem xmlns="urn:wildfly:microprofile-config-smallrye:1.0"/>
         <subsystem xmlns="urn:wildfly:microprofile-health-smallrye:2.0" security-enabled="false" empty-liveness-checks-status="${env.MP_HEALTH_EMPTY_LIVENESS_CHECKS_STATUS:UP}" empty-readiness-checks-status="${env.MP_HEALTH_EMPTY_READINESS_CHECKS_STATUS:UP}"/>
