@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -25,6 +24,7 @@ public class FilePropertiesService {
     private static final String FACEBOOK_MARKETING_ACCOUNT_ID = "facebook.marketing_account_id";
     private static final String DEVELOPER_MODE = "system.dev-mode";
     private static final String PASSWORD_HASH_SALT = "password-hash-salt";
+    private static final String MONGO_DB_HOST = "mongodb.host";
     private Logger logger = Logger.getLogger(FilePropertiesService.class.getName());
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -72,6 +72,10 @@ public class FilePropertiesService {
         return getPropertyThrows(PASSWORD_HASH_SALT);
     }
 
+    public String getMongoDbHost() {
+        return getPropertyDefault(MONGO_DB_HOST, "localhost");
+    }
+
     public boolean isDeveloperMode() {
         return developerMode;
     }
@@ -85,5 +89,17 @@ public class FilePropertiesService {
             throw new IllegalArgumentException("No property found for: " + key);
         }
         return value;
+    }
+
+    private String getPropertyDefault(String key, String defaultValue) {
+        if (properties == null) {
+            throw new IllegalStateException("Properties is not initialized");
+        }
+        String value = properties.getProperty(key);
+        if (value != null) {
+            return value;
+        } else {
+            return defaultValue;
+        }
     }
 }

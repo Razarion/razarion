@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.btxtech.server.system.FilePropertiesService;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.client.MongoCollection;
@@ -9,6 +9,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
@@ -21,12 +22,14 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 @Singleton
 public class MongoDbService {
     public static final String RAZARION_DB = "razarion";
+    @Inject
+    private FilePropertiesService filePropertiesService;
     private MongoClient mongoClient;
 
     @PostConstruct
     public void postConstruct() {
         CodecRegistry pojoCodecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(), fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        mongoClient = new MongoClient("localhost", MongoClientOptions.builder().codecRegistry(pojoCodecRegistry).build());
+        mongoClient = new MongoClient(filePropertiesService.getMongoDbHost(), MongoClientOptions.builder().codecRegistry(pojoCodecRegistry).build());
     }
 
     public MongoDatabase getRazarionDatabase() {
@@ -37,7 +40,7 @@ public class MongoDbService {
         return getRazarionDatabase().getCollection(collectionNameName.getName(), theClass);
     }
 
-    public <T> void storeObject(T entity, Class<T> theClass, CollectionName collectionNameName) throws JsonProcessingException {
+    public <T> void storeObject(T entity, Class<T> theClass, CollectionName collectionNameName) {
         getCollection(collectionNameName, theClass).insertOne(entity);
     }
 
