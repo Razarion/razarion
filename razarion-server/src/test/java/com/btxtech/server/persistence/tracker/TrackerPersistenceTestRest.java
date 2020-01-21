@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.tracker;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.util.DateUtil;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by Beat on 29.05.2017.
  */
-public class TrackerPersistenceTest extends ServerArquillianBaseTest {
+public class TrackerPersistenceTestRest extends RestServerTestBase {
     @Inject
     private TrackerPersistence trackerPersistence;
 

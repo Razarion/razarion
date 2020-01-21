@@ -6,7 +6,7 @@ target/
 razarion-ui-service/razarion-ui-service.iml
 razarion-dev-tools/razarion-dev-tools.iml
 razarion-server/razarion-server.iml
-razarion-server/src/test/resources/docker/stage/ROOT.war
+razarion-server/src/test/resources/docker/stage/wildfly/ROOT.war
 razarion-server/src/main/webapp/razarion_client
 razarion-server/src/main/webapp/razarion_client_worker
 razarion-server/src/main/webapp/debug

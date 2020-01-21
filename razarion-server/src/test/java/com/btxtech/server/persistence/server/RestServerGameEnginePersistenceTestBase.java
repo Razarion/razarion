@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.server;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.PlanetEntity;
@@ -31,7 +31,7 @@ import java.util.List;
  * Created by Beat
  * 09.05.2017.
  */
-public class ServerGameEnginePersistenceTest extends ServerArquillianBaseTest {
+public class RestServerGameEnginePersistenceTestBase extends RestServerTestBase {
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
     @Inject

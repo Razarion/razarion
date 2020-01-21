@@ -2,7 +2,7 @@ package com.btxtech.server.gameengine;
 
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.FakeEmailServer;
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.persistence.history.QuestHistoryEntity;
@@ -41,7 +41,7 @@ import java.util.Map;
  * Created by Beat
  * on 11.02.2018.
  */
-public class ServerLevelQuestServiceRealTest extends ServerArquillianBaseTest {
+public class RestServerLevelQuestServiceRealTestBase extends RestServerTestBase {
     private static int FULFILLED_QUEST;
     private static int BEFORE_FULFILLED_QUEST;
     @Inject

@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 13.05.2017.
  */
-public class StaticGameConfigPersistenceTest extends ServerArquillianBaseTest {
+public class StaticGameConfigPersistenceTestRest extends RestServerTestBase {
     @Inject
     private StaticGameConfigPersistence staticGameConfigPersistence;
 

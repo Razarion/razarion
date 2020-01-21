@@ -7,7 +7,7 @@ services:
       - "32778:8080"
       - "32768:9990"
     volumes:
-      - ./stage:/tmp/stage
+      - ./stage/wildfly:/tmp/stage
   db:
     image: mariadb
     restart: always
@@ -16,6 +16,8 @@ services:
       MYSQL_USER: raz_user
       MYSQL_PASSWORD: 1234
       MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - ./stage/db:/docker-entrypoint-initdb.d
     ports:
       - "32788:3306"
   mongo:

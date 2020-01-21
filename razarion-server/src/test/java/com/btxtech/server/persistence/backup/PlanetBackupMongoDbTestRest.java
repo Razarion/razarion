@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.backup;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
 import org.junit.After;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by Beat
  * on 03.09.2017.
  */
-public class PlanetBackupMongoDbTest extends ServerArquillianBaseTest {
+public class PlanetBackupMongoDbTestRest extends RestServerTestBase {
     @Inject
     private PlanetBackupMongoDb planetBackupMongoDb;
 

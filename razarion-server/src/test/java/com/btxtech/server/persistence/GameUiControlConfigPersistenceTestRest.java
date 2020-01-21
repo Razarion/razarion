@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
@@ -18,7 +18,7 @@ import java.util.Locale;
  * Created by Beat
  * 10.05.2017.
  */
-public class GameUiControlConfigPersistenceTest extends ServerArquillianBaseTest {
+public class GameUiControlConfigPersistenceTestRest extends RestServerTestBase {
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
     @Inject

@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
@@ -15,7 +15,6 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.LevelUpPacket;
-import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.gameengine.datatypes.config.LevelUnlockConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
@@ -43,7 +42,7 @@ import java.util.concurrent.CountDownLatch;
  * Created by Beat
  * on 10.08.2017.
  */
-public class ServerLevelQuestServiceTest extends ServerArquillianBaseTest {
+public class RestServerLevelQuestServiceTestBase extends RestServerTestBase {
     @Inject
     private UserService userService;
     @Inject

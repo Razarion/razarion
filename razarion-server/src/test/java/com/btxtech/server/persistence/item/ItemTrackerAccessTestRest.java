@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.item;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.util.DateUtil;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,7 +14,7 @@ import java.util.List;
  * Created by Beat
  * on 08.01.2018.
  */
-public class ItemTrackerAccessTest extends ServerArquillianBaseTest {
+public class ItemTrackerAccessTestRest extends RestServerTestBase {
     @Inject
     private ItemTrackerAccess itemTrackerAccess;
 

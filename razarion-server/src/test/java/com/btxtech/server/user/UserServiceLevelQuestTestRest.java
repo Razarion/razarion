@@ -1,6 +1,6 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;
@@ -22,7 +22,7 @@ import java.util.Locale;
  * Created by Beat
  * 05.05.2017.
  */
-public class UserServiceLevelQuestTest extends ServerArquillianBaseTest {
+public class UserServiceLevelQuestTestRest extends RestServerTestBase {
     @Inject
     private ServerGameEnginePersistence serverGameEnginePersistence;
 

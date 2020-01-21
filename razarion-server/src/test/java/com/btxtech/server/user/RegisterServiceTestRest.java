@@ -1,7 +1,7 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.FakeEmailServer;
-import com.btxtech.server.ServerArquillianBaseTest;
+import com.btxtech.server.RestServerTestBase;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.ErrorResult;
 import org.junit.After;
@@ -16,7 +16,7 @@ import java.util.Date;
  * Created by Beat
  * 05.05.2017.
  */
-public class RegisterServiceTest extends ServerArquillianBaseTest {
+public class RegisterServiceTestRest extends RestServerTestBase {
     @Inject
     private RegisterService registerService;
     @Inject
