@@ -6,6 +6,7 @@ services:
     ports:
       - "32778:8080"
       - "32768:9990"
+      - "60784:8787"
     volumes:
       - ./stage/wildfly:/tmp/stage
   db:
