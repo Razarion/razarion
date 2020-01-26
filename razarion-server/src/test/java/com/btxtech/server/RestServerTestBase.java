@@ -17,34 +17,40 @@ import javax.ws.rs.client.ClientResponseFilter;
 public abstract class RestServerTestBase extends ServerTestHelper {
     public static String URL = "http://localhost:32778";
     public static String REST_URL = URL + "/rest/";
-    // private SessionFactory sessionFactory;
+    private ResteasyWebTarget target;
 
-    protected <T> T setupRestAccess(Class<T> clazz) {
+    public RestServerTestBase() {
         TestSessionContext testSessionContext = new TestSessionContext();
         Client client = ClientBuilder.newClient();
-        ResteasyWebTarget target = (ResteasyWebTarget) client.target(REST_URL);
-        if (testSessionContext != null) {
-            client.register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Accept-Language", testSessionContext.getAcceptLanguage()));
-            client.register((ClientResponseFilter) (requestContext, responseContext) -> {
-                if (responseContext.getCookies().containsKey("JSESSIONID")) {
-                    testSessionContext.setSessionCookie(responseContext.getCookies().get("JSESSIONID"));
-                }
-                if (responseContext.getCookies().containsKey("LoginToken")) {
-                    testSessionContext.setLoginTokenCookie(responseContext.getCookies().get("LoginToken"));
-                }
-            });
-            client.register((ClientRequestFilter) (requestContext) -> {
-                if (testSessionContext.getSessionCookie() != null) {
-                    requestContext.getCookies().put("JSESSIONID", testSessionContext.getSessionCookie());
-                }
-                if (testSessionContext.getLoginTokenCookie() != null) {
-                    requestContext.getCookies().put("LoginToken", testSessionContext.getLoginTokenCookie());
-                }
-            });
-            testSessionContext.setTarget(target);
+        target = (ResteasyWebTarget) client.target(REST_URL);
+        client.register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Accept-Language", testSessionContext.getAcceptLanguage()));
+        client.register((ClientResponseFilter) (requestContext, responseContext) -> {
+            if (responseContext.getCookies().containsKey("JSESSIONID")) {
+                testSessionContext.setSessionCookie(responseContext.getCookies().get("JSESSIONID"));
+            }
+            if (responseContext.getCookies().containsKey("LoginToken")) {
+                testSessionContext.setLoginTokenCookie(responseContext.getCookies().get("LoginToken"));
+            }
+        });
+        client.register((ClientRequestFilter) (requestContext) -> {
+            if (testSessionContext.getSessionCookie() != null) {
+                requestContext.getCookies().put("JSESSIONID", testSessionContext.getSessionCookie());
+            }
+            if (testSessionContext.getLoginTokenCookie() != null) {
+                requestContext.getCookies().put("LoginToken", testSessionContext.getLoginTokenCookie());
+            }
+        });
+        testSessionContext.setTarget(target);
+    }
+
+    protected void login(String email, String password) {
+        LoginResult loginResult = target.proxy(FrontendProvider.class).loginUser("admin@admin.com", "1234", false);
+        if (loginResult != LoginResult.OK) {
+            throw new AssertionError("Can not login with email: " + email + " and password: " + password + ". Result: " + loginResult);
         }
-        LoginResult loginResult = target.proxy(FrontendProvider.class).loginUser("admin@admin.com", "test", false);
-        System.out.println("loginResult: " + loginResult);
+    }
+
+    protected <T> T setupRestAccess(Class<T> clazz) {
         return target.proxy(clazz);
     }
 }

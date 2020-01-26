@@ -44,11 +44,10 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
-import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
+import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
@@ -58,6 +57,7 @@ import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionTrigger;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -80,14 +80,17 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 import javax.persistence.Query;
-import javax.transaction.UserTransaction;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -114,7 +117,13 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
  * on 08.02.2018.
  */
 public class ServerTestHelper {
-    public static final byte[] PIXEL_BYTES = Base64.getDecoder().decode("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==".getBytes());
+    public static final String IMG_1_DATA_BASE64 = "R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==";
+    public static final String IMG_1_DATA_URL = "data:image/jpeg;base64," + IMG_1_DATA_BASE64;
+    public static final byte[] IMG_1_BYTES = Base64.getDecoder().decode(IMG_1_DATA_BASE64.getBytes());
+
+    public static final String IMG_2_DATA_BASE64 = "R0lGODlhAQABAIABABWLAP///yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs=";
+    public static final String IMG_2_DATA_URL = "data:image/gif;base64," + IMG_2_DATA_BASE64;
+    public static final byte[] IMG_2_BYTES = Base64.getDecoder().decode(IMG_2_DATA_BASE64.getBytes());
     // Item types
     public static int BASE_ITEM_TYPE_BULLDOZER_ID;
     public static int BASE_ITEM_TYPE_HARVESTER_ID;
@@ -154,10 +163,9 @@ public class ServerTestHelper {
     public static int SLOPE_WATER_CONFIG_ENTITY_2;
     // Image
     public static int onePixelImageId;
-    @PersistenceContext
-    private EntityManager em;
-    @Inject
-    private UserTransaction utx;
+    private EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
+    private EntityTransaction entityTransaction;
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
@@ -174,13 +182,26 @@ public class ServerTestHelper {
     private BaseItemService baseItemService;
     private MongoClient mongoClient;
 
+    @Before
+    public void setupJpa() {
+        entityManagerFactory = Persistence.createEntityManagerFactory("test-jpa");
+        entityManager = entityManagerFactory.createEntityManager();
+        entityTransaction = entityManager.getTransaction();
+    }
+
+    @After
+    public void closeJpa() {
+        entityManager.close();
+        entityManagerFactory.close();
+    }
+
     @PreDestroy
     public void preDestroy() {
         closeMongoDb();
     }
 
     protected EntityManager getEntityManager() {
-        return em;
+        return entityManager;
     }
 
     protected I18nString i18nHelper(String string) {
@@ -283,109 +304,109 @@ public class ServerTestHelper {
     }
 
     protected <T> T persistInTransaction(T object) throws Exception {
-        utx.begin();
-        em.joinTransaction();
-        em.persist(object);
-        utx.commit();
+        entityTransaction.begin();
+        entityManager.joinTransaction();
+        entityManager.persist(object);
+        entityTransaction.commit();
         return object;
     }
 
-    protected void runInTransaction(Consumer<EntityManager> consumer) throws Exception {
-        utx.begin();
-        em.joinTransaction();
-        consumer.accept(em);
-        utx.commit();
+    protected void runInTransaction(Consumer<EntityManager> consumer) {
+        entityTransaction.begin();
+        entityManager.joinTransaction();
+        consumer.accept(entityManager);
+        entityTransaction.commit();
     }
 
 
     protected <T> T runInTransactionAndReturn(Function<EntityManager, T> function) throws Exception {
-        utx.begin();
-        em.joinTransaction();
-        T result = function.apply(em);
-        utx.commit();
+        entityTransaction.begin();
+        entityManager.joinTransaction();
+        T result = function.apply(entityManager);
+        entityTransaction.commit();
         return result;
     }
 
     protected void runInTransactionSave(Consumer<EntityManager> consumer) throws Exception {
         try {
-            utx.begin();
-            em.joinTransaction();
-            consumer.accept(em);
-            utx.commit();
+            entityTransaction.begin();
+            entityManager.joinTransaction();
+            consumer.accept(entityManager);
+            entityTransaction.commit();
         } catch (Throwable t) {
             t.printStackTrace();
-            utx.rollback();
+            entityTransaction.rollback();
         }
     }
 
     protected void setupLevels() throws Exception {
         setupItemTypes();
-        utx.begin();
-        em.joinTransaction();
+        entityTransaction.begin();
+        entityManager.joinTransaction();
 
         // Level 1
         LevelEntity levelEntity1 = new LevelEntity();
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation1 = new HashMap<>();
-        itemTypeLimitation1.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation1.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
         levelEntity1.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(1).setXp2LevelUp(10), itemTypeLimitation1, null);
-        em.persist(levelEntity1);
+        entityManager.persist(levelEntity1);
         LEVEL_1_ID = levelEntity1.getId();
         // Level 2
         LevelEntity levelEntity2 = new LevelEntity();
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation2 = new HashMap<>();
-        itemTypeLimitation2.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation2.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation2.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
         levelEntity2.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(2).setXp2LevelUp(20), itemTypeLimitation2, null);
-        em.persist(levelEntity2);
+        entityManager.persist(levelEntity2);
         LEVEL_2_ID = levelEntity2.getId();
         // Level 3
         LevelEntity levelEntity3 = new LevelEntity();
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation3 = new HashMap<>();
-        itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
-        itemTypeLimitation3.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        itemTypeLimitation3.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
         levelEntity3.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(3).setXp2LevelUp(30), itemTypeLimitation3, null);
-        em.persist(levelEntity3);
+        entityManager.persist(levelEntity3);
         LEVEL_3_ID = levelEntity3.getId();
         // Level 4
         LevelEntity levelEntity4 = new LevelEntity();
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation4 = new HashMap<>();
-        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
-        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
-        itemTypeLimitation4.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 2);
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        itemTypeLimitation4.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
         LevelUnlockEntity levelUnlockEntity4_1 = new LevelUnlockEntity();
-        levelUnlockEntity4_1.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
+        levelUnlockEntity4_1.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID));
         levelUnlockEntity4_1.setBaseItemTypeCount(1);
         levelUnlockEntity4_1.setInternalName("levelUnlockEntity4_1");
         levelEntity4.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(4).setXp2LevelUp(300), itemTypeLimitation4, Collections.singletonList(levelUnlockEntity4_1));
-        em.persist(levelEntity4);
+        entityManager.persist(levelEntity4);
         LEVEL_4_ID = levelEntity4.getId();
         LEVEL_UNLOCK_ID_L4_1 = levelUnlockEntity4_1.getId();
         // Level 5
         LevelEntity levelEntity5 = new LevelEntity();
         Map<BaseItemTypeEntity, Integer> itemTypeLimitation5 = new HashMap<>();
-        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
-        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 4);
-        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
-        itemTypeLimitation5.put(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_BULLDOZER_ID), 1);
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID), 4);
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_FACTORY_ID), 1);
+        itemTypeLimitation5.put(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID), 1);
         LevelUnlockEntity levelUnlockEntity5_1 = new LevelUnlockEntity();
-        levelUnlockEntity5_1.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID));
+        levelUnlockEntity5_1.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_ATTACKER_ID));
         levelUnlockEntity5_1.setBaseItemTypeCount(2);
         levelUnlockEntity5_1.setCrystalCost(10);
         levelUnlockEntity5_1.setInternalName("levelUnlockEntity5_1");
         LevelUnlockEntity levelUnlockEntity5_2 = new LevelUnlockEntity();
-        levelUnlockEntity5_2.setBaseItemType(em.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID));
+        levelUnlockEntity5_2.setBaseItemType(entityManager.find(BaseItemTypeEntity.class, BASE_ITEM_TYPE_HARVESTER_ID));
         levelUnlockEntity5_2.setBaseItemTypeCount(1);
         levelUnlockEntity5_2.setCrystalCost(20);
         levelUnlockEntity5_2.setInternalName("levelUnlockEntity5_2");
         levelEntity5.fromLevelEditConfig((LevelEditConfig) new LevelEditConfig().setNumber(5).setXp2LevelUp(400), itemTypeLimitation5, Arrays.asList(levelUnlockEntity5_1, levelUnlockEntity5_2));
-        em.persist(levelEntity5);
+        entityManager.persist(levelEntity5);
         LEVEL_5_ID = levelEntity5.getId();
         LEVEL_UNLOCK_ID_L5_1 = levelUnlockEntity5_1.getId();
         LEVEL_UNLOCK_ID_L5_2 = levelUnlockEntity5_2.getId();
 
-        utx.commit();
+        entityTransaction.commit();
     }
 
     protected void cleanLevels() throws Exception {
@@ -398,27 +419,27 @@ public class ServerTestHelper {
     public void setupPlanets() throws Exception {
         runInTransaction(em -> {
             ImageLibraryEntity imageLibraryEntity = new ImageLibraryEntity();
-            imageLibraryEntity.setData(PIXEL_BYTES);
+            imageLibraryEntity.setData(IMG_1_BYTES);
             em.persist(imageLibraryEntity);
             onePixelImageId = imageLibraryEntity.getId();
         });
 
         setupLevels();
 
-        utx.begin();
-        em.joinTransaction();
+        entityTransaction.begin();
+        entityManager.joinTransaction();
 
         GroundConfigEntity groundConfigEntity = new GroundConfigEntity();
         groundConfigEntity.fromGroundConfig(setupGroundConfig(), imagePersistence);
-        em.persist(groundConfigEntity);
+        entityManager.persist(groundConfigEntity);
 
-        em.persist(new WaterConfigEntity());
+        entityManager.persist(new WaterConfigEntity());
 
         PlanetEntity planetEntity1 = new PlanetEntity();
         planetEntity1.setGroundMeshDimension(new Rectangle(0, 0, 2, 2));
         planetEntity1.setPlayGround(new Rectangle2D(50, 50, 200, 200));
         planetEntity1.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
-        em.persist(planetEntity1);
+        entityManager.persist(planetEntity1);
         PLANET_1_ID = planetEntity1.getId();
 
         PlanetEntity planetEntity2 = new PlanetEntity();
@@ -427,28 +448,28 @@ public class ServerTestHelper {
         planetEntity2.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
         planetEntity2.setItemTypeLimitation(setupPlanet2Limitation());
         planetEntity2.setStartRazarion(100);
-        em.persist(planetEntity2);
+        entityManager.persist(planetEntity2);
         PLANET_2_ID = planetEntity2.getId();
 
         GameUiControlConfigEntity gameUiControlConfigEntity1 = new GameUiControlConfigEntity();
         gameUiControlConfigEntity1.setPlanetEntity(planetEntity1);
-        gameUiControlConfigEntity1.setMinimalLevel(em.find(LevelEntity.class, LEVEL_1_ID));
+        gameUiControlConfigEntity1.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_1_ID));
         gameUiControlConfigEntity1.setGameEngineMode(GameEngineMode.MASTER);
-        em.persist(gameUiControlConfigEntity1);
+        entityManager.persist(gameUiControlConfigEntity1);
         GAME_UI_CONTROL_CONFIG_1_ID = gameUiControlConfigEntity1.getId();
 
         GameUiControlConfigEntity gameUiControlConfigEntity2 = new GameUiControlConfigEntity();
         gameUiControlConfigEntity2.setPlanetEntity(planetEntity2);
-        gameUiControlConfigEntity2.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
+        gameUiControlConfigEntity2.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
         gameUiControlConfigEntity2.setGameEngineMode(GameEngineMode.SLAVE);
-        em.persist(gameUiControlConfigEntity2);
+        entityManager.persist(gameUiControlConfigEntity2);
         GAME_UI_CONTROL_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
 
         ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
         serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
 
         ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
-        serverLevelQuestEntityL4.setMinimalLevel(em.find(LevelEntity.class, LEVEL_4_ID));
+        serverLevelQuestEntityL4.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
         QuestConfigEntity questConfigEntityL41 = new QuestConfigEntity();
         questConfigEntityL41.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L4 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.SYNC_ITEM_KILLED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
         QuestConfigEntity questConfigEntityL42 = new QuestConfigEntity();
@@ -456,7 +477,7 @@ public class ServerTestHelper {
         serverLevelQuestEntityL4.setQuestConfigs(Arrays.asList(questConfigEntityL41, questConfigEntityL42));
 
         ServerLevelQuestEntity serverLevelQuestEntityL5 = new ServerLevelQuestEntity();
-        serverLevelQuestEntityL5.setMinimalLevel(em.find(LevelEntity.class, LEVEL_5_ID));
+        serverLevelQuestEntityL5.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_5_ID));
         QuestConfigEntity questConfigEntityL51 = new QuestConfigEntity();
         questConfigEntityL51.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 1").setXp(100).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.BOX_PICKED).setComparisonConfig(new ComparisonConfig().setCount(1))), Locale.US);
         QuestConfigEntity questConfigEntityL52 = new QuestConfigEntity();
@@ -466,14 +487,14 @@ public class ServerTestHelper {
         serverLevelQuestEntityL5.setQuestConfigs(Arrays.asList(questConfigEntityL51, questConfigEntityL52, questConfigEntityL53));
 
         serverGameEngineConfigEntity1.setServerQuestEntities(Arrays.asList(serverLevelQuestEntityL4, serverLevelQuestEntityL5));
-        em.persist(serverGameEngineConfigEntity1);
+        entityManager.persist(serverGameEngineConfigEntity1);
         SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
         SERVER_QUEST_ID_L4_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
         SERVER_QUEST_ID_L4_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
         SERVER_QUEST_ID_L5_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(0).getId();
         SERVER_QUEST_ID_L5_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(1).getId();
         SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(2).getId();
-        utx.commit();
+        entityTransaction.commit();
     }
 
     protected void setupPlanetWithSlopes() throws Exception {
@@ -645,14 +666,14 @@ public class ServerTestHelper {
     }
 
     protected void assertCountNative(int countExpected, String tableName) {
-        Assert.assertEquals(countExpected, ((Number) em.createNativeQuery("SELECT COUNT(*) FROM " + tableName).getSingleResult()).intValue());
+        Assert.assertEquals(countExpected, ((Number) entityManager.createNativeQuery("SELECT COUNT(*) FROM " + tableName).getSingleResult()).intValue());
     }
 
     protected void assertEmptyCountNative(String tableName) {
         assertCountNative(0, tableName);
     }
 
-    protected void cleanTable(Class entityClass) throws Exception {
+    protected void cleanTable(Class entityClass) {
         runInTransaction(em -> em.createQuery("DELETE FROM " + entityClass.getName()).executeUpdate());
     }
 
@@ -661,7 +682,7 @@ public class ServerTestHelper {
     }
 
     protected void printSqlStatement(String sql) {
-        Query q = em.createNativeQuery(sql);
+        Query q = entityManager.createNativeQuery(sql);
         List<Object[]> resultList = q.getResultList();
 
         System.out.println("SQL-----------------------------------------------------");
@@ -696,10 +717,10 @@ public class ServerTestHelper {
     }
 
     protected void closeMongoDb() {
-       if(mongoClient != null) {
-           mongoClient.close();
-           mongoClient = null;
-       }
+        if (mongoClient != null) {
+            mongoClient.close();
+            mongoClient = null;
+        }
     }
 
     protected <T> void fillBackupInfoMongoDb(String collectionName, String fileName, Class<T> theClass) {
