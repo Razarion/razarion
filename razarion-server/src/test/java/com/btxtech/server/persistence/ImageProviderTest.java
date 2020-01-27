@@ -80,6 +80,18 @@ public class ImageProviderTest extends RestServerTestBase {
     }
 
     @Test(expected = NotAuthorizedException.class)
+    public void uploadImageReg() {
+        login("user@user.com", "1234");
+        imageProvider.uploadImage(IMG_1_DATA_URL);
+    }
+
+    @Test(expected = NotAuthorizedException.class)
+    public void saveReg() {
+        login("user@user.com", "1234");
+        imageProvider.save(1, IMG_1_DATA_URL);
+    }
+
+    @Test(expected = NotAuthorizedException.class)
     public void uploadImageUnreg() {
         imageProvider.uploadImage(IMG_1_DATA_URL);
     }

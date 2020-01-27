@@ -53,7 +53,7 @@ public abstract class RestServerTestBase extends ServerTestHelper {
     }
 
     protected void login(String email, String password) {
-        LoginResult loginResult = target.proxy(FrontendProvider.class).loginUser("admin@admin.com", "1234", false);
+        LoginResult loginResult = target.proxy(FrontendProvider.class).loginUser(email, password, false);
         if (loginResult != LoginResult.OK) {
             throw new AssertionError("Can not login with email: " + email + " and password: " + password + ". Result: " + loginResult);
         }
