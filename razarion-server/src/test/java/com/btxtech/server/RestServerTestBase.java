@@ -4,6 +4,7 @@ import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.rest.FrontendProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.junit.After;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -18,6 +19,14 @@ public abstract class RestServerTestBase extends ServerTestHelper {
     public static String URL = "http://localhost:32778";
     public static String REST_URL = URL + "/rest/";
     private ResteasyWebTarget target;
+    private boolean loggedIn = false;
+
+    @After
+    public void cleanup() {
+        if (loggedIn) {
+            logout();
+        }
+    }
 
     public RestServerTestBase() {
         TestSessionContext testSessionContext = new TestSessionContext();
@@ -48,6 +57,12 @@ public abstract class RestServerTestBase extends ServerTestHelper {
         if (loginResult != LoginResult.OK) {
             throw new AssertionError("Can not login with email: " + email + " and password: " + password + ". Result: " + loginResult);
         }
+        loggedIn = true;
+    }
+
+    protected void logout() {
+        target.proxy(FrontendProvider.class).logout();
+        loggedIn = false;
     }
 
     protected <T> T setupRestAccess(Class<T> clazz) {

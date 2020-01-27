@@ -5,8 +5,10 @@ import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
@@ -17,6 +19,12 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 
 public class ImageProviderTest extends RestServerTestBase {
+    private ImageProvider imageProvider;
+
+    @Before
+    public void setup() {
+        imageProvider = setupRestAccess(ImageProvider.class);
+    }
 
     @After
     public void cleanImages() {
@@ -24,9 +32,8 @@ public class ImageProviderTest extends RestServerTestBase {
     }
 
     @Test
-    public void crud() {
+    public void crudAdmin() {
         login("admin@admin.com", "1234");
-        ImageProvider imageProvider = setupRestAccess(ImageProvider.class);
 
         Assert.assertTrue(imageProvider.getImageGalleryItems().isEmpty());
 
@@ -70,5 +77,15 @@ public class ImageProviderTest extends RestServerTestBase {
         assertThat(response.readEntity(byte[].class), equalTo(IMG_2_BYTES));
         // Delete image
         // TODO delete image missing
+    }
+
+    @Test(expected = NotAuthorizedException.class)
+    public void uploadImageUnreg() {
+        imageProvider.uploadImage(IMG_1_DATA_URL);
+    }
+
+    @Test(expected = NotAuthorizedException.class)
+    public void saveUnreg() {
+        imageProvider.save(1, IMG_1_DATA_URL);
     }
 }
