@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * E = entity
  * C = config
  */
-public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvider, C> {
+public class ServerChildCrudPersistence<R, P, E extends ObjectNameIdProvider, C> {
     @PersistenceContext
     private EntityManager entityManager;
     private Supplier<R> rootProvider;
@@ -38,52 +38,52 @@ public class ServerChildListCrudePersistence<R, P, E extends ObjectNameIdProvide
     private Function<E, C> configGenerator;
     private BiConsumer<EntityManager, Integer> additionalDelete;
 
-    public ServerChildListCrudePersistence<R, P, E, C> setRootProvider(Supplier<R> rootProvider) {
+    public ServerChildCrudPersistence<R, P, E, C> setRootProvider(Supplier<R> rootProvider) {
         this.rootProvider = rootProvider;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setParentProvider(Function<EntityManager, P> parentProvider) {
+    public ServerChildCrudPersistence<R, P, E, C> setParentProvider(Function<EntityManager, P> parentProvider) {
         this.parentProvider = parentProvider;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setEntitiesGetter(Function<P, List<E>> entitiesGetter) {
+    public ServerChildCrudPersistence<R, P, E, C> setEntitiesGetter(Function<P, List<E>> entitiesGetter) {
         this.entitiesGetter = entitiesGetter;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setEntitiesSetter(BiConsumer<P, List<E>> entitiesSetter) {
+    public ServerChildCrudPersistence<R, P, E, C> setEntitiesSetter(BiConsumer<P, List<E>> entitiesSetter) {
         this.entitiesSetter = entitiesSetter;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setEntityIdProvider(Function<E, Integer> entityIdProvider) {
+    public ServerChildCrudPersistence<R, P, E, C> setEntityIdProvider(Function<E, Integer> entityIdProvider) {
         this.entityIdProvider = entityIdProvider;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setConfigIdProvider(Function<C, Integer> configIdProvider) {
+    public ServerChildCrudPersistence<R, P, E, C> setConfigIdProvider(Function<C, Integer> configIdProvider) {
         this.configIdProvider = configIdProvider;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setEntityFactory(Supplier<E> entityFactory) {
+    public ServerChildCrudPersistence<R, P, E, C> setEntityFactory(Supplier<E> entityFactory) {
         this.entityFactory = entityFactory;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setEntityFiller(BiConsumer<E, C> entityFiller) {
+    public ServerChildCrudPersistence<R, P, E, C> setEntityFiller(BiConsumer<E, C> entityFiller) {
         this.entityFiller = entityFiller;
         return this;
     }
 
-    public ServerChildListCrudePersistence<R, P, E, C> setConfigGenerator(Function<E, C> configGenerator) {
+    public ServerChildCrudPersistence<R, P, E, C> setConfigGenerator(Function<E, C> configGenerator) {
         this.configGenerator = configGenerator;
         return this;
     }
 
-    public ServerChildListCrudePersistence setAdditionalDelete(BiConsumer<EntityManager, Integer> additionalDelete) {
+    public ServerChildCrudPersistence setAdditionalDelete(BiConsumer<EntityManager, Integer> additionalDelete) {
         this.additionalDelete = additionalDelete;
         return this;
     }

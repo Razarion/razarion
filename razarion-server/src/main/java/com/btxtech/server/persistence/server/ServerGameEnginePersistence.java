@@ -10,10 +10,7 @@ import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
-import com.btxtech.server.user.HumanPlayerIdEntity_;
 import com.btxtech.server.user.SecurityCheck;
-import com.btxtech.server.user.UserEntity;
-import com.btxtech.server.user.UserEntity_;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
@@ -61,17 +58,17 @@ public class ServerGameEnginePersistence {
     @Inject
     private LevelPersistence levelPersistence;
     @Inject
-    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
+    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig>> serverLevelQuestCrudInstance;
     @Inject
-    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
+    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig>> serverQuestCrudInstance;
     @Inject
-    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig>> resourceRegionCrud;
+    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig>> resourceRegionCrud;
     @Inject
-    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig>> botConfigCrud;
+    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig>> botConfigCrud;
     @Inject
-    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig>> botSceneConfigCrud;
+    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig>> botSceneConfigCrud;
     @Inject
-    private Instance<ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig>> boxRegionCrud;
+    private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig>> boxRegionCrud;
 
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
@@ -268,8 +265,8 @@ public class ServerGameEnginePersistence {
         return entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(locale);
     }
 
-    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverLevelQuestCrudInstance.get();
+    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {
+        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverLevelQuestCrudInstance.get();
         crud.setRootProvider(this::read).setParentProvider(entityManager1 -> read());
         crud.setEntitiesGetter((entityManager) -> read().getServerQuestEntities());
         crud.setEntitiesSetter((entityManager, serverLevelQuestEntities) -> read().setServerQuestEntities(serverLevelQuestEntities));
@@ -283,8 +280,8 @@ public class ServerGameEnginePersistence {
         return crud;
     }
 
-    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> getServerQuestCrud(int serverLevelQuestEntityId, Locale locale) {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> crud = serverQuestCrudInstance.get();
+    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> getServerQuestCrud(int serverLevelQuestEntityId, Locale locale) {
+        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> crud = serverQuestCrudInstance.get();
         crud.setRootProvider(this::read);
         crud.setParentProvider(entityManager -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId));
         crud.setEntitiesGetter(ServerLevelQuestEntity::getQuestConfigs).setEntitiesSetter(ServerLevelQuestEntity::setQuestConfigs);
@@ -296,8 +293,8 @@ public class ServerGameEnginePersistence {
         return crud;
     }
 
-    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> getResourceRegionConfigCrud() {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> crud = resourceRegionCrud.get();
+    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> getResourceRegionConfigCrud() {
+        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> crud = resourceRegionCrud.get();
         crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
         crud.setEntitiesGetter((entityManager) -> read().getResourceRegionConfigs());
         crud.setEntitiesSetter((entityManager, resourceRegionConfigs) -> read().setResourceRegionConfigs(resourceRegionConfigs));
@@ -310,8 +307,8 @@ public class ServerGameEnginePersistence {
         return crud;
     }
 
-    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> getBotConfigCrud() {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> crud = botConfigCrud.get();
+    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> getBotConfigCrud() {
+        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> crud = botConfigCrud.get();
         crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
         crud.setEntitiesGetter((entityManager) -> read().getBotConfigEntities());
         crud.setEntitiesSetter((entityManager, botConfigs) -> read().setBotConfigEntities(botConfigs));
@@ -324,8 +321,8 @@ public class ServerGameEnginePersistence {
         return crud;
     }
 
-    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> getBotSceneConfigCrud() {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> crud = botSceneConfigCrud.get();
+    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> getBotSceneConfigCrud() {
+        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> crud = botSceneConfigCrud.get();
         crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
         crud.setEntitiesGetter((entityManager) -> read().getBotSceneConfigEntities());
         crud.setEntitiesSetter((entityManager, botConfigs) -> read().setBotSceneConfigEntities(botConfigs));
@@ -338,8 +335,8 @@ public class ServerGameEnginePersistence {
         return crud;
     }
 
-    public ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> getBoxRegionConfigCrud() {
-        ServerChildListCrudePersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> crud = boxRegionCrud.get();
+    public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> getBoxRegionConfigCrud() {
+        ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> crud = boxRegionCrud.get();
         crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
         crud.setEntitiesGetter((entityManager) -> read().getServerBoxRegionConfigEntities());
         crud.setEntitiesSetter((entityManager, boxRegionConfigEntities) -> read().setServerBoxRegionConfigEntities(boxRegionConfigEntities));

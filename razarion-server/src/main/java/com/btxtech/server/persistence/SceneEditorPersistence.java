@@ -14,7 +14,7 @@ import com.btxtech.server.persistence.scene.BoxItemPositionEntity;
 import com.btxtech.server.persistence.scene.GameTipConfigEntity;
 import com.btxtech.server.persistence.scene.ResourceItemPositionEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
-import com.btxtech.server.persistence.server.ServerChildListCrudePersistence;
+import com.btxtech.server.persistence.server.ServerChildCrudPersistence;
 import com.btxtech.shared.dto.BotAttackCommandConfig;
 import com.btxtech.shared.dto.BotHarvestCommandConfig;
 import com.btxtech.shared.dto.BotKillHumanCommandConfig;
@@ -49,10 +49,10 @@ public class SceneEditorPersistence {
     @Inject
     private ImagePersistence imagePersistence;
     @Inject
-    private Instance<ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig>> sceneConfigCrudInstance;
+    private Instance<ServerChildCrudPersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig>> sceneConfigCrudInstance;
 
-    public ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> getSceneConfigCrud(int gameUiControlConfigId) {
-        ServerChildListCrudePersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> crud = sceneConfigCrudInstance.get();
+    public ServerChildCrudPersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> getSceneConfigCrud(int gameUiControlConfigId) {
+        ServerChildCrudPersistence<GameUiControlConfigEntity, GameUiControlConfigEntity, SceneEntity, SceneConfig> crud = sceneConfigCrudInstance.get();
         crud.setRootProvider(() -> readGameUiControlConfigEntity(gameUiControlConfigId)).setParentProvider(entityManager -> readGameUiControlConfigEntity(gameUiControlConfigId));
         crud.setEntitiesGetter((entityManager) -> readGameUiControlConfigEntity(gameUiControlConfigId).getScenes());
         crud.setEntitiesSetter((entityManager, sceneConfigEntities) -> readGameUiControlConfigEntity(gameUiControlConfigId).setScenes(sceneConfigEntities));
