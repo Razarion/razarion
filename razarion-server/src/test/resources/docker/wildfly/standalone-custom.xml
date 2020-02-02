@@ -161,11 +161,6 @@
                 <datasource jndi-name="java:/MariaDbDs" pool-name="MariaDB">
                     <connection-url>jdbc:mariadb://db:3306/razarion</connection-url>
                     <driver>mariadb</driver>
-                    <pool>
-                        <min-pool-size>20</min-pool-size>
-                        <initial-pool-size>25</initial-pool-size>
-                        <max-pool-size>50</max-pool-size>
-                    </pool>
                     <security>
                         <user-name>raz_user</user-name>
                         <password>1234</password>

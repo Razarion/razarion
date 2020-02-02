@@ -21,6 +21,9 @@ services:
       - ./stage/db:/docker-entrypoint-initdb.d
     ports:
       - "32788:3306"
+    command: [
+        '--wait_timeout=28800',
+      ]
   mongo:
     image: mongo
     restart: always
