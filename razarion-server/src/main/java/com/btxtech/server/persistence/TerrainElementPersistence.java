@@ -4,18 +4,15 @@ import com.btxtech.server.persistence.object.TerrainObjectEntity;
 import com.btxtech.server.persistence.object.TerrainObjectEntity_;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity;
 import com.btxtech.server.persistence.surface.DrivewayConfigEntity_;
-import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity_;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.DrivewayConfig;
-import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig_OLD;
 
 import javax.inject.Inject;
@@ -45,19 +42,8 @@ public class TerrainElementPersistence {
     private ImagePersistence imagePersistence;
 
     @Transactional
-    public GroundSkeletonConfig loadGroundSkeleton() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        // Query for total row count in invitations
-        CriteriaQuery<GroundConfigEntity> userQuery = criteriaBuilder.createQuery(GroundConfigEntity.class);
-        Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
-        CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
-        return entityManager.createQuery(userSelect).getSingleResult().generateGroundSkeleton();
-    }
-
-    @Transactional
     public WaterConfig readWaterConfig() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        // Query for total row count in invitations
         CriteriaQuery<WaterConfigEntity> userQuery = criteriaBuilder.createQuery(WaterConfigEntity.class);
         Root<WaterConfigEntity> from = userQuery.from(WaterConfigEntity.class);
         CriteriaQuery<WaterConfigEntity> userSelect = userQuery.select(from);
@@ -65,33 +51,9 @@ public class TerrainElementPersistence {
     }
 
     @Transactional
-    public GroundConfig loadGroundConfig() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        // Query for total row count in invitations
-        CriteriaQuery<GroundConfigEntity> userQuery = criteriaBuilder.createQuery(GroundConfigEntity.class);
-        Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
-        CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
-        return entityManager.createQuery(userSelect).getSingleResult().toGroundConfig();
-    }
-
-    @Transactional
-    @SecurityCheck
-    public GroundConfig saveGroundConfig(GroundConfig groundConfig) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        // Query for total row count in invitations
-        CriteriaQuery<GroundConfigEntity> userQuery = criteriaBuilder.createQuery(GroundConfigEntity.class);
-        Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
-        CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
-        GroundConfigEntity groundConfigEntity = entityManager.createQuery(userSelect).getSingleResult();
-        groundConfigEntity.fromGroundConfig(groundConfig, imagePersistence);
-        return entityManager.merge(groundConfigEntity).toGroundConfig();
-    }
-
-    @Transactional
     @SecurityCheck
     public WaterConfig saveWaterConfig(WaterConfig waterConfig) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        // Query for total row count in invitations
         CriteriaQuery<WaterConfigEntity> userQuery = criteriaBuilder.createQuery(WaterConfigEntity.class);
         Root<WaterConfigEntity> from = userQuery.from(WaterConfigEntity.class);
         CriteriaQuery<WaterConfigEntity> userSelect = userQuery.select(from);
@@ -179,7 +141,6 @@ public class TerrainElementPersistence {
     @Transactional
     public List<TerrainObjectConfig> readTerrainObjects() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        // Query for total row count in invitations
         CriteriaQuery<TerrainObjectEntity> userQuery = criteriaBuilder.createQuery(TerrainObjectEntity.class);
         Root<TerrainObjectEntity> from = userQuery.from(TerrainObjectEntity.class);
         CriteriaQuery<TerrainObjectEntity> userSelect = userQuery.select(from);

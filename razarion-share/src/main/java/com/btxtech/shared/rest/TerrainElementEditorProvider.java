@@ -1,7 +1,6 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
@@ -52,17 +51,6 @@ public interface TerrainElementEditorProvider {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("readSlopeConfigs")
     List<SlopeConfig_OLD> readSlopeConfigs();
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("loadGroundConfig")
-    GroundConfig loadGroundConfig();
-
-    @PUT
-    @Path("saveGroundConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    GroundConfig saveGroundConfig(GroundConfig slopeConfig);
 
     @PUT
     @Path("saveWaterConfig")

@@ -9,7 +9,6 @@ import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.terrain.TerrainUiService;
 import org.jboss.errai.common.client.api.Caller;
-import org.jboss.errai.common.client.api.RemoteCallback;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.AutoBound;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -98,27 +97,27 @@ public class GroundSidebar extends LeftSideBarContent {
 
     @PostConstruct
     public void init() {
-        terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
-            groundConfigDataBinder.setModel(groundConfig);
-            // TODO            specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
-//   TODO         topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> {
-//                groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId);
-//                terrainUiService.onEditorTerrainChanged();
-//            });
-//            bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> {
-//                groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId);
-//                terrainUiService.onEditorTerrainChanged();
-//            });
-//            bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> {
-//                groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId);
-//                terrainUiService.onEditorTerrainChanged();
-//            });
-//            splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> {
-//                groundConfig.getGroundSkeletonConfig().setSplattingId(imageId);
-//                terrainUiService.onEditorTerrainChanged();
-//            });
-//            terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
-        }, exceptionHandler.restErrorHandler("loadGroundConfig failed: ")).loadGroundConfig();
+//        terrainEditorService.call((RemoteCallback<GroundConfig>) groundConfig -> {
+//            groundConfigDataBinder.setModel(groundConfig);
+//            // TODO            specularLightConfig.setModel(groundConfig.getGroundSkeletonConfig().getSpecularLightConfig());
+////   TODO         topTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getTopTextureId(), imageId -> {
+////                groundConfig.getGroundSkeletonConfig().setTopTextureId(imageId);
+////                terrainUiService.onEditorTerrainChanged();
+////            });
+////            bottomTextureId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomTextureId(), imageId -> {
+////                groundConfig.getGroundSkeletonConfig().setBottomTextureId(imageId);
+////                terrainUiService.onEditorTerrainChanged();
+////            });
+////            bottomBmId.setImageId(groundConfig.getGroundSkeletonConfig().getBottomBmId(), imageId -> {
+////                groundConfig.getGroundSkeletonConfig().setBottomBmId(imageId);
+////                terrainUiService.onEditorTerrainChanged();
+////            });
+////            splattingId.setImageId(groundConfig.getGroundSkeletonConfig().getSplattingId(), imageId -> {
+////                groundConfig.getGroundSkeletonConfig().setSplattingId(imageId);
+////                terrainUiService.onEditorTerrainChanged();
+////            });
+////            terrainUiService.enableEditMode(groundConfig.getGroundSkeletonConfig());
+//        }, exceptionHandler.restErrorHandler("loadGroundConfig failed: ")).loadGroundConfig();
     }
 
 //    @Override

@@ -1,7 +1,6 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.TerrainElementPersistence;
-import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
@@ -76,26 +75,6 @@ public class TerrainElementEditorProviderImpl implements TerrainElementEditorPro
     public void deleteSlopeConfig(int id) {
         try {
             persistenceService.deleteSlopeConfig(id);
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public GroundConfig loadGroundConfig() {
-        try {
-            return persistenceService.loadGroundConfig();
-        } catch (Throwable t) {
-            exceptionHandler.handleException(t);
-            throw t;
-        }
-    }
-
-    @Override
-    public GroundConfig saveGroundConfig(GroundConfig slopeConfig) {
-        try {
-            return persistenceService.saveGroundConfig(slopeConfig);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             throw t;
