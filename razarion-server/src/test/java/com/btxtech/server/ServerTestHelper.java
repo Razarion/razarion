@@ -21,8 +21,6 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.server.ServerGameEngineConfigEntity;
 import com.btxtech.server.persistence.server.ServerLevelQuestEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
-import com.btxtech.server.persistence.surface.GroundHeightEntity;
-import com.btxtech.server.persistence.surface.GroundSplattingEntity;
 import com.btxtech.server.persistence.surface.SlopeConfigEntity;
 import com.btxtech.server.persistence.surface.SlopeNodeEntity;
 import com.btxtech.server.persistence.surface.SlopeShapeEntity;
@@ -613,8 +611,6 @@ public class ServerTestHelper {
         cleanTableNative("QUEST_COMPARISON_BASE_ITEM");
 
         cleanTable(WaterConfigEntity.class);
-        cleanTable(GroundHeightEntity.class);
-        cleanTable(GroundSplattingEntity.class);
         cleanTable(GroundConfigEntity.class);
         cleanTable(GameUiControlConfigEntity.class);
         cleanTable(ServerGameEngineConfigEntity.class);

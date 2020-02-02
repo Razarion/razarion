@@ -333,7 +333,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             }
         }
 
-        throw new UnsupportedOperationException("TODO");
+        logger.severe("GameUiControl.getAllTextureIds(): Fix TODO");
         // TODO GroundSkeletonConfig groundSkeletonConfig = coldGameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
         //  if (groundSkeletonConfig.getTopTextureId() != null) {
         //      textureIds.add(groundSkeletonConfig.getTopTextureId());
@@ -341,7 +341,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         //  if (groundSkeletonConfig.getBottomTextureId() != null) {
         //      textureIds.add(groundSkeletonConfig.getBottomTextureId());
         //  }
-        //  return textureIds;
+        return textureIds;
     }
 
     public Set<Integer> getAllBumpTextureIds() {
@@ -352,7 +352,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
             }
         }
 
-        throw new UnsupportedOperationException("TODO");
+        logger.severe("GameUiControl.getAllBumpTextureIds(): Fix TODO");
 //  TODO      GroundSkeletonConfig groundSkeletonConfig = coldGameUiControlConfig.getStaticGameConfig().getGroundSkeletonConfig();
 //        if (groundSkeletonConfig.getBottomBmId() != null) {
 //            bumpIds.add(groundSkeletonConfig.getBottomBmId());
@@ -360,7 +360,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
 //        if (coldGameUiControlConfig.getStaticGameConfig().getWaterConfig().getNormMapId() != null) {
 //            bumpIds.add(coldGameUiControlConfig.getStaticGameConfig().getWaterConfig().getNormMapId());
 //        }
-//        return bumpIds;
+        return bumpIds;
     }
 
     public void onLevelUpdate(LevelConfig newLevelConfig) {

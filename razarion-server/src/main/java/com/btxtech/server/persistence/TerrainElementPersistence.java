@@ -47,7 +47,7 @@ public class TerrainElementPersistence {
         CriteriaQuery<WaterConfigEntity> userQuery = criteriaBuilder.createQuery(WaterConfigEntity.class);
         Root<WaterConfigEntity> from = userQuery.from(WaterConfigEntity.class);
         CriteriaQuery<WaterConfigEntity> userSelect = userQuery.select(from);
-        return entityManager.createQuery(userSelect).getSingleResult().toWaterConfig();
+        return entityManager.createQuery(userSelect).getResultList().stream().findFirst().map(WaterConfigEntity::toWaterConfig).orElse(null);
     }
 
     @Transactional

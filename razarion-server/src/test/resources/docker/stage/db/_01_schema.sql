@@ -11,6 +11,11 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
+
+-- Exportiere Datenbank Struktur für razarion
+CREATE DATABASE IF NOT EXISTS `razarion` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `razarion`;
+
 -- Exportiere Struktur von Tabelle razarion.AUDIO_LIBRARY
 CREATE TABLE IF NOT EXISTS `AUDIO_LIBRARY` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -586,69 +591,8 @@ CREATE TABLE IF NOT EXISTS `GAME_UI_CONTROL_CONFIG` (
 -- Exportiere Struktur von Tabelle razarion.GROUND_CONFIG
 CREATE TABLE IF NOT EXISTS `GROUND_CONFIG` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `bottomBmDepth` double NOT NULL,
-  `bottomBmScale` double NOT NULL,
-  `bottomTextureScale` double NOT NULL,
-  `heightFractalClampMax` double NOT NULL,
-  `heightFractalClampMin` double NOT NULL,
-  `heightFractalMax` double NOT NULL,
-  `heightFractalMin` double NOT NULL,
-  `heightFractalRoughness` double NOT NULL,
-  `heightXCount` int(11) NOT NULL,
-  `heightYCount` int(11) NOT NULL,
-  `specularHardness` double DEFAULT NULL,
-  `specularIntensity` double DEFAULT NULL,
-  `splattingFadeThreshold` double NOT NULL,
-  `splattingFractalClampMax` double NOT NULL,
-  `splattingFractalClampMin` double NOT NULL,
-  `splattingFractalMax` double NOT NULL,
-  `splattingFractalMin` double NOT NULL,
-  `splattingFractalRoughness` double NOT NULL,
-  `splattingGroundBmMultiplicator` double NOT NULL,
-  `splattingOffset` double NOT NULL,
-  `splattingScale` double NOT NULL,
-  `splattingXCount` int(11) NOT NULL,
-  `splattingYCount` int(11) NOT NULL,
-  `topTextureScale` double NOT NULL,
-  `bottomBm_id` int(11) DEFAULT NULL,
-  `bottomTexture_id` int(11) DEFAULT NULL,
-  `splatting_id` int(11) DEFAULT NULL,
-  `topTexture_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKhvf9wdroitf7l250s2si9ra8m` (`bottomBm_id`),
-  KEY `FKncu4rmf1d597pn9nkbm40euxh` (`bottomTexture_id`),
-  KEY `FK7f71xj1yqpgy5i93ueer11xxd` (`splatting_id`),
-  KEY `FKmvyhhqqxmwys0ttqjmnq9975o` (`topTexture_id`),
-  CONSTRAINT `FK7f71xj1yqpgy5i93ueer11xxd` FOREIGN KEY (`splatting_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
-  CONSTRAINT `FKhvf9wdroitf7l250s2si9ra8m` FOREIGN KEY (`bottomBm_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
-  CONSTRAINT `FKmvyhhqqxmwys0ttqjmnq9975o` FOREIGN KEY (`topTexture_id`) REFERENCES `IMAGE_LIBRARY` (`id`),
-  CONSTRAINT `FKncu4rmf1d597pn9nkbm40euxh` FOREIGN KEY (`bottomTexture_id`) REFERENCES `IMAGE_LIBRARY` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Daten Export vom Benutzer nicht ausgewählt
--- Exportiere Struktur von Tabelle razarion.GROUND_HEIGHT
-CREATE TABLE IF NOT EXISTS `GROUND_HEIGHT` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `height` double NOT NULL,
-  `xIndex` int(11) NOT NULL,
-  `yIndex` int(11) NOT NULL,
-  `heights_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK3dauap09p29rwvdsiiwbs5hw9` (`heights_id`),
-  CONSTRAINT `FK3dauap09p29rwvdsiiwbs5hw9` FOREIGN KEY (`heights_id`) REFERENCES `GROUND_CONFIG` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- Daten Export vom Benutzer nicht ausgewählt
--- Exportiere Struktur von Tabelle razarion.GROUND_SPLATTING
-CREATE TABLE IF NOT EXISTS `GROUND_SPLATTING` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `splatting` double NOT NULL,
-  `xIndex` int(11) NOT NULL,
-  `yIndex` int(11) NOT NULL,
-  `splattings_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FKapp2bfps95kgm1y7oe2s5hp1y` (`splattings_id`),
-  CONSTRAINT `FKapp2bfps95kgm1y7oe2s5hp1y` FOREIGN KEY (`splattings_id`) REFERENCES `GROUND_CONFIG` (`id`)
+  `internalName` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Daten Export vom Benutzer nicht ausgewählt
@@ -1589,7 +1533,7 @@ CREATE TABLE IF NOT EXISTS `TRACKER_PAGE` (
   `uri` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX8r3ssjnqi1ayq740sslge33bl` (`sessionId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
 -- Daten Export vom Benutzer nicht ausgewählt
 -- Exportiere Struktur von Tabelle razarion.TRACKER_PERFMON
