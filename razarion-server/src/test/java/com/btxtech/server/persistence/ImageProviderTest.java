@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.EmptyDockerContainer;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import org.junit.After;
@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 
-public class ImageProviderTest extends RestServerTestBase {
+public class ImageProviderTest extends EmptyDockerContainer {
     private ImageProvider imageProvider;
 
     @Before

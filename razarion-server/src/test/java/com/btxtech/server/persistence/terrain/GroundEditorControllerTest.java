@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.terrain;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.EmptyDockerContainer;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.GroundEditorController;
@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 
-public class GroundEditorControllerTest extends RestServerTestBase {
+public class GroundEditorControllerTest extends EmptyDockerContainer {
     private GroundEditorController groundEditorController;
 
     @Before
