@@ -8,9 +8,9 @@ import com.btxtech.shared.utils.CollectionUtils;
  */
 public class GroundSkeletonConfig {
     private int id;
-    private PhongMaterialConfig topTexture;
-    private PhongMaterialConfig bottomTexture;
-    private ImageScaleConfig splatting;
+    // private PhongMaterialConfig topTexture;
+    // private PhongMaterialConfig bottomTexture;
+    // private ImageScaleConfig splatting;
     private double splattingScale2;
     private double splattingFadeThreshold;
     private double splattingOffset;
@@ -31,32 +31,32 @@ public class GroundSkeletonConfig {
         return id;
     }
 
-    public PhongMaterialConfig getTopTexture() {
-        return topTexture;
-    }
-
-    public GroundSkeletonConfig setTopTexture(PhongMaterialConfig topTexture) {
-        this.topTexture = topTexture;
-        return this;
-    }
-
-    public PhongMaterialConfig getBottomTexture() {
-        return bottomTexture;
-    }
-
-    public GroundSkeletonConfig setBottomTexture(PhongMaterialConfig bottomTexture) {
-        this.bottomTexture = bottomTexture;
-        return this;
-    }
-
-    public ImageScaleConfig getSplatting() {
-        return splatting;
-    }
-
-    public GroundSkeletonConfig setSplatting(ImageScaleConfig splatting) {
-        this.splatting = splatting;
-        return this;
-    }
+//    public PhongMaterialConfig getTopTexture() {
+//        return topTexture;
+//    }
+//
+//    public GroundSkeletonConfig setTopTexture(PhongMaterialConfig topTexture) {
+//        this.topTexture = topTexture;
+//        return this;
+//    }
+//
+//    public PhongMaterialConfig getBottomTexture() {
+//        return bottomTexture;
+//    }
+//
+//    public GroundSkeletonConfig setBottomTexture(PhongMaterialConfig bottomTexture) {
+//        this.bottomTexture = bottomTexture;
+//        return this;
+//    }
+//
+//    public ImageScaleConfig getSplatting() {
+//        return splatting;
+//    }
+//
+//    public GroundSkeletonConfig setSplatting(ImageScaleConfig splatting) {
+//        this.splatting = splatting;
+//        return this;
+//    }
 
     public double getSplattingScale2() {
         return splattingScale2;

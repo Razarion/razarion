@@ -677,7 +677,7 @@ public class ServerTestHelper {
         runInTransaction(em -> em.createQuery("DELETE FROM " + entityClass.getName()).executeUpdate());
     }
 
-    protected void cleanTableNative(String tableName) throws Exception {
+    protected void cleanTableNative(String tableName) {
         runInTransaction(em -> em.createNativeQuery("DELETE FROM " + tableName).executeUpdate());
     }
 

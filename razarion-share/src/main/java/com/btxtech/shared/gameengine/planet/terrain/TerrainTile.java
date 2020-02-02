@@ -12,9 +12,9 @@ import java.util.Map;
  */
 @JsType(isNative = true, name = "TerrainTile", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainTile {
-    private Map<Integer, double[]> groundSlopeVertices; // TODO remove if used in Javascript Interop GWT
-    private Map<Integer, double[]> groundSlopeNorms; // TODO remove if used in Javascript Interop GWT
-    private List<TerrainWaterTile> terrainWaterTiles;
+//    private Map<Integer, double[]> groundSlopeVertices; // TODO remove if used in Javascript Interop GWT
+//    private Map<Integer, double[]> groundSlopeNorms; // TODO remove if used in Javascript Interop GWT
+//    private List<TerrainWaterTile> terrainWaterTiles;
 
     public native void init(int indexX, int indexY);
 
@@ -30,33 +30,21 @@ public abstract class TerrainTile {
 
     public native double[] getGroundNorms();
 
-    public Map<Integer, double[]> getGroundSlopeVertices() {
-        return groundSlopeVertices;
-    }
+    public native Map<Integer, double[]> getGroundSlopeVertices();
 
-    public void setGroundSlopeVertices(Map<Integer, double[]> groundSlopeVertices) {
-        this.groundSlopeVertices = groundSlopeVertices;
-    }
+    public native void setGroundSlopeVertices(Map<Integer, double[]> groundSlopeVertices);
 
-    public Map<Integer, double[]> getGroundSlopeNorms() {
-        return groundSlopeNorms;
-    }
+    public native Map<Integer, double[]> getGroundSlopeNorms();
 
-    public void setGroundSlopeNorms(Map<Integer, double[]> groundSlopeNorms) {
-        this.groundSlopeNorms = groundSlopeNorms;
-    }
+    public native void setGroundSlopeNorms(Map<Integer, double[]> groundSlopeNorms);
 
     public native void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile);
 
     public native TerrainSlopeTile[] getTerrainSlopeTiles();
 
-    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
-        this.terrainWaterTiles = terrainWaterTiles;
-    }
+    public native void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles);
 
-    public List<TerrainWaterTile> getTerrainWaterTiles() {
-        return terrainWaterTiles;
-    }
+    public native List<TerrainWaterTile> getTerrainWaterTiles();
 
     public native double getLandWaterProportion();
 

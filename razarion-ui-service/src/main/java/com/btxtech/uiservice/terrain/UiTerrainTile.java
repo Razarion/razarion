@@ -104,7 +104,8 @@ public class UiTerrainTile {
     }
 
     public Integer getSplattingId() {
-        return groundSkeletonConfig.getSplatting().getId();
+        // TODO return groundSkeletonConfig.getSplatting().getId();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public Integer getBottomTextureId() {
@@ -123,7 +124,8 @@ public class UiTerrainTile {
     }
 
     public double getSplattingScale() {
-        return groundSkeletonConfig.getSplatting().getScale();
+        // TODO  return groundSkeletonConfig.getSplatting().getScale();
+        throw new UnsupportedOperationException("TODO");
     }
 
     public double getBottomTextureScale() {

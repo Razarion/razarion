@@ -2,7 +2,6 @@ package com.btxtech.server.persistence.surface;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.PersistenceUtil;
 import com.btxtech.server.persistence.SpecularLightConfigEmbeddable;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
@@ -31,6 +30,7 @@ public class GroundConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     @Embedded
     private SpecularLightConfigEmbeddable specularLightConfigEmbeddable;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -125,8 +125,8 @@ public class GroundConfigEntity {
                 // TODO  splattings.add(new GroundSplattingEntity(x, y, groundConfig.getGroundSkeletonConfig().getSplattings()[x][y]));
             }
         }
-        splatting = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getSplatting().getId());
-        splattingScale = groundConfig.getGroundSkeletonConfig().getSplatting().getScale();
+        // TODO splatting = imagePersistence.getImageLibraryEntity(groundConfig.getGroundSkeletonConfig().getSplatting().getId());
+        // TODO splattingScale = groundConfig.getGroundSkeletonConfig().getSplatting().getScale();
         heightFractalMin = groundConfig.getHeightFractalMin();
         heightFractalMax = groundConfig.getHeightFractalMax();
         heightFractalClampMin = groundConfig.getHeightFractalClampMin();
@@ -161,20 +161,20 @@ public class GroundConfigEntity {
         // TODO groundSkeletonConfig.setSpecularLightConfig(specularLightConfigEmbeddable.toLightConfig());
         // TODO groundSkeletonConfig.setSplattingXCount(splattingXCount);
         // TODO groundSkeletonConfig.setSplattingYCount(splattingYCount);
-        double[][] splattingNodes = new double[splattingXCount][splattingYCount];
-        for (GroundSplattingEntity groundSplattingEntity : splattings) {
-            splattingNodes[groundSplattingEntity.getXIndex()][groundSplattingEntity.getYIndex()] = groundSplattingEntity.getSplatting();
-        }
+        // TODO double[][] splattingNodes = new double[splattingXCount][splattingYCount];
+        // TODO for (GroundSplattingEntity groundSplattingEntity : splattings) {
+        // TODO     splattingNodes[groundSplattingEntity.getXIndex()][groundSplattingEntity.getYIndex()] = groundSplattingEntity.getSplatting();
+        // TODO }
         // TODO groundSkeletonConfig.setSplattings(splattingNodes);
         groundSkeletonConfig.setHeightXCount(heightXCount);
         groundSkeletonConfig.setHeightYCount(heightYCount);
         // TODO groundSkeletonConfig.setSplattingId(PersistenceUtil.getImageIdSafe(splatting));
         // TODO groundSkeletonConfig.setSplattingScale(splattingScale);
-        double[][] heightNodes = new double[heightXCount][heightYCount];
-        for (GroundHeightEntity groundHeightEntity : heights) {
-            heightNodes[groundHeightEntity.getXIndex()][groundHeightEntity.getYIndex()] = groundHeightEntity.getHeight();
-        }
-        groundSkeletonConfig.setHeights(heightNodes);
+        // TODO double[][] heightNodes = new double[heightXCount][heightYCount];
+        // TODO for (GroundHeightEntity groundHeightEntity : heights) {
+        // TODO     heightNodes[groundHeightEntity.getXIndex()][groundHeightEntity.getYIndex()] = groundHeightEntity.getHeight();
+        // TODO }
+        // TODO groundSkeletonConfig.setHeights(heightNodes);
         return groundSkeletonConfig;
     }
 

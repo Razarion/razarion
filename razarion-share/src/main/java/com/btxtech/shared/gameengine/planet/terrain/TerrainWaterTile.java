@@ -8,40 +8,24 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainWaterTile", namespace = "com.btxtech.shared.nativejs")
 public class TerrainWaterTile {
-    private int slopeConfigId;
-    private double[] vertices;
-    private double[] shallowVertices;
-    private double[] shallowUvs;
+//    private int slopeConfigId;
+//    private double[] vertices;
+//    private double[] shallowVertices;
+//    private double[] shallowUvs;
 
-    public int getSlopeConfigId() {
-        return slopeConfigId;
-    }
+    public native int getSlopeConfigId();
 
-    public void setSlopeConfigId(int slopeConfigId) {
-        this.slopeConfigId = slopeConfigId;
-    }
+    public native void setSlopeConfigId(int slopeConfigId);
 
-    public void setVertices(double[] vertices) {
-        this.vertices = vertices;
-    }
+    public native void setVertices(double[] vertices);
 
-    public double[] getVertices() {
-        return vertices;
-    }
+    public native double[] getVertices();
 
-    public double[] getShallowVertices() {
-        return shallowVertices;
-    }
+    public native double[] getShallowVertices();
 
-    public void setShallowVertices(double[] shallowVertices) {
-        this.shallowVertices = shallowVertices;
-    }
+    public native void setShallowVertices(double[] shallowVertices);
 
-    public double[] getShallowUvs() {
-        return shallowUvs;
-    }
+    public native double[] getShallowUvs();
 
-    public void setShallowUvs(double[] shallowUvs) {
-        this.shallowUvs = shallowUvs;
-    }
+    public native void setShallowUvs(double[] shallowUvs);
 }

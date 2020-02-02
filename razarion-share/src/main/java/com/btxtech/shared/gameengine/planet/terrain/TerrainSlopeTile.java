@@ -9,40 +9,24 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, name = "TerrainSlopeTile", namespace = "com.btxtech.shared.nativejs")
 public abstract class TerrainSlopeTile {
-    private int slopeConfigId;
-    private SlopeGeometry outerSlopeGeometry;
-    private SlopeGeometry centerSlopeGeometry;
-    private SlopeGeometry innerSlopeGeometry;
+//    private int slopeConfigId;
+//    private SlopeGeometry outerSlopeGeometry;
+//    private SlopeGeometry centerSlopeGeometry;
+//    private SlopeGeometry innerSlopeGeometry;
 
-    public int getSlopeConfigId() {
-        return slopeConfigId;
-    }
+    public native int getSlopeConfigId();
 
-    public void setSlopeConfigId(int slopeConfigId) {
-        this.slopeConfigId = slopeConfigId;
-    }
+    public native void setSlopeConfigId(int slopeConfigId);
 
-    public SlopeGeometry getOuterSlopeGeometry() {
-        return outerSlopeGeometry;
-    }
+    public native SlopeGeometry getOuterSlopeGeometry();
 
-    public void setOuterSlopeGeometry(SlopeGeometry outerSlopeGeometry) {
-        this.outerSlopeGeometry = outerSlopeGeometry;
-    }
+    public native void setOuterSlopeGeometry(SlopeGeometry outerSlopeGeometry);
 
-    public SlopeGeometry getCenterSlopeGeometry() {
-        return centerSlopeGeometry;
-    }
+    public native SlopeGeometry getCenterSlopeGeometry();
 
-    public void setCenterSlopeGeometry(SlopeGeometry centerSlopeGeometry) {
-        this.centerSlopeGeometry = centerSlopeGeometry;
-    }
+    public native void setCenterSlopeGeometry(SlopeGeometry centerSlopeGeometry);
 
-    public SlopeGeometry getInnerSlopeGeometry() {
-        return innerSlopeGeometry;
-    }
+    public native SlopeGeometry getInnerSlopeGeometry();
 
-    public void setInnerSlopeGeometry(SlopeGeometry innerSlopeGeometry) {
-        this.innerSlopeGeometry = innerSlopeGeometry;
-    }
+    public native void setInnerSlopeGeometry(SlopeGeometry innerSlopeGeometry);
 }

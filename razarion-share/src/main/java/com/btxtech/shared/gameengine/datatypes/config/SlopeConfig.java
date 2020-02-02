@@ -47,8 +47,8 @@ public class SlopeConfig implements ObjectNameIdProvider {
     private Double slopeFoamDistortionStrength;
     private Double slopeFoamAnimationDuration;
     private GroundSkeletonConfig groundSkeletonConfig;
-    private SlopeGroundSplattingConfig outerSplatting;
-    private SlopeGroundSplattingConfig innerSplatting;
+//    private SlopeGroundSplattingConfig outerSplatting;
+//    private SlopeGroundSplattingConfig innerSplatting;
     private Double waterLevel;
     private Double waterFresnelOffset;
     private Double waterFresnelDelta;
@@ -219,24 +219,24 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public SlopeGroundSplattingConfig getOuterSplatting() {
-        return outerSplatting;
-    }
-
-    public SlopeConfig setOuterSplatting(SlopeGroundSplattingConfig outerSplatting) {
-        this.outerSplatting = outerSplatting;
-        return this;
-    }
-
-    public SlopeGroundSplattingConfig getInnerSplatting() {
-        return innerSplatting;
-    }
-
-    public SlopeConfig setInnerSplatting(SlopeGroundSplattingConfig innerSplatting) {
-        this.innerSplatting = innerSplatting;
-        return this;
-    }
-
+//    public SlopeGroundSplattingConfig getOuterSplatting() {
+//        return outerSplatting;
+//    }
+//
+//    public SlopeConfig setOuterSplatting(SlopeGroundSplattingConfig outerSplatting) {
+//        this.outerSplatting = outerSplatting;
+//        return this;
+//    }
+//
+//    public SlopeGroundSplattingConfig getInnerSplatting() {
+//        return innerSplatting;
+//    }
+//
+//    public SlopeConfig setInnerSplatting(SlopeGroundSplattingConfig innerSplatting) {
+//        this.innerSplatting = innerSplatting;
+//        return this;
+//    }
+//
     public double getOuterLineGameEngine() {
         return outerLineGameEngine;
     }

@@ -39,6 +39,7 @@ public class CommonUrl {
     public static final String WARM = "warm";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";
     public static final String TERRAIN_ELEMENT_SERVICE_PATH = "terrainelement";
+    public static final String GROUND_EDITOR_PATH = "editor/ground";
     public static final String SHAPE_3D_PROVIDER = G_ZIPPED + "/" + "shape3dprovider";
     public static final String TERRAIN_SHAPE_PROVIDER = G_ZIPPED + "/" + "terrainshape";
     public static final String SHAPE_3D_PROVIDER_GET_VERTEX_BUFFER = "getshape3dvertexbuffer";
