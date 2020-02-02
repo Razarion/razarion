@@ -4,7 +4,7 @@ import com.btxtech.client.user.FacebookService;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.rest.GameUiControlProvider;
+import com.btxtech.shared.rest.GameUiControlController;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -27,7 +27,7 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private Caller<GameUiControlProvider> serviceCaller;
+    private Caller<GameUiControlController> serviceCaller;
     @Inject
     private FacebookService facebookService;
     @Inject
@@ -41,7 +41,7 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
             facebookService.activateFacebookAppStartLogin();
             deferredStartup.finished();
         }, (message, throwable) -> {
-            exceptionHandler.restErrorHandler("GameUiControlProvider.loadGameUiControlConfig()");
+            exceptionHandler.restErrorHandler("GameUiControlController.loadGameUiControlConfig()");
             deferredStartup.failed(throwable);
             return false;
         }).loadGameUiControlConfig(setupGameUiControlInput());

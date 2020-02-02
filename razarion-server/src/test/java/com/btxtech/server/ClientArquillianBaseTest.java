@@ -3,7 +3,7 @@ package com.btxtech.server;
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.rest.GameUiControlProvider;
+import com.btxtech.shared.rest.GameUiControlController;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -130,7 +130,7 @@ public class ClientArquillianBaseTest {
     }
 
     protected ColdGameUiControlConfig getColdGameUiControlConfig(TestSessionContext testSessionContext) {
-        return setupClient(GameUiControlProvider.class, testSessionContext).loadGameUiControlConfig(new GameUiControlInput());
+        return setupClient(GameUiControlController.class, testSessionContext).loadGameUiControlConfig(new GameUiControlInput());
     }
 
 }

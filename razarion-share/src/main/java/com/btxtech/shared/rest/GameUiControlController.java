@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
  * 06.07.2016.
  */
 @Path(CommonUrl.GAME_UI_CONTROL_PATH)
-public interface GameUiControlProvider {
+public interface GameUiControlController {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

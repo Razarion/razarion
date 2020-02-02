@@ -14,7 +14,7 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.rest.GameUiControlProvider;
+import com.btxtech.shared.rest.GameUiControlController;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.junit.After;
 import org.junit.Assert;
@@ -51,7 +51,7 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         FrontendLoginState frontendLoginState = frontendProvider.isLoggedIn("", "");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
         Assert.assertEquals("en_US", frontendLoginState.getLanguage());
-        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
+        GameUiControlController gameUiControlProvider = testSessionContext.proxy(GameUiControlController.class);
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login facebook
         Assert.assertTrue(frontendProvider.facebookAuthenticated(new FbAuthResponse().setUserID("000000012")));
@@ -124,7 +124,7 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         FrontendLoginState frontendLoginState = frontendProvider.isLoggedIn("", "");
         Assert.assertFalse(frontendLoginState.isLoggedIn());
         Assert.assertEquals(languageExpected, frontendLoginState.getLanguage());
-        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
+        GameUiControlController gameUiControlProvider = testSessionContext.proxy(GameUiControlController.class);
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Register
         RegisterResult registerResult = frontendProvider.createUnverifiedUser("xxx@yyy.com", "123456789", false);
@@ -208,12 +208,12 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         // User 1 login and activate user 2
         Assert.assertTrue(frontendProvider1.isLoggedIn("", "").isLoggedIn());
         Assert.assertTrue(frontendProvider1.verifyEmailLink(getEmailVerificationUuid("xx1@yyy.com")));
-        UserContext userContext1 = testSessionContext1.proxy(GameUiControlProvider.class).loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
+        UserContext userContext1 = testSessionContext1.proxy(GameUiControlController.class).loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
         Assert.assertTrue(userContext1.checkRegistered());
         Assert.assertTrue(userContext1.isEmailNotVerified());
         // User 2 login and activate user 2
         Assert.assertTrue(frontendProvider2.isLoggedIn("", "").isLoggedIn());
-        UserContext userContext2 = testSessionContext2.proxy(GameUiControlProvider.class).loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
+        UserContext userContext2 = testSessionContext2.proxy(GameUiControlController.class).loadGameUiControlConfig(new GameUiControlInput()).getUserContext();
         Assert.assertTrue(userContext2.checkRegistered());
         Assert.assertFalse(userContext2.isEmailNotVerified());
 
@@ -233,7 +233,7 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         // Verify login token cookie
         Assert.assertNotNull(testSessionContext.getLoginTokenCookie());
         Cookie loginCookie1 = testSessionContext.getLoginTokenCookie();
-        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
+        GameUiControlController gameUiControlProvider = testSessionContext.proxy(GameUiControlController.class);
         Assert.assertTrue(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Logout
         frontendProvider.logout();
@@ -329,7 +329,7 @@ public class FrontendProviderTest extends ClientArquillianBaseTest {
         Assert.assertEquals(messageBodyPart1 + uuid + messageBodyPart2 + uuid + messageBodyPart3, mails.get(0).getContent().replaceAll("\\s", ""));
         // Check wrong uuid
         Assert.assertFalse(frontendProvider.savePassword(uuid + "qefdewfdswf", "asdasdasdasd"));
-        GameUiControlProvider gameUiControlProvider = testSessionContext.proxy(GameUiControlProvider.class);
+        GameUiControlController gameUiControlProvider = testSessionContext.proxy(GameUiControlController.class);
         Assert.assertFalse(gameUiControlProvider.loadGameUiControlConfig(new GameUiControlInput()).getUserContext().checkRegistered());
         // Login with new password
         Assert.assertEquals(LoginResult.WRONG_PASSWORD, frontendProvider.loginUser("xxx@yyy.com", "asdasdasdasd", false));

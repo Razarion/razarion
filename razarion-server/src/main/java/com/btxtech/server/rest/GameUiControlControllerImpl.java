@@ -7,7 +7,7 @@ import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
-import com.btxtech.shared.rest.GameUiControlProvider;
+import com.btxtech.shared.rest.GameUiControlController;
 import com.btxtech.shared.system.ExceptionHandler;
 import org.xml.sax.SAXException;
 
@@ -20,7 +20,7 @@ import java.io.IOException;
  * Created by Beat
  * 06.07.2016.
  */
-public class GameUiControlProviderImpl implements GameUiControlProvider {
+public class GameUiControlControllerImpl implements GameUiControlController {
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
     @Inject
