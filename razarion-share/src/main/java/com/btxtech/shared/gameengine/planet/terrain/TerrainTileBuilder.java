@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Triangle2d;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShapeTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
@@ -38,9 +37,6 @@ public class TerrainTileBuilder {
     private int offsetIndexX;
     private int offsetIndexY;
     private Collection<TerrainSlopeTileBuilder> terrainSlopeTileBuilders;
-    @Deprecated
-    private GroundSkeletonConfig groundSkeletonConfig;
-
     private List<Vertex> groundPositions = new ArrayList<>();
     private List<Vertex> groundNorms = new ArrayList<>();
     private MapList<Integer, Vertex> groundSlopeVertices = new MapList<>();
@@ -48,9 +44,8 @@ public class TerrainTileBuilder {
     private Rectangle2D playGround;
 
 
-    public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, GroundSkeletonConfig groundSkeletonConfig, Rectangle2D playGround) {
+    public void init(Index terrainTileIndex, TerrainShapeTile terrainShapeTile, Rectangle2D playGround) {
         this.terrainTileIndex = terrainTileIndex;
-        this.groundSkeletonConfig = groundSkeletonConfig;
         terrainWaterTileBuilder.init(this);
 
         terrainTile = jsInteropObjectFactory.generateTerrainTile();
@@ -173,7 +168,7 @@ public class TerrainTileBuilder {
     public Vertex setupVertexWithGroundSkeletonHeight(int x, int y, double additionHeight) {
         double absoluteX = x * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
         double absoluteY = y * TerrainUtil.TERRAIN_NODE_ABSOLUTE_LENGTH;
-        return new Vertex(absoluteX, absoluteY, groundSkeletonConfig.getHeight(x, y) + additionHeight);
+        return new Vertex(absoluteX, absoluteY, additionHeight);
     }
 
     public Vertex addGroundSkeletonNorm(int x, int y, Vertex norm) {

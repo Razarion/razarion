@@ -3,15 +3,15 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.DrivewayConfig;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
@@ -30,16 +30,13 @@ import java.util.stream.Collectors;
 public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
-    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<TerrainObjectConfig> terrainObjectConfigs, double[][] heights, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundSkeletonConfig groundSkeletonConfig) {
+    protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundConfig groundConfig) {
         StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
-        if(groundSkeletonConfig == null) {
-            groundSkeletonConfig = new GroundSkeletonConfig();
-            groundSkeletonConfig.setHeights(toColumnRow(heights));
-            groundSkeletonConfig.setHeightXCount(heights[0].length);
-            groundSkeletonConfig.setHeightYCount(heights.length);
+        if(groundConfig == null) {
+            groundConfig = new GroundConfig();
         }
-        staticGameConfig.setGroundSkeletonConfig(groundSkeletonConfig);
+        staticGameConfig.setGroundConfig(groundConfig);
         staticGameConfig.setSlopeConfigs(slopeConfigs);
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();

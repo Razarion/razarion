@@ -525,12 +525,11 @@ public class TerrainShapeSetup {
         if (water) {
             return new Vertex(position, groundHeight);
         } else {
-            Index nodeTile = TerrainUtil.toNode(position);
             double height;
             if (driveway != null) {
                 height = driveway.getInterpolateDrivewayHeight(position) + drivewayBaseHeight;
             } else {
-                height = groundHeight + terrainTypeService.getGroundSkeletonConfig().getHeight(nodeTile.getX(), nodeTile.getY());
+                height = groundHeight;
             }
             return new Vertex(position, height);
         }

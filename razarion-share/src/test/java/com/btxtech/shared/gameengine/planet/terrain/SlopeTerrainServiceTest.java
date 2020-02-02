@@ -59,7 +59,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(slopeConfigs, null, heights, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainSlopePositions, null, null);
 
         showDisplay();
 
@@ -116,7 +116,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
         };
 
         PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
-        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, heights, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, planetConfig, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -167,7 +167,7 @@ public class SlopeTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.5, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(slopeConfigs, null, heights, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 

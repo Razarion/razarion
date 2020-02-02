@@ -74,7 +74,7 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
         planetConfig.setPlayGround(new Rectangle2D(50, 50, 5000, 5000));
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
 
-        setupTerrainTypeService(slopeConfigs, null, heights, planetConfig, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, planetConfig, terrainSlopePositions, null, null);
     }
 
     private List<TerrainSlopePosition> setupSlope(int slopeConfigId, boolean inverted, List<TerrainSlopePosition> children, TerrainSlopeCorner... slopePolygon) {

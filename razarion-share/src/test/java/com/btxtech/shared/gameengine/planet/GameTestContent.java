@@ -5,8 +5,7 @@ import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.DrivewayConfig;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
@@ -17,6 +16,7 @@ import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.QuestConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
@@ -75,7 +75,7 @@ public interface GameTestContent {
 
     static StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setId(GROUND_SKELETON_ID).setHeights(new double[][]{{0.0}}).setHeightXCount(1).setHeightYCount(1));
+        staticGameConfig.setGroundConfig(new GroundConfig().id(GROUND_SKELETON_ID));
         staticGameConfig.setLevelConfigs(setupLevelConfigs());
         staticGameConfig.setBaseItemTypes(setupBaseItemType());
         staticGameConfig.setResourceItemTypes(setupResourceItemType());

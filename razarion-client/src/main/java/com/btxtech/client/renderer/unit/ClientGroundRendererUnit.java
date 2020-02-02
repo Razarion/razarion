@@ -90,8 +90,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
         lightUniforms.setLightUniforms(webGlFacade);
         specularUniforms.setUniforms(uiTerrainTile.getSpecularLightConfig(), webGlFacade);
         webGlFacade.uniform1f(uBottomBmDepth, uiTerrainTile.getBottomBmDepth());
-        webGlFacade.uniform1f(uSplattingFadeThreshold, uiTerrainTile.getSplattingFadeThreshold());
-        webGlFacade.uniform1f(uSplattingOffset, uiTerrainTile.getSplattingOffset());
+        // TODO  webGlFacade.uniform1f(uSplattingFadeThreshold, uiTerrainTile.getSplattingFadeThreshold());
+        // TODO  webGlFacade.uniform1f(uSplattingOffset, uiTerrainTile.getSplattingOffset());
         webGlFacade.uniform1f(uSplattingGroundBmMultiplicator, uiTerrainTile.getSplattingGroundBmMultiplicator());
 
         webGlFacade.activateReceiveShadow();

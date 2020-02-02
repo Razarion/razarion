@@ -43,7 +43,6 @@ import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.GroundConfig;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
@@ -592,11 +591,7 @@ public class ServerTestHelper {
 
     private GroundConfig setupGroundConfig() throws Exception {
         GroundConfig groundConfig = new GroundConfig();
-        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
         // TODO groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
-        groundSkeletonConfig.setHeightXCount(1);
-        groundSkeletonConfig.setHeightYCount(1);
-        groundSkeletonConfig.setHeights(new double[][]{{0}});
         // TODO groundSkeletonConfig.setSplattingXCount(1);
         // TODO groundSkeletonConfig.setSplattingYCount(1);
         // TODO groundSkeletonConfig.setSplattings(new double[][]{{0}});
@@ -604,7 +599,6 @@ public class ServerTestHelper {
         // TODO groundSkeletonConfig.setBottomBmId(onePixelImageId);
         // TODO groundSkeletonConfig.setBottomTextureId(onePixelImageId);
         // TODO groundSkeletonConfig.setTopTextureId(onePixelImageId);
-        groundConfig.setGroundSkeletonConfig(groundSkeletonConfig);
         return groundConfig;
     }
 

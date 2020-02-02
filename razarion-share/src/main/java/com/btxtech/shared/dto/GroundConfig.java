@@ -1,84 +1,85 @@
 package com.btxtech.shared.dto;
 
+import java.util.Objects;
+
 /**
  * Created by Beat
  * 07.05.2016.
  */
 public class GroundConfig {
-    private GroundSkeletonConfig groundSkeletonConfig;
-    private double heightFractalRoughness;
-    private double heightFractalMin;
-    private double heightFractalMax;
-    private double heightFractalClampMin;
-    private double heightFractalClampMax;
+    private int id;
+    private String internalName;
+    // private PhongMaterialConfig topTexture;
+    // private PhongMaterialConfig bottomTexture;
+    // private ImageScaleConfig splatting;
 
-    public GroundSkeletonConfig getGroundSkeletonConfig() {
-        return groundSkeletonConfig;
+    public int getId() {
+        return id;
     }
 
-    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
-        this.groundSkeletonConfig = groundSkeletonConfig;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public double getHeightFractalMin() {
-        return heightFractalMin;
+    public String getInternalName() {
+        return internalName;
     }
 
-    public void setHeightFractalMin(double heightFractalMin) {
-        this.heightFractalMin = heightFractalMin;
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
     }
 
-    public double getHeightFractalMax() {
-        return heightFractalMax;
+    public GroundConfig id(int id) {
+        setId(id);
+        return this;
     }
 
-    public void setHeightFractalMax(double heightFractalMax) {
-        this.heightFractalMax = heightFractalMax;
+    public GroundConfig internalName(String internalName) {
+        setInternalName(internalName);
+        return this;
     }
 
-    public double getHeightFractalClampMin() {
-        return heightFractalClampMin;
+    //    public PhongMaterialConfig getTopTexture() {
+//        return topTexture;
+//    }
+//
+//    public GroundSkeletonConfig setTopTexture(PhongMaterialConfig topTexture) {
+//        this.topTexture = topTexture;
+//        return this;
+//    }
+//
+//    public PhongMaterialConfig getBottomTexture() {
+//        return bottomTexture;
+//    }
+//
+//    public GroundSkeletonConfig setBottomTexture(PhongMaterialConfig bottomTexture) {
+//        this.bottomTexture = bottomTexture;
+//        return this;
+//    }
+//
+//    public ImageScaleConfig getSplatting() {
+//        return splatting;
+//    }
+//
+//    public GroundSkeletonConfig setSplatting(ImageScaleConfig splatting) {
+//        this.splatting = splatting;
+//        return this;
+//    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        GroundConfig that = (GroundConfig) o;
+        return id == that.id;
     }
 
-    public void setHeightFractalClampMin(double heightFractalClampMin) {
-        this.heightFractalClampMin = heightFractalClampMin;
-    }
-
-    public double getHeightFractalClampMax() {
-        return heightFractalClampMax;
-    }
-
-    public void setHeightFractalClampMax(double heightFractalClampMax) {
-        this.heightFractalClampMax = heightFractalClampMax;
-    }
-
-    public double getHeightFractalRoughness() {
-        return heightFractalRoughness;
-    }
-
-    public void setHeightFractalRoughness(double heightFractalRoughness) {
-        this.heightFractalRoughness = heightFractalRoughness;
-    }
-
-    public FractalFieldConfig toHeightFractalFiledConfig() {
-        FractalFieldConfig fractalFieldConfig = new FractalFieldConfig();
-        fractalFieldConfig.setFractalMin(heightFractalMin);
-        fractalFieldConfig.setFractalMax(heightFractalMax);
-        fractalFieldConfig.setClampMin(heightFractalClampMin);
-        fractalFieldConfig.setClampMax(heightFractalClampMax);
-        fractalFieldConfig.setXCount(groundSkeletonConfig.getHeightXCount());
-        fractalFieldConfig.setYCount(groundSkeletonConfig.getHeightYCount());
-        fractalFieldConfig.setFractalRoughness(heightFractalRoughness);
-        return fractalFieldConfig;
-    }
-
-    public void fromHeightFractalFiledConfig(FractalFieldConfig fractalFieldConfig) {
-        heightFractalMin = fractalFieldConfig.getFractalMin();
-        heightFractalMax = fractalFieldConfig.getFractalMax();
-        heightFractalClampMin = fractalFieldConfig.getClampMin();
-        heightFractalClampMax = fractalFieldConfig.getClampMax();
-        heightFractalRoughness = fractalFieldConfig.getFractalRoughness();
-        groundSkeletonConfig.setHeightXCount(fractalFieldConfig.getXCount());
-        groundSkeletonConfig.setHeightYCount(fractalFieldConfig.getYCount());
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

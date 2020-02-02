@@ -139,8 +139,8 @@ public class ClientSlopeRendererUnit extends AbstractSlopeRendererUnit {
         //Ground
         groundSpecularUniforms.setUniforms(uiTerrainSlopeTile.getUiTerrainTile().getSpecularLightConfig(), webGlFacade);
         webGlFacade.uniform1f(uGroundBottomBmDepth, uiTerrainSlopeTile.getUiTerrainTile().getBottomBmDepth());
-        webGlFacade.uniform1f(uGroundSplattingFadeThreshold, uiTerrainSlopeTile.getUiTerrainTile().getSplattingFadeThreshold());
-        webGlFacade.uniform1f(uGroundSplattingOffset, uiTerrainSlopeTile.getUiTerrainTile().getSplattingOffset());
+        // TODO webGlFacade.uniform1f(uGroundSplattingFadeThreshold, uiTerrainSlopeTile.getUiTerrainTile().getSplattingFadeThreshold());
+        // TODO webGlFacade.uniform1f(uGroundSplattingOffset, uiTerrainSlopeTile.getUiTerrainTile().getSplattingOffset());
         webGlFacade.uniform1f(uGroundSplattingGroundBmMultiplicator, uiTerrainSlopeTile.getUiTerrainTile().getSplattingGroundBmMultiplicator());
 
         // Water

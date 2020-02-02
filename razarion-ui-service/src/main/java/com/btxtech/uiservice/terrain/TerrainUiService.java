@@ -8,9 +8,9 @@ import com.btxtech.shared.datatypes.MapCollection;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
@@ -103,7 +103,7 @@ public class TerrainUiService {
             }
 
             UiTerrainTile newUiTerrainTile = uiTerrainTileInstance.get();
-            newUiTerrainTile.init(index, terrainTypeService.getGroundSkeletonConfig());
+            newUiTerrainTile.init(index, terrainTypeService.getGroundConfig());
             newUiTerrainTile.setActive(true);
             newDisplayTerrainTiles.put(index, newUiTerrainTile);
         }
@@ -256,10 +256,10 @@ public class TerrainUiService {
         terrainTileConsumers.remove(new Index(terrainTile.getIndexX(), terrainTile.getIndexY())).accept(terrainTile);
     }
 
-    public void enableEditMode(GroundSkeletonConfig groundSkeletonConfig) {
-        terrainTypeService.setGroundSkeletonConfig(groundSkeletonConfig);
-        displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundSkeletonConfig));
-        cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundSkeletonConfig));
+    public void enableEditMode(GroundConfig groundConfig) {
+        terrainTypeService.setGroundConfig(groundConfig);
+        displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
+        cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
     }
 
     public void enableEditMode(SlopeConfig slopeConfig) {

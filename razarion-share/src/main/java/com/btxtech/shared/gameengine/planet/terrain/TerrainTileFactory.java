@@ -54,7 +54,7 @@ public class TerrainTileFactory {
     public TerrainTile generateTerrainTile(Index terrainTileIndex, TerrainShape terrainShape) {
         TerrainShapeTile terrainShapeTile = terrainShape.getTerrainShapeTile(terrainTileIndex);
         TerrainTileBuilder terrainTileBuilder = terrainTileBuilderInstance.get();
-        terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainTypeService.getGroundSkeletonConfig(), terrainShape.getPlayGround());
+        terrainTileBuilder.init(terrainTileIndex, terrainShapeTile, terrainShape.getPlayGround());
         insertSlopeGroundConnectionPart(terrainTileBuilder, terrainShapeTile);
         insertGroundPart(terrainTileBuilder, terrainShapeTile);
         insertSlopePart(terrainTileBuilder, terrainShapeTile);

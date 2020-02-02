@@ -1,10 +1,10 @@
 package com.btxtech.shared.gameengine;
 
 import com.btxtech.shared.dto.DrivewayConfig;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.WaterConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 
 import javax.enterprise.event.Observes;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Singleton
 public class TerrainTypeService {
     private Map<Integer, SlopeConfig> slopeSkeletonConfigs = new HashMap<>();
-    private GroundSkeletonConfig groundSkeletonConfig;
+    private GroundConfig groundConfig;
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
     private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
     private WaterConfig waterConfig;
@@ -31,7 +31,7 @@ public class TerrainTypeService {
 
     public void init(StaticGameConfig staticGameConfig) {
         waterConfig = staticGameConfig.getWaterConfig();
-        groundSkeletonConfig = staticGameConfig.getGroundSkeletonConfig();
+        groundConfig = staticGameConfig.getGroundConfig();
         setSlopeSkeletonConfigs(staticGameConfig.getSlopeConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
         setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
@@ -64,12 +64,12 @@ public class TerrainTypeService {
         }
     }
 
-    public GroundSkeletonConfig getGroundSkeletonConfig() {
-        return groundSkeletonConfig;
+    public GroundConfig getGroundConfig() {
+        return groundConfig;
     }
 
-    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
-        this.groundSkeletonConfig = groundSkeletonConfig;
+    public void setGroundConfig(GroundConfig groundConfig) {
+        this.groundConfig = groundConfig;
     }
 
     public SlopeConfig getSlopeSkeleton(int id) {

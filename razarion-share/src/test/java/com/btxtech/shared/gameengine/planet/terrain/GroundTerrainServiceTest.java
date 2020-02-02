@@ -19,13 +19,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testGroundTileGeneration1() {
         // Run test
-        setupTerrainTypeService(null, null, new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-        }, null, null, null, null);
+        setupTerrainTypeService(null, null, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
@@ -45,13 +39,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
     @Test
     public void testGroundTileGeneration2() {
         // Run test
-        setupTerrainTypeService(null, null, new double[][]{
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-                {0, 0, 0, 0},
-        }, null, null, null, null);
+        setupTerrainTypeService(null, null, null, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
         // showDisplay();
@@ -73,13 +61,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 20, 20));
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 3200, 3200));
 
-        setupTerrainTypeService(null, null, new double[][]{
-                {4, 0, 0, 0},
-                {0, 1, 0, 0},
-                {0, 0, 0, 0},
-                {0, -1.6, 0, 0},
-                {0, 0, 0, 8},
-        }, planetConfig, null, null, null);
+        setupTerrainTypeService(null, null, planetConfig, null, null, null);
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(8, 16));
 
@@ -101,13 +83,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         planetConfig.setPlayGround(new Rectangle2D(-320, -320, 640, 640));
 
         // Run test
-        setupTerrainTypeService(null, null, new double[][]{
-                {4, 0, 0, 0},
-                {0, 1, 0, 0},
-                {0, 0, 0, 0},
-                {0, -1.6, 0, 0},
-                {0, 0, 0, 8},
-        }, planetConfig, null, null, null);
+        setupTerrainTypeService(null, null, planetConfig, null, null, null);
 
         // showDisplay();
 

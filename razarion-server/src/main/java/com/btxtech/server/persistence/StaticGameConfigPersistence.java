@@ -29,7 +29,7 @@ public class StaticGameConfigPersistence {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
         staticGameConfig.setSlopeConfigs(terrainElementPersistence.loadSlopeSkeletons());
         staticGameConfig.setDrivewayConfigs(terrainElementPersistence.loadDrivewayConfigs());
-        staticGameConfig.setGroundSkeletonConfig(groundCrudPersistence.getDefaultGround());
+        staticGameConfig.setGroundConfig(groundCrudPersistence.getDefaultGround());
         staticGameConfig.setTerrainObjectConfigs(terrainElementPersistence.readTerrainObjects());
         staticGameConfig.setWaterConfig(terrainElementPersistence.readWaterConfig());
         staticGameConfig.setBaseItemTypes(itemTypePersistence.readBaseItemTypes());

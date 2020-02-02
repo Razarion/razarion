@@ -1,6 +1,6 @@
 package com.btxtech.server.systemtests;
 
-import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.GroundEditorController;
 import com.fasterxml.jackson.databind.JavaType;
@@ -36,17 +36,17 @@ public class GroundEditorControllerTest extends EmptyDockerContainer {
 
         List<ObjectNameId> objectNameIds = groundEditorController.getObjectNameIds();
         Assert.assertEquals(0, objectNameIds.size());
-        GroundSkeletonConfig groundConfig1 = mapper.convertValue(groundEditorController.create(), GroundSkeletonConfig.class);
+        GroundConfig groundConfig1 = mapper.convertValue(groundEditorController.create(), GroundConfig.class);
 
         objectNameIds = groundEditorController.getObjectNameIds();
         Assert.assertEquals(1, objectNameIds.size());
         Assert.assertEquals(objectNameIds.get(0).getId(), groundConfig1.getId());
 
-        GroundSkeletonConfig groundConfig2 = mapper.convertValue(groundEditorController.read(groundConfig1.getId()), GroundSkeletonConfig.class);
+        GroundConfig groundConfig2 = mapper.convertValue(groundEditorController.read(groundConfig1.getId()), GroundConfig.class);
         assertThat(groundConfig2, is(samePropertyValuesAs(groundConfig1)));
 
-        JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, GroundSkeletonConfig.class);
-        List <GroundSkeletonConfig> groundConfigs = mapper.convertValue(groundEditorController.read(), type);
+        JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, GroundConfig.class);
+        List<GroundConfig> groundConfigs = mapper.convertValue(groundEditorController.read(), type);
         Assert.assertEquals(1, groundConfigs.size());
         assertThat(groundConfigs.get(0), is(samePropertyValuesAs(groundConfig1)));
 

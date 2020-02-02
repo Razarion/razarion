@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.datatypes.config;
 
 
-import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.dto.SlopeNode;
@@ -46,8 +46,8 @@ public class SlopeConfig implements ObjectNameIdProvider {
     private Integer slopeFoamDistortionId;
     private Double slopeFoamDistortionStrength;
     private Double slopeFoamAnimationDuration;
-    private GroundSkeletonConfig groundSkeletonConfig;
-//    private SlopeGroundSplattingConfig outerSplatting;
+    private GroundConfig groundConfig;
+    //    private SlopeGroundSplattingConfig outerSplatting;
 //    private SlopeGroundSplattingConfig innerSplatting;
     private Double waterLevel;
     private Double waterFresnelOffset;
@@ -210,16 +210,16 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    public GroundSkeletonConfig getGroundSkeletonConfig() {
-        return groundSkeletonConfig;
+    public GroundConfig getGroundConfig() {
+        return groundConfig;
     }
 
-    public SlopeConfig setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
-        this.groundSkeletonConfig = groundSkeletonConfig;
+    public SlopeConfig setGroundConfig(GroundConfig groundConfig) {
+        this.groundConfig = groundConfig;
         return this;
     }
 
-//    public SlopeGroundSplattingConfig getOuterSplatting() {
+    //    public SlopeGroundSplattingConfig getOuterSplatting() {
 //        return outerSplatting;
 //    }
 //

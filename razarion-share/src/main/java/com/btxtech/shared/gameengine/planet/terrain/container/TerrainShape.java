@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  */
 public class TerrainShape {
     private static Logger logger = Logger.getLogger(TerrainShape.class.getName());
-    private GroundSkeletonConfig groundSkeletonConfig;
+    private GroundConfig groundConfig;
     private TerrainShapeTile[][] terrainShapeTiles;
     private SurfaceAccess surfaceAccess;
     private PathingAccess pathingAccess;
@@ -47,7 +47,7 @@ public class TerrainShape {
 
     public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
-        this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
+        this.groundConfig = terrainTypeService.getGroundConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         tileOffset = planetConfig.getTerrainTileDimension().getStart();
@@ -63,7 +63,7 @@ public class TerrainShape {
     }
 
     public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
-        this.groundSkeletonConfig = terrainTypeService.getGroundSkeletonConfig();
+        this.groundConfig = terrainTypeService.getGroundConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         playGround = planetConfig.getPlayGround();
@@ -143,7 +143,7 @@ public class TerrainShape {
     }
 
     public TerrainShapeTile getTerrainShapeTile(Index terrainTileIndex) {
-        if(tileOffset == null) {
+        if (tileOffset == null) {
             throw new IllegalStateException("TerrainShape is not initialized");
         }
         Index fieldIndex = terrainTileIndex.sub(tileOffset);
@@ -314,8 +314,8 @@ public class TerrainShape {
         return surfaceAccess;
     }
 
-    GroundSkeletonConfig getGroundSkeletonConfig() {
-        return groundSkeletonConfig;
+    GroundConfig getGroundConfig() {
+        return groundConfig;
     }
 
     public boolean isSightBlocked(Line line) {

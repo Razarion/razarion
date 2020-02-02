@@ -60,7 +60,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(slopeConfigs, null, heights, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -272,7 +272,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3, 0.3}
         };
 
-        setupTerrainTypeService(slopeConfigs, null, heights, null, terrainSlopePositions, null, null);
+        setupTerrainTypeService(slopeConfigs, null, null, terrainSlopePositions, null, null);
 
         // showDisplay();
 
@@ -341,7 +341,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
                 {0.1, 0.2, 0.3}
         };
 
-        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, heights, null, terrainSlopePositions, terrainObjectPositions, null);
+        setupTerrainTypeService(slopeConfigs, terrainObjectConfigs, null, terrainSlopePositions, terrainObjectPositions, null);
 
         // showDisplay();
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));

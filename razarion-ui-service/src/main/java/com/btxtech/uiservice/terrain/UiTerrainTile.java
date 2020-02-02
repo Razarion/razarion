@@ -3,16 +3,15 @@ package com.btxtech.uiservice.terrain;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
-import com.btxtech.shared.dto.GroundSkeletonConfig;
-import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
+import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.SpecularLightConfig;
+import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
-import com.btxtech.shared.gameengine.planet.terrain.container.TerrainHelper;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.CollectionUtils;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
@@ -43,7 +42,7 @@ public class UiTerrainTile {
     @Inject
     private Instance<UiTerrainWaterTile> uiTerrainWaterTileInstance;
     private Index index;
-    private GroundSkeletonConfig groundSkeletonConfig;
+    private GroundConfig groundConfig;
     private TerrainTile terrainTile;
     private ModelRenderer modelRenderer;
     private boolean active;
@@ -51,9 +50,9 @@ public class UiTerrainTile {
     private UiTerrainWaterTile uiTerrainWaterTile;
     private MapList<Integer, ModelMatrices> terrainObjectModelMatrices;
 
-    public void init(Index index, GroundSkeletonConfig groundSkeletonConfig) {
+    public void init(Index index, GroundConfig groundConfig) {
         this.index = index;
-        this.groundSkeletonConfig = groundSkeletonConfig;
+        this.groundConfig = groundConfig;
         terrainUiService.requestTerrainTile(index, this::terrainTileReceived);
     }
 
@@ -86,9 +85,9 @@ public class UiTerrainTile {
 //            uiTerrainWaterTile = uiTerrainWaterTileInstance.get();
 //            uiTerrainWaterTile.init(active, terrainTile.getTerrainWaterTile());
 //        }
-        if(active) {
+        if (active) {
             MapList<Integer, ModelMatrices> terrainObjects = getTerrainObjectModelMatrices();
-            if(terrainObjects != null) {
+            if (terrainObjects != null) {
                 terrainUiService.onTerrainObjectModelMatrices(terrainObjects);
             }
         }
@@ -148,16 +147,8 @@ public class UiTerrainTile {
         throw new UnsupportedOperationException("TODO");
     }
 
-    public void setGroundSkeletonConfig(GroundSkeletonConfig groundSkeletonConfig) {
-        this.groundSkeletonConfig = groundSkeletonConfig;
-    }
-
-    public double getSplattingFadeThreshold() {
-        return groundSkeletonConfig.getSplattingFadeThreshold();
-    }
-
-    public double getSplattingOffset() {
-        return groundSkeletonConfig.getSplattingOffset();
+    public void setGroundSkeletonConfig(GroundConfig groundConfig) {
+        this.groundConfig = groundConfig;
     }
 
     public double getSplattingGroundBmMultiplicator() {
@@ -218,7 +209,7 @@ public class UiTerrainTile {
 
             @Override
             public Double onTerrainTile() {
-                return terrainTile.getHeight() + TerrainHelper.interpolateHeightFromGroundSkeletonConfig(terrainPosition, groundSkeletonConfig);
+                return terrainTile.getHeight();
             }
 
             @Override
