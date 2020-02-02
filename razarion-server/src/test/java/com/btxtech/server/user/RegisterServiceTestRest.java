@@ -1,7 +1,7 @@
 package com.btxtech.server.user;
 
 import com.btxtech.server.FakeEmailServer;
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.ErrorResult;
 import org.junit.After;

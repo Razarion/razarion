@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.server;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.PlaceConfigEntity;
 import com.btxtech.server.persistence.PlanetEntity;

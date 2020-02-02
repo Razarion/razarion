@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.quest.ComparisonConfigEntity;
 import com.btxtech.server.persistence.quest.ConditionConfigEntity;

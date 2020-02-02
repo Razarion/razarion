@@ -1,6 +1,5 @@
-package com.btxtech.server.persistence.terrain;
+package com.btxtech.server.systemtests;
 
-import com.btxtech.server.EmptyDockerContainer;
 import com.btxtech.shared.dto.GroundSkeletonConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.GroundEditorController;

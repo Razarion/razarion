@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.tracker;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.util.DateUtil;
 import org.junit.Assert;
 import org.junit.Test;

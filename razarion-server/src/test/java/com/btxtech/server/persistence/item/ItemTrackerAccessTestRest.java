@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.item;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.util.DateUtil;
 import org.junit.After;
 import org.junit.Assert;

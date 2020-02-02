@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.terrain;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.rest.PlanetEditorProviderImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainEditorLoad;

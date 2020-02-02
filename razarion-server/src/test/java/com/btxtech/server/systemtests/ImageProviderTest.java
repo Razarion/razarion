@@ -1,6 +1,6 @@
-package com.btxtech.server.persistence;
+package com.btxtech.server.systemtests;
 
-import com.btxtech.server.EmptyDockerContainer;
+import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import org.junit.After;

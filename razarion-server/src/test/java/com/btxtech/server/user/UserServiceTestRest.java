@@ -1,6 +1,6 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.ClientGameConnectionServiceTestHelper;
 import com.btxtech.server.TestClientGameConnection;
 import com.btxtech.server.gameengine.ServerLevelQuestService;

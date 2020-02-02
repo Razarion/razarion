@@ -1,5 +1,6 @@
-package com.btxtech.server;
+package com.btxtech.server.systemtests;
 
+import com.btxtech.server.ServerTestHelper;
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.rest.FrontendProvider;

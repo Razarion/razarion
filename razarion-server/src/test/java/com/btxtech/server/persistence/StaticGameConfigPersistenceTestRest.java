@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import org.junit.Assert;
 import org.junit.Test;

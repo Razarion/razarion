@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
 import com.btxtech.server.user.UserService;

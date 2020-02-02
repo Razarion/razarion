@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.chat;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.user.UserEntity;

@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.shared.gameengine.datatypes.itemtype.ResourceItemType;
 import org.junit.After;
 import org.junit.Assert;

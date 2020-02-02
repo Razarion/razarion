@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;

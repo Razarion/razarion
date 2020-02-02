@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.history.InventoryHistoryEntry;
 import com.btxtech.server.user.UserEntity;

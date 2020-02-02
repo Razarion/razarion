@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.level;
 
-import com.btxtech.server.RestServerTestBase;
+import com.btxtech.server.systemtests.RestServerTestBase;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.shared.gameengine.datatypes.config.LevelConfig;
 import com.btxtech.shared.gameengine.datatypes.config.LevelEditConfig;
