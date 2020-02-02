@@ -1,0 +1,2 @@
+INSERT INTO GROUND_CONFIG (id, bottomBmDepth) VALUE (1, 0);
+
