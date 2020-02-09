@@ -1,12 +1,11 @@
 package com.btxtech.client.editor.sidebar;
 
-import com.google.gwt.user.client.ui.RootPanel;
+import com.btxtech.client.MainPanelService;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Stack;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -14,7 +13,9 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class LeftSideBarManager {
-    private Logger logger = Logger.getLogger(LeftSideBarManager.class.getName());
+    // private Logger logger = Logger.getLogger(LeftSideBarManager.class.getName());
+    @Inject
+    private MainPanelService mainPanelService;
     @Inject
     private Instance<SideBarPanel> sideBarPanelInstance;
     private SideBarPanel sideBarPanel;
@@ -23,7 +24,7 @@ public class LeftSideBarManager {
     public void show(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
         if (sideBarPanel == null) {
             sideBarPanel = sideBarPanelInstance.get();
-            RootPanel.get().add(sideBarPanel);
+            mainPanelService.addToGamePanel(sideBarPanel);
         }
         sideBarPanel.setContent(leftSideBarContentClass);
     }
@@ -50,12 +51,12 @@ public class LeftSideBarManager {
         }
         close();
         sideBarPanel = sideBarPanelStack.pop();
-        RootPanel.get().add(sideBarPanel);
+        mainPanelService.addToGamePanel(sideBarPanel);
     }
 
     public void close() {
         if (sideBarPanel != null) {
-            RootPanel.get().remove(sideBarPanel);
+            mainPanelService.removeFromGamePanel(sideBarPanel);
             sideBarPanel = null;
         }
     }

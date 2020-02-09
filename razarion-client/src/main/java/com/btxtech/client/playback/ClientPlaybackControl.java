@@ -1,5 +1,6 @@
 package com.btxtech.client.playback;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.shared.datatypes.Index;
@@ -7,10 +8,10 @@ import com.btxtech.shared.datatypes.tracking.DetailedTracking;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.cockpit.CockpitService;
 import com.btxtech.uiservice.control.PlaybackControl;
-import com.google.gwt.canvas.client.Canvas;
-import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.ui.RootPanel;
+import elemental2.dom.CanvasRenderingContext2D;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.HTMLCanvasElement;
+import jsinterop.base.Js;
 import org.jboss.errai.common.client.dom.Window;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -20,6 +21,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static elemental2.dom.CSSProperties.HeightUnionType;
+import static elemental2.dom.CSSProperties.WidthUnionType;
+import static elemental2.dom.CanvasRenderingContext2D.FillStyleUnionType;
+import static elemental2.dom.CanvasRenderingContext2D.StrokeStyleUnionType;
+
 /**
  * Created by Beat
  * on 31.05.2017.
@@ -27,14 +33,16 @@ import java.util.Map;
 @ApplicationScoped
 public class ClientPlaybackControl extends PlaybackControl {
     @Inject
+    private MainPanelService mainPanelService;
+    @Inject
     private GameCanvas gameCanvas;
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
     private CockpitService cockpitService;
-    private Context2d mousePlaybackContext;
+    private CanvasRenderingContext2D mousePlaybackContext;
     private Index lastMousePosition;
-    private Canvas mousePlaybackCanvas;
+    private HTMLCanvasElement canvasElementPlaybackCanvas;
     @Inject
     private Instance<PlaybackSidebar> playbackSidebarInstance;
     @Inject
@@ -50,30 +58,31 @@ public class ClientPlaybackControl extends PlaybackControl {
         cockpitService.hide();
         endTimeStamp = endDetailedTracking.getTimeStamp();
         playbackSidebar = playbackSidebarInstance.get();
-        RootPanel.get().add(playbackSidebar);
+        mainPanelService.createLeftPanel(playbackSidebar);
         playbackSidebar.setPlaybackControl(this);
         playbackSidebar.displayRemainingTime(endTimeStamp.getTime() - startTimeStamp.getTime());
     }
 
     private void showMousePlaybackPanel() {
-        mousePlaybackCanvas = Canvas.createIfSupported();
-        if (mousePlaybackCanvas == null) {
+        canvasElementPlaybackCanvas = (HTMLCanvasElement) DomGlobal.document.createElement("canvas");
+        if (canvasElementPlaybackCanvas == null) {
             throw new IllegalStateException("Canvas is not supported");
         }
-        mousePlaybackCanvas.getElement().getStyle().setZIndex(ZIndexConstants.PLAYBACK_MOUSE_CANVAS);
-        mousePlaybackCanvas.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
-        mousePlaybackContext = (Context2d) mousePlaybackCanvas.getContext("2d");
-        RootPanel.get().add(mousePlaybackCanvas);
+        canvasElementPlaybackCanvas.style.zIndex = ZIndexConstants.PLAYBACK_MOUSE_CANVAS;
+        canvasElementPlaybackCanvas.style.position = "absolute";
+
+        mousePlaybackContext = Js.cast(canvasElementPlaybackCanvas.getContext("2d"));
+        mainPanelService.addToGamePanel(canvasElementPlaybackCanvas);
     }
 
     @Override
     protected void setCanvasPlaybackDimension(Index browserWindowDimension) {
         try {
             gameCanvas.setPlaybackDimension(browserWindowDimension);
-            mousePlaybackCanvas.getElement().getStyle().setWidth(browserWindowDimension.getX(), Style.Unit.PX);
-            mousePlaybackCanvas.getElement().getStyle().setHeight(browserWindowDimension.getY(), Style.Unit.PX);
-            mousePlaybackCanvas.setCoordinateSpaceWidth(browserWindowDimension.getX());
-            mousePlaybackCanvas.setCoordinateSpaceHeight(browserWindowDimension.getY());
+            canvasElementPlaybackCanvas.style.width = WidthUnionType.of(browserWindowDimension.getX() + "px");
+            canvasElementPlaybackCanvas.style.height = HeightUnionType.of(browserWindowDimension.getY() + "px");
+            canvasElementPlaybackCanvas.width = browserWindowDimension.getX();
+            canvasElementPlaybackCanvas.height = browserWindowDimension.getY();
         } catch (Exception e) {
             exceptionHandler.handleException(e);
         }
@@ -88,8 +97,8 @@ public class ClientPlaybackControl extends PlaybackControl {
         mousePlaybackContext.beginPath();
         mousePlaybackContext.moveTo(lastMousePosition.getX(), lastMousePosition.getY());
         mousePlaybackContext.lineTo(position.getX(), position.getY());
-        mousePlaybackContext.setLineWidth(2);
-        mousePlaybackContext.setStrokeStyle("black");
+        mousePlaybackContext.lineWidth = 2;
+        mousePlaybackContext.strokeStyle = StrokeStyleUnionType.of("black");
         mousePlaybackContext.stroke();
         lastMousePosition = position;
     }
@@ -102,20 +111,20 @@ public class ClientPlaybackControl extends PlaybackControl {
         mousePlaybackContext.beginPath();
         mousePlaybackContext.arc(lastMousePosition.getX(), lastMousePosition.getY(), 5, 0, 2 * Math.PI, false);
         if (button == 0) {
-            mousePlaybackContext.setFillStyle("red");
+            mousePlaybackContext.fillStyle = FillStyleUnionType.of("red");
         } else if (button == 1) {
-            mousePlaybackContext.setFillStyle("green");
+            mousePlaybackContext.fillStyle = FillStyleUnionType.of("green");
         } else if (button == 2) {
-            mousePlaybackContext.setFillStyle("blue");
+            mousePlaybackContext.fillStyle = FillStyleUnionType.of("blue");
         } else {
-            mousePlaybackContext.setFillStyle("yello");
+            mousePlaybackContext.fillStyle = FillStyleUnionType.of("yello");
         }
         mousePlaybackContext.fill();
-        mousePlaybackContext.setLineWidth(2);
+        mousePlaybackContext.lineWidth = 2;
         if (down) {
-            mousePlaybackContext.setStrokeStyle("black");
+            mousePlaybackContext.strokeStyle = StrokeStyleUnionType.of("black");
         } else {
-            mousePlaybackContext.setStrokeStyle("white");
+            mousePlaybackContext.strokeStyle = StrokeStyleUnionType.of("white");
         }
         mousePlaybackContext.stroke();
     }

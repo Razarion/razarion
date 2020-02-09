@@ -1,19 +1,36 @@
 package com.btxtech.client.cockpit;
 
-import com.google.gwt.animation.client.AnimationScheduler;
-import com.google.gwt.user.client.ui.Composite;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
+import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+
+import javax.inject.Inject;
 
 /**
  * Created by Beat
  * 27.02.2017.
  */
 @Templated("EmptyCover.html#emptyCover")
-public class EmptyCover extends Composite {
+public class EmptyCover implements IsElement {
+    @Inject
+    @DataField
+    private HTMLDivElement emptyCover;
+
+    @Override
+    public HTMLElement getElement() {
+        return emptyCover;
+    }
+
     public void startFadeout() {
-        getElement().getStyle().setZIndex(ZIndexConstants.EMPTY_COVER);
+        emptyCover.style.zIndex = ZIndexConstants.EMPTY_COVER;
         // Newly added element is batching reflows by browsers
         // http://stackoverflow.com/questions/12088819/css-transitions-on-new-elements
-        AnimationScheduler.get().requestAnimationFrame(timestamp -> getElement().addClassName("empty-cover-opacity"), getElement());
+        DomGlobal.requestAnimationFrame(timestamp -> {
+            emptyCover.classList.add("empty-cover-opacity");
+            return null;
+        }, emptyCover);
     }
 }

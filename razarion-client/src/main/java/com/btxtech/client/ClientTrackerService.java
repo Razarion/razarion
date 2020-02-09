@@ -282,7 +282,7 @@ public class ClientTrackerService implements TrackerService, StartupProgressList
                 dialogTracking.setTop(dialogRectangle.startY());
                 dialogTracking.setWidth(dialogRectangle.width());
                 dialogTracking.setHeight(dialogRectangle.height());
-                dialogTracking.setIndexZ(Integer.parseInt(modalDialogPanel.getElement().getStyle().getZIndex()));
+                dialogTracking.setIndexZ((int) modalDialogPanel.getElement().style.zIndex.asDouble());
             }
             trackingContainer.addDialogTracking(dialogTracking);
         } catch (Throwable t) {

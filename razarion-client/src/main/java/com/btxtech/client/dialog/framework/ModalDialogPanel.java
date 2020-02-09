@@ -5,9 +5,11 @@ import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.Button;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Window;
@@ -23,7 +25,7 @@ import javax.inject.Inject;
  * 20.05.2016.
  */
 @Templated("ModalDialogPanel.html#glass-panel")
-public class ModalDialogPanel<T> extends Composite {
+public class ModalDialogPanel<T> implements IsElement {
     // private Logger logger = Logger.getLogger(ModalDialogPanel.class.getName());
     @Inject
     private Instance<ModalDialogContent> contentInstance;
@@ -33,13 +35,13 @@ public class ModalDialogPanel<T> extends Composite {
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     @DataField
+    private HTMLDivElement glassPanelDiv;
+    @Inject
+    @DataField
     private Label headerLabel;
     @Inject
     @DataField
-    private com.btxtech.client.guielements.Div glassPanelDiv;
-    @Inject
-    @DataField
-    private com.btxtech.client.guielements.Div modalDialogDiv;
+    private HTMLDivElement modalDialogDiv;
     @Inject
     @DataField
     private SimplePanel content;
@@ -53,8 +55,13 @@ public class ModalDialogPanel<T> extends Composite {
 
     @PostConstruct
     public void postConstruct() {
-        getElement().getStyle().setZIndex(ZIndexConstants.DIALOG);
-        GwtUtils.preventContextMenu(this);
+        glassPanelDiv.style.zIndex = ZIndexConstants.DIALOG;
+        GwtUtils.preventContextMenu(glassPanelDiv);
+    }
+
+    @Override
+    public HTMLElement getElement() {
+        return glassPanelDiv;
     }
 
     public void init(String title, Class<? extends ModalDialogContent<T>> contentClass, T t, DialogButton.Listener<T> listener, DialogButton.Button... dialogButtons) {
@@ -118,15 +125,14 @@ public class ModalDialogPanel<T> extends Composite {
         buttonDiv.appendChild(button);
     }
 
-    @Override
     public String getTitle() {
         return title;
     }
 
     public Rectangle getDialogRectangle() {
-        int x = GwtUtils.correctInt(glassPanelDiv.getOffsetLeft() + modalDialogDiv.getOffsetLeft());
-        int y = GwtUtils.correctInt(glassPanelDiv.getOffsetTop() + modalDialogDiv.getOffsetTop());
-        return new Rectangle(x, y, GwtUtils.correctInt(modalDialogDiv.getClientWidth()), GwtUtils.correctInt(modalDialogDiv.getClientHeight()));
+        int x = (int) (glassPanelDiv.offsetLeft + modalDialogDiv.offsetLeft);
+        int y = (int) (glassPanelDiv.offsetTop + modalDialogDiv.offsetTop);
+        return new Rectangle(x, y, (int) modalDialogDiv.clientWidth, (int) modalDialogDiv.clientHeight);
     }
 
     public void onShown() {

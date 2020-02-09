@@ -1,11 +1,11 @@
 package com.btxtech.client.cockpit.quest;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.shared.gameengine.datatypes.config.QuestDescriptionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
 import com.btxtech.shared.gameengine.datatypes.packets.QuestProgressInfo;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.cockpit.TopRightCockpit;
-import com.google.gwt.user.client.ui.RootPanel;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -21,6 +21,8 @@ public class TopRightCockpitImpl implements TopRightCockpit {
     // private Logger logger = Logger.getLogger(TopRightCockpitImpl.class.getName());
     @Inject
     private Instance<TopRightCockpitWidget> instance;
+    @Inject
+    private MainPanelService mainPanelService;
     @Inject
     private ExceptionHandler exceptionHandler;
     private TopRightCockpitWidget topRightCockpitWidget;
@@ -65,7 +67,7 @@ public class TopRightCockpitImpl implements TopRightCockpit {
     private TopRightCockpitWidget getTopRightCockpitWidget() {
         if (topRightCockpitWidget == null) {
             topRightCockpitWidget = instance.get();
-            RootPanel.get().add(topRightCockpitWidget);
+            mainPanelService.addToGamePanel(topRightCockpitWidget);
         }
         return topRightCockpitWidget;
     }

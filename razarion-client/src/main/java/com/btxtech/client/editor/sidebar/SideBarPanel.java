@@ -4,8 +4,10 @@ import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.GwtUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.SimplePanel;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.TableCell;
 import org.jboss.errai.common.client.dom.TableRow;
 import org.jboss.errai.common.client.dom.Window;
@@ -22,11 +24,14 @@ import javax.inject.Inject;
  * 03.05.2016.
  */
 @Templated("SideBarPanel.html#sideBarPanel")
-public class SideBarPanel extends Composite {
+public class SideBarPanel implements IsElement {
     @Inject
     private Instance<LeftSideBarContent> leftSideBarContentInstance;
     @Inject
     private LeftSideBarManager leftSideBarManager;
+    @Inject
+    @DataField
+    private HTMLDivElement sideBarPanel;
     @Inject
     @DataField
     private SimplePanel content;
@@ -49,8 +54,13 @@ public class SideBarPanel extends Composite {
 
     @PostConstruct
     public void init() {
-        getElement().getStyle().setZIndex(ZIndexConstants.EDITOR_SIDE_BAR);
-        GwtUtils.preventContextMenu(this);
+        sideBarPanel.style.zIndex = ZIndexConstants.EDITOR_SIDE_BAR;
+        GwtUtils.preventContextMenu(sideBarPanel);
+    }
+
+    @Override
+    public HTMLElement getElement() {
+        return sideBarPanel;
     }
 
     void setContent(Class<? extends LeftSideBarContent> leftSideBarContentClass) {

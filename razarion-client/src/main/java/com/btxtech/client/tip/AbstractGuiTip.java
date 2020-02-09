@@ -5,6 +5,8 @@ import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.shared.CommonUrl;
 import com.btxtech.uiservice.tip.visualization.AbstractGuiTipVisualization;
 import com.google.gwt.dom.client.ImageElement;
+import elemental2.dom.HTMLDivElement;
+import jsinterop.base.Js;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.HTMLElement;
@@ -23,7 +25,7 @@ public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageL
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField("tip")
-    private Div div;
+    private HTMLDivElement div;
     @SuppressWarnings("CdiInjectionPointsInspection")
     @Inject
     @DataField
@@ -35,8 +37,8 @@ public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageL
         this.guiTipVisualization = guiPointingTipVisualization;
         imageUiService.requestImage(guiPointingTipVisualization.getImageId(), this);
         image.setSrc(CommonUrl.getImageServiceUrlSafe(guiPointingTipVisualization.getImageId()));
-        div.getStyle().setProperty("z-index", Integer.toString(ZIndexConstants.TIP));
-        div.setClassName(containerCss);
+        div.style.zIndex = ZIndexConstants.TIP;
+        div.className = containerCss;
         image.setClassName(imageCss);
     }
 
@@ -46,7 +48,7 @@ public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageL
 
     @Override
     public HTMLElement getElement() {
-        return div;
+        return Js.cast(div);
     }
 
     @Override
@@ -55,7 +57,7 @@ public abstract class AbstractGuiTip implements IsElement, ImageUiService.ImageL
     }
 
     protected Div getDiv() {
-        return div;
+        return Js.cast(div);
     }
 
     ImageElement getImageElement() {

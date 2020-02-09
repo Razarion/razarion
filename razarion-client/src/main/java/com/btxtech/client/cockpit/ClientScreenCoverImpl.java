@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.SimpleExecutorService;
 import com.btxtech.uiservice.cockpit.ScreenCover;
@@ -8,7 +9,6 @@ import com.btxtech.uiservice.system.boot.StartupProgressListener;
 import com.btxtech.uiservice.system.boot.StartupSeq;
 import com.btxtech.uiservice.system.boot.StartupTaskEnum;
 import com.btxtech.uiservice.system.boot.StartupTaskInfo;
-import com.google.gwt.user.client.ui.RootPanel;
 import elemental.client.Browser;
 import elemental.dom.Element;
 import elemental.html.ProgressElement;
@@ -28,6 +28,8 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     private static final String LOADING_PROGRESS_ID = "RAZARION_LOADING_PROGRESS";
     // private Logger logger = Logger.getLogger(ClientScreenCoverImpl.class.getName());
     @Inject
+    private MainPanelService mainPanelService;
+    @Inject
     private Instance<StoryCoverPanel> storyCoverPanelInstance;
     @Inject
     private Instance<EmptyCover> emptyCoverInstance;
@@ -45,15 +47,15 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
         if (storyCoverPanel == null) {
             storyCoverPanel = storyCoverPanelInstance.get();
             storyCoverPanel.setText(text);
-            storyCoverPanel.getElement().getStyle().setZIndex(ZIndexConstants.STORY_COVER);
-            RootPanel.get().add(storyCoverPanel);
+            storyCoverPanel.getElement().style.zIndex = ZIndexConstants.STORY_COVER;
+            mainPanelService.addToGamePanel(storyCoverPanel);
         }
     }
 
     @Override
     public void hideStoryCover() {
         if (storyCoverPanel != null) {
-            RootPanel.get().remove(storyCoverPanel);
+            mainPanelService.removeFromGamePanel(storyCoverPanel);
             storyCoverPanel = null;
         }
     }
@@ -84,7 +86,7 @@ public class ClientScreenCoverImpl implements ScreenCover, StartupProgressListen
     @Override
     public void fadeOutAndForward(String url) {
         EmptyCover emptyCover = emptyCoverInstance.get();
-        RootPanel.get().add(emptyCover);
+        mainPanelService.addToGamePanel(emptyCover);
         emptyCover.startFadeout();
         simpleExecutorService.schedule(FADE_DURATION, () -> Browser.getWindow().getLocation().setHref(url), SimpleExecutorService.Type.COVER_FADE);
     }

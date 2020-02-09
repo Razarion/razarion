@@ -3,7 +3,6 @@ package com.btxtech.client;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.uiservice.mouse.CursorService;
 import com.btxtech.uiservice.mouse.CursorType;
-import elemental.css.CSSStyleDeclaration;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,16 +19,16 @@ public class ClientCursorService extends CursorService {
 
     @Override
     protected void setDefaultCursorInternal() {
-        gameCanvas.getCanvasElement().getStyle().setCursor(CSSStyleDeclaration.Cursor.DEFAULT);
+        gameCanvas.setCursor("default");
     }
 
     @Override
     protected void setPointerCursorInternal() {
-        gameCanvas.getCanvasElement().getStyle().setCursor(CSSStyleDeclaration.Cursor.POINTER);
+        gameCanvas.setCursor("pointer");
     }
 
     @Override
     protected void setCursorInternal(CursorType cursorType, boolean allowed) {
-        gameCanvas.getCanvasElement().getStyle().setCursor("url('" + StaticResourcePath.getCursorPath(cursorType.getName(allowed)) + "') " + cursorType.getHotSpotX(allowed) + " " + cursorType.getHotSpotY(allowed) + ", " + cursorType.getAlternativeDefault(allowed));
+        gameCanvas.setCursor("url('" + StaticResourcePath.getCursorPath(cursorType.getName(allowed)) + "') " + cursorType.getHotSpotX(allowed) + " " + cursorType.getHotSpotY(allowed) + ", " + cursorType.getAlternativeDefault(allowed));
     }
 }

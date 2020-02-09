@@ -15,7 +15,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <gwt.version>2.8.2</gwt.version>
-        <gwt.elemental2.version>1.0.0-RC1</gwt.elemental2.version>
+        <gwt.elemental2.version>1.0.0-beta-1</gwt.elemental2.version>
         <gwt.pulgin.version>2.8.2</gwt.pulgin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <errai.version>4.1.3.Final</errai.version>

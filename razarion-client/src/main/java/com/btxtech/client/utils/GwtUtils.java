@@ -7,8 +7,8 @@ import elemental.events.Event;
 import elemental.events.MouseEvent;
 import elemental.events.WheelEvent;
 import elemental.html.ImageElement;
+import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
-import elemental2.svg.SVGSVGElement;
 import org.jboss.errai.common.client.dom.Node;
 
 /**
@@ -52,7 +52,11 @@ public class GwtUtils {
         widget.addEventListener(Event.CONTEXTMENU, Event::preventDefault, true);
     }
 
-    public static native void toggleFullscreen(com.google.gwt.dom.client.Element element) /*-{
+    public static void preventContextMenu(HTMLElement element) {
+        element.addEventListener(Event.CONTEXTMENU, elemental2.dom.Event::preventDefault, true);
+    }
+
+    public static native void toggleFullscreen(HTMLElement element) /*-{
         if (element.requestFullscreen) {
             if ($doc.fullScreenElement) {
                 $doc.cancelFullScreen();
@@ -98,5 +102,9 @@ public class GwtUtils {
 
     public static Index correctIndex(int x, int y) {
         return new Index(correctInt(x), correctInt(y));
+    }
+
+    public static void removeAllChildren(HTMLDivElement buildupItemPanel) {
+        buildupItemPanel.childNodes.setLength(0);
     }
 }

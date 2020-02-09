@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.inventory.InventoryDialog;
@@ -18,8 +19,9 @@ import com.btxtech.uiservice.user.UserUiService;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.RootPanel;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.Div;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.common.client.dom.TableRow;
@@ -35,7 +37,7 @@ import javax.inject.Inject;
  * 12.08.2016.
  */
 @Templated("ClientSideCockpit.html#cockpit")
-public class ClientSideCockpit extends Composite implements SideCockpit {
+public class ClientSideCockpit implements IsElement, SideCockpit {
     @Inject
     private GameTipService gameTipService;
     @Inject
@@ -44,6 +46,11 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     private UserUiService userUiService;
     @Inject
     private UnlockUiService unlockUiService;
+    @Inject
+    private MainPanelService mainPanelService;
+    @Inject
+    @DataField
+    private HTMLDivElement cockpit;
     @Inject
     @DataField
     private TableRow editorTableRow;
@@ -109,8 +116,8 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @PostConstruct
     public void init() {
-        getElement().getStyle().setZIndex(ZIndexConstants.MAIN_COCKPIT);
-        GwtUtils.preventContextMenu(this);
+        cockpit.style.zIndex = ZIndexConstants.MAIN_COCKPIT;
+        GwtUtils.preventContextMenu(cockpit);
         unlockUiService.setBlinkListener(blink -> {
             if (blink) {
                 //noinspection GWTStyleCheck
@@ -124,14 +131,19 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
     }
 
     @Override
+    public HTMLElement getElement() {
+        return cockpit;
+    }
+
+    @Override
     public void show() {
-        RootPanel.get().add(this);
+        mainPanelService.addToGamePanel(this);
         editorTableRow.getStyle().setProperty("display", userUiService.isAdmin() ? "table-row" : "none");
     }
 
     @Override
     public void hide() {
-        RootPanel.get().remove(this);
+        mainPanelService.removeFromGamePanel(this);
     }
 
     @EventHandler("inventoryButton")
@@ -151,7 +163,7 @@ public class ClientSideCockpit extends Composite implements SideCockpit {
 
     @EventHandler("fullScreenButton")
     private void onFullScreenButtonClick(ClickEvent event) {
-        GwtUtils.toggleFullscreen(RootPanel.get().getElement());
+        GwtUtils.toggleFullscreen(mainPanelService.getMainPanelElement());
     }
 
     @EventHandler("unlockButton")

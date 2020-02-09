@@ -1,5 +1,6 @@
 package com.btxtech.client.dialog.framework;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.quest.QuestPassedDialog;
 import com.btxtech.client.dialog.boxcontent.BoxContentDialog;
 import com.btxtech.client.dialog.common.MessageDialog;
@@ -24,7 +25,6 @@ import com.btxtech.uiservice.i18n.I18nHelper;
 import com.btxtech.uiservice.tip.tiptask.ScrollTipDialogModel;
 import com.btxtech.uiservice.unlock.UnlockUiService;
 import com.btxtech.uiservice.user.UserUiService;
-import com.google.gwt.user.client.ui.RootPanel;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -47,6 +47,8 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         UNIMPORTANT
     }
 
+    @Inject
+    private MainPanelService mainPanelService;
     @Inject
     private Instance<ModalDialogPanel<Object>> containerInstance;
     @Inject
@@ -230,7 +232,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
 
     private void showDialog(ModalDialogPanel modalDialogPanel, Consumer<ModalDialogPanel> shownCallback, Integer audioId) {
         audioService.onDialogOpened(audioId);
-        RootPanel.get().add(modalDialogPanel);
+        mainPanelService.addToGamePanel(modalDialogPanel);
         modalDialogPanel.onShown();
         if (shownCallback != null) {
             shownCallback.accept(modalDialogPanel);
@@ -246,7 +248,7 @@ public class ClientModalDialogManagerImpl extends ModalDialogManager {
         if (trackerCallback != null) {
             trackerCallback.accept(modalDialogPanel, false);
         }
-        RootPanel.get().remove(modalDialogPanel);
+        mainPanelService.removeFromGamePanel(modalDialogPanel);
         if (modalDialogPanel == activeDialog) {
             activeDialog = null;
             if (!dialogQueue.isEmpty()) {

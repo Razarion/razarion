@@ -1,5 +1,6 @@
 package com.btxtech.client.cockpit.chat;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.dialog.common.UnnamedDialog;
 import com.btxtech.client.dialog.common.UnregisteredDialog;
@@ -43,6 +44,8 @@ public class ClientChatCockpit implements ChatCockpit {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
+    private MainPanelService mainPanelService;
+    @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     private UserUiService userUiService;
@@ -65,8 +68,8 @@ public class ClientChatCockpit implements ChatCockpit {
     @Override
     public void show() {
         DOMUtil.removeAllElementChildren(messagesDiv.getElement()); // Remove placeholder table row from template.
-        DomGlobal.document.body.appendChild(chatCockpit);
-        chatCockpit.style.setProperty("z-index", Integer.toString(ZIndexConstants.CHAT_COCKPIT));
+        mainPanelService.addToGamePanel(chatCockpit);
+        chatCockpit.style.zIndex = ZIndexConstants.CHAT_COCKPIT;
         chatCockpit.addEventListener("mousemove", event -> {
             if (isResizeAllowed((MouseEvent) event)) {
                 chatCockpit.style.setProperty("cursor", "se-resize");
@@ -109,16 +112,16 @@ public class ClientChatCockpit implements ChatCockpit {
         Index current = new Index((int) event.clientX, (int) event.clientY);
         Index delta = current.sub(startResizePosition);
         startResizePosition = current;
-        chatCockpit.style.setProperty("width", Integer.toString(chatCockpit.clientWidth - delta.getX()) + "px");
-        chatCockpit.style.setProperty("height", Integer.toString(chatCockpit.clientHeight - delta.getY()) + "px");
+        chatCockpit.style.setProperty("width", chatCockpit.clientWidth - delta.getX() + "px");
+        chatCockpit.style.setProperty("height", chatCockpit.clientHeight - delta.getY() + "px");
     }
 
     @Override
     public void displayMessages(List<ChatMessage> messages) {
         messagesDiv.setValue(Collections.emptyList());
         messagesDiv.setValue(messages);
-        if(messagesDiv.getValue().size() > 0) {
-            ((HTMLElement)messagesDiv.getComponent(messagesDiv.getValue().size() - 1).getElement()).scrollIntoView();
+        if (messagesDiv.getValue().size() > 0) {
+            ((HTMLElement) messagesDiv.getComponent(messagesDiv.getValue().size() - 1).getElement()).scrollIntoView();
         }
     }
 

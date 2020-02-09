@@ -117,6 +117,12 @@
             <version>${gwt.elemental2.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.elemental2</groupId>
+            <artifactId>elemental2-webgl</artifactId>
+            <version>${gwt.elemental2.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Errai -->
         <dependency>
             <groupId>org.jboss.errai</groupId>

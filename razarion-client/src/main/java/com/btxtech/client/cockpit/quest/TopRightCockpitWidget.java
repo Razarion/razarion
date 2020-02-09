@@ -2,7 +2,9 @@ package com.btxtech.client.cockpit.quest;
 
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotSceneIndicationInfo;
-import com.google.gwt.user.client.ui.Composite;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.DOMUtil;
 import org.jboss.errai.databinding.client.components.ListComponent;
 import org.jboss.errai.databinding.client.components.ListContainer;
@@ -19,7 +21,10 @@ import java.util.List;
  * on 30.03.2018.
  */
 @Templated("TopRightCockpitWidget.html#topRightCockpitWidget")
-public class TopRightCockpitWidget extends Composite {
+public class TopRightCockpitWidget implements IsElement {
+    @Inject
+    @DataField
+    private HTMLDivElement topRightCockpitWidget;
     @Inject
     @DataField
     private QuestSidebar questSidebar;
@@ -30,8 +35,13 @@ public class TopRightCockpitWidget extends Composite {
 
     @PostConstruct
     public void postConstruct() {
-        getElement().getStyle().setZIndex(ZIndexConstants.TOP_RIGHT_BAR);
+        topRightCockpitWidget.style.zIndex = ZIndexConstants.TOP_RIGHT_BAR;
         DOMUtil.removeAllElementChildren(botSceneIndications.getElement()); // Remove placeholder table row from template.
+    }
+
+    @Override
+    public HTMLElement getElement() {
+        return topRightCockpitWidget;
     }
 
     public QuestSidebar getQuestSidebar() {

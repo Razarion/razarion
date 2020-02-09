@@ -1,7 +1,9 @@
 package com.btxtech.client.cockpit;
 
 import com.btxtech.client.utils.GwtUtils;
-import com.google.gwt.user.client.ui.Composite;
+import elemental2.dom.HTMLDivElement;
+import elemental2.dom.HTMLElement;
+import org.jboss.errai.common.client.api.elemental2.IsElement;
 import org.jboss.errai.common.client.dom.Span;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -14,14 +16,22 @@ import javax.inject.Inject;
  * 11.02.2017.
  */
 @Templated("StoryCoverPanel.html#storyCover")
-public class StoryCoverPanel extends Composite {
+public class StoryCoverPanel implements IsElement {
+    @Inject
+    @DataField
+    private HTMLDivElement storyCover;
     @Inject
     @DataField
     private Span text;
 
     @PostConstruct
     public void postConstruct() {
-        GwtUtils.preventContextMenu(this);
+        GwtUtils.preventContextMenu(storyCover);
+    }
+
+    @Override
+    public HTMLElement getElement() {
+        return storyCover;
     }
 
     public void setText(String text) {
