@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.renderpanel;
 
 import com.btxtech.client.editor.renderer.MonitorRenderTask;
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.client.guielements.CommaDoubleBox;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.datatypes.Vertex;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * 13.08.2016.
  */
 @Templated("RenderEngineEditorPanel.html#render-engine-editor-panel")
-public class RenderEngineEditorPanel extends LeftSideBarContent {
+public class RenderEngineEditorPanel extends AbstractEditor {
     @Inject
     private RenderService renderService;
     @Inject

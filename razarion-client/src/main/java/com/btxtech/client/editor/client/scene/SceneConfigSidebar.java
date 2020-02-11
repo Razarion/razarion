@@ -2,7 +2,7 @@ package com.btxtech.client.editor.client.scene;
 
 import com.btxtech.client.editor.framework.AbstractObjectNameIdEditor;
 import com.btxtech.client.editor.framework.ObjectNameIdTable;
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.rest.SceneEditorProvider;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
  * on 28.07.2017.
  */
 @Templated("SceneConfigSidebar.html#sceneconfig")
-public class SceneConfigSidebar extends LeftSideBarContent {
+public class SceneConfigSidebar extends AbstractEditor {
     private Logger logger = Logger.getLogger(SceneConfigSidebar.class.getName());
     @Inject
     private Caller<SceneEditorProvider> provider;

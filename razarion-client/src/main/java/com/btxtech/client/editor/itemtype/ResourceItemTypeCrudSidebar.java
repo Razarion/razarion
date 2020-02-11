@@ -30,7 +30,7 @@ public class ResourceItemTypeCrudSidebar extends AbstractCrudeParentSidebar<Reso
     @Override
     public void onConfigureDialog() {
         super.onConfigureDialog();
-        getSideBarPanel().addButton("Restart", () -> provider.call(ignore -> {
+        getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
         }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.reloadStatic() failed: ")).reloadStatic());
     }
 

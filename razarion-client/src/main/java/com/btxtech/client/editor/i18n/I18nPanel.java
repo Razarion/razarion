@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.i18n;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.I18nStringEditor;
 import com.btxtech.shared.rest.CommonEditorProvider;
@@ -20,8 +20,6 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +27,7 @@ import java.util.stream.Collectors;
  * on 10.09.2017.
  */
 @Templated("I18nPanel.html#i18nPanel")
-public class I18nPanel extends LeftSideBarContent {
+public class I18nPanel extends AbstractEditor {
     // private Logger logger = Logger.getLogger(I18nPanel.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;

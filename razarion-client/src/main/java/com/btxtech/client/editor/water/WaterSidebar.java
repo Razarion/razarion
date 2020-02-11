@@ -1,15 +1,13 @@
 package com.btxtech.client.editor.water;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.client.editor.widgets.SpecularLightWidget;
 import com.btxtech.client.editor.widgets.image.ImageItemWidget;
-import com.btxtech.client.utils.HtmlColor2ColorConverter;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.WaterConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.rest.TerrainElementEditorProvider;
 import com.btxtech.uiservice.terrain.TerrainUiService;
-import com.google.gwt.user.client.ui.TextBox;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.dom.NumberInput;
 import org.jboss.errai.databinding.client.api.DataBinder;
@@ -26,7 +24,7 @@ import javax.inject.Inject;
  * 15.03.2017.
  */
 @Templated("WaterSidebar.html#water")
-public class WaterSidebar extends LeftSideBarContent {
+public class WaterSidebar extends AbstractEditor {
     @Inject
     private Caller<TerrainElementEditorProvider> terrainElementEditorProvider;
     @Inject

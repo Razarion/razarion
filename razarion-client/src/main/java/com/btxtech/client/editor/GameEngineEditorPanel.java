@@ -1,6 +1,6 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.shared.gameengine.planet.PlanetService;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import org.jboss.errai.common.client.dom.CheckboxInput;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
  * 26.08.2016.
  */
 @Templated("GameEngineEditorPanel.html#game-engine")
-public class GameEngineEditorPanel extends LeftSideBarContent {
+public class GameEngineEditorPanel extends AbstractEditor {
     @Inject
     private PlanetService planetService;
     @Inject

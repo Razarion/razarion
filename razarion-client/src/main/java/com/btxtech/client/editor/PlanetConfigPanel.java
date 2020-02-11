@@ -1,6 +1,6 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.client.editor.widgets.itemtype.base.BaseItemTypeWidget;
 import com.btxtech.client.editor.widgets.itemtype.basecount.BaseItemTypeCountWidget;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
@@ -30,7 +30,7 @@ import java.util.logging.Logger;
  * on 22.08.2017.
  */
 @Templated("PlanetConfigPanel.html#planetConfigPanel")
-public class PlanetConfigPanel extends LeftSideBarContent {
+public class PlanetConfigPanel extends AbstractEditor {
     private Logger logger = Logger.getLogger(PlanetConfigPanel.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;

@@ -1,6 +1,6 @@
 package com.btxtech.client.editor;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.client.editor.widgets.LightDirectionWidget;
 import com.btxtech.client.guielements.VertexRoBox;
 import com.btxtech.client.utils.HtmlColor2ColorConverter;
@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * 14.08.2016.
  */
 @Templated("PlanetVisualConfigPanel.html#planet-panel")
-public class PlanetVisualConfigPanel extends LeftSideBarContent {
+public class PlanetVisualConfigPanel extends AbstractEditor {
     private Logger logger = Logger.getLogger(PlanetVisualConfigPanel.class.getName());
     @Inject
     private ShadowUiService shadowUiService;

@@ -2,7 +2,6 @@ package com.btxtech.client.editor.server.resource;
 
 import com.btxtech.client.editor.framework.AbstractCrudeParentSidebar;
 import com.btxtech.client.editor.framework.CrudEditor;
-import com.btxtech.client.editor.server.startregion.StartRegionPropertyPanel;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.rest.ServerGameEngineControlProvider;
@@ -11,8 +10,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -33,7 +30,7 @@ public class ResourceRegionSidebar extends AbstractCrudeParentSidebar<ResourceRe
     @Override
     public void onConfigureDialog() {
         super.onConfigureDialog();
-        getSideBarPanel().addButton("Restart", () -> provider.call(ignore -> {
+        getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
         }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.restartResourceRegions() failed: ")).restartResourceRegions());
     }
 

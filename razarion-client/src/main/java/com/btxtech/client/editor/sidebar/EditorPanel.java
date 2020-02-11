@@ -25,15 +25,15 @@ import javax.inject.Inject;
  * Created by Beat
  * 03.05.2016.
  */
-@Templated("SideBarPanel.html#sideBarPanel")
-public class SideBarPanel implements IsElement {
+@Templated("EditorPanel.html#editorPanel")
+public class EditorPanel implements IsElement {
     @Inject
     private MainPanelService mainPanelService;
     @Inject
-    private Instance<LeftSideBarContent> leftSideBarContentInstance;
+    private Instance<AbstractEditor> leftSideBarContentInstance;
     @Inject
     @DataField
-    private HTMLDivElement sideBarPanel;
+    private HTMLDivElement editorPanel;
     @Inject
     @DataField
     private SimplePanel content; // TODO use elemental2
@@ -49,30 +49,30 @@ public class SideBarPanel implements IsElement {
     @Inject
     @DataField
     private TableRow buttonTableRow; // TODO use elemental2
-    private LeftSideBarContent leftSideBarContent;
+    private AbstractEditor abstractEditor;
 
     @PostConstruct
     public void init() {
-        sideBarPanel.style.zIndex = ZIndexConstants.EDITOR_SIDE_BAR;
-        GwtUtils.preventContextMenu(sideBarPanel);
+        editorPanel.style.zIndex = ZIndexConstants.EDITOR_SIDE_BAR;
+        GwtUtils.preventContextMenu(editorPanel);
     }
 
     @Override
     public HTMLElement getElement() {
-        return sideBarPanel;
+        return editorPanel;
     }
 
-    public void setContent(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
-        if (leftSideBarContent != null) {
-            leftSideBarContent.onClose();
+    public void setContent(Class<? extends AbstractEditor> leftSideBarContentClass) {
+        if (abstractEditor != null) {
+            abstractEditor.onClose();
         }
-        leftSideBarContent = leftSideBarContentInstance.select(leftSideBarContentClass).get();
-        leftSideBarContent.init(this);
-        content.setWidget(leftSideBarContent);
+        abstractEditor = leftSideBarContentInstance.select(leftSideBarContentClass).get();
+        abstractEditor.init(this);
+        content.setWidget(abstractEditor);
     }
 
-    public LeftSideBarContent getContent() {
-        return (LeftSideBarContent) content.getWidget();
+    public AbstractEditor getContent() {
+        return (AbstractEditor) content.getWidget();
     }
 
     Button getSaveButton() {
@@ -98,7 +98,7 @@ public class SideBarPanel implements IsElement {
 
     @EventHandler("closeButton")
     private void closeButtonClick(ClickEvent event) {
-        leftSideBarContent.onClose();
+        abstractEditor.onClose();
         mainPanelService.removeEditorPanel(this);
     }
 }

@@ -1,7 +1,7 @@
 package com.btxtech.client.editor.ground;
 
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
@@ -21,7 +21,7 @@ import javax.inject.Inject;
  * 06.11.2015.
  */
 @Templated("GroundSidebar.html#terrain")
-public class GroundSidebar extends LeftSideBarContent {
+public class GroundSidebar extends AbstractEditor {
     //private Logger logger = Logger.getLogger(GroundSidebar.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;

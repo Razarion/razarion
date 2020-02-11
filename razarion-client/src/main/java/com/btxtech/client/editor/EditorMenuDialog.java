@@ -25,8 +25,8 @@ import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.editor.sidebar.SideBarPanel;
+import com.btxtech.client.editor.sidebar.EditorPanel;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
@@ -56,7 +56,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     @Inject
     private MainPanelService mainPanelService;
     @Inject
-    private Instance<SideBarPanel> sideBarPanelInstance;
+    private Instance<EditorPanel> editorPanelInstance;
     @Inject
     @DataField
     private Button perfmonButton;
@@ -301,12 +301,12 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
         this.modalDialogPanel = modalDialogPanel;
     }
 
-    private void openEditor(Class<? extends LeftSideBarContent> editorPanelClass) {
+    private void openEditor(Class<? extends AbstractEditor> editorPanelClass) {
         try {
             modalDialogPanel.close();
-            SideBarPanel sideBarPanel = sideBarPanelInstance.get();
-            sideBarPanel.setContent(editorPanelClass);
-            mainPanelService.addEditorPanel(sideBarPanel);
+            EditorPanel editorPanel = editorPanelInstance.get();
+            editorPanel.setContent(editorPanelClass);
+            mainPanelService.addEditorPanel(editorPanel);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             modalDialogManager.showMessageDialog("Error open Editor", t.getMessage());

@@ -10,8 +10,6 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -32,7 +30,7 @@ public class BoxRegionSidebar extends AbstractCrudeParentSidebar<BoxRegionConfig
     @Override
     public void onConfigureDialog() {
         super.onConfigureDialog();
-        getSideBarPanel().addButton("Restart", () -> provider.call(ignore -> {
+        getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
         }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.restartBoxRegions() failed: ")).restartBoxRegions());
     }
 

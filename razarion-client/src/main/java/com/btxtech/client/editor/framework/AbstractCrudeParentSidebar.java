@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.framework;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * 23.08.2016.
  */
 @Templated("AbstractCrudeParentSidebar.html#abstract-crud-parent")
-public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends LeftSideBarContent implements CrudEditor.LoadedListener, CrudEditor.SelectionListener {
+public abstract class AbstractCrudeParentSidebar<T extends ObjectNameIdProvider, U extends AbstractPropertyPanel<T>> extends AbstractEditor implements CrudEditor.LoadedListener, CrudEditor.SelectionListener {
     // private Logger logger = Logger.getLogger(AbstractCrudeParentSidebar.class.getName());
     @Inject
     @DataField

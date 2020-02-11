@@ -1,6 +1,6 @@
 package com.btxtech.client.editor.basemgmt;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
 import com.btxtech.shared.datatypes.AdditionUserInfo;
 import com.btxtech.shared.datatypes.HumanPlayerId;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  * on 12.03.2018.
  */
 @Templated("BaseMgmtEditorPanel.html#baseMgmt")
-public class BaseMgmtEditorPanel extends LeftSideBarContent {
+public class BaseMgmtEditorPanel extends AbstractEditor {
     private Logger logger = Logger.getLogger(BaseMgmtEditorPanel.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;

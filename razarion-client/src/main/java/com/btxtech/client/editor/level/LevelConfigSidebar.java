@@ -30,7 +30,7 @@ public class LevelConfigSidebar extends AbstractCrudeParentSidebar<LevelEditConf
     @Override
     public void onConfigureDialog() {
         super.onConfigureDialog();
-        getSideBarPanel().addButton("Restart", () -> provider.call(ignore -> {
+        getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
         }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.reloadStatic() failed: ")).reloadStatic());
     }
 

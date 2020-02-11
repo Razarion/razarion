@@ -2,7 +2,7 @@ package com.btxtech.client.editor.terrain;
 
 import com.btxtech.client.cockpit.radar.RadarPanel;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.sidebar.LeftSideBarContent;
+import com.btxtech.client.editor.sidebar.AbstractEditor;
 import com.btxtech.client.guielements.DecimalPositionBox;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
@@ -35,15 +35,13 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 06.11.2015.
  */
 @Templated("TerrainEditorSidebar.html#terrainEditor")
-public class TerrainEditorSidebar extends LeftSideBarContent implements ViewService.ViewFieldListener {
+public class TerrainEditorSidebar extends AbstractEditor implements ViewService.ViewFieldListener {
     // private Logger logger = Logger.getLogger(TerrainEditorSidebar.class.getName());
     @Inject
     private ClientExceptionHandlerImpl exceptionHandler;

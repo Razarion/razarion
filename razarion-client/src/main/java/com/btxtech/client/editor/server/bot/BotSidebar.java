@@ -30,7 +30,7 @@ public class BotSidebar extends AbstractCrudeParentSidebar<BotConfig, BotConfigW
     @Override
     public void onConfigureDialog() {
         super.onConfigureDialog();
-        getSideBarPanel().addButton("Restart", () -> provider.call(ignore -> {
+        getEditorPanel().addButton("Restart", () -> provider.call(ignore -> {
         }, exceptionHandler.restErrorHandler("Calling ServerGameEngineControlProvider.restartBots() failed: ")).restartBots());
     }
 

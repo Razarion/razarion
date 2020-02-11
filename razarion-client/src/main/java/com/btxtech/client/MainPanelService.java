@@ -1,6 +1,6 @@
 package com.btxtech.client;
 
-import com.btxtech.client.editor.sidebar.SideBarPanel;
+import com.btxtech.client.editor.sidebar.EditorPanel;
 import com.btxtech.shared.system.ExceptionHandler;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
@@ -36,12 +36,12 @@ public class MainPanelService {
         mainPanel.removeFromGamePanel(htmlElement);
     }
 
-    public void addEditorPanel(SideBarPanel sideBarPanel) {
-        mainPanel.addToFlexContainer(sideBarPanel.getElement());
+    public void addEditorPanel(EditorPanel editorPanel) {
+        mainPanel.addToFlexContainer(editorPanel.getElement());
     }
 
-    public void removeEditorPanel(SideBarPanel sideBarPanel) {
-        mainPanel.removeFromFlexContainer(sideBarPanel.getElement());
+    public void removeEditorPanel(EditorPanel editorPanel) {
+        mainPanel.removeFromFlexContainer(editorPanel.getElement());
     }
 
     public void addPlaybackPanel(IsElement isElement) {

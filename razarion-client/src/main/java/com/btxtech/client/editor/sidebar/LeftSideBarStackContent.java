@@ -6,21 +6,21 @@ package com.btxtech.client.editor.sidebar;
  */
 // Not needed anymore... may be
 @Deprecated
-public class LeftSideBarStackContent extends LeftSideBarContent {
-    private SideBarPanel predecessor;
+public class LeftSideBarStackContent extends AbstractEditor {
+    private EditorPanel predecessor;
 
     @Override
-    public void init(SideBarPanel sideBarPanel) {
+    public void init(EditorPanel sideBarPanel) {
         super.init(sideBarPanel);
         // TODO sideBarPanel.getCloseButton().setVisible(false);
         // TODO sideBarPanel.getBackButton().getElement().getStyle().setVisibility(Style.Visibility.VISIBLE);
     }
 
-    public SideBarPanel getPredecessor() {
+    public EditorPanel getPredecessor() {
         return predecessor;
     }
 
-    public void setPredecessor(SideBarPanel predecessor) {
+    public void setPredecessor(EditorPanel predecessor) {
         this.predecessor = predecessor;
     }
 }
