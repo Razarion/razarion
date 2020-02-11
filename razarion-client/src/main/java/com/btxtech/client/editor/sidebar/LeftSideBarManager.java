@@ -10,7 +10,11 @@ import java.util.Stack;
 /**
  * Created by Beat
  * 03.05.2016.
+ *
+ * Deprecated, replaced by
+ * @see com.btxtech.client.MainPanelService
  */
+@Deprecated
 @Singleton
 public class LeftSideBarManager {
     // private Logger logger = Logger.getLogger(LeftSideBarManager.class.getName());

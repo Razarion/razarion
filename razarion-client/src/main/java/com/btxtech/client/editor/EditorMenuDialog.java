@@ -1,5 +1,6 @@
 package com.btxtech.client.editor;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
 import com.btxtech.client.dialog.framework.ModalDialogContent;
 import com.btxtech.client.dialog.framework.ModalDialogPanel;
@@ -26,6 +27,7 @@ import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
 import com.btxtech.client.editor.sidebar.LeftSideBarManager;
+import com.btxtech.client.editor.sidebar.SideBarPanel;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
@@ -39,6 +41,7 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 /**
@@ -53,6 +56,10 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
     private ExceptionHandler exceptionHandler;
+    @Inject
+    private MainPanelService mainPanelService;
+    @Inject
+    private Instance<SideBarPanel> sideBarPanelInstance;
     @Inject
     @DataField
     private Button perfmonButton;
@@ -300,11 +307,12 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
     private void openEditor(Class<? extends LeftSideBarContent> editorPanelClass) {
         try {
             modalDialogPanel.close();
-            leftSideBarManager.show(editorPanelClass);
+            SideBarPanel sideBarPanel = sideBarPanelInstance.get();
+            sideBarPanel.setContent(editorPanelClass);
+            mainPanelService.addEditorPanel(sideBarPanel);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
             modalDialogManager.showMessageDialog("Error open Editor", t.getMessage());
-            leftSideBarManager.close();
         }
     }
 }

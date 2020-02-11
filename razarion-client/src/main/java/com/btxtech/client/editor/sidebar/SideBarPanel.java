@@ -1,10 +1,12 @@
 package com.btxtech.client.editor.sidebar;
 
+import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.GwtUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.SimplePanel;
+import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
@@ -26,30 +28,27 @@ import javax.inject.Inject;
 @Templated("SideBarPanel.html#sideBarPanel")
 public class SideBarPanel implements IsElement {
     @Inject
-    private Instance<LeftSideBarContent> leftSideBarContentInstance;
+    private MainPanelService mainPanelService;
     @Inject
-    private LeftSideBarManager leftSideBarManager;
+    private Instance<LeftSideBarContent> leftSideBarContentInstance;
     @Inject
     @DataField
     private HTMLDivElement sideBarPanel;
     @Inject
     @DataField
-    private SimplePanel content;
+    private SimplePanel content; // TODO use elemental2
     @Inject
     @DataField
-    private Button deleteButton;
+    private Button deleteButton; // TODO use elemental2
     @Inject
     @DataField
-    private Button saveButton;
+    private Button saveButton; // TODO use elemental2
     @Inject
     @DataField
-    private Button closeButton;
+    private HTMLButtonElement closeButton;
     @Inject
     @DataField
-    private Button backButton;
-    @Inject
-    @DataField
-    private TableRow buttonTableRow;
+    private TableRow buttonTableRow; // TODO use elemental2
     private LeftSideBarContent leftSideBarContent;
 
     @PostConstruct
@@ -63,7 +62,7 @@ public class SideBarPanel implements IsElement {
         return sideBarPanel;
     }
 
-    void setContent(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
+    public void setContent(Class<? extends LeftSideBarContent> leftSideBarContentClass) {
         if (leftSideBarContent != null) {
             leftSideBarContent.onClose();
         }
@@ -84,12 +83,8 @@ public class SideBarPanel implements IsElement {
         return deleteButton;
     }
 
-    public Button getCloseButton() {
+    public HTMLButtonElement getCloseButton() {
         return closeButton;
-    }
-
-    public Button getBackButton() {
-        return backButton;
     }
 
     public void addButton(String text, Runnable clickCallback) {
@@ -104,12 +99,6 @@ public class SideBarPanel implements IsElement {
     @EventHandler("closeButton")
     private void closeButtonClick(ClickEvent event) {
         leftSideBarContent.onClose();
-        leftSideBarManager.close();
-    }
-
-    @EventHandler("backButton")
-    private void backButtonClick(ClickEvent event) {
-        leftSideBarContent.onClose();
-        leftSideBarManager.pop();
+        mainPanelService.removeEditorPanel(this);
     }
 }
