@@ -1,7 +1,6 @@
 package com.btxtech.client.editor.framework;
 
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.google.gwt.event.dom.client.ClickEvent;

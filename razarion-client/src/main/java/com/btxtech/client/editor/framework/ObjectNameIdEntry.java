@@ -1,6 +1,5 @@
 package com.btxtech.client.editor.framework;
 
-import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.common.DisplayUtils;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -22,8 +21,6 @@ import javax.inject.Inject;
  */
 @Templated("ObjectNameIdTable.html#objectNameIdRow")
 public class ObjectNameIdEntry implements TakesValue<ObjectNameId>, IsElement {
-    @Inject
-    private LeftSideBarManager leftSideBarManager;
     @Inject
     @DataField
     private TableRow objectNameIdRow;
@@ -82,8 +79,8 @@ public class ObjectNameIdEntry implements TakesValue<ObjectNameId>, IsElement {
 
     @EventHandler("editButton")
     public void editButtonClicked(ClickEvent event) {
-        ObjectNamePropertyPanel objectNamePropertyPanel = leftSideBarManager.stack(abstractObjectNameIdEditor.getObjectNamePropertyPanelClass());
-        objectNamePropertyPanel.setObjectNameId(objectNameId);
+        // TODO ??? ObjectNamePropertyPanel objectNamePropertyPanel = leftSideBarManager.stack(abstractObjectNameIdEditor.getObjectNamePropertyPanelClass());
+        // TODO ??? objectNamePropertyPanel.setObjectNameId(objectNameId);
     }
 
     public void setAbstractObjectNameIdEditor(AbstractObjectNameIdEditor abstractObjectNameIdEditor) {

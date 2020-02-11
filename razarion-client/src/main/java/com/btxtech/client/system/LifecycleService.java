@@ -3,7 +3,6 @@ package com.btxtech.client.system;
 import com.btxtech.client.ClientTrackerService;
 import com.btxtech.client.cockpit.ClientScreenCoverImpl;
 import com.btxtech.client.dialog.framework.ClientModalDialogManagerImpl;
-import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.system.boot.GameStartupSeq;
 import com.btxtech.common.system.ClientPerformanceTrackerService;
@@ -100,8 +99,6 @@ public class LifecycleService {
     @Inject
     private ScreenCover screenCover;
     @Inject
-    private LeftSideBarManager leftSideBarManager;
-    @Inject
     private GameUiControl gameUiControl;
     @Inject
     private SelectionHandler selectionHandler;
@@ -192,7 +189,7 @@ public class LifecycleService {
         terrainUiService.clear();
         audioService.muteTerrainLoopAudio();
         terrainScrollHandler.cleanup();
-        leftSideBarManager.close();
+        // TODO ??? leftSideBarManager.close();
     }
 
     private void startRestartWatchdog() {

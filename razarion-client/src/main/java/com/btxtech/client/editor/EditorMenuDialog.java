@@ -26,7 +26,6 @@ import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
 import com.btxtech.client.editor.sidebar.LeftSideBarContent;
-import com.btxtech.client.editor.sidebar.LeftSideBarManager;
 import com.btxtech.client.editor.sidebar.SideBarPanel;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
@@ -50,8 +49,6 @@ import javax.inject.Inject;
  */
 @Templated("EditorMenuDialog.html#editor-menu-dialog")
 public class EditorMenuDialog extends Composite implements ModalDialogContent<Void> {
-    @Inject
-    private LeftSideBarManager leftSideBarManager;
     @Inject
     private ClientModalDialogManagerImpl modalDialogManager;
     @Inject
