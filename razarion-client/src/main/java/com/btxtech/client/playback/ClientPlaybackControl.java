@@ -58,7 +58,7 @@ public class ClientPlaybackControl extends PlaybackControl {
         cockpitService.hide();
         endTimeStamp = endDetailedTracking.getTimeStamp();
         playbackSidebar = playbackSidebarInstance.get();
-        mainPanelService.createLeftPanel(playbackSidebar);
+        mainPanelService.addPlaybackPanel(playbackSidebar);
         playbackSidebar.setPlaybackControl(this);
         playbackSidebar.displayRemainingTime(endTimeStamp.getTime() - startTimeStamp.getTime());
     }

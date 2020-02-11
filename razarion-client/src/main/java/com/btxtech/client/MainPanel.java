@@ -31,6 +31,14 @@ public class MainPanel implements IsElement {
         gamePanel.removeChild(htmlElement);
     }
 
+    public void addToFlexContainer(HTMLElement htmlElement) {
+        flexContainer.appendChild(htmlElement);
+    }
+
+    public void removeFromFlexContainer(HTMLElement htmlElement) {
+        flexContainer.removeChild(htmlElement);
+    }
+
     @Override
     public HTMLElement getElement() {
         return flexContainer;

@@ -1,5 +1,6 @@
 package com.btxtech.client;
 
+import com.btxtech.client.editor.AbstractEditorPanel;
 import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
@@ -32,12 +33,17 @@ public class MainPanelService {
         mainPanel.removeFromGamePanel(htmlElement);
     }
 
-    public HTMLElement getMainPanelElement() {
-        return mainPanel.getElement();
+    public void addEditorPanel(AbstractEditorPanel abstractEditorPanel) {
+        mainPanel.addToFlexContainer(abstractEditorPanel.getElement());
+        abstractEditorPanel.getCloseButton().addEventListener("click", evt -> mainPanel.removeFromGamePanel(abstractEditorPanel.getElement()));
     }
 
-    public void createLeftPanel(IsElement isElement) {
-        throw new UnsupportedOperationException("MainPanelService.createLeftPanel() TODO");
+    public void addPlaybackPanel(IsElement isElement) {
+        throw new UnsupportedOperationException("MainPanelService.addPlaybackPanel() TODO");
 
+    }
+
+    public HTMLElement getMainPanelElement() {
+        return mainPanel.getElement();
     }
 }
