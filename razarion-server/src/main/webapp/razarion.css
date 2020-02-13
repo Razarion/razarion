@@ -125,6 +125,35 @@ a:active {
     -ms-user-select: none; /* IE 10+ */
 }
 
+.main-flex-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.game-panel {
+    position: relative;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    order: 50;
+}
+
+.editor-panel {
+    position: relative;
+    flex-grow: 1;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    order: 10;
+}
 /** -------------------------- MAIN ENDS -------------------------- */
 
 /** -------------------------- Cover -------------------------- */
