@@ -3,11 +3,12 @@ package com.btxtech.server.rest;
 import com.btxtech.server.persistence.CrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.ObjectNameId;
+import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.rest.CrudController;
 
 import java.util.List;
 
-public abstract class AbstractCrudController<C, E> implements CrudController<C> {
+public abstract class AbstractCrudController<C extends ObjectNameIdProvider, E> implements CrudController<C> {
     @SecurityCheck
     @Override
     public List<ObjectNameId> getObjectNameIds() {

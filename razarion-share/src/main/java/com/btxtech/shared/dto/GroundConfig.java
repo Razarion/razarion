@@ -6,12 +6,18 @@ import java.util.Objects;
  * Created by Beat
  * 07.05.2016.
  */
-public class GroundConfig {
+public class GroundConfig implements ObjectNameIdProvider{
     private int id;
     private String internalName;
     // private PhongMaterialConfig topTexture;
     // private PhongMaterialConfig bottomTexture;
     // private ImageScaleConfig splatting;
+
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
+    }
 
     public int getId() {
         return id;

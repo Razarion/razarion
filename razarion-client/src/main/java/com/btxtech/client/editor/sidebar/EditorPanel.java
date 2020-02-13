@@ -2,6 +2,7 @@ package com.btxtech.client.editor.sidebar;
 
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
+import com.btxtech.client.editor.generic.GenericCrudeControllerEditor;
 import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.rest.CrudController;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -62,17 +63,18 @@ public class EditorPanel implements IsElement {
         return editorPanel;
     }
 
-    public void setContent(Class<? extends AbstractEditor> leftSideBarContentClass) {
+    public void setContent(Class<? extends AbstractEditor> abstractEditorClass) {
         if (abstractEditor != null) {
-            abstractEditor.onClose();
+            throw new IllegalStateException("abstractEditor != null");
         }
-        abstractEditor = leftSideBarContentInstance.select(leftSideBarContentClass).get();
+        abstractEditor = leftSideBarContentInstance.select(abstractEditorClass).get();
         abstractEditor.init(this);
         content.setWidget(abstractEditor);
     }
 
     public void setGenericCrud(Class<? extends CrudController> crudControllerClass) {
-
+        setContent(GenericCrudeControllerEditor.class);
+        ((GenericCrudeControllerEditor)abstractEditor).setCrudControllerClass(crudControllerClass);
     }
 
     public AbstractEditor getContent() {
