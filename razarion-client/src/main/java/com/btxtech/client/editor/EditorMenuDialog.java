@@ -7,7 +7,6 @@ import com.btxtech.client.dialog.framework.ModalDialogPanel;
 import com.btxtech.client.editor.audio.AudioGalleryDialog;
 import com.btxtech.client.editor.basemgmt.BaseMgmtEditorPanel;
 import com.btxtech.client.editor.client.scene.SceneConfigSidebar;
-import com.btxtech.client.editor.ground.GroundSidebar;
 import com.btxtech.client.editor.i18n.I18nPanel;
 import com.btxtech.client.editor.imagegallery.ImageGalleryDialog;
 import com.btxtech.client.editor.inventory.InventoryItemCrudSidebar;
@@ -25,12 +24,14 @@ import com.btxtech.client.editor.server.quest.LevelQuestSidebar;
 import com.btxtech.client.editor.server.resource.ResourceRegionSidebar;
 import com.btxtech.client.editor.server.startregion.StartRegionSidebar;
 import com.btxtech.client.editor.shape3dgallery.Shape3DCrudeSidebar;
-import com.btxtech.client.editor.sidebar.EditorPanel;
 import com.btxtech.client.editor.sidebar.AbstractEditor;
+import com.btxtech.client.editor.sidebar.EditorPanel;
 import com.btxtech.client.editor.slopeeditor.SlopeConfigCrudSidebar;
 import com.btxtech.client.editor.terrain.TerrainEditorSidebar;
 import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.client.editor.water.WaterSidebar;
+import com.btxtech.shared.rest.CrudController;
+import com.btxtech.shared.rest.GroundEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -226,7 +227,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("groundButton")
     private void onGroundButtonClicked(ClickEvent event) {
-        openEditor(GroundSidebar.class);
+        openGenericCrudEditor(GroundEditorController.class);
     }
 
     @EventHandler("waterButton")
@@ -306,6 +307,18 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
             modalDialogPanel.close();
             EditorPanel editorPanel = editorPanelInstance.get();
             editorPanel.setContent(editorPanelClass);
+            mainPanelService.addEditorPanel(editorPanel);
+        } catch (Throwable t) {
+            exceptionHandler.handleException(t);
+            modalDialogManager.showMessageDialog("Error open Editor", t.getMessage());
+        }
+    }
+
+    private void openGenericCrudEditor(Class<? extends CrudController> crudControllerClass) {
+        try {
+            modalDialogPanel.close();
+            EditorPanel editorPanel = editorPanelInstance.get();
+            editorPanel.setGenericCrud(crudControllerClass);
             mainPanelService.addEditorPanel(editorPanel);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

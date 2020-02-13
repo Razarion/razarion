@@ -3,16 +3,16 @@ package com.btxtech.client.editor.sidebar;
 import com.btxtech.client.MainPanelService;
 import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.utils.GwtUtils;
+import com.btxtech.shared.rest.CrudController;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.SimplePanel;
+import elemental2.dom.DomGlobal;
 import elemental2.dom.HTMLButtonElement;
 import elemental2.dom.HTMLDivElement;
 import elemental2.dom.HTMLElement;
+import elemental2.dom.HTMLTableCellElement;
+import elemental2.dom.HTMLTableRowElement;
 import org.jboss.errai.common.client.api.elemental2.IsElement;
-import org.jboss.errai.common.client.dom.TableCell;
-import org.jboss.errai.common.client.dom.TableRow;
-import org.jboss.errai.common.client.dom.Window;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -39,16 +39,16 @@ public class EditorPanel implements IsElement {
     private SimplePanel content; // TODO use elemental2
     @Inject
     @DataField
-    private Button deleteButton; // TODO use elemental2
+    private HTMLButtonElement deleteButton;
     @Inject
     @DataField
-    private Button saveButton; // TODO use elemental2
+    private HTMLButtonElement saveButton;
     @Inject
     @DataField
     private HTMLButtonElement closeButton;
     @Inject
     @DataField
-    private TableRow buttonTableRow; // TODO use elemental2
+    private HTMLTableRowElement buttonTableRow;
     private AbstractEditor abstractEditor;
 
     @PostConstruct
@@ -71,27 +71,27 @@ public class EditorPanel implements IsElement {
         content.setWidget(abstractEditor);
     }
 
+    public void setGenericCrud(Class<? extends CrudController> crudControllerClass) {
+
+    }
+
     public AbstractEditor getContent() {
         return (AbstractEditor) content.getWidget();
     }
 
-    Button getSaveButton() {
+    public HTMLButtonElement getSaveButton() {
         return saveButton;
     }
 
-    Button getDeleteButton() {
+    public HTMLButtonElement getDeleteButton() {
         return deleteButton;
     }
 
-    public HTMLButtonElement getCloseButton() {
-        return closeButton;
-    }
-
     public void addButton(String text, Runnable clickCallback) {
-        TableCell tableCell = (TableCell) Window.getDocument().createElement("td");
+        HTMLTableCellElement tableCell = (HTMLTableCellElement) DomGlobal.document.createElement("td");
         buttonTableRow.appendChild(tableCell);
-        org.jboss.errai.common.client.dom.Button button = (org.jboss.errai.common.client.dom.Button) Window.getDocument().createElement("button");
-        button.setInnerHTML(text);
+        HTMLButtonElement button = (HTMLButtonElement) DomGlobal.document.createElement("button");
+        button.innerHTML = text;
         tableCell.appendChild(button);
         button.addEventListener("click", event -> clickCallback.run(), false);
     }
