@@ -56,17 +56,15 @@ public class LoggingProviderImpl implements LoggingProvider {
     @Override
     public void jsonLogger(LogRecordInfo logRecordInfo) {
         try {
-            String s = "GWT jsonLogger: " + setupUserWebString(sessionHolder)
-                    + "\n" + "GWT module name: " + logRecordInfo.getGwtModuleName()
-                    + "\n" + "Client time: " + DateUtil.getDateStringMillis(logRecordInfo.getMillis())
-                    + "\n" + "Message: " + logRecordInfo.getMessage();
+            String s = "Gwt Message: " + logRecordInfo.getMessage();
             if (logRecordInfo.getThrown() != null) {
-                s += "\nThrown: " + thrownToString(convertToThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtModuleName(), logRecordInfo.getGwtStrongName()));
-            } else {
-                s += "\n";
+                s += "\n - Thrown: " + thrownToString(convertToThrown(logRecordInfo.getThrown(), logRecordInfo.getGwtModuleName(), logRecordInfo.getGwtStrongName()));
             }
-            s += "Logger name: " + logRecordInfo.getLoggerName();
-            s += "\n" + "GWT strong name: " + logRecordInfo.getGwtStrongName();
+            s += "\n - GWT module name: " + logRecordInfo.getGwtModuleName();
+            s += "\n - GWT jsonLogger: " + setupUserWebString(sessionHolder);
+            s += "\n - Gwt Client time: " + DateUtil.getDateStringMillis(logRecordInfo.getMillis());
+            s += "\n - Logger name: " + logRecordInfo.getLoggerName();
+            s += "\n - GWT strong name: " + logRecordInfo.getGwtStrongName();
             logger.log(Level.parse(logRecordInfo.getLevel()), s);
         } catch (Throwable throwable) {
             logger.log(Level.SEVERE, "Logging from client failed. LogRecordInfo: " + logRecordInfo, throwable);
