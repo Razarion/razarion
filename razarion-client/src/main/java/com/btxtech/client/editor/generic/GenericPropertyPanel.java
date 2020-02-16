@@ -18,14 +18,14 @@ public class GenericPropertyPanel extends AbstractPropertyPanel<ObjectNameIdProv
     // private Logger logger = Logger.getLogger(GenericPropertyPanel.class.getName());
     @Inject
     @DataField
-    @ListContainer("propertyTable")
+    @ListContainer("tbody")
     private ListComponent<PropertyField, PropertyFieldWidget> propertyTable;
     private ObjectNameIdProvider genericObjectNameIdProvider;
 
     @Override
     public void init(ObjectNameIdProvider objectNameIdProvider) {
         this.genericObjectNameIdProvider = objectNameIdProvider;
-        HasProperties hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(objectNameIdProvider.getClass());
+        HasProperties hasProperties = (HasProperties) BindableProxyFactory.getBindableProxy(objectNameIdProvider);
         DOMUtil.removeAllElementChildren(propertyTable.getElement()); // Remove placeholder table row from template.
         propertyTable.setValue(hasProperties.getBeanProperties().entrySet().stream().map(entry -> new PropertyField(entry.getKey(), entry.getValue(), hasProperties)).collect(Collectors.toList()));
     }
