@@ -106,7 +106,7 @@ public class TerrainUiService {
             }
 
             UiTerrainTile newUiTerrainTile = uiTerrainTileInstance.get();
-            newUiTerrainTile.init(index, terrainTypeService.getGroundConfig(gameUiControl.getPlanetConfig().getPlanetId()));
+            newUiTerrainTile.init(index, terrainTypeService.getGroundConfig(gameUiControl.getPlanetConfig().getGroundConfigId()));
             newUiTerrainTile.setActive(true);
             newDisplayTerrainTiles.put(index, newUiTerrainTile);
         }

@@ -1,4 +1,4 @@
-INSERT INTO GROUND_CONFIG (id, internalName) VALUE (1, 'Minimal');
+# INSERT INTO GROUND_CONFIG (id, internalName) VALUE (1, 'Minimal');
 
 INSERT INTO PLANET (id,
                     groundMeshDimensionStartX, groundMeshDimensionStartY, groundMeshDimensionEndX,
