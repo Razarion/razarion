@@ -18,6 +18,10 @@ public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameI
 
     public void init(Class<? extends CrudController> crudControllerClass) {
         this.crudControllerClass = crudControllerClass;
+        loadObjectNameId(crudControllerClass);
+    }
+
+    private void loadObjectNameId(Class<? extends CrudController> crudControllerClass) {
         MessageBuilder.createCall((RemoteCallback<List<ObjectNameId>>) objectNameIds -> {
             GenericCrudControllerEditor.this.objectNameIds = objectNameIds;
             fire();
@@ -40,12 +44,12 @@ public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameI
 
     @Override
     public void save(ObjectNameIdProvider objectNameIdProvider) {
-
+        MessageBuilder.createCall(ignore -> fire(), crudControllerClass).update(objectNameIdProvider);
     }
 
     @Override
     public void reload() {
-
+        loadObjectNameId(crudControllerClass);
     }
 
     @Override

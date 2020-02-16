@@ -15,11 +15,10 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.logging.Logger;
 
 @Templated("GenericPropertyPanel.html#genericPropertyPanel")
 public class PropertyWidget implements IsElement, TakesValue<PropertyModel> {
-    private Logger logger = Logger.getLogger(PropertyWidget.class.getName());
+    // private Logger logger = Logger.getLogger(PropertyWidget.class.getName());
     @Inject
     @DataField
     private HTMLTableRowElement propertyTableRow;
@@ -44,7 +43,9 @@ public class PropertyWidget implements IsElement, TakesValue<PropertyModel> {
         propertyName.textContent = propertyModel.getPropertyName();
         Elemental2Utils.removeAllChildren(propertyValue);
         Class propertyClass = propertyModel.getPropertyType().getType();
-        if (propertyClass == String.class) {
+        if(propertyModel.isReadOnly()) {
+            propertyValue.textContent = propertyModel.getStringValue();
+        } else if (propertyClass == String.class) {
             propertyValue.appendChild(setupStringEditor(propertyModel));
         } else if (propertyClass == Integer.class) {
             propertyValue.appendChild(setupIntegerEditor(propertyModel));
@@ -57,24 +58,30 @@ public class PropertyWidget implements IsElement, TakesValue<PropertyModel> {
 
     private Node setupStringEditor(PropertyModel propertyModel) {
         HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
-        htmlInputElement.value = propertyModel.getValue();
-//        propertyTableRow.addEventListener("mouseover ", evt -> {
-//            logger.severe(evt + " value=" + htmlInputElement.value);
-//        }, EventTarget.AddEventListenerOptionsUnionType.of(false));
+        htmlInputElement.value = propertyModel.getStringValue();
+        htmlInputElement.addEventListener("input", event ->  {
+            propertyModel.setStringValue(htmlInputElement.value);
+        }, false);
         return htmlInputElement;
     }
 
     private HTMLInputElement setupIntegerEditor(PropertyModel propertyModel) {
         HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "number";
-        htmlInputElement.value = propertyModel.getValue();
+        htmlInputElement.value = propertyModel.getStringValue();
+        htmlInputElement.addEventListener("input", event ->  {
+            propertyModel.setStringValue(htmlInputElement.value);
+        }, false);
         return htmlInputElement;
     }
 
     private Node setupDoubleEditor(PropertyModel propertyModel) {
         HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "number";
-        htmlInputElement.value = propertyModel.getValue();
+        htmlInputElement.value = propertyModel.getStringValue();
+        htmlInputElement.addEventListener("input", event ->  {
+            propertyModel.setStringValue(htmlInputElement.value);
+        }, false);
         return htmlInputElement;
     }
 
