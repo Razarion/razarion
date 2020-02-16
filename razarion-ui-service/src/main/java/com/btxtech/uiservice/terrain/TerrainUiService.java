@@ -17,6 +17,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainUtil;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import com.btxtech.shared.utils.GeometricUtil;
 import com.btxtech.uiservice.control.GameEngineControl;
+import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.ViewField;
 
@@ -47,6 +48,8 @@ public class TerrainUiService {
     private GameEngineControl gameEngineControl;
     @Inject
     private Instance<UiTerrainTile> uiTerrainTileInstance;
+    @Inject
+    private GameUiControl gameUiControl;
     private double highestPointInView; // Should be calculated
     private double lowestPointInView; // Should be calculated
     private MapList<Integer, ModelMatrices> terrainObjectConfigModelMatrices = new MapList<>();
@@ -103,7 +106,7 @@ public class TerrainUiService {
             }
 
             UiTerrainTile newUiTerrainTile = uiTerrainTileInstance.get();
-            newUiTerrainTile.init(index, terrainTypeService.getGroundConfig());
+            newUiTerrainTile.init(index, terrainTypeService.getGroundConfig(gameUiControl.getPlanetConfig().getPlanetId()));
             newUiTerrainTile.setActive(true);
             newDisplayTerrainTiles.put(index, newUiTerrainTile);
         }
@@ -257,14 +260,14 @@ public class TerrainUiService {
     }
 
     public void enableEditMode(GroundConfig groundConfig) {
-        terrainTypeService.setGroundConfig(groundConfig);
-        displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
-        cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
+        // TODO terrainTypeService.setGroundConfigs(groundConfig);
+        // TODO displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
+        // TODO  cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setGroundSkeletonConfig(groundConfig));
     }
 
     public void enableEditMode(SlopeConfig slopeConfig) {
         terrainTypeService.overrideSlopeSkeletonConfig(slopeConfig);
-        displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeConfig));
+        // TODO displayTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeConfig));
         cacheTerrainTiles.values().forEach(uiTerrainTile -> uiTerrainTile.setSlopeSkeletonConfig(slopeConfig));
     }
 

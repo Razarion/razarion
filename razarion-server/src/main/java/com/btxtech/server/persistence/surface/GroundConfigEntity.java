@@ -21,6 +21,10 @@ public class GroundConfigEntity {
     private Integer id;
     private String internalName;
 
+    public Integer getId() {
+        return id;
+    }
+
     public GroundConfig toGroundConfig() {
         GroundConfig groundConfig = new GroundConfig();
         groundConfig.id(id).internalName(internalName);

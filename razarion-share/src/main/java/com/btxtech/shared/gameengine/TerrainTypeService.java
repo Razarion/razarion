@@ -20,7 +20,7 @@ import java.util.Map;
 @Singleton
 public class TerrainTypeService {
     private Map<Integer, SlopeConfig> slopeSkeletonConfigs = new HashMap<>();
-    private GroundConfig groundConfig;
+    private Map<Integer, GroundConfig> groundConfigs = new HashMap<>();;
     private Map<Integer, TerrainObjectConfig> terrainObjectConfigs = new HashMap<>();
     private Map<Integer, DrivewayConfig> drivewayConfigs = new HashMap<>();
     private WaterConfig waterConfig;
@@ -30,11 +30,20 @@ public class TerrainTypeService {
     }
 
     public void init(StaticGameConfig staticGameConfig) {
+        setGroundConfigs(staticGameConfig.getGroundConfigs());
         waterConfig = staticGameConfig.getWaterConfig();
-        groundConfig = staticGameConfig.getGroundConfig();
         setSlopeSkeletonConfigs(staticGameConfig.getSlopeConfigs());
         setTerrainObjectConfigs(staticGameConfig.getTerrainObjectConfigs());
         setDrivewayConfigs(staticGameConfig.getDrivewayConfigs());
+    }
+
+    public void setGroundConfigs(Collection<GroundConfig> groundConfigs) {
+        this.groundConfigs.clear();
+        if (groundConfigs != null) {
+            for (GroundConfig groundConfig : groundConfigs) {
+                this.groundConfigs.put(groundConfig.getId(), groundConfig);
+            }
+        }
     }
 
     public void setSlopeSkeletonConfigs(Collection<SlopeConfig> slopeConfigs) {
@@ -64,12 +73,13 @@ public class TerrainTypeService {
         }
     }
 
-    public GroundConfig getGroundConfig() {
-        return groundConfig;
-    }
 
-    public void setGroundConfig(GroundConfig groundConfig) {
-        this.groundConfig = groundConfig;
+    public TerrainObjectConfig getTerrainObjectConfig(int id) {
+        TerrainObjectConfig terrainObjectConfig = terrainObjectConfigs.get(id);
+        if (terrainObjectConfig == null) {
+            throw new IllegalArgumentException("No TerrainObjectConfig for id: " + id);
+        }
+        return terrainObjectConfig;
     }
 
     public SlopeConfig getSlopeSkeleton(int id) {
@@ -88,14 +98,6 @@ public class TerrainTypeService {
         return terrainObjectConfigs.values();
     }
 
-    public TerrainObjectConfig getTerrainObjectConfig(int id) {
-        TerrainObjectConfig terrainObjectConfig = terrainObjectConfigs.get(id);
-        if (terrainObjectConfig == null) {
-            throw new IllegalArgumentException("No TerrainObjectConfig for id: " + id);
-        }
-        return terrainObjectConfig;
-    }
-
     @Deprecated
     public WaterConfig getWaterConfig() {
         return waterConfig;
@@ -108,6 +110,18 @@ public class TerrainTypeService {
         }
         return drivewayConfig;
     }
+
+    public GroundConfig getGroundConfig(Integer groundConfigId) {
+        if(groundConfigId == null) {
+            return null;
+        }
+        GroundConfig groundConfig = groundConfigs.get(groundConfigId);
+        if (groundConfig == null) {
+            throw new IllegalArgumentException("No GroundConfig for groundConfigId: " + groundConfigId);
+        }
+        return groundConfig;
+    }
+
 
     // Methods used by the editors -----------------------------------------------------------------
     public void overrideTerrainObjectConfig(TerrainObjectConfig terrainObjectConfig) {

@@ -147,10 +147,6 @@ public class UiTerrainTile {
         throw new UnsupportedOperationException("TODO");
     }
 
-    public void setGroundSkeletonConfig(GroundConfig groundConfig) {
-        this.groundConfig = groundConfig;
-    }
-
     public double getSplattingGroundBmMultiplicator() {
         // Todo return groundSkeletonConfig.getSplattingGroundBmMultiplicator();
         return 0;

@@ -6,7 +6,6 @@ import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Line;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
-import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.TerrainTypeService;
@@ -33,7 +32,6 @@ import java.util.logging.Logger;
  */
 public class TerrainShape {
     private static Logger logger = Logger.getLogger(TerrainShape.class.getName());
-    private GroundConfig groundConfig;
     private TerrainShapeTile[][] terrainShapeTiles;
     private SurfaceAccess surfaceAccess;
     private PathingAccess pathingAccess;
@@ -47,7 +45,6 @@ public class TerrainShape {
 
     public TerrainShape(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions) {
         long time = System.currentTimeMillis();
-        this.groundConfig = terrainTypeService.getGroundConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         tileOffset = planetConfig.getTerrainTileDimension().getStart();
@@ -63,7 +60,6 @@ public class TerrainShape {
     }
 
     public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
-        this.groundConfig = terrainTypeService.getGroundConfig();
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         playGround = planetConfig.getPlayGround();
@@ -312,10 +308,6 @@ public class TerrainShape {
 
     public SurfaceAccess getSurfaceAccess() {
         return surfaceAccess;
-    }
-
-    GroundConfig getGroundConfig() {
-        return groundConfig;
     }
 
     public boolean isSightBlocked(Line line) {

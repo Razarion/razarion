@@ -36,6 +36,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +76,7 @@ public interface GameTestContent {
 
     static StaticGameConfig setupStaticGameConfig() {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setGroundConfig(new GroundConfig().id(GROUND_SKELETON_ID));
+        staticGameConfig.setGroundConfigs(Collections.singletonList(new GroundConfig().id(GROUND_SKELETON_ID)));
         staticGameConfig.setLevelConfigs(setupLevelConfigs());
         staticGameConfig.setBaseItemTypes(setupBaseItemType());
         staticGameConfig.setResourceItemTypes(setupResourceItemType());

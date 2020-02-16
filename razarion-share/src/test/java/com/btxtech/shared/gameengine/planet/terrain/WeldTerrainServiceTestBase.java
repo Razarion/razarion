@@ -20,6 +20,7 @@ import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         if(groundConfig == null) {
             groundConfig = new GroundConfig();
         }
-        staticGameConfig.setGroundConfig(groundConfig);
+        staticGameConfig.setGroundConfigs(Collections.singletonList(groundConfig));
         staticGameConfig.setSlopeConfigs(slopeConfigs);
         staticGameConfig.setTerrainObjectConfigs(terrainObjectConfigs);
         List<DrivewayConfig> drivewayConfigs = new ArrayList<>();

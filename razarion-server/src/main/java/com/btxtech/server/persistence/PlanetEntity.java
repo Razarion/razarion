@@ -2,6 +2,7 @@ package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
+import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Rectangle;
@@ -43,6 +44,9 @@ public class PlanetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private GroundConfigEntity groundConfig;
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "planet")
     private List<TerrainSlopePositionEntity> terrainSlopePositionEntities;
@@ -104,6 +108,9 @@ public class PlanetEntity {
     public PlanetConfig toPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
         planetConfig.setPlanetId(id);
+        if(groundConfig != null) {
+            planetConfig.setGroundConfigId(groundConfig.getId());
+        }
         planetConfig.setTerrainTileDimension(groundMeshDimension);
         planetConfig.setPlayGround(playGround);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
@@ -134,6 +141,10 @@ public class PlanetEntity {
         shadowAlpha = planetVisualConfig.getShadowAlpha();
         ambient = planetVisualConfig.getAmbient();
         diffuse = planetVisualConfig.getDiffuse();
+    }
+
+    public void setGroundConfig(GroundConfigEntity groundConfig) {
+        this.groundConfig = groundConfig;
     }
 
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {

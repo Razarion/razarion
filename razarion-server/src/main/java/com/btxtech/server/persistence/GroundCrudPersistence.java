@@ -8,10 +8,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
 
 @Singleton
 public class GroundCrudPersistence extends CrudPersistence<GroundConfig, GroundConfigEntity> {
@@ -34,12 +30,7 @@ public class GroundCrudPersistence extends CrudPersistence<GroundConfig, GroundC
         entity.fromGroundConfig(config, imagePersistence);
     }
 
-    @Transactional
-    public GroundConfig getDefaultGround() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<GroundConfigEntity> userQuery = criteriaBuilder.createQuery(GroundConfigEntity.class);
-        Root<GroundConfigEntity> from = userQuery.from(GroundConfigEntity.class);
-        CriteriaQuery<GroundConfigEntity> userSelect = userQuery.select(from);
-        return toConfig(entityManager.createQuery(userSelect).getSingleResult());
+    public GroundConfigEntity getPlanetConfig(Integer groundConfigId) {
+        return entityManager.find(GroundConfigEntity.class, groundConfigId);
     }
 }

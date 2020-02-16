@@ -36,6 +36,8 @@ public class PlanetPersistence {
     private TerrainElementPersistence terrainElementPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
+    @Inject
+    private GroundCrudPersistence groundCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -60,6 +62,7 @@ public class PlanetPersistence {
         if (planetEntity == null) {
             throw new IllegalArgumentException("No planet for id: " + planetConfig.getPlanetId());
         }
+        planetEntity.setGroundConfig(groundCrudPersistence.getPlanetConfig(planetConfig.getGroundConfigId()));
         planetEntity.setHouseSpace(planetConfig.getHouseSpace());
         planetEntity.setStartRazarion(planetConfig.getStartRazarion());
         planetEntity.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId()));
@@ -144,7 +147,7 @@ public class PlanetPersistence {
                 terrainSlopeCornerEntity.setDrivewayConfigEntity(terrainElementPersistence.getDrivewayConfigEntity(terrainSlopeCorner.getSlopeDrivewayId()));
                 return terrainSlopeCornerEntity;
             }).collect(Collectors.toList()));
-            if(chain.getParent() != null) {
+            if (chain.getParent() != null) {
                 entityManager.persist(chain.getParent());
             }
         }
@@ -185,7 +188,7 @@ public class PlanetPersistence {
         PlanetEntity planetEntity = loadPlanet(planetId);
         for (int terrainSlopePositionId : terrainSlopePositionIds) {
             TerrainSlopePositionEntityChain chain = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePositionId);
-            if(chain.getParent() != null) {
+            if (chain.getParent() != null) {
                 chain.getParent().removeChild(chain.getChild());
                 entityManager.persist(chain.getParent());
             } else {

@@ -16,7 +16,7 @@ import java.util.List;
  * 18.07.2016.
  */
 public class StaticGameConfig {
-    private GroundConfig groundConfig;
+    private List<GroundConfig> groundConfigs;
     @Deprecated
     private WaterConfig waterConfig;
     private List<SlopeConfig> slopeConfigs;
@@ -28,12 +28,12 @@ public class StaticGameConfig {
     private List<InventoryItem> inventoryItems;
     private List<DrivewayConfig> drivewayConfigs;
 
-    public GroundConfig getGroundConfig() {
-        return groundConfig;
+    public List<GroundConfig> getGroundConfigs() {
+        return groundConfigs;
     }
 
-    public StaticGameConfig setGroundConfig(GroundConfig groundConfig) {
-        this.groundConfig = groundConfig;
+    public StaticGameConfig setGroundConfigs(List<GroundConfig> groundConfigs) {
+        this.groundConfigs = groundConfigs;
         return this;
     }
 

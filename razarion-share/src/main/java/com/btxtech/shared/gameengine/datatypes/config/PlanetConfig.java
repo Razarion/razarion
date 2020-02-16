@@ -2,10 +2,7 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
-import com.btxtech.shared.dto.TerrainObjectPosition;
-import com.btxtech.shared.dto.TerrainSlopePosition;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +17,7 @@ public class PlanetConfig {
     private int houseSpace;
     private int startRazarion;
     private int startBaseItemTypeId;
+    private Integer groundConfigId;
 
     public int getPlanetId() {
         return planetId;
@@ -90,6 +88,15 @@ public class PlanetConfig {
 
     public PlanetConfig setPlayGround(Rectangle2D playGround) {
         this.playGround = playGround;
+        return this;
+    }
+
+    public Integer getGroundConfigId() {
+        return groundConfigId;
+    }
+
+    public PlanetConfig setGroundConfigId(Integer groundConfigId) {
+        this.groundConfigId = groundConfigId;
         return this;
     }
 }

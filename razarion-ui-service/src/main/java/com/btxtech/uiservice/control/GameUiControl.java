@@ -142,7 +142,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         levelService.init(coldGameUiControlConfig.getStaticGameConfig());
         inventoryTypeService.init(coldGameUiControlConfig.getStaticGameConfig());
         gameUiControlInitEvent.fire(new GameUiControlInitEvent(coldGameUiControlConfig));
-        terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
+        terrainScrollHandler.setPlayGround(getPlanetConfig().getPlayGround());
     }
 
     public void closeConnection() {
@@ -155,7 +155,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
     public void initWarm() {
         abstractServerSystemConnection.sendGameSessionUuid();
         gameEngineMode = coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode();
-        terrainScrollHandler.setPlayGround(coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig().getPlayGround());
+        terrainScrollHandler.setPlayGround(getPlanetConfig().getPlayGround());
     }
 
     public void start() {
