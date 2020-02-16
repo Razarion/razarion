@@ -11,7 +11,6 @@ public class ZIndexConstants {
     public static final ZIndexUnionType WEBGL_CANVAS = ZIndexUnionType.of(counter++);
     public static final ZIndexUnionType MAIN_COCKPIT = ZIndexUnionType.of(counter++);
     public static final ZIndexUnionType CHAT_COCKPIT = ZIndexUnionType.of(counter++);
-    public static final ZIndexUnionType EDITOR_SIDE_BAR = ZIndexUnionType.of(counter++);
     public static final ZIndexUnionType TOP_RIGHT_BAR = ZIndexUnionType.of(counter++);
     public static final ZIndexUnionType ITEM_COCKPIT = ZIndexUnionType.of(counter++);
     public static final ZIndexUnionType STORY_COVER = ZIndexUnionType.of(counter++);

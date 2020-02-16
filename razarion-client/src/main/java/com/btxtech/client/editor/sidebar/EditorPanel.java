@@ -1,9 +1,7 @@
 package com.btxtech.client.editor.sidebar;
 
 import com.btxtech.client.MainPanelService;
-import com.btxtech.client.cockpit.ZIndexConstants;
 import com.btxtech.client.editor.generic.GenericCrudEditor;
-import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.rest.CrudController;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -18,7 +16,6 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
@@ -51,12 +48,6 @@ public class EditorPanel implements IsElement {
     @DataField
     private HTMLTableRowElement buttonTableRow;
     private AbstractEditor abstractEditor;
-
-    @PostConstruct
-    public void init() {
-        editorPanel.style.zIndex = ZIndexConstants.EDITOR_SIDE_BAR;
-        GwtUtils.preventContextMenu(editorPanel);
-    }
 
     @Override
     public HTMLElement getElement() {

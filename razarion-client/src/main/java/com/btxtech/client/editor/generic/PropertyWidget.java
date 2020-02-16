@@ -15,9 +15,11 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.logging.Logger;
 
 @Templated("GenericPropertyPanel.html#genericPropertyPanel")
-public class PropertyFieldWidget implements IsElement, TakesValue<PropertyField> {
+public class PropertyWidget implements IsElement, TakesValue<PropertyModel> {
+    private Logger logger = Logger.getLogger(PropertyWidget.class.getName());
     @Inject
     @DataField
     private HTMLTableRowElement propertyTableRow;
@@ -29,7 +31,7 @@ public class PropertyFieldWidget implements IsElement, TakesValue<PropertyField>
     @DataField
     @Named("td")
     private HTMLTableCellElement propertyValue;
-    private PropertyField propertyField;
+    private PropertyModel propertyModel;
 
     @Override
     public HTMLElement getElement() {
@@ -37,48 +39,51 @@ public class PropertyFieldWidget implements IsElement, TakesValue<PropertyField>
     }
 
     @Override
-    public void setValue(PropertyField propertyField) {
-        this.propertyField = propertyField;
-        propertyName.textContent = propertyField.getPropertyName();
+    public void setValue(PropertyModel propertyModel) {
+        this.propertyModel = propertyModel;
+        propertyName.textContent = propertyModel.getPropertyName();
         Elemental2Utils.removeAllChildren(propertyValue);
-        Class propertyClass = propertyField.getPropertyType().getType();
+        Class propertyClass = propertyModel.getPropertyType().getType();
         if (propertyClass == String.class) {
-            propertyValue.appendChild(setupStringEditor(propertyField));
+            propertyValue.appendChild(setupStringEditor(propertyModel));
         } else if (propertyClass == Integer.class) {
-            propertyValue.appendChild(setupIntegerEditor(propertyField));
+            propertyValue.appendChild(setupIntegerEditor(propertyModel));
         } else if (propertyClass == Double.class) {
-            propertyValue.appendChild(setupDoubleEditor(propertyField));
+            propertyValue.appendChild(setupDoubleEditor(propertyModel));
         } else {
             propertyValue.textContent = setupUnknownInformation(propertyClass);
         }
     }
 
-    private Node setupStringEditor(PropertyField propertyField) {
+    private Node setupStringEditor(PropertyModel propertyModel) {
         HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
-        htmlInputElement.value = propertyField.getValue();
+        htmlInputElement.value = propertyModel.getValue();
+//        propertyTableRow.addEventListener("mouseover ", evt -> {
+//            logger.severe(evt + " value=" + htmlInputElement.value);
+//        }, EventTarget.AddEventListenerOptionsUnionType.of(false));
         return htmlInputElement;
     }
 
-    private HTMLInputElement setupIntegerEditor(PropertyField propertyField) {
+    private HTMLInputElement setupIntegerEditor(PropertyModel propertyModel) {
         HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "number";
-        htmlInputElement.value = propertyField.getValue();
+        htmlInputElement.value = propertyModel.getValue();
         return htmlInputElement;
     }
 
-    private Node setupDoubleEditor(PropertyField propertyField) {
+    private Node setupDoubleEditor(PropertyModel propertyModel) {
         HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
         htmlInputElement.type = "number";
-        htmlInputElement.value = propertyField.getValue();
+        htmlInputElement.value = propertyModel.getValue();
         return htmlInputElement;
     }
 
     private String setupUnknownInformation(Class propertyClass) {
-        return "No editor for <" + propertyField + ">";
+        return "No editor for <" + propertyModel + ">";
     }
 
     @Override
-    public PropertyField getValue() {
-        return propertyField;
+    public PropertyModel getValue() {
+        return propertyModel;
     }
 }

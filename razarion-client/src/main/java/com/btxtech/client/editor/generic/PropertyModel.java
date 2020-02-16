@@ -5,16 +5,16 @@ import org.jboss.errai.databinding.client.PropertyType;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 @Templated("GenericPropertyPanel.html#genericPropertyPanel")
-public class PropertyField {
+public class PropertyModel {
     private String propertyName;
     private PropertyType propertyType;
     private HasProperties hasProperties;
 
     // Used by gwt
-    public PropertyField() {
+    public PropertyModel() {
     }
 
-    public PropertyField(String propertyName, PropertyType propertyType, HasProperties hasProperties) {
+    public PropertyModel(String propertyName, PropertyType propertyType, HasProperties hasProperties) {
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.hasProperties = hasProperties;
