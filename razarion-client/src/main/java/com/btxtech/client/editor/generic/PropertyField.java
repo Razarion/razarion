@@ -31,4 +31,8 @@ public class PropertyField {
         }
         return value.toString();
     }
+
+    public PropertyType getPropertyType() {
+        return propertyType;
+    }
 }
