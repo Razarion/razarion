@@ -86,7 +86,7 @@ public class PropertyWidget implements IsElement, TakesValue<PropertyModel> {
     }
 
     private String setupUnknownInformation(Class propertyClass) {
-        return "No editor for <" + propertyModel + ">";
+        return "No editor for <" + propertyClass + ">";
     }
 
     @Override
