@@ -1,54 +1,88 @@
 package com.btxtech.shared.dto;
 
 public class PhongMaterialConfig {
-    private ImageScaleConfig textureScaleConfig;
+    private Integer textureId;
+    private double scale;
     private Integer bumpMapId;
-    private double bumpMapDepth;
-    private double shininess;
-    private double specularStrength;
+    private Double bumpMapDepth;
+    private Double shininess;
+    private Double specularStrength;
 
-    public ImageScaleConfig getTextureScaleConfig() {
-        return textureScaleConfig;
+    public Integer getTextureId() {
+        return textureId;
     }
 
-    public PhongMaterialConfig setTextureScaleConfig(ImageScaleConfig textureScaleConfig) {
-        this.textureScaleConfig = textureScaleConfig;
-        return this;
+    public void setTextureId(Integer textureId) {
+        this.textureId = textureId;
+    }
+
+    public double getScale() {
+        return scale;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 
     public Integer getBumpMapId() {
         return bumpMapId;
     }
 
-    public PhongMaterialConfig setBumpMapId(Integer bumpMapId) {
+    public void setBumpMapId(Integer bumpMapId) {
         this.bumpMapId = bumpMapId;
-        return this;
     }
 
-    public double getBumpMapDepth() {
+    public Double getBumpMapDepth() {
         return bumpMapDepth;
     }
 
-    public PhongMaterialConfig setBumpMapDepth(double bumpMapDepth) {
+    public void setBumpMapDepth(Double bumpMapDepth) {
         this.bumpMapDepth = bumpMapDepth;
-        return this;
     }
 
-    public double getShininess() {
+    public Double getShininess() {
         return shininess;
     }
 
-    public PhongMaterialConfig setShininess(double shininess) {
+    public void setShininess(Double shininess) {
         this.shininess = shininess;
-        return this;
     }
 
-    public double getSpecularStrength() {
+    public Double getSpecularStrength() {
         return specularStrength;
     }
 
-    public PhongMaterialConfig setSpecularStrength(double specularStrength) {
+    public void setSpecularStrength(Double specularStrength) {
         this.specularStrength = specularStrength;
+    }
+
+    public PhongMaterialConfig textureId(Integer textureId) {
+        setTextureId(textureId);
+        return this;
+    }
+
+    public PhongMaterialConfig scale(double scale) {
+        setScale(scale);
+        return this;
+    }
+
+    public PhongMaterialConfig bumpMapId(Integer bumpMapId) {
+        setBumpMapId(bumpMapId);
+        return this;
+    }
+
+    public PhongMaterialConfig bumpMapDepth(Double bumpMapDepth) {
+        setBumpMapDepth(bumpMapDepth);
+        return this;
+    }
+
+    public PhongMaterialConfig shininess(Double shininess) {
+        setShininess(shininess);
+        return this;
+    }
+
+    public PhongMaterialConfig specularStrength(Double specularStrength) {
+        setSpecularStrength(specularStrength);
         return this;
     }
 }

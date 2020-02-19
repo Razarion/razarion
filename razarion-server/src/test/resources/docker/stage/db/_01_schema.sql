@@ -592,7 +592,35 @@ CREATE TABLE IF NOT EXISTS `GAME_UI_CONTROL_CONFIG` (
 CREATE TABLE IF NOT EXISTS `GROUND_CONFIG` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `internalName` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `topBumpMapDepth` double DEFAULT NULL,
+  `topScale` double DEFAULT NULL,
+  `topShininess` double DEFAULT NULL,
+  `topSpecularStrength` double DEFAULT NULL,
+  `topBumpMapId` int(11) DEFAULT NULL,
+  `topTextureId` int(11) DEFAULT NULL,
+  `bottomBumpMapDepth` double DEFAULT NULL,
+  `bottomScale` double DEFAULT NULL,
+  `bottomShininess` double DEFAULT NULL,
+  `bottomSpecularStrength` double DEFAULT NULL,
+  `bottomBumpMapId` int(11) DEFAULT NULL,
+  `bottomTextureId` int(11) DEFAULT NULL,
+  `splattingScale2` double DEFAULT NULL,
+  `splattingAmplitude` double DEFAULT NULL,
+  `splattingBlur` double DEFAULT NULL,
+  `splattingOffset` double DEFAULT NULL,
+  `splattingScale` double DEFAULT NULL,
+  `splattingImageId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `FKkqjsikvnicb0qo3auqhlghq3a` (`topBumpMapId`),
+  KEY `FKnrbnl1yvrst306eyg8mkpqt6i` (`topTextureId`),
+  KEY `FKrwtceqklrjay1axmmlfj75di3` (`bottomBumpMapId`),
+  KEY `FKnoefvdom880ef7ioae7tjwct8` (`bottomTextureId`),
+  KEY `FKlmwoy4287cl2sksg1cf8cx5dd` (`splattingImageId`),
+  CONSTRAINT `FKkqjsikvnicb0qo3auqhlghq3a` FOREIGN KEY (`topBumpMapId`) REFERENCES `IMAGE_LIBRARY` (`id`),
+  CONSTRAINT `FKlmwoy4287cl2sksg1cf8cx5dd` FOREIGN KEY (`splattingImageId`) REFERENCES `IMAGE_LIBRARY` (`id`),
+  CONSTRAINT `FKnoefvdom880ef7ioae7tjwct8` FOREIGN KEY (`bottomTextureId`) REFERENCES `IMAGE_LIBRARY` (`id`),
+  CONSTRAINT `FKnrbnl1yvrst306eyg8mkpqt6i` FOREIGN KEY (`topTextureId`) REFERENCES `IMAGE_LIBRARY` (`id`),
+  CONSTRAINT `FKrwtceqklrjay1axmmlfj75di3` FOREIGN KEY (`bottomBumpMapId`) REFERENCES `IMAGE_LIBRARY` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Daten Export vom Benutzer nicht ausgewählt
@@ -833,10 +861,13 @@ CREATE TABLE IF NOT EXISTS `PLANET` (
   `playGroundStartY` double DEFAULT NULL,
   `shadowAlpha` double NOT NULL,
   `startRazarion` int(11) NOT NULL,
+  `groundConfig_id` int(11) DEFAULT NULL,
   `startBaseItemType_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
+  KEY `FKqvdx3rd9pwbcpl3k3my1pdefw` (`groundConfig_id`),
   KEY `FKpal29tk0xwgxthg5jpc08tcbr` (`startBaseItemType_id`),
-  CONSTRAINT `FKpal29tk0xwgxthg5jpc08tcbr` FOREIGN KEY (`startBaseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`)
+  CONSTRAINT `FKpal29tk0xwgxthg5jpc08tcbr` FOREIGN KEY (`startBaseItemType_id`) REFERENCES `BASE_ITEM_TYPE` (`id`),
+  CONSTRAINT `FKqvdx3rd9pwbcpl3k3my1pdefw` FOREIGN KEY (`groundConfig_id`) REFERENCES `GROUND_CONFIG` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Daten Export vom Benutzer nicht ausgewählt
@@ -1506,7 +1537,7 @@ CREATE TABLE IF NOT EXISTS `TRACKER_FRONTEND_NAVIGATION` (
   `timeStamp` datetime(3) DEFAULT NULL,
   `url` varchar(190) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Daten Export vom Benutzer nicht ausgewählt
 -- Exportiere Struktur von Tabelle razarion.TRACKER_GAME_UI_CONTROL
@@ -1533,7 +1564,7 @@ CREATE TABLE IF NOT EXISTS `TRACKER_PAGE` (
   `uri` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX8r3ssjnqi1ayq740sslge33bl` (`sessionId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Daten Export vom Benutzer nicht ausgewählt
 -- Exportiere Struktur von Tabelle razarion.TRACKER_PERFMON
@@ -1593,7 +1624,7 @@ CREATE TABLE IF NOT EXISTS `TRACKER_SESSION` (
   `userAgent` longtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDXtmu9rd272j5lofhd2c8rh6fxh` (`sessionId`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Daten Export vom Benutzer nicht ausgewählt
 -- Exportiere Struktur von Tabelle razarion.TRACKER_STARTUP_TASK

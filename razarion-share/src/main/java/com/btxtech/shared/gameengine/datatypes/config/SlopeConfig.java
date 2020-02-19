@@ -47,8 +47,8 @@ public class SlopeConfig implements ObjectNameIdProvider {
     private Double slopeFoamDistortionStrength;
     private Double slopeFoamAnimationDuration;
     private GroundConfig groundConfig;
-    //    private SlopeGroundSplattingConfig outerSplatting;
-//    private SlopeGroundSplattingConfig innerSplatting;
+    //    private SplattingConfig outerSplatting;
+//    private SplattingConfig innerSplatting;
     private Double waterLevel;
     private Double waterFresnelOffset;
     private Double waterFresnelDelta;
@@ -219,20 +219,20 @@ public class SlopeConfig implements ObjectNameIdProvider {
         return this;
     }
 
-    //    public SlopeGroundSplattingConfig getOuterSplatting() {
+    //    public SplattingConfig getOuterSplatting() {
 //        return outerSplatting;
 //    }
 //
-//    public SlopeConfig setOuterSplatting(SlopeGroundSplattingConfig outerSplatting) {
+//    public SlopeConfig setOuterSplatting(SplattingConfig outerSplatting) {
 //        this.outerSplatting = outerSplatting;
 //        return this;
 //    }
 //
-//    public SlopeGroundSplattingConfig getInnerSplatting() {
+//    public SplattingConfig getInnerSplatting() {
 //        return innerSplatting;
 //    }
 //
-//    public SlopeConfig setInnerSplatting(SlopeGroundSplattingConfig innerSplatting) {
+//    public SlopeConfig setInnerSplatting(SplattingConfig innerSplatting) {
 //        this.innerSplatting = innerSplatting;
 //        return this;
 //    }

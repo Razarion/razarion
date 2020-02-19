@@ -94,9 +94,9 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 //        waterConfig.setInterpolateNorm(true);
 //        waterConfig.setSlopeTextureId(8).setSlopeBumpMapId(9).setSlopeTextureScale(43.1).setSlopeBumpMapDepth(0.5).setSlopeShininess(3.0).setSlopeSpecularStrength(0.5);
 //        waterConfig.setSlopeFoamTextureId(11).setSlopeFoamDistortionId(10).setSlopeFoamAnimationDuration(10.0).setSlopeFoamDistortionStrength(1.0);
-//        waterConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(6).setScale(700.0)).setBumpMapId(7).setBumpMapDepth(1.0).setSpecularStrength(1.0).setShininess(30.0)));
-//        waterConfig.setOuterSplatting(new SlopeGroundSplattingConfig().setImageId(19).setScale(90.0).setImpact(0.78).setOffset(0.5).setFadeThreshold(0.053));
-//        waterConfig.setInnerSplatting(new SlopeGroundSplattingConfig().setImageId(19).setScale(300.0).setImpact(0.58).setOffset(0.5).setFadeThreshold(0.1));
+//        waterConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setTopMaterial(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(6).setScale(700.0)).setBumpMapId(7).setBumpMapDepth(1.0).setSpecularStrength(1.0).setShininess(30.0)));
+//        waterConfig.setOuterSplatting(new SplattingConfig().setImageId(19).setScale(90.0).setImpact(0.78).setOffset(0.5).setFadeThreshold(0.053));
+//        waterConfig.setInnerSplatting(new SplattingConfig().setImageId(19).setScale(300.0).setImpact(0.58).setOffset(0.5).setFadeThreshold(0.1));
 //        waterConfig.setWaterLevel(-0.10).setOuterLineGameEngine(3).setCoastDelimiterLineGameEngine(5).setInnerLineGameEngine(7);
 //        waterConfig.setWaterShininess(30.0).setWaterSpecularStrength(0.7).setWaterReflectionId(3).setWaterReflectionScale(80.0).setWaterMapScale(40.0).setWaterDistortionId(4).setWaterDistortionStrength(0.05).setWaterBumpMapId(5).setWaterBumpMapDepth(0.5).setWaterTransparency(0.75).setWaterAnimationDuration(30.0).setWaterFresnelOffset(0.8).setWaterFresnelDelta(0.5);
 //        waterConfig.setShallowWaterTextureId(11).setShallowWaterTextureScale(43.1).setShallowWaterStencilId(26).setShallowWaterDistortionId(27).setShallowWaterAnimation(10.0).setShallowWaterDistortionStrength(1.0);
@@ -122,7 +122,7 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 //                new SlopeShape().setPosition(new DecimalPosition(1.5, 2.8)).setSlopeFactor(1));
 //        riConfig.setInterpolateNorm(false);
 //        riConfig.setSlopeTextureId(12).setSlopeBumpMapId(13).setSlopeTextureScale(16).setSlopeBumpMapDepth(0.5).setSlopeShininess(20.0).setSlopeSpecularStrength(0.5);
-//        riConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(1).setScale(8)).setBumpMapId(2).setBumpMapDepth(0.5).setSpecularStrength(0.5).setShininess(3)));
+//        riConfig.setGroundSkeletonConfig(new GroundSkeletonConfig().setTopMaterial(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(1).setScale(8)).setBumpMapId(2).setBumpMapDepth(0.5).setSpecularStrength(0.5).setShininess(3)));
 //        slopeConfigs.add(riConfig);
 //        TerrainSlopePosition riPositionLand = new TerrainSlopePosition();
 //        riPositionLand.setId(2).setSlopeConfigId(2);
@@ -136,8 +136,8 @@ public class SlopeWaterTerrainServiceTest extends WeldTerrainServiceTestBase {
 //        terrainSlopePositions.add(riPositionLand);
 //        // Setup ground
 //        GroundSkeletonConfig groundSkeletonConfig = new GroundSkeletonConfig();
-//        groundSkeletonConfig.setTopTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(14).setScale(50)).setBumpMapId(15).setBumpMapDepth(0.2).setShininess(3).setSpecularStrength(0.5));
-//        groundSkeletonConfig.setBottomTexture(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(16).setScale(50)).setBumpMapId(17).setBumpMapDepth(0.8).setShininess(5).setSpecularStrength(0.5));
+//        groundSkeletonConfig.setTopMaterial(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(14).setScale(50)).setBumpMapId(15).setBumpMapDepth(0.2).setShininess(3).setSpecularStrength(0.5));
+//        groundSkeletonConfig.setBottomMaterial(new PhongMaterialConfig().setTextureScaleConfig(new ImageScaleConfig().setId(16).setScale(50)).setBumpMapId(17).setBumpMapDepth(0.8).setShininess(5).setSpecularStrength(0.5));
 //        groundSkeletonConfig.setSplatting(new ImageScaleConfig().setId(18).setScale(50)).setSplattingScale2(1000).setSplattingFadeThreshold(0.2).setSplattingOffset(0.5);
 //        groundSkeletonConfig.setHeightXCount(3).setHeightYCount(5).setHeights(toColumnRow(new double[][]{
 //                {0, 0, 0},

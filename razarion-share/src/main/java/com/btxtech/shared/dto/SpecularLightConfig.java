@@ -4,6 +4,7 @@ package com.btxtech.shared.dto;
  * Created by Beat
  * 28.05.2016.
  */
+@Deprecated
 public class SpecularLightConfig {
     private double specularIntensity;
     private double specularHardness;
