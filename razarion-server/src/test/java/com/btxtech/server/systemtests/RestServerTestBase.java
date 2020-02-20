@@ -6,6 +6,7 @@ import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.rest.FrontendProvider;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
+import org.junit.Before;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -22,16 +23,11 @@ public abstract class RestServerTestBase extends ServerTestHelper {
     private ResteasyWebTarget target;
     private boolean loggedIn = false;
 
-    @After
-    public void cleanup() {
-        if (loggedIn) {
-            logout();
-        }
-    }
-
-    public RestServerTestBase() {
+    @Before
+    public void setupRestClient() {
         TestSessionContext testSessionContext = new TestSessionContext();
         Client client = ClientBuilder.newClient();
+        configureRestClient(client);
         target = (ResteasyWebTarget) client.target(REST_URL);
         client.register((ClientRequestFilter) requestContext -> requestContext.getHeaders().add("Accept-Language", testSessionContext.getAcceptLanguage()));
         client.register((ClientResponseFilter) (requestContext, responseContext) -> {
@@ -51,6 +47,20 @@ public abstract class RestServerTestBase extends ServerTestHelper {
             }
         });
         testSessionContext.setTarget(target);
+    }
+
+    @After
+    public void cleanup() {
+        if (loggedIn) {
+            logout();
+        }
+    }
+
+    /**
+     * Override to configure the JAX RS Client
+     * @param client JAX RS Client
+     */
+    protected void configureRestClient(Client client) {
     }
 
     protected void login(String email, String password) {

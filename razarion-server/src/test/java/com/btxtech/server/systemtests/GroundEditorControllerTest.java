@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.ws.rs.client.Client;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,6 +26,11 @@ public class GroundEditorControllerTest extends EmptyDockerContainer {
     @After
     public void cleanImages() {
         cleanTableNative("GROUND_CONFIG");
+    }
+
+    @Override
+    protected void configureRestClient(Client client) {
+        client.register(new ObjectMapperResolver(GroundConfig.class));
     }
 
     @Test
