@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class GameUiControlControllerTest extends MinimalDockerContainer {
+public class GameUiControlControllerTest extends RestServerTestBase {
     private GameUiControlController gameUiControlController;
 
     @Before

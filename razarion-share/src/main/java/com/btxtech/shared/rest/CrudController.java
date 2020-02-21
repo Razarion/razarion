@@ -1,7 +1,7 @@
 package com.btxtech.shared.rest;
 
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
-import com.btxtech.shared.dto.ObjectNameIdProvider;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -13,7 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-public interface CrudController<C extends ObjectNameIdProvider> {
+public interface CrudController<C extends Config> {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("objectNameIds")

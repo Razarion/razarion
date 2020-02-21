@@ -1,6 +1,7 @@
 package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.editor.framework.AbstractCrudeEditor;
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ObjectNameIdProvider;
 import com.btxtech.shared.rest.CrudController;
@@ -44,7 +45,7 @@ public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameI
 
     @Override
     public void save(ObjectNameIdProvider objectNameIdProvider) {
-        MessageBuilder.createCall(ignore -> fire(), crudControllerClass).update(objectNameIdProvider);
+        MessageBuilder.createCall(ignore -> fire(), crudControllerClass).update((Config) objectNameIdProvider);
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.btxtech.client.editor.generic;
 
 import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.PropertyType;
-import org.jboss.errai.ui.shared.api.annotations.Templated;
 
 import java.util.Collections;
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.logging.Logger;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 
-@Templated("GenericPropertyPanel.html#genericPropertyPanel")
 public class PropertyModel {
     private final List<String> READ_ONLY_PROPERTIES = Collections.singletonList("id");
     private Logger logger = Logger.getLogger(PropertyModel.class.getName());

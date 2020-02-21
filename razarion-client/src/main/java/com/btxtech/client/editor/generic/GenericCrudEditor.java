@@ -10,10 +10,10 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 @Templated("../framework/AbstractCrudeParentSidebar.html#abstract-crud-parent")
-public class GenericCrudEditor extends AbstractCrudeParentSidebar<ObjectNameIdProvider, GenericPropertyPanel> {
+public class GenericCrudEditor extends AbstractCrudeParentSidebar<ObjectNameIdProvider, GenericPropertyBook> {
     private GenericCrudControllerEditor genericCrudControllerEditor = new GenericCrudControllerEditor();
     @Inject
-    private Instance<GenericPropertyPanel> genericPropertyPanelInstance;
+    private Instance<GenericPropertyBook> genericPropertyPanelInstance;
 
     public void setCrudControllerClass(Class<? extends CrudController> crudControllerClass) {
         genericCrudControllerEditor.init(crudControllerClass);
@@ -25,7 +25,7 @@ public class GenericCrudEditor extends AbstractCrudeParentSidebar<ObjectNameIdPr
     }
 
     @Override
-    protected GenericPropertyPanel createPropertyPanel() {
+    protected GenericPropertyBook createPropertyPanel() {
         return genericPropertyPanelInstance.get();
     }
 }

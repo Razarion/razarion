@@ -6,7 +6,7 @@ import java.util.Objects;
  * Created by Beat
  * 07.05.2016.
  */
-public class GroundConfig implements ObjectNameIdProvider {
+public class GroundConfig implements Config {
     private int id;
     private String internalName;
     private PhongMaterialConfig topMaterial;
@@ -72,11 +72,6 @@ public class GroundConfig implements ObjectNameIdProvider {
     public GroundConfig splatting(DoubleSplattingConfig splatting) {
         setSplatting(splatting);
         return this;
-    }
-
-    @Override
-    public ObjectNameId createObjectNameId() {
-        return new ObjectNameId(id, internalName);
     }
 
     @Override

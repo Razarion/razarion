@@ -16,7 +16,7 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-@Templated("GenericPropertyPanel.html#genericPropertyPanel")
+@Templated("GenericPropertyBook.html#genericPropertyBook")
 public class PropertyWidget implements IsElement, TakesValue<PropertyModel> {
     // private Logger logger = Logger.getLogger(PropertyWidget.class.getName());
     @Inject

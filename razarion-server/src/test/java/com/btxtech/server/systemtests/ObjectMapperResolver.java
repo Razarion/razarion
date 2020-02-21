@@ -1,6 +1,6 @@
 package com.btxtech.server.systemtests;
 
-import com.btxtech.shared.dto.ObjectNameIdProvider;
+import com.btxtech.shared.dto.Config;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,13 +16,12 @@ import java.io.IOException;
 public class ObjectMapperResolver implements ContextResolver<ObjectMapper> {
     private final ObjectMapper mapper;
 
-    public ObjectMapperResolver(Class<? extends ObjectNameIdProvider> implClass) {
+    public ObjectMapperResolver(Class<? extends Config> implClass) {
         mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
-        module.addDeserializer(ObjectNameIdProvider.class, new StdDeserializer<ObjectNameIdProvider>(ObjectNameIdProvider.class) {
+        module.addDeserializer(Config.class, new StdDeserializer<Config>(Config.class) {
             @Override
-            public ObjectNameIdProvider deserialize(JsonParser p, DeserializationContext ctxt)
-                    throws IOException {
+            public Config deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
                 ObjectMapper mapper = (ObjectMapper) p.getCodec();
                 ObjectNode obj = mapper.readTree(p);
                 return mapper.treeToValue(obj, implClass);

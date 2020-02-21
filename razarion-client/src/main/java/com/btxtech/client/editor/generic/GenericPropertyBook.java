@@ -13,9 +13,9 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import javax.inject.Inject;
 import java.util.stream.Collectors;
 
-@Templated("GenericPropertyPanel.html#genericPropertyPanel")
-public class GenericPropertyPanel extends AbstractPropertyPanel<ObjectNameIdProvider> {
-    // private Logger logger = Logger.getLogger(GenericPropertyPanel.class.getName());
+@Templated("GenericPropertyBook.html#genericPropertyBook")
+public class GenericPropertyBook extends AbstractPropertyPanel<ObjectNameIdProvider> {
+    // private Logger logger = Logger.getLogger(GenericPropertyBook.class.getName());
     @Inject
     @DataField
     @ListContainer("tbody")
