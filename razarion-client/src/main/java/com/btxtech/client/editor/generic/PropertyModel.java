@@ -8,11 +8,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static java.lang.Double.parseDouble;
-import static java.lang.Integer.parseInt;
-
 public class PropertyModel {
-    private final List<String> READ_ONLY_PROPERTIES = Collections.singletonList("id");
+    private static final List<String> READ_ONLY_PROPERTIES = Collections.singletonList("id");
     private Logger logger = Logger.getLogger(PropertyModel.class.getName());
     private String propertyName;
     private PropertyType propertyType;
@@ -44,20 +41,9 @@ public class PropertyModel {
 
     public void setStringValue(String value) {
         try {
-            if (readOnly) {
-                throw new IllegalStateException("Readonly property can not be set: " + propertyName);
-            }
-            if (propertyType.getType() == String.class) {
-                hasProperties.set(propertyName, value);
-            } else if (propertyType.getType() == Integer.class) {
-                hasProperties.set(propertyName, parseInt(value));
-            } else if (propertyType.getType() == Double.class) {
-                hasProperties.set(propertyName, parseDouble(value));
-            } else {
-                logger.severe("PropertyModel.setStringValue() Can not handle propertyType.getType(): " + propertyType.getType());
-            }
+            hasProperties.set(propertyName, PropertyTypeUtils.stringToValue(value, propertyType, readOnly));
         } catch (Throwable t) {
-            logger.log(Level.WARNING, t.getMessage(), t);
+            logger.log(Level.WARNING, "Cannot set property value for property: " + propertyName, t);
         }
     }
 

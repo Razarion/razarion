@@ -2,11 +2,8 @@ package com.btxtech.client.editor.generic;
 
 import com.btxtech.client.utils.Elemental2Utils;
 import com.google.gwt.user.client.TakesValue;
-import elemental2.dom.DomGlobal;
-import elemental2.dom.HTMLInputElement;
 import elemental2.dom.HTMLTableCellElement;
 import elemental2.dom.HTMLTableRowElement;
-import elemental2.dom.Node;
 import jsinterop.base.Js;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
@@ -42,51 +39,7 @@ public class PropertyWidget implements IsElement, TakesValue<PropertyModel> {
         this.propertyModel = propertyModel;
         propertyName.textContent = propertyModel.getPropertyName();
         Elemental2Utils.removeAllChildren(propertyValue);
-        Class propertyClass = propertyModel.getPropertyType().getType();
-        if(propertyModel.isReadOnly()) {
-            propertyValue.textContent = propertyModel.getStringValue();
-        } else if (propertyClass == String.class) {
-            propertyValue.appendChild(setupStringEditor(propertyModel));
-        } else if (propertyClass == Integer.class) {
-            propertyValue.appendChild(setupIntegerEditor(propertyModel));
-        } else if (propertyClass == Double.class) {
-            propertyValue.appendChild(setupDoubleEditor(propertyModel));
-        } else {
-            propertyValue.textContent = setupUnknownInformation(propertyClass);
-        }
-    }
-
-    private Node setupStringEditor(PropertyModel propertyModel) {
-        HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
-        htmlInputElement.value = propertyModel.getStringValue();
-        htmlInputElement.addEventListener("input", event ->  {
-            propertyModel.setStringValue(htmlInputElement.value);
-        }, false);
-        return htmlInputElement;
-    }
-
-    private HTMLInputElement setupIntegerEditor(PropertyModel propertyModel) {
-        HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
-        htmlInputElement.type = "number";
-        htmlInputElement.value = propertyModel.getStringValue();
-        htmlInputElement.addEventListener("input", event ->  {
-            propertyModel.setStringValue(htmlInputElement.value);
-        }, false);
-        return htmlInputElement;
-    }
-
-    private Node setupDoubleEditor(PropertyModel propertyModel) {
-        HTMLInputElement htmlInputElement = (HTMLInputElement) DomGlobal.document.createElement("input");
-        htmlInputElement.type = "number";
-        htmlInputElement.value = propertyModel.getStringValue();
-        htmlInputElement.addEventListener("input", event ->  {
-            propertyModel.setStringValue(htmlInputElement.value);
-        }, false);
-        return htmlInputElement;
-    }
-
-    private String setupUnknownInformation(Class propertyClass) {
-        return "No editor for <" + propertyClass + ">";
+        propertyValue.appendChild(PropertyTypeUtils.setupPropertyWidget(propertyModel));
     }
 
     @Override
