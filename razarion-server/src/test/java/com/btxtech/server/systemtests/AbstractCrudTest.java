@@ -3,21 +3,26 @@ package com.btxtech.server.systemtests;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.CrudController;
-import org.junit.Assert;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.junit.Assert.assertEquals;
 
 public class AbstractCrudTest<Controller extends CrudController<ConfigObject>, ConfigObject extends Config> extends RestServerTestBase {
     private final Class<Controller> controllerClass;
     private final Class<ConfigObject> configClass;
     private Controller controller;
+    private List<Consumer<ConfigObject>> configModifiers = new ArrayList<>();
 
     // TODO test unregistered and none admin user
 
@@ -36,18 +41,22 @@ public class AbstractCrudTest<Controller extends CrudController<ConfigObject>, C
         client.register(new ObjectMapperResolver(configClass));
     }
 
+    protected void registerUpdate(Consumer<ConfigObject> configModifier) {
+        configModifiers.add(configModifier);
+    }
+
     @Test
     public void testCrud() {
         login("admin@admin.com", "1234");
 
         // Create
         List<ObjectNameId> objectNameIds = controller.getObjectNameIds();
-        Assert.assertEquals(0, objectNameIds.size());
+        assertEquals(0, objectNameIds.size());
         ConfigObject config1 = controller.create();
         // Read all
         objectNameIds = controller.getObjectNameIds();
-        Assert.assertEquals(1, objectNameIds.size());
-        Assert.assertEquals(objectNameIds.get(0).getId(), config1.getId());
+        assertEquals(1, objectNameIds.size());
+        assertEquals(objectNameIds.get(0).getId(), config1.getId());
         // Read
         ConfigObject config2 = controller.read(config1.getId());
         assertThat(config2, is(samePropertyValuesAs(config1)));
@@ -57,11 +66,25 @@ public class AbstractCrudTest<Controller extends CrudController<ConfigObject>, C
         ConfigObject config3 = controller.read(config2.getId());
         assertThat(config3, is(samePropertyValuesAs(config2)));
         List<ConfigObject> configs = controller.read();
-        Assert.assertEquals(1, configs.size());
+        assertEquals(1, configs.size());
         assertThat(configs.get(0), is(samePropertyValuesAs(config3)));
+        // Additional Update
+        configModifiers.forEach(configObjectConsumer -> {
+            configObjectConsumer.accept(config3);
+            controller.update(config3);
+            ConfigObject configRead = controller.read(config2.getId());
+            try {
+                // https://www.baeldung.com/jackson-compare-two-json-objects
+                ObjectMapper mapper = new ObjectMapper();
+                assertEquals(mapper.readTree(mapper.writeValueAsString(configRead)),
+                        mapper.readTree(mapper.writeValueAsString(config3)));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
         // Delete
         controller.delete(config3.getId());
-        Assert.assertEquals(0, controller.getObjectNameIds().size());
+        assertEquals(0, controller.getObjectNameIds().size());
     }
 
 }

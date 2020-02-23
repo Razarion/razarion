@@ -121,6 +121,10 @@ public class ServerTestHelper {
     public static final String IMG_2_DATA_BASE64 = "R0lGODlhAQABAIABABWLAP///yH+EUNyZWF0ZWQgd2l0aCBHSU1QACwAAAAAAQABAAACAkQBADs=";
     public static final String IMG_2_DATA_URL = "data:image/gif;base64," + IMG_2_DATA_BASE64;
     public static final byte[] IMG_2_BYTES = Base64.getDecoder().decode(IMG_2_DATA_BASE64.getBytes());
+    // Images
+    public static int IMAGE_1_ID;
+    public static int IMAGE_2_ID;
+    public static int IMAGE_3_ID;
     // Item types
     public static int BASE_ITEM_TYPE_BULLDOZER_ID;
     public static int BASE_ITEM_TYPE_HARVESTER_ID;
@@ -207,6 +211,12 @@ public class ServerTestHelper {
         return new I18nString(localizedStrings);
     }
 
+    protected void setupImages() {
+        IMAGE_1_ID = persistInTransaction(new ImageLibraryEntity()).getId();
+        IMAGE_2_ID = persistInTransaction(new ImageLibraryEntity()).getId();
+        IMAGE_3_ID = persistInTransaction(new ImageLibraryEntity()).getId();
+    }
+
     protected void setupItemTypes() throws Exception {
         BaseItemType factory = new BaseItemType();
         factory.setPrice(1).setHealth(100).setSpawnDurationMillis(1000).setBuildup(3).setInternalName("Factory");
@@ -249,7 +259,14 @@ public class ServerTestHelper {
         BOX_ITEM_TYPE_ID = createBoxItemTypeEntity(boxItemType);
     }
 
-    protected void cleanItemTypes() throws Exception {
+    protected void cleanImages() {
+        runInTransaction(em -> {
+            em.createQuery("DELETE FROM ImageLibraryEntity").executeUpdate();
+        });
+    }
+
+
+    protected void cleanItemTypes() {
         runInTransaction(em -> {
             em.createNativeQuery("DELETE FROM BASE_ITEM_FACTORY_TYPE_ABLE_TO_BUILD").executeUpdate();
             em.createNativeQuery("DELETE FROM BASE_ITEM_BUILDER_TYPE_ABLE_TO_BUILD").executeUpdate();
@@ -272,35 +289,35 @@ public class ServerTestHelper {
         });
     }
 
-    private int createBaseItemTypeEntity(BaseItemType baseItemType) throws Exception {
+    private int createBaseItemTypeEntity(BaseItemType baseItemType) {
         BaseItemTypeEntity baseItemTypeEntity = new BaseItemTypeEntity();
         baseItemTypeEntity.fromBaseItemType(baseItemType, itemTypePersistence, shape3DPersistence);
         persistInTransaction(baseItemTypeEntity);
         return baseItemTypeEntity.getId();
     }
 
-    private int createResourceItemTypeEntity(ResourceItemType resourceItemType) throws Exception {
+    private int createResourceItemTypeEntity(ResourceItemType resourceItemType) {
         ResourceItemTypeEntity resourceItemTypeEntity = new ResourceItemTypeEntity();
         resourceItemTypeEntity.fromResourceItemType(resourceItemType);
         persistInTransaction(resourceItemTypeEntity);
         return resourceItemTypeEntity.getId();
     }
 
-    private int createInventoryItemEntity(InventoryItem inventoryItem) throws Exception {
+    private int createInventoryItemEntity(InventoryItem inventoryItem) {
         InventoryItemEntity inventoryItemEntity = new InventoryItemEntity();
         inventoryItemEntity.fromInventoryItem(inventoryItem);
         persistInTransaction(inventoryItemEntity);
         return inventoryItemEntity.getId();
     }
 
-    private int createBoxItemTypeEntity(BoxItemType boxItemType) throws Exception {
+    private int createBoxItemTypeEntity(BoxItemType boxItemType) {
         BoxItemTypeEntity boxItemTypeEntity = new BoxItemTypeEntity();
         boxItemTypeEntity.fromBoxItemType(boxItemType, null);
         persistInTransaction(boxItemTypeEntity);
         return boxItemTypeEntity.getId();
     }
 
-    protected <T> T persistInTransaction(T object) throws Exception {
+    protected <T> T persistInTransaction(T object) {
         entityTransaction.begin();
         entityManager.joinTransaction();
         entityManager.persist(object);
@@ -316,7 +333,7 @@ public class ServerTestHelper {
     }
 
 
-    protected <T> T runInTransactionAndReturn(Function<EntityManager, T> function) throws Exception {
+    protected <T> T runInTransactionAndReturn(Function<EntityManager, T> function) {
         entityTransaction.begin();
         entityManager.joinTransaction();
         T result = function.apply(entityManager);
@@ -324,7 +341,7 @@ public class ServerTestHelper {
         return result;
     }
 
-    protected void runInTransactionSave(Consumer<EntityManager> consumer) throws Exception {
+    protected void runInTransactionSave(Consumer<EntityManager> consumer) {
         try {
             entityTransaction.begin();
             entityManager.joinTransaction();
@@ -406,7 +423,7 @@ public class ServerTestHelper {
         entityTransaction.commit();
     }
 
-    protected void cleanLevels() throws Exception {
+    protected void cleanLevels() {
         cleanTable(LevelUnlockEntity.class);
         cleanTableNative("LEVEL_LIMITATION");
         cleanTable(LevelEntity.class);
@@ -526,7 +543,7 @@ public class ServerTestHelper {
         setupPlanetWithSlopes();
     }
 
-    protected void setupSlopeConfigEntities() throws Exception {
+    protected void setupSlopeConfigEntities() {
         runInTransaction(em -> {
             SlopeConfigEntity slopeConfigEntity1 = new SlopeConfigEntity();
             SlopeConfig slopeConfigLand = new SlopeConfig();
@@ -587,7 +604,7 @@ public class ServerTestHelper {
         return limitation;
     }
 
-    private GroundConfig setupGroundConfig() throws Exception {
+    private GroundConfig setupGroundConfig() {
         GroundConfig groundConfig = new GroundConfig();
         // TODO groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
         // TODO groundSkeletonConfig.setSplattingXCount(1);
@@ -600,7 +617,7 @@ public class ServerTestHelper {
         return groundConfig;
     }
 
-    protected void cleanPlanets() throws Exception {
+    protected void cleanPlanets() {
         cleanTable(ServerLevelQuestEntity.class);
         cleanTableNative("SERVER_QUEST");
         cleanTable(QuestConfigEntity.class);
@@ -630,7 +647,7 @@ public class ServerTestHelper {
         cleanPlanetWithSlopes();
     }
 
-    protected void cleanSlopeEntities() throws Exception {
+    protected void cleanSlopeEntities() {
         cleanTable(TerrainSlopeCornerEntity.class);
         cleanTable(TerrainSlopePositionEntity.class);
 
@@ -639,7 +656,7 @@ public class ServerTestHelper {
         cleanTable(SlopeConfigEntity.class);
     }
 
-    protected void cleanUsers() throws Exception {
+    protected void cleanUsers() {
         cleanTable(ForgotPasswordEntity.class);
         cleanTable(LoginCookieEntity.class);
         cleanTable(UserHistoryEntity.class);
@@ -780,15 +797,15 @@ public class ServerTestHelper {
         return userService.getUserContextFromSession();
     }
 
-    public String getEmailVerificationUuid(String email) throws Exception {
+    public String getEmailVerificationUuid(String email) {
         return runInTransactionAndReturn(em -> (String) em.createQuery("SELECT u.verificationId FROM UserEntity u where u.email=:email").setParameter("email", email).getSingleResult());
     }
 
-    public String getForgotPasswordUuid(String email) throws Exception {
+    public String getForgotPasswordUuid(String email) {
         return runInTransactionAndReturn(em -> (String) em.createQuery("SELECT p.uuid FROM ForgotPasswordEntity p where p.user.email=:email").setParameter("email", email).getSingleResult());
     }
 
-    protected QuestConfig readQuestConfig(int questId) throws Exception {
+    protected QuestConfig readQuestConfig(int questId) {
         SingleHolder<QuestConfig> holder = new SingleHolder<>();
         runInTransaction(entityManager -> {
             holder.setO(entityManager.find(QuestConfigEntity.class, questId).toQuestConfig(Locale.US));
