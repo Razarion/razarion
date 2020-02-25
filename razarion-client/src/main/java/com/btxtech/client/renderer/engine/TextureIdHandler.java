@@ -1,6 +1,6 @@
 package com.btxtech.client.renderer.engine;
 
-import elemental.html.WebGLRenderingContext;
+import elemental2.webgl.WebGLRenderingContext;
 
 /**
  * Created by Beat
@@ -43,15 +43,15 @@ public class TextureIdHandler {
         TEXTURE30(WebGLRenderingContext.TEXTURE30),
         TEXTURE31(WebGLRenderingContext.TEXTURE31);
 
-        private int webGlTextureId;
+        private double webGlTextureId;
         private int uniformValue;
 
-        WebGlTextureId(int webGlTextureId) {
+        WebGlTextureId(double webGlTextureId) {
             this.webGlTextureId = webGlTextureId;
             uniformValue = LAST_UNIFORM_VALUE++;
         }
 
-        public int getWebGlTextureId() {
+        public double getWebGlTextureId() {
             return webGlTextureId;
         }
 

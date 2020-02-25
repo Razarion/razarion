@@ -8,8 +8,8 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.uiservice.Colors;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.selection.AbstractSelectionFrameRenderUnit;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

@@ -1,6 +1,6 @@
 package com.btxtech.client.shape3d;
 
-import elemental.html.Float32Array;
+import elemental2.core.Float32Array;
 
 /**
  * Created by Beat

@@ -8,7 +8,7 @@ import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
-import elemental.html.WebGLRenderingContext;
+import elemental2.webgl.WebGLRenderingContext;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

@@ -29,7 +29,6 @@ import java.util.logging.Logger;
 import static elemental2.dom.CSSProperties.HeightUnionType;
 import static elemental2.dom.CSSProperties.WidthUnionType;
 import static elemental2.dom.DomGlobal.RequestAnimationFrameCallbackFn;
-import static elemental2.dom.DomGlobal.requestAnimationFrame;
 
 /**
  * Created by Beat
@@ -125,7 +124,7 @@ public class GameCanvas {
             } catch (Throwable t) {
                 logger.log(Level.SEVERE, "requestAnimationFrame() execute failed", t);
             }
-            requestAnimationFrame(animationCallback, canvasElement);
+            DomGlobal.requestAnimationFrame(animationCallback, canvasElement);
             return null;
         };
     }
@@ -160,7 +159,7 @@ public class GameCanvas {
                         (int) WebGLRenderingContext.RGBA,
                         (int) WebGLRenderingContext.UNSIGNED_BYTE,
                         uint8Array);
-                WebGlUtil.checkLastWebGlError("readPixels", Js.cast(ctx3d));
+                WebGlUtil.checkLastWebGlError("readPixels", ctx3d);
                 logger.severe("Read screen pixel at " + mouseEvent.getClientX() + ":" + mouseEvent.getClientY() + " RGBA=" + uint8Array.buffer + "," + uint8Array.getAt(0) + "," + uint8Array.getAt(1) + "," + uint8Array.getAt(2) + "," + uint8Array.getAt(3) + "(if 0,0,0,0 -> {preserveDrawingBuffer: true})");
                 double x = uint8Array.getAt(0) / 255.0 * 2.0 - 1.0;
                 double y = uint8Array.getAt(1) / 255.0 * 2.0 - 1.0;
@@ -191,15 +190,15 @@ public class GameCanvas {
     public void startRenderLoop() {
         running = true;
         onWindowResized();
-        requestAnimationFrame(animationCallback, canvasElement);
+        DomGlobal.requestAnimationFrame(animationCallback, canvasElement);
     }
 
     public void stopRenderLoop() {
         running = false;
     }
 
-    public elemental.html.WebGLRenderingContext getCtx3d() {
-        return Js.cast(ctx3d);
+    public WebGLRenderingContext getCtx3d() {
+        return ctx3d;
     }
 
     public int getWidth() {

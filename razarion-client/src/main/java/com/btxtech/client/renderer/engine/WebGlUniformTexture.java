@@ -2,9 +2,9 @@ package com.btxtech.client.renderer.engine;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLTexture;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLTexture;
+import elemental2.webgl.WebGLUniformLocation;
 
 /**
  * Created by Beat

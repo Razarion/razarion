@@ -14,8 +14,8 @@ import com.btxtech.uiservice.renderer.AbstractRenderUnit;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

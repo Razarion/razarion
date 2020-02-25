@@ -1,7 +1,7 @@
 package com.btxtech.client.renderer;
 
 import com.btxtech.shared.datatypes.Float32ArrayEmu;
-import elemental.html.Float32Array;
+import elemental2.core.Float32Array;
 
 import java.util.List;
 

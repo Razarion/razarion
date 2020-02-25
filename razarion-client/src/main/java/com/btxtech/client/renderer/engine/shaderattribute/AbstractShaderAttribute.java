@@ -2,9 +2,9 @@ package com.btxtech.client.renderer.engine.shaderattribute;
 
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.client.renderer.webgl.WebGlUtil;
-import elemental.html.Float32Array;
-import elemental.html.WebGLBuffer;
-import elemental.html.WebGLRenderingContext;
+import elemental2.core.Float32Array;
+import elemental2.webgl.WebGLBuffer;
+import elemental2.webgl.WebGLRenderingContext;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ abstract public class AbstractShaderAttribute {
     // private Logger logger = Logger.getLogger(AbstractShaderAttribute.class.getName());
     private WebGLRenderingContext ctx3d;
     private final int size;
-    private int attributeLocation;
+    private double attributeLocation;
     private WebGLBuffer webGlBuffer;
 
     protected AbstractShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName, int size) {

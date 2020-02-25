@@ -14,7 +14,7 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.xhr.client.XMLHttpRequest;
-import elemental.html.Float32Array;
+import elemental2.core.Float32Array;
 import elemental.js.util.Xhr;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -96,8 +96,8 @@ public class ClientShape3DUiService extends Shape3DUiService {
         Float32Array vertices = getShape3DBuffer(vertexContainer).getVertex();
         Matrix4 matrix = vertexContainer.getShapeTransform().setupMatrix();
 
-        for (int i = 0; i < vertices.length(); i += 3) {
-            Vertex vertex = new Vertex(vertices.numberAt(i), vertices.numberAt(i + 1), vertices.numberAt(i + 2));
+        for (int i = 0; i < vertices.length; i += 3) {
+            Vertex vertex = new Vertex(vertices.getAt(i), vertices.getAt(i + 1), vertices.getAt(i + 2));
             maxZ = Math.max(matrix.multiply(vertex, 1.0).getZ(), maxZ);
         }
 

@@ -19,8 +19,8 @@ import com.btxtech.shared.datatypes.Vertex4;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -118,7 +118,7 @@ public class WebGlFacade {
         return new ShaderTextureCoordinateAttribute(gameCanvas.getCtx3d(), webGlProgram, attributeName);
     }
 
-    protected int getAndEnableAttributeLocation(String attributeName) {
+    protected double getAndEnableAttributeLocation(String attributeName) {
         return webGlProgram.getAttributeLocation(attributeName);
     }
 
@@ -226,7 +226,7 @@ public class WebGlFacade {
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, renderService.getDepthTexture());
     }
 
-    public void drawArrays(int mode) {
+    public void drawArrays(double mode) {
         getCtx3d().drawArrays(mode, 0, abstractRenderUnit.getElementCount());
         WebGlUtil.checkLastWebGlError("drawArrays for " + abstractRenderUnit.helperString(), getCtx3d());
     }

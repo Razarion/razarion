@@ -2,7 +2,7 @@ package com.btxtech.client.renderer.unit;
 
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.shared.dto.SpecularLightConfig;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLUniformLocation;
 
 /**
  * Created by Beat

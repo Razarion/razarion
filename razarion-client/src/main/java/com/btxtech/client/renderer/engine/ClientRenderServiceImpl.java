@@ -3,9 +3,9 @@ package com.btxtech.client.renderer.engine;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.uiservice.renderer.RenderService;
 import com.btxtech.uiservice.renderer.RenderUnitControl;
-import elemental.html.WebGLFramebuffer;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLTexture;
+import elemental2.webgl.WebGLFramebuffer;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLTexture;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -37,14 +37,14 @@ public class ClientRenderServiceImpl extends RenderService {
         }
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, shadowFrameBuffer);
         gameCanvas.getCtx3d().viewport(0, 0, DEPTH_BUFFER_SIZE, DEPTH_BUFFER_SIZE);
-        gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
+        gameCanvas.getCtx3d().clear((int) (WebGLRenderingContext.COLOR_BUFFER_BIT) | (int) (WebGLRenderingContext.DEPTH_BUFFER_BIT));
     }
 
     @Override
     protected void prepareMainRendering() {
         gameCanvas.getCtx3d().bindFramebuffer(WebGLRenderingContext.FRAMEBUFFER, null);
         gameCanvas.getCtx3d().viewport(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
-        gameCanvas.getCtx3d().clear(WebGLRenderingContext.COLOR_BUFFER_BIT | WebGLRenderingContext.DEPTH_BUFFER_BIT);
+        gameCanvas.getCtx3d().clear((int) (WebGLRenderingContext.COLOR_BUFFER_BIT) | (int) (WebGLRenderingContext.DEPTH_BUFFER_BIT));
     }
 
     @Override

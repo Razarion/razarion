@@ -1,10 +1,8 @@
 package com.btxtech.client.renderer.engine;
 
-import elemental.html.WebGLRenderingContext;
+import elemental2.webgl.WebGLRenderingContext;
 import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by Beat
@@ -51,13 +49,13 @@ public class TextureIdHandlerTest {
         try {
             textureIdHandler.create();
             Assert.fail("IllegalStateException expected");
-        } catch(IllegalStateException e) {
+        } catch (IllegalStateException e) {
             Assert.assertEquals("Running out of WebGlTextureId", e.getMessage());
         }
     }
 
-    private void assertTextureId(int expectedWebGLId, int expectedUniformId, TextureIdHandler.WebGlTextureId actual) {
-        Assert.assertEquals(expectedWebGLId, actual.getWebGlTextureId());
-        Assert.assertEquals(expectedUniformId, actual.getUniformValue());
+    private void assertTextureId(double expectedWebGLId, double expectedUniformId, TextureIdHandler.WebGlTextureId actual) {
+        Assert.assertEquals(expectedWebGLId, actual.getWebGlTextureId(), 0.0);
+        Assert.assertEquals(expectedUniformId, actual.getUniformValue(), 0.0);
     }
 }

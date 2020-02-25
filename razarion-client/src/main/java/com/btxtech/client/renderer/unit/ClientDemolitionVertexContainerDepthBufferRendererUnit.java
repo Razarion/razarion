@@ -11,8 +11,8 @@ import com.btxtech.shared.datatypes.shape.VertexContainer;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractDemolitionVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

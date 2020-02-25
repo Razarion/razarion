@@ -3,7 +3,7 @@ package com.btxtech.client.renderer.engine.shaderattribute;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
 import com.btxtech.shared.datatypes.TextureCoordinate;
 import elemental.html.WebGLBuffer;
-import elemental.html.WebGLRenderingContext;
+import elemental2.webgl.WebGLRenderingContext;
 
 import java.util.ArrayList;
 import java.util.List;

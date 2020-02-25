@@ -9,8 +9,8 @@ import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.uiservice.renderer.NormRenderer;
 import com.btxtech.uiservice.renderer.task.slope.AbstractSlopeRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainSlopeTile;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

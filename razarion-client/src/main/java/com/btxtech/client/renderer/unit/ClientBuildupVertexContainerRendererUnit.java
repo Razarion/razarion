@@ -13,9 +13,9 @@ import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.renderer.AbstractBuildupVertexContainerRenderUnit;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
-import elemental.html.Float32Array;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
+import elemental2.core.Float32Array;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

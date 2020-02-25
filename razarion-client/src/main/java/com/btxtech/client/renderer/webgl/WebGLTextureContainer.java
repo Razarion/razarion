@@ -2,19 +2,19 @@ package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.imageservice.ImageUiService;
 import com.btxtech.client.renderer.GameCanvas;
-import com.btxtech.client.utils.GwtUtils;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.questvisualization.InGameQuestVisualizationService;
-import com.google.gwt.dom.client.ImageElement;
-import elemental.client.Browser;
-import elemental.html.CanvasElement;
 import elemental.html.CanvasRenderingContext2D;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLTexture;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.HTMLCanvasElement;
+import elemental2.dom.HTMLImageElement;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLTexture;
+import jsinterop.base.Js;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -59,10 +59,10 @@ public class WebGLTextureContainer {
 
     public void setupTextures() {
         for (Integer imageId : gameUiControl.getAllTextureIds()) {
-            imageUiService.requestImage(imageId, imageElement -> setupTexture(imageId, imageElement));
+            imageUiService.requestImage(imageId, imageElement -> setupTexture(imageId, Js.cast(imageElement)));
         }
         for (Integer imageId : gameUiControl.getAllBumpTextureIds()) {
-            imageUiService.requestImage(imageId, imageElement -> setupTextureForBumpMap(imageId, imageElement));
+            imageUiService.requestImage(imageId, imageElement -> setupTextureForBumpMap(imageId, Js.cast(imageElement)));
         }
         setupEmptyTerrainMarkerTexture();
     }
@@ -74,7 +74,7 @@ public class WebGLTextureContainer {
         }
         webGLTexture = gameCanvas.getCtx3d().createTexture();
         WebGLTexture finalWebGLTexture = webGLTexture;
-        imageUiService.requestImage(imageId, imageElement -> bindTexture(imageElement, finalWebGLTexture));
+        imageUiService.requestImage(imageId, imageElement -> bindTexture(Js.cast(imageElement), finalWebGLTexture));
         return webGLTexture;
     }
 
@@ -85,7 +85,7 @@ public class WebGLTextureContainer {
         }
         webGLTexture = gameCanvas.getCtx3d().createTexture();
         WebGLTexture finalWebGLTexture = webGLTexture;
-        imageUiService.requestImage(imageId, imageElement -> bindTextureForBumpMap(imageElement, finalWebGLTexture));
+        imageUiService.requestImage(imageId, imageElement -> bindTextureForBumpMap(Js.cast(imageElement), finalWebGLTexture));
         return webGLTexture;
     }
 
@@ -93,7 +93,7 @@ public class WebGLTextureContainer {
         imageUiService.requestImage(imageId, imageElement -> pixelSizeConsumer.accept(imageElement.getWidth()));
     }
 
-    private void setupTexture(int imageId, ImageElement imageElement) {
+    private void setupTexture(int imageId, HTMLImageElement imageElement) {
         WebGLTexture webGLTexture = textures.get(imageId);
         if (webGLTexture == null) {
             webGLTexture = gameCanvas.getCtx3d().createTexture();
@@ -102,7 +102,7 @@ public class WebGLTextureContainer {
         bindTexture(imageElement, webGLTexture);
     }
 
-    protected void setupTextureForBumpMap(int imageId, ImageElement imageElement) {
+    protected void setupTextureForBumpMap(int imageId, HTMLImageElement imageElement) {
         WebGLTexture webGLTexture = bumpTextures.get(imageId);
         if (webGLTexture == null) {
             webGLTexture = gameCanvas.getCtx3d().createTexture();
@@ -111,10 +111,10 @@ public class WebGLTextureContainer {
         bindTextureForBumpMap(imageElement, webGLTexture);
     }
 
-    private void bindTexture(ImageElement imageElement, WebGLTexture webGLTexture) {
+    private void bindTexture(HTMLImageElement imageElement, WebGLTexture webGLTexture) {
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
         gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
-        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) GwtUtils.castElementToElement(imageElement));
+        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, imageElement);
         gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.NEAREST);
         gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR_MIPMAP_NEAREST);
         gameCanvas.getCtx3d().generateMipmap(WebGLRenderingContext.TEXTURE_2D);
@@ -122,10 +122,10 @@ public class WebGLTextureContainer {
         WebGlUtil.checkLastWebGlError("bindTexture", gameCanvas.getCtx3d());
     }
 
-    private void bindTextureForBumpMap(ImageElement imageElement, WebGLTexture webGLTexture) {
+    private void bindTextureForBumpMap(HTMLImageElement imageElement, WebGLTexture webGLTexture) {
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, webGLTexture);
         gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);
-        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, (elemental.html.ImageElement) GwtUtils.castElementToElement(imageElement));
+        gameCanvas.getCtx3d().texImage2D(WebGLRenderingContext.TEXTURE_2D, 0, WebGLRenderingContext.RGBA, WebGLRenderingContext.RGBA, WebGLRenderingContext.UNSIGNED_BYTE, imageElement);
         gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MAG_FILTER, WebGLRenderingContext.LINEAR);
         gameCanvas.getCtx3d().texParameteri(WebGLRenderingContext.TEXTURE_2D, WebGLRenderingContext.TEXTURE_MIN_FILTER, WebGLRenderingContext.LINEAR);
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, null);
@@ -135,9 +135,9 @@ public class WebGLTextureContainer {
     private void setupEmptyTerrainMarkerTexture() {
         try {
             // Create canvas image
-            CanvasElement canvasElement = Browser.getDocument().createCanvasElement();
-            canvasElement.setWidth(TERRAIN_MARKER_LENGTH);
-            canvasElement.setHeight(TERRAIN_MARKER_LENGTH);
+            HTMLCanvasElement canvasElement = (HTMLCanvasElement) DomGlobal.document.createElement("canvas");
+            canvasElement.width = TERRAIN_MARKER_LENGTH;
+            canvasElement.height = TERRAIN_MARKER_LENGTH;
             bindTextureTerrainMarker(canvasElement);
         } catch (Throwable t) {
             exceptionHandler.handleException(t);
@@ -147,9 +147,9 @@ public class WebGLTextureContainer {
     private void setupTerrainMarkerTexture(PlaceConfig placeConfig, Rectangle2D placeConfigBoundary) {
         try {
             // Create canvas image
-            CanvasElement canvasElement = Browser.getDocument().createCanvasElement();
-            canvasElement.setWidth(TERRAIN_MARKER_LENGTH);
-            canvasElement.setHeight(TERRAIN_MARKER_LENGTH);
+            HTMLCanvasElement canvasElement = (HTMLCanvasElement) DomGlobal.document.createElement("canvas");
+            canvasElement.width = TERRAIN_MARKER_LENGTH;
+            canvasElement.height = TERRAIN_MARKER_LENGTH;
             CanvasRenderingContext2D ctx = (CanvasRenderingContext2D) canvasElement.getContext("2d");
             ctx.setFillStyle("#000000");
             ctx.fillRect(0, 0, TERRAIN_MARKER_LENGTH, TERRAIN_MARKER_LENGTH);
@@ -191,7 +191,7 @@ public class WebGLTextureContainer {
         }
     }
 
-    private void bindTextureTerrainMarker(CanvasElement canvasElement) {
+    private void bindTextureTerrainMarker(HTMLCanvasElement canvasElement) {
         // Bind to texture
         gameCanvas.getCtx3d().bindTexture(WebGLRenderingContext.TEXTURE_2D, terrainMarkerTexture);
         gameCanvas.getCtx3d().pixelStorei(WebGLRenderingContext.UNPACK_FLIP_Y_WEBGL, 1);

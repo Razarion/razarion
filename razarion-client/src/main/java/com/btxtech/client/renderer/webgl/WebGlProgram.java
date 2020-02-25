@@ -2,10 +2,10 @@ package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.uiservice.renderer.ViewService;
-import elemental.html.WebGLProgram;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLShader;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLProgram;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLShader;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
@@ -97,8 +97,8 @@ public class WebGlProgram {
 
     }
 
-    public int getAttributeLocation(String attributeName) {
-        int attributeLocation = gameCanvas.getCtx3d().getAttribLocation(program, attributeName);
+    public double getAttributeLocation(String attributeName) {
+        double attributeLocation = gameCanvas.getCtx3d().getAttribLocation(program, attributeName);
         if (attributeLocation == -1) {
             throw new IllegalArgumentException("No attribute location for '" + attributeName + "' in OpenGl program.");
         }
@@ -117,7 +117,7 @@ public class WebGlProgram {
         gameCanvas.getCtx3d().useProgram(program);
     }
 
-    private WebGLShader createShader(int type, String code) {
+    private WebGLShader createShader(double type, String code) {
         WebGLShader shader = gameCanvas.getCtx3d().createShader(type);
         gameCanvas.getCtx3d().shaderSource(shader, code);
         gameCanvas.getCtx3d().compileShader(shader);

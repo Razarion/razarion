@@ -12,8 +12,8 @@ import com.btxtech.uiservice.datatypes.ModelMatrices;
 import com.btxtech.uiservice.particle.ParticleShapeConfig;
 import com.btxtech.uiservice.renderer.ColorBufferRenderer;
 import com.btxtech.uiservice.renderer.task.particle.AbstractParticleRenderUnit;
-import elemental.html.WebGLRenderingContext;
-import elemental.html.WebGLUniformLocation;
+import elemental2.webgl.WebGLRenderingContext;
+import elemental2.webgl.WebGLUniformLocation;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;

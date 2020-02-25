@@ -2,8 +2,8 @@ package com.btxtech.client.renderer.webgl;
 
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.google.gwt.dom.client.CanvasElement;
-import elemental.html.Float32Array;
-import elemental.html.WebGLRenderingContext;
+import elemental2.core.Float32Array;
+import elemental2.webgl.WebGLRenderingContext;
 import elemental.js.html.JsUint8Array;
 import elemental.js.util.JsArrayOfNumber;
 
