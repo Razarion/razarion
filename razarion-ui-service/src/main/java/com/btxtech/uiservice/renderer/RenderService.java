@@ -3,20 +3,7 @@ package com.btxtech.uiservice.renderer;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonEnum;
 import com.btxtech.shared.system.perfmon.PerfmonService;
-import com.btxtech.uiservice.renderer.task.BaseItemRenderTask;
-import com.btxtech.uiservice.renderer.task.BoxItemRenderTask;
-import com.btxtech.uiservice.renderer.task.ProjectileRenderTask;
-import com.btxtech.uiservice.renderer.task.ResourceItemRenderTask;
-import com.btxtech.uiservice.renderer.task.TerrainObjectRenderTask;
-import com.btxtech.uiservice.renderer.task.TrailRenderTask;
 import com.btxtech.uiservice.renderer.task.ground.GroundRenderTask;
-import com.btxtech.uiservice.renderer.task.itemplacer.BaseItemPlacerRenderTask;
-import com.btxtech.uiservice.renderer.task.particle.ParticleRenderTask;
-import com.btxtech.uiservice.renderer.task.selection.ItemMarkerRenderTask;
-import com.btxtech.uiservice.renderer.task.selection.SelectionFrameRenderTask;
-import com.btxtech.uiservice.renderer.task.slope.SlopeRenderTask;
-import com.btxtech.uiservice.renderer.task.visualization.ItemVisualizationRenderTask;
-import com.btxtech.uiservice.renderer.task.water.WaterRenderTask;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -53,19 +40,19 @@ public abstract class RenderService {
         renderTasks.clear();
 
         addRenderTask(GroundRenderTask.class, "Ground");
-        addRenderTask(SlopeRenderTask.class, "Slope");
-        addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
-        addRenderTask(ItemMarkerRenderTask.class, "Item Marker");
-        addRenderTask(BaseItemRenderTask.class, "Base Item");
-        addRenderTask(TrailRenderTask.class, "Trail");
-        addRenderTask(ResourceItemRenderTask.class, "Resource");
-        addRenderTask(BoxItemRenderTask.class, "Box");
-        addRenderTask(WaterRenderTask.class, "Water");
-        addRenderTask(ProjectileRenderTask.class, "Projectile");
-        addRenderTask(BaseItemPlacerRenderTask.class, "Base Item Placer");
-        addRenderTask(SelectionFrameRenderTask.class, "Selection Frame");
-        addRenderTask(ItemVisualizationRenderTask.class, "Tip");
-        addRenderTask(ParticleRenderTask.class, "Particle");
+// TODO       addRenderTask(SlopeRenderTask.class, "Slope");
+// TODO       addRenderTask(TerrainObjectRenderTask.class, "Terrain Object");
+// TODO       addRenderTask(ItemMarkerRenderTask.class, "Item Marker");
+// TODO       addRenderTask(BaseItemRenderTask.class, "Base Item");
+// TODO       addRenderTask(TrailRenderTask.class, "Trail");
+// TODO       addRenderTask(ResourceItemRenderTask.class, "Resource");
+// TODO       addRenderTask(BoxItemRenderTask.class, "Box");
+// TODO       addRenderTask(WaterRenderTask.class, "Water");
+// TODO       addRenderTask(ProjectileRenderTask.class, "Projectile");
+// TODO       addRenderTask(BaseItemPlacerRenderTask.class, "Base Item Placer");
+// TODO       addRenderTask(SelectionFrameRenderTask.class, "Selection Frame");
+// TODO       addRenderTask(ItemVisualizationRenderTask.class, "Tip");
+// TODO       addRenderTask(ParticleRenderTask.class, "Particle");
 
         fillBuffers();
     }

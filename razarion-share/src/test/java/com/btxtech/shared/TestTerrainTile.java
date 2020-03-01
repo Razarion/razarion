@@ -4,7 +4,6 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 import java.util.ArrayList;
@@ -17,51 +16,12 @@ import java.util.List;
  */
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, getterVisibility = JsonAutoDetect.Visibility.NONE, setterVisibility = JsonAutoDetect.Visibility.NONE)
 public class TestTerrainTile extends TerrainTile {
-    private int indexX;
-    private int indexY;
-    private double[] groundVertices;
-    private double[] groundNorms;
     private Collection<TestTerrainSlopeTile> terrainSlopeTiles;
     private double landWaterProportion;
     private TestTerrainNode[][] testTerrainNodes;
     private double height;
     private List<TestTerrainTileObjectList> terrainTileObjectLists;
 
-    @Override
-    public void init(int indexX, int indexY) {
-        this.indexX = indexX;
-        this.indexY = indexY;
-    }
-
-    @Override
-    public int getIndexX() {
-        return indexX;
-    }
-
-    @Override
-    public int getIndexY() {
-        return indexY;
-    }
-
-    @Override
-    public double[] getGroundPositions() {
-        return groundVertices;
-    }
-
-    @Override
-    public void setGroundPositions(double[] groundPositions) {
-        this.groundVertices = groundPositions;
-    }
-
-    @Override
-    public double[] getGroundNorms() {
-        return groundNorms;
-    }
-
-    @Override
-    public void setGroundNorms(double[] groundNorms) {
-        this.groundNorms = groundNorms;
-    }
 
     @Override
     public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
@@ -87,16 +47,6 @@ public class TestTerrainTile extends TerrainTile {
     @Override
     public void setLandWaterProportion(double landWaterProportion) {
         this.landWaterProportion = landWaterProportion;
-    }
-
-    @Override
-    public Object toArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int fromArray(Object object, NativeMatrixFactory nativeMatrixFactory) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

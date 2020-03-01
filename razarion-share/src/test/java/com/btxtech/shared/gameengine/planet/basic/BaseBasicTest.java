@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.basic;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -13,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
@@ -61,7 +61,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         terrainSlopePositionLand.setId(1);
         terrainSlopePositionLand.setSlopeConfigId(1);
         terrainSlopePositionLand.setPolygon(Arrays.asList(GameTestHelper.createTerrainSlopeCorner(50, 40, null), GameTestHelper.createTerrainSlopeCorner(100, 40, null),
-                GameTestHelper.createTerrainSlopeCorner(100, 60, GameTestContent.DRIVEWAY_ID_ID), GameTestHelper.createTerrainSlopeCorner(100, 90, GameTestContent.DRIVEWAY_ID_ID), // driveway
+                GameTestHelper.createTerrainSlopeCorner(100, 60, FallbackConfig.DRIVEWAY_ID_ID), GameTestHelper.createTerrainSlopeCorner(100, 90, FallbackConfig.DRIVEWAY_ID_ID), // driveway
                 GameTestHelper.createTerrainSlopeCorner(100, 110, null), GameTestHelper.createTerrainSlopeCorner(50, 110, null)));
         terrainSlopePositions.add(terrainSlopePositionLand);
         // Water slope
@@ -74,7 +74,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         terrainSlopePositions.add(terrainSlopePositionWater);
 
 
-        StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
+        StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
         staticGameConfig.setSlopeConfigs(slopeConfigs);
 
         setupMasterEnvironment(staticGameConfig, terrainSlopePositions);
@@ -105,15 +105,15 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(builderPosition, userContext);
         humanBaseContext.setPlayerBaseFull(playerBaseFull);
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         humanBaseContext.setBuilder(builder);
-        getCommandService().build(builder, factoryPosition, getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        getCommandService().build(builder, factoryPosition, getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
         humanBaseContext.setFactory(factory);
-        getCommandService().fabricate(factory, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        getCommandService().fabricate(factory, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem attacker1 = findSyncBaseItem(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID);
+        SyncBaseItem attacker1 = findSyncBaseItem(playerBaseFull, FallbackConfig.ATTACKER_ITEM_TYPE_ID);
         humanBaseContext.setAttacker1(attacker1);
 
         return humanBaseContext;
@@ -121,17 +121,17 @@ public class BaseBasicTest extends WeldMasterBaseTest {
 
     protected HumanBaseContext createHumanBaseBFA4(DecimalPosition builderPosition, DecimalPosition factoryPosition) {
         HumanBaseContext humanBaseContext = createHumanBaseBFA(builderPosition, factoryPosition);
-        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem attacker2 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1());
+        SyncBaseItem attacker2 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1());
         humanBaseContext.setAttacker2(attacker2);
-        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem attacker3 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1(), attacker2);
+        SyncBaseItem attacker3 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1(), attacker2);
         humanBaseContext.setAttacker3(attacker3);
-        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        getCommandService().fabricate(humanBaseContext.getFactory(), getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem attacker4 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1(), attacker2, attacker3);
+        SyncBaseItem attacker4 = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.ATTACKER_ITEM_TYPE_ID, humanBaseContext.getAttacker1(), attacker2, attacker3);
         humanBaseContext.setAttacker4(attacker4);
 
         return humanBaseContext;
@@ -142,7 +142,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         String botName = "setupBuilderBot id:" + botId;
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.BUILDER_ITEM_TYPE_ID).setCount(builderCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.BUILDER_ITEM_TYPE_ID).setCount(builderCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
@@ -156,7 +156,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         String botName = "TestTargetHarvesterBot id:" + botId;
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.HARVESTER_ITEM_TYPE_ID).setCount(harvesterCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.HARVESTER_ITEM_TYPE_ID).setCount(harvesterCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));
@@ -170,7 +170,7 @@ public class BaseBasicTest extends WeldMasterBaseTest {
         String botName = "setupFactoryBot id:" + botId;
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.FACTORY_ITEM_TYPE_ID).setCount(factoryCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(factoryCount).setCreateDirectly(true).setPlace(new PlaceConfig().setPolygon2D(botRegion)).setNoRebuild(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(botId).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName(botName).setNpc(false));

@@ -1,5 +1,7 @@
 package com.btxtech.uiservice.cdimock;
 
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
@@ -9,6 +11,7 @@ import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -43,6 +46,11 @@ public class TestJsInteropObjectFactory implements JsInteropObjectFactory {
 
     @Override
     public TerrainTileObjectList generateTerrainTileObjectList() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Float32ArrayEmu newFloat32Array(List<Vertex> vertices) {
         throw new UnsupportedOperationException();
     }
 }

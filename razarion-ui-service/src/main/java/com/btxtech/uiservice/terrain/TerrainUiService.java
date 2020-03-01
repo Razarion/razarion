@@ -256,7 +256,7 @@ public class TerrainUiService {
     }
 
     public void onTerrainTileResponse(TerrainTile terrainTile) {
-        terrainTileConsumers.remove(new Index(terrainTile.getIndexX(), terrainTile.getIndexY())).accept(terrainTile);
+        terrainTileConsumers.remove(terrainTile.getIndex()).accept(terrainTile);
     }
 
     public void enableEditMode(GroundConfig groundConfig) {

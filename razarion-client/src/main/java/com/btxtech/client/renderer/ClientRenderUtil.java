@@ -1,9 +1,6 @@
 package com.btxtech.client.renderer;
 
-import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import elemental2.core.Float32Array;
-
-import java.util.List;
 
 /**
  * Created by Beat
@@ -18,15 +15,4 @@ public class ClientRenderUtil {
 //            vertexFloat32Array.numberAt(i)
 //        }
     }
-
-    public static Float32ArrayEmu setupNormFloat32Array(Float32ArrayEmu vertices, Float32ArrayEmu norms) {
-        // TODO fix
-        throw new UnsupportedOperationException();
-    }
-
-
-    public static native Float32Array toFloat32Array(Float32ArrayEmu float32Array) /*-{
-        return float32Array;
-    }-*/;
-
 }

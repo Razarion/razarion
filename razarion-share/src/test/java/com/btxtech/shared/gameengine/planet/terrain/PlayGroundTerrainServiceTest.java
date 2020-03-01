@@ -4,13 +4,13 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.TerrainObjectConfig;
 import com.btxtech.shared.dto.TerrainObjectPosition;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
@@ -107,7 +107,7 @@ public class PlayGroundTerrainServiceTest extends WeldTerrainServiceTestBase {
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(2).setRadius(5));
         terrainObjectConfigs.add(new TerrainObjectConfig().setId(3).setRadius(10));
 
-        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
+        PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setPlayGround(new Rectangle2D(50, 50, 200, 200));
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 2, 2));
 

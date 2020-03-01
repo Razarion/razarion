@@ -1,16 +1,10 @@
 package com.btxtech.shared.gameengine.planet.pathing.move;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.datatypes.UserContext;
-import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
-import com.btxtech.shared.gameengine.planet.gui.userobject.MouseMoveCallback;
-import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.planet.testframework.Scenario;
 import com.btxtech.shared.gameengine.planet.testframework.ScenarioBaseTest;
 import org.junit.Test;
-
-import java.util.Collections;
 
 /**
  * Created by Beat
@@ -34,7 +28,7 @@ public class MoveSingleUnitObstacleTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitObstacleTest_moveAroundCorner1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(176, 102), new DecimalPosition(182, 97));
+                createSyncBaseItemSimplePath(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(176, 102), new DecimalPosition(182, 97));
             }
         });
     }
@@ -44,7 +38,7 @@ public class MoveSingleUnitObstacleTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitObstacleTest_moveAroundDriveWayPath1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(168, 104), new DecimalPosition(152, 46));
+                createSyncBaseItem(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(168, 104), new DecimalPosition(152, 46));
             }
         });
     }
@@ -54,7 +48,7 @@ public class MoveSingleUnitObstacleTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitObstacleTest_moveThroughDriveWayPath1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(168, 104), new DecimalPosition(72, 96));
+                createSyncBaseItem(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(168, 104), new DecimalPosition(72, 96));
             }
         });
     }
@@ -64,7 +58,7 @@ public class MoveSingleUnitObstacleTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitObstacleTest_moveAroundSeaPath1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(220, 315), new DecimalPosition(156, 371));
+                createSyncBaseItem(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(220, 315), new DecimalPosition(156, 371));
             }
         });
     }
@@ -75,7 +69,7 @@ public class MoveSingleUnitObstacleTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitObstacleTest_moveAroundTerrainObject1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItem(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(333, 10), new DecimalPosition(450, 140));
+                createSyncBaseItem(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(333, 10), new DecimalPosition(450, 140));
             }
         });
     }

@@ -3,8 +3,6 @@ package com.btxtech.uiservice.terrain.helpers;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
-import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,41 +12,10 @@ import java.util.Collection;
  * 31.03.2017.
  */
 public class TestToolTerrainTile extends TerrainTile {
-    private int indexX;
-    private int indexY;
-    private double[] groundVertices;
-    private double[] groundNorms;
-    private double[] groundTangents;
     private Collection<TerrainSlopeTile> terrainSlopeTiles;
     private double landWaterProportion;
     private TerrainNode[][] terrainNodes;
     private double height;
-
-    @Override
-    public void init(int indexX, int indexY) {
-        this.indexX = indexX;
-        this.indexY = indexY;
-    }
-
-    @Override
-    public int getIndexX() {
-        return indexX;
-    }
-
-    @Override
-    public int getIndexY() {
-        return indexY;
-    }
-
-    @Override
-    public double[] getGroundPositions() {
-        return groundVertices;
-    }
-
-    @Override
-    public double[] getGroundNorms() {
-        return groundNorms;
-    }
 
     @Override
     public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
@@ -89,16 +56,6 @@ public class TestToolTerrainTile extends TerrainTile {
     @Override
     public void setLandWaterProportion(double landWaterProportion) {
         this.landWaterProportion = landWaterProportion;
-    }
-
-    @Override
-    public Object toArray() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int fromArray(Object object, NativeMatrixFactory nativeMatrixFactory) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

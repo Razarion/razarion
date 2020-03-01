@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.Character;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
@@ -28,9 +29,9 @@ public class MasterBaseItemServiceTest extends BaseItemServiceBase {
 
         PlayerBaseFull base1 = getBaseItemService().createHumanBase(1000, 1, Collections.emptyMap(), new HumanPlayerId().setPlayerId(105), "Unit test Base human");
         PlayerBaseFull base2 = getBaseItemService().createBotBase(new BotConfig().setName("Test Bot").setNpc(false));
-        int builderId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(GameTestContent.BUILDER_ITEM_TYPE_ID), new DecimalPosition(100, 200), Math.toRadians(80), base1, true).getId();
-        int factoryId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID), new DecimalPosition(200, 200), Math.toRadians(100), base2, true).getId();
-        int attackerId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID), new DecimalPosition(300, 200), Math.toRadians(120), base2, false).getId();
+        int builderId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.BUILDER_ITEM_TYPE_ID), new DecimalPosition(100, 200), Math.toRadians(80), base1, true).getId();
+        int factoryId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID), new DecimalPosition(200, 200), Math.toRadians(100), base2, true).getId();
+        int attackerId = getBaseItemService().spawnSyncBaseItem(getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID), new DecimalPosition(300, 200), Math.toRadians(120), base2, false).getId();
 
         // Verify bases
         List<PlayerBaseInfo> playerBaseInfos = getBaseItemService().getPlayerBaseInfos();

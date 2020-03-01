@@ -3,11 +3,11 @@ package com.btxtech.shared.gameengine.planet.basic;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotEnragementStateConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotItemConfig;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.WeldSlaveEmulator;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import org.junit.Assert;
@@ -31,12 +31,12 @@ public class ItemContainerTest extends BaseBasicTest {
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
         permSlave.connectToMater(createLevel1UserContext(), this);
-        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
-        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
@@ -93,12 +93,12 @@ public class ItemContainerTest extends BaseBasicTest {
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
         permSlave.connectToMater(createLevel1UserContext(), this);
-        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
-        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
@@ -124,12 +124,12 @@ public class ItemContainerTest extends BaseBasicTest {
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
         permSlave.connectToMater(createLevel1UserContext(), this);
-        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
-        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
@@ -164,12 +164,12 @@ public class ItemContainerTest extends BaseBasicTest {
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
         permSlave.connectToMater(createLevel1UserContext(), this);
-        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
-        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
@@ -206,12 +206,12 @@ public class ItemContainerTest extends BaseBasicTest {
         HumanBaseContext humanBaseContext = createHumanBaseBFA();
         WeldSlaveEmulator permSlave = new WeldSlaveEmulator();
         permSlave.connectToMater(createLevel1UserContext(), this);
-        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.HARBOUR_ITEM_TYPE_ID);
-        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID));
+        SyncBaseItem harbour = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), GameTestContent.SHIP_TRANSPORTER_ITEM_TYPE_ID);
+        SyncBaseItem transporter = findSyncBaseItem(humanBaseContext.getPlayerBaseFull(), FallbackConfig.SHIP_TRANSPORTER_ITEM_TYPE_ID);
         getCommandService().move(transporter, new DecimalPosition(146, 200));
         tickPlanetServiceBaseServiceActive();
         assertAllSlaves(permSlave, transporter, 0, humanBaseContext.getBuilder(), humanBaseContext.getAttacker1());
@@ -241,7 +241,7 @@ public class ItemContainerTest extends BaseBasicTest {
             Assert.assertTrue(ie.getMessage(), ie.getMessage().startsWith("CommandService.checkSyncBaseItem() Item is inside a item container:"));
         }
         try {
-            getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(146, 150), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+            getCommandService().build(humanBaseContext.getBuilder(), new DecimalPosition(146, 150), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
             Assert.fail("IllegalStateException expected");
         } catch (IllegalStateException ie) {
             Assert.assertTrue(ie.getMessage(), ie.getMessage().startsWith("CommandService.checkSyncBaseItem() Item is inside a item container:"));
@@ -253,7 +253,7 @@ public class ItemContainerTest extends BaseBasicTest {
             Assert.assertTrue(ie.getMessage(), ie.getMessage().startsWith("CommandService.checkSyncBaseItem() Item is inside a item container:"));
         }
         try {
-            getCommandService().fabricate(humanBaseContext.getBuilder(), getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+            getCommandService().fabricate(humanBaseContext.getBuilder(), getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
             Assert.fail("IllegalStateException expected");
         } catch (IllegalStateException ie) {
             Assert.assertTrue(ie.getMessage(), ie.getMessage().startsWith("CommandService.checkSyncBaseItem() Item is inside a item container:"));
@@ -341,7 +341,7 @@ public class ItemContainerTest extends BaseBasicTest {
     public void setupSimpleAttackerBot() {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.SHIP_ATTACKER_ITEM_TYPE_ID).setCount(5).setCreateDirectly(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID).setCount(5).setCreateDirectly(true));
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Test bot").setNpc(false).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(96,312, 40, 40))));

@@ -8,8 +8,7 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
 import com.btxtech.shared.gameengine.GameEngineWorker;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import elemental.events.MessageEvent;
-import elemental.js.html.JsDedicatedWorkerGlobalScope;
+import elemental2.dom.DedicatedWorkerGlobalScope;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 import org.jboss.errai.ioc.client.api.EntryPoint;
 
@@ -35,15 +34,13 @@ public class ClientGameEngineWorker extends GameEngineWorker {
         exceptionHandler.registerWindowCloseHandler();
         RestClient.setApplicationRoot(CommonUrl.getWorkerApplicationRoot());
         getDedicatedWorkerGlobalScope().setOnmessage(evt -> {
-            Object data = null;
             try {
-                MessageEvent messageEvent = (MessageEvent) evt;
-                data = messageEvent.getData();
-                GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(messageEvent.getData(), nativeMatrixFactory);
+                GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(evt.data, nativeMatrixFactory);
                 dispatch(controlPackage);
             } catch (Throwable t) {
-                exceptionHandler.handleException("ClientGameEngineWorker: exception processing package on worker. Data: " + data, t);
+                exceptionHandler.handleException("ClientGameEngineWorker: exception processing package on worker. Data: " + evt.data, t);
             }
+            return null;
         });
         sendToClient(GameEngineControlPackage.Command.LOADED);
     }
@@ -65,7 +62,7 @@ public class ClientGameEngineWorker extends GameEngineWorker {
         getDedicatedWorkerGlobalScope().postMessage(WorkerMarshaller.marshall(new GameEngineControlPackage(command, object)));
     }
 
-    public static native JsDedicatedWorkerGlobalScope getDedicatedWorkerGlobalScope() /*-{
+    public static native DedicatedWorkerGlobalScope getDedicatedWorkerGlobalScope() /*-{
         return self;
     }-*/;
 }

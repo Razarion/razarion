@@ -16,12 +16,14 @@ import com.btxtech.uiservice.terrain.TerrainUiService;
 import javax.annotation.PostConstruct;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
  * 24.12.2016.
  */
 public abstract class AudioService implements ViewService.ViewFieldListener {
+    private Logger logger = Logger.getLogger(AudioService.class.getName());
     @Inject
     private ViewService viewService;
     @Inject
@@ -124,6 +126,15 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
 
     @Override
     public void onViewChanged(ViewField viewField, Rectangle2D absAabbRect) {
+        if(audioConfig.getTerrainLoopLand() == null) {
+            logger.warning("audioConfig.getTerrainLoopLand() == null");
+            return;
+        }
+        if(audioConfig.getTerrainLoopWater() == null) {
+            logger.warning("audioConfig.getTerrainLoopWater() == null");
+            return;
+        }
+
         double landWaterProportion = terrainUiService.calculateLandWaterProportion();
         if (MathHelper.compareWithPrecision(lastLandWaterProportion, landWaterProportion, 0.05)) {
             return;

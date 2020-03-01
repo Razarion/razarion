@@ -4,11 +4,11 @@ import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShader
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
 import com.btxtech.client.renderer.webgl.WebGlFacadeConfig;
-import com.btxtech.client.renderer.webgl.WebGlUtil;
 import com.btxtech.uiservice.renderer.DepthBufferRenderer;
 import com.btxtech.uiservice.renderer.task.ground.AbstractGroundRendererUnit;
 import com.btxtech.uiservice.terrain.UiTerrainTile;
 import elemental2.webgl.WebGLRenderingContext;
+import jsinterop.base.Js;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -34,7 +34,7 @@ public class ClientGroundDepthBufferRendererUnit extends AbstractGroundRendererU
 
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-        vertices.fillFloat32Array(WebGlUtil.doublesToFloat32Array(uiTerrainTile.getTerrainTile().getGroundPositions()));
+        vertices.fillFloat32Array(Js.uncheckedCast(uiTerrainTile.getTerrainTile().getGroundPositions()));
     }
 
     @Override

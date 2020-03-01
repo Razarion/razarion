@@ -23,7 +23,11 @@ import com.btxtech.shared.gameengine.datatypes.workerdto.SyncResourceItemSimpleD
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArrayMixed;
+import com.google.gwt.core.client.JsArrayInteger;
+import elemental2.core.Array;
+import elemental2.core.JsObject;
+import jsinterop.base.Any;
+import jsinterop.base.Js;
 import org.jboss.errai.enterprise.client.jaxrs.MarshallingWrapper;
 import org.jboss.errai.enterprise.client.jaxrs.api.RestClient;
 
@@ -46,9 +50,9 @@ public class WorkerMarshaller {
     private static final int DATA_OFFSET_5 = 6;
     private static final int DATA_OFFSET_6 = 7;
 
-    public static JavaScriptObject marshall(GameEngineControlPackage controlPackage) {
-        JsArrayMixed array = JavaScriptObject.createArray().cast();
-        array.set(COMMAND_OFFSET, controlPackage.getCommand().name());
+    public static Array<Object> marshall(GameEngineControlPackage controlPackage) {
+        Array<Object> array = new Array<>();
+        array.setAt(COMMAND_OFFSET, controlPackage.getCommand().name());
         switch (controlPackage.getCommand()) {
             // No data
             case LOADED:
@@ -89,7 +93,7 @@ public class WorkerMarshaller {
             case SELL_ITEMS:
             case USE_INVENTORY_ITEM:
             case INITIAL_SLAVE_SYNCHRONIZED:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
                 break;
             // Double JSON data
             case COMMAND_ATTACK:
@@ -106,47 +110,47 @@ public class WorkerMarshaller {
             case PROJECTILE_DETONATION:
             case SINGLE_Z_TERRAIN_ANSWER:
             case ENERGY_CHANGED:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
                 break;
             // Triple JSON data
             case COMMAND_BUILD:
             case PROJECTILE_FIRED:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
-                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.setAt(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
                 break;
             case INITIALIZE_WARM:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
-                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
-                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.setAt(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.setAt(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
-                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
-                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
-                array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
+                array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.setAt(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.setAt(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                array.setAt(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
                 break;
             // Multiple  JSON data
             case INITIALIZE:
-                array.set(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
-                array.set(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
-                array.set(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
-                array.set(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
-                array.set(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
-                array.set(DATA_OFFSET_5, toJson(controlPackage.getData(5)));
+                array.setAt(DATA_OFFSET_0, toJson(controlPackage.getData(0)));
+                array.setAt(DATA_OFFSET_1, toJson(controlPackage.getData(1)));
+                array.setAt(DATA_OFFSET_2, toJson(controlPackage.getData(2)));
+                array.setAt(DATA_OFFSET_3, toJson(controlPackage.getData(3)));
+                array.setAt(DATA_OFFSET_4, toJson(controlPackage.getData(4)));
+                array.setAt(DATA_OFFSET_5, toJson(controlPackage.getData(5)));
                 break;
             // Native marshal terrain buffers
             case TERRAIN_TILE_RESPONSE:
-                array.set(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
+                array.setAt(DATA_OFFSET_0, marshallTerrainTile((TerrainTile) controlPackage.getData(0)));
                 break;
             // Single Structure clone
             case TICK_UPDATE_RESPONSE:
             case SYNC_ITEM_START_SPAWNED:
             case SYNC_ITEM_IDLE:
-                array.set(DATA_OFFSET_0, (JavaScriptObject) controlPackage.getData(0));
+                array.setAt(DATA_OFFSET_0, (JsObject) controlPackage.getData(0));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + controlPackage.getCommand());
@@ -155,8 +159,8 @@ public class WorkerMarshaller {
     }
 
     public static GameEngineControlPackage deMarshall(Object javaScriptObject, NativeMatrixFactory nativeMatrixFactory) {
-        JsArrayMixed array = ((JavaScriptObject) javaScriptObject).cast();
-        GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(array.getString(COMMAND_OFFSET));
+        Any[] array = Js.castToArray(javaScriptObject);
+        GameEngineControlPackage.Command command = GameEngineControlPackage.Command.valueOf(array[COMMAND_OFFSET].asString());
 
         List<Object> data = new ArrayList<>();
         switch (command) {
@@ -174,179 +178,179 @@ public class WorkerMarshaller {
             case INITIAL_SLAVE_SYNCHRONIZED_NO_BASE: // Marshaller can not handle null value
                 break;
             case INITIALIZE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), StaticGameConfig.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), PlanetConfig.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), UserContext.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_3), GameEngineMode.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_4), Boolean.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_5), String.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), StaticGameConfig.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), PlanetConfig.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), UserContext.class));
+                data.add(fromJson(array[DATA_OFFSET_3].asString(), GameEngineMode.class));
+                data.add(fromJson(array[DATA_OFFSET_4].asString(), Boolean.class));
+                data.add(fromJson(array[DATA_OFFSET_5].asString(), String.class));
                 break;
             case INITIALIZE_WARM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), PlanetConfig.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), UserContext.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_3), GameEngineMode.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_4), String.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), PlanetConfig.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), UserContext.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), GameEngineMode.class));
+                data.add(fromJson(array[DATA_OFFSET_3].asString(), String.class));
                 break;
             case INITIALISING_FAILED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), String.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), String.class));
                 break;
             case START_BOTS:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
                 break;
             case EXECUTE_BOT_COMMANDS:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
                 break;
             case CREATE_RESOURCES:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
                 break;
             case CREATE_HUMAN_BASE_WITH_BASE_ITEM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Map.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), HumanPlayerId.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_3), String.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_4), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Map.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), HumanPlayerId.class));
+                data.add(fromJson(array[DATA_OFFSET_3].asString(), String.class));
+                data.add(fromJson(array[DATA_OFFSET_4].asString(), DecimalPosition.class));
                 break;
             case TICK_UPDATE_RESPONSE:
-                data.add(array.getObject(DATA_OFFSET_0));
-//                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-//                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
-//                data.add(fromJson(array.getString(DATA_OFFSET_2), List.class));
-//                data.add(fromJson(array.getString(DATA_OFFSET_3), List.class));
+                data.add(array[DATA_OFFSET_0]);
+//                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+//                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
+//                data.add(fromJson(array[DATA_OFFSET_2].asString(), List.class));
+//                data.add(fromJson(array[DATA_OFFSET_3].asString(), List.class));
                 break;
             case COMMAND_ATTACK:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_FINALIZE_BUILD:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_BUILD:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), DecimalPosition.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), Integer.class));
                 break;
             case COMMAND_FABRICATE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_HARVEST:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_MOVE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), DecimalPosition.class));
                 break;
             case COMMAND_PICK_BOX:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_LOAD_CONTAINER:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case COMMAND_UNLOAD_CONTAINER:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), DecimalPosition.class));
                 break;
             case RESOURCE_CREATED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncResourceItemSimpleDto.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncResourceItemSimpleDto.class));
                 break;
             case RESOURCE_DELETED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 break;
             case ENERGY_CHANGED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Integer.class));
                 break;
             case BASE_CREATED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseDto.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), PlayerBaseDto.class));
                 break;
             case BASE_DELETED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 break;
             case BASE_UPDATED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseDto.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), PlayerBaseDto.class));
                 break;
             case USE_INVENTORY_ITEM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), UseInventoryItem.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), UseInventoryItem.class));
                 break;
             case SYNC_ITEM_START_SPAWNED:
-                data.add(array.getObject(DATA_OFFSET_0));
+                data.add(array[DATA_OFFSET_0]);
                 break;
             case SYNC_ITEM_IDLE:
-                data.add(array.getObject(DATA_OFFSET_0));
+                data.add(array[DATA_OFFSET_0]);
                 break;
             case CREATE_BOXES:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
                 break;
             case BOX_CREATED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBoxItemSimpleDto.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncBoxItemSimpleDto.class));
                 break;
             case BOX_DELETED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 break;
             case BOX_PICKED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), BoxContent.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), BoxContent.class));
                 break;
             case ACTIVATE_QUEST:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 break;
             case UPDATE_LEVEL:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
                 break;
             case PROJECTILE_FIRED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Vertex.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_2), Vertex.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Vertex.class));
+                data.add(fromJson(array[DATA_OFFSET_2].asString(), Vertex.class));
                 break;
             case PROJECTILE_DETONATION:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Integer.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Vertex.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Integer.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Vertex.class));
                 break;
             case PERFMON_RESPONSE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
                 break;
             case SINGLE_Z_TERRAIN:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
                 break;
             case SINGLE_Z_TERRAIN_ANSWER:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
-                data.add(fromJson(array.getString(DATA_OFFSET_1), Double.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_1].asString(), Double.class));
                 break;
             case SINGLE_Z_TERRAIN_ANSWER_FAIL:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
                 break;
             case TERRAIN_TILE_REQUEST:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), Index.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), Index.class));
                 break;
             case TERRAIN_TILE_RESPONSE:
-                data.add(demarshallTerrainTile(array.getObject(DATA_OFFSET_0), nativeMatrixFactory));
+                data.add(demarshallTerrainTile(array[DATA_OFFSET_0], nativeMatrixFactory));
                 break;
             case PLAYBACK_PLAYER_BASE:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), PlayerBaseTracking.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), PlayerBaseTracking.class));
                 break;
             case PLAYBACK_SYNC_ITEM_DELETED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncItemDeletedInfo.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncItemDeletedInfo.class));
                 break;
             case PLAYBACK_SYNC_BASE_ITEM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBaseItemInfo.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncBaseItemInfo.class));
                 break;
             case PLAYBACK_SYNC_RESOURCE_ITEM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncResourceItemInfo.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncResourceItemInfo.class));
                 break;
             case PLAYBACK_SYNC_BOX_ITEM:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), SyncBoxItemInfo.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), SyncBoxItemInfo.class));
                 break;
             case QUEST_PROGRESS:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), QuestProgressInfo.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), QuestProgressInfo.class));
                 break;
             case SELL_ITEMS:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), List.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), List.class));
                 break;
             case INITIAL_SLAVE_SYNCHRONIZED:
-                data.add(fromJson(array.getString(DATA_OFFSET_0), DecimalPosition.class));
+                data.add(fromJson(array[DATA_OFFSET_0].asString(), DecimalPosition.class));
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported command: " + command);
@@ -373,16 +377,24 @@ public class WorkerMarshaller {
         }
     }
 
-
-    private static TerrainTile demarshallTerrainTile(JavaScriptObject data, NativeMatrixFactory nativeMatrixFactory) {
-        TerrainTile terrainTile = new TerrainTile() {
-        };
-        terrainTile.fromArray(data, nativeMatrixFactory);
+    private static TerrainTile demarshallTerrainTile(Object data, NativeMatrixFactory nativeMatrixFactory) {
+        Any[] array = Js.castToArray(data);
+        TerrainTile terrainTile = new TerrainTile();
+        terrainTile.setIndex(new Index(array[0].asArray()[0].asInt(), array[0].asArray()[1].asInt()));
+        terrainTile.setGroundPositions(array[1].uncheckedCast());
+        terrainTile.setGroundNorms(array[2].uncheckedCast());
         return terrainTile;
     }
 
-    private static JavaScriptObject marshallTerrainTile(TerrainTile terrainTile) {
-        return (JavaScriptObject) terrainTile.toArray();
+    private static Object marshallTerrainTile(TerrainTile terrainTile) {
+        Array<Object> array = new Array<>();
+        JsArrayInteger indexArray = JavaScriptObject.createArray().cast();
+        indexArray.push(terrainTile.getIndex().getX());
+        indexArray.push(terrainTile.getIndex().getY());
+        array.push(indexArray);
+        array.push(terrainTile.getGroundPositions());
+        array.push(terrainTile.getGroundNorms());
+        return array;
     }
 
 }

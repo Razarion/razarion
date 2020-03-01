@@ -6,6 +6,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BoxRegionConfig;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
@@ -39,21 +40,21 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Start box service
         BoxService boxService = getBoxService();
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_ID).setMinInterval(100).setMaxInterval(100).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(40, 50, 200, 150))));
+        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_ID).setMinInterval(100).setMaxInterval(100).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(40, 50, 200, 150))));
         boxService.startBoxRegions(boxRegionConfigs);
         // Span box 1
         tickBoxService(900);
         assertSyncItemCount(permanentSalve, 0);
         tickBoxService(100);
         assertSyncItemCount(permanentSalve, 1);
-        SyncBoxItem box1 = findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_ID);
+        SyncBoxItem box1 = findSyncBoxItem(FallbackConfig.BOX_ITEM_TYPE_ID);
         Assert.assertTrue(box1.isAlive());
         // Span box 2
         tickBoxService(900);
         assertSyncItemCount(permanentSalve, 1);
         tickBoxService(100);
         assertSyncItemCount(permanentSalve, 2);
-        SyncBoxItem box2 = findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_ID, box1);
+        SyncBoxItem box2 = findSyncBoxItem(FallbackConfig.BOX_ITEM_TYPE_ID, box1);
         Assert.assertTrue(box1.isAlive());
         Assert.assertTrue(box2.isAlive());
         // Span box 3
@@ -61,7 +62,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         assertSyncItemCount(permanentSalve, 2);
         tickBoxService(100);
         assertSyncItemCount(permanentSalve, 3);
-        SyncBoxItem box3 = findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_ID, box1, box2);
+        SyncBoxItem box3 = findSyncBoxItem(FallbackConfig.BOX_ITEM_TYPE_ID, box1, box2);
         Assert.assertTrue(box1.isAlive());
         Assert.assertTrue(box2.isAlive());
         Assert.assertTrue(box3.isAlive());
@@ -76,7 +77,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Span box 4
         tickBoxService(400);
         assertSyncItemCount(permanentSalve, 3);
-        SyncBoxItem box4 = findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_ID, box2, box3);
+        SyncBoxItem box4 = findSyncBoxItem(FallbackConfig.BOX_ITEM_TYPE_ID, box2, box3);
         Assert.assertFalse(box1.isAlive());
         Assert.assertTrue(box2.isAlive());
         Assert.assertTrue(box3.isAlive());
@@ -89,7 +90,7 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         // Start box service
         BoxService boxService = getBoxService();
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_LONG_ID).setMinInterval(10000).setMaxInterval(10000).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 1, 1))));
+        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(10000).setMaxInterval(10000).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 1, 1))));
         boxService.startBoxRegions(boxRegionConfigs);
         tickBoxService(100000);
         assertSyncItemCount(0, 0, 1);
@@ -100,9 +101,9 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);
         tickPlanetServiceBaseServiceActive();
         permanentSalve.assertSyncItemCount(1, 0, 1);
-        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         // Pick box
-        SyncBoxItem syncBoxItem = findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_LONG_ID);
+        SyncBoxItem syncBoxItem = findSyncBoxItem(FallbackConfig.BOX_ITEM_TYPE_LONG_ID);
         getCommandService().pickupBox(builder, syncBoxItem);
         verifySlavePick(permanentSalve, builder.getId(), syncBoxItem.getId());
         tickPlanetServiceBaseServiceActive();
@@ -114,33 +115,33 @@ public class BoxServiceTest extends WeldMasterBaseTest {
         Assert.assertEquals(10, boxPickedEntry.getBoxContent().getCrystals());
         Assert.assertEquals(2, boxPickedEntry.getBoxContent().getInventoryItems().size());
         TestHelper.assertObjects(boxPickedEntry.getBoxContent().getInventoryItems(),
-                getInventoryTypeService().getInventoryItem(GameTestContent.INVENTORY_ITEM_GOLD_ID),
-                getInventoryTypeService().getInventoryItem(GameTestContent.INVENTORY_ITEM_ATTACKER_ID));
+                getInventoryTypeService().getInventoryItem(FallbackConfig.INVENTORY_ITEM_GOLD_ID),
+                getInventoryTypeService().getInventoryItem(FallbackConfig.INVENTORY_ITEM_ATTACKER_ID));
     }
 
     @Test
     public void testItemDropBoxes() {
-        StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
-        BaseItemType builderType = GameTestContent.findBaseItemType(GameTestContent.BUILDER_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
+        StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
+        BaseItemType builderType = GameTestContent.findBaseItemType(FallbackConfig.BUILDER_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
         builderType.setDropBoxPossibility(1.0);
-        builderType.setDropBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_LONG_ID);
-        BaseItemType factoryType = GameTestContent.findBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
+        builderType.setDropBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID);
+        BaseItemType factoryType = GameTestContent.findBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID, staticGameConfig.getBaseItemTypes());
         factoryType.setDropBoxPossibility(1.0);
-        factoryType.setDropBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_LONG_ID);
+        factoryType.setDropBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID);
         setupMasterEnvironment(staticGameConfig, null);
         // Setup target to drop boxes
         UserContext userContext = createLevel1UserContext();
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(10, 20), userContext);
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
-        getCommandService().build(builder, new DecimalPosition(30, 20), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().build(builder, new DecimalPosition(30, 20), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
         // Setup attacker bot
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.ATTACKER_ITEM_TYPE_ID).setCount(3).setCreateDirectly(true));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setAutoAttack(true).setRealm(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(10, 10, 50, 50))).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         getBotService().startBots(botConfigs, null);

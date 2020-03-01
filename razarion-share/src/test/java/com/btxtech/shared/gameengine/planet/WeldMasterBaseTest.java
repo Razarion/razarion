@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.dto.TerrainSlopePosition;
@@ -27,11 +28,11 @@ public class WeldMasterBaseTest extends WeldBaseTest {
     private int nextHumanPlayerId = 1;
 
     protected void setupMasterEnvironment() {
-        setupMasterEnvironment(GameTestContent.setupStaticGameConfig(), null);
+        setupMasterEnvironment(FallbackConfig.setupStaticGameConfig(), null);
     }
 
     protected void setupMasterEnvironment(StaticGameConfig staticGameConfig, List<TerrainSlopePosition> terrainSlopePositions) {
-        setupEnvironment(staticGameConfig, GameTestContent.setupPlanetConfig());
+        setupEnvironment(staticGameConfig, FallbackConfig.setupPlanetConfig());
         getTestNativeTerrainShapeAccess().setTerrainSlopeAndObjectPositions(terrainSlopePositions, null);
         getPlanetService().initialise(getPlanetConfig(), GameEngineMode.MASTER, setupMasterPlanetConfig(), () -> getPlanetService().start(), null);
     }
@@ -90,7 +91,7 @@ public class WeldMasterBaseTest extends WeldBaseTest {
 
     protected UserContext createLevel1UserContext(Integer userId) {
         int humanPlayerId = nextHumanPlayerId++;
-        return new UserContext().setLevelId(GameTestContent.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId).setUserId(userId)).setName("test base " + humanPlayerId);
+        return new UserContext().setLevelId(FallbackConfig.LEVEL_ID_1).setUnlockedItemLimit(Collections.emptyMap()).setHumanPlayerId(new HumanPlayerId().setPlayerId(humanPlayerId).setUserId(userId)).setName("test base " + humanPlayerId);
     }
 
     protected UserContext createLevel1UserContext() {

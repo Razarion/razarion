@@ -1,8 +1,10 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
-import com.btxtech.shared.nativejs.NativeMatrixFactory;
-import jsinterop.annotations.JsType;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Index;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -10,61 +12,121 @@ import java.util.Map;
  * Created by Beat
  * 28.03.2017.
  */
-@JsType(isNative = true, name = "TerrainTile", namespace = "com.btxtech.shared.nativejs")
-public abstract class TerrainTile {
-//    private Map<Integer, double[]> groundSlopeVertices; // TODO remove if used in Javascript Interop GWT
-//    private Map<Integer, double[]> groundSlopeNorms; // TODO remove if used in Javascript Interop GWT
-//    private List<TerrainWaterTile> terrainWaterTiles;
+public class TerrainTile {
+    private Index index;
+    private Float32ArrayEmu groundPositions;
+    private Float32ArrayEmu groundNorms;
+    private Map<Integer, Float32ArrayEmu> groundSlopePositions;
+    private Map<Integer, Float32ArrayEmu> groundSlopeNorms;
+    private Collection<TerrainWaterTile> terrainWaterTiles;
+    private Collection<TerrainSlopeTile> terrainSlopeTiles;
+    private double landWaterProportion;
+    private TerrainNode[][] terrainNodes;
+    private double height;
+    private Collection<TerrainTileObjectList> terrainTileObjectLists;
 
-    public native void init(int indexX, int indexY);
 
-    public native int getIndexX();
+    public void setIndex(Index index) {
+        this.index = index;
+    }
 
-    public native int getIndexY();
+    public Index getIndex() {
+        return index;
+    }
 
-    public native void setGroundPositions(double[] groundPositions);
+    public Float32ArrayEmu getGroundPositions() {
+        return groundPositions;
+    }
 
-    public native double[] getGroundPositions();
+    public void setGroundPositions(Float32ArrayEmu groundPositions) {
+        this.groundPositions = groundPositions;
+    }
 
-    public native void setGroundNorms(double[] groundNorms);
+    public Float32ArrayEmu getGroundNorms() {
+        return groundNorms;
+    }
 
-    public native double[] getGroundNorms();
+    public void setGroundNorms(Float32ArrayEmu groundNorms) {
+        this.groundNorms = groundNorms;
+    }
 
-    public native Map<Integer, double[]> getGroundSlopeVertices();
+    public Map<Integer, Float32ArrayEmu> getGroundSlopePositions() {
+        return groundSlopePositions;
+    }
 
-    public native void setGroundSlopeVertices(Map<Integer, double[]> groundSlopeVertices);
+    public void setGroundSlopePositions(Map<Integer, Float32ArrayEmu> groundSlopePositions) {
+        this.groundSlopePositions = groundSlopePositions;
+    }
 
-    public native Map<Integer, double[]> getGroundSlopeNorms();
+    public Map<Integer, Float32ArrayEmu> getGroundSlopeNorms() {
+        return groundSlopeNorms;
+    }
 
-    public native void setGroundSlopeNorms(Map<Integer, double[]> groundSlopeNorms);
+    public void setGroundSlopeNorms(Map<Integer, Float32ArrayEmu> groundSlopeNorms) {
+        this.groundSlopeNorms = groundSlopeNorms;
+    }
 
-    public native void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile);
+    public void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles) {
+        this.terrainWaterTiles = terrainWaterTiles;
+    }
 
-    public native TerrainSlopeTile[] getTerrainSlopeTiles();
+    public Collection<TerrainWaterTile> getTerrainWaterTiles() {
+        return terrainWaterTiles;
+    }
 
-    public native void setTerrainWaterTiles(List<TerrainWaterTile> terrainWaterTiles);
+    public void addTerrainSlopeTile(TerrainSlopeTile terrainSlopeTile) {
+        if (terrainSlopeTiles == null) {
+            terrainSlopeTiles = new ArrayList<>();
+        }
+        terrainSlopeTiles.add(terrainSlopeTile);
+    }
 
-    public native List<TerrainWaterTile> getTerrainWaterTiles();
+    public TerrainSlopeTile[] getTerrainSlopeTiles() {
+        if (terrainSlopeTiles == null) {
+            return null;
+        }
+        return terrainSlopeTiles.toArray(new TerrainSlopeTile[0]);
+    }
 
-    public native double getLandWaterProportion();
+    public double getLandWaterProportion() {
+        return landWaterProportion;
+    }
 
-    public native void setLandWaterProportion(double landWaterProportion);
+    public void setLandWaterProportion(double landWaterProportion) {
+        this.landWaterProportion = landWaterProportion;
+    }
 
-    public native void setHeight(double height);
+    public void initTerrainNodeField(int terrainTileNodesEdgeCount) {
+        terrainNodes = new TerrainNode[terrainTileNodesEdgeCount][terrainTileNodesEdgeCount];
+    }
 
-    public native double getHeight();
+    public void insertTerrainNode(int x, int y, TerrainNode terrainNode) {
+        terrainNodes[x][y] = terrainNode;
+    }
 
-    public native void initTerrainNodeField(int terrainTileNodesEdgeCount);
+    public TerrainNode[][] getTerrainNodes() {
+        return terrainNodes;
+    }
 
-    public native void insertTerrainNode(int x, int y, TerrainNode terrainNode);
+    public void setHeight(double height) {
+        this.height = height;
+    }
 
-    public native TerrainNode[][] getTerrainNodes();
+    public double getHeight() {
+        return height;
+    }
 
-    public native Object toArray();
+    public TerrainTileObjectList[] getTerrainTileObjectLists() {
+        if (terrainTileObjectLists == null) {
+            return null;
+        }
+        return terrainTileObjectLists.toArray(new TerrainTileObjectList[0]);
+    }
 
-    public native int fromArray(Object object, NativeMatrixFactory nativeMatrixFactory);
-
-    public native TerrainTileObjectList[] getTerrainTileObjectLists();
-
-    public native void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList);
+    public void addTerrainTileObjectList(TerrainTileObjectList terrainTileObjectList) {
+        if (terrainTileObjectLists == null) {
+            terrainTileObjectLists = new ArrayList<>();
+        }
+        terrainTileObjectLists.add(terrainTileObjectList);
+    }
 }

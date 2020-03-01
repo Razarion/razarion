@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet.terrain;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.datatypes.Rectangle2D;
@@ -50,7 +51,7 @@ public class TerrainTileBuilder {
 
         terrainTile = jsInteropObjectFactory.generateTerrainTile();
 
-        terrainTile.init(terrainTileIndex.getX(), terrainTileIndex.getY());
+        terrainTile.setIndex(terrainTileIndex);
         offsetIndexX = terrainTileIndex.getX() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         offsetIndexY = terrainTileIndex.getY() * TerrainUtil.TERRAIN_TILE_NODES_COUNT;
         if (terrainShapeTile != null) {
@@ -68,14 +69,14 @@ public class TerrainTileBuilder {
     public TerrainTile generate() {
         terrainTile.setTerrainWaterTiles(terrainWaterTileBuilder.generate());
 
-        terrainTile.setGroundPositions(Vertex.toArray(groundPositions));
-        terrainTile.setGroundNorms(Vertex.toArray(groundNorms));
+        terrainTile.setGroundPositions(jsInteropObjectFactory.newFloat32Array(groundPositions));
+        terrainTile.setGroundNorms(jsInteropObjectFactory.newFloat32Array(groundNorms));
 
-        Map<Integer, double[]> terrainTileGroundSlopeVertices = new HashMap<>();
-        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, Vertex.toArray(vertices)));
-        terrainTile.setGroundSlopeVertices(terrainTileGroundSlopeVertices);
-        Map<Integer, double[]> terrainTileGroundNorms = new HashMap<>();
-        groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, Vertex.toArray(vertices)));
+        Map<Integer, Float32ArrayEmu> terrainTileGroundSlopeVertices = new HashMap<>();
+        groundSlopeVertices.getMap().forEach((slopeId, vertices) -> terrainTileGroundSlopeVertices.put(slopeId, jsInteropObjectFactory.newFloat32Array(vertices)));
+        terrainTile.setGroundSlopePositions(terrainTileGroundSlopeVertices);
+        Map<Integer, Float32ArrayEmu> terrainTileGroundNorms = new HashMap<>();
+        groundSlopeNorms.getMap().forEach((slopeId, vertices) -> terrainTileGroundNorms.put(slopeId, jsInteropObjectFactory.newFloat32Array(vertices)));
         terrainTile.setGroundSlopeNorms(terrainTileGroundNorms);
 
         //  TODO groundSlopeVertices.

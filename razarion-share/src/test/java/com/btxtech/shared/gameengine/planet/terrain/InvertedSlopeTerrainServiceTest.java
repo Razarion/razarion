@@ -4,12 +4,12 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.GameTestHelper;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
@@ -70,7 +70,7 @@ public class InvertedSlopeTerrainServiceTest extends WeldTerrainServiceTestBase 
                 {0.1, 0.2, 0.3}
         };
 
-        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
+        PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setPlayGround(new Rectangle2D(50, 50, 5000, 5000));
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 32, 32));
 

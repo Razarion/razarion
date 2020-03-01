@@ -3,6 +3,7 @@ package com.btxtech.shared.gameengine.planet.terrain;
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.dto.DrivewayConfig;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.TerrainObjectConfig;
@@ -13,7 +14,6 @@ import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.datatypes.config.StaticGameConfig;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.WeldMasterBaseTest;
 import com.btxtech.shared.gameengine.planet.terrain.container.TerrainShape;
 
@@ -32,7 +32,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
     public static int DRIVEWAY_ID_1 = 1;
 
     protected void setupTerrainTypeService(List<SlopeConfig> slopeConfigs, List<TerrainObjectConfig> terrainObjectConfigs, PlanetConfig planetConfig, List<TerrainSlopePosition> terrainSlopePositions, List<TerrainObjectPosition> terrainObjectPositions, GroundConfig groundConfig) {
-        StaticGameConfig staticGameConfig = GameTestContent.setupStaticGameConfig();
+        StaticGameConfig staticGameConfig = FallbackConfig.setupStaticGameConfig();
         staticGameConfig.setWaterConfig(new WaterConfig().setWaterLevel(-0.7));
         if(groundConfig == null) {
             groundConfig = new GroundConfig();
@@ -44,7 +44,7 @@ public class WeldTerrainServiceTestBase extends WeldMasterBaseTest {
         drivewayConfigs.add(new DrivewayConfig().setId(DRIVEWAY_ID_1).setAngle(Math.toRadians(20)));
         staticGameConfig.setDrivewayConfigs(drivewayConfigs);
         if (planetConfig == null) {
-            planetConfig = GameTestContent.setupPlanetConfig();
+            planetConfig = FallbackConfig.setupPlanetConfig();
         }
         setupEnvironment(staticGameConfig, planetConfig);
         getTestNativeTerrainShapeAccess().setPlanetConfig(planetConfig);

@@ -1,6 +1,7 @@
 package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.datatypes.Polygon2D;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlaceConfig;
@@ -20,7 +21,7 @@ public class ResourceServiceTest extends WeldMasterBaseTest {
     @Override
     protected MasterPlanetConfig setupMasterPlanetConfig() {
         resourceRegionConfigs = new ArrayList<>();
-        resourceRegionConfigs.add(new ResourceRegionConfig().setResourceItemTypeId(GameTestContent.RESOURCE_ITEM_TYPE_ID).setCount(5).setMinDistanceToItems(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 20, 20))));
+        resourceRegionConfigs.add(new ResourceRegionConfig().setResourceItemTypeId(FallbackConfig.RESOURCE_ITEM_TYPE_ID).setCount(5).setMinDistanceToItems(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(20, 20, 20, 20))));
         return super.setupMasterPlanetConfig().setResourceRegionConfigs(resourceRegionConfigs);
     }
 

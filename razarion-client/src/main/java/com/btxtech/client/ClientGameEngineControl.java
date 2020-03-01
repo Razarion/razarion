@@ -10,10 +10,8 @@ import com.btxtech.shared.nativejs.NativeMatrixFactory;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.control.GameEngineControl;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
-import elemental.client.Browser;
-import elemental.events.ErrorEvent;
-import elemental.events.MessageEvent;
-import elemental.html.Worker;
+import elemental2.dom.ErrorEvent;
+import elemental2.dom.Worker;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
@@ -45,12 +43,11 @@ public class ClientGameEngineControl extends GameEngineControl {
     public void loadWorker(DeferredStartup deferredStartup) {
         this.deferredStartup = deferredStartup;
         try {
-            worker = Browser.getWindow().newWorker(CommonUrl.getWorkerScriptUrl());
-            worker.setOnmessage(event -> {
+            worker = new Worker(CommonUrl.getWorkerScriptUrl());
+            worker.onmessage = messageEvent -> {
                 Object data = null;
                 try {
-                    MessageEvent messageEvent = (MessageEvent) event;
-                    data = messageEvent.getData();
+                    data = messageEvent.data;
                     GameEngineControlPackage controlPackage = WorkerMarshaller.deMarshall(data, nativeMatrixFactory);
                     dispatch(controlPackage);
                     if (queueStatistics != null) {
@@ -59,8 +56,12 @@ public class ClientGameEngineControl extends GameEngineControl {
                 } catch (Throwable t) {
                     exceptionHandler.handleException("ClientGameEngineControl: exception processing package on client. Data: " + data, t);
                 }
-            });
-            worker.setOnerror(event -> handleErrors((ErrorEvent) event));
+                return null;
+            };
+            worker.onerror = event -> {
+                handleErrors((ErrorEvent) event);
+                return null;
+            };
         } catch (Throwable t) {
             this.deferredStartup.failed(t);
             this.deferredStartup = null;
@@ -68,7 +69,7 @@ public class ClientGameEngineControl extends GameEngineControl {
     }
 
     private void handleErrors(ErrorEvent errorEvent) {
-        logger.severe("ClientGameEngineControl handleErrors. Message: \"" + errorEvent.getMessage() + "\". FileName: " + errorEvent.getFilename() + ". LineNo: " + errorEvent.getLineno());
+        logger.severe("ClientGameEngineControl handleErrors. Message: \"" + errorEvent.message + "\". FileName: " + errorEvent.filename + ". LineNo: " + errorEvent.lineno);
     }
 
     @Override

@@ -20,8 +20,8 @@ public class GroundRenderTask extends AbstractRenderTask<UiTerrainTile> {
         CommonRenderComposite<AbstractGroundRendererUnit, UiTerrainTile> renderComposite = modelRenderer.create();
         renderComposite.init(uiTerrainTile);
         renderComposite.setRenderUnit(AbstractGroundRendererUnit.class);
-        renderComposite.setDepthBufferRenderUnit(AbstractGroundRendererUnit.class);
-        renderComposite.setNormRenderUnit(AbstractGroundRendererUnit.class);
+        // TODO renderComposite.setDepthBufferRenderUnit(AbstractGroundRendererUnit.class);
+        // TODO renderComposite.setNormRenderUnit(AbstractGroundRendererUnit.class);
         modelRenderer.add(RenderUnitControl.TERRAIN, renderComposite);
         add(modelRenderer);
         renderComposite.fillBuffers();

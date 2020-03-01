@@ -6,15 +6,19 @@ import com.btxtech.shared.TestTerrainSubNode;
 import com.btxtech.shared.TestTerrainTile;
 import com.btxtech.shared.TestTerrainTileObjectList;
 import com.btxtech.shared.TestTerrainWaterTile;
+import com.btxtech.shared.datatypes.Float32ArrayEmu;
+import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSlopeTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainSubNode;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTile;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainTileObjectList;
 import com.btxtech.shared.gameengine.planet.terrain.TerrainWaterTile;
+import com.btxtech.shared.mocks.TestFloat32Array;
 import com.btxtech.shared.system.JsInteropObjectFactory;
 
 import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * Created by Beat
@@ -50,5 +54,10 @@ public class TestJsInteropObjectFactory implements JsInteropObjectFactory {
     @Override
     public TerrainTileObjectList generateTerrainTileObjectList() {
         return new TestTerrainTileObjectList();
+    }
+
+    @Override
+    public Float32ArrayEmu newFloat32Array(List<Vertex> vertices) {
+        return new TestFloat32Array(vertices);
     }
 }

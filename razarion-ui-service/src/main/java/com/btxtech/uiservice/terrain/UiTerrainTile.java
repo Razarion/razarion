@@ -99,7 +99,7 @@ public class UiTerrainTile {
 
     public Integer getTopTextureId() {
         // TODO return groundSkeletonConfig.getTopTextureId();
-        throw new UnsupportedOperationException("TODO");
+        return null;
     }
 
     public Integer getSplattingId() {

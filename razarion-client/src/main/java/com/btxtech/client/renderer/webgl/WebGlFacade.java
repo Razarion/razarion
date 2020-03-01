@@ -33,8 +33,9 @@ import javax.inject.Inject;
 public class WebGlFacade {
     // private Logger logger = Logger.getLogger(WebGlFacade.class.getName());
     // Attributes
-    public static final String A_VERTEX_POSITION = "aVertexPosition";
-    public static final String A_VERTEX_NORMAL = "aVertexNormal";
+    public static final String A_VERTEX_POSITION = "position";
+    public static final String A_VERTEX_NORMAL = "objectNormal";
+    @Deprecated
     public static final String A_VERTEX_TANGENT = "aVertexTangent";
     public static final String A_TEXTURE_COORDINATE = "aTextureCoord";
     public static final String A_BARYCENTRIC = "aBarycentric";
@@ -44,11 +45,11 @@ public class WebGlFacade {
     public static final String U_COLOR = "uColor";
     public static final String U_TEXTURE = "uTexture";
     // Uniform model matrix
-    public static final String U_PERSPECTIVE_MATRIX = "uPMatrix";
-    public static final String U_VIEW_MATRIX = "uVMatrix";
-    public static final String U_VIEW_NORM_MATRIX = "uNVMatrix";
+    public static final String U_VIEW_MATRIX = "viewMatrix";
+    public static final String U_PROJECTION_MATRIX = "projectionMatrix";
+    public static final String U_VIEW_NORM_MATRIX = "normalMatrix";
     public static final String U_MODEL_MATRIX = "uMMatrix";
-    public static final String U_MODEL_NORM_MATRIX = "uNMatrix";
+    public static final String U_SHADOW_MATRIX = "shadowMatrix";
     // Uniform Light
     public static final String U_LIGHT_DIRECTION = "uLightDirection";
     public static final String U_LIGHT_DIFFUSE = "uLightDiffuse";
@@ -81,8 +82,8 @@ public class WebGlFacade {
         webGlProgram = webGlProgramService.getWebGlProgram(webGlFacadeConfig);
         if (webGlFacadeConfig.isReceiveShadow()) {
             shadowWebGlTextureId = createWebGlTextureId();
-            uShadowAlpha = getUniformLocation("uShadowAlpha");
-            uShadowTexture = getUniformLocation("uShadowTexture");
+            // TODO uShadowAlpha = getUniformLocation("uShadowAlpha");
+            // TODO uShadowTexture = getUniformLocation("uShadowTexture");
         }
     }
 

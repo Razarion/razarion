@@ -1,7 +1,7 @@
 package com.btxtech.shared.gameengine.planet.pathing.move;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.planet.testframework.Scenario;
 import com.btxtech.shared.gameengine.planet.testframework.ScenarioBaseTest;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitTest_moveEast1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(100, 160));
+                createSyncBaseItemSimplePath(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(100, 160));
             }
         });
     }
@@ -27,7 +27,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitTest_moveEast2.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(60, 160));
+                createSyncBaseItemSimplePath(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(40, 160), new DecimalPosition(60, 160));
             }
         });
     }
@@ -37,7 +37,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitTest_moveNorth1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(16, 160), new DecimalPosition(16, 176));
+                createSyncBaseItemSimplePath(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(16, 160), new DecimalPosition(16, 176));
             }
         });
     }
@@ -47,7 +47,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitTest_moveWest1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(64, 160), new DecimalPosition(16, 160));
+                createSyncBaseItemSimplePath(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(64, 160), new DecimalPosition(16, 160));
             }
         });
     }
@@ -57,7 +57,7 @@ public class MoveSingleUnitTest extends ScenarioBaseTest {
         testScenario(new Scenario("MoveSingleUnitTest_moveSouth1.json", getClass()) {
             @Override
             protected void createSyncItems() {
-                createSyncBaseItemSimplePath(GameTestContent.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(24, 224), new DecimalPosition(24, 184));
+                createSyncBaseItemSimplePath(FallbackConfig.MOVING_TEST_ITEM_TYPE_ID, new DecimalPosition(24, 224), new DecimalPosition(24, 184));
             }
         });
     }

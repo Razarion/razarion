@@ -19,10 +19,6 @@ public class MainPanel implements IsElement {
     @DataField
     private HTMLDivElement gamePanel;
 
-    public MainPanel() {
-        logger.severe("MainPanel constructor");
-    }
-
     public void addToGamePanel(HTMLElement htmlElement) {
         gamePanel.appendChild(htmlElement);
     }

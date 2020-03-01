@@ -4,8 +4,8 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertShapeAccess;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainShape;
 import com.btxtech.shared.gameengine.planet.terrain.asserthelper.AssertTerrainTile;
@@ -23,7 +23,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
         TerrainTile terrainTile = getTerrainService().generateTerrainTile(new Index(0, 0));
 
-        // showDisplay();
+        showDisplay();
 
         // AssertTerrainTile.saveTerrainTile(terrainTile, "testGroundTileGeneration1.json");
         AssertTerrainTile assertTerrainTile = new AssertTerrainTile(getClass(), "testGroundTileGeneration1.json");
@@ -57,7 +57,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testGroundTileGenerationOffset() {
-        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
+        PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 20, 20));
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 3200, 3200));
 
@@ -78,7 +78,7 @@ public class GroundTerrainServiceTest extends WeldTerrainServiceTestBase {
 
     @Test
     public void testGroundTileGenerationOffsetNeg() {
-        PlanetConfig planetConfig = GameTestContent.setupPlanetConfig();
+        PlanetConfig planetConfig = FallbackConfig.setupPlanetConfig();
         planetConfig.setTerrainTileDimension(new Rectangle(-2, -2, 4, 4));
         planetConfig.setPlayGround(new Rectangle2D(-320, -320, 640, 640));
 

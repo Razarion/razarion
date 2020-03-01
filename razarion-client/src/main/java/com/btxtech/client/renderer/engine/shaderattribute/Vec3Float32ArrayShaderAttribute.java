@@ -1,8 +1,6 @@
 package com.btxtech.client.renderer.engine.shaderattribute;
 
-import com.btxtech.client.renderer.ClientRenderUtil;
 import com.btxtech.client.renderer.webgl.WebGlProgram;
-import com.btxtech.shared.datatypes.Float32ArrayEmu;
 import elemental2.webgl.WebGLRenderingContext;
 
 /**
@@ -14,9 +12,4 @@ public class Vec3Float32ArrayShaderAttribute extends AbstractShaderAttribute {
     public Vec3Float32ArrayShaderAttribute(WebGLRenderingContext ctx3d, WebGlProgram webGlProgram, String attributeName) {
         super(ctx3d, webGlProgram, attributeName, 3);
     }
-
-    public void fillFloat32ArrayEmu(Float32ArrayEmu float32Array) {
-        fillFloat32Array(ClientRenderUtil.toFloat32Array(float32Array));
-    }
-
 }

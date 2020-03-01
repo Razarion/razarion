@@ -5,16 +5,14 @@ import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.WarmGameUiControlConfig;
 import com.btxtech.shared.rest.GameUiControlController;
-import com.btxtech.shared.system.ExceptionHandler;
-import org.xml.sax.SAXException;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Created by Beat
@@ -24,11 +22,11 @@ public class GameUiControlControllerImpl implements GameUiControlController {
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
     @Inject
-    private ExceptionHandler exceptionHandler;
-    @Inject
     private UserService userService;
     @Inject
     private SessionHolder sessionHolder;
+    @Inject
+    private Logger logger;
 
     @Override
     @Transactional
@@ -36,12 +34,9 @@ public class GameUiControlControllerImpl implements GameUiControlController {
         try {
             UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.load(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            exceptionHandler.handleException(e);
-            throw new RuntimeException(e);
         } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
+            logger.severe("Using ColdGameUiControlConfig. No planets configured");
+            return FallbackConfig.coldGameUiControlConfig();
         }
     }
 
@@ -51,8 +46,8 @@ public class GameUiControlControllerImpl implements GameUiControlController {
             UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
+            logger.severe("Using Fallback. No WarmGameUiControlConfig configured");
+            return FallbackConfig.warmGameUiControlConfig();
         }
     }
 }

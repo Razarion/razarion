@@ -5,6 +5,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Polygon2D;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.BoxRegionConfig;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ResourceRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.BackupPlanetInfo;
@@ -44,11 +45,11 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         TestBaseRestoreProvider testBaseRestoreProvider = new TestBaseRestoreProvider();
         // Resources
         getResourceService().startResourceRegions();
-        Collection<SyncResourceItem> resources = getSyncItemContainerService().findResourceItemWithPlace(GameTestContent.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
+        Collection<SyncResourceItem> resources = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resources.size());
         // Box
         Collection<BoxRegionConfig> boxRegionConfigs = new ArrayList<>();
-        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(GameTestContent.BOX_ITEM_TYPE_LONG_ID).setMinInterval(1).setMaxInterval(1).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(200, 20, 20, 20))));
+        boxRegionConfigs.add(new BoxRegionConfig().setBoxItemTypeId(FallbackConfig.BOX_ITEM_TYPE_LONG_ID).setMinInterval(1).setMaxInterval(1).setCount(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(200, 20, 20, 20))));
         getBoxService().startBoxRegions(boxRegionConfigs);
         // Bot
         SyncBaseItem botTarget = setupBot();
@@ -59,19 +60,19 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         tickPlanetServiceBaseServiceActive();
         QuestConfig questCreate1 = GameTestContent.createItemCountCreatedQuest();
         getQuestService().activateCondition(playerBaseFull1.getHumanPlayerId(), questCreate1);
-        SyncBaseItem builder1 = findSyncBaseItem(playerBaseFull1, GameTestContent.BUILDER_ITEM_TYPE_ID);
-        getCommandService().build(builder1, new DecimalPosition(40, 20), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        SyncBaseItem builder1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().build(builder1, new DecimalPosition(40, 20), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem factory1 = findSyncBaseItem(playerBaseFull1, GameTestContent.FACTORY_ITEM_TYPE_ID);
-        getCommandService().fabricate(factory1, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        SyncBaseItem factory1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.FACTORY_ITEM_TYPE_ID);
+        getCommandService().fabricate(factory1, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem attacker1 = findSyncBaseItem(playerBaseFull1, GameTestContent.ATTACKER_ITEM_TYPE_ID);
-        getCommandService().fabricate(factory1, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        SyncBaseItem attacker1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.ATTACKER_ITEM_TYPE_ID);
+        getCommandService().fabricate(factory1, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem boxPicker1 = findSyncBaseItem(playerBaseFull1, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1);
-        getCommandService().fabricate(factory1, getBaseItemType(GameTestContent.HARVESTER_ITEM_TYPE_ID));
+        SyncBaseItem boxPicker1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.ATTACKER_ITEM_TYPE_ID, attacker1);
+        getCommandService().fabricate(factory1, getBaseItemType(FallbackConfig.HARVESTER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem harvester1 = findSyncBaseItem(playerBaseFull1, GameTestContent.HARVESTER_ITEM_TYPE_ID);
+        SyncBaseItem harvester1 = findSyncBaseItem(playerBaseFull1, FallbackConfig.HARVESTER_ITEM_TYPE_ID);
         getCommandService().harvest(harvester1, CollectionUtils.getFirst(resources));
         // Create base 2
         UserContext userContext2 = createLevel1UserContext();
@@ -80,10 +81,10 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         tickPlanetServiceBaseServiceActive(harvester1);
         QuestConfig questCreate2 = GameTestContent.createItemTypeCountCreatedQuest();
         getQuestService().activateCondition(playerBaseFull2.getHumanPlayerId(), questCreate2);
-        SyncBaseItem builder2 = findSyncBaseItem(playerBaseFull2, GameTestContent.BUILDER_ITEM_TYPE_ID);
-        getCommandService().build(builder2, new DecimalPosition(70, 40), getBaseItemType(GameTestContent.CONSUMER_ITEM_TYPE_ID));
+        SyncBaseItem builder2 = findSyncBaseItem(playerBaseFull2, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().build(builder2, new DecimalPosition(70, 40), getBaseItemType(FallbackConfig.CONSUMER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive(harvester1);
-        SyncBaseItem consumer2 = findSyncBaseItem(playerBaseFull2, GameTestContent.CONSUMER_ITEM_TYPE_ID);
+        SyncBaseItem consumer2 = findSyncBaseItem(playerBaseFull2, FallbackConfig.CONSUMER_ITEM_TYPE_ID);
 
         // Check energy
         assertEnergy(0, 0, playerBaseFull1);
@@ -91,9 +92,9 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Command before backup
         getCommandService().attack(attacker1, botTarget, true);
-        getCommandService().pickupBox(boxPicker1, findSyncBoxItem(GameTestContent.BOX_ITEM_TYPE_LONG_ID));
-        getCommandService().fabricate(factory1, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
-        getCommandService().build(builder2, new DecimalPosition(40, 40), getBaseItemType(GameTestContent.GENERATOR_ITEM_TYPE_ID));
+        getCommandService().pickupBox(boxPicker1, findSyncBoxItem(FallbackConfig.BOX_ITEM_TYPE_LONG_ID));
+        getCommandService().fabricate(factory1, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
+        getCommandService().build(builder2, new DecimalPosition(40, 40), getBaseItemType(FallbackConfig.GENERATOR_ITEM_TYPE_ID));
         Assert.assertNotNull(harvester1.getSyncHarvester().getResource());
         // ---------- Backup ---------
         BackupPlanetInfo backupPlanetInfoUnregistered = getPlanetService().backup(true);
@@ -123,7 +124,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Verify resources
         getResourceService().startResourceRegions();
-        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(GameTestContent.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
+        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resourcesRestore.size());
         assertDifferentResources(resources, resourcesRestore);
         assertSyncItemCount(7, 5, 0);
@@ -132,23 +133,23 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull1Restore = (PlayerBaseFull) getBaseItemService().getPlayerBase4BaseId(playerBaseFull1.getBaseId());
         Assert.assertEquals(5, playerBaseFull1Restore.getItemCount());
         assertPlayerBaseFull(playerBaseFull1, playerBaseFull1Restore);
-        SyncBaseItem builder1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem builder1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         assertSyncBaseItem(builder1, builder1Restore);
-        SyncBaseItem factory1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        SyncBaseItem factory1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.FACTORY_ITEM_TYPE_ID);
         assertSyncBaseItem(factory1, factory1Restore);
-        SyncBaseItem harvester1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.HARVESTER_ITEM_TYPE_ID);
+        SyncBaseItem harvester1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.HARVESTER_ITEM_TYPE_ID);
         assertSyncHarvestBaseItem(harvester1, harvester1Restore);
-        SyncBaseItem attacker1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, boxPicker1);
+        SyncBaseItem attacker1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.ATTACKER_ITEM_TYPE_ID, boxPicker1);
         assertSyncAttackerBaseItem(attacker1, attacker1Restore);
-        SyncBaseItem boxPickerRestore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1);
+        SyncBaseItem boxPickerRestore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.ATTACKER_ITEM_TYPE_ID, attacker1);
         assertSyncBoxPickBaseItem(boxPicker1, boxPickerRestore);
         // Verify base 2
         PlayerBaseFull playerBaseFull2Restore = (PlayerBaseFull) getBaseItemService().getPlayerBase4BaseId(playerBaseFull2.getBaseId());
         assertPlayerBaseFull(playerBaseFull2, playerBaseFull2Restore);
         Assert.assertEquals(2, playerBaseFull2Restore.getItemCount());
-        SyncBaseItem builder2Restore = findSyncBaseItem(playerBaseFull2Restore, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem builder2Restore = findSyncBaseItem(playerBaseFull2Restore, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         assertSyncBaseItem(builder2, builder2Restore);
-        SyncBaseItem consumer2Restore = findSyncBaseItem(playerBaseFull2Restore, GameTestContent.CONSUMER_ITEM_TYPE_ID);
+        SyncBaseItem consumer2Restore = findSyncBaseItem(playerBaseFull2Restore, FallbackConfig.CONSUMER_ITEM_TYPE_ID);
         assertSyncBaseItem(consumer2, consumer2Restore);
 
         // Check energy restore 1
@@ -160,10 +161,10 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         assertSyncItemCount(9, 5, 0);
         // Base 1
         Assert.assertEquals(6, playerBaseFull1Restore.getItemCount());
-        findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1Restore, boxPickerRestore);
+        findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.ATTACKER_ITEM_TYPE_ID, attacker1Restore, boxPickerRestore);
         // Base 2
         Assert.assertEquals(3, playerBaseFull2Restore.getItemCount());
-        SyncBaseItem factory2Restore = findSyncBaseItem(playerBaseFull2Restore, GameTestContent.GENERATOR_ITEM_TYPE_ID);
+        SyncBaseItem factory2Restore = findSyncBaseItem(playerBaseFull2Restore, FallbackConfig.GENERATOR_ITEM_TYPE_ID);
         Assert.assertEquals(new DecimalPosition(40, 40), factory2Restore.getSyncPhysicalArea().getPosition2d());
 
         // Check energy restore 2
@@ -175,7 +176,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull3 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext3);
         Assert.assertEquals(5, playerBaseFull3.getBaseId());
         tickPlanetServiceBaseServiceActive(attacker1Restore, boxPickerRestore);
-        findSyncBaseItem(playerBaseFull3, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        findSyncBaseItem(playerBaseFull3, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         printAllSyncItems();
         assertSyncItemCount(10, 5, 0);
 
@@ -201,7 +202,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
 
         // Verify resources
         getResourceService().startResourceRegions();
-        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(GameTestContent.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
+        Collection<SyncResourceItem> resourcesRestore = getSyncItemContainerService().findResourceItemWithPlace(FallbackConfig.RESOURCE_ITEM_TYPE_ID, new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20)));
         Assert.assertEquals(5, resourcesRestore.size());
         assertDifferentResources(resources, resourcesRestore);
         assertSyncItemCount(5, 5, 0);
@@ -209,15 +210,15 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull1Restore = (PlayerBaseFull) getBaseItemService().getPlayerBase4BaseId(playerBaseFull1.getBaseId());
         Assert.assertEquals(5, playerBaseFull1Restore.getItemCount());
         assertPlayerBaseFull(playerBaseFull1, playerBaseFull1Restore);
-        SyncBaseItem builder1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        SyncBaseItem builder1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         assertSyncBaseItem(builder1, builder1Restore);
-        SyncBaseItem factory1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        SyncBaseItem factory1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.FACTORY_ITEM_TYPE_ID);
         assertSyncBaseItem(factory1, factory1Restore);
-        SyncBaseItem harvester1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.HARVESTER_ITEM_TYPE_ID);
+        SyncBaseItem harvester1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.HARVESTER_ITEM_TYPE_ID);
         assertSyncHarvestBaseItem(harvester1, harvester1Restore);
-        SyncBaseItem attacker1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, boxPicker1);
+        SyncBaseItem attacker1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.ATTACKER_ITEM_TYPE_ID, boxPicker1);
         assertSyncAttackerBaseItem(attacker1, attacker1Restore);
-        SyncBaseItem boxPicker1Restore = findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1);
+        SyncBaseItem boxPicker1Restore = findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.ATTACKER_ITEM_TYPE_ID, attacker1);
         assertSyncBoxPickBaseItem(boxPicker1, boxPicker1Restore);
 
         // Check energy restore 1
@@ -228,7 +229,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         // Base 1
         assertSyncItemCount(6, 5, 0);
         Assert.assertEquals(6, playerBaseFull1Restore.getItemCount());
-        findSyncBaseItem(playerBaseFull1Restore, GameTestContent.ATTACKER_ITEM_TYPE_ID, attacker1Restore, boxPicker1Restore);
+        findSyncBaseItem(playerBaseFull1Restore, FallbackConfig.ATTACKER_ITEM_TYPE_ID, attacker1Restore, boxPicker1Restore);
 
         // Check energy restore 2
         assertEnergy(0, 0, playerBaseFull1Restore);
@@ -239,7 +240,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         PlayerBaseFull playerBaseFull3 = createHumanBaseWithBaseItem(new DecimalPosition(20, 20), userContext3);
         Assert.assertEquals(4, playerBaseFull3.getBaseId());
         tickPlanetServiceBaseServiceActive(attacker1Restore, boxPicker1Restore);
-        findSyncBaseItem(playerBaseFull3, GameTestContent.BUILDER_ITEM_TYPE_ID);
+        findSyncBaseItem(playerBaseFull3, FallbackConfig.BUILDER_ITEM_TYPE_ID);
         assertSyncItemCount(7, 5, 0);
 
         // Restore Quests
@@ -254,7 +255,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
         List<BotConfig> botConfigs = new ArrayList<>();
         List<BotEnragementStateConfig> botEnragementStateConfigs = new ArrayList<>();
         List<BotItemConfig> botItems = new ArrayList<>();
-        botItems.add(new BotItemConfig().setBaseItemTypeId(GameTestContent.FACTORY_ITEM_TYPE_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(100, 70))));
+        botItems.add(new BotItemConfig().setBaseItemTypeId(FallbackConfig.FACTORY_ITEM_TYPE_ID).setCount(1).setCreateDirectly(true).setPlace(new PlaceConfig().setPosition(new DecimalPosition(100, 70))));
         botEnragementStateConfigs.add(new BotEnragementStateConfig().setName("Normal").setBotItems(botItems));
         botConfigs.add(new BotConfig().setId(1).setActionDelay(1).setBotEnragementStateConfigs(botEnragementStateConfigs).setName("Kenny").setNpc(false));
         getBotService().startBots(botConfigs, null);
@@ -263,7 +264,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
             botScheduledFuture.invokeRun();
             tickPlanetService();
         }
-        return findSyncBaseItem(findBotBase(1), GameTestContent.FACTORY_ITEM_TYPE_ID);
+        return findSyncBaseItem(findBotBase(1), FallbackConfig.FACTORY_ITEM_TYPE_ID);
     }
 
     private void assertDifferentResources(Collection<SyncResourceItem> resources, Collection<SyncResourceItem> resourcesRestore) {
@@ -273,7 +274,7 @@ public class TestBackupRestore extends WeldMasterBaseTest {
     @Override
     protected MasterPlanetConfig setupMasterPlanetConfig() {
         List<ResourceRegionConfig> resourceRegionConfigs = new ArrayList<>();
-        resourceRegionConfigs.add(new ResourceRegionConfig().setResourceItemTypeId(GameTestContent.RESOURCE_ITEM_TYPE_ID).setCount(5).setMinDistanceToItems(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20))));
+        resourceRegionConfigs.add(new ResourceRegionConfig().setResourceItemTypeId(FallbackConfig.RESOURCE_ITEM_TYPE_ID).setCount(5).setMinDistanceToItems(1).setRegion(new PlaceConfig().setPolygon2D(Polygon2D.fromRectangle(100, 20, 20, 20))));
         return super.setupMasterPlanetConfig().setResourceRegionConfigs(resourceRegionConfigs);
     }
 

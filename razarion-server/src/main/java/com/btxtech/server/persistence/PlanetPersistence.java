@@ -239,11 +239,11 @@ public class PlanetPersistence {
 
     @Transactional
     public Collection<PlanetConfig> loadAllPlanetConfig() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PlanetEntity> criteriaQuery = criteriaBuilder.createQuery(PlanetEntity.class);
-        Root<PlanetEntity> root = criteriaQuery.from(PlanetEntity.class);
-        CriteriaQuery<PlanetEntity> userSelect = criteriaQuery.select(root);
-        return entityManager.createQuery(userSelect).getResultList().stream().map(PlanetEntity::toPlanetConfig).collect(Collectors.toList());
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaQuery<PlanetEntity> criteriaQuery = criteriaBuilder.createQuery(PlanetEntity.class);
+            Root<PlanetEntity> root = criteriaQuery.from(PlanetEntity.class);
+            CriteriaQuery<PlanetEntity> userSelect = criteriaQuery.select(root);
+            return entityManager.createQuery(userSelect).getResultList().stream().map(PlanetEntity::toPlanetConfig).collect(Collectors.toList());
     }
 
     @Transactional

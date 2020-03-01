@@ -12,6 +12,7 @@ import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.dto.BoxRegionConfig;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +50,7 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class ServerGameEnginePersistence {
-    // private Logger logger = Logger.getLogger(ServerGameEnginePersistence.class.getName());
+    private Logger logger = Logger.getLogger(ServerGameEnginePersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -79,12 +81,22 @@ public class ServerGameEnginePersistence {
 
     @Transactional
     public MasterPlanetConfig readMasterPlanetConfig() {
-        return read().getMasterPlanetConfig();
+        try {
+            return read().getMasterPlanetConfig();
+        } catch (Throwable t) {
+            logger.severe("Using fallback. Error reading MasterPlanetConfig: " + t.getMessage());
+            return FallbackConfig.setupMasterPlanetConfig();
+        }
     }
 
     @Transactional
     public PlanetConfig readPlanetConfig() {
-        return read().getPlanetConfig();
+        try {
+            return read().getPlanetConfig();
+        } catch (Throwable t) {
+            logger.severe("Using fallback. Error reading PlanetConfig: " + t.getMessage());
+            return FallbackConfig.setupPlanetConfig();
+        }
     }
 
     @Transactional
@@ -94,7 +106,7 @@ public class ServerGameEnginePersistence {
 
     @Transactional
     @SecurityCheck
-    public Map<Integer,String> getAllBotName2Id() {
+    public Map<Integer, String> getAllBotName2Id() {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = criteriaBuilder.createTupleQuery();
         Root<BotConfigEntity> root = cq.from(BotConfigEntity.class);

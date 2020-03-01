@@ -2,6 +2,7 @@ package com.btxtech.shared.gameengine.planet;
 
 import com.btxtech.shared.SimpleTestEnvironment;
 import com.btxtech.shared.datatypes.DecimalPosition;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.InitialSlaveSyncItemInfo;
 import com.btxtech.shared.gameengine.ItemTypeService;
@@ -80,7 +81,7 @@ public class BaseItemServiceBase {
         SimpleTestEnvironment.injectService("syncItemContainerService", baseItemService, syncItemContainerService);
         // Level
         LevelService levelService = new LevelService();
-        levelService.init(new StaticGameConfig().setLevelConfigs(GameTestContent.setupLevelConfigs()));
+        levelService.init(new StaticGameConfig().setLevelConfigs(FallbackConfig.setupLevelConfigs()));
         SimpleTestEnvironment.injectService("levelService", baseItemService, levelService);
 
         GameLogicService gameLogicServiceMock = EasyMock.createNiceMock(GameLogicService.class);
@@ -91,14 +92,14 @@ public class BaseItemServiceBase {
         setupItemTypeService(itemTypeService);
         SimpleTestEnvironment.injectService("itemTypeService", baseItemService, itemTypeService);
 
-        planetConfig.setItemTypeLimitation(GameTestContent.setupPlanetItemTypeLimitations());
+        planetConfig.setItemTypeLimitation(FallbackConfig.setupPlanetItemTypeLimitations());
 
         baseItemService.onPlanetActivation(new PlanetActivationEvent(planetConfig, gameEngineMode, masterPlanetConfig, PlanetActivationEvent.Type.INITIALIZE));
     }
 
     private void setupItemTypeService(ItemTypeService itemTypeService) {
         StaticGameConfig staticGameConfig = new StaticGameConfig();
-        staticGameConfig.setBaseItemTypes(GameTestContent.setupBaseItemType());
+        staticGameConfig.setBaseItemTypes(FallbackConfig.setupBaseItemType());
         itemTypeService.onGameEngineInit(new StaticGameInitEvent(staticGameConfig));
     }
 

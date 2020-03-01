@@ -2,8 +2,8 @@ package com.btxtech.shared.gameengine.planet.basic;
 
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
+import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.datatypes.PlayerBaseFull;
-import com.btxtech.shared.gameengine.planet.GameTestContent;
 import com.btxtech.shared.gameengine.planet.model.SyncBaseItem;
 import com.btxtech.shared.gameengine.planet.model.SyncFactory;
 import org.junit.Assert;
@@ -22,11 +22,11 @@ public class FactoryTest extends BaseBasicTest {
         UserContext userContext = createLevel1UserContext();
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
-        getCommandService().build(builder, new DecimalPosition(185, 140), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().build(builder, new DecimalPosition(185, 140), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
-        getCommandService().fabricate(factory, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
+        getCommandService().fabricate(factory, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
         SyncFactory syncFactory = factory.getSyncFactory();
         Assert.assertEquals(0, syncFactory.getBuildup(), 0.0001);
         tickPlanetServiceSeconds(1);
@@ -38,7 +38,7 @@ public class FactoryTest extends BaseBasicTest {
         tickPlanetServiceSeconds(1);
         Assert.assertEquals(0, syncFactory.getBuildup(), 0.0001);
         assertSyncItemCount(3, 0, 0);
-        SyncBaseItem attacker = findSyncBaseItem(playerBaseFull, GameTestContent.ATTACKER_ITEM_TYPE_ID);
+        SyncBaseItem attacker = findSyncBaseItem(playerBaseFull, FallbackConfig.ATTACKER_ITEM_TYPE_ID);
         Assert.assertEquals(0, attacker.getBuildup(), 1);
         Assert.assertEquals(20, attacker.getHealth(), 1);
 
@@ -52,14 +52,14 @@ public class FactoryTest extends BaseBasicTest {
         UserContext userContext = createLevel1UserContext();
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
-        getCommandService().build(builder, new DecimalPosition(189, 193), getBaseItemType(GameTestContent.HARBOUR_ITEM_TYPE_ID));
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().build(builder, new DecimalPosition(189, 193), getBaseItemType(FallbackConfig.HARBOUR_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem harbour = findSyncBaseItem(playerBaseFull, GameTestContent.HARBOUR_ITEM_TYPE_ID);
-        getCommandService().fabricate(harbour, getBaseItemType(GameTestContent.SHIP_ATTACKER_ITEM_TYPE_ID));
+        SyncBaseItem harbour = findSyncBaseItem(playerBaseFull, FallbackConfig.HARBOUR_ITEM_TYPE_ID);
+        getCommandService().fabricate(harbour, getBaseItemType(FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
         assertSyncItemCount(3, 0, 0);
-        SyncBaseItem ship = findSyncBaseItem(playerBaseFull, GameTestContent.SHIP_ATTACKER_ITEM_TYPE_ID);
+        SyncBaseItem ship = findSyncBaseItem(playerBaseFull, FallbackConfig.SHIP_ATTACKER_ITEM_TYPE_ID);
         Assert.assertEquals(0, ship.getBuildup(), 1);
         Assert.assertEquals(30, ship.getHealth(), 1);
 
@@ -73,13 +73,13 @@ public class FactoryTest extends BaseBasicTest {
         UserContext userContext = createLevel1UserContext();
         PlayerBaseFull playerBaseFull = createHumanBaseWithBaseItem(new DecimalPosition(167, 136), userContext);
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, GameTestContent.BUILDER_ITEM_TYPE_ID);
-        getCommandService().build(builder, new DecimalPosition(185, 140), getBaseItemType(GameTestContent.FACTORY_ITEM_TYPE_ID));
+        SyncBaseItem builder = findSyncBaseItem(playerBaseFull, FallbackConfig.BUILDER_ITEM_TYPE_ID);
+        getCommandService().build(builder, new DecimalPosition(185, 140), getBaseItemType(FallbackConfig.FACTORY_ITEM_TYPE_ID));
         tickPlanetServiceBaseServiceActive();
-        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, GameTestContent.FACTORY_ITEM_TYPE_ID);
+        SyncBaseItem factory = findSyncBaseItem(playerBaseFull, FallbackConfig.FACTORY_ITEM_TYPE_ID);
 
         for (int i = 0; i < 10; i++) {
-            getCommandService().fabricate(factory, getBaseItemType(GameTestContent.ATTACKER_ITEM_TYPE_ID));
+            getCommandService().fabricate(factory, getBaseItemType(FallbackConfig.ATTACKER_ITEM_TYPE_ID));
             tickPlanetServiceBaseServiceActive();
         }
         assertSyncItemCount(12, 0, 0);
