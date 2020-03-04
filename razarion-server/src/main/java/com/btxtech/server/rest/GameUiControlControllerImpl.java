@@ -36,7 +36,7 @@ public class GameUiControlControllerImpl implements GameUiControlController {
             return gameUiControlConfigPersistence.load(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
             logger.severe("Using ColdGameUiControlConfig. No planets configured");
-            return FallbackConfig.coldGameUiControlConfig();
+            return FallbackConfig.coldGameUiControlConfig(userService.getUserContextFromSession());
         }
     }
 

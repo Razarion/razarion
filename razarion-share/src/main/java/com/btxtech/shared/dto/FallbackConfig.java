@@ -1,6 +1,5 @@
 package com.btxtech.shared.dto;
 
-import com.btxtech.shared.datatypes.HumanPlayerId;
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.UserContext;
@@ -61,9 +60,9 @@ public final class FallbackConfig {
 
     }
 
-    public static ColdGameUiControlConfig coldGameUiControlConfig() {
+    public static ColdGameUiControlConfig coldGameUiControlConfig(UserContext userContextFromSession) {
         ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
-        coldGameUiControlConfig.setUserContext(new UserContext().setLevelId(LEVEL_ID_1).setHumanPlayerId(new HumanPlayerId()));
+        coldGameUiControlConfig.setUserContext(userContextFromSession);
         coldGameUiControlConfig.setShape3Ds(new ArrayList<>());
         coldGameUiControlConfig.setStaticGameConfig(setupStaticGameConfig());
         coldGameUiControlConfig.setWarmGameUiControlConfig(warmGameUiControlConfig());

@@ -4,6 +4,7 @@ import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.Index;
 import com.btxtech.shared.datatypes.MapList;
 import com.btxtech.shared.dto.GroundConfig;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.gameengine.datatypes.config.SlopeConfig;
 import com.btxtech.shared.gameengine.planet.terrain.QuadTreeAccess;
@@ -97,9 +98,8 @@ public class UiTerrainTile {
         return terrainTile;
     }
 
-    public Integer getTopTextureId() {
-        // TODO return groundSkeletonConfig.getTopTextureId();
-        return null;
+    public PhongMaterialConfig getTopTexture() {
+        return groundConfig.getTopMaterial();
     }
 
     public Integer getSplattingId() {

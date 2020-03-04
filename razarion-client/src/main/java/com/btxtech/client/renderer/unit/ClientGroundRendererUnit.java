@@ -1,5 +1,6 @@
 package com.btxtech.client.renderer.unit;
 
+import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.shaderattribute.Vec3Float32ArrayShaderAttribute;
 import com.btxtech.client.renderer.shaders.Shaders;
 import com.btxtech.client.renderer.webgl.WebGlFacade;
@@ -31,7 +32,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
     private InGameQuestVisualizationService inGameQuestVisualizationService;
     private Vec3Float32ArrayShaderAttribute vertices;
     private Vec3Float32ArrayShaderAttribute normals;
-//    private WebGlUniformTexture topTexture;
+    private WebGlPhongMaterial topMaterial;
 //    private WebGlUniformTexture splattingTexture;
 //    private WebGlUniformTexture bottomTexture;
 //    private WebGlUniformTexture bottomBm;
@@ -45,6 +46,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
     @PostConstruct
     public void init() {
+        webGlFacade.enableOESStandartDerivatives();
         webGlFacade.init(new WebGlFacadeConfig(this, Shaders.INSTANCE.groundVertexShader(), Shaders.INSTANCE.groundFragmentShader()).enableTransformation(true).enableReceiveShadow());
         vertices = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_POSITION);
         normals = webGlFacade.createVec3Float32ArrayShaderAttribute(WebGlFacade.A_VERTEX_NORMAL);
@@ -63,7 +65,7 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
     @Override
     protected void fillBuffersInternal(UiTerrainTile uiTerrainTile) {
-//        topTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getTopTextureId(), "uTopTexture", "uTopTextureScale", uiTerrainTile.getTopTextureScale());
+        topMaterial = webGlFacade.createPhongMaterial(uiTerrainTile.getTopTexture(), "topMaterial");
 //        splattingTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getSplattingId(), "uSplatting", "uSplattingScale", uiTerrainTile.getSplattingScale());
 //        bottomTexture = webGlFacade.createWebGLTexture(uiTerrainTile.getBottomTextureId(), "uBottomTexture", "uBottomTextureScale", uiTerrainTile.getBottomTextureScale());
 //        bottomBm = webGlFacade.createWebGLBumpMapTexture(uiTerrainTile.getBottomBmId(), "uBottomBm", "uBottomBmScale", uiTerrainTile.getBottomBmScale(), "uBottomBmOnePixel");
@@ -87,6 +89,8 @@ public class ClientGroundRendererUnit extends AbstractGroundRendererUnit {
 
         vertices.activate();
         normals.activate();
+
+        topMaterial.activate();
 
 //        topTexture.overrideScale(uiTerrainTile.getTopTextureScale());
 //        topTexture.activate();

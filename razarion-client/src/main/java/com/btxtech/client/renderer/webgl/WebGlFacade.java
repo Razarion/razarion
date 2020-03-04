@@ -3,6 +3,7 @@ package com.btxtech.client.renderer.webgl;
 import com.btxtech.client.renderer.GameCanvas;
 import com.btxtech.client.renderer.engine.ClientRenderServiceImpl;
 import com.btxtech.client.renderer.engine.TextureIdHandler;
+import com.btxtech.client.renderer.engine.WebGlPhongMaterial;
 import com.btxtech.client.renderer.engine.WebGlUniformTexture;
 import com.btxtech.client.renderer.engine.shaderattribute.DecimalPositionShaderAttribute;
 import com.btxtech.client.renderer.engine.shaderattribute.Float32ArrayShaderAttribute;
@@ -16,6 +17,7 @@ import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.Matrix4;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
+import com.btxtech.shared.dto.PhongMaterialConfig;
 import com.btxtech.shared.nativejs.NativeMatrix;
 import com.btxtech.uiservice.VisualUiService;
 import com.btxtech.uiservice.renderer.AbstractRenderUnit;
@@ -207,6 +209,10 @@ public class WebGlFacade {
         WebGlUniformTexture webGlUniformTexture = new WebGlUniformTexture(gameCanvas.getCtx3d(), this, samplerUniformName, textureIdHandler.create(), null, null, null);
         webGlUniformTexture.setWebGLTexture(textureContainer.getTerrainMarkerTexture());
         return webGlUniformTexture;
+    }
+
+    public WebGlPhongMaterial createPhongMaterial(PhongMaterialConfig phongMaterialConfig, String prefix) {
+        return new WebGlPhongMaterial(this, phongMaterialConfig, prefix);
     }
 
     private TextureIdHandler.WebGlTextureId createWebGlTextureId() {
