@@ -1,6 +1,7 @@
 package com.btxtech.server.web;
 
 import com.btxtech.server.gameengine.ServerGameEngineControl;
+import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.mgmt.ServerMgmt;
 import com.btxtech.server.persistence.chat.ChatPersistence;
 import com.btxtech.shared.datatypes.ServerState;
@@ -18,6 +19,8 @@ import javax.servlet.annotation.WebListener;
 @WebListener
 public class ServletContextMonitor implements ServletContextListener {
     @Inject
+    private ServerTerrainShapeService serverTerrainShapeService;
+    @Inject
     private ServerGameEngineControl gameEngineService;
     @Inject
     private ChatPersistence chatPersistence;
@@ -29,6 +32,11 @@ public class ServletContextMonitor implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         serverMgmt.setServerState(ServerState.STARTING);
+        try {
+            serverTerrainShapeService.start();
+        } catch (Exception e) {
+            exceptionHandler.handleException(e);
+        }
         try {
             gameEngineService.start(null, true);
         } catch (Exception e) {

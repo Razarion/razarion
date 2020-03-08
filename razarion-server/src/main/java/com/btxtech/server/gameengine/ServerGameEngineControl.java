@@ -72,8 +72,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
-    private ServerTerrainShapeService serverTerrainShapeService;
-    @Inject
     private QuestService questService;
     @Inject
     private UserService userService;
@@ -101,7 +99,6 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         //debugGui.display();
-        serverTerrainShapeService.start();
         int planetConfigId = serverGameEngineCrudPersistence.read().get(0).getPlanetConfigId();
         PlanetConfig planetConfig = planetCrudPersistence.read(planetConfigId);
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
