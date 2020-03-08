@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence;
 
+import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 
 import javax.persistence.EntityManager;
@@ -12,26 +13,23 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * @param <C> Config
  * @param <E> Entity
  */
-public abstract class CrudPersistence<C, E> {
+public abstract class CrudPersistence<C extends Config, E> {
     @PersistenceContext
     private EntityManager entityManager;
     private Class<E> entityClass;
     private SingularAttribute<E, Integer> id;
     private SingularAttribute<E, String> internalName;
-    private Function<C, Integer> configIdProvider;
 
-    public CrudPersistence(Class<E> entityClass, SingularAttribute<E, Integer> id, SingularAttribute<E, String> internalName, Function<C, Integer> configIdProvider) {
+    public CrudPersistence(Class<E> entityClass, SingularAttribute<E, Integer> id, SingularAttribute<E, String> internalName) {
         this.entityClass = entityClass;
         this.id = id;
         this.internalName = internalName;
-        this.configIdProvider = configIdProvider;
     }
 
     @Transactional
@@ -59,7 +57,7 @@ public abstract class CrudPersistence<C, E> {
 
     @Transactional
     public void update(C config) {
-        E entity = entityManager.find(entityClass, configIdProvider.apply(config));
+        E entity = entityManager.find(entityClass, config.getId());
         fromConfig(config, entity);
         entityManager.merge(entity);
     }
@@ -82,7 +80,7 @@ public abstract class CrudPersistence<C, E> {
 
     protected abstract C toConfig(E entity);
 
-    protected abstract void fromConfig(C entity, E config);
+    protected abstract void fromConfig(C config, E entity);
 
     protected E newEntity() {
         try {
@@ -92,4 +90,22 @@ public abstract class CrudPersistence<C, E> {
         }
     }
 
+    public E getEntity(Integer id) {
+        if (id == null) {
+            return null;
+        }
+        E entity = entityManager.find(entityClass, id);
+        if (entity == null) {
+            throw new IllegalArgumentException("No " + entityClass + " for id: " + id);
+        }
+        return entity;
+    }
+
+    public List<E> getEntities() {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<E> userQuery = criteriaBuilder.createQuery(entityClass);
+        Root<E> root = userQuery.from(entityClass);
+        CriteriaQuery<E> userSelect = userQuery.select(root);
+        return entityManager.createQuery(userSelect).getResultList();
+    }
 }

@@ -32,13 +32,13 @@ public class MiniTerrain extends AbstractMiniMap {
 
     public void show() {
         ImageLoader<Integer> imageLoader = new ImageLoader<>();
-        imageLoader.addImageUrl(CommonUrl.getMiniMapPlanetUrl(gameUiControl.getPlanetConfig().getPlanetId()), gameUiControl.getPlanetConfig().getPlanetId());
+        imageLoader.addImageUrl(CommonUrl.getMiniMapPlanetUrl(gameUiControl.getPlanetConfig().getId()), gameUiControl.getPlanetConfig().getId());
         imageLoader.startLoading((loadedImageElements, failed) -> {
             if (!failed.isEmpty()) {
                 logger.warning("MiniTerrain.postConstruct() loading image failed: " + failed);
                 return;
             }
-            ImageElement imageElement = loadedImageElements.get(gameUiControl.getPlanetConfig().getPlanetId());
+            ImageElement imageElement = loadedImageElements.get(gameUiControl.getPlanetConfig().getId());
             if (imageElement == null) {
                 logger.warning("MiniTerrain.postConstruct() loading not loaded: " + failed);
                 return;

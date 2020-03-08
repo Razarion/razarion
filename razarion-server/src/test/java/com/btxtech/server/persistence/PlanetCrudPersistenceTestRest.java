@@ -14,9 +14,9 @@ import java.util.Locale;
  * Created by Beat
  * 25.05.2017.
  */
-public class PlanetPersistenceTestRest extends RestServerTestBase {
+public class PlanetCrudPersistenceTestRest extends RestServerTestBase {
     @Inject
-    private PlanetPersistence planetPersistence;
+    private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
 
@@ -26,7 +26,7 @@ public class PlanetPersistenceTestRest extends RestServerTestBase {
 
         PlanetVisualConfig expectedPlanetVisualConfig = new PlanetVisualConfig().setShadowAlpha(0.2);
         expectedPlanetVisualConfig.setLightDirection(new Vertex(0, 0, -1));
-        planetPersistence.updatePlanetVisualConfig(PLANET_1_ID, expectedPlanetVisualConfig);
+        planetCrudPersistence.updatePlanetVisualConfig(PLANET_1_ID, expectedPlanetVisualConfig);
 
         PlanetVisualConfig actualPlanetVisualConfig = gameUiControlConfigPersistence.loadWarm(Locale.ENGLISH, new UserContext().setLevelId(LEVEL_1_ID)).getPlanetVisualConfig();
 

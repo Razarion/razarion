@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.gameengine.TerrainTypeService;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
@@ -22,25 +22,25 @@ import java.util.logging.Logger;
 public class TerrainShapeService {
     private Logger logger = Logger.getLogger(TerrainShapeService.class.getName());
     @Inject
-    private PlanetPersistence planetPersistence;
+    private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private TerrainTypeService terrainTypeService;
     private Map<Integer, NativeTerrainShape> terrainShapes = new HashMap<>();
 
     public void start() {
         terrainShapes.clear();
-        planetPersistence.loadAllPlanetConfig().forEach(this::setupTerrainShape);
+        planetCrudPersistence.loadAllPlanetConfig().forEach(this::setupTerrainShape);
         if (terrainShapes.isEmpty()) {
             logger.severe("Using Fallback. No planets configured");
             PlanetConfig fallbackPlanet = FallbackConfig.setupPlanetConfig();
             TerrainShape terrainShape = new TerrainShape(fallbackPlanet, terrainTypeService, Collections.emptyList(), Collections.emptyList());
-            terrainShapes.put(fallbackPlanet.getPlanetId(), terrainShape.toNativeTerrainShape());
+            terrainShapes.put(fallbackPlanet.getId(), terrainShape.toNativeTerrainShape());
         }
     }
 
     public void setupTerrainShape(PlanetConfig planetConfig) {
-        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetPersistence.getTerrainSlopePositions(planetConfig.getPlanetId()), planetPersistence.getTerrainObjectPositions(planetConfig.getPlanetId()));
-        terrainShapes.put(planetConfig.getPlanetId(), terrainShape.toNativeTerrainShape());
+        TerrainShape terrainShape = new TerrainShape(planetConfig, terrainTypeService, planetCrudPersistence.getTerrainSlopePositions(planetConfig.getId()), planetCrudPersistence.getTerrainObjectPositions(planetConfig.getId()));
+        terrainShapes.put(planetConfig.getId(), terrainShape.toNativeTerrainShape());
     }
 
     public NativeTerrainShape getNativeTerrainShape(int planetId) {

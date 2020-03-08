@@ -1,12 +1,13 @@
 package com.btxtech.server.gameengine;
 
 import com.btxtech.server.connection.ClientSystemConnectionService;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.StaticGameConfigPersistence;
 import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.persistence.item.ItemTrackerPersistence;
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.HumanPlayerId;
@@ -67,7 +68,9 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @Inject
     private ClientSystemConnectionService systemConnectionService;
     @Inject
-    private ServerGameEnginePersistence serverGameEnginePersistence;
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
+    @Inject
+    private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private TerrainShapeService terrainShapeService;
     @Inject
@@ -98,11 +101,12 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     public void start(BackupPlanetInfo backupPlanetInfo, boolean activateQuests) {
         //debugGui.display();
-        PlanetConfig planetConfig = serverGameEnginePersistence.readPlanetConfig();
+        int planetConfigId = serverGameEngineCrudPersistence.read().get(0).getPlanetConfigId();
+        PlanetConfig planetConfig = planetCrudPersistence.read(planetConfigId);
         BackupPlanetInfo finaBackupPlanetInfo = setupBackupPlanetInfo(backupPlanetInfo, planetConfig);
         gameEngineInitEvent.fire(new StaticGameInitEvent(staticGameConfigPersistence.loadStaticGameConfig()));
         terrainShapeService.start();
-        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEnginePersistence.readMasterPlanetConfig(), () -> {
+        planetService.initialise(planetConfig, GameEngineMode.MASTER, serverGameEngineCrudPersistence.readMasterPlanetConfig(), () -> {
             gameLogicService.setGameLogicListener(this);
             if (finaBackupPlanetInfo != null) {
                 planetService.restoreBases(finaBackupPlanetInfo, this);
@@ -110,8 +114,8 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
             planetService.start();
             planetService.addTickListener(this);
             resourceService.startResourceRegions();
-            boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
-            botService.startBots(serverGameEnginePersistence.readBotConfigs(), serverGameEnginePersistence.readBotSceneConfigs());
+            boxService.startBoxRegions(serverGameEngineCrudPersistence.readBoxRegionConfigs());
+            botService.startBots(serverGameEngineCrudPersistence.readBotConfigs(), serverGameEngineCrudPersistence.readBotSceneConfigs());
             planetService.enableTracking(false);
         }, failText -> logger.severe("TerrainSetup failed: " + failText));
         if (activateQuests) {
@@ -123,7 +127,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
         if (backupPlanetInfo != null) {
             return backupPlanetInfo;
         } else {
-            return planetBackupMongoDb.loadLastBackup(planetConfig.getPlanetId());
+            return planetBackupMongoDb.loadLastBackup(planetConfig.getId());
         }
     }
 
@@ -140,14 +144,14 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void restartBots() {
         synchronized (reloadLook) {
             botService.killAllBots();
-            botService.startBots(serverGameEnginePersistence.readBotConfigs(), serverGameEnginePersistence.readBotSceneConfigs());
+            botService.startBots(serverGameEngineCrudPersistence.readBotConfigs(), serverGameEngineCrudPersistence.readBotSceneConfigs());
         }
     }
 
     @SecurityCheck
     public void reloadPlanet() {
         synchronized (reloadLook) {
-            PlanetConfig newPlanetConfig = serverGameEnginePersistence.readPlanetConfig();
+            PlanetConfig newPlanetConfig = serverGameEngineCrudPersistence.readPlanetConfig();
             PlanetConfig currentPlanetConfig = planetService.getPlanetConfig();
             currentPlanetConfig.setItemTypeLimitation(newPlanetConfig.getItemTypeLimitation());
             currentPlanetConfig.setHouseSpace(newPlanetConfig.getHouseSpace());
@@ -159,7 +163,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     @SecurityCheck
     public void restartResourceRegions() {
         synchronized (reloadLook) {
-            resourceService.reloadResourceRegions(serverGameEnginePersistence.readMasterPlanetConfig().getResourceRegionConfigs());
+            resourceService.reloadResourceRegions(serverGameEngineCrudPersistence.readMasterPlanetConfig().getResourceRegionConfigs());
         }
     }
 
@@ -167,7 +171,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
     public void restartBoxRegions() {
         synchronized (reloadLook) {
             boxService.stopBoxRegions();
-            boxService.startBoxRegions(serverGameEnginePersistence.readBoxRegionConfigs());
+            boxService.startBoxRegions(serverGameEngineCrudPersistence.readBoxRegionConfigs());
         }
     }
 
@@ -199,7 +203,7 @@ public class ServerGameEngineControl implements GameLogicListener, BaseRestorePr
 
     private void activateQuests(BackupPlanetInfo backupPlanetInfo) {
         questService.clean();
-        Collection<Integer> planetQuestId = serverGameEnginePersistence.readAllQuestIds();
+        Collection<Integer> planetQuestId = serverGameEngineCrudPersistence.readAllQuestIds();
         if (planetQuestId == null || planetQuestId.isEmpty()) {
             return;
         }

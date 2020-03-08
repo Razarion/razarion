@@ -17,20 +17,16 @@ public class GroundCrudPersistence extends CrudPersistence<GroundConfig, GroundC
     private ImagePersistence imagePersistence;
 
     public GroundCrudPersistence() {
-        super(GroundConfigEntity.class, GroundConfigEntity_.id, GroundConfigEntity_.internalName, GroundConfig::getId);
+        super(GroundConfigEntity.class, GroundConfigEntity_.id, GroundConfigEntity_.internalName);
     }
 
     @Override
     protected GroundConfig toConfig(GroundConfigEntity entity) {
-        return entity.toGroundConfig();
+        return entity.toConfig();
     }
 
     @Override
     protected void fromConfig(GroundConfig config, GroundConfigEntity entity) {
         entity.fromGroundConfig(config, imagePersistence);
-    }
-
-    public GroundConfigEntity getPlanetConfig(Integer groundConfigId) {
-        return entityManager.find(GroundConfigEntity.class, groundConfigId);
     }
 }

@@ -83,7 +83,7 @@ public class PlanetVisualConfigPanel extends AbstractEditor {
             }, (message, throwable) -> {
                 logger.log(Level.SEVERE, "getAudioItemConfigs failed: " + message, throwable);
                 return false;
-            }).updatePlanetVisualConfig(gameUiControl.getPlanetConfig().getPlanetId(), visualUiService.getPlanetVisualConfig());
+            }).updatePlanetVisualConfig(gameUiControl.getPlanetConfig().getId(), visualUiService.getPlanetVisualConfig());
         });
         enableSaveButton(false);
     }

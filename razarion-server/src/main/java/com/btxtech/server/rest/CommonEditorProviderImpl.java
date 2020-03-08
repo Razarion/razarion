@@ -1,7 +1,7 @@
 package com.btxtech.server.rest;
 
 import com.btxtech.server.persistence.CommonEditorPersistence;
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.shared.datatypes.I18nStringEditor;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.CommonEditorProvider;
@@ -21,7 +21,7 @@ public class CommonEditorProviderImpl implements CommonEditorProvider {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private ServerGameEnginePersistence serverGameEnginePersistence;
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
 
     @Override
     public List<I18nStringEditor> loadAllI18NEntries() {
@@ -46,7 +46,7 @@ public class CommonEditorProviderImpl implements CommonEditorProvider {
     @Override
     public List<ObjectNameId> getAllBotsFromPlanet(int planetId) {
         try {
-            return serverGameEnginePersistence.readBotConfigs().stream().map(botConfig -> new ObjectNameId(botConfig.getId(), botConfig.getInternalName())).collect(Collectors.toList());
+            return serverGameEngineCrudPersistence.readBotConfigs().stream().map(botConfig -> new ObjectNameId(botConfig.getId(), botConfig.getInternalName())).collect(Collectors.toList());
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

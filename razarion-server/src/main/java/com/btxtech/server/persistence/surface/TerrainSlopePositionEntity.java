@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.surface;
 
-import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.shared.dto.TerrainSlopePosition;
 
 import javax.persistence.CascadeType;
@@ -86,15 +86,15 @@ public class TerrainSlopePositionEntity {
         children.remove(child);
     }
 
-    public PlanetPersistence.TerrainSlopePositionEntityChain deepFirstSearchSlope(int id) {
+    public PlanetCrudPersistence.TerrainSlopePositionEntityChain deepFirstSearchSlope(int id) {
         if (children == null || children.isEmpty()) {
             return null;
         }
         for (TerrainSlopePositionEntity child : children) {
             if (child.getId() == id) {
-                return new PlanetPersistence.TerrainSlopePositionEntityChain(this, child);
+                return new PlanetCrudPersistence.TerrainSlopePositionEntityChain(this, child);
             }
-            PlanetPersistence.TerrainSlopePositionEntityChain grandson = child.deepFirstSearchSlope(id);
+            PlanetCrudPersistence.TerrainSlopePositionEntityChain grandson = child.deepFirstSearchSlope(id);
             if (grandson != null) {
                 return grandson;
             }

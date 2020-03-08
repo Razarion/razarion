@@ -9,7 +9,7 @@ import com.btxtech.server.persistence.history.UserHistoryEntry;
 import com.btxtech.server.persistence.item.ItemTrackerAccess;
 import com.btxtech.server.persistence.item.ItemTracking;
 import com.btxtech.server.persistence.item.ItemTrackingSearch;
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.persistence.tracker.SearchConfig;
 import com.btxtech.server.persistence.tracker.SessionDetail;
 import com.btxtech.server.persistence.tracker.SessionTracker;
@@ -44,7 +44,7 @@ public class BackendProviderImpl implements BackendProvider {
     @Inject
     private ItemTypeService itemTypeService;
     @Inject
-    private ServerGameEnginePersistence serverGameEnginePersistence;
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
 
     @Override
     public List<OnlineInfo> loadAllOnlines() {
@@ -194,7 +194,7 @@ public class BackendProviderImpl implements BackendProvider {
                 itemTrackingDescription.getBoxItemTypeNames().put(boxItemType.getId(), boxItemType.getInternalName());
             });
             itemTrackingDescription.setHumanPlayerIdNames(userService.getAllHumanPlayerId2RegisteredUserName());
-            itemTrackingDescription.setBotNames(serverGameEnginePersistence.getAllBotName2Id());
+            itemTrackingDescription.setBotNames(serverGameEngineCrudPersistence.getAllBotName2Id());
             return itemTrackingDescription;
         } catch (Throwable t) {
             exceptionHandler.handleException(t);

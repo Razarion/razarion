@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence.server;
 
-import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.CrudPersistence;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity_;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
@@ -16,6 +17,7 @@ import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.ServerLevelQuestConfig;
 import com.btxtech.shared.dto.SlavePlanetConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
@@ -41,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -49,12 +52,12 @@ import java.util.stream.Collectors;
  * 09.05.2017.
  */
 @Singleton
-public class ServerGameEnginePersistence {
-    private Logger logger = Logger.getLogger(ServerGameEnginePersistence.class.getName());
+public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameEngineConfig, ServerGameEngineConfigEntity> {
+    private Logger logger = Logger.getLogger(ServerGameEngineCrudPersistence.class.getName());
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
-    private PlanetPersistence planetPersistence;
+    private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private ItemTypePersistence itemTypePersistence;
     @Inject
@@ -72,17 +75,31 @@ public class ServerGameEnginePersistence {
     @Inject
     private Instance<ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig>> boxRegionCrud;
 
+    public ServerGameEngineCrudPersistence() {
+        super(ServerGameEngineConfigEntity.class, ServerGameEngineConfigEntity_.id, ServerGameEngineConfigEntity_.internalName);
+    }
+
+    @Override
+    protected ServerGameEngineConfig toConfig(ServerGameEngineConfigEntity entity) {
+        return entity.toServerGameEngineConfig();
+    }
+
+    @Override
+    protected void fromConfig(ServerGameEngineConfig config, ServerGameEngineConfigEntity entity) {
+        entity.fromServerGameEngineConfig(config, planetCrudPersistence);
+    }
+
     @Transactional
     public SlavePlanetConfig readSlavePlanetConfig(int levelId) {
         SlavePlanetConfig slavePlanetConfig = new SlavePlanetConfig();
-        slavePlanetConfig.setStartRegion(read().findStartRegion(levelPersistence.getLevelNumber4Id(levelId)));
+        slavePlanetConfig.setStartRegion(serverGameEngineConfigEntity().findStartRegion(levelPersistence.getLevelNumber4Id(levelId)));
         return slavePlanetConfig;
     }
 
     @Transactional
     public MasterPlanetConfig readMasterPlanetConfig() {
         try {
-            return read().getMasterPlanetConfig();
+            return serverGameEngineConfigEntity().getMasterPlanetConfig();
         } catch (Throwable t) {
             logger.severe("Using fallback. Error reading MasterPlanetConfig: " + t.getMessage());
             return FallbackConfig.setupMasterPlanetConfig();
@@ -92,7 +109,7 @@ public class ServerGameEnginePersistence {
     @Transactional
     public PlanetConfig readPlanetConfig() {
         try {
-            return read().getPlanetConfig();
+            return serverGameEngineConfigEntity().getPlanetConfig();
         } catch (Throwable t) {
             logger.severe("Using fallback. Error reading PlanetConfig: " + t.getMessage());
             return FallbackConfig.setupPlanetConfig();
@@ -101,7 +118,7 @@ public class ServerGameEnginePersistence {
 
     @Transactional
     public Collection<BotConfig> readBotConfigs() {
-        return read().getBotConfigs();
+        return serverGameEngineConfigEntity().getBotConfigs();
     }
 
     @Transactional
@@ -123,20 +140,20 @@ public class ServerGameEnginePersistence {
 
     @Transactional
     public Collection<BotSceneConfig> readBotSceneConfigs() {
-        return read().getBotSceneConfigs();
+        return serverGameEngineConfigEntity().getBotSceneConfigs();
     }
 
     @Transactional
     public Collection<BoxRegionConfig> readBoxRegionConfigs() {
-        return read().getBoxRegionConfigs();
+        return serverGameEngineConfigEntity().getBoxRegionConfigs();
     }
 
     @Transactional
     @SecurityCheck
     public void updatePlanetConfig(Integer planetConfigId) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
         if (planetConfigId != null) {
-            serverGameEngineConfigEntity.setPlanetEntity(planetPersistence.loadPlanet(planetConfigId));
+            serverGameEngineConfigEntity.setPlanetEntity(planetCrudPersistence.loadPlanet(planetConfigId));
         } else {
             serverGameEngineConfigEntity.setPlanetEntity(null);
         }
@@ -146,19 +163,19 @@ public class ServerGameEnginePersistence {
     @Transactional
     @SecurityCheck
     public List<ObjectNameId> readStartRegionObjectNameIds() {
-        return read().readStartRegionObjectNameIds();
+        return serverGameEngineConfigEntity().readStartRegionObjectNameIds();
     }
 
     @Transactional
     @SecurityCheck
     public StartRegionConfig readStartRegionConfig(int id) {
-        return read().readStartRegionConfig(id);
+        return serverGameEngineConfigEntity().readStartRegionConfig(id);
     }
 
     @Transactional
     @SecurityCheck
     public StartRegionConfig createStartRegionConfig() {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
         StartRegionLevelConfigEntity startRegionLevelConfigEntity = serverGameEngineConfigEntity.createStartRegionConfig();
         entityManager.persist(serverGameEngineConfigEntity); // Ignores changes on parent but child id is set
         return startRegionLevelConfigEntity.toStartRegionConfig();
@@ -167,7 +184,7 @@ public class ServerGameEnginePersistence {
     @Transactional
     @SecurityCheck
     public void updateStartRegionConfig(StartRegionConfig startRegionConfig) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
         serverGameEngineConfigEntity.updateStartRegionConfig(startRegionConfig, levelPersistence);
         entityManager.merge(serverGameEngineConfigEntity);
     }
@@ -175,7 +192,7 @@ public class ServerGameEnginePersistence {
     @Transactional
     @SecurityCheck
     public void updateResourceRegionConfigs(List<ResourceRegionConfig> resourceRegionConfigs) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
         serverGameEngineConfigEntity.setResourceRegionConfigs(itemTypePersistence, resourceRegionConfigs);
         entityManager.merge(serverGameEngineConfigEntity);
     }
@@ -183,24 +200,9 @@ public class ServerGameEnginePersistence {
     @Transactional
     @SecurityCheck
     public void deleteStartRegion(int id) {
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity = read();
+        ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
         serverGameEngineConfigEntity.deleteStartRegion(id);
         entityManager.merge(serverGameEngineConfigEntity);
-    }
-
-    private ServerGameEngineConfigEntity read() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ServerGameEngineConfigEntity> userQuery = criteriaBuilder.createQuery(ServerGameEngineConfigEntity.class);
-        Root<ServerGameEngineConfigEntity> from = userQuery.from(ServerGameEngineConfigEntity.class);
-        CriteriaQuery<ServerGameEngineConfigEntity> userSelect = userQuery.select(from);
-        List<ServerGameEngineConfigEntity> serverGameEngineConfigEntities = entityManager.createQuery(userSelect).getResultList();
-        if (serverGameEngineConfigEntities.isEmpty()) {
-            throw new IllegalStateException("No ServerGameEngineConfigEntity found");
-        }
-        if (serverGameEngineConfigEntities.size() > 1) {
-            throw new IllegalStateException("More then one ServerGameEngineConfigEntity found: " + serverGameEngineConfigEntities.size());
-        }
-        return serverGameEngineConfigEntities.get(0);
     }
 
     @Transactional
@@ -279,9 +281,9 @@ public class ServerGameEnginePersistence {
 
     public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> getServerLevelQuestCrud() {
         ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerLevelQuestEntity, ServerLevelQuestConfig> crud = serverLevelQuestCrudInstance.get();
-        crud.setRootProvider(this::read).setParentProvider(entityManager1 -> read());
-        crud.setEntitiesGetter((entityManager) -> read().getServerQuestEntities());
-        crud.setEntitiesSetter((entityManager, serverLevelQuestEntities) -> read().setServerQuestEntities(serverLevelQuestEntities));
+        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager1 -> serverGameEngineConfigEntity());
+        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getServerQuestEntities());
+        crud.setEntitiesSetter((entityManager, serverLevelQuestEntities) -> serverGameEngineConfigEntity().setServerQuestEntities(serverLevelQuestEntities));
         crud.setEntityIdProvider(ServerLevelQuestEntity::getId).setConfigIdProvider(ServerLevelQuestConfig::getId);
         crud.setConfigGenerator(ServerLevelQuestEntity::toServerLevelQuestConfig);
         crud.setEntityFactory(ServerLevelQuestEntity::new);
@@ -294,7 +296,7 @@ public class ServerGameEnginePersistence {
 
     public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> getServerQuestCrud(int serverLevelQuestEntityId, Locale locale) {
         ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerLevelQuestEntity, QuestConfigEntity, QuestConfig> crud = serverQuestCrudInstance.get();
-        crud.setRootProvider(this::read);
+        crud.setRootProvider(this::serverGameEngineConfigEntity);
         crud.setParentProvider(entityManager -> entityManager.find(ServerLevelQuestEntity.class, serverLevelQuestEntityId));
         crud.setEntitiesGetter(ServerLevelQuestEntity::getQuestConfigs).setEntitiesSetter(ServerLevelQuestEntity::setQuestConfigs);
         crud.setEntityIdProvider(QuestConfigEntity::getId).setConfigIdProvider(QuestConfig::getId);
@@ -307,9 +309,9 @@ public class ServerGameEnginePersistence {
 
     public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> getResourceRegionConfigCrud() {
         ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerResourceRegionConfigEntity, ResourceRegionConfig> crud = resourceRegionCrud.get();
-        crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
-        crud.setEntitiesGetter((entityManager) -> read().getResourceRegionConfigs());
-        crud.setEntitiesSetter((entityManager, resourceRegionConfigs) -> read().setResourceRegionConfigs(resourceRegionConfigs));
+        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
+        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getResourceRegionConfigs());
+        crud.setEntitiesSetter((entityManager, resourceRegionConfigs) -> serverGameEngineConfigEntity().setResourceRegionConfigs(resourceRegionConfigs));
         crud.setEntityIdProvider(ServerResourceRegionConfigEntity::getId).setConfigIdProvider(ResourceRegionConfig::getId);
         crud.setConfigGenerator(ServerResourceRegionConfigEntity::toResourceRegionConfig);
         crud.setEntityFactory(ServerResourceRegionConfigEntity::new);
@@ -321,9 +323,9 @@ public class ServerGameEnginePersistence {
 
     public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> getBotConfigCrud() {
         ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotConfigEntity, BotConfig> crud = botConfigCrud.get();
-        crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
-        crud.setEntitiesGetter((entityManager) -> read().getBotConfigEntities());
-        crud.setEntitiesSetter((entityManager, botConfigs) -> read().setBotConfigEntities(botConfigs));
+        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
+        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getBotConfigEntities());
+        crud.setEntitiesSetter((entityManager, botConfigs) -> serverGameEngineConfigEntity().setBotConfigEntities(botConfigs));
         crud.setEntityIdProvider(BotConfigEntity::getId).setConfigIdProvider(BotConfig::getId);
         crud.setConfigGenerator(BotConfigEntity::toBotConfig);
         crud.setEntityFactory(() -> new BotConfigEntity().setAutoAttack(true));
@@ -335,9 +337,9 @@ public class ServerGameEnginePersistence {
 
     public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> getBotSceneConfigCrud() {
         ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, BotSceneConfigEntity, BotSceneConfig> crud = botSceneConfigCrud.get();
-        crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
-        crud.setEntitiesGetter((entityManager) -> read().getBotSceneConfigEntities());
-        crud.setEntitiesSetter((entityManager, botConfigs) -> read().setBotSceneConfigEntities(botConfigs));
+        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
+        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getBotSceneConfigEntities());
+        crud.setEntitiesSetter((entityManager, botConfigs) -> serverGameEngineConfigEntity().setBotSceneConfigEntities(botConfigs));
         crud.setEntityIdProvider(BotSceneConfigEntity::getId).setConfigIdProvider(BotSceneConfig::getId);
         crud.setConfigGenerator(BotSceneConfigEntity::toBotSceneConfig);
         crud.setEntityFactory(BotSceneConfigEntity::new);
@@ -349,9 +351,9 @@ public class ServerGameEnginePersistence {
 
     public ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> getBoxRegionConfigCrud() {
         ServerChildCrudPersistence<ServerGameEngineConfigEntity, ServerGameEngineConfigEntity, ServerBoxRegionConfigEntity, BoxRegionConfig> crud = boxRegionCrud.get();
-        crud.setRootProvider(this::read).setParentProvider(entityManager -> read());
-        crud.setEntitiesGetter((entityManager) -> read().getServerBoxRegionConfigEntities());
-        crud.setEntitiesSetter((entityManager, boxRegionConfigEntities) -> read().setServerBoxRegionConfigEntities(boxRegionConfigEntities));
+        crud.setRootProvider(this::serverGameEngineConfigEntity).setParentProvider(entityManager -> serverGameEngineConfigEntity());
+        crud.setEntitiesGetter((entityManager) -> serverGameEngineConfigEntity().getServerBoxRegionConfigEntities());
+        crud.setEntitiesSetter((entityManager, boxRegionConfigEntities) -> serverGameEngineConfigEntity().setServerBoxRegionConfigEntities(boxRegionConfigEntities));
         crud.setEntityIdProvider(ServerBoxRegionConfigEntity::getId).setConfigIdProvider(BoxRegionConfig::getId);
         crud.setConfigGenerator(ServerBoxRegionConfigEntity::toBoxRegionConfig);
         crud.setEntityFactory(ServerBoxRegionConfigEntity::new);
@@ -359,5 +361,13 @@ public class ServerGameEnginePersistence {
             serverBoxRegionConfigEntity.fromBoxRegionConfig(itemTypePersistence, boxRegionConfig);
         });
         return crud;
+    }
+
+    private ServerGameEngineConfigEntity serverGameEngineConfigEntity() {
+        try {
+            return getEntities().stream().findFirst().orElseThrow((Supplier<Throwable>) () -> new IllegalStateException("No ServerGameEngineConfigEntity in DB"));
+        } catch (Throwable throwable) {
+            throw new RuntimeException(throwable);
+        }
     }
 }

@@ -169,7 +169,7 @@ public class GameUiControl { // Equivalent worker class is PlanetService
         nextSceneNumber = 0;
         if (gameEngineMode == GameEngineMode.MASTER) {
             if (coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking()) {
-                trackerService.startDetailedTracking(getPlanetConfig().getPlanetId());
+                trackerService.startDetailedTracking(getPlanetConfig().getId());
             }
             scenes = coldGameUiControlConfig.getWarmGameUiControlConfig().getSceneConfigs();
             topRightCockpit.setBotSceneIndicationInfos(null);

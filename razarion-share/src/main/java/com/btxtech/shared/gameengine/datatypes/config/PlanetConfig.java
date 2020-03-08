@@ -2,6 +2,8 @@ package com.btxtech.shared.gameengine.datatypes.config;
 
 import com.btxtech.shared.datatypes.Rectangle;
 import com.btxtech.shared.datatypes.Rectangle2D;
+import com.btxtech.shared.dto.Config;
+import com.btxtech.shared.dto.ObjectNameId;
 
 import java.util.Map;
 
@@ -9,8 +11,9 @@ import java.util.Map;
  * Created by Beat
  * 05.07.2016.
  */
-public class PlanetConfig {
-    private int planetId;
+public class PlanetConfig implements Config {
+    private int id;
+    private String internalName;
     private Rectangle terrainTileDimension; // In terrain tiles TerrainUtil.TERRAIN_TILE_NODES_COUNT
     private Rectangle2D playGround;
     private Map<Integer, Integer> itemTypeLimitation;
@@ -19,22 +22,32 @@ public class PlanetConfig {
     private int startBaseItemTypeId;
     private Integer groundConfigId;
 
-    public int getPlanetId() {
-        return planetId;
+    @Override
+    public int getId() {
+        return id;
     }
 
-    public PlanetConfig setPlanetId(int planetId) {
-        this.planetId = planetId;
-        return this;
+    @Override
+    public String getInternalName() {
+        return internalName;
+    }
+
+    @Override
+    public void setInternalName(String internalName) {
+        this.internalName = internalName;
+    }
+
+    @Override
+    public ObjectNameId createObjectNameId() {
+        return new ObjectNameId(id, internalName);
     }
 
     public Rectangle getTerrainTileDimension() {
         return terrainTileDimension;
     }
 
-    public PlanetConfig setTerrainTileDimension(Rectangle terrainTileDimension) {
+    public void setTerrainTileDimension(Rectangle terrainTileDimension) {
         this.terrainTileDimension = terrainTileDimension;
-        return this;
     }
 
     public Map<Integer, Integer> getItemTypeLimitation() {
@@ -97,6 +110,17 @@ public class PlanetConfig {
 
     public PlanetConfig setGroundConfigId(Integer groundConfigId) {
         this.groundConfigId = groundConfigId;
+        return this;
+    }
+
+    public PlanetConfig id(int id) {
+        this.id = id;
+        return this;
+    }
+
+
+    public PlanetConfig internalName(String internalName) {
+        setInternalName(internalName);
         return this;
     }
 }

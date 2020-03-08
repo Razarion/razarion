@@ -265,7 +265,7 @@ public class SlopeConfigPropertyPanel extends AbstractPropertyPanel<SlopeConfig_
 //    @EventHandler("restartPlanetButton")
 //    private void restartPlanetButtonClicked(ClickEvent event) {
 //        modalDialogManager.showQuestionDialog("Restart planet", "Really restart the planet? Close all current connections.", () -> planetEditorServiceCaller.call(ignore -> {
-//        }, exceptionHandler.restErrorHandler("PlanetEditorProvider.restartPlanetWarm() failed: ")).restartPlanetCold(gameUiControl.getPlanetConfig().getPlanetId()), () -> {
+//        }, exceptionHandler.restErrorHandler("PlanetEditorProvider.restartPlanetWarm() failed: ")).restartPlanetCold(gameUiControl.getPlanetConfig().getId()), () -> {
 //        });
 //    }
 }

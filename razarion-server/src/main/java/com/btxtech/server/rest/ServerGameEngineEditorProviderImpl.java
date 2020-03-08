@@ -1,6 +1,6 @@
 package com.btxtech.server.rest;
 
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
@@ -24,12 +24,12 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private ServerGameEnginePersistence serverGameEnginePersistence;
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
 
     @Override
     public List<ObjectNameId> readStartRegionObjectNameIds() {
         try {
-            return serverGameEnginePersistence.readStartRegionObjectNameIds();
+            return serverGameEngineCrudPersistence.readStartRegionObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -39,7 +39,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public StartRegionConfig readStartRegionConfig(int id) {
         try {
-            return serverGameEnginePersistence.readStartRegionConfig(id);
+            return serverGameEngineCrudPersistence.readStartRegionConfig(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -49,7 +49,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public StartRegionConfig createStartRegionConfig() {
         try {
-            return serverGameEnginePersistence.createStartRegionConfig();
+            return serverGameEngineCrudPersistence.createStartRegionConfig();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -59,7 +59,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void updateStartRegionConfig(StartRegionConfig startRegionConfig) {
         try {
-            serverGameEnginePersistence.updateStartRegionConfig(startRegionConfig);
+            serverGameEngineCrudPersistence.updateStartRegionConfig(startRegionConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -69,7 +69,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void deleteStartRegionConfig(int id) {
         try {
-            serverGameEnginePersistence.deleteStartRegion(id);
+            serverGameEngineCrudPersistence.deleteStartRegion(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -79,7 +79,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public List<ObjectNameId> readLevelQuestConfigObjectNameIds() {
         try {
-            return serverGameEnginePersistence.getServerLevelQuestCrud().readObjectNameIds();
+            return serverGameEngineCrudPersistence.getServerLevelQuestCrud().readObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -89,7 +89,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public ServerLevelQuestConfig readLevelQuestConfig(int id) {
         try {
-            return serverGameEnginePersistence.getServerLevelQuestCrud().read(id);
+            return serverGameEngineCrudPersistence.getServerLevelQuestCrud().read(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -99,7 +99,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public ServerLevelQuestConfig createLevelQuestConfig() {
         try {
-            return serverGameEnginePersistence.getServerLevelQuestCrud().create();
+            return serverGameEngineCrudPersistence.getServerLevelQuestCrud().create();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -109,7 +109,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void updateLevelQuestConfig(ServerLevelQuestConfig serverLevelQuestConfig) {
         try {
-            serverGameEnginePersistence.getServerLevelQuestCrud().update(serverLevelQuestConfig);
+            serverGameEngineCrudPersistence.getServerLevelQuestCrud().update(serverLevelQuestConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -119,7 +119,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void deleteLevelQuestConfig(int id) {
         try {
-            serverGameEnginePersistence.getServerLevelQuestCrud().delete(id);
+            serverGameEngineCrudPersistence.getServerLevelQuestCrud().delete(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -129,7 +129,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public List<ObjectNameId> readQuestConfigObjectNameIds(int levelQuestId) {
         try {
-            return serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).readObjectNameIds();
+            return serverGameEngineCrudPersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).readObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -139,7 +139,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public QuestConfig createQuestConfig(int levelQuestId) {
         try {
-            return serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).create();
+            return serverGameEngineCrudPersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).create();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -149,7 +149,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public QuestConfig readQuestConfig(int levelQuestId, int questId) {
         try {
-            return serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).read(questId);
+            return serverGameEngineCrudPersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).read(questId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -159,7 +159,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void updateQuestConfig(int levelQuestId, QuestConfig questConfig) {
         try {
-            serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).update(questConfig);
+            serverGameEngineCrudPersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).update(questConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -170,7 +170,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     public void deleteQuestConfig(int levelQuestId, int questId) {
         System.out.println("deleteQuestConfig levelQuestId: " + levelQuestId + " questId: " + questId);
         try {
-            serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).delete(questId);
+            serverGameEngineCrudPersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).delete(questId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -180,7 +180,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void swapQuestConfig(int levelQuestId, int index1, int index2) {
         try {
-            serverGameEnginePersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).swap(index1, index2);
+            serverGameEngineCrudPersistence.getServerQuestCrud(levelQuestId, Locale.ENGLISH).swap(index1, index2);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -190,7 +190,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public List<ObjectNameId> readResourceRegionObjectNameIds() {
         try {
-            return serverGameEnginePersistence.getResourceRegionConfigCrud().readObjectNameIds();
+            return serverGameEngineCrudPersistence.getResourceRegionConfigCrud().readObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -200,7 +200,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public ResourceRegionConfig createResourceRegionConfig() {
         try {
-            return serverGameEnginePersistence.getResourceRegionConfigCrud().create();
+            return serverGameEngineCrudPersistence.getResourceRegionConfigCrud().create();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -210,7 +210,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void deleteResourceRegionConfig(int resourceRegionConfigId) {
         try {
-            serverGameEnginePersistence.getResourceRegionConfigCrud().delete(resourceRegionConfigId);
+            serverGameEngineCrudPersistence.getResourceRegionConfigCrud().delete(resourceRegionConfigId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -220,7 +220,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void updateResourceRegionConfig(ResourceRegionConfig resourceRegionConfig) {
         try {
-            serverGameEnginePersistence.getResourceRegionConfigCrud().update(resourceRegionConfig);
+            serverGameEngineCrudPersistence.getResourceRegionConfigCrud().update(resourceRegionConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -230,7 +230,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public ResourceRegionConfig readResourceRegionConfig(int resourceRegionConfigId) {
         try {
-            return serverGameEnginePersistence.getResourceRegionConfigCrud().read(resourceRegionConfigId);
+            return serverGameEngineCrudPersistence.getResourceRegionConfigCrud().read(resourceRegionConfigId);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -240,7 +240,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public List<ObjectNameId> readBotConfigObjectNameIds() {
         try {
-            return serverGameEnginePersistence.getBotConfigCrud().readObjectNameIds();
+            return serverGameEngineCrudPersistence.getBotConfigCrud().readObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -250,7 +250,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public BotConfig createBotConfig() {
         try {
-            return serverGameEnginePersistence.getBotConfigCrud().create();
+            return serverGameEngineCrudPersistence.getBotConfigCrud().create();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -260,7 +260,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void deleteBotConfigConfig(int id) {
         try {
-            serverGameEnginePersistence.getBotConfigCrud().delete(id);
+            serverGameEngineCrudPersistence.getBotConfigCrud().delete(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -270,7 +270,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void updateBotConfig(BotConfig botConfig) {
         try {
-            serverGameEnginePersistence.getBotConfigCrud().update(botConfig);
+            serverGameEngineCrudPersistence.getBotConfigCrud().update(botConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -280,7 +280,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public BotConfig readBotConfig(int id) {
         try {
-            return serverGameEnginePersistence.getBotConfigCrud().read(id);
+            return serverGameEngineCrudPersistence.getBotConfigCrud().read(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -290,7 +290,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public List<ObjectNameId> readBotSceneConfigObjectNameIds() {
         try {
-            return serverGameEnginePersistence.getBotSceneConfigCrud().readObjectNameIds();
+            return serverGameEngineCrudPersistence.getBotSceneConfigCrud().readObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -300,7 +300,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public BotSceneConfig createBotSceneConfig() {
         try {
-            return serverGameEnginePersistence.getBotSceneConfigCrud().create();
+            return serverGameEngineCrudPersistence.getBotSceneConfigCrud().create();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -310,7 +310,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void deleteBotSceneConfigConfig(int id) {
         try {
-            serverGameEnginePersistence.getBotSceneConfigCrud().delete(id);
+            serverGameEngineCrudPersistence.getBotSceneConfigCrud().delete(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -320,7 +320,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void updateBotSceneConfig(BotSceneConfig botSceneConfig) {
         try {
-            serverGameEnginePersistence.getBotSceneConfigCrud().update(botSceneConfig);
+            serverGameEngineCrudPersistence.getBotSceneConfigCrud().update(botSceneConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -330,7 +330,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public BotSceneConfig readBotSceneConfig(int id) {
         try {
-            return serverGameEnginePersistence.getBotSceneConfigCrud().read(id);
+            return serverGameEngineCrudPersistence.getBotSceneConfigCrud().read(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -340,7 +340,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public BoxRegionConfig createBoxRegionConfig() {
         try {
-            return serverGameEnginePersistence.getBoxRegionConfigCrud().create();
+            return serverGameEngineCrudPersistence.getBoxRegionConfigCrud().create();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -350,7 +350,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void updateBoxRegionConfig(BoxRegionConfig resourceRegionConfig) {
         try {
-            serverGameEnginePersistence.getBoxRegionConfigCrud().update(resourceRegionConfig);
+            serverGameEngineCrudPersistence.getBoxRegionConfigCrud().update(resourceRegionConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -360,7 +360,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public void deleteBoxRegionConfig(int id) {
         try {
-            serverGameEnginePersistence.getBoxRegionConfigCrud().delete(id);
+            serverGameEngineCrudPersistence.getBoxRegionConfigCrud().delete(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -370,7 +370,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public BoxRegionConfig readBoxRegionConfig(int id) {
         try {
-            return serverGameEnginePersistence.getBoxRegionConfigCrud().read(id);
+            return serverGameEngineCrudPersistence.getBoxRegionConfigCrud().read(id);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -380,7 +380,7 @@ public class ServerGameEngineEditorProviderImpl implements ServerGameEngineEdito
     @Override
     public List<ObjectNameId> readBoxRegionObjectNameIds() {
         try {
-            return serverGameEnginePersistence.getBoxRegionConfigCrud().readObjectNameIds();
+            return serverGameEngineCrudPersistence.getBoxRegionConfigCrud().readObjectNameIds();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

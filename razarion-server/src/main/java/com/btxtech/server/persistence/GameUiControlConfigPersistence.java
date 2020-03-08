@@ -5,7 +5,7 @@ import com.btxtech.server.gameengine.ServerLevelQuestService;
 import com.btxtech.server.gameengine.ServerUnlockService;
 import com.btxtech.server.persistence.level.LevelEntity_;
 import com.btxtech.server.persistence.level.LevelPersistence;
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
@@ -48,7 +48,7 @@ public class GameUiControlConfigPersistence {
     @Inject
     private LevelPersistence levelPersistence;
     @Inject
-    private ServerGameEnginePersistence serverGameEnginePersistence;
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
     private DbPropertiesService dbPropertiesService;
     @Inject
@@ -82,7 +82,7 @@ public class GameUiControlConfigPersistence {
     public WarmGameUiControlConfig loadWarm(Locale locale, UserContext userContext) {
         WarmGameUiControlConfig warmGameUiControlConfig = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
         if (warmGameUiControlConfig.getGameEngineMode() == GameEngineMode.SLAVE) {
-            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEnginePersistence.readSlavePlanetConfig(userContext.getLevelId()));
+            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
             warmGameUiControlConfig.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
             warmGameUiControlConfig.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getHumanPlayerId()));
         }

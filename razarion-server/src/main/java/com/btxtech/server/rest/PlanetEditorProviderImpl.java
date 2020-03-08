@@ -4,7 +4,7 @@ import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.gameengine.TerrainShapeService;
-import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.PlanetVisualConfig;
@@ -24,7 +24,7 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private PlanetPersistence planetPersistence;
+    private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private TerrainShapeService terrainShapeService;
     @Inject
@@ -36,8 +36,8 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     public TerrainEditorLoad readTerrainEditorLoad(int planetId) {
         try {
             TerrainEditorLoad terrainEditorLoad = new TerrainEditorLoad();
-            terrainEditorLoad.setSlopes(planetPersistence.getTerrainSlopePositions(planetId));
-            terrainEditorLoad.setTerrainObjects(planetPersistence.getTerrainObjectPositions(planetId));
+            terrainEditorLoad.setSlopes(planetCrudPersistence.getTerrainSlopePositions(planetId));
+            terrainEditorLoad.setTerrainObjects(planetCrudPersistence.getTerrainObjectPositions(planetId));
             return terrainEditorLoad;
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
@@ -52,23 +52,23 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
             // this does not make any sense terrainShapeService.setupTerrainShapeDryRun(planetId, terrainEditorUpdate);
 
             if (terrainEditorUpdate.getCreatedSlopes() != null && !terrainEditorUpdate.getCreatedSlopes().isEmpty()) {
-                planetPersistence.createTerrainSlopePositions(planetId, terrainEditorUpdate.getCreatedSlopes());
+                planetCrudPersistence.createTerrainSlopePositions(planetId, terrainEditorUpdate.getCreatedSlopes());
             }
             if (terrainEditorUpdate.getUpdatedSlopes() != null && !terrainEditorUpdate.getUpdatedSlopes().isEmpty()) {
-                planetPersistence.updateTerrainSlopePositions(planetId, terrainEditorUpdate.getUpdatedSlopes());
+                planetCrudPersistence.updateTerrainSlopePositions(planetId, terrainEditorUpdate.getUpdatedSlopes());
             }
             if (terrainEditorUpdate.getDeletedSlopeIds() != null && !terrainEditorUpdate.getDeletedSlopeIds().isEmpty()) {
-                planetPersistence.deleteTerrainSlopePositions(planetId, terrainEditorUpdate.getDeletedSlopeIds());
+                planetCrudPersistence.deleteTerrainSlopePositions(planetId, terrainEditorUpdate.getDeletedSlopeIds());
             }
 
             if (terrainEditorUpdate.getCreatedTerrainObjects() != null && !terrainEditorUpdate.getCreatedTerrainObjects().isEmpty()) {
-                planetPersistence.createTerrainObjectPositions(planetId, terrainEditorUpdate.getCreatedTerrainObjects());
+                planetCrudPersistence.createTerrainObjectPositions(planetId, terrainEditorUpdate.getCreatedTerrainObjects());
             }
             if (terrainEditorUpdate.getUpdatedTerrainObjects() != null && !terrainEditorUpdate.getUpdatedTerrainObjects().isEmpty()) {
-                planetPersistence.updateTerrainObjectPositions(planetId, terrainEditorUpdate.getUpdatedTerrainObjects());
+                planetCrudPersistence.updateTerrainObjectPositions(planetId, terrainEditorUpdate.getUpdatedTerrainObjects());
             }
             if (terrainEditorUpdate.getDeletedTerrainObjectsIds() != null && !terrainEditorUpdate.getDeletedTerrainObjectsIds().isEmpty()) {
-                planetPersistence.deleteTerrainObjectPositionIds(planetId, terrainEditorUpdate.getDeletedTerrainObjectsIds());
+                planetCrudPersistence.deleteTerrainObjectPositionIds(planetId, terrainEditorUpdate.getDeletedTerrainObjectsIds());
             }
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
@@ -92,7 +92,7 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     private void restartPlanet(int planetId, LifecyclePacket.Type type) {
         try {
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
-            terrainShapeService.setupTerrainShape(planetPersistence.loadPlanetConfig(planetId));
+            terrainShapeService.setupTerrainShape(planetCrudPersistence.loadPlanetConfig(planetId));
             serverGameEngineControl.restartPlanet();
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {
@@ -104,7 +104,7 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     @Override
     public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
         try {
-            planetPersistence.updatePlanetVisualConfig(planetId, planetVisualConfig);
+            planetCrudPersistence.updatePlanetVisualConfig(planetId, planetVisualConfig);
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;
@@ -112,20 +112,15 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     }
 
     @Override
+    @Deprecated
     public void updatePlanetConfig(PlanetConfig planetConfig) {
-        try {
-            planetPersistence.updatePlanetConfig(planetConfig);
-        } catch (Throwable e) {
-            exceptionHandler.handleException(e);
-            throw e;
-        }
     }
 
     @Override
     public void updateMiniMapImage(int planetId, String dataUrl) {
         try {
             DataUrlDecoder dataUrlDecoder = new DataUrlDecoder(dataUrl);
-            planetPersistence.updateMiniMapImage(planetId, dataUrlDecoder.getData());
+            planetCrudPersistence.updateMiniMapImage(planetId, dataUrlDecoder.getData());
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

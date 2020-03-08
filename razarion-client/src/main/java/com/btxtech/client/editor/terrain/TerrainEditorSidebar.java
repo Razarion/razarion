@@ -135,7 +135,7 @@ public class TerrainEditorSidebar extends AbstractEditor implements ViewService.
     @PostConstruct
     public void init() {
         terrainEditor.activate();
-        planetId.setTextContent(Integer.toString(terrainEditor.getPlanetConfig().getPlanetId()));
+        planetId.setTextContent(Integer.toString(terrainEditor.getPlanetConfig().getId()));
         terrainTiles.setTextContent(DisplayUtils.handleRectangle(terrainEditor.getPlanetConfig().getTerrainTileDimension()));
         terrainTileDimension.setTextContent(DisplayUtils.handleRectangle2D(TerrainUtil.toTileAbsolute(terrainEditor.getPlanetConfig().getTerrainTileDimension())));
         playGround.setTextContent(DisplayUtils.handleRectangle2D(terrainEditor.getPlanetConfig().getPlayGround()));

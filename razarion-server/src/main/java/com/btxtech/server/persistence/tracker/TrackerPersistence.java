@@ -2,7 +2,7 @@ package com.btxtech.server.persistence.tracker;
 
 import com.btxtech.server.marketing.facebook.FbFacade;
 import com.btxtech.server.persistence.PlanetEntity;
-import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.history.HistoryPersistence;
 import com.btxtech.server.user.HumanPlayerIdEntity;
 import com.btxtech.server.user.HumanPlayerIdEntity_;
@@ -60,7 +60,7 @@ public class TrackerPersistence {
     @Inject
     private SessionHolder sessionHolder;
     @Inject
-    private PlanetPersistence planetPersistence;
+    private PlanetCrudPersistence planetCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
     @Inject
@@ -468,7 +468,7 @@ public class TrackerPersistence {
     public WarmGameUiControlConfig setupWarmGameUiControlConfig(GameUiControlInput gameUiControlInput) {
         ServerTrackerStart serverTrackerStart = trackingContainerMongoDb.findServerTrackerStart(gameUiControlInput);
 
-        PlanetEntity planetEntity = planetPersistence.loadPlanet(serverTrackerStart.getTrackingStart().getPlanetId());
+        PlanetEntity planetEntity = planetCrudPersistence.loadPlanet(serverTrackerStart.getTrackingStart().getPlanetId());
         WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameUiControlConfigId(-2).setGameEngineMode(GameEngineMode.PLAYBACK);
         warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
 

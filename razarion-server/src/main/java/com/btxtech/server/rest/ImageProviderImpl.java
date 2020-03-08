@@ -2,7 +2,7 @@ package com.btxtech.server.rest;
 
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.persistence.ImagePersistence;
-import com.btxtech.server.persistence.PlanetPersistence;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import com.btxtech.shared.system.ExceptionHandler;
@@ -23,7 +23,7 @@ public class ImageProviderImpl implements ImageProvider {
     @Inject
     private ExceptionHandler exceptionHandler;
     @Inject
-    private PlanetPersistence planetPersistence;
+    private PlanetCrudPersistence planetCrudPersistence;
 
     @Override
     public Response getImage(int id) {
@@ -81,7 +81,7 @@ public class ImageProviderImpl implements ImageProvider {
     @Override
     public Response getMiniMapImage(int planetId) {
         try {
-            return Response.ok(planetPersistence.getMiniMapImage(planetId)).lastModified(new Date()).build();
+            return Response.ok(planetCrudPersistence.getMiniMapImage(planetId)).lastModified(new Date()).build();
         } catch (Throwable e) {
             exceptionHandler.handleException(e);
             throw e;

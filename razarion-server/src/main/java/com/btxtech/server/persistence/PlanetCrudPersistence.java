@@ -1,6 +1,5 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
@@ -18,12 +17,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.SingularAttribute;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -31,7 +29,7 @@ import java.util.stream.Collectors;
  * 08.07.2016.
  */
 @Singleton
-public class PlanetPersistence {
+public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetEntity> {
     @Inject
     private TerrainElementPersistence terrainElementPersistence;
     @Inject
@@ -40,6 +38,20 @@ public class PlanetPersistence {
     private GroundCrudPersistence groundCrudPersistence;
     @PersistenceContext
     private EntityManager entityManager;
+
+    public PlanetCrudPersistence(Class<PlanetEntity> entityClass, SingularAttribute<PlanetEntity, Integer> id, SingularAttribute<PlanetEntity, String> internalName) {
+        super(entityClass, id, internalName);
+    }
+
+    @Override
+    protected PlanetConfig toConfig(PlanetEntity entity) {
+        return entity.toPlanetConfig();
+    }
+
+    @Override
+    protected void fromConfig(PlanetConfig config, PlanetEntity entity) {
+        entity.fromPlanetConfig(config, groundCrudPersistence, itemTypePersistence);
+    }
 
     @Transactional
     @SecurityCheck
@@ -53,28 +65,6 @@ public class PlanetPersistence {
     @SecurityCheck
     public void deletePlanetConfig(int planetId) {
         entityManager.remove(loadPlanet(planetId));
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void updatePlanetConfig(PlanetConfig planetConfig) {
-        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetConfig.getPlanetId());
-        if (planetEntity == null) {
-            throw new IllegalArgumentException("No planet for id: " + planetConfig.getPlanetId());
-        }
-        planetEntity.setGroundConfig(groundCrudPersistence.getPlanetConfig(planetConfig.getGroundConfigId()));
-        planetEntity.setHouseSpace(planetConfig.getHouseSpace());
-        planetEntity.setStartRazarion(planetConfig.getStartRazarion());
-        planetEntity.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId()));
-        Map<BaseItemTypeEntity, Integer> limitation = planetEntity.getItemTypeLimitation();
-        if (limitation == null) {
-            limitation = new HashMap<>();
-        }
-        limitation.clear();
-        for (Map.Entry<Integer, Integer> entry : planetConfig.getItemTypeLimitation().entrySet()) {
-            limitation.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
-        }
-        planetEntity.setItemTypeLimitation(limitation);
     }
 
     @Transactional
@@ -239,11 +229,11 @@ public class PlanetPersistence {
 
     @Transactional
     public Collection<PlanetConfig> loadAllPlanetConfig() {
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<PlanetEntity> criteriaQuery = criteriaBuilder.createQuery(PlanetEntity.class);
-            Root<PlanetEntity> root = criteriaQuery.from(PlanetEntity.class);
-            CriteriaQuery<PlanetEntity> userSelect = criteriaQuery.select(root);
-            return entityManager.createQuery(userSelect).getResultList().stream().map(PlanetEntity::toPlanetConfig).collect(Collectors.toList());
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<PlanetEntity> criteriaQuery = criteriaBuilder.createQuery(PlanetEntity.class);
+        Root<PlanetEntity> root = criteriaQuery.from(PlanetEntity.class);
+        CriteriaQuery<PlanetEntity> userSelect = criteriaQuery.select(root);
+        return entityManager.createQuery(userSelect).getResultList().stream().map(PlanetEntity::toPlanetConfig).collect(Collectors.toList());
     }
 
     @Transactional

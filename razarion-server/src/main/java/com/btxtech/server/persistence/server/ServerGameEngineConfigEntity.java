@@ -1,5 +1,6 @@
 package com.btxtech.server.persistence.server;
 
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
 import com.btxtech.server.persistence.bot.BotConfigEntity;
 import com.btxtech.server.persistence.bot.BotSceneConfigEntity;
@@ -10,6 +11,7 @@ import com.btxtech.shared.dto.BoxRegionConfig;
 import com.btxtech.shared.dto.MasterPlanetConfig;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.dto.ResourceRegionConfig;
+import com.btxtech.shared.dto.ServerGameEngineConfig;
 import com.btxtech.shared.dto.StartRegionConfig;
 import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.gameengine.datatypes.config.bot.BotConfig;
@@ -42,7 +44,8 @@ public class ServerGameEngineConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @OneToOne
+    private String internalName;
+    @OneToOne(fetch = FetchType.LAZY)
     private PlanetEntity planetEntity;
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "serverGameEngineId", nullable = false)
@@ -66,6 +69,19 @@ public class ServerGameEngineConfigEntity {
     @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "serverGameEngineConfig")
     private List<ServerLevelQuestEntity> serverQuestEntities;
+
+    public ServerGameEngineConfig toServerGameEngineConfig() {
+        ServerGameEngineConfig serverGameEngineConfig = new ServerGameEngineConfig().id(id).internalName(internalName);
+        if(planetEntity != null) {
+            serverGameEngineConfig.setPlanetConfigId(planetEntity.getId());
+        }
+        return serverGameEngineConfig;
+    }
+
+    public void fromServerGameEngineConfig(ServerGameEngineConfig config, PlanetCrudPersistence planetCrudPersistence) {
+        internalName = config.getInternalName();
+        planetEntity = planetCrudPersistence.getEntity(config.getPlanetConfigId());
+    }
 
     public Integer getId() {
         return id;

@@ -4,8 +4,8 @@ import com.btxtech.server.gameengine.ServerGameEngineControl;
 import com.btxtech.server.persistence.GameUiControlConfigEntity;
 import com.btxtech.server.persistence.ImageLibraryEntity;
 import com.btxtech.server.persistence.ImagePersistence;
+import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.persistence.PlanetEntity;
-import com.btxtech.server.persistence.PlanetPersistence;
 import com.btxtech.server.persistence.Shape3DPersistence;
 import com.btxtech.server.persistence.history.UserHistoryEntity;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
@@ -35,8 +35,6 @@ import com.btxtech.server.util.DateUtil;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.FbAuthResponse;
 import com.btxtech.shared.datatypes.I18nString;
-import com.btxtech.shared.datatypes.Rectangle;
-import com.btxtech.shared.datatypes.Rectangle2D;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
@@ -47,7 +45,6 @@ import com.btxtech.shared.dto.SlopeShape;
 import com.btxtech.shared.dto.SpecularLightConfig;
 import com.btxtech.shared.dto.TerrainSlopeCorner;
 import com.btxtech.shared.dto.TerrainSlopePosition;
-import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import com.btxtech.shared.gameengine.datatypes.config.ComparisonConfig;
 import com.btxtech.shared.gameengine.datatypes.config.ConditionConfig;
@@ -174,7 +171,7 @@ public class ServerTestHelper {
     @Inject
     private Shape3DPersistence shape3DPersistence;
     @Inject
-    private PlanetPersistence planetPersistence;
+    private PlanetCrudPersistence planetCrudPersistence;
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
     @Inject
@@ -449,38 +446,38 @@ public class ServerTestHelper {
 
         entityManager.persist(new WaterConfigEntity());
 
-        PlanetEntity planetEntity1 = new PlanetEntity();
-        planetEntity1.setGroundMeshDimension(new Rectangle(0, 0, 2, 2));
-        planetEntity1.setPlayGround(new Rectangle2D(50, 50, 200, 200));
-        planetEntity1.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
-        entityManager.persist(planetEntity1);
-        PLANET_1_ID = planetEntity1.getId();
-
-        PlanetEntity planetEntity2 = new PlanetEntity();
-        planetEntity2.setGroundMeshDimension(new Rectangle(0, 0, 10, 10));
-        planetEntity2.setPlayGround(new Rectangle2D(50, 50, 1500, 1500));
-        planetEntity2.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
-        planetEntity2.setItemTypeLimitation(setupPlanet2Limitation());
-        planetEntity2.setStartRazarion(100);
-        entityManager.persist(planetEntity2);
-        PLANET_2_ID = planetEntity2.getId();
-
-        GameUiControlConfigEntity gameUiControlConfigEntity1 = new GameUiControlConfigEntity();
-        gameUiControlConfigEntity1.setPlanetEntity(planetEntity1);
-        gameUiControlConfigEntity1.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_1_ID));
-        gameUiControlConfigEntity1.setGameEngineMode(GameEngineMode.MASTER);
-        entityManager.persist(gameUiControlConfigEntity1);
-        GAME_UI_CONTROL_CONFIG_1_ID = gameUiControlConfigEntity1.getId();
-
-        GameUiControlConfigEntity gameUiControlConfigEntity2 = new GameUiControlConfigEntity();
-        gameUiControlConfigEntity2.setPlanetEntity(planetEntity2);
-        gameUiControlConfigEntity2.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
-        gameUiControlConfigEntity2.setGameEngineMode(GameEngineMode.SLAVE);
-        entityManager.persist(gameUiControlConfigEntity2);
-        GAME_UI_CONTROL_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
-
-        ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
-        serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
+//   TODO     PlanetEntity planetEntity1 = new PlanetEntity();
+//        planetEntity1.setGroundMeshDimension(new Rectangle(0, 0, 2, 2));
+//        planetEntity1.setPlayGround(new Rectangle2D(50, 50, 200, 200));
+//        planetEntity1.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
+//        entityManager.persist(planetEntity1);
+//        PLANET_1_ID = planetEntity1.getId();
+//
+//   TODO     PlanetEntity planetEntity2 = new PlanetEntity();
+//        planetEntity2.setGroundMeshDimension(new Rectangle(0, 0, 10, 10));
+//        planetEntity2.setPlayGround(new Rectangle2D(50, 50, 1500, 1500));
+//        planetEntity2.setStartBaseItemType(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID));
+//        planetEntity2.setItemTypeLimitation(setupPlanet2Limitation());
+//        planetEntity2.setStartRazarion(100);
+//        entityManager.persist(planetEntity2);
+//        PLANET_2_ID = planetEntity2.getId();
+//
+//    TODO    GameUiControlConfigEntity gameUiControlConfigEntity1 = new GameUiControlConfigEntity();
+//        gameUiControlConfigEntity1.setPlanetEntity(planetEntity1);
+//        gameUiControlConfigEntity1.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_1_ID));
+//        gameUiControlConfigEntity1.setGameEngineMode(GameEngineMode.MASTER);
+//        entityManager.persist(gameUiControlConfigEntity1);
+//        GAME_UI_CONTROL_CONFIG_1_ID = gameUiControlConfigEntity1.getId();
+//
+//   TODO     GameUiControlConfigEntity gameUiControlConfigEntity2 = new GameUiControlConfigEntity();
+//        gameUiControlConfigEntity2.setPlanetEntity(planetEntity2);
+//        gameUiControlConfigEntity2.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
+//        gameUiControlConfigEntity2.setGameEngineMode(GameEngineMode.SLAVE);
+//        entityManager.persist(gameUiControlConfigEntity2);
+//        GAME_UI_CONTROL_CONFIG_2_ID = gameUiControlConfigEntity2.getId();
+//
+//   TODO     ServerGameEngineConfigEntity serverGameEngineConfigEntity1 = new ServerGameEngineConfigEntity();
+//        serverGameEngineConfigEntity1.setPlanetEntity(planetEntity2);
 
         ServerLevelQuestEntity serverLevelQuestEntityL4 = new ServerLevelQuestEntity();
         serverLevelQuestEntityL4.setMinimalLevel(entityManager.find(LevelEntity.class, LEVEL_4_ID));
@@ -500,14 +497,14 @@ public class ServerTestHelper {
         questConfigEntityL53.fromQuestConfig(null, new QuestConfig().setInternalName("Test Server Quest L5 3").setXp(50).setConditionConfig(new ConditionConfig().setConditionTrigger(ConditionTrigger.HARVEST).setComparisonConfig(new ComparisonConfig().setCount(100))), Locale.US);
         serverLevelQuestEntityL5.setQuestConfigs(Arrays.asList(questConfigEntityL51, questConfigEntityL52, questConfigEntityL53));
 
-        serverGameEngineConfigEntity1.setServerQuestEntities(Arrays.asList(serverLevelQuestEntityL4, serverLevelQuestEntityL5));
-        entityManager.persist(serverGameEngineConfigEntity1);
-        SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
-        SERVER_QUEST_ID_L4_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
-        SERVER_QUEST_ID_L4_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
-        SERVER_QUEST_ID_L5_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(0).getId();
-        SERVER_QUEST_ID_L5_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(1).getId();
-        SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(2).getId();
+//  TODO      serverGameEngineConfigEntity1.setServerQuestEntities(Arrays.asList(serverLevelQuestEntityL4, serverLevelQuestEntityL5));
+//        entityManager.persist(serverGameEngineConfigEntity1);
+//        SERVER_GAME_ENGINE_CONFIG_ID_1 = serverGameEngineConfigEntity1.getId();
+//        SERVER_QUEST_ID_L4_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(0).getId();
+//        SERVER_QUEST_ID_L4_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(0).getQuestConfigs().get(1).getId();
+//        SERVER_QUEST_ID_L5_1 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(0).getId();
+//        SERVER_QUEST_ID_L5_2 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(1).getId();
+//        SERVER_QUEST_ID_L5_3 = serverGameEngineConfigEntity1.getServerQuestEntities().get(1).getQuestConfigs().get(2).getId();
         entityTransaction.commit();
     }
 
@@ -532,7 +529,7 @@ public class ServerTestHelper {
                 new TerrainSlopeCorner().setPosition(new DecimalPosition(239, 359)), new TerrainSlopeCorner().setPosition(new DecimalPosition(49, 360))));
         terrainSlopePositions.add(terrainSlopePositionWater);
 
-        planetPersistence.createTerrainSlopePositions(PLANET_2_ID, terrainSlopePositions);
+        planetCrudPersistence.createTerrainSlopePositions(PLANET_2_ID, terrainSlopePositions);
 
         // Start from ServletContextMonitor.contextInitialized() not working
         serverGameEngineControl.start(null, true);

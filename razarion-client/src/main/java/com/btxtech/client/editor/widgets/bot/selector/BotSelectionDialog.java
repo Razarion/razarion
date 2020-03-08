@@ -46,7 +46,7 @@ public class BotSelectionDialog extends Composite implements ModalDialogContent<
         DOMUtil.removeAllElementChildren(botList.getElement()); // Remove placeholder table row from template.
         provider.call(response -> {
             fillTable(selectedId, (List<ObjectNameId>) response);
-        }, exceptionHandler.restErrorHandler("CommonEditorProvider.getAllBotsFromPlanet() failed: ")).getAllBotsFromPlanet(gameUiControl.getPlanetConfig().getPlanetId());
+        }, exceptionHandler.restErrorHandler("CommonEditorProvider.getAllBotsFromPlanet() failed: ")).getAllBotsFromPlanet(gameUiControl.getPlanetConfig().getId());
 
         botList.addComponentCreationHandler(botSelectionEntryWidget -> botSelectionEntryWidget.setBotSelectionDialog(BotSelectionDialog.this));
         botList.setSelector(baseItemTypeSelectionEntry -> baseItemTypeSelectionEntry.setSelected(true));

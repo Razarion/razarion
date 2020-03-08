@@ -56,14 +56,14 @@ public class TerrainShape {
         terrainShapeSetup.processSlopes(terrainSlopePositions);
         terrainShapeSetup.processTerrainObject(terrainObjectPositions);
         terrainShapeSetup.finish();
-        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getPlanetId());
+        logger.severe("Setup TerrainShape: " + (System.currentTimeMillis() - time) + " for planet config: " + planetConfig.getId());
     }
 
     public void lazyInit(PlanetConfig planetConfig, TerrainTypeService terrainTypeService, NativeTerrainShapeAccess nativeTerrainShapeAccess, Runnable finishCallback, Consumer<String> failCallback) {
         surfaceAccess = new SurfaceAccess(this);
         pathingAccess = new PathingAccess(this);
         playGround = planetConfig.getPlayGround();
-        nativeTerrainShapeAccess.load(planetConfig.getPlanetId(), nativeTerrainShape -> {
+        nativeTerrainShapeAccess.load(planetConfig.getId(), nativeTerrainShape -> {
             try {
                 // long time = System.currentTimeMillis();
                 tileXCount = nativeTerrainShape.tileXCount;

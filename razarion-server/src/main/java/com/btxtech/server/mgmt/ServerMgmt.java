@@ -96,15 +96,15 @@ public class ServerMgmt {
             }
             ClientGameConnection clientGameConnection = gameSessionUuids.remove(clientSystemConnection.getGameSessionUuid());
             if (clientGameConnection != null) {
-                onlineInfo.setMultiplayerDate(clientGameConnection.getTime()).setMultiplayerDuration(clientGameConnection.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getPlanetId()));
+                onlineInfo.setMultiplayerDate(clientGameConnection.getTime()).setMultiplayerDuration(clientGameConnection.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getId()));
             }
             onlineInfos.add(onlineInfo);
         });
         for (ClientGameConnection orphans : gameSessionUuids.values()) {
-            onlineInfos.add(new OnlineInfo().setType(OnlineInfo.Type.ORPHAN).setMultiplayerDate(orphans.getTime()).setMultiplayerDuration(orphans.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getPlanetId())));
+            onlineInfos.add(new OnlineInfo().setType(OnlineInfo.Type.ORPHAN).setMultiplayerDate(orphans.getTime()).setMultiplayerDuration(orphans.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getId())));
         }
         for (ClientGameConnection unknown : unknowns) {
-            onlineInfos.add(new OnlineInfo().setType(OnlineInfo.Type.UNKNOWN).setMultiplayerDate(unknown.getTime()).setMultiplayerDuration(unknown.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getPlanetId())));
+            onlineInfos.add(new OnlineInfo().setType(OnlineInfo.Type.UNKNOWN).setMultiplayerDate(unknown.getTime()).setMultiplayerDuration(unknown.getDuration()).setMultiplayerPlanet(Integer.toString(serverGameEngineControl.getPlanetConfig().getId())));
         }
 
         return onlineInfos;

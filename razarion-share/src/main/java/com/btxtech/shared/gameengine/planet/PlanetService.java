@@ -105,7 +105,7 @@ public class PlanetService implements Runnable { // Only available in worker. On
     public BackupPlanetInfo backup(boolean saveUnregistered) {
         BackupPlanetInfo backupPlanetInfo = new BackupPlanetInfo();
         backupPlanetInfo.setDate(new Date());
-        backupPlanetInfo.setPlanetId(planetConfig.getPlanetId());
+        backupPlanetInfo.setPlanetId(planetConfig.getId());
         baseItemService.fillBackup(backupPlanetInfo, saveUnregistered);
         questService.fillBackup(backupPlanetInfo);
         return backupPlanetInfo;

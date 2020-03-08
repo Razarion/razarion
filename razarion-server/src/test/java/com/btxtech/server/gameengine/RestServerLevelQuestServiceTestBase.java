@@ -9,7 +9,7 @@ import com.btxtech.server.persistence.GameUiControlConfigPersistence;
 import com.btxtech.server.persistence.history.LevelHistoryEntity;
 import com.btxtech.server.persistence.history.QuestHistoryEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.user.UserEntity;
 import com.btxtech.server.user.UserService;
 import com.btxtech.server.web.SessionHolder;
@@ -52,7 +52,7 @@ public class RestServerLevelQuestServiceTestBase extends RestServerTestBase {
     @Inject
     private GameUiControlConfigPersistence gameUiControlConfigPersistence;
     @Inject
-    private ServerGameEnginePersistence serverGameEnginePersistence;
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
     private ClientSystemConnectionServiceTestHelper systemConnectionService;
     @Resource(name = "DefaultManagedScheduledExecutorService")
@@ -102,18 +102,18 @@ public class RestServerLevelQuestServiceTestBase extends RestServerTestBase {
         UserContext userContext = handleFacebookUserLogin("0000001");
 
         assertUser("0000001", LEVEL_1_ID, null);
-        Assert.assertTrue(userService.findActiveQuests4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertTrue(userService.findActiveQuests4Users(serverGameEngineCrudPersistence.readAllQuestIds()).entrySet().isEmpty());
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_2_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContextFromSession().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
-        Assert.assertTrue(userService.findActiveQuests4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertTrue(userService.findActiveQuests4Users(serverGameEngineCrudPersistence.readAllQuestIds()).entrySet().isEmpty());
         Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_3_ID);
         Assert.assertEquals(LEVEL_1_ID, userService.getUserContextFromSession().getLevelId());
         assertUser("0000001", LEVEL_1_ID, null);
-        Assert.assertTrue(userService.findActiveQuests4Users(serverGameEnginePersistence.readAllQuestIds()).entrySet().isEmpty());
+        Assert.assertTrue(userService.findActiveQuests4Users(serverGameEngineCrudPersistence.readAllQuestIds()).entrySet().isEmpty());
         Assert.assertNull(gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlavePlanetConfig());
 
         serverLevelQuestService.onClientLevelUpdate(sessionId, LEVEL_4_ID);
@@ -121,7 +121,7 @@ public class RestServerLevelQuestServiceTestBase extends RestServerTestBase {
         assertUser("0000001", LEVEL_4_ID, SERVER_QUEST_ID_L4_1);
         Assert.assertEquals(SERVER_QUEST_ID_L4_1, gameUiControlConfigPersistence.loadWarm(Locale.US, userContext).getSlaveQuestInfo().getActiveQuest().getId());
 
-        Map<HumanPlayerId, QuestConfig> map = userService.findActiveQuests4Users(serverGameEnginePersistence.readAllQuestIds());
+        Map<HumanPlayerId, QuestConfig> map = userService.findActiveQuests4Users(serverGameEngineCrudPersistence.readAllQuestIds());
         Assert.assertEquals(1, map.size());
         Map.Entry<HumanPlayerId, QuestConfig> entry = CollectionUtils.getFirst(map.entrySet());
         UserEntity userEntity = userService.getUserForFacebookId("0000001");

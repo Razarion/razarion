@@ -1,6 +1,7 @@
 package com.btxtech.server.persistence;
 
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
+import com.btxtech.server.persistence.itemtype.ItemTypePersistence;
 import com.btxtech.server.persistence.object.TerrainObjectPositionEntity;
 import com.btxtech.server.persistence.surface.GroundConfigEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
@@ -44,6 +45,7 @@ public class PlanetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String internalName;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private GroundConfigEntity groundConfig;
@@ -106,8 +108,7 @@ public class PlanetEntity {
     }
 
     public PlanetConfig toPlanetConfig() {
-        PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setPlanetId(id);
+        PlanetConfig planetConfig = new PlanetConfig().id(id).internalName(internalName);
         if(groundConfig != null) {
             planetConfig.setGroundConfigId(groundConfig.getId());
         }
@@ -125,6 +126,20 @@ public class PlanetEntity {
             planetConfig.setStartBaseItemTypeId(startBaseItemType.getId());
         }
         return planetConfig;
+    }
+
+    public void fromPlanetConfig(PlanetConfig planetConfig, GroundCrudPersistence groundCrudPersistence, ItemTypePersistence itemTypePersistence) {
+        groundConfig = groundCrudPersistence.getEntity(planetConfig.getGroundConfigId());
+        houseSpace = planetConfig.getHouseSpace();
+        startRazarion = planetConfig.getStartRazarion();
+        startBaseItemType = itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId());
+        if (itemTypeLimitation == null) {
+            itemTypeLimitation = new HashMap<>();
+        }
+        itemTypeLimitation.clear();
+        for (Map.Entry<Integer, Integer> entry : planetConfig.getItemTypeLimitation().entrySet()) {
+            itemTypeLimitation.put(itemTypePersistence.readBaseItemTypeEntity(entry.getKey()), entry.getValue());
+        }
     }
 
     public PlanetVisualConfig toPlanetVisualConfig() {
@@ -161,26 +176,6 @@ public class PlanetEntity {
 
     public void setMiniMapImage(byte[] miniMapImage) {
         this.miniMapImage = miniMapImage;
-    }
-
-    public void setHouseSpace(int houseSpace) {
-        this.houseSpace = houseSpace;
-    }
-
-    public void setStartRazarion(int startRazarion) {
-        this.startRazarion = startRazarion;
-    }
-
-    public void setStartBaseItemType(BaseItemTypeEntity startBaseItemType) {
-        this.startBaseItemType = startBaseItemType;
-    }
-
-    public Map<BaseItemTypeEntity, Integer> getItemTypeLimitation() {
-        return itemTypeLimitation;
-    }
-
-    public void setItemTypeLimitation(Map<BaseItemTypeEntity, Integer> itemTypeLimitation) {
-        this.itemTypeLimitation = itemTypeLimitation;
     }
 
     public void setPlayGround(Rectangle2D playGround) {

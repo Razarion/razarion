@@ -309,7 +309,7 @@ public final class FallbackConfig {
 
     public static PlanetConfig setupPlanetConfig() {
         PlanetConfig planetConfig = new PlanetConfig();
-        planetConfig.setPlanetId(PLANET_ID);
+        planetConfig.id(PLANET_ID);
         planetConfig.setItemTypeLimitation(setupPlanetItemTypeLimitations());
         planetConfig.setTerrainTileDimension(new Rectangle(0, 0, 6, 6));
         planetConfig.setPlayGround(new Rectangle2D(0, 0, 1000, 1000));

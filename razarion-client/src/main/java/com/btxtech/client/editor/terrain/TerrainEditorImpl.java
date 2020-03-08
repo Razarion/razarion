@@ -508,7 +508,7 @@ public class TerrainEditorImpl implements EditorMouseListener, EditorKeyboardLis
     }
 
     public int getPlanetId() {
-        return getPlanetConfig().getPlanetId();
+        return getPlanetConfig().getId();
     }
 
     public PlanetConfig getPlanetConfig() {

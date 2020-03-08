@@ -12,7 +12,7 @@ import com.btxtech.server.persistence.level.LevelPersistence;
 import com.btxtech.server.persistence.level.LevelUnlockEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity;
 import com.btxtech.server.persistence.quest.QuestConfigEntity_;
-import com.btxtech.server.persistence.server.ServerGameEnginePersistence;
+import com.btxtech.server.persistence.server.ServerGameEngineCrudPersistence;
 import com.btxtech.server.web.SessionHolder;
 import com.btxtech.server.web.SessionService;
 import com.btxtech.shared.datatypes.AdditionUserInfo;
@@ -67,7 +67,7 @@ public class UserService {
     @Inject
     private LevelPersistence levelPersistence;
     @Inject
-    private ServerGameEnginePersistence serverGameEnginePersistence;
+    private ServerGameEngineCrudPersistence serverGameEngineCrudPersistence;
     @Inject
     private SessionService sessionService;
     @Inject
@@ -396,7 +396,7 @@ public class UserService {
     public QuestConfig getAndSaveNewQuest(Integer userId) {
         UserEntity userEntity = getUserEntity(userId);
         if (userEntity.getActiveQuest() == null) {
-            QuestConfigEntity newQuest = serverGameEnginePersistence.getQuest4LevelAndCompleted(userEntity.getLevel(), userEntity.getCompletedQuestIds());
+            QuestConfigEntity newQuest = serverGameEngineCrudPersistence.getQuest4LevelAndCompleted(userEntity.getLevel(), userEntity.getCompletedQuestIds());
             userEntity.setActiveQuest(newQuest);
             entityManager.merge(userEntity);
             if (newQuest != null) {

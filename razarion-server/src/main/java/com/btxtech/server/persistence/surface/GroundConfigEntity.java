@@ -66,7 +66,7 @@ public class GroundConfigEntity {
         return id;
     }
 
-    public GroundConfig toGroundConfig() {
+    public GroundConfig toConfig() {
         GroundConfig groundConfig = new GroundConfig();
         groundConfig.id(id).internalName(internalName);
         if (topMaterial != null) {
