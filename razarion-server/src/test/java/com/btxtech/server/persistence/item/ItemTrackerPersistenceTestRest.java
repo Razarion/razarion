@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.item;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.user.UserService;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.datatypes.UserContext;
@@ -18,7 +18,7 @@ import java.util.List;
  * Created by Beat
  * on 09.01.2018.
  */
-public class ItemTrackerPersistenceTestRest extends RestServerTestBase {
+public class ItemTrackerPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private UserService userService;
     @Inject

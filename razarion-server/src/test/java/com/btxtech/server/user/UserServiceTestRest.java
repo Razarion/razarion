@@ -1,6 +1,6 @@
 package com.btxtech.server.user;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.ClientGameConnectionServiceTestHelper;
 import com.btxtech.server.TestClientGameConnection;
 import com.btxtech.server.gameengine.ServerLevelQuestService;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * 05.05.2017.
  */
-public class UserServiceTestRest extends RestServerTestBase {
+public class UserServiceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private Logger logger;
     @Inject

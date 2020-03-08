@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.persistence.inventory.InventoryItemEntity;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BoxItemTypePossibility;
@@ -17,7 +17,7 @@ import java.util.List;
  * Created by Beat
  * 19.05.2017.
  */
-public class BoxItemTypePersistenceTestRest extends RestServerTestBase {
+public class BoxItemTypePersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private ItemTypePersistence itemTypePersistence;
     private int inventoryItemId1;

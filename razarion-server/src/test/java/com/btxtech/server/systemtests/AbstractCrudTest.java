@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.Assert.assertEquals;
 
-public class AbstractCrudTest<Controller extends CrudController<ConfigObject>, ConfigObject extends Config> extends RestServerTestBase {
+public abstract class AbstractCrudTest<Controller extends CrudController<ConfigObject>, ConfigObject extends Config> extends AbstractSystemTest {
     private final Class<Controller> controllerClass;
     private final Class<ConfigObject> configClass;
     private Controller controller;

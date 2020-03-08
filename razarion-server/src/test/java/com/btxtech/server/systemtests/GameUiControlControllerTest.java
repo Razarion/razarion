@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class GameUiControlControllerTest extends RestServerTestBase {
+public class GameUiControlControllerTest extends AbstractSystemTest {
     private GameUiControlController gameUiControlController;
 
     @Before

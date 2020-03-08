@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.terrain;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.rest.PlanetEditorProviderImpl;
 import com.btxtech.shared.datatypes.DecimalPosition;
 import com.btxtech.shared.dto.TerrainEditorLoad;
@@ -24,7 +24,7 @@ import java.util.List;
  * Created by Beat
  * on 28.11.2017.
  */
-public class TerrainPersistenceTestRest extends RestServerTestBase {
+public class TerrainPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private PlanetEditorProviderImpl planetEditorProvider;
 

@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.RazAssertTestHelper;
 import com.btxtech.shared.datatypes.Color;
 import com.btxtech.shared.datatypes.DbPropertyKey;
@@ -13,7 +13,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 15.05.2017.
  */
-public class DbPropertiesServiceTestRest extends RestServerTestBase {
+public class DbPropertiesServiceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private DbPropertiesService dbPropertiesService;
 

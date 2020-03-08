@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.persistence.backup.BackupPlanetOverview;
 import com.btxtech.server.persistence.backup.PlanetBackupMongoDb;
 import com.btxtech.server.user.UserService;
@@ -21,7 +21,7 @@ import java.util.List;
  * Created by Beat
  * on 01.09.2017.
  */
-public class RestServerGameEngineControlTestBase extends RestServerTestBase {
+public class RestServerGameEngineControlTestBase extends IgnoreOldArquillianTest {
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
     @Inject

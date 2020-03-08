@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasProperty;
 
-public class ImageProviderTest extends RestServerTestBase {
+public class ImageProviderTest extends AbstractSystemTest {
     private ImageProvider imageProvider;
 
     @Before

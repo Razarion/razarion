@@ -27,7 +27,7 @@ import java.util.List;
  * on 08.02.2018.
  */
 @Ignore
-@RunWith(Arquillian.class)
+@RunWith(Arquillian.class)  // Ignores tests
 public class ClientArquillianBaseTest {
     public static String HOST_PORT = "192.168.99.100:32778";
     public static String URL = "http://" + HOST_PORT + "/test";

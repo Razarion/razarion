@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.TestHelper;
 import com.btxtech.server.persistence.history.InventoryHistoryEntry;
 import com.btxtech.server.user.UserEntity;
@@ -26,7 +26,7 @@ import java.util.Collections;
  * Created by Beat
  * on 18.09.2017.
  */
-public class RestServerInventoryServiceTestBase extends RestServerTestBase {
+public class RestServerInventoryServiceTestBase extends IgnoreOldArquillianTest {
     @Inject
     private ServerInventoryService serverInventoryService;
     @Inject

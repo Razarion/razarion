@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Created by Beat
  * on 21.09.2017.
  */
-public class RestServerUnlockServiceTestBase extends RestServerTestBase {
+public class RestServerUnlockServiceTestBase extends IgnoreOldArquillianTest {
     @Inject
     private UserService userService;
     @Inject

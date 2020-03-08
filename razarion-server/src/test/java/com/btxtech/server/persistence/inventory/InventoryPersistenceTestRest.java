@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.inventory;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.persistence.itemtype.BaseItemTypeEntity;
 import com.btxtech.shared.gameengine.datatypes.InventoryItem;
 import org.junit.After;
@@ -15,7 +15,7 @@ import java.util.List;
  * Created by Beat
  * 20.05.2017.
  */
-public class InventoryPersistenceTestRest extends RestServerTestBase {
+public class InventoryPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private InventoryPersistence inventoryPersistence;
     private int baseItemTypeId;

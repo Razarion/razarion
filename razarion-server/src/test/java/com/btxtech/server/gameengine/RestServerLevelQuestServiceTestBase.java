@@ -1,6 +1,6 @@
 package com.btxtech.server.gameengine;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.SimpleTestEnvironment;
 import com.btxtech.server.TestClientSystemConnection;
@@ -42,7 +42,7 @@ import java.util.concurrent.CountDownLatch;
  * Created by Beat
  * on 10.08.2017.
  */
-public class RestServerLevelQuestServiceTestBase extends RestServerTestBase {
+public class RestServerLevelQuestServiceTestBase extends IgnoreOldArquillianTest {
     @Inject
     private UserService userService;
     @Inject

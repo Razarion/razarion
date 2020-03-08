@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.chat;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.server.ClientSystemConnectionServiceTestHelper;
 import com.btxtech.server.TestClientSystemConnection;
 import com.btxtech.server.user.UserEntity;
@@ -21,7 +21,7 @@ import java.util.Date;
  * Created by Beat
  * on 29.12.2017.
  */
-public class ChatPersistenceTestRest extends RestServerTestBase {
+public class ChatPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private UserService userService;
     @Inject

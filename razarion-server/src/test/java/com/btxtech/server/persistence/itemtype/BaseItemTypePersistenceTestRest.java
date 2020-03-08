@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence.itemtype;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BaseItemType;
 import com.btxtech.shared.gameengine.datatypes.itemtype.BuilderType;
@@ -26,7 +26,7 @@ import java.util.List;
  * Created by Beat
  * 19.05.2017.
  */
-public class BaseItemTypePersistenceTestRest extends RestServerTestBase {
+public class BaseItemTypePersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private ItemTypePersistence itemTypePersistence;
 

@@ -17,7 +17,7 @@ import javax.ws.rs.client.ClientResponseFilter;
  * Created by Beat
  * 05.05.2017.
  */
-public abstract class RestServerTestBase extends ServerTestHelper {
+public abstract class AbstractSystemTest extends ServerTestHelper {
     public static String URL = "http://localhost:32778";
     public static String REST_URL = URL + "/rest/";
     private ResteasyWebTarget target;

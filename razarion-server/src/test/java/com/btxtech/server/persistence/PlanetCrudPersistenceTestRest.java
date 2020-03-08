@@ -1,6 +1,6 @@
 package com.btxtech.server.persistence;
 
-import com.btxtech.server.systemtests.RestServerTestBase;
+import com.btxtech.server.IgnoreOldArquillianTest;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.dto.PlanetVisualConfig;
@@ -14,7 +14,7 @@ import java.util.Locale;
  * Created by Beat
  * 25.05.2017.
  */
-public class PlanetCrudPersistenceTestRest extends RestServerTestBase {
+public class PlanetCrudPersistenceTestRest extends IgnoreOldArquillianTest {
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
