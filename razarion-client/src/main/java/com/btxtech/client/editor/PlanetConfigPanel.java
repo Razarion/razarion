@@ -46,7 +46,7 @@ public class PlanetConfigPanel extends AbstractEditor {
     @Inject
     @Bound
     @DataField
-    private Label planetId;
+    private Label id;
     @Inject
     @Bound
     @DataField

@@ -4,6 +4,7 @@ import com.btxtech.server.ServerTestHelper;
 import com.btxtech.server.clienthelper.TestSessionContext;
 import com.btxtech.shared.dto.LoginResult;
 import com.btxtech.shared.rest.FrontendProvider;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +13,9 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseFilter;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Beat
@@ -58,6 +62,7 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
 
     /**
      * Override to configure the JAX RS Client
+     *
      * @param client JAX RS Client
      */
     protected void configureRestClient(Client client) {
@@ -78,5 +83,15 @@ public abstract class AbstractSystemTest extends ServerTestHelper {
 
     protected <T> T setupRestAccess(Class<T> clazz) {
         return target.proxy(clazz);
+    }
+
+    protected void assertViaJson(Object expected, Object actual) {
+        try {
+            // https://www.baeldung.com/jackson-compare-two-json-objects
+            ObjectMapper mapper = new ObjectMapper();
+            assertEquals(mapper.readTree(mapper.writeValueAsString(expected)), mapper.readTree(mapper.writeValueAsString(actual)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

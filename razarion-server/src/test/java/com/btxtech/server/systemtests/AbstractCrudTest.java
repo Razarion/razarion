@@ -3,12 +3,10 @@ package com.btxtech.server.systemtests;
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;
 import com.btxtech.shared.rest.CrudController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.ws.rs.client.Client;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -73,14 +71,7 @@ public abstract class AbstractCrudTest<Controller extends CrudController<ConfigO
             configObjectConsumer.accept(config3);
             controller.update(config3);
             ConfigObject configRead = controller.read(config2.getId());
-            try {
-                // https://www.baeldung.com/jackson-compare-two-json-objects
-                ObjectMapper mapper = new ObjectMapper();
-                assertEquals(mapper.readTree(mapper.writeValueAsString(configRead)),
-                        mapper.readTree(mapper.writeValueAsString(config3)));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            assertViaJson(config3, configRead);
         });
         // Delete
         controller.delete(config3.getId());
