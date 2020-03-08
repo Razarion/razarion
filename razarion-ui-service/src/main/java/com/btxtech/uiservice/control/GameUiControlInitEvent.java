@@ -1,19 +1,19 @@
 package com.btxtech.uiservice.control;
 
-import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
 
 /**
  * Created by Beat
  * 04.01.2017.
  */
 public class GameUiControlInitEvent {
-    private ColdGameUiControlConfig coldGameUiControlConfig;
+    private ColdGameUiContext coldGameUiContext;
 
-    public GameUiControlInitEvent(ColdGameUiControlConfig coldGameUiControlConfig) {
-        this.coldGameUiControlConfig = coldGameUiControlConfig;
+    public GameUiControlInitEvent(ColdGameUiContext coldGameUiContext) {
+        this.coldGameUiContext = coldGameUiContext;
     }
 
-    public ColdGameUiControlConfig getColdGameUiControlConfig() {
-        return coldGameUiControlConfig;
+    public ColdGameUiContext getColdGameUiContext() {
+        return coldGameUiContext;
     }
 }

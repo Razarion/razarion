@@ -176,7 +176,7 @@ public abstract class AbstractTipTask {
     }
 
     GameTipVisualConfig getGameTipVisualConfig() {
-        return gameUiControl.getColdGameUiControlConfig().getGameTipVisualConfig();
+        return gameUiControl.getColdGameUiContext().getGameTipVisualConfig();
     }
 
     Collection<SyncBaseItemSimpleDto> findItemsOfType(int baseItemTypeId) {

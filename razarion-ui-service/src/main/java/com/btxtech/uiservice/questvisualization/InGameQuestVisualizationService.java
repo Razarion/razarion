@@ -117,22 +117,22 @@ public class InGameQuestVisualizationService {
                         itemTypeFilter = quest.getConditionConfig().getComparisonConfig().getTypeCount().keySet();
                     }
                 }
-                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getAttackColor(), baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter, quest.getConditionConfig().getComparisonConfig().toBotIdSet()));
+                setupVisualization(gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getAttackColor(), baseItemUiService.createSyncItemSetPositionMonitor(itemTypeFilter, quest.getConditionConfig().getComparisonConfig().toBotIdSet()));
                 break;
             case HARVEST:
-                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getHarvestColor(), resourceUiService.createSyncItemSetPositionMonitor());
+                setupVisualization(gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getHarvestColor(), resourceUiService.createSyncItemSetPositionMonitor());
                 break;
             case SYNC_ITEM_POSITION:
                 setupVisualization(quest.getConditionConfig().getComparisonConfig().getPlaceConfig());
                 break;
             case BOX_PICKED:
-                setupVisualization(gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig().getPickColor(), boxUiService.createSyncItemSetPositionMonitor());
+                setupVisualization(gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig().getPickColor(), boxUiService.createSyncItemSetPositionMonitor());
                 break;
         }
     }
 
     private void setupVisualization(Color color, AbstractSyncItemSetPositionMonitor syncItemSetPositionMonitor) {
-        InGameQuestVisualConfig inGameQuestVisualConfig = gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig();
+        InGameQuestVisualConfig inGameQuestVisualConfig = gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig();
         questInGameItemVisualization = instanceQuestInGameItemVisualization.get();
         questInGameItemVisualization.init(color, inGameQuestVisualConfig, syncItemSetPositionMonitor);
         itemVisualizationRenderTask.activate(questInGameItemVisualization);
@@ -141,7 +141,7 @@ public class InGameQuestVisualizationService {
     private void setupVisualization(PlaceConfig placeConfig) {
         if (placeConfig != null) {
             questInGamePlaceVisualization = instanceQuestInGamePlaceVisualization.get();
-            questInGamePlaceVisualization.init(placeConfig, gameUiControl.getColdGameUiControlConfig().getInGameQuestVisualConfig());
+            questInGamePlaceVisualization.init(placeConfig, gameUiControl.getColdGameUiContext().getInGameQuestVisualConfig());
             placeConfigCallback.forEach(Runnable::run);
             itemVisualizationRenderTask.activate(questInGamePlaceVisualization);
         }

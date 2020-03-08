@@ -10,7 +10,7 @@ import java.util.List;
  * Created by Beat
  * 08.05.2017.
  */
-public class WarmGameUiControlConfig {
+public class WarmGameUiContext {
     private int gameUiControlConfigId;
     private GameEngineMode gameEngineMode;
     private SlavePlanetConfig slavePlanetConfig;
@@ -26,7 +26,7 @@ public class WarmGameUiControlConfig {
         return gameUiControlConfigId;
     }
 
-    public WarmGameUiControlConfig setGameUiControlConfigId(int gameUiControlConfigId) {
+    public WarmGameUiContext setGameUiControlConfigId(int gameUiControlConfigId) {
         this.gameUiControlConfigId = gameUiControlConfigId;
         return this;
     }
@@ -35,7 +35,7 @@ public class WarmGameUiControlConfig {
         return gameEngineMode;
     }
 
-    public WarmGameUiControlConfig setGameEngineMode(GameEngineMode gameEngineMode) {
+    public WarmGameUiContext setGameEngineMode(GameEngineMode gameEngineMode) {
         this.gameEngineMode = gameEngineMode;
         return this;
     }
@@ -44,7 +44,7 @@ public class WarmGameUiControlConfig {
         return slavePlanetConfig;
     }
 
-    public WarmGameUiControlConfig setSlavePlanetConfig(SlavePlanetConfig slavePlanetConfig) {
+    public WarmGameUiContext setSlavePlanetConfig(SlavePlanetConfig slavePlanetConfig) {
         this.slavePlanetConfig = slavePlanetConfig;
         return this;
     }
@@ -53,7 +53,7 @@ public class WarmGameUiControlConfig {
         return slaveQuestInfo;
     }
 
-    public WarmGameUiControlConfig setSlaveQuestInfo(SlaveQuestInfo slaveQuestInfo) {
+    public WarmGameUiContext setSlaveQuestInfo(SlaveQuestInfo slaveQuestInfo) {
         this.slaveQuestInfo = slaveQuestInfo;
         return this;
     }
@@ -62,7 +62,7 @@ public class WarmGameUiControlConfig {
         return botSceneIndicationInfos;
     }
 
-    public WarmGameUiControlConfig setBotSceneIndicationInfos(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
+    public WarmGameUiContext setBotSceneIndicationInfos(List<BotSceneIndicationInfo> botSceneIndicationInfos) {
         this.botSceneIndicationInfos = botSceneIndicationInfos;
         return this;
     }
@@ -71,7 +71,7 @@ public class WarmGameUiControlConfig {
         return planetConfig;
     }
 
-    public WarmGameUiControlConfig setPlanetConfig(PlanetConfig planetConfig) {
+    public WarmGameUiContext setPlanetConfig(PlanetConfig planetConfig) {
         this.planetConfig = planetConfig;
         return this;
     }
@@ -80,7 +80,7 @@ public class WarmGameUiControlConfig {
         return sceneConfigs;
     }
 
-    public WarmGameUiControlConfig setSceneConfigs(List<SceneConfig> sceneConfigs) {
+    public WarmGameUiContext setSceneConfigs(List<SceneConfig> sceneConfigs) {
         this.sceneConfigs = sceneConfigs;
         return this;
     }
@@ -89,7 +89,7 @@ public class WarmGameUiControlConfig {
         return planetVisualConfig;
     }
 
-    public WarmGameUiControlConfig setPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
+    public WarmGameUiContext setPlanetVisualConfig(PlanetVisualConfig planetVisualConfig) {
         this.planetVisualConfig = planetVisualConfig;
         return this;
     }
@@ -98,7 +98,7 @@ public class WarmGameUiControlConfig {
         return detailedTracking;
     }
 
-    public WarmGameUiControlConfig setDetailedTracking(boolean detailedTracking) {
+    public WarmGameUiContext setDetailedTracking(boolean detailedTracking) {
         this.detailedTracking = detailedTracking;
         return this;
     }
@@ -107,7 +107,7 @@ public class WarmGameUiControlConfig {
         return playbackGameUiControlConfig;
     }
 
-    public WarmGameUiControlConfig setPlaybackGameUiControlConfig(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
+    public WarmGameUiContext setPlaybackGameUiControlConfig(PlaybackGameUiControlConfig playbackGameUiControlConfig) {
         this.playbackGameUiControlConfig = playbackGameUiControlConfig;
         return this;
     }

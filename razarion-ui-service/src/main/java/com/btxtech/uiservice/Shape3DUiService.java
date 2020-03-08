@@ -1,14 +1,10 @@
 package com.btxtech.uiservice;
 
-import com.btxtech.shared.datatypes.Matrix4;
-import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.shape.Shape3D;
 import com.btxtech.shared.datatypes.shape.VertexContainer;
-import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +21,7 @@ public abstract class Shape3DUiService {
 
     // Global methods  ----------------------------------------------------
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        setShapes3Ds(gameUiControlInitEvent.getColdGameUiControlConfig().getShape3Ds());
+        setShapes3Ds(gameUiControlInitEvent.getColdGameUiContext().getShape3Ds());
     }
 
     public Shape3D getShape3D(int id) {

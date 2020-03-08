@@ -60,23 +60,23 @@ public final class FallbackConfig {
 
     }
 
-    public static ColdGameUiControlConfig coldGameUiControlConfig(UserContext userContextFromSession) {
-        ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
-        coldGameUiControlConfig.setUserContext(userContextFromSession);
-        coldGameUiControlConfig.setShape3Ds(new ArrayList<>());
-        coldGameUiControlConfig.setStaticGameConfig(setupStaticGameConfig());
-        coldGameUiControlConfig.setWarmGameUiControlConfig(warmGameUiControlConfig());
-        coldGameUiControlConfig.setAudioConfig(new AudioConfig());
-        return coldGameUiControlConfig;
+    public static ColdGameUiContext coldGameUiControlConfig(UserContext userContextFromSession) {
+        ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
+        coldGameUiContext.setUserContext(userContextFromSession);
+        coldGameUiContext.setShape3Ds(new ArrayList<>());
+        coldGameUiContext.setStaticGameConfig(setupStaticGameConfig());
+        coldGameUiContext.setWarmGameUiContext(warmGameUiControlConfig());
+        coldGameUiContext.setAudioConfig(new AudioConfig());
+        return coldGameUiContext;
     }
 
-    public static WarmGameUiControlConfig warmGameUiControlConfig() {
-        WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig();
-        warmGameUiControlConfig.setPlanetConfig(setupPlanetConfig());
-        warmGameUiControlConfig.setGameEngineMode(GameEngineMode.MASTER);
-        warmGameUiControlConfig.setSceneConfigs(Collections.singletonList(new SceneConfig().setRemoveLoadingCover(true).setWait4LevelUpDialog(true)));
-        warmGameUiControlConfig.setPlanetVisualConfig(new PlanetVisualConfig().setLightDirection(Vertex.Z_NORM_NEG));
-        return warmGameUiControlConfig;
+    public static WarmGameUiContext warmGameUiControlConfig() {
+        WarmGameUiContext warmGameUiContext = new WarmGameUiContext();
+        warmGameUiContext.setPlanetConfig(setupPlanetConfig());
+        warmGameUiContext.setGameEngineMode(GameEngineMode.MASTER);
+        warmGameUiContext.setSceneConfigs(Collections.singletonList(new SceneConfig().setRemoveLoadingCover(true).setWait4LevelUpDialog(true)));
+        warmGameUiContext.setPlanetVisualConfig(new PlanetVisualConfig().setLightDirection(Vertex.Z_NORM_NEG));
+        return warmGameUiContext;
     }
 
     public static StaticGameConfig setupStaticGameConfig() {

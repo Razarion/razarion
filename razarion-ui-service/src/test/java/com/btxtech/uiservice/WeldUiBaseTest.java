@@ -2,9 +2,9 @@ package com.btxtech.uiservice;
 
 import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.Vertex4;
-import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.PlanetVisualConfig;
-import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.uiservice.control.GameUiControlInitEvent;
 import com.btxtech.uiservice.renderer.Camera;
 import com.btxtech.uiservice.renderer.ProjectionTransformation;
@@ -25,7 +25,7 @@ public class WeldUiBaseTest {
         Weld weld = new Weld();
         weldContainer = weld.initialize();
 
-        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(new ColdGameUiControlConfig().setWarmGameUiControlConfig(new WarmGameUiControlConfig().setPlanetVisualConfig(planetVisualConfig))));
+        weldContainer.getBeanManager().fireEvent(new GameUiControlInitEvent(new ColdGameUiContext().setWarmGameUiContext(new WarmGameUiContext().setPlanetVisualConfig(planetVisualConfig))));
 
         // getWeldBean(Event.class).fire(new WeldUiBaseTest());
     }

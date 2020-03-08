@@ -21,7 +21,7 @@ public class VisualUiService {
     private PlanetVisualConfig planetVisualConfig;
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        planetVisualConfig = gameUiControlInitEvent.getColdGameUiControlConfig().getWarmGameUiControlConfig().getPlanetVisualConfig();
+        planetVisualConfig = gameUiControlInitEvent.getColdGameUiContext().getWarmGameUiContext().getPlanetVisualConfig();
         planetVisualConfigTrigger.fire(planetVisualConfig);
     }
 

@@ -34,7 +34,7 @@ public class CommonUrl {
     public static final String SERVER_GAME_ENGINE_EDITOR_PROVIDER_PATH = "servergameengineditorprovider";
     public static final String QUEST_PROVIDER_PATH = "questprovider";
     public static final String SERVER_GAME_ENGINE_CONTROL_PROVIDER_PATH = "servergameengincontrolprovider";
-    public static final String GAME_UI_CONTROL_PATH = G_ZIPPED + "/" + "gameuicontrol";
+    public static final String GAME_UI_CONTEXT_CONTROL_PATH = G_ZIPPED + "/" + "game-ui-context-control";
     public static final String COLD = "cold";
     public static final String WARM = "warm";
     public static final String PLANET_EDITOR_SERVICE_PATH = "planeteditor";

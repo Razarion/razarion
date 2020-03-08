@@ -211,7 +211,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
         DOMUtil.removeAllElementChildren(boxItemPositions.getElement()); // Remove placeholder table row from template.
         resourceItemTypePositions.addComponentCreationHandler(resourceItemPositionRow -> resourceItemPositionRow.setSceneConfigPropertyPanel(SceneConfigPropertyPanel.this));
         boxItemPositions.addComponentCreationHandler(boxItemPositionRow -> boxItemPositionRow.setSceneConfigPropertyPanel(SceneConfigPropertyPanel.this));
-        int gameUiControlConfigId = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getGameUiControlConfigId();
+        int gameUiControlConfigId = gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameUiControlConfigId();
         provider.call(new RemoteCallback<SceneConfig>() {
             @Override
             public void callback(SceneConfig sceneConfig) {
@@ -235,7 +235,7 @@ public class SceneConfigPropertyPanel extends ObjectNamePropertyPanel {
     }
 
     private void save() {
-        int gameUiControlConfigId = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getGameUiControlConfigId();
+        int gameUiControlConfigId = gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameUiControlConfigId();
         provider.call(response -> {
         }, exceptionHandler.restErrorHandler("SceneEditorProvider.updateSceneConfig failed: ")).updateSceneConfig(gameUiControlConfigId, dataBinder.getModel());
     }

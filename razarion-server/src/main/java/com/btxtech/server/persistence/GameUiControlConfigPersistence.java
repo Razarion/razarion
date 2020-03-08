@@ -10,11 +10,11 @@ import com.btxtech.server.persistence.tracker.TrackerPersistence;
 import com.btxtech.shared.datatypes.DbPropertyKey;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.dto.AudioConfig;
-import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameTipVisualConfig;
 import com.btxtech.shared.dto.GameUiControlInput;
 import com.btxtech.shared.dto.InGameQuestVisualConfig;
-import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.gameengine.planet.bot.BotService;
 import org.xml.sax.SAXException;
@@ -61,32 +61,32 @@ public class GameUiControlConfigPersistence {
     private BotService botService;
 
     @Transactional
-    public ColdGameUiControlConfig load(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
-        ColdGameUiControlConfig coldGameUiControlConfig = new ColdGameUiControlConfig();
-        coldGameUiControlConfig.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
-        coldGameUiControlConfig.setUserContext(userContext);
-        coldGameUiControlConfig.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
-        coldGameUiControlConfig.setShape3Ds(shape3DPersistence.getShape3Ds());
-        coldGameUiControlConfig.setAudioConfig(setupAudioConfig());
-        coldGameUiControlConfig.setGameTipVisualConfig(setupGameTipVisualConfig());
-        coldGameUiControlConfig.setInGameQuestVisualConfig(setupInGameQuestVisualConfig());
+    public ColdGameUiContext load(GameUiControlInput gameUiControlInput, Locale locale, UserContext userContext) throws ParserConfigurationException, SAXException, IOException {
+        ColdGameUiContext coldGameUiContext = new ColdGameUiContext();
+        coldGameUiContext.setStaticGameConfig(staticGameConfigPersistence.loadStaticGameConfig());
+        coldGameUiContext.setUserContext(userContext);
+        coldGameUiContext.setLevelUnlockConfigs(serverUnlockService.gatherAvailableUnlocks(userContext.getHumanPlayerId(), userContext.getLevelId()));
+        coldGameUiContext.setShape3Ds(shape3DPersistence.getShape3Ds());
+        coldGameUiContext.setAudioConfig(setupAudioConfig());
+        coldGameUiContext.setGameTipVisualConfig(setupGameTipVisualConfig());
+        coldGameUiContext.setInGameQuestVisualConfig(setupInGameQuestVisualConfig());
         if (gameUiControlInput.checkPlayback()) {
-            coldGameUiControlConfig.setWarmGameUiControlConfig(trackerPersistence.setupWarmGameUiControlConfig(gameUiControlInput));
+            coldGameUiContext.setWarmGameUiContext(trackerPersistence.setupWarmGameUiControlConfig(gameUiControlInput));
         } else {
-            coldGameUiControlConfig.setWarmGameUiControlConfig(loadWarm(locale, userContext));
+            coldGameUiContext.setWarmGameUiContext(loadWarm(locale, userContext));
         }
-        return coldGameUiControlConfig;
+        return coldGameUiContext;
     }
 
     @Transactional
-    public WarmGameUiControlConfig loadWarm(Locale locale, UserContext userContext) {
-        WarmGameUiControlConfig warmGameUiControlConfig = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
-        if (warmGameUiControlConfig.getGameEngineMode() == GameEngineMode.SLAVE) {
-            warmGameUiControlConfig.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
-            warmGameUiControlConfig.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
-            warmGameUiControlConfig.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getHumanPlayerId()));
+    public WarmGameUiContext loadWarm(Locale locale, UserContext userContext) {
+        WarmGameUiContext warmGameUiContext = load4Level(userContext.getLevelId()).toGameWarmGameUiControlConfig(locale);
+        if (warmGameUiContext.getGameEngineMode() == GameEngineMode.SLAVE) {
+            warmGameUiContext.setSlavePlanetConfig(serverGameEngineCrudPersistence.readSlavePlanetConfig(userContext.getLevelId()));
+            warmGameUiContext.setSlaveQuestInfo(serverLevelQuestService.getSlaveQuestInfo(locale, userContext.getHumanPlayerId()));
+            warmGameUiContext.setBotSceneIndicationInfos(botService.getBotSceneIndicationInfos(userContext.getHumanPlayerId()));
         }
-        return warmGameUiControlConfig;
+        return warmGameUiContext;
     }
 
     public GameUiControlConfigEntity load4Level(int levelId) {

@@ -17,7 +17,7 @@ import com.btxtech.shared.dto.PlaybackGameUiControlConfig;
 import com.btxtech.shared.dto.SceneTrackerInfo;
 import com.btxtech.shared.dto.StartupTaskJson;
 import com.btxtech.shared.dto.StartupTerminatedJson;
-import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.shared.system.perfmon.PerfmonStatistic;
@@ -465,16 +465,16 @@ public class TrackerPersistence {
 
     @Transactional
     @SecurityCheck
-    public WarmGameUiControlConfig setupWarmGameUiControlConfig(GameUiControlInput gameUiControlInput) {
+    public WarmGameUiContext setupWarmGameUiControlConfig(GameUiControlInput gameUiControlInput) {
         ServerTrackerStart serverTrackerStart = trackingContainerMongoDb.findServerTrackerStart(gameUiControlInput);
 
         PlanetEntity planetEntity = planetCrudPersistence.loadPlanet(serverTrackerStart.getTrackingStart().getPlanetId());
-        WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig().setGameUiControlConfigId(-2).setGameEngineMode(GameEngineMode.PLAYBACK);
-        warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
+        WarmGameUiContext warmGameUiContext = new WarmGameUiContext().setGameUiControlConfigId(-2).setGameEngineMode(GameEngineMode.PLAYBACK);
+        warmGameUiContext.setPlanetConfig(planetEntity.toPlanetConfig()).setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
 
         PlaybackGameUiControlConfig playbackGameUiControlConfig = new PlaybackGameUiControlConfig();
         playbackGameUiControlConfig.setTrackingStart(serverTrackerStart.getTrackingStart()).setTrackingContainer(trackingContainerMongoDb.findServerTrackingContainer(gameUiControlInput));
-        warmGameUiControlConfig.setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
-        return warmGameUiControlConfig;
+        warmGameUiContext.setPlaybackGameUiControlConfig(playbackGameUiControlConfig);
+        return warmGameUiContext;
     }
 }

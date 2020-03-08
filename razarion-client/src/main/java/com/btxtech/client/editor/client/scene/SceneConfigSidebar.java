@@ -35,10 +35,10 @@ public class SceneConfigSidebar extends AbstractEditor {
 
     @PostConstruct
     public void postConstruct() {
-        if (gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getGameEngineMode() != GameEngineMode.MASTER) {
-            throw new IllegalStateException("Only WarmGameUiControlConfig with GameEngineMode.MASTER can have scenes");
+        if (gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameEngineMode() != GameEngineMode.MASTER) {
+            throw new IllegalStateException("Only WarmGameUiContext with GameEngineMode.MASTER can have scenes");
         }
-        int gameUiControlConfigId = gameUiControl.getColdGameUiControlConfig().getWarmGameUiControlConfig().getGameUiControlConfigId();
+        int gameUiControlConfigId = gameUiControl.getColdGameUiContext().getWarmGameUiContext().getGameUiControlConfigId();
 
         sceneConfigTable.init(new AbstractObjectNameIdEditor() {
 

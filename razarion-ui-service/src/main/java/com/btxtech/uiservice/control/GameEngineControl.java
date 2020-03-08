@@ -6,7 +6,7 @@ import com.btxtech.shared.datatypes.Vertex;
 import com.btxtech.shared.datatypes.tracking.PlayerBaseTracking;
 import com.btxtech.shared.dto.AbstractBotCommandConfig;
 import com.btxtech.shared.dto.BoxItemPosition;
-import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.ResourceItemPosition;
 import com.btxtech.shared.dto.UseInventoryItem;
 import com.btxtech.shared.gameengine.GameEngineControlPackage;
@@ -119,10 +119,10 @@ public abstract class GameEngineControl {
         sendToWorker(GameEngineControlPackage.Command.STOP_REQUEST);
     }
 
-    public void init(ColdGameUiControlConfig coldGameUiControlConfig, DeferredStartup initializationReferredStartup) {
+    public void init(ColdGameUiContext coldGameUiContext, DeferredStartup initializationReferredStartup) {
         this.deferredStartup = initializationReferredStartup;
-        sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiControlConfig.getStaticGameConfig(), coldGameUiControlConfig.getWarmGameUiControlConfig().getPlanetConfig(),
-                userUiService.getUserContext(), coldGameUiControlConfig.getWarmGameUiControlConfig().getGameEngineMode(), coldGameUiControlConfig.getWarmGameUiControlConfig().isDetailedTracking(),
+        sendToWorker(GameEngineControlPackage.Command.INITIALIZE, coldGameUiContext.getStaticGameConfig(), coldGameUiContext.getWarmGameUiContext().getPlanetConfig(),
+                userUiService.getUserContext(), coldGameUiContext.getWarmGameUiContext().getGameEngineMode(), coldGameUiContext.getWarmGameUiContext().isDetailedTracking(),
                 clientRunner.getGameSessionUuid());
     }
 

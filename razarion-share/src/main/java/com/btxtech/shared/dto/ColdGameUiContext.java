@@ -12,7 +12,7 @@ import java.util.List;
  * 05.07.2016.
  */
 // Better name: something with game-control, client control
-public class ColdGameUiControlConfig {
+public class ColdGameUiContext {
     // User
     private UserContext userContext;
     private List<LevelUnlockConfig> levelUnlockConfigs;
@@ -21,13 +21,13 @@ public class ColdGameUiControlConfig {
     private AudioConfig audioConfig;
     private GameTipVisualConfig gameTipVisualConfig;
     private InGameQuestVisualConfig inGameQuestVisualConfig;
-    private WarmGameUiControlConfig warmGameUiControlConfig;
+    private WarmGameUiContext warmGameUiContext;
 
     public StaticGameConfig getStaticGameConfig() {
         return staticGameConfig;
     }
 
-    public ColdGameUiControlConfig setStaticGameConfig(StaticGameConfig staticGameConfig) {
+    public ColdGameUiContext setStaticGameConfig(StaticGameConfig staticGameConfig) {
         this.staticGameConfig = staticGameConfig;
         return this;
     }
@@ -36,7 +36,7 @@ public class ColdGameUiControlConfig {
         return shape3Ds;
     }
 
-    public ColdGameUiControlConfig setShape3Ds(List<Shape3D> shape3Ds) {
+    public ColdGameUiContext setShape3Ds(List<Shape3D> shape3Ds) {
         this.shape3Ds = shape3Ds;
         return this;
     }
@@ -45,7 +45,7 @@ public class ColdGameUiControlConfig {
         return audioConfig;
     }
 
-    public ColdGameUiControlConfig setAudioConfig(AudioConfig audioConfig) {
+    public ColdGameUiContext setAudioConfig(AudioConfig audioConfig) {
         this.audioConfig = audioConfig;
         return this;
     }
@@ -54,7 +54,7 @@ public class ColdGameUiControlConfig {
         return userContext;
     }
 
-    public ColdGameUiControlConfig setUserContext(UserContext userContext) {
+    public ColdGameUiContext setUserContext(UserContext userContext) {
         this.userContext = userContext;
         return this;
     }
@@ -63,7 +63,7 @@ public class ColdGameUiControlConfig {
         return levelUnlockConfigs;
     }
 
-    public ColdGameUiControlConfig setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
+    public ColdGameUiContext setLevelUnlockConfigs(List<LevelUnlockConfig> levelUnlockConfigs) {
         this.levelUnlockConfigs = levelUnlockConfigs;
         return this;
     }
@@ -72,7 +72,7 @@ public class ColdGameUiControlConfig {
         return gameTipVisualConfig;
     }
 
-    public ColdGameUiControlConfig setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
+    public ColdGameUiContext setGameTipVisualConfig(GameTipVisualConfig gameTipVisualConfig) {
         this.gameTipVisualConfig = gameTipVisualConfig;
         return this;
     }
@@ -81,17 +81,17 @@ public class ColdGameUiControlConfig {
         return inGameQuestVisualConfig;
     }
 
-    public ColdGameUiControlConfig setInGameQuestVisualConfig(InGameQuestVisualConfig inGameQuestVisualConfig) {
+    public ColdGameUiContext setInGameQuestVisualConfig(InGameQuestVisualConfig inGameQuestVisualConfig) {
         this.inGameQuestVisualConfig = inGameQuestVisualConfig;
         return this;
     }
 
-    public WarmGameUiControlConfig getWarmGameUiControlConfig() {
-        return warmGameUiControlConfig;
+    public WarmGameUiContext getWarmGameUiContext() {
+        return warmGameUiContext;
     }
 
-    public ColdGameUiControlConfig setWarmGameUiControlConfig(WarmGameUiControlConfig warmGameUiControlConfig) {
-        this.warmGameUiControlConfig = warmGameUiControlConfig;
+    public ColdGameUiContext setWarmGameUiContext(WarmGameUiContext warmGameUiContext) {
+        this.warmGameUiContext = warmGameUiContext;
         return this;
     }
 }

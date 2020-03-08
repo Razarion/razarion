@@ -1,9 +1,9 @@
 package com.btxtech.shared.rest;
 
 import com.btxtech.shared.CommonUrl;
-import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -16,17 +16,17 @@ import javax.ws.rs.core.MediaType;
  * Created by Beat
  * 06.07.2016.
  */
-@Path(CommonUrl.GAME_UI_CONTROL_PATH)
-public interface GameUiControlController {
+@Path(CommonUrl.GAME_UI_CONTEXT_CONTROL_PATH)
+public interface GameUiContextController {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path(CommonUrl.COLD)
-    ColdGameUiControlConfig loadGameUiControlConfig(GameUiControlInput gameUiControlInput);
+    ColdGameUiContext loadColdGameUiContext(GameUiControlInput gameUiControlInput);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path(CommonUrl.WARM)
-    WarmGameUiControlConfig loadWarmGameUiControlConfig();
+    WarmGameUiContext loadWarmGameUiContext();
 }

@@ -2,9 +2,9 @@ package com.btxtech.client.system.boot;
 
 import com.btxtech.client.user.FacebookService;
 import com.btxtech.common.system.ClientExceptionHandlerImpl;
-import com.btxtech.shared.dto.ColdGameUiControlConfig;
+import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.GameUiControlInput;
-import com.btxtech.shared.rest.GameUiControlController;
+import com.btxtech.shared.rest.GameUiContextController;
 import com.btxtech.uiservice.control.GameUiControl;
 import com.btxtech.uiservice.system.boot.AbstractStartupTask;
 import com.btxtech.uiservice.system.boot.DeferredStartup;
@@ -27,7 +27,7 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Inject
     private GameUiControl gameUiControl;
     @Inject
-    private Caller<GameUiControlController> serviceCaller;
+    private Caller<GameUiContextController> serviceCaller;
     @Inject
     private FacebookService facebookService;
     @Inject
@@ -36,15 +36,15 @@ public class LoadGameUiControlTask extends AbstractStartupTask {
     @Override
     protected void privateStart(final DeferredStartup deferredStartup) {
         deferredStartup.setDeferred();
-        serviceCaller.call((RemoteCallback<ColdGameUiControlConfig>) coldGameUiControlConfig -> {
-            gameUiControl.setColdGameUiControlConfig(coldGameUiControlConfig);
+        serviceCaller.call((RemoteCallback<ColdGameUiContext>) coldGameUiControlConfig -> {
+            gameUiControl.setColdGameUiContext(coldGameUiControlConfig);
             facebookService.activateFacebookAppStartLogin();
             deferredStartup.finished();
         }, (message, throwable) -> {
-            exceptionHandler.restErrorHandler("GameUiControlController.loadGameUiControlConfig()");
+            exceptionHandler.restErrorHandler("GameUiContextController.loadColdGameUiContext()");
             deferredStartup.failed(throwable);
             return false;
-        }).loadGameUiControlConfig(setupGameUiControlInput());
+        }).loadColdGameUiContext(setupGameUiControlInput());
     }
 
     private GameUiControlInput setupGameUiControlInput() {

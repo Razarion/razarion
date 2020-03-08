@@ -46,7 +46,7 @@ public abstract class AudioService implements ViewService.ViewFieldListener {
     }
 
     public void onGameUiControlInitEvent(@Observes GameUiControlInitEvent gameUiControlInitEvent) {
-        this.audioConfig = gameUiControlInitEvent.getColdGameUiControlConfig().getAudioConfig();
+        this.audioConfig = gameUiControlInitEvent.getColdGameUiContext().getAudioConfig();
     }
 
     public void onDialogOpened(Integer audioId) {

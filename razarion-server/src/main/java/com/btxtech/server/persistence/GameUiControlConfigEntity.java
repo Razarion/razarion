@@ -3,7 +3,7 @@ package com.btxtech.server.persistence;
 import com.btxtech.server.persistence.level.LevelEntity;
 import com.btxtech.server.persistence.scene.SceneEntity;
 import com.btxtech.shared.dto.SceneConfig;
-import com.btxtech.shared.dto.WarmGameUiControlConfig;
+import com.btxtech.shared.dto.WarmGameUiContext;
 import com.btxtech.shared.gameengine.datatypes.GameEngineMode;
 
 import javax.persistence.CascadeType;
@@ -48,15 +48,15 @@ public class GameUiControlConfigEntity {
         return id;
     }
 
-    public WarmGameUiControlConfig toGameWarmGameUiControlConfig(Locale locale) {
-        WarmGameUiControlConfig warmGameUiControlConfig = new WarmGameUiControlConfig();
-        warmGameUiControlConfig.setGameUiControlConfigId(id);
-        warmGameUiControlConfig.setPlanetConfig(planetEntity.toPlanetConfig());
-        warmGameUiControlConfig.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
-        warmGameUiControlConfig.setSceneConfigs(setupScenes(locale));
-        warmGameUiControlConfig.setGameEngineMode(gameEngineMode);
-        warmGameUiControlConfig.setDetailedTracking(detailedTracking);
-        return warmGameUiControlConfig;
+    public WarmGameUiContext toGameWarmGameUiControlConfig(Locale locale) {
+        WarmGameUiContext warmGameUiContext = new WarmGameUiContext();
+        warmGameUiContext.setGameUiControlConfigId(id);
+        warmGameUiContext.setPlanetConfig(planetEntity.toPlanetConfig());
+        warmGameUiContext.setPlanetVisualConfig(planetEntity.toPlanetVisualConfig());
+        warmGameUiContext.setSceneConfigs(setupScenes(locale));
+        warmGameUiContext.setGameEngineMode(gameEngineMode);
+        warmGameUiContext.setDetailedTracking(detailedTracking);
+        return warmGameUiContext;
     }
 
     private List<SceneConfig> setupScenes(Locale locale) {
