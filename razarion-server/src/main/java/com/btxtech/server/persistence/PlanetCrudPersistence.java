@@ -17,7 +17,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,8 +38,8 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
     @PersistenceContext
     private EntityManager entityManager;
 
-    public PlanetCrudPersistence(Class<PlanetEntity> entityClass, SingularAttribute<PlanetEntity, Integer> id, SingularAttribute<PlanetEntity, String> internalName) {
-        super(entityClass, id, internalName);
+    public PlanetCrudPersistence() {
+        super(PlanetEntity.class, PlanetEntity_.id, PlanetEntity_.internalName);
     }
 
     @Override
