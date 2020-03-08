@@ -3,7 +3,7 @@ package com.btxtech.server.rest;
 import com.btxtech.server.DataUrlDecoder;
 import com.btxtech.server.connection.ClientSystemConnectionService;
 import com.btxtech.server.gameengine.ServerGameEngineControl;
-import com.btxtech.server.gameengine.TerrainShapeService;
+import com.btxtech.server.gameengine.ServerTerrainShapeService;
 import com.btxtech.server.persistence.PlanetCrudPersistence;
 import com.btxtech.server.user.SecurityCheck;
 import com.btxtech.shared.datatypes.LifecyclePacket;
@@ -26,7 +26,7 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
-    private TerrainShapeService terrainShapeService;
+    private ServerTerrainShapeService serverTerrainShapeService;
     @Inject
     private ServerGameEngineControl serverGameEngineControl;
     @Inject
@@ -92,7 +92,7 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     private void restartPlanet(int planetId, LifecyclePacket.Type type) {
         try {
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
-            terrainShapeService.setupTerrainShape(planetCrudPersistence.loadPlanetConfig(planetId));
+            serverTerrainShapeService.setupTerrainShape(planetCrudPersistence.loadPlanetConfig(planetId));
             serverGameEngineControl.restartPlanet();
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {

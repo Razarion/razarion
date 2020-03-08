@@ -22,7 +22,7 @@ public class ClientNativeTerrainShapeAccess implements NativeTerrainShapeAccess 
         Xhr.get(CommonUrl.terrainShapeProvider(planetId), new Xhr.Callback() {
             @Override
             public void onFail(XMLHttpRequest xhr) {
-                failCallback.accept("TerrainShapeProvider call failed: " + xhr.getStatusText() + " Status: " + xhr.getStatus());
+                failCallback.accept("TerrainShapeController call failed: " + xhr.getStatusText() + " Status: " + xhr.getStatus());
             }
 
             @Override

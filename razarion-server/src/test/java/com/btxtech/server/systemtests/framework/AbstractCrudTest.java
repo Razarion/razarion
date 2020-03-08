@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests;
+package com.btxtech.server.systemtests.framework;
 
 import com.btxtech.shared.dto.Config;
 import com.btxtech.shared.dto.ObjectNameId;

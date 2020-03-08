@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests;
 
+import com.btxtech.server.systemtests.framework.AbstractCrudTest;
 import com.btxtech.shared.dto.DoubleSplattingConfig;
 import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.PhongMaterialConfig;

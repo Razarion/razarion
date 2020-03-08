@@ -14,10 +14,10 @@ import java.util.function.Consumer;
 @Singleton
 public class ServerNativeTerrainShapeAccess implements NativeTerrainShapeAccess {
     @Inject
-    private TerrainShapeService terrainShapeService;
+    private ServerTerrainShapeService serverTerrainShapeService;
 
     @Override
     public void load(int planetId, Consumer<NativeTerrainShape> loadedCallback, Consumer<String> failCallback) {
-        loadedCallback.accept(terrainShapeService.getNativeTerrainShape(planetId));
+        loadedCallback.accept(serverTerrainShapeService.getNativeTerrainShape(planetId));
     }
 }

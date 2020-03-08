@@ -1,5 +1,6 @@
 package com.btxtech.server.systemtests;
 
+import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.ColdGameUiContext;
 import com.btxtech.shared.dto.FallbackConfig;
 import com.btxtech.shared.dto.GameUiControlInput;

@@ -1,6 +1,7 @@
 package com.btxtech.server.systemtests;
 
 import com.btxtech.server.persistence.ImageLibraryEntity;
+import com.btxtech.server.systemtests.framework.AbstractSystemTest;
 import com.btxtech.shared.dto.ImageGalleryItem;
 import com.btxtech.shared.rest.ImageProvider;
 import org.junit.After;

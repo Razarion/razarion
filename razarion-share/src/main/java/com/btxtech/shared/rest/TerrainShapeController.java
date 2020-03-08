@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
  * on 11.02.2018.
  */
 @Path(CommonUrl.TERRAIN_SHAPE_PROVIDER)
-public interface TerrainShapeProvider {
+public interface TerrainShapeController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{id}")

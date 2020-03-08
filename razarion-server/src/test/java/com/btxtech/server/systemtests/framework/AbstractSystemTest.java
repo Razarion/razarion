@@ -1,4 +1,4 @@
-package com.btxtech.server.systemtests;
+package com.btxtech.server.systemtests.framework;
 
 import com.btxtech.server.ServerTestHelper;
 import com.btxtech.server.clienthelper.TestSessionContext;

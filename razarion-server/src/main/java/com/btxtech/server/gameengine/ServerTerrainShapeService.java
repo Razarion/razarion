@@ -19,8 +19,8 @@ import java.util.logging.Logger;
  * on 28.06.2017.
  */
 @Singleton
-public class TerrainShapeService {
-    private Logger logger = Logger.getLogger(TerrainShapeService.class.getName());
+public class ServerTerrainShapeService {
+    private Logger logger = Logger.getLogger(ServerTerrainShapeService.class.getName());
     @Inject
     private PlanetCrudPersistence planetCrudPersistence;
     @Inject
