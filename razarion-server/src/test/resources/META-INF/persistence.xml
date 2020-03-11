@@ -5,7 +5,7 @@
         http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
     <persistence-unit name="test-jpa">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>com.btxtech.server.persistence.ImageLibraryEntity</class>
+        <jar-file>target/ROOT.war</jar-file>
         <properties>
             <property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost:32788/razarion"/>
             <property name="javax.persistence.jdbc.user" value="raz_user"/>

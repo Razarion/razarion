@@ -32,6 +32,7 @@ import com.btxtech.client.editor.terrainobject.TerrainObjectCrudSidebar;
 import com.btxtech.client.editor.water.WaterSidebar;
 import com.btxtech.shared.rest.CrudController;
 import com.btxtech.shared.rest.GroundEditorController;
+import com.btxtech.shared.rest.PlanetEditorController;
 import com.btxtech.shared.system.ExceptionHandler;
 import com.btxtech.uiservice.dialog.DialogButton;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -167,7 +168,7 @@ public class EditorMenuDialog extends Composite implements ModalDialogContent<Vo
 
     @EventHandler("planetButton")
     private void onPlanetButtonClicked(ClickEvent event) {
-        openEditor(PlanetConfigPanel.class);
+        openGenericCrudEditor(PlanetEditorController.class);
     }
 
     @EventHandler("planetVisualConfigButton")

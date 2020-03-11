@@ -56,12 +56,12 @@ public class PlanetEntity {
     @JoinColumn(nullable = false, name = "planet")
     private List<TerrainObjectPositionEntity> terrainObjectPositionEntities;
     @AttributeOverrides({
-            @AttributeOverride(name = "start.x", column = @Column(name = "groundMeshDimensionStartX")),
-            @AttributeOverride(name = "start.y", column = @Column(name = "groundMeshDimensionStartY")),
-            @AttributeOverride(name = "end.x", column = @Column(name = "groundMeshDimensionEndX")),
-            @AttributeOverride(name = "end.y", column = @Column(name = "groundMeshDimensionEndY")),
+            @AttributeOverride(name = "start.x", column = @Column(name = "terrainTileDimensionStartX")),
+            @AttributeOverride(name = "start.y", column = @Column(name = "terrainTileDimensionStartY")),
+            @AttributeOverride(name = "end.x", column = @Column(name = "terrainTileDimensionEndX")),
+            @AttributeOverride(name = "end.y", column = @Column(name = "terrainTileDimensionEndY")),
     })
-    private Rectangle groundMeshDimension;
+    private Rectangle terrainTileDimension;
     @AttributeOverrides({
             @AttributeOverride(name = "start.x", column = @Column(name = "playGroundStartX")),
             @AttributeOverride(name = "start.y", column = @Column(name = "playGroundStartY")),
@@ -108,12 +108,16 @@ public class PlanetEntity {
     }
 
     public PlanetConfig toPlanetConfig() {
-        PlanetConfig planetConfig = new PlanetConfig().id(id).internalName(internalName);
-        if(groundConfig != null) {
+        PlanetConfig planetConfig = new PlanetConfig()
+                .id(id)
+                .internalName(internalName)
+                .houseSpace(houseSpace)
+                .startRazarion(startRazarion)
+                .terrainTileDimension(terrainTileDimension)
+                .playGround(playGround);
+        if (groundConfig != null) {
             planetConfig.setGroundConfigId(groundConfig.getId());
         }
-        planetConfig.setTerrainTileDimension(groundMeshDimension);
-        planetConfig.setPlayGround(playGround);
         Map<Integer, Integer> itemTypeLimitation = new HashMap<>();
         if (this.itemTypeLimitation != null) {
             for (Map.Entry<BaseItemTypeEntity, Integer> entry : this.itemTypeLimitation.entrySet()) {
@@ -121,7 +125,6 @@ public class PlanetEntity {
             }
         }
         planetConfig.setItemTypeLimitation(itemTypeLimitation);
-        planetConfig.setHouseSpace(houseSpace).setStartRazarion(startRazarion);
         if (startBaseItemType != null) {
             planetConfig.setStartBaseItemTypeId(startBaseItemType.getId());
         }
@@ -129,9 +132,12 @@ public class PlanetEntity {
     }
 
     public void fromPlanetConfig(PlanetConfig planetConfig, GroundCrudPersistence groundCrudPersistence, ItemTypePersistence itemTypePersistence) {
+        internalName = planetConfig.getInternalName();
         groundConfig = groundCrudPersistence.getEntity(planetConfig.getGroundConfigId());
         houseSpace = planetConfig.getHouseSpace();
         startRazarion = planetConfig.getStartRazarion();
+        terrainTileDimension = planetConfig.getTerrainTileDimension();
+        playGround = planetConfig.getPlayGround();
         startBaseItemType = itemTypePersistence.readBaseItemTypeEntity(planetConfig.getStartBaseItemTypeId());
         if (itemTypeLimitation == null) {
             itemTypeLimitation = new HashMap<>();
@@ -158,10 +164,6 @@ public class PlanetEntity {
         diffuse = planetVisualConfig.getDiffuse();
     }
 
-    public void setGroundConfig(GroundConfigEntity groundConfig) {
-        this.groundConfig = groundConfig;
-    }
-
     public List<TerrainSlopePositionEntity> getTerrainSlopePositionEntities() {
         return terrainSlopePositionEntities;
     }
@@ -176,14 +178,6 @@ public class PlanetEntity {
 
     public void setMiniMapImage(byte[] miniMapImage) {
         this.miniMapImage = miniMapImage;
-    }
-
-    public void setPlayGround(Rectangle2D playGround) {
-        this.playGround = playGround;
-    }
-
-    public void setGroundMeshDimension(Rectangle groundMeshDimension) {
-        this.groundMeshDimension = groundMeshDimension;
     }
 
     @Override

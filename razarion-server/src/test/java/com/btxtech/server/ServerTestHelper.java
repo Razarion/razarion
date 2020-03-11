@@ -27,6 +27,7 @@ import com.btxtech.server.persistence.surface.SlopeShapeEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopeCornerEntity;
 import com.btxtech.server.persistence.surface.TerrainSlopePositionEntity;
 import com.btxtech.server.persistence.surface.WaterConfigEntity;
+import com.btxtech.server.systemtests.framework.CleanupAfterTest;
 import com.btxtech.server.user.ForgotPasswordEntity;
 import com.btxtech.server.user.LoginCookieEntity;
 import com.btxtech.server.user.UserEntity;
@@ -38,7 +39,6 @@ import com.btxtech.shared.datatypes.I18nString;
 import com.btxtech.shared.datatypes.SingleHolder;
 import com.btxtech.shared.datatypes.UserContext;
 import com.btxtech.shared.datatypes.Vertex;
-import com.btxtech.shared.dto.GroundConfig;
 import com.btxtech.shared.dto.RegisterResult;
 import com.btxtech.shared.dto.SlopeNode;
 import com.btxtech.shared.dto.SlopeShape;
@@ -119,6 +119,11 @@ public class ServerTestHelper {
     public static final String IMG_2_DATA_URL = "data:image/gif;base64," + IMG_2_DATA_BASE64;
     public static final byte[] IMG_2_BYTES = Base64.getDecoder().decode(IMG_2_DATA_BASE64.getBytes());
     // Images
+    public static int GROUND_1_ID;
+    public static int GROUND_2_ID;
+    public static int GROUND_3_ID;
+    public static int GROUND_4_ID;
+    // Images
     public static int IMAGE_1_ID;
     public static int IMAGE_2_ID;
     public static int IMAGE_3_ID;
@@ -179,6 +184,7 @@ public class ServerTestHelper {
     @Inject
     private BaseItemService baseItemService;
     private MongoClient mongoClient;
+    private List<CleanupAfterTest> cleanupAfterTests = new ArrayList<>();
 
     @Before
     public void setupJpa() {
@@ -189,6 +195,11 @@ public class ServerTestHelper {
 
     @After
     public void closeJpa() {
+        cleanupAfterTests.forEach(cleanupAfterTest -> {
+            runInTransaction(em -> {
+                em.createQuery("DELETE FROM " + cleanupAfterTest.getEntityClass().getSimpleName()).executeUpdate();
+            });
+        });
         entityManager.close();
         entityManagerFactory.close();
     }
@@ -208,10 +219,19 @@ public class ServerTestHelper {
         return new I18nString(localizedStrings);
     }
 
+    protected void setupGroundConfig() {
+        GROUND_1_ID = persistInTransaction(new GroundConfigEntity()).getId();
+        GROUND_2_ID = persistInTransaction(new GroundConfigEntity()).getId();
+        GROUND_3_ID = persistInTransaction(new GroundConfigEntity()).getId();
+        GROUND_4_ID = persistInTransaction(new GroundConfigEntity()).getId();
+        cleanupAfterTests.add(new CleanupAfterTest().setEntity(GroundConfigEntity.class));
+    }
+
     protected void setupImages() {
         IMAGE_1_ID = persistInTransaction(new ImageLibraryEntity()).getId();
         IMAGE_2_ID = persistInTransaction(new ImageLibraryEntity()).getId();
         IMAGE_3_ID = persistInTransaction(new ImageLibraryEntity()).getId();
+        cleanupAfterTests.add(new CleanupAfterTest().setEntity(ImageLibraryEntity.class));
     }
 
     protected void setupItemTypes() throws Exception {
@@ -440,11 +460,11 @@ public class ServerTestHelper {
         entityTransaction.begin();
         entityManager.joinTransaction();
 
-        GroundConfigEntity groundConfigEntity = new GroundConfigEntity();
-        groundConfigEntity.fromGroundConfig(setupGroundConfig(), imagePersistence);
-        entityManager.persist(groundConfigEntity);
-
-        entityManager.persist(new WaterConfigEntity());
+//  TODO      GroundConfigEntity groundConfigEntity = new GroundConfigEntity();
+//        groundConfigEntity.fromGroundConfig(setupGroundConfig(), imagePersistence);
+//        entityManager.persist(groundConfigEntity);
+//
+//        entityManager.persist(new WaterConfigEntity());
 
 //   TODO     PlanetEntity planetEntity1 = new PlanetEntity();
 //        planetEntity1.setGroundMeshDimension(new Rectangle(0, 0, 2, 2));
@@ -599,19 +619,6 @@ public class ServerTestHelper {
         limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_BULLDOZER_ID), 1);
         limitation.put(itemTypePersistence.readBaseItemTypeEntity(BASE_ITEM_TYPE_FACTORY_ID), 1);
         return limitation;
-    }
-
-    private GroundConfig setupGroundConfig() {
-        GroundConfig groundConfig = new GroundConfig();
-        // TODO groundSkeletonConfig.setSpecularLightConfig(new SpecularLightConfig());
-        // TODO groundSkeletonConfig.setSplattingXCount(1);
-        // TODO groundSkeletonConfig.setSplattingYCount(1);
-        // TODO groundSkeletonConfig.setSplattings(new double[][]{{0}});
-        // TODO groundSkeletonConfig.setSplattingId(onePixelImageId);
-        // TODO groundSkeletonConfig.setBottomBmId(onePixelImageId);
-        // TODO groundSkeletonConfig.setBottomTextureId(onePixelImageId);
-        // TODO groundSkeletonConfig.setTopTextureId(onePixelImageId);
-        return groundConfig;
     }
 
     protected void cleanPlanets() {

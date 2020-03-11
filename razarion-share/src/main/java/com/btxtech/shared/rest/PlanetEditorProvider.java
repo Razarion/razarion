@@ -4,7 +4,6 @@ import com.btxtech.shared.CommonUrl;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.MediaType;
  * 07.07.2016.
  */
 @Path(CommonUrl.PLANET_EDITOR_SERVICE_PATH)
+@Deprecated
 public interface PlanetEditorProvider {
     @GET
     @Path("readTerrainSlopePositions/{planetId}")
@@ -42,11 +42,6 @@ public interface PlanetEditorProvider {
     @Path("updatePlanetVisualConfig/{planetId}")
     @Consumes(MediaType.APPLICATION_JSON)
     void updatePlanetVisualConfig(@PathParam("planetId") int planetId, PlanetVisualConfig planetVisualConfig);
-
-    @PUT
-    @Path("updatePlanetConfig")
-    @Consumes(MediaType.APPLICATION_JSON)
-    void updatePlanetConfig(PlanetConfig planetConfig);
 
     @PUT
     @Path("updateMiniMapImage/{planetId}")

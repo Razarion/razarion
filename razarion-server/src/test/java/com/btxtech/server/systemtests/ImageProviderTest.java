@@ -34,7 +34,7 @@ public class ImageProviderTest extends AbstractSystemTest {
 
     @Test
     public void crudAdmin() {
-        login("admin@admin.com", "1234");
+        getDefaultRestConnection().loginAdmin();
 
         Assert.assertTrue(imageProvider.getImageGalleryItems().isEmpty());
 
@@ -82,13 +82,13 @@ public class ImageProviderTest extends AbstractSystemTest {
 
     @Test(expected = NotAuthorizedException.class)
     public void uploadImageReg() {
-        login("user@user.com", "1234");
+        getDefaultRestConnection().loginUser();
         imageProvider.uploadImage(IMG_1_DATA_URL);
     }
 
     @Test(expected = NotAuthorizedException.class)
     public void saveReg() {
-        login("user@user.com", "1234");
+        getDefaultRestConnection().loginUser();
         imageProvider.save(1, IMG_1_DATA_URL);
     }
 

@@ -10,7 +10,6 @@ import com.btxtech.shared.datatypes.LifecyclePacket;
 import com.btxtech.shared.dto.PlanetVisualConfig;
 import com.btxtech.shared.dto.TerrainEditorLoad;
 import com.btxtech.shared.dto.TerrainEditorUpdate;
-import com.btxtech.shared.gameengine.datatypes.config.PlanetConfig;
 import com.btxtech.shared.rest.PlanetEditorProvider;
 import com.btxtech.shared.system.ExceptionHandler;
 
@@ -20,6 +19,7 @@ import javax.inject.Inject;
  * Created by Beat
  * 08.07.2016.
  */
+@Deprecated
 public class PlanetEditorProviderImpl implements PlanetEditorProvider {
     @Inject
     private ExceptionHandler exceptionHandler;
@@ -88,11 +88,11 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
         restartPlanet(planetId, LifecyclePacket.Type.PLANET_RESTART_COLD);
     }
 
-    // Move to ServerMgmt
+    // TODO Move to ServerMgmt
     private void restartPlanet(int planetId, LifecyclePacket.Type type) {
         try {
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(LifecyclePacket.Type.HOLD).setDialog(LifecyclePacket.Dialog.PLANET_RESTART));
-            serverTerrainShapeService.setupTerrainShape(planetCrudPersistence.loadPlanetConfig(planetId));
+            serverTerrainShapeService.setupTerrainShape(planetCrudPersistence.read(planetId));
             serverGameEngineControl.restartPlanet();
             systemConnectionService.sendLifecyclePacket(new LifecyclePacket().setType(type));
         } catch (Throwable e) {
@@ -109,11 +109,6 @@ public class PlanetEditorProviderImpl implements PlanetEditorProvider {
             exceptionHandler.handleException(e);
             throw e;
         }
-    }
-
-    @Override
-    @Deprecated
-    public void updatePlanetConfig(PlanetConfig planetConfig) {
     }
 
     @Override

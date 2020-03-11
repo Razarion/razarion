@@ -29,7 +29,7 @@ public class ServerTerrainShapeService {
 
     public void start() {
         terrainShapes.clear();
-        planetCrudPersistence.loadAllPlanetConfig().forEach(this::setupTerrainShape);
+        planetCrudPersistence.read().forEach(this::setupTerrainShape);
         if (terrainShapes.isEmpty()) {
             logger.severe("Using Fallback. No planets configured");
             PlanetConfig fallbackPlanet = FallbackConfig.setupPlanetConfig();

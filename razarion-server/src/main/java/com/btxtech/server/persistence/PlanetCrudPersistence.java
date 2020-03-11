@@ -14,9 +14,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,19 +49,6 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
         entity.fromPlanetConfig(config, groundCrudPersistence, itemTypePersistence);
     }
 
-    @Transactional
-    @SecurityCheck
-    public int createPlanetConfig() {
-        PlanetEntity planetEntity = new PlanetEntity();
-        entityManager.persist(planetEntity);
-        return planetEntity.getId();
-    }
-
-    @Transactional
-    @SecurityCheck
-    public void deletePlanetConfig(int planetId) {
-        entityManager.remove(loadPlanet(planetId));
-    }
 
     @Transactional
     public List<TerrainObjectPosition> getTerrainObjectPositions(int planetId) {
@@ -93,7 +77,7 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
             terrainObjectPositionEntities.add(terrainObjectPositionEntity);
         }
 
-        PlanetEntity planetEntity = loadPlanet(planetId);
+        PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.getTerrainObjectPositionEntities().addAll(terrainObjectPositionEntities);
         entityManager.persist(planetEntity);
     }
@@ -101,7 +85,7 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
     @Transactional
     @SecurityCheck
     public void updateTerrainObjectPositions(int planetId, List<TerrainObjectPosition> updatedTerrainObjects) {
-        PlanetEntity planetEntity = loadPlanet(planetId);
+        PlanetEntity planetEntity = getEntity(planetId);
         for (TerrainObjectPosition terrainObjectPosition : updatedTerrainObjects) {
             TerrainObjectPositionEntity terrainObjectPositionEntity = getTerrainObjectPositionEntity(planetEntity, terrainObjectPosition.getId());
             terrainObjectPositionEntity.setTerrainObjectEntity(terrainElementPersistence.getTerrainObjectEntity(terrainObjectPosition.getTerrainObjectId()));
@@ -115,7 +99,7 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
     @Transactional
     @SecurityCheck
     public void deleteTerrainObjectPositionIds(int planetId, List<Integer> deletedTerrainIds) {
-        PlanetEntity planetEntity = loadPlanet(planetId);
+        PlanetEntity planetEntity = getEntity(planetId);
         for (int terrainSlopePositionId : deletedTerrainIds) {
             planetEntity.getTerrainObjectPositionEntities().remove(getTerrainObjectPositionEntity(planetEntity, terrainSlopePositionId));
         }
@@ -124,7 +108,7 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
     @Transactional
     @SecurityCheck
     public void updateTerrainSlopePositions(int planetId, List<TerrainSlopePosition> updatedSlopes) {
-        PlanetEntity planetEntity = loadPlanet(planetId);
+        PlanetEntity planetEntity = getEntity(planetId);
         for (TerrainSlopePosition terrainSlopePosition : updatedSlopes) {
             TerrainSlopePositionEntityChain chain = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePosition.getId());
             chain.getChild().setSlopeConfigEntity(terrainElementPersistence.getSlopeConfigEntity(terrainSlopePosition.getSlopeConfigId()));
@@ -166,7 +150,7 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
                 terrainSlopePositionEntities.add(terrainSlopePositionEntity);
             }
         }
-        PlanetEntity planetEntity = loadPlanet(planetId);
+        PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.getTerrainSlopePositionEntities().addAll(terrainSlopePositionEntities);
         entityManager.persist(planetEntity);
     }
@@ -174,7 +158,7 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
     @Transactional
     @SecurityCheck
     public void deleteTerrainSlopePositions(int planetId, Collection<Integer> terrainSlopePositionIds) {
-        PlanetEntity planetEntity = loadPlanet(planetId);
+        PlanetEntity planetEntity = getEntity(planetId);
         for (int terrainSlopePositionId : terrainSlopePositionIds) {
             TerrainSlopePositionEntityChain chain = getSlopePositionEntityFromPlanet(planetEntity, terrainSlopePositionId);
             if (chain.getParent() != null) {
@@ -209,39 +193,12 @@ public class PlanetCrudPersistence extends CrudPersistence<PlanetConfig, PlanetE
         throw new IllegalArgumentException("No TerrainObjectPositionEntity on planet for id: " + id);
     }
 
-    @SecurityCheck
-    public PlanetEntity loadPlanet(int planetId) {
-        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
-        if (planetEntity == null) {
-            throw new IllegalArgumentException("No planet for id: " + planetId);
-        }
-        return planetEntity;
-    }
-
     @Transactional
     @SecurityCheck
     public void updatePlanetVisualConfig(int planetId, PlanetVisualConfig planetVisualConfig) {
-        PlanetEntity planetEntity = loadPlanet(planetId);
+        PlanetEntity planetEntity = getEntity(planetId);
         planetEntity.fromPlanetVisualConfig(planetVisualConfig);
         entityManager.merge(planetEntity);
-    }
-
-    @Transactional
-    public Collection<PlanetConfig> loadAllPlanetConfig() {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PlanetEntity> criteriaQuery = criteriaBuilder.createQuery(PlanetEntity.class);
-        Root<PlanetEntity> root = criteriaQuery.from(PlanetEntity.class);
-        CriteriaQuery<PlanetEntity> userSelect = criteriaQuery.select(root);
-        return entityManager.createQuery(userSelect).getResultList().stream().map(PlanetEntity::toPlanetConfig).collect(Collectors.toList());
-    }
-
-    @Transactional
-    public PlanetConfig loadPlanetConfig(int planetId) {
-        PlanetEntity planetEntity = entityManager.find(PlanetEntity.class, planetId);
-        if (planetEntity == null) {
-            throw new IllegalArgumentException("No planet for id: " + planetId);
-        }
-        return planetEntity.toPlanetConfig();
     }
 
     @Transactional

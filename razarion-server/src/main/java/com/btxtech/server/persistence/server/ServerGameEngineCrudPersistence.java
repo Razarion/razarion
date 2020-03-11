@@ -153,7 +153,7 @@ public class ServerGameEngineCrudPersistence extends CrudPersistence<ServerGameE
     public void updatePlanetConfig(Integer planetConfigId) {
         ServerGameEngineConfigEntity serverGameEngineConfigEntity = serverGameEngineConfigEntity();
         if (planetConfigId != null) {
-            serverGameEngineConfigEntity.setPlanetEntity(planetCrudPersistence.loadPlanet(planetConfigId));
+            serverGameEngineConfigEntity.setPlanetEntity(planetCrudPersistence.getEntity(planetConfigId));
         } else {
             serverGameEngineConfigEntity.setPlanetEntity(null);
         }

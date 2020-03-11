@@ -11,12 +11,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 @Provider
 public class ObjectMapperResolver implements ContextResolver<ObjectMapper> {
     private final ObjectMapper mapper;
 
-    public ObjectMapperResolver(Class<? extends Config> implClass) {
+    public ObjectMapperResolver(Supplier<Class<? extends Config>> implClassSuplier) {
         mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(Config.class, new StdDeserializer<Config>(Config.class) {
@@ -24,7 +25,7 @@ public class ObjectMapperResolver implements ContextResolver<ObjectMapper> {
             public Config deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
                 ObjectMapper mapper = (ObjectMapper) p.getCodec();
                 ObjectNode obj = mapper.readTree(p);
-                return mapper.treeToValue(obj, implClass);
+                return mapper.treeToValue(obj, implClassSuplier.get());
             }
         });
         mapper.registerModule(module);

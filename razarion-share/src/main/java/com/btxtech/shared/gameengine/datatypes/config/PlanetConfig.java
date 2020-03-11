@@ -19,7 +19,7 @@ public class PlanetConfig implements Config {
     private Map<Integer, Integer> itemTypeLimitation;
     private int houseSpace;
     private int startRazarion;
-    private int startBaseItemTypeId;
+    private Integer startBaseItemTypeId;
     private Integer groundConfigId;
 
     @Override
@@ -50,13 +50,52 @@ public class PlanetConfig implements Config {
         this.terrainTileDimension = terrainTileDimension;
     }
 
+    public Rectangle2D getPlayGround() {
+        return playGround;
+    }
+
+    public void setPlayGround(Rectangle2D playGround) {
+        this.playGround = playGround;
+    }
+
     public Map<Integer, Integer> getItemTypeLimitation() {
         return itemTypeLimitation;
     }
 
-    public PlanetConfig setItemTypeLimitation(Map<Integer, Integer> itemTypeLimitation) {
+    public void setItemTypeLimitation(Map<Integer, Integer> itemTypeLimitation) {
         this.itemTypeLimitation = itemTypeLimitation;
-        return this;
+    }
+
+    public int getHouseSpace() {
+        return houseSpace;
+    }
+
+    public void setHouseSpace(int houseSpace) {
+        this.houseSpace = houseSpace;
+    }
+
+    public int getStartRazarion() {
+        return startRazarion;
+    }
+
+    public void setStartRazarion(int startRazarion) {
+        this.startRazarion = startRazarion;
+    }
+
+    public Integer getStartBaseItemTypeId() {
+        return startBaseItemTypeId;
+    }
+
+    public void setStartBaseItemTypeId(Integer startBaseItemTypeId) {
+        this.startBaseItemTypeId = startBaseItemTypeId;
+    }
+
+    public Integer getGroundConfigId() {
+        return groundConfigId;
+    }
+
+    public void setGroundConfigId(Integer groundConfigId) {
+        this.groundConfigId = groundConfigId;
     }
 
     public int imitation4ItemType(int itemTypeId) {
@@ -68,59 +107,48 @@ public class PlanetConfig implements Config {
         }
     }
 
-    public int getHouseSpace() {
-        return houseSpace;
-    }
-
-    public PlanetConfig setHouseSpace(int houseSpace) {
-        this.houseSpace = houseSpace;
-        return this;
-    }
-
-    public int getStartBaseItemTypeId() {
-        return startBaseItemTypeId;
-    }
-
-    public PlanetConfig setStartBaseItemTypeId(int startBaseItemTypeId) {
-        this.startBaseItemTypeId = startBaseItemTypeId;
-        return this;
-    }
-
-    public int getStartRazarion() {
-        return startRazarion;
-    }
-
-    public PlanetConfig setStartRazarion(int startRazarion) {
-        this.startRazarion = startRazarion;
-        return this;
-    }
-
-    public Rectangle2D getPlayGround() {
-        return playGround;
-    }
-
-    public PlanetConfig setPlayGround(Rectangle2D playGround) {
-        this.playGround = playGround;
-        return this;
-    }
-
-    public Integer getGroundConfigId() {
-        return groundConfigId;
-    }
-
-    public PlanetConfig setGroundConfigId(Integer groundConfigId) {
-        this.groundConfigId = groundConfigId;
-        return this;
-    }
-
     public PlanetConfig id(int id) {
         this.id = id;
         return this;
     }
 
-
     public PlanetConfig internalName(String internalName) {
         setInternalName(internalName);
+        return this;
+    }
+
+    public PlanetConfig terrainTileDimension(Rectangle terrainTileDimension) {
+        setTerrainTileDimension(terrainTileDimension);
+        return this;
+    }
+
+    public PlanetConfig playGround(Rectangle2D playGround) {
+        setPlayGround(playGround);
+        return this;
+    }
+
+    public PlanetConfig itemTypeLimitation(Map<Integer, Integer> itemTypeLimitation) {
+        setItemTypeLimitation(itemTypeLimitation);
+        return this;
+    }
+
+    public PlanetConfig houseSpace(int houseSpace) {
+        setHouseSpace(houseSpace);
+        return this;
+    }
+
+    public PlanetConfig startRazarion(int startRazarion) {
+        setStartRazarion(startRazarion);
+        return this;
+    }
+
+    public PlanetConfig startBaseItemTypeId(Integer startBaseItemTypeId) {
+        setStartBaseItemTypeId(startBaseItemTypeId);
+        return this;
+    }
+
+    public PlanetConfig groundConfigId(Integer groundConfigId) {
+        setGroundConfigId(groundConfigId);
         return this;
     }
 }
