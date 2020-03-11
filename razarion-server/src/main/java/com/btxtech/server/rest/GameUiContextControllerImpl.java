@@ -35,7 +35,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
             UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.load(gameUiControlInput, sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
-            logger.severe("Using ColdGameUiContext. No planets configured");
+            logger.severe("Using fallback. No planets configured");
             return FallbackConfig.coldGameUiControlConfig(userService.getUserContextFromSession());
         }
     }
@@ -46,7 +46,7 @@ public class GameUiContextControllerImpl implements GameUiContextController {
             UserContext userContext = userService.getUserContextFromSession();
             return gameUiControlConfigPersistence.loadWarm(sessionHolder.getPlayerSession().getLocale(), userContext);
         } catch (Throwable e) {
-            logger.severe("Using Fallback. No WarmGameUiContext configured");
+            logger.severe("Using fallback. No WarmGameUiContext configured");
             return FallbackConfig.warmGameUiControlConfig();
         }
     }
