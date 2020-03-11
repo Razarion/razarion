@@ -40,7 +40,7 @@ public class GenericCrudControllerEditor extends AbstractCrudeEditor<ObjectNameI
 
     @Override
     public void delete(ObjectNameIdProvider objectNameIdProvider) {
-
+        MessageBuilder.createCall(ignore -> loadObjectNameId(crudControllerClass), crudControllerClass).delete(objectNameIdProvider.createObjectNameId().getId());
     }
 
     @Override
